@@ -9,7 +9,7 @@
 	"scripts": {
 		"build": "npm run lint && tsc",
 		"prepare": "npm run build",
-		"lint": "eslint ./src ./index.ts"
+		"lint": "eslint ./src/** ./index.ts"
 	},
 	"license": "MIT",
 	"devDependencies": {

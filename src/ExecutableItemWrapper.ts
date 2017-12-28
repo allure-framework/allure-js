@@ -113,7 +113,6 @@ export class ExecutableItemWrapper {
 				this.stage = Stage.FINISHED;
 				return result;
 			}
-
-		}
+		};
 	}
 }

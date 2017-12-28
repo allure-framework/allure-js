@@ -2,7 +2,7 @@ import { TestResultContainer } from "./entities/TestResultContainer";
 import { Link } from "./entities/Link";
 import { ExecutableItem } from "./entities/ExecutableItem";
 import { FixtureResult } from "./entities/FixtureResult";
-import { AllureRuntime} from "./AllureRuntime";
+import { AllureRuntime } from "./AllureRuntime";
 import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
 import { AllureTest } from "./AllureTest";
 

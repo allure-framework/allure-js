@@ -21,7 +21,8 @@ env:
 
 rules:
     no-console: off
-    no-unused-vars: warn
+    no-undef: off
+    no-unused-vars: off
     valid-jsdoc: off
     no-multi-spaces: error
     no-return-await: error
