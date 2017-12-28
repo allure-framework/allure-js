@@ -7,7 +7,6 @@ import { ContentType } from "./entities/ContentType";
 import { Attachment } from "./entities/Attachment";
 import { StepResult } from "./entities/StepResult";
 import { isPromise } from "./isPromise";
-import { AllureStep } from "./AllureStep";
 
 export class ExecutableItemWrapper {
 	constructor(private readonly info: ExecutableItem) {
@@ -114,5 +113,18 @@ export class ExecutableItemWrapper {
 				return result;
 			}
 		};
+	}
+}
+
+// This class is here because of circular dependency with ExecutableItemWrapper
+export class AllureStep extends ExecutableItemWrapper {
+	constructor(private readonly stepResult: StepResult) {
+		super(stepResult);
+		this.stepResult.start = Date.now();
+	}
+
+	endStep() {
+		this.stepResult.stop = Date.now();
+		// TODO: test that child steps ended
 	}
 }

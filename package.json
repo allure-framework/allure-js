@@ -1,6 +1,6 @@
 {
 	"name": "allure2-js-commons",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Common helper for writing report files for Allure 2",
 	"author": "Ilya Korobitsyn <mail@korobochka.org>",
 	"repository": "https://github.com/korobochka/allure2-js-commons",
