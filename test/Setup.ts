@@ -1,9 +1,10 @@
-import { AllureInterface, ConsoleReporter, JasmineAllureReporter } from "../src/JasmineReporter";
+import { AllureInterface, JasmineAllureReporter } from "../src/JasmineAllureReporter";
+import { JasmineConsoleReporter } from "../src/JasmineConsoleReporter";
 import { AllureRuntime, Status } from "allure2-js-commons";
 
 const runtime = new AllureRuntime({ resultsDir: "./out/allure-results" });
 
-jasmine.getEnv().addReporter(new ConsoleReporter());
+jasmine.getEnv().addReporter(new JasmineConsoleReporter());
 
 const reporter = new JasmineAllureReporter(runtime);
 jasmine.getEnv().addReporter(reporter);

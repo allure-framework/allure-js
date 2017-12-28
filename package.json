@@ -1,6 +1,6 @@
 {
 	"name": "jasmine-allure2-reporter",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Allure 2 reporter for Jasmine framework",
 	"author": "Ilya Korobitsyn <mail@korobochka.org>",
 	"repository": "https://github.com/korobochka/jasmine-allure2-reporter",
@@ -26,6 +26,6 @@
 		"typescript-eslint-parser": "^11.0.0"
 	},
 	"dependencies": {
-		"allure2-js-commons": "^1.0.2"
+		"allure2-js-commons": "^1.0.2npm "
 	}
 }
