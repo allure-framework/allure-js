@@ -15,8 +15,8 @@
 	"devDependencies": {
 		"@types/node": "^8.5.2",
 		"@types/uuid": "^3.4.3",
-		"allure-commandline": "^2.4.1",
-		"eslint": "^4.13.1",
+		"allure-commandline": "^2.5.0",
+		"eslint": "^4.14.0",
 		"eslint-plugin-typescript": "^0.8.1",
 		"typescript": "^2.6.2",
 		"typescript-eslint-parser": "^11.0.0"
