@@ -5,3 +5,4 @@ dist/declarations/test
 !package.json
 !package-lock.json
 !*.md
+!*.txt
