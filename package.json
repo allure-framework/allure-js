@@ -16,9 +16,9 @@
 	},
 	"license": "MIT",
 	"devDependencies": {
-		"@types/jasmine": "^2.8.2",
+		"@types/jasmine": "^2.8.3",
 		"@types/node": "^8.5.2",
-		"allure-commandline": "^2.4.1",
+		"allure-commandline": "^2.5.0",
 		"eslint": "^4.13.1",
 		"eslint-plugin-typescript": "^0.8.1",
 		"jasmine": "^2.8.0",
