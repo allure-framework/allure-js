@@ -1,5 +1,6 @@
 import { TestResult } from "./entities/TestResult";
-import { existsSync, mkdirSync, writeFileSync } from "fs";
+import { existsSync, writeFileSync } from "fs";
+import { sync as mkdirSync } from "mkdirp";
 import { join as buildPath } from "path";
 import { TestResultContainer } from "./entities/TestResultContainer";
 import { v4 as randomUUID } from "uuid";
@@ -14,7 +15,7 @@ export class AllureRuntime {
 
 	constructor(config: AllureConfig) {
 		this.config = config;
-		if (!existsSync(this.config.resultsDir)) mkdirSync(this.config.resultsDir); // FIXME mkdir -p
+		if (!existsSync(this.config.resultsDir)) mkdirSync(this.config.resultsDir);
 	}
 
 	startGroup(name?: string): AllureGroup {
