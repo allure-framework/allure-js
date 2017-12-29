@@ -7,11 +7,13 @@
 	"main": "./dist/index.js",
 	"typings": "./dist/declarations/",
 	"scripts": {
-		"build": "npm run lint && tsc",
-		"prepare": "npm run build",
+		"compile": "tsc",
+		"clean": "rimraf ./dist",
+		"prepare": "npm run clean && npm run build",
+		"build": "npm run lint && npm run compile",
 		"generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
 		"runTest": "jasmine ./dist/test/*.js",
-		"test": "npm run build && npm run runTest ; npm run generate-report",
+		"test": "rimraf ./out ; npm run build && npm run runTest ; npm run generate-report",
 		"lint": "eslint ./src/** ./test/** ./index.ts"
 	},
 	"license": "MIT",
@@ -22,10 +24,11 @@
 		"eslint": "^4.13.1",
 		"eslint-plugin-typescript": "^0.8.1",
 		"jasmine": "^2.8.0",
+		"rimraf": "^2.6.2",
 		"typescript": "^2.6.2",
 		"typescript-eslint-parser": "^11.0.0"
 	},
 	"dependencies": {
-		"allure2-js-commons": "^1.0.2npm "
+		"allure2-js-commons": "^1.0.4"
 	}
 }
