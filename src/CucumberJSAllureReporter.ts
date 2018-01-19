@@ -129,6 +129,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 		}
 
 		this.currentTest.historyId = this.hash(JSON.stringify(info));
+		this.currentTest.addLabel(LabelName.THREAD, `${process.pid}`); // parallel tests support
 
 		this.currentTest.addLabel(LabelName.FEATURE, feature.feature.name);
 		//this.currentTest.addLabel(LabelName.STORY, feature.feature.name);
