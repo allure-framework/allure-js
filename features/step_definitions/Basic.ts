@@ -18,6 +18,8 @@ defineSupportCode(function(steps) {
 	steps.Then(/^failing then$/, function() { throw new Error("step failed!"); });
 
 	steps.Then(/^passing with (\d+) (\d+)$/, function(arg1, arg2) {});
+	steps.Then(/^passing with duplicated (\d+) (\d+) (\d+) (\d+)$/, function(arg1, arg2, arg3, arg4) {});
+	steps.Then(/^argument names are not replaced/, function() {});
 
 	steps.After(function() {
 		this.attach("some text is attached after every step");

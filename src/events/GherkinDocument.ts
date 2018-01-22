@@ -3,7 +3,7 @@ import { GherkinStep } from "./GherkinStep";
 
 export class GherkinDocument {
 	type: string;
-	feature: {
+	feature?: {
 		type: string;
 		tags: {
 			name: string

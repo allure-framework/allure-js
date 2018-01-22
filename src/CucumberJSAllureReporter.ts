@@ -18,7 +18,7 @@ import { SourceLocation } from "./events/SourceLocation";
 import { GherkinStep } from "./events/GherkinStep";
 import { GherkinTestCase } from "./events/GherkinTestCase";
 import { GherkinDocument } from "./events/GherkinDocument";
-import { examplesToSensibleFormat } from "./events/Example";
+import { Example, examplesToSensibleFormat } from "./events/Example";
 
 export interface World extends CucumberWorld {
 	allure: AllureInterface;
@@ -72,27 +72,29 @@ export class CucumberJSAllureFormatter extends Formatter {
 		// "ScenarioOutline"
 		data.document.caseMap = new Map<number, GherkinTestCase>();
 		data.document.stepMap = new Map<number, GherkinStep>();
-		for (const test of data.document.feature.children) {
-			test.stepMap = new Map();
-			if (test.type === "Background") {
-				data.document.stepMap = new Map();
-				for (const step of test.steps) {
-					data.document.stepMap.set(step.location.line, step);
+		if (data.document.feature !== undefined) {
+			for (const test of data.document.feature.children || []) {
+				test.stepMap = new Map();
+				if (test.type === "Background") {
+					data.document.stepMap = new Map();
+					for (const step of test.steps) {
+						data.document.stepMap.set(step.location.line, step);
+					}
+				} else {
+					for (const step of test.steps) {
+						test.stepMap.set(step.location.line, step);
+					}
 				}
-			} else {
-				for (const step of test.steps) {
-					test.stepMap.set(step.location.line, step);
-				}
-			}
 
-			if (test.type === "ScenarioOutline") {
-				for (const example of examplesToSensibleFormat(test.examples || [])) {
-					const copy = { ...test };
-					copy.example = example;
-					data.document.caseMap.set(example.line, copy);
+				if (test.type === "ScenarioOutline") {
+					for (const example of examplesToSensibleFormat(test.examples || [])) {
+						const copy = { ...test };
+						copy.example = example;
+						data.document.caseMap.set(example.line, copy);
+					}
+				} else {
+					data.document.caseMap.set(test.location.line, test);
 				}
-			} else {
-				data.document.caseMap.set(test.location.line, test);
 			}
 		}
 		this.featureMap.set(data.uri, data.document);
@@ -105,14 +107,14 @@ export class CucumberJSAllureFormatter extends Formatter {
 
 	onTestCaseStarted(data: SourceLocation) {
 		const feature = this.featureMap.get(data.sourceLocation.uri);
-		if (feature === undefined) throw new Error("Unknown feature");
+		if (feature === undefined || feature.feature === undefined) throw new Error("Unknown feature");
 		const test = feature.caseMap.get(data.sourceLocation.line);
 		if (test === undefined) throw new Error("Unknown scenario");
 
 		console.log(`Test case started: ${test.name} (${test.description})`);
 
 		this.currentGroup = this.allureRuntime.startGroup("");
-		this.currentTest = this.currentGroup.startTest(test.name);
+		this.currentTest = this.currentGroup.startTest(this.applyExample(test.name, test.example));
 
 		const info = {
 			f: feature.feature.name,
@@ -149,6 +151,15 @@ export class CucumberJSAllureFormatter extends Formatter {
 		}
 	}
 
+	private applyExample(text: string, example: Example | undefined) {
+		if (example === undefined) return text;
+		for (const argName in example.arguments) {
+			if (!example.arguments.hasOwnProperty(argName)) continue;
+			text = text.replace(new RegExp(`<${argName}>`, "g"), `<${example.arguments[argName]}>`);
+		}
+		return text;
+	}
+
 	onTestStepStarted(data: { index: number, testCase: SourceLocation }) {
 		const location = (this.stepsMap.get(SourceLocation.toKey(data.testCase)) || [])[data.index];
 
@@ -169,13 +180,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 		}
 		if (step === undefined) throw new Error("Unknown step");
 
-		let stepText = `${step.keyword}${step.text}`;
-		if (test.example !== undefined) {
-			for (const argName in test.example.arguments) {
-				if (!test.example.arguments.hasOwnProperty(argName)) continue;
-				stepText = stepText.replace(argName, test.example.arguments[argName]);
-			}
-		}
+		const stepText = this.applyExample(`${step.keyword}${step.text}`, test.example);
 
 		console.log(stepText);
 		const allureStep = this.currentTest.startStep(stepText);

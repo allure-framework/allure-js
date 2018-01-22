@@ -28,10 +28,12 @@ Feature: Basic tests
 		When passing when
 		Then failing then
 
-	Scenario Outline: Test with examples
+	Scenario Outline: Test with examples <argument 1>
 		Given passing given
 		When passing when
 		Then passing with <argument 1> <argument 2>
+		And passing with duplicated <argument 1> <argument 2> <argument 1> <argument 2>
+		And argument names are not replaced argument 1 argument 2
 
 		Examples:
 			| argument 1 | argument 2 |
