@@ -18,4 +18,8 @@ defineSupportCode(function(consumer) {
 		});
 		this.allure.step("Inner step 2", function() {});
 	});
+
+	consumer.When(/^test throws message "([^"]*)"$/, function(message) {
+		throw new Error(message);
+	});
 });

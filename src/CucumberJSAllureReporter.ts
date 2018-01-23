@@ -24,12 +24,19 @@ export interface World extends CucumberWorld {
 	allure: AllureInterface;
 }
 
+export class CucumberJSAllureFormatterConfig {
+	labels: {
+		[key: string]: RegExp[];
+	};
+	exceptionFormatter?: (message: string) => string;
+}
+
 export class CucumberJSAllureFormatter extends Formatter {
 	private readonly sourceMap: Map<string, string[]> = new Map();
 	private readonly stepsMap: Map<string, SourceLocation[]> = new Map();
 	private readonly featureMap: Map<string, GherkinDocument> = new Map();
 	private readonly labels: { [key: string]: RegExp[]; };
-
+	private readonly exceptionFormatter: (message: string) => string;
 
 	private stepStack: AllureStep[] = [];
 	currentGroup: AllureGroup;
@@ -38,7 +45,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 
 	public readonly allureInterface: AllureInterface;
 
-	constructor(options: any, private readonly allureRuntime: AllureRuntime, config: { labels: { [key: string]: RegExp[]; } }) {
+	constructor(options: any, private readonly allureRuntime: AllureRuntime, config: CucumberJSAllureFormatterConfig) {
 		super(options);
 		options.eventBroadcaster
 			.on("source", this.onSource.bind(this))
@@ -51,6 +58,9 @@ export class CucumberJSAllureFormatter extends Formatter {
 			.on("test-case-finished", this.onTestCaseFinished.bind(this));
 
 		this.labels = config.labels;
+		this.exceptionFormatter = config.exceptionFormatter || function(message) {
+			return message;
+		};
 
 		this.allureInterface = new AllureInterface(this);
 		options.supportCodeLibrary.World.prototype.allure = this.allureInterface;
@@ -224,7 +234,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 		currentStep.status = statusTextToAllure(data.result.status);
 		currentStep.stage = statusTextToStage(data.result.status);
 		if (data.result.exception !== undefined) {
-			currentStep.detailsMessage = data.result.exception.message;
+			currentStep.detailsMessage = this.exceptionFormatter(data.result.exception.message);
 			currentStep.detailsTrace = data.result.exception.stack || "";
 		}
 		currentStep.endStep();
@@ -235,7 +245,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 		this.currentTest.status = statusTextToAllure(data.result.status);
 		this.currentTest.stage = statusTextToStage(data.result.status);
 		if (data.result.exception !== undefined) {
-			this.currentTest.detailsMessage = data.result.exception.message;
+			this.currentTest.detailsMessage = this.exceptionFormatter(data.result.exception.message);
 			this.currentTest.detailsTrace = data.result.exception.stack || "";
 		}
 
