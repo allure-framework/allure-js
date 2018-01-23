@@ -3,6 +3,8 @@
 Allure 2 reporter for Cucumber.JS framework
 Compatible with Cucumber.JS 3+ and Allure 2+
 
+NPM link: [cucumberjs-allure2-reporter](https://www.npmjs.com/package/cucumberjs-allure2-reporter)
+
 ### How to use
 Create Reporter file:
 ```ecmascript 6
