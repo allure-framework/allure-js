@@ -14,6 +14,6 @@ export class GherkinDocument {
 	};
 	comments: string[];
 
-	stepMap: Map<number, GherkinStep>; // not from input, internal bookkeeping; for steps from backgrounds
-	caseMap: Map<number, GherkinTestCase>;
+	stepMap?: Map<number, GherkinStep>; // not from input, internal bookkeeping; for steps from backgrounds
+	caseMap?: Map<number, GherkinTestCase>;
 }

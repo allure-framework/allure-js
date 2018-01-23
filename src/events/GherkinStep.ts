@@ -13,4 +13,6 @@ export class GherkinStep {
 			}[]
 		}[];
 	};
+
+	isBackground?: boolean; // internal
 }

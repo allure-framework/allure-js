@@ -34,6 +34,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 	private stepStack: AllureStep[] = [];
 	currentGroup: AllureGroup;
 	currentTest: AllureTest;
+	currentBefore: ExecutableItemWrapper | null;
 
 	public readonly allureInterface: AllureInterface;
 
@@ -78,6 +79,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 				if (test.type === "Background") {
 					data.document.stepMap = new Map();
 					for (const step of test.steps) {
+						step.isBackground = true;
 						data.document.stepMap.set(step.location.line, step);
 					}
 				} else {
@@ -103,12 +105,13 @@ export class CucumberJSAllureFormatter extends Formatter {
 	onTestCasePrepared(data: { steps: SourceLocation[] } & SourceLocation) {
 		this.stepsMap.clear();
 		this.stepsMap.set(SourceLocation.toKey(data), data.steps);
+		this.currentBefore = null;
 	}
 
 	onTestCaseStarted(data: SourceLocation) {
 		const feature = this.featureMap.get(data.sourceLocation.uri);
 		if (feature === undefined || feature.feature === undefined) throw new Error("Unknown feature");
-		const test = feature.caseMap.get(data.sourceLocation.line);
+		const test = feature.caseMap === undefined ? undefined : feature.caseMap.get(data.sourceLocation.line);
 		if (test === undefined) throw new Error("Unknown scenario");
 
 		console.log(`Test case started: ${test.name} (${test.description})`);
@@ -165,10 +168,10 @@ export class CucumberJSAllureFormatter extends Formatter {
 
 		const feature = this.featureMap.get(data.testCase.sourceLocation.uri);
 		if (feature === undefined) throw new Error("Unknown feature");
-		const test = feature.caseMap.get(data.testCase.sourceLocation.line);
+		const test = feature.caseMap === undefined ? undefined : feature.caseMap.get(data.testCase.sourceLocation.line);
 		if (test === undefined) throw new Error("Unknown scenario");
 		let step: GherkinStep | undefined;
-		if (location.sourceLocation !== undefined) {
+		if (location.sourceLocation !== undefined && feature.stepMap !== undefined) {
 			step = test.stepMap.get(location.sourceLocation.line) || feature.stepMap.get(location.sourceLocation.line);
 		} else {
 			if (location.actionLocation === undefined) location.actionLocation = { uri: "unknown", line: -1 };
@@ -183,7 +186,12 @@ export class CucumberJSAllureFormatter extends Formatter {
 		const stepText = this.applyExample(`${step.keyword}${step.text}`, test.example);
 
 		console.log(stepText);
-		const allureStep = this.currentTest.startStep(stepText);
+		if (step.isBackground) {
+			if (this.currentBefore === null) this.currentBefore = this.currentGroup.addBefore();
+		} else {
+			if (this.currentBefore !== null) this.currentBefore = null;
+		}
+		const allureStep = (this.currentBefore || this.currentTest).startStep(stepText);
 		this.pushStep(allureStep);
 
 		if (step.argument !== undefined) {

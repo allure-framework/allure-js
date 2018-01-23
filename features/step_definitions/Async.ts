@@ -1,6 +1,5 @@
 /* eslint-disable new-cap */
 import { defineSupportCode } from "cucumber";
-import { AllureRuntime } from "../../../allure2-js-commons/dist/declarations/index";
 import { delay, delayFail } from "./helpers";
 
 defineSupportCode(function(steps) {
