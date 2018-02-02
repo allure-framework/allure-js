@@ -58,7 +58,14 @@ export class CucumberJSAllureFormatter extends Formatter {
 			.on("test-case-finished", this.onTestCaseFinished.bind(this));
 
 		this.labels = config.labels;
-		this.exceptionFormatter = config.exceptionFormatter || function(message) {
+		this.exceptionFormatter = function(message) {
+			if (config.exceptionFormatter !== undefined) {
+				try {
+					return config.exceptionFormatter(message);
+				} catch (e) {
+					console.warn(`Error in exceptionFormatter: ${e}`);
+				}
+			}
 			return message;
 		};
 
@@ -233,10 +240,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 		if (currentStep === null) throw new Error("No current step defined");
 		currentStep.status = statusTextToAllure(data.result.status);
 		currentStep.stage = statusTextToStage(data.result.status);
-		if (data.result.exception !== undefined) {
-			currentStep.detailsMessage = this.exceptionFormatter(data.result.exception.message);
-			currentStep.detailsTrace = data.result.exception.stack || "";
-		}
+		this.setException(currentStep, data.result.exception);
 		currentStep.endStep();
 		this.popStep();
 	}
@@ -244,13 +248,21 @@ export class CucumberJSAllureFormatter extends Formatter {
 	onTestCaseFinished(data: { result: Result } & SourceLocation) {
 		this.currentTest.status = statusTextToAllure(data.result.status);
 		this.currentTest.stage = statusTextToStage(data.result.status);
-		if (data.result.exception !== undefined) {
-			this.currentTest.detailsMessage = this.exceptionFormatter(data.result.exception.message);
-			this.currentTest.detailsTrace = data.result.exception.stack || "";
-		}
+		this.setException(this.currentTest, data.result.exception);
 
 		this.currentTest.endTest();
 		this.currentGroup.endGroup();
+	}
+
+	private setException(target: ExecutableItemWrapper, exception?: Error | string) {
+		if (exception !== undefined) {
+			if (typeof exception === "string") {
+				target.detailsMessage = this.exceptionFormatter(exception);
+			} else {
+				target.detailsMessage = this.exceptionFormatter(exception.message || "Error.message === undefined");
+				target.detailsTrace = exception.stack || "";
+			}
+		}
 	}
 
 	pushStep(step: AllureStep): void {

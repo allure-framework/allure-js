@@ -5,3 +5,6 @@ Feature: Exception formatting tests
 
 	Scenario: Test 2
 		When test throws message "Exception message after 60002ms"
+
+	Scenario: Test with undefined message
+		When test throws undefined message

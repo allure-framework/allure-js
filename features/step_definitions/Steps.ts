@@ -22,4 +22,18 @@ defineSupportCode(function(consumer) {
 	consumer.When(/^test throws message "([^"]*)"$/, function(message) {
 		throw new Error(message);
 	});
+
+	consumer.When(/^test throws undefined message$/, function() {
+		throw new Error(undefined);
+	});
+
+	consumer.Given(/^step is ambiguous$/, function() {
+		return true;
+	});
+	consumer.When(/^step is ambiguous$/, function() {
+		return true;
+	});
+	consumer.Then(/^step is ambiguous$/, function() {
+		return true;
+	});
 });
