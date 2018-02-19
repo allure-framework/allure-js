@@ -25,7 +25,10 @@ runtime.writeExecutorInfo({
 
 runtime.writeEnvironmentInfo({
 	"a": "b",
-	"PATH": "azazaz"
+	"PATH": "azazaz",
+	"APPDATA": "C:\\USERS\\test (x86)\\AppData",
+	"PS1": "\\[\\0330;$MSYSTEM;${PWD//[^[:ascii:]]/?}\\007\\]",
+	"TEST1": "\\usr\\bin"
 });
 
 runtime.writeCategories([

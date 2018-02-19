@@ -10,7 +10,8 @@ enum SpecStatus {
 	FAILED = "failed",
 	BROKEN = "broken",
 	PENDING = "pending",
-	DISABLED = "disabled"
+	DISABLED = "disabled",
+	EXCLUDED = "excluded"
 }
 
 export class JasmineAllureReporter implements jasmine.CustomReporter {
@@ -99,7 +100,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
 			this.stepStack = [];
 		}
 
-		if (spec.status === SpecStatus.PENDING || spec.status === SpecStatus.DISABLED) {
+		if (spec.status === SpecStatus.PENDING || spec.status === SpecStatus.DISABLED || spec.status === SpecStatus.EXCLUDED) {
 			currentTest.status = Status.SKIPPED;
 			currentTest.stage = Stage.PENDING;
 			currentTest.detailsMessage = spec.pendingReason || "Suite disabled";
