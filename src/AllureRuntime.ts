@@ -4,6 +4,7 @@ import { sync as mkdirSync } from "mkdirp";
 import { join as buildPath } from "path";
 import { TestResultContainer } from "./entities/TestResultContainer";
 import { v4 as randomUUID } from "uuid";
+import { stringify } from "properties";
 import { ContentType, typeToExtension } from "./entities/ContentType";
 import { ExecutorInfo } from "./entities/ExecutorInfo";
 import { Category } from "./entities/Category";
@@ -49,13 +50,8 @@ export class AllureRuntime {
 
 	writeEnvironmentInfo(info?: { [key: string]: string }) {
 		const path = buildPath(this.config.resultsDir, "environment.properties");
-		let text = "";
 		const target = info || process.env;
-		for (const key in target) {
-			if (target.hasOwnProperty(key)) {
-				text += `${key}=${target[key]}\n`;
-			}
-		}
+		const text = stringify(target, { unicode: true });
 		writeFileSync(path, text, { encoding: "utf-8" });
 	}
 

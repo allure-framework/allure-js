@@ -38,7 +38,7 @@ export class AllureGroup {
 	}
 
 	get name(): string {
-		return this.testResultContainer.name;
+		return this.testResultContainer.name || "";
 	}
 
 	set name(name: string) {

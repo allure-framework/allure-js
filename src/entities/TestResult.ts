@@ -6,7 +6,7 @@ import { v4 as randomUUID } from "uuid";
 export class TestResult extends ExecutableItem {
 	uuid: string;
 	historyId: string;
-	fullName: string;
+	fullName?: string;
 	labels: Label[] = [];
 	links: Link[] = [];
 
