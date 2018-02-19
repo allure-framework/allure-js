@@ -1,9 +1,9 @@
 export class GherkinStep {
-	location: {
+	location?: {
 		line: number
 	};
-	keyword: string;
-	text: string;
+	keyword?: string;
+	text?: string;
 	argument?: {
 		type: String;
 		content?: string;

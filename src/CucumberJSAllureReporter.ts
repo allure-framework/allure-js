@@ -25,7 +25,7 @@ export interface World extends CucumberWorld {
 }
 
 export class CucumberJSAllureFormatterConfig {
-	labels: {
+	labels?: {
 		[key: string]: RegExp[];
 	};
 	exceptionFormatter?: (message: string) => string;
@@ -39,9 +39,9 @@ export class CucumberJSAllureFormatter extends Formatter {
 	private readonly exceptionFormatter: (message: string) => string;
 
 	private stepStack: AllureStep[] = [];
-	currentGroup: AllureGroup;
-	currentTest: AllureTest;
-	currentBefore: ExecutableItemWrapper | null;
+	currentGroup: AllureGroup | null = null;
+	currentTest: AllureTest | null = null;
+	currentBefore: ExecutableItemWrapper | null = null;
 
 	public readonly allureInterface: AllureInterface;
 
@@ -57,7 +57,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 			.on("test-step-finished", this.onTestStepFinished.bind(this))
 			.on("test-case-finished", this.onTestCaseFinished.bind(this));
 
-		this.labels = config.labels;
+		this.labels = config.labels || {};
 		this.exceptionFormatter = function(message) {
 			if (config.exceptionFormatter !== undefined) {
 				try {
@@ -77,11 +77,6 @@ export class CucumberJSAllureFormatter extends Formatter {
 		return createHash("md5").update(data).digest("hex");
 	}
 
-	private getSource(location: SourceLocation): string {
-		//if (location === undefined) throw new Error("Source location is undefined");
-		return (this.sourceMap.get(location.sourceLocation.uri) || [])[location.sourceLocation.line - 1];
-	}
-
 	onSource(data: { uri: string, data: string, media: { encoding: string, type: string } }) {
 		this.sourceMap.set(data.uri, data.data.split(/\n/));
 	}
@@ -97,11 +92,11 @@ export class CucumberJSAllureFormatter extends Formatter {
 					data.document.stepMap = new Map();
 					for (const step of test.steps) {
 						step.isBackground = true;
-						data.document.stepMap.set(step.location.line, step);
+						data.document.stepMap.set(step.location!.line, step);
 					}
 				} else {
 					for (const step of test.steps) {
-						test.stepMap.set(step.location.line, step);
+						test.stepMap.set(step.location!.line, step);
 					}
 				}
 
@@ -112,7 +107,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 						data.document.caseMap.set(example.line, copy);
 					}
 				} else {
-					data.document.caseMap.set(test.location.line, test);
+					data.document.caseMap.set(test.location!.line, test);
 				}
 			}
 		}
@@ -126,15 +121,15 @@ export class CucumberJSAllureFormatter extends Formatter {
 	}
 
 	onTestCaseStarted(data: SourceLocation) {
-		const feature = this.featureMap.get(data.sourceLocation.uri);
+		const feature = this.featureMap.get(data.sourceLocation!.uri);
 		if (feature === undefined || feature.feature === undefined) throw new Error("Unknown feature");
-		const test = feature.caseMap === undefined ? undefined : feature.caseMap.get(data.sourceLocation.line);
+		const test = feature.caseMap === undefined ? undefined : feature.caseMap.get(data.sourceLocation!.line);
 		if (test === undefined) throw new Error("Unknown scenario");
 
 		console.log(`Test case started: ${test.name} (${test.description})`);
 
 		this.currentGroup = this.allureRuntime.startGroup("");
-		this.currentTest = this.currentGroup.startTest(this.applyExample(test.name, test.example));
+		this.currentTest = this.currentGroup.startTest(this.applyExample(test.name || "Unnamed test", test.example));
 
 		const info = {
 			f: feature.feature.name,
@@ -183,9 +178,9 @@ export class CucumberJSAllureFormatter extends Formatter {
 	onTestStepStarted(data: { index: number, testCase: SourceLocation }) {
 		const location = (this.stepsMap.get(SourceLocation.toKey(data.testCase)) || [])[data.index];
 
-		const feature = this.featureMap.get(data.testCase.sourceLocation.uri);
+		const feature = this.featureMap.get(data.testCase.sourceLocation!.uri);
 		if (feature === undefined) throw new Error("Unknown feature");
-		const test = feature.caseMap === undefined ? undefined : feature.caseMap.get(data.testCase.sourceLocation.line);
+		const test = feature.caseMap === undefined ? undefined : feature.caseMap.get(data.testCase.sourceLocation!.line);
 		if (test === undefined) throw new Error("Unknown scenario");
 		let step: GherkinStep | undefined;
 		if (location.sourceLocation !== undefined && feature.stepMap !== undefined) {
@@ -204,11 +199,11 @@ export class CucumberJSAllureFormatter extends Formatter {
 
 		console.log(stepText);
 		if (step.isBackground) {
-			if (this.currentBefore === null) this.currentBefore = this.currentGroup.addBefore();
+			if (this.currentBefore === null) this.currentBefore = this.currentGroup!.addBefore();
 		} else {
 			if (this.currentBefore !== null) this.currentBefore = null;
 		}
-		const allureStep = (this.currentBefore || this.currentTest).startStep(stepText);
+		const allureStep = (this.currentBefore || this.currentTest)!.startStep(stepText);
 		this.pushStep(allureStep);
 
 		if (step.argument !== undefined) {
@@ -246,6 +241,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 	}
 
 	onTestCaseFinished(data: { result: Result } & SourceLocation) {
+		if (this.currentTest === null || this.currentGroup === null) throw new Error("No current test info");
 		this.currentTest.status = statusTextToAllure(data.result.status);
 		this.currentTest.stage = statusTextToStage(data.result.status);
 		this.setException(this.currentTest, data.result.exception);
@@ -288,7 +284,9 @@ export class AllureInterface {
 	}
 
 	private get currentExecutable(): ExecutableItemWrapper {
-		return this.reporter.currentStep || this.reporter.currentTest;
+		const result = this.reporter.currentStep || this.reporter.currentTest;
+		if (result === null) throw new Error("No executable!");
+		return result;
 	}
 
 	private get currentTest(): AllureTest {
@@ -404,14 +402,14 @@ export class WrappedStep {
 }
 
 
-function statusTextToAllure(status: string): Status {
+function statusTextToAllure(status?: string): Status {
 	if (status === "passed") return Status.PASSED;
 	if (status === "skipped") return Status.SKIPPED;
 	if (status === "failed") return Status.FAILED;
 	return Status.BROKEN;
 }
 
-function statusTextToStage(status: string): Stage {
+function statusTextToStage(status?: string): Stage {
 	if (status === "passed") return Stage.FINISHED;
 	if (status === "skipped") return Stage.PENDING;
 	if (status === "failed") return Stage.INTERRUPTED;

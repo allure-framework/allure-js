@@ -1,10 +1,10 @@
 export class GherkinExample {
-	tableHeader: {
+	tableHeader?: {
 		cells: {
 			value: string;
 		}[];
 	};
-	tableBody: {
+	tableBody?: {
 		location: {
 			line: number;
 		};

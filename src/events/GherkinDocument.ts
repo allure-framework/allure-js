@@ -2,7 +2,7 @@ import { GherkinTestCase } from "./GherkinTestCase";
 import { GherkinStep } from "./GherkinStep";
 
 export class GherkinDocument {
-	type: string;
+	type?: string;
 	feature?: {
 		type: string;
 		tags: {
@@ -12,7 +12,7 @@ export class GherkinDocument {
 		description: string;
 		children: GherkinTestCase[];
 	};
-	comments: string[];
+	comments: string[] = [];
 
 	stepMap?: Map<number, GherkinStep>; // not from input, internal bookkeeping; for steps from backgrounds
 	caseMap?: Map<number, GherkinTestCase>;
