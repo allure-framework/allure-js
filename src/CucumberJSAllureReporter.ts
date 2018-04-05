@@ -129,8 +129,6 @@ export class CucumberJSAllureFormatter extends Formatter {
 		const test = feature.caseMap === undefined ? undefined : feature.caseMap.get(data.sourceLocation!.line);
 		if (test === undefined) throw new Error("Unknown scenario");
 
-		console.log(`Test case started: ${test.name} (${test.description})`);
-
 		this.currentGroup = this.allureRuntime.startGroup("");
 		this.currentTest = this.currentGroup.startTest(this.applyExample(test.name || "Unnamed test", test.example));
 
@@ -200,7 +198,6 @@ export class CucumberJSAllureFormatter extends Formatter {
 
 		const stepText = this.applyExample(`${step.keyword}${step.text}`, test.example);
 
-		console.log(stepText);
 		if (step.isBackground) {
 			if (this.currentBefore === null) this.currentBefore = this.currentGroup!.addBefore();
 		} else {
