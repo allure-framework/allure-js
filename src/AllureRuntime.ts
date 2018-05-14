@@ -26,8 +26,11 @@ export class AllureRuntime {
 	}
 
 	writeResult(result: TestResult): void {
-		const path = buildPath(this.config.resultsDir, `${result.uuid}-result.json`);
-		writeFileSync(path, JSON.stringify(result), { encoding: "utf-8" });
+		const modifiedResult = this.config.testMapper(result);
+		if (modifiedResult != null) {
+			const path = buildPath(this.config.resultsDir, `${modifiedResult.uuid}-result.json`);
+			writeFileSync(path, JSON.stringify(modifiedResult), { encoding: "utf-8" });
+		}
 	}
 
 	writeGroup(result: TestResultContainer): void {

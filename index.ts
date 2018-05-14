@@ -8,5 +8,6 @@ export { AllureConfig } from "./src/AllureConfig";
 export { AllureGroup } from "./src/AllureGroup";
 export { ExecutableItemWrapper } from "./src/ExecutableItemWrapper";
 export { AllureTest } from "./src/AllureTest";
+export { TestResult } from "./src/entities/TestResult";
 export { AllureStep } from "./src/ExecutableItemWrapper";
 export { isPromise } from "./src/isPromise";
