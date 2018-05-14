@@ -1,8 +1,15 @@
 import { AllureInterface, JasmineAllureReporter } from "../src/JasmineAllureReporter";
 import { JasmineConsoleReporter } from "../src/JasmineConsoleReporter";
 import { AllureRuntime, Status } from "allure2-js-commons";
+import { TestResult } from "allure2-js-commons";
 
-const runtime = new AllureRuntime({ resultsDir: "./out/allure-results" });
+const runtime = new AllureRuntime({
+	resultsDir: "./out/allure-results",
+	testMapper: (result: TestResult) => {
+		if (result.status == Status.SKIPPED) result.fullName = `(WAS SKIPPED) ${result.fullName}`;
+		return result;
+	}
+});
 
 jasmine.getEnv().addReporter(new JasmineConsoleReporter());
 
