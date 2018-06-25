@@ -1,8 +1,9 @@
 /* eslint-disable no-undef */
 import {
 	AllureGroup, AllureRuntime, AllureStep, AllureTest, ContentType, ExecutableItemWrapper, isPromise, LabelName,
-	Severity, Stage, Status
+	Severity, Stage, Status, AllureInterface
 } from "allure2-js-commons";
+export { AllureInterface } from "allure2-js-commons";
 import FailedExpectation = jasmine.FailedExpectation;
 
 enum SpecStatus {
@@ -36,7 +37,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
 	}
 
 	getInterface(): AllureInterface {
-		return new AllureInterface(this);
+		return new JasmineAllureInterface(this);
 	}
 
 	get currentTest(): AllureTest {
@@ -220,8 +221,9 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
 }
 
 
-export class AllureInterface {
+export class JasmineAllureInterface extends AllureInterface {
 	constructor(private readonly reporter: JasmineAllureReporter) {
+		super();
 	}
 
 	private get currentExecutable(): ExecutableItemWrapper {
@@ -309,9 +311,19 @@ export class AllureInterface {
 		const file = this.reporter.writeAttachment(content, type);
 		this.currentExecutable.addAttachment(name, type, file);
 	}
+
+	addParameter(name: string, value: string): void {
+		if (this.reporter.currentTest === null) throw new Error("No test running!");
+		this.reporter.currentTest.addParameter(name, value);
+	}
+
+	addLabel(name: string, value: string): void {
+		if (this.reporter.currentTest === null) throw new Error("No test running!");
+		this.reporter.currentTest.addLabel(name, value);
+	}
 }
 
-export class WrappedStep { // needed?
+class WrappedStep { // needed?
 	constructor(private readonly reporter: JasmineAllureReporter, private readonly step: AllureStep) {
 	}
 
