@@ -10,7 +10,8 @@ import {
 	LabelName,
 	Severity,
 	Stage,
-	Status
+	Status,
+	AllureInterface
 } from "allure2-js-commons";
 import { createHash } from "crypto";
 import { Result } from "./events/Result";
@@ -19,6 +20,8 @@ import { GherkinStep } from "./events/GherkinStep";
 import { GherkinTestCase } from "./events/GherkinTestCase";
 import { GherkinDocument } from "./events/GherkinDocument";
 import { Example, examplesToSensibleFormat } from "./events/Example";
+
+export { AllureInterface } from "allure2-js-commons";
 
 export interface World extends CucumberWorld {
 	allure: AllureInterface;
@@ -69,7 +72,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 			return message;
 		};
 
-		this.allureInterface = new AllureInterface(this);
+		this.allureInterface = new CucumberAllureInterface(this);
 		options.supportCodeLibrary.World.prototype.allure = this.allureInterface;
 	}
 
@@ -279,8 +282,9 @@ export class CucumberJSAllureFormatter extends Formatter {
 	}
 }
 
-export class AllureInterface {
+class CucumberAllureInterface extends AllureInterface {
 	constructor(private readonly reporter: CucumberJSAllureFormatter) {
+		super();
 	}
 
 	private get currentExecutable(): ExecutableItemWrapper {
@@ -378,6 +382,14 @@ export class AllureInterface {
 	testAttachment(name: string, content: Buffer | string, type: ContentType) {
 		const file = this.reporter.writeAttachment(content, type);
 		this.currentTest.addAttachment(name, type, file);
+	}
+
+	addParameter(name: string, value: string): void {
+		this.currentTest.addParameter(name, value);
+	}
+
+	addLabel(name: string, value: string): void {
+		this.currentTest.addLabel(name, value);
 	}
 }
 
