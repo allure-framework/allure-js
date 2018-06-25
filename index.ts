@@ -11,3 +11,4 @@ export { AllureTest } from "./src/AllureTest";
 export { TestResult } from "./src/entities/TestResult";
 export { AllureStep } from "./src/ExecutableItemWrapper";
 export { isPromise } from "./src/isPromise";
+export { AllureInterface } from "./src/AllureInterface";
