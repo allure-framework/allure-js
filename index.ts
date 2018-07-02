@@ -4,7 +4,7 @@ export { LabelName } from "./src/entities/LabelName";
 export { Status } from "./src/entities/Status";
 export { Stage } from "./src/entities/Stage";
 export { Severity } from "./src/entities/Severity";
-export { AllureConfig } from "./src/AllureConfig";
+export { AllureConfig, IAllureConfig } from "./src/AllureConfig";
 export { AllureGroup } from "./src/AllureGroup";
 export { ExecutableItemWrapper } from "./src/ExecutableItemWrapper";
 export { AllureTest } from "./src/AllureTest";

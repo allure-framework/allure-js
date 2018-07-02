@@ -8,13 +8,13 @@ import { stringify } from "properties";
 import { ContentType, typeToExtension } from "./entities/ContentType";
 import { ExecutorInfo } from "./entities/ExecutorInfo";
 import { Category } from "./entities/Category";
-import { AllureConfig } from "./AllureConfig";
+import { IAllureConfig } from "./AllureConfig";
 import { AllureGroup } from "./AllureGroup";
 
 export class AllureRuntime {
-	private config: AllureConfig;
+	private config: IAllureConfig;
 
-	constructor(config: AllureConfig) {
+	constructor(config: IAllureConfig) {
 		this.config = config;
 		if (!existsSync(this.config.resultsDir)) mkdirSync(this.config.resultsDir);
 	}
@@ -26,7 +26,7 @@ export class AllureRuntime {
 	}
 
 	writeResult(result: TestResult): void {
-		const modifiedResult = this.config.testMapper(result);
+		const modifiedResult = this.config.testMapper !== undefined ? this.config.testMapper(result) : result;
 		if (modifiedResult != null) {
 			const path = buildPath(this.config.resultsDir, `${modifiedResult.uuid}-result.json`);
 			writeFileSync(path, JSON.stringify(modifiedResult), { encoding: "utf-8" });
