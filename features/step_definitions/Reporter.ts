@@ -1,11 +1,11 @@
 import { CucumberJSAllureFormatter } from "../../src/CucumberJSAllureReporter";
-import { AllureRuntime, AllureConfig } from "allure2-js-commons";
+import { AllureRuntime } from "allure2-js-commons";
 
 export default class Reporter extends CucumberJSAllureFormatter {
 	constructor(options: any) {
 		super(
 			options,
-			new AllureRuntime(new AllureConfig("./out/allure-results")),
+			new AllureRuntime({ resultsDir: "./out/allure-results" }),
 			{
 				labels: {
 					issue: [/@bug_(.*)/],
