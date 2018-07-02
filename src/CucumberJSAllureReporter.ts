@@ -215,7 +215,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 		}
 		if (step === undefined) throw new Error("Unknown step");
 
-		const stepText = this.applyExample(`${step.keyword}${step.text}`, test.example);
+		let stepText = this.applyExample(`${step.keyword}${step.text}`, test.example);
 
 		const isAfter = this.afterHooks.find(({ uri, line }) => {
 			if (location.actionLocation === undefined) return false;
@@ -229,10 +229,14 @@ export class CucumberJSAllureFormatter extends Formatter {
 			line === location.actionLocation!.line;
 		});
 
-		if (step.isBackground || isBefore) {
+		if (step.isBackground) {
 			if (this.currentBefore === null) this.currentBefore = this.currentGroup!.addBefore();
+		} else if (isBefore) {
+			if (this.currentBefore === null) this.currentBefore = this.currentGroup!.addBefore();
+			stepText = `Before: ${isBefore.code!.name || step.text}`;
 		} else if (isAfter) {
 			if (this.currentAfter === null) this.currentAfter = this.currentGroup!.addAfter();
+			stepText = `After: ${isAfter.code!.name || step.text}`;
 		} else {
 			if (this.currentBefore !== null) this.currentBefore = null;
 			if (this.currentAfter !== null) this.currentAfter = null;
