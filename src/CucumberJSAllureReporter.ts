@@ -1,4 +1,9 @@
-import { Formatter, World as CucumberWorld } from "cucumber";
+import {
+	Formatter,
+	World as CucumberWorld,
+	HookCode,
+	HookOptions,
+} from "cucumber";
 import {
 	AllureGroup,
 	AllureRuntime,
@@ -34,17 +39,28 @@ export class CucumberJSAllureFormatterConfig {
 	exceptionFormatter?: (message: string) => string;
 }
 
+interface TestHookDefinition {
+	code: HookCode;
+	line: number;
+	options?: HookOptions;
+	pattern?: any;
+	uri: string;
+}
+
 export class CucumberJSAllureFormatter extends Formatter {
 	private readonly sourceMap: Map<string, string[]> = new Map();
 	private readonly stepsMap: Map<string, SourceLocation[]> = new Map();
 	private readonly featureMap: Map<string, GherkinDocument> = new Map();
 	private readonly labels: { [key: string]: RegExp[]; };
 	private readonly exceptionFormatter: (message: string) => string;
+	private readonly beforeHooks: TestHookDefinition[];
+	private readonly afterHooks: TestHookDefinition[];
 
 	private stepStack: AllureStep[] = [];
 	currentGroup: AllureGroup | null = null;
 	currentTest: AllureTest | null = null;
 	currentBefore: ExecutableItemWrapper | null = null;
+	currentAfter: ExecutableItemWrapper | null = null;
 
 	public readonly allureInterface: AllureInterface;
 
@@ -74,6 +90,8 @@ export class CucumberJSAllureFormatter extends Formatter {
 
 		this.allureInterface = new CucumberAllureInterface(this);
 		options.supportCodeLibrary.World.prototype.allure = this.allureInterface;
+		this.beforeHooks = options.supportCodeLibrary.beforeTestCaseHookDefinitions;
+		this.afterHooks = options.supportCodeLibrary.afterTestCaseHookDefinitions;
 	}
 
 	private hash(data: string): string {
@@ -121,6 +139,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 		this.stepsMap.clear();
 		this.stepsMap.set(SourceLocation.toKey(data), data.steps);
 		this.currentBefore = null;
+		this.currentAfter = null;
 	}
 
 	onTestCaseStarted(data: SourceLocation) {
@@ -198,12 +217,27 @@ export class CucumberJSAllureFormatter extends Formatter {
 
 		const stepText = this.applyExample(`${step.keyword}${step.text}`, test.example);
 
-		if (step.isBackground) {
+		const isAfter = this.afterHooks.find(({ uri, line }) => {
+			if (location.actionLocation === undefined) return false;
+			return uri === location.actionLocation!.uri &&
+			line === location.actionLocation!.line;
+		});
+
+		const isBefore = this.beforeHooks.find(({ uri, line }) => {
+			if (location.actionLocation === undefined) return false;
+			return uri === location.actionLocation!.uri &&
+			line === location.actionLocation!.line;
+		});
+
+		if (step.isBackground || isBefore) {
 			if (this.currentBefore === null) this.currentBefore = this.currentGroup!.addBefore();
+		} else if (isAfter) {
+			if (this.currentAfter === null) this.currentAfter = this.currentGroup!.addAfter();
 		} else {
 			if (this.currentBefore !== null) this.currentBefore = null;
+			if (this.currentAfter !== null) this.currentAfter = null;
 		}
-		const allureStep = (this.currentBefore || this.currentTest)!.startStep(stepText);
+		const allureStep = (this.currentAfter || this.currentBefore || this.currentTest)!.startStep(stepText);
 		this.pushStep(allureStep);
 
 		if (step.argument !== undefined) {
