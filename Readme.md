@@ -43,6 +43,10 @@ node cucumber.js --format ./path/to/Reporter.js:./dummy.txt
 Instance of AllureInterface will be added to World prototype.
 You can use it for creating nested steps and adding info to the report. 
 
-### Authors
+### Author
 
 Ilya Korobitsyn <mail@korobochka.org>
+
+#### Contributors
+
+* Claudia Hardman <claudia.hardman@mattel.com>
