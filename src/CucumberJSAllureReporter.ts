@@ -219,14 +219,14 @@ export class CucumberJSAllureFormatter extends Formatter {
 
 		const isAfter = this.afterHooks.find(({ uri, line }) => {
 			if (location.actionLocation === undefined) return false;
-			return uri === location.actionLocation!.uri &&
-			line === location.actionLocation!.line;
+			return uri === location.actionLocation.uri &&
+			line === location.actionLocation.line;
 		});
 
 		const isBefore = this.beforeHooks.find(({ uri, line }) => {
 			if (location.actionLocation === undefined) return false;
-			return uri === location.actionLocation!.uri &&
-			line === location.actionLocation!.line;
+			return uri === location.actionLocation.uri &&
+			line === location.actionLocation.line;
 		});
 
 		if (step.isBackground) {
