@@ -25,7 +25,7 @@ Feature: Description is formatted
 
         indented code formatting still works fine
 
-        Given test given
+        Given passing given
 
     Scenario: Tab indent
 
@@ -33,7 +33,7 @@ Feature: Description is formatted
 
 			the trimmer only cuts the minimum number of tabs
 
-        Given test given
+        Given passing given
 
     Scenario: Multiple lines are joined
 
@@ -45,4 +45,4 @@ Feature: Description is formatted
         Until you line-break to
         start another.
 
-        Given test given
+        Given passing given
