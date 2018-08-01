@@ -142,6 +142,17 @@ export class CucumberJSAllureFormatter extends Formatter {
 		this.currentAfter = null;
 	}
 
+	// remove shortest leading indentation from all lines
+	private stripIndent(data: string): string {
+		const match = data.match(/^[^\S\n]*(?=\S)/gm);
+
+		if (match !== null) {
+			const indent = Math.min(...match.map(sp => sp.length));
+			return data.replace(new RegExp(`^.{${indent}}`, "gm"), "");
+		}
+		return data;
+	}
+
 	onTestCaseStarted(data: SourceLocation) {
 		const feature = this.featureMap.get(data.sourceLocation!.uri);
 		if (feature === undefined || feature.feature === undefined) throw new Error("Unknown feature");
@@ -170,7 +181,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 
 		this.currentTest.addLabel(LabelName.FEATURE, feature.feature.name);
 		//this.currentTest.addLabel(LabelName.STORY, feature.feature.name);
-		this.currentTest.description = test.description || "";
+		this.currentTest.description = this.stripIndent(test.description || "");
 		for (const tag of [...(test.tags || []), ...feature.feature.tags]) {
 			this.currentTest.addLabel(LabelName.TAG, tag.name);
 
