@@ -1,30 +1,23 @@
-import {
-	Formatter,
-	World as CucumberWorld,
-	HookCode,
-	HookOptions,
-} from "cucumber";
+import { Formatter, World as CucumberWorld } from "cucumber";
 import {
 	AllureGroup,
+	AllureInterface,
 	AllureRuntime,
 	AllureStep,
 	AllureTest,
 	ContentType,
 	ExecutableItemWrapper,
-	isPromise,
-	LabelName,
-	Severity,
-	Stage,
-	Status,
-	AllureInterface
+	LabelName
 } from "allure2-js-commons";
-import { createHash } from "crypto";
 import { Result } from "./events/Result";
 import { SourceLocation } from "./events/SourceLocation";
 import { GherkinStep } from "./events/GherkinStep";
 import { GherkinTestCase } from "./events/GherkinTestCase";
 import { GherkinDocument } from "./events/GherkinDocument";
-import { Example, examplesToSensibleFormat } from "./events/Example";
+import { examplesToSensibleFormat } from "./events/Example";
+import { TestHookDefinition } from "./events/TestHookDefinition";
+import { CucumberAllureInterface } from "./CucumberAllureInterface";
+import { applyExample, hash, statusTextToAllure, statusTextToStage, stripIndent } from "./utilities";
 
 export { AllureInterface } from "allure2-js-commons";
 
@@ -37,14 +30,6 @@ export class CucumberJSAllureFormatterConfig {
 		[key: string]: RegExp[];
 	};
 	exceptionFormatter?: (message: string) => string;
-}
-
-interface TestHookDefinition {
-	code: HookCode;
-	line: number;
-	options?: HookOptions;
-	pattern?: any;
-	uri: string;
 }
 
 export class CucumberJSAllureFormatter extends Formatter {
@@ -94,10 +79,6 @@ export class CucumberJSAllureFormatter extends Formatter {
 		this.afterHooks = options.supportCodeLibrary.afterTestCaseHookDefinitions;
 	}
 
-	private hash(data: string): string {
-		return createHash("md5").update(data).digest("hex");
-	}
-
 	onSource(data: { uri: string, data: string, media: { encoding: string, type: string } }) {
 		this.sourceMap.set(data.uri, data.data.split(/\n/));
 	}
@@ -142,17 +123,6 @@ export class CucumberJSAllureFormatter extends Formatter {
 		this.currentAfter = null;
 	}
 
-	// remove shortest leading indentation from all lines
-	private stripIndent(data: string): string {
-		const match = data.match(/^[^\S\n]*(?=\S)/gm);
-
-		if (match !== null) {
-			const indent = Math.min(...match.map(sp => sp.length));
-			return data.replace(new RegExp(`^.{${indent}}`, "gm"), "");
-		}
-		return data;
-	}
-
 	onTestCaseStarted(data: SourceLocation) {
 		const feature = this.featureMap.get(data.sourceLocation!.uri);
 		if (feature === undefined || feature.feature === undefined) throw new Error("Unknown feature");
@@ -160,7 +130,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 		if (test === undefined) throw new Error("Unknown scenario");
 
 		this.currentGroup = this.allureRuntime.startGroup("");
-		this.currentTest = this.currentGroup.startTest(this.applyExample(test.name || "Unnamed test", test.example));
+		this.currentTest = this.currentGroup.startTest(applyExample(test.name || "Unnamed test", test.example));
 
 		const info = {
 			f: feature.feature.name,
@@ -176,12 +146,12 @@ export class CucumberJSAllureFormatter extends Formatter {
 			}
 		}
 
-		this.currentTest.historyId = this.hash(JSON.stringify(info));
+		this.currentTest.historyId = hash(JSON.stringify(info));
 		this.currentTest.addLabel(LabelName.THREAD, `${process.pid}`); // parallel tests support
 
 		this.currentTest.addLabel(LabelName.FEATURE, feature.feature.name);
 		//this.currentTest.addLabel(LabelName.STORY, feature.feature.name);
-		this.currentTest.description = this.stripIndent(test.description || "");
+		this.currentTest.description = stripIndent(test.description || "");
 		for (const tag of [...(test.tags || []), ...feature.feature.tags]) {
 			this.currentTest.addLabel(LabelName.TAG, tag.name);
 
@@ -195,15 +165,6 @@ export class CucumberJSAllureFormatter extends Formatter {
 				}
 			}
 		}
-	}
-
-	private applyExample(text: string, example: Example | undefined) {
-		if (example === undefined) return text;
-		for (const argName in example.arguments) {
-			if (!example.arguments.hasOwnProperty(argName)) continue;
-			text = text.replace(new RegExp(`<${argName}>`, "g"), `<${example.arguments[argName]}>`);
-		}
-		return text;
 	}
 
 	onTestStepStarted(data: { index: number, testCase: SourceLocation }) {
@@ -226,7 +187,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 		}
 		if (step === undefined) throw new Error("Unknown step");
 
-		let stepText = this.applyExample(`${step.keyword}${step.text}`, test.example);
+		let stepText = applyExample(`${step.keyword}${step.text}`, test.example);
 
 		const isAfter = this.afterHooks.find(({ uri, line }) => {
 			if (location.actionLocation === undefined) return false;
@@ -326,152 +287,6 @@ export class CucumberJSAllureFormatter extends Formatter {
 	writeAttachment(content: Buffer | string, type: ContentType): string {
 		return this.allureRuntime.writeAttachment(content, type);
 	}
-}
-
-class CucumberAllureInterface extends AllureInterface {
-	constructor(private readonly reporter: CucumberJSAllureFormatter) {
-		super();
-	}
-
-	private get currentExecutable(): ExecutableItemWrapper {
-		const result = this.reporter.currentStep || this.reporter.currentTest;
-		if (result === null) throw new Error("No executable!");
-		return result;
-	}
-
-	private get currentTest(): AllureTest {
-		if (this.reporter.currentTest === null) throw new Error("No test running!");
-		return this.reporter.currentTest;
-	}
-
-	setDescription(text: string) {
-		this.currentExecutable.description = text;
-		this.currentExecutable.descriptionHtml = text;
-	}
-
-	setTestDescription(text: string) {
-		this.currentTest.description = text;
-		this.currentTest.descriptionHtml = text;
-	}
-
-	setFlaky() {
-		this.currentExecutable.detailsFlaky = true;
-	}
-
-	setKnown() {
-		this.currentExecutable.detailsKnown = true;
-	}
-
-	setMuted() {
-		this.currentExecutable.detailsMuted = true;
-	}
-
-	addOwner(owner: string) {
-		this.currentTest.addLabel(LabelName.OWNER, owner);
-	}
-
-	setSeverity(severity: Severity) {
-		this.currentTest.addLabel(LabelName.SEVERITY, severity);
-	}
-
-	addIssue(issue: string) {
-		this.currentTest.addLabel(LabelName.ISSUE, issue);
-	}
-
-	addTag(tag: string) {
-		this.currentTest.addLabel(LabelName.TAG, tag);
-	}
-
-	addTestType(type: string) {
-		this.currentTest.addLabel(LabelName.TEST_TYPE, type);
-	}
-
-	addLink(name: string, url: string, type?: string) {
-		this.currentTest.addLink(name, url, type);
-	}
-
-	private startStep(name: string): WrappedStep {
-		const allureStep: AllureStep = this.currentExecutable.startStep(name);
-		this.reporter.pushStep(allureStep);
-		return new WrappedStep(this.reporter, allureStep);
-	}
-
-	step<T>(name: string, body: () => any): any {
-		const wrappedStep = this.startStep(name);
-		let result;
-		try {
-			result = wrappedStep.run(body);
-		} catch (err) {
-			wrappedStep.endStep();
-			throw err;
-		}
-		if (isPromise(result)) {
-			const promise = result as Promise<any>;
-			return promise.then(a => {
-				wrappedStep.endStep();
-				return a;
-			}).catch(e => {
-				wrappedStep.endStep();
-				throw e;
-			});
-		} else {
-			wrappedStep.endStep();
-			return result;
-		}
-	}
-
-	attachment(name: string, content: Buffer | string, type: ContentType) {
-		const file = this.reporter.writeAttachment(content, type);
-		this.currentExecutable.addAttachment(name, type, file);
-	}
-
-	testAttachment(name: string, content: Buffer | string, type: ContentType) {
-		const file = this.reporter.writeAttachment(content, type);
-		this.currentTest.addAttachment(name, type, file);
-	}
-
-	addParameter(name: string, value: string): void {
-		this.currentTest.addParameter(name, value);
-	}
-
-	addLabel(name: string, value: string): void {
-		this.currentTest.addLabel(name, value);
-	}
-}
-
-export class WrappedStep {
-	constructor(private readonly reporter: CucumberJSAllureFormatter, private readonly step: AllureStep) {
-	}
-
-	startStep(name: string): WrappedStep {
-		const step = this.step.startStep(name);
-		this.reporter.pushStep(step);
-		return new WrappedStep(this.reporter, step);
-	}
-
-	endStep(): void {
-		this.reporter.popStep();
-		this.step.endStep();
-	}
-
-	run<T>(body: () => T): T {
-		return this.step.wrap(body)();
-	}
-}
-
-
-function statusTextToAllure(status?: string): Status {
-	if (status === "passed") return Status.PASSED;
-	if (status === "skipped") return Status.SKIPPED;
-	if (status === "failed") return Status.FAILED;
-	return Status.BROKEN;
-}
-
-function statusTextToStage(status?: string): Stage {
-	if (status === "passed") return Stage.FINISHED;
-	if (status === "skipped") return Stage.PENDING;
-	if (status === "failed") return Stage.INTERRUPTED;
-	return Stage.INTERRUPTED;
 }
 
 
