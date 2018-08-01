@@ -39,6 +39,24 @@ If you want to retain default formatter add some dummy file as output:
 node cucumber.js --format ./path/to/Reporter.js:./dummy.txt
 ```
 
+#### Reporter without classes
+If you can not use classes (ES6 or TypeScript), here is an example of Reporter.js file written in plain JS:
+```javascript
+var CucumberJSAllureFormatter = require("cucumberjs-allure2-reporter").CucumberJSAllureFormatter;
+var AllureRuntime = require("cucumberjs-allure2-reporter").AllureRuntime;
+
+function Reporter(options) {
+	CucumberJSAllureFormatter.call(this,
+		options,
+		new AllureRuntime({ resultsDir: "./out/allure-results" }),
+		{});
+}
+Reporter.prototype = Object.create(CucumberJSAllureFormatter.prototype);
+Reporter.prototype.constructor = Reporter;
+
+exports.default = Reporter;
+```
+
 ### API
 Instance of AllureInterface will be added to World prototype.
 You can use it for creating nested steps and adding info to the report. 
