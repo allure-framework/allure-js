@@ -1,6 +1,7 @@
 import { Severity } from "./entities/Severity";
 import { ContentType } from "./entities/ContentType";
 import { LabelName } from "./entities/LabelName";
+import { GlobalInfoWriter } from "./GlobalInfoWriter";
 
 export abstract class AllureInterface {
 	public abstract setDescription(text: string): void;
@@ -28,6 +29,8 @@ export abstract class AllureInterface {
 	public abstract attachment(name: string, content: Buffer | string, type: ContentType): void;
 
 	public abstract addParameter(name: string, value: string): void;
+
+	public abstract getGlobalInfoWriter(): GlobalInfoWriter;
 
 	// below are compatibility functions
 

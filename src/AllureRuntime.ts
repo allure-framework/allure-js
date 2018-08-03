@@ -10,8 +10,9 @@ import { ExecutorInfo } from "./entities/ExecutorInfo";
 import { Category } from "./entities/Category";
 import { IAllureConfig } from "./AllureConfig";
 import { AllureGroup } from "./AllureGroup";
+import { GlobalInfoWriter } from "./GlobalInfoWriter";
 
-export class AllureRuntime {
+export class AllureRuntime implements GlobalInfoWriter {
 	private config: IAllureConfig;
 
 	constructor(config: IAllureConfig) {

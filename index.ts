@@ -12,3 +12,6 @@ export { TestResult } from "./src/entities/TestResult";
 export { AllureStep } from "./src/ExecutableItemWrapper";
 export { isPromise } from "./src/isPromise";
 export { AllureInterface } from "./src/AllureInterface";
+export { GlobalInfoWriter } from "./src/GlobalInfoWriter";
+export { ExecutorInfo } from "./src/entities/ExecutorInfo";
+export { Category } from "./src/entities/Category";
