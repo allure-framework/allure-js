@@ -19,17 +19,17 @@
 	},
 	"license": "MIT",
 	"devDependencies": {
-		"@types/jasmine": "^2.8.7",
-		"@types/node": "^10.0.8",
-		"allure-commandline": "^2.5.0",
-		"eslint": "^4.19.0",
+		"@types/jasmine": "^2.8.8",
+		"@types/node": "^10.5.5",
+		"allure-commandline": "^2.7.0",
+		"eslint": "^5.2.0",
 		"eslint-plugin-typescript": "^0.12.0",
 		"jasmine": "^3.1.0",
 		"rimraf": "^2.6.2",
-		"typescript": "^2.8.3",
-		"typescript-eslint-parser": "^15.0.0"
+		"typescript": "^3.0.1",
+		"typescript-eslint-parser": "^17.0.1"
 	},
 	"dependencies": {
-		"allure2-js-commons": "^1.1.0"
+		"allure2-js-commons": "^1.2.0"
 	}
 }
