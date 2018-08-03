@@ -1,25 +1,23 @@
-import { AllureInterface, JasmineAllureReporter } from "../src/JasmineAllureReporter";
+import { JasmineAllureReporter } from "../src/JasmineAllureReporter";
 import { JasmineConsoleReporter } from "../src/JasmineConsoleReporter";
-import { AllureRuntime, Status } from "allure2-js-commons";
+import { AllureRuntime, Status, GlobalInfoWriter, AllureInterface } from "allure2-js-commons";
 import { TestResult } from "allure2-js-commons";
 
-const runtime = new AllureRuntime({
+jasmine.getEnv().addReporter(new JasmineConsoleReporter());
+
+const reporter = new JasmineAllureReporter(new AllureRuntime({
 	resultsDir: "./out/allure-results",
 	testMapper: (result: TestResult) => {
 		if (result.status == Status.SKIPPED) result.fullName = `(WAS SKIPPED) ${result.fullName}`;
 		return result;
 	}
-});
-
-jasmine.getEnv().addReporter(new JasmineConsoleReporter());
-
-const reporter = new JasmineAllureReporter(runtime);
+}));
 jasmine.getEnv().addReporter(reporter);
 
 export const allure: AllureInterface = reporter.getInterface();
+const giw: GlobalInfoWriter = allure.getGlobalInfoWriter();
 
-
-runtime.writeExecutorInfo({
+giw.writeExecutorInfo({
 	"name": "Jenkins",
 	"type": "jenkins",
 	"url": "http://example.org",
@@ -30,7 +28,7 @@ runtime.writeExecutorInfo({
 	"reportName": "Demo allure report"
 });
 
-runtime.writeEnvironmentInfo({
+giw.writeEnvironmentInfo({
 	"a": "b",
 	"PATH": "azazaz",
 	"APPDATA": "C:\\USERS\\test (x86)\\AppData",
@@ -38,7 +36,7 @@ runtime.writeEnvironmentInfo({
 	"TEST1": "\\usr\\bin"
 });
 
-runtime.writeCategories([
+giw.writeCategories([
 	{
 		"name": "Sad tests",
 		"messageRegex": /.*Sad.*/,

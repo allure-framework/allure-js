@@ -1,9 +1,8 @@
 /* eslint-disable no-undef */
 import {
 	AllureGroup, AllureRuntime, AllureStep, AllureTest, ContentType, ExecutableItemWrapper, isPromise, LabelName,
-	Severity, Stage, Status, AllureInterface
+	Severity, Stage, Status, AllureInterface, GlobalInfoWriter
 } from "allure2-js-commons";
-export { AllureInterface } from "allure2-js-commons";
 import FailedExpectation = jasmine.FailedExpectation;
 
 enum SpecStatus {
@@ -38,6 +37,10 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
 
 	getInterface(): AllureInterface {
 		return new JasmineAllureInterface(this);
+	}
+
+	getGlobalInfoWriter(): GlobalInfoWriter {
+		return this.runtime as GlobalInfoWriter;
 	}
 
 	get currentTest(): AllureTest {
@@ -320,6 +323,10 @@ export class JasmineAllureInterface extends AllureInterface {
 	addLabel(name: string, value: string): void {
 		if (this.reporter.currentTest === null) throw new Error("No test running!");
 		this.reporter.currentTest.addLabel(name, value);
+	}
+
+	getGlobalInfoWriter(): GlobalInfoWriter {
+		return this.reporter.getGlobalInfoWriter();
 	}
 }
 

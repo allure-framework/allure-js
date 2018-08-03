@@ -1,6 +1,6 @@
 {
 	"name": "jasmine-allure2-reporter",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"description": "Allure 2 reporter for Jasmine framework",
 	"author": "Ilya Korobitsyn <mail@korobochka.org>",
 	"repository": "https://github.com/korobochka/jasmine-allure2-reporter",
