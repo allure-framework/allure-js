@@ -1,6 +1,6 @@
 {
 	"name": "cucumberjs-allure2-reporter",
-	"version": "1.2.1",
+	"version": "1.3.0",
 	"description": "Allure 2 reporter for Cucumber.JS framework",
 	"author": "Ilya Korobitsyn <mail@korobochka.org>",
 	"contributors": [
@@ -18,21 +18,21 @@
 		"runTest": "node $NODE_DEBUG_OPTION ./node_modules/cucumber/bin/cucumber-js --require ./dist/features/step_definitions/ --format ./dist/features/step_definitions/Reporter.js:./dist/dummy.txt",
 		"runTestNoReporter": "node $NODE_DEBUG_OPTION ./node_modules/cucumber/bin/cucumber-js --require ./dist/features/step_definitions/ --format event-protocol:./out/event-protocol.txt",
 		"test": "rimraf ./out ; npm run build && npm run runTest ; npm run generate-report",
-		"lint": "eslint ./src/** ./features/step_definitions/** ./index.ts"
+		"lint": "eslint ./src/**/*.ts ./features/step_definitions/**/*.ts ./index.ts"
 	},
 	"license": "MIT",
 	"devDependencies": {
-		"@types/cucumber": "^4.0.1",
-		"@types/node": "^9.4.6",
-		"allure-commandline": "^2.5.0",
-		"cucumber": "^4.0.0",
-		"eslint": "^4.18.0",
-		"eslint-plugin-typescript": "^0.8.1",
+		"@types/cucumber": "^4.0.4",
+		"@types/node": "^10.5.5",
+		"allure-commandline": "^2.7.0",
+		"cucumber": "^4.2.1",
+		"eslint": "^5.2.0",
+		"eslint-plugin-typescript": "^0.12.0",
 		"rimraf": "^2.6.2",
-		"typescript": "^2.7.2",
-		"typescript-eslint-parser": "^13.0.0"
+		"typescript": "^3.0.1",
+		"typescript-eslint-parser": "^17.0.1"
 	},
 	"dependencies": {
-		"allure2-js-commons": "^1.1.1"
+		"allure2-js-commons": "^1.2.0"
 	}
 }

@@ -18,5 +18,12 @@ export default class Reporter extends CucumberJSAllureFormatter {
 				}
 			}
 		);
+
+		const giw = this.getGlobalInfoWriter();
+		giw.writeExecutorInfo({
+			name: "Host 1",
+			buildUrl: "example.com/1242"
+		});
+		giw.writeEnvironmentInfo();
 	}
 }

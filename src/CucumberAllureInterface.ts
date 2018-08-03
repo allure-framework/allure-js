@@ -4,6 +4,7 @@ import {
 	AllureTest,
 	ContentType,
 	ExecutableItemWrapper,
+	GlobalInfoWriter,
 	isPromise,
 	LabelName,
 	Severity
@@ -118,6 +119,10 @@ export class CucumberAllureInterface extends AllureInterface {
 
 	addLabel(name: string, value: string): void {
 		this.currentTest.addLabel(name, value);
+	}
+
+	getGlobalInfoWriter(): GlobalInfoWriter {
+		return this.reporter.getGlobalInfoWriter();
 	}
 }
 
