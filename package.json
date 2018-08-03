@@ -9,25 +9,25 @@
 	"scripts": {
 		"compile": "tsc",
 		"clean": "rimraf ./dist",
-		"lint": "eslint ./src/** ./index.ts",
+		"lint": "eslint ./src/**/*.ts ./index.ts",
 		"prepare": "npm run clean && npm run build",
 		"build": "npm run lint && npm run compile"
 	},
 	"license": "MIT",
 	"devDependencies": {
 		"@types/mkdirp": "^0.5.2",
-		"@types/node": "^10.0.8",
+		"@types/node": "^10.5.5",
 		"@types/uuid": "^3.4.3",
-		"allure-commandline": "^2.5.0",
-		"eslint": "^4.19.1",
+		"allure-commandline": "^2.7.0",
+		"eslint": "^5.2.0",
 		"eslint-plugin-typescript": "^0.12.0",
 		"rimraf": "^2.6.2",
-		"typescript": "^2.8.3",
-		"typescript-eslint-parser": "^15.0.0"
+		"typescript": "^3.0.1",
+		"typescript-eslint-parser": "^17.0.1"
 	},
 	"dependencies": {
 		"mkdirp": "^0.5.1",
 		"properties": "^1.2.1",
-		"uuid": "^3.2.1"
+		"uuid": "^3.3.2"
 	}
 }

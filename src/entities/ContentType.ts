@@ -13,7 +13,7 @@ export enum ContentType {
 }
 
 export function typeToExtension(type: ContentType): string {
-	switch(type) {
+	switch (type) {
 		case ContentType.TEXT: return "txt";
 		case ContentType.XML: return "xml";
 		case ContentType.CSV: return "csv";
