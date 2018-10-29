@@ -1,5 +1,9 @@
 # Mocha Allure2 Reporter
 
+[![Build Status](https://travis-ci.com/sskorol/mocha-allure2-reporter.svg?branch=master)](https://travis-ci.com/sskorol/mocha-allure2-reporter)
+[![codecov](https://codecov.io/gh/sskorol/mocha-allure2-reporter/branch/master/graph/badge.svg)](https://codecov.io/gh/sskorol/mocha-allure2-reporter)
+[![npm version](https://badge.fury.io/js/mocha-allure2-reporter.svg)](https://badge.fury.io/js/mocha-allure2-reporter)
+
 This project implements recent Allure 2 TS [interface](https://github.com/korobochka/allure2-js-commons) for Mocha framework.
 
 ## Installation
