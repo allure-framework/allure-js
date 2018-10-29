@@ -1,2 +1,50 @@
-# mocha-allure2-reporter
-Allure 2 reporter for Mocha framework
+# Mocha Allure2 Reporter
+
+This project implements recent Allure 2 TS [interface](https://github.com/korobochka/allure2-js-commons) for Mocha framework.
+
+## Installation
+
+```bash
+npm install allure2-js-commons mocha-allure2-reporter --save-dev
+```
+or via yarn:
+```bash
+yarn add allure2-js-commons mocha-allure2-reporter --dev
+```
+
+## Allure types configuration
+
+Add the following into your **tsconfig.json** to access exported Allure types.
+```json
+    "typeRoots": [
+      "./node_modules/allure2-js-commons/dist/declarations/**/"
+    ]
+```
+
+## Usage
+
+Either add **mocha-allure2-reporter** into **mocha.opts**:
+
+```text
+--ui mocha-typescript
+--require source-map-support/register
+--reporter mocha-allure2-reporter
+```
+
+Or pass the same value via commandline / scripts:
+
+```bash
+mocha -R mocha-allure2-reporter
+```
+
+Now you can access a global **allure** object from within your project:
+
+```typescript
+const allure: AllureInterface = global.allure;
+``` 
+
+A full API is listed in [AllureInterface.ts](https://github.com/korobochka/allure2-js-commons/blob/master/src/AllureInterface.ts).
+
+## Decorators Support
+
+To make tests more readable and avoid explicit API calls, you can use a special extension - [ts-test-decorators](https://github.com/sskorol/ts-test-decorators).

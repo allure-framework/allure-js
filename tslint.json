@@ -1,0 +1,58 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:latest",
+    "tslint-eslint-rules",
+    "tslint-config-prettier"
+  ],
+  "jsRules": {},
+  "rules": {
+    "prettier": [
+      true,
+      "./.prettierrc"
+    ],
+    "no-implicit-dependencies": [
+      true,
+      "dev"
+    ],
+    "trailing-comma": false,
+    "no-empty": false,
+    "no-submodule-imports": false,
+    "ter-indent": [
+      true,
+      2,
+      {
+        "FunctionExpression": {
+          "parameters": 1,
+          "body": 1
+        }
+      }
+    ],
+    "linebreak-style": [
+      true,
+      "LF"
+    ],
+    "no-console": [
+      true,
+      "log",
+      "info"
+    ],
+    "no-duplicate-variable": [
+      true,
+      "check-parameters"
+    ],
+    "quotemark": [
+      true,
+      "single",
+      "avoid-escape",
+      "avoid-template"
+    ],
+    "semicolon": [
+      true,
+      "always"
+    ]
+  },
+  "rulesDirectory": [
+    "tslint-plugin-prettier"
+  ]
+}
