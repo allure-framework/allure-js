@@ -1,6 +1,6 @@
 {
   "name": "mocha-allure2-reporter",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Allure 2 reporter for Mocha framework",
   "main": "index.js",
   "keywords": [
@@ -54,6 +54,9 @@
   },
   "dependencies": {
     "allure2-js-commons": "^1.2.0"
+  },
+  "peerDependencies": {
+    "mocha": "^5.2.0"
   },
   "nyc": {
     "check-coverage": true,

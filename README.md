@@ -9,12 +9,20 @@ This project implements recent Allure 2 TS [interface](https://github.com/korobo
 ## Installation
 
 ```bash
-npm i allure2-js-commons mocha-allure2-reporter mocha typescript mocha-typescript source-map-support --save-dev
+npm i mocha-allure2-reporter mocha --save-dev
 ```
 or via yarn:
 ```bash
-yarn add allure2-js-commons mocha-allure2-reporter mocha typescript mocha-typescript source-map-support --dev
+yarn add mocha-allure2-reporter mocha --dev
 ```
+
+Note that it's recommended to add the following dependencies as well for better user experience:
+
+ - typescript
+ - mocha-typescript
+ - source-map-support
+ 
+[allure2-js-commons](https://github.com/korobochka/allure2-js-commons) comes as an implicit dependency.
 
 ## Allure types configuration
 
