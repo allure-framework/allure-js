@@ -56,3 +56,7 @@ To make tests more readable and avoid explicit API calls, you can use a special 
 ## Examples
 
 See [mocha-allure2-example](https://github.com/sskorol/mocha-allure2-example) project, which is already configured to use latest Allure 2 features with decorators support.
+
+## Thanks
+
+[@srg-kostyrko](https://github.com/srg-kostyrko) for help and assistance.
