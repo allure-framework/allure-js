@@ -52,3 +52,7 @@ A full API is listed in [AllureInterface.ts](https://github.com/korobochka/allur
 ## Decorators Support
 
 To make tests more readable and avoid explicit API calls, you can use a special extension - [ts-test-decorators](https://github.com/sskorol/ts-test-decorators).
+
+## Examples
+
+See [mocha-allure2-example](https://github.com/sskorol/mocha-allure2-example) project, which is already configured to use latest Allure 2 features with decorators support.
