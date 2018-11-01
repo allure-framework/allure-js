@@ -1,0 +1,26 @@
+#IDEA Files
+.idea
+target
+*.iml
+*.ipr
+build
+schema
+.gradle
+
+out/
+
+#Eclipse files
+*.settings
+*.classpath
+*.project
+*.pydevproject
+
+#Node
+node_modules
+npm-debug.log
+
+#Other
+.repo
+
+#Mac OS stuff
+.DS_Store
