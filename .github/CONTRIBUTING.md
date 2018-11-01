@@ -23,16 +23,24 @@ Fork, then clone the repo:
 $ git clone git@github.com:your-username/allure-js.git
 ```
 
-Then build the project:
+Note that latest NodeJS LTS is required (the most recent is 10.13.0) to proceed.
+
+Then install core dependencies:
 
 ```bash
-#TODO
+npm install
+```
+
+Then build and link all packages:
+
+```bash
+npm run setup
 ```
 
 Make your change. Add tests for your change. Make sure all the tests pass:
 
 ```bash
-#TODO
+npm run test
 ```
 
 Push your fork and submit a pull request. 
