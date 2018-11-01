@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"outDir": "./dist",
+		"target": "es5",
+		"lib": ["es6"],
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"declaration": true,
+		"declarationDir": "./dist/declarations",
+		"strict": true,
+		"sourceMap": true
+	},
+	"include": [
+		"./src/**/*",
+		"index.ts"
+	]
+}
