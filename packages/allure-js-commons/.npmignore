@@ -1,0 +1,6 @@
+.editorconfig
+!dist/**/*
+!package.json
+package-lock.json
+!*.md
+!*.txt

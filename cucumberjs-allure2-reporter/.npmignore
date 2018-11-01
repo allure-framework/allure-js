@@ -1,8 +1,0 @@
-*
-!dist/**/*
-dist/features
-dist/declarations/features
-!package.json
-!package-lock.json
-!*.md
-!*.txt
