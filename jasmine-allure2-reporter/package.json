@@ -1,0 +1,35 @@
+{
+	"name": "jasmine-allure2-reporter",
+	"version": "1.2.0",
+	"description": "Allure 2 reporter for Jasmine framework",
+	"author": "Ilya Korobitsyn <mail@korobochka.org>",
+	"repository": "https://github.com/korobochka/jasmine-allure2-reporter",
+	"main": "./dist/index.js",
+	"typings": "./dist/declarations/",
+	"scripts": {
+		"compile": "tsc",
+		"clean": "rimraf ./dist",
+		"prepare": "npm run clean && npm run build",
+		"build": "npm run lint && npm run compile",
+		"generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
+		"runTest": "jasmine ./dist/test/*.js",
+		"runTestDebug": "node $NODE_DEBUG_OPTION ./node_modules/jasmine/bin/jasmine ./dist/test/*.js",
+		"test": "rimraf ./out ; npm run build && npm run runTest ; npm run generate-report",
+		"lint": "eslint ./src/** ./test/** ./index.ts"
+	},
+	"license": "MIT",
+	"devDependencies": {
+		"@types/jasmine": "^2.8.8",
+		"@types/node": "^10.5.5",
+		"allure-commandline": "^2.7.0",
+		"eslint": "^5.2.0",
+		"eslint-plugin-typescript": "^0.12.0",
+		"jasmine": "^3.1.0",
+		"rimraf": "^2.6.2",
+		"typescript": "^3.0.1",
+		"typescript-eslint-parser": "^17.0.1"
+	},
+	"dependencies": {
+		"allure2-js-commons": "^1.2.0"
+	}
+}
