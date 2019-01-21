@@ -18,7 +18,7 @@
 		"build": "npm run compile",
 		"generate-report": "allure generate ./allure-results -o ./.allure-report --clean",
 		"allure-report": "allure serve ./allure-results",
-		"test": "npm run prepublishOnly && nyc mocha",
+		"test": "nyc mocha",
 		"coverage": "codecov",
 		"lint-fix": "tslint --fix --project .",
 		"lint": "tslint --project .",

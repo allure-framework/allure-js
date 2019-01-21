@@ -21,7 +21,7 @@
 		"generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
 		"runTest": "cucumber-js --require ./dist/features/step_definitions/ --format ./dist/features/step_definitions/Reporter.js:./dist/dummy.txt",
 		"runTestNoReporter": "cucumber-js --require ./dist/features/step_definitions/ --format event-protocol:./out/event-protocol.txt",
-		"test": "rimraf ./out ; npm run build && npm run runTest ; npm run generate-report"
+		"test": "rimraf ./out ; npm run runTest ; npm run generate-report"
 	},
 	"devDependencies": {
 		"@types/cucumber": "^4.0.4",
