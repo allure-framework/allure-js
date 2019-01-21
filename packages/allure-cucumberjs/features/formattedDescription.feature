@@ -1,48 +1,48 @@
 Feature: Description is formatted
 
-    Scenario: Formatted as Markdown
+  Scenario: Formatted as Markdown
 
-        This *description* **can be formatted** with markdown
+  This *description* **can be formatted** with markdown
 
-        ```
-        with code fencing
-        ```
+  ```
+  with code fencing
+  ```
 
-            or with indent code
+  or with indent code
 
 
-        Given test given
+    Given test given
         #comment2
-        And test given 2
-        When I do double 2
-        Then Number is 4
+    And test given 2
+    When I do double 2
+    Then Number is 4
 
-    Scenario: Varying indent levels
+  Scenario: Varying indent levels
 
-    Minimum indent level is used
+  Minimum indent level is used
 
-    So you can write description aligned to Scenario
+  So you can write description aligned to Scenario
 
-        indented code formatting still works fine
+  indented code formatting still works fine
 
-        Given passing given
+    Given passing given
 
-    Scenario: Tab indent
+  Scenario: Tab indent
 
-		You can totally indent with tabs, if that's your style
+  You can totally indent with tabs, if that's your style
 
-			the trimmer only cuts the minimum number of tabs
+  the trimmer only cuts the minimum number of tabs
 
-        Given passing given
+    Given passing given
 
-    Scenario: Multiple lines are joined
+  Scenario: Multiple lines are joined
 
-        Same as with Markdown, multiple
-        lines are joined as one paragraph.
-        You can wrap your paragraph
-        however you'd like, and it'll be a paragraph
+  Same as with Markdown, multiple
+  lines are joined as one paragraph.
+  You can wrap your paragraph
+  however you'd like, and it'll be a paragraph
 
-        Until you line-break to
-        start another.
+  Until you line-break to
+  start another.
 
-        Given passing given
+    Given passing given

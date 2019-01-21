@@ -2,7 +2,9 @@
 import { defineSupportCode } from "cucumber";
 
 defineSupportCode(function(steps) {
-	steps.Given(/^passing given with table:$/, function(table) {});
+  steps.Given(/^passing given with table:$/, function(table) {
+  });
 
-	steps.Given(/^passing given with string:$/, function(string) {});
+  steps.Given(/^passing given with string:$/, function(string) {
+  });
 });

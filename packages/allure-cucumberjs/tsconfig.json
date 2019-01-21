@@ -1,16 +1,16 @@
 {
-	"extends": "../../tsconfig.json",
-	"include": [
-		"./src/**/*",
-		"./features/step_definitions/**/*",
-		"./index.ts"
-	],
-	"compilerOptions": {
-		"types": [
-			"node",
-			"cucumber"
-		],
-		"outDir": "./dist",
-		"declarationDir": "./dist/declarations"
-	}
+  "extends": "../../tsconfig.json",
+  "include": [
+    "./src/**/*",
+    "./features/step_definitions/**/*",
+    "./index.ts"
+  ],
+  "compilerOptions": {
+    "types": [
+      "node",
+      "cucumber"
+    ],
+    "outDir": "./dist",
+    "declarationDir": "./dist/declarations"
+  }
 }

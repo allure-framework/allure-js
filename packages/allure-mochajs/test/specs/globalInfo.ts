@@ -1,7 +1,14 @@
 /* tslint:disable */
 import { expect } from 'chai';
 import { suite } from 'mocha-typescript';
-import { cleanResults, findFiles, readProperties, readResults, runTests, whenResultsAppeared } from '../utils/index';
+import {
+  cleanResults,
+  findFiles,
+  readProperties,
+  readResults,
+  runTests,
+  whenResultsAppeared
+} from '../utils/index';
 
 @suite
 class GlobalInfoSuite {

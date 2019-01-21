@@ -1,3 +1,4 @@
 export class Parameter {
-	constructor(public name: string, public value: string) {}
+  constructor(public name: string, public value: string) {
+  }
 }
