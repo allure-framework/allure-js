@@ -1,17 +1,19 @@
 {
 	"private": true,
 	"scripts": {
-		"bootstrap": "npm run clean && lerna bootstrap --hoist",
-		"build": "lerna run build",
-		"prepare": "lerna run prepare",
-		"pack": "lerna exec -- npm pack",
-		"clean": "run-p clean:*",
-		"clean:build": "lerna run clean",
-		"clean:pkglock": "rimraf ./packages/*/package-lock.json",
-		"clean:node_modules": "rimraf ./packages/*/node_modules",
+		"build": "npm run clean && lerna run build",
+		"test": "lerna run test",
+		"clean": "lerna run clean",
 		"release": "lerna publish",
-		"setup": "run-s bootstrap build",
-		"test": "lerna run test"
+		"lint": "lerna run lint",
+		"lint-fix": "lerna run lint-fix",
+
+		"prepublish": "npm run bootstrap",
+		"bootstrap": "npm run pre-bootstrap && lerna bootstrap --hoist",
+		"pre-bootstrap": "run-p pre-bootstrap:*",
+		"pre-bootstrap:pkglock": "rimraf ./packages/*/package-lock.json",
+		"pre-bootstrap:node_modules": "rimraf ./packages/*/node_modules",
+		"pack": "lerna exec -- npm pack"
 	},
 	"devDependencies": {
 		"@types/node": "^10.12.18",

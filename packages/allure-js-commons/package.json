@@ -1,19 +1,20 @@
 {
 	"name": "allure-js-commons",
 	"version": "2.0.0-beta.1",
-	"description": "Common helper for writing report files for Allure 2",
+	"description": "Allure JS Commons",
+	"license": "Apache-2.0",
 	"author": "Ilya Korobitsyn <mail@korobochka.org>",
-	"repository": "https://github.com/korobochka/allure2-js-commons",
+	"repository": "https://github.com/allure-framework/allure-js",
 	"main": "./dist/index.js",
 	"typings": "./dist/declarations/",
 	"scripts": {
-		"compile": "tsc",
 		"clean": "rimraf ./dist",
 		"lint": "eslint ./src/**/*.ts ./index.ts",
-		"prepare": "npm run clean && npm run build",
-		"build": "npm run lint && npm run compile"
+		"lint-fix": "eslint --fix ./src/**/*.ts ./index.ts",
+		"compile": "tsc",
+		"build": "npm run lint && npm run compile",
+		"prepublishOnly": "npm run clean && npm run build"
 	},
-	"license": "Apache-2.0",
 	"devDependencies": {
 		"@types/mkdirp": "^0.5.2",
 		"@types/uuid": "^3.4.4"

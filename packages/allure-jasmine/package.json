@@ -1,23 +1,25 @@
 {
 	"name": "allure-jasmine",
 	"version": "2.0.0-beta.1",
-	"description": "Allure 2 reporter for Jasmine framework",
+	"description": "Allure Jasmine integration",
+	"license": "Apache-2.0",
 	"author": "Ilya Korobitsyn <mail@korobochka.org>",
-	"repository": "https://github.com/korobochka/jasmine-allure2-reporter",
+	"repository": "https://github.com/allure-framework/allure-js",
 	"main": "./dist/index.js",
 	"typings": "./dist/declarations/",
 	"scripts": {
-		"compile": "tsc",
 		"clean": "rimraf ./dist ./out",
-		"prepare": "npm run clean && npm run build",
+		"lint": "eslint ./src/** ./test/** ./index.ts",
+		"lint-fix": "eslint --fix ./src/** ./test/** ./index.ts",
+		"compile": "tsc",
 		"build": "npm run lint && npm run compile",
+		"prepublishOnly": "npm run clean && npm run build",
+
 		"generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
 		"runTest": "jasmine ./dist/test/*.js",
 		"runTestDebug": "node $NODE_DEBUG_OPTION ./node_modules/jasmine/bin/jasmine ./dist/test/*.js",
-		"test": "rimraf ./out ; npm run build && npm run runTest ; npm run generate-report",
-		"lint": "eslint ./src/** ./test/** ./index.ts"
+		"test": "rimraf ./out ; npm run build && npm run runTest ; npm run generate-report"
 	},
-	"license": "Apache-2.0",
 	"devDependencies": {
 		"@types/jasmine": "^3.3.7",
 		"jasmine": "^3.3.1"
