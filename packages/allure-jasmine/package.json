@@ -18,7 +18,7 @@
 		"generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
 		"runTest": "jasmine ./dist/test/*.js",
 		"runTestDebug": "node $NODE_DEBUG_OPTION ./node_modules/jasmine/bin/jasmine ./dist/test/*.js",
-		"test": "rimraf ./out ; npm run build && npm run runTest ; npm run generate-report"
+		"test": "rimraf ./out ; npm run runTest ; npm run generate-report"
 	},
 	"devDependencies": {
 		"@types/jasmine": "^3.3.7",

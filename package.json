@@ -2,12 +2,13 @@
 	"private": true,
 	"scripts": {
 		"build": "npm run clean && lerna run build",
-		"test": "lerna run test",
+		"test": "npm run build && npm run run-test",
 		"clean": "lerna run clean",
 		"release": "lerna publish",
 		"lint": "lerna run lint",
 		"lint-fix": "lerna run lint-fix",
 
+		"run-test": "lerna run test",
 		"prepublish": "npm run bootstrap",
 		"bootstrap": "npm run pre-bootstrap && lerna bootstrap --hoist",
 		"pre-bootstrap": "run-p pre-bootstrap:*",
