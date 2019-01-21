@@ -1,19 +1,25 @@
 # Allure Javascript Integrations
 
-This project aggregates Allure 2 Javascript commons and reporters. 
+This project aggregates Allure Javascript commons and reporters. 
+
+## Currently supported frameworks
+
+- Jasmine
+- Cucumber.JS
+- Mocha
 
 ## Local Development
 
-Install root dependencies:
+Install dependencies and bootstrap Lerna links:
 
 ```bash
 npm install
 ```
 
-Link dependencies and build all packages:
+Build:
 
 ```bash
-npm run setup
+npm run build
 ```  
 
 Run tests for all the packages:
