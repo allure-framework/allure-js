@@ -16,7 +16,7 @@ class FlakySuite {
     return whenResultsAppeared().then(() => {
       expect(findTest('Flaky')).not.eq(undefined);
       expect(findTest(testName).status).eq(Status.PASSED);
-      expect(findStatusDetails(testName, 'flaky')).to.be.true;
+      expect(findStatusDetails(testName, 'flaky')).to.equal(true);
     });
   }
 }

@@ -16,7 +16,7 @@ class MutedSuite {
     return whenResultsAppeared().then(() => {
       expect(findTest('Muted')).not.eq(undefined);
       expect(findTest(testName).status).eq(Status.PASSED);
-      expect(findStatusDetails(testName, 'muted')).to.be.true;
+      expect(findStatusDetails(testName, 'muted')).to.equal(true);
     });
   }
 }
