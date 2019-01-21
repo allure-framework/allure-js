@@ -1,5 +1,5 @@
 pipeline {
-    agent { docker 'npm:alpine' }
+    agent { docker 'node:alpine' }
     parameters {
         booleanParam(name: 'RELEASE', defaultValue: false, description: 'Perform release?')
         //string(name: 'RELEASE_VERSION', defaultValue: '', description: 'Release version')
