@@ -1,5 +1,8 @@
 pipeline {
     agent { docker 'timbru31/java-node:alpine' }
+    environment {
+        HOME = pwd()
+    }
     parameters {
         booleanParam(name: 'RELEASE', defaultValue: false, description: 'Perform release?')
         //string(name: 'RELEASE_VERSION', defaultValue: '', description: 'Release version')
