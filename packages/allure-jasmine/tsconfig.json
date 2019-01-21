@@ -1,18 +1,16 @@
 {
-	"compilerOptions": {
-		"outDir": "./dist",
-		"target": "es5",
-		"lib": ["es6"],
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"declaration": true,
-		"declarationDir": "./dist/declarations",
-		"strict": true,
-		"sourceMap": true
-	},
+	"extends": "../../tsconfig.json",
 	"include": [
 		"./src/**/*",
 		"./test/**/*",
 		"./index.ts"
-	]
+	],
+	"compilerOptions": {
+		"types": [
+			"node",
+			"jasmine"
+		],
+		"outDir": "./dist",
+		"declarationDir": "./dist/declarations"
+	}
 }

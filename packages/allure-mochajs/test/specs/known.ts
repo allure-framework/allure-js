@@ -16,7 +16,7 @@ class KnownSuite {
     return whenResultsAppeared().then(() => {
       expect(findTest('Known')).not.eq(undefined);
       expect(findTest(testName).status).eq(Status.PASSED);
-      expect(findStatusDetails(testName, 'known')).to.be.true;
+      expect(findStatusDetails(testName, 'known')).to.equal(true);
     });
   }
 }

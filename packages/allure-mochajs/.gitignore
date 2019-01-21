@@ -1,11 +1,6 @@
 allure-results
-.idea
 coverage
 .nyc_output
-node_modules
-*.tgz
 package
-*.log
 *.js
 *.d.ts
-package-lock.json

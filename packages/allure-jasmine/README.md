@@ -1,8 +1,6 @@
-# jasmine-allure2-reporter
+# allure-jasmine
 
-Allure 2 reporter for Jasmine framework
-
-NPM link: [jasmine-allure2-reporter](https://www.npmjs.com/package/jasmine-allure2-reporter)
+Allure integration Jasmine framework
 
 For usage example see `test/Setup.ts`
 
