@@ -1,4 +1,3 @@
-/* tslint:disable */
 import { Status } from "allure-js-commons";
 import { suite, test } from "mocha-typescript";
 import { MochaAllureInterface } from "../../../src/MochaAllureInterface";

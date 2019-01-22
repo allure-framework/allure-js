@@ -1,4 +1,3 @@
-/* tslint:disable */
 import { expect } from "chai";
 import { suite } from "mocha-typescript";
 import {
