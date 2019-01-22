@@ -13,12 +13,12 @@
   "main": "./dist/index.js",
   "typings": "./dist/declarations/",
   "scripts": {
-    "clean": "rimraf ./allure-results ./coverage ./.nyc_output ./dist",
+    "clean": "rimraf ./dist ./out",
     "compile": "tsc",
     "prepublishOnly": "npm run clean && npm run build",
     "build": "npm run lint && npm run compile",
-    "generate-report": "allure generate ./allure-results -o ./.allure-report --clean",
-    "allure-report": "allure serve ./allure-results",
+    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
+    "allure-report": "allure serve ./out/allure-results",
     "test": "nyc mocha",
     "coverage": "codecov",
     "lint": "eslint ./src ./test ./index.ts --ext .ts",
@@ -53,16 +53,15 @@
     "extension": [
       ".ts"
     ],
-    "exclude": [
-      "**/*.d.ts",
-      "test/**/*.*",
-      "index.*",
-      "package/**"
+    "include": [
+      "dist/src/**/*.js"
     ],
     "reporter": [
       "lcov",
       "text"
     ],
-    "all": true
+    "all": true,
+    "report-dir": "./out/coverage",
+    "temp-dir": "./out/.nyc"
   }
 }

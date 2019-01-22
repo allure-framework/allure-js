@@ -4,8 +4,8 @@ import * as path from "path";
 import * as propertiesReader from "properties-reader";
 import { MochaAllureReporter } from "../../src/MochaAllureReporter";
 
-const testDir = "./test/fixtures/specs";
-const resultsDir = path.join(__dirname, "../../allure-results");
+const testDir = "./dist/test/fixtures/specs";
+const resultsDir = path.join(__dirname, "../../../out/allure-results");
 const resultsPollingInterval: number = 10;
 
 let results: any[] = [];
@@ -14,7 +14,7 @@ export function runTests(...specs: string[]) {
   const mocha = new Mocha();
   assignSpecs(mocha, specs);
   mocha
-    .reporter(MochaAllureReporter)
+    .reporter(MochaAllureReporter, { "resultsDir": "./out/allure-results" })
     .run(failures => {
       process.exitCode = failures ? 1 : 0;
     })
