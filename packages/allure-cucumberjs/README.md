@@ -8,18 +8,18 @@ Compatible with Cucumber.JS 3+ and Allure 2+
 Create Reporter file:
 ```ecmascript 6
 export default class Reporter extends CucumberJSAllureFormatter {
-	constructor(options) {
-		super(
-			options,
-			new AllureRuntime({ resultsDir: "./out/allure-results" }),
-			{
-				labels: {
-					issue: [/@bug_(.*)/],
-					epic: [/@feature:(.*)/]
-				}
-			}
-		);
-	}
+  constructor(options) {
+    super(
+      options,
+      new AllureRuntime({ resultsDir: "./out/allure-results" }),
+      {
+        labels: {
+          issue: [/@bug_(.*)/],
+          epic: [/@feature:(.*)/]
+        }
+      }
+    );
+  }
 }
 ```
 This class MUST:
@@ -45,10 +45,10 @@ var CucumberJSAllureFormatter = require(allure-cucumberjs).CucumberJSAllureForma
 var AllureRuntime = require(allure-cucumberjs).AllureRuntime;
 
 function Reporter(options) {
-	CucumberJSAllureFormatter.call(this,
-		options,
-		new AllureRuntime({ resultsDir: "./out/allure-results" }),
-		{});
+  CucumberJSAllureFormatter.call(this,
+    options,
+    new AllureRuntime({ resultsDir: "./out/allure-results" }),
+    {});
 }
 Reporter.prototype = Object.create(CucumberJSAllureFormatter.prototype);
 Reporter.prototype.constructor = Reporter;

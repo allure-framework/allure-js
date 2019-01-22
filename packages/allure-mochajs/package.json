@@ -13,10 +13,10 @@
   "main": "./dist/index.js",
   "typings": "./dist/declarations/",
   "scripts": {
-    "clean": "rimraf ./allure-results ./coverage ./.nyc_output",
+    "clean": "rimraf ./allure-results ./coverage ./.nyc_output ./dist",
     "compile": "tsc",
     "prepublishOnly": "npm run clean && npm run build",
-    "build": "npm run compile",
+    "build": "npm run lint && npm run compile",
     "generate-report": "allure generate ./allure-results -o ./.allure-report --clean",
     "allure-report": "allure serve ./allure-results",
     "test": "nyc mocha",

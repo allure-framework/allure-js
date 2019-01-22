@@ -11,7 +11,7 @@ Feature: Feature Name is here
   Scenario: Scenario_Name
   Some description of scenario
     Given test given
-		#comment2
+    #comment2
     And test given 2
     When I do double 2
     Then Number is 4

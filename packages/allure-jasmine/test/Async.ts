@@ -35,11 +35,11 @@ describe("Suite with asyncs", function() {
 
   // FIXME: steps fall into the next test
   /*it("Test with timeout", async function () {
-		await actions("Step 1");
-		expect(1).toEqual(1);
-		console.log("This should not happen 1");
-		await actions("Step 2");
-		console.log("This should not happen 2");
-	}, 150);*/
+    await actions("Step 1");
+    expect(1).toEqual(1);
+    console.log("This should not happen 1");
+    await actions("Step 2");
+    console.log("This should not happen 2");
+  }, 150);*/
 });
 

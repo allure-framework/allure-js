@@ -10,10 +10,10 @@ Feature: Steps can have arguments
 
   Scenario: Test with string parameter
     Given passing given with string:
-		"""
-		Haha this is some text body
-		Many lines!
-		A lot of text...
-		"""
+    """
+    Haha this is some text body
+    Many lines!
+    A lot of text...
+    """
     When passing when
     Then passing then
