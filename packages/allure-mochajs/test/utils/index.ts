@@ -1,11 +1,11 @@
-import jetpack = require('fs-jetpack');
-import * as Mocha from 'mocha';
-import * as path from 'path';
-import * as PropertiesReader from 'properties-reader';
-import { MochaAllureReporter } from '../../src/MochaAllureReporter';
+import jetpack = require("fs-jetpack");
+import * as Mocha from "mocha";
+import * as path from "path";
+import * as propertiesReader from "properties-reader";
+import { MochaAllureReporter } from "../../src/MochaAllureReporter";
 
-const testDir = './test/fixtures/specs';
-const resultsDir = path.join(__dirname, '../../allure-results');
+const testDir = "./test/fixtures/specs";
+const resultsDir = path.join(__dirname, "../../allure-results");
 const resultsPollingInterval: number = 10;
 
 let results: any[] = [];
@@ -18,7 +18,7 @@ export function runTests(...specs: string[]) {
     .run(failures => {
       process.exitCode = failures ? 1 : 0;
     })
-    .on('end', () => (results = readResults('*.json')));
+    .on("end", () => (results = readResults("*.json")));
 }
 
 export function whenResultsAppeared() {
@@ -92,7 +92,7 @@ export function findFiles(pattern: string): any[] {
 }
 
 export function readProperties(fileName: string) {
-  return PropertiesReader(fileName);
+  return propertiesReader(fileName);
 }
 
 function assignSpecs(mocha: Mocha, specs: string[]) {

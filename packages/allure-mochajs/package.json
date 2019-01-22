@@ -10,7 +10,8 @@
     "typescript",
     "allure"
   ],
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "typings": "./dist/declarations/",
   "scripts": {
     "clean": "rimraf ./allure-results ./coverage ./.nyc_output",
     "compile": "tsc",
@@ -20,10 +21,8 @@
     "allure-report": "allure serve ./allure-results",
     "test": "nyc mocha",
     "coverage": "codecov",
-    "lint-fix": "tslint --fix --project .",
-    "lint": "tslint --project .",
-    "precommit": "lint-staged",
-    "postcommit": "git update-index -g"
+    "lint": "eslint ./src ./test ./index.ts --ext .ts",
+    "lint-fix": "eslint ./src ./test ./index.ts --ext .ts --fix"
   },
   "devDependencies": {
     "@types/chai": "^4.1.6",
@@ -32,19 +31,12 @@
     "codecov": "^3.1.0",
     "dotenv": "^6.1.0",
     "fs-jetpack": "^2.2.0",
-    "husky": "^1.1.2",
-    "lint-staged": "^7.3.0",
     "mocha": "^5.2.0",
     "mocha-typescript": "^1.1.17",
     "nyc": "^13.1.0",
     "prettier": "^1.14.3",
     "properties-reader": "^0.0.16",
-    "source-map-support": "^0.5.9",
-    "ts-node": "^7.0.1",
-    "tslint": "^5.11.0",
-    "tslint-config-prettier": "^1.15.0",
-    "tslint-eslint-rules": "^5.4.0",
-    "tslint-plugin-prettier": "^2.0.0"
+    "source-map-support": "^0.5.9"
   },
   "dependencies": {
     "allure-js-commons": "2.0.0-beta.1"
@@ -72,11 +64,5 @@
       "text"
     ],
     "all": true
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "prettier --parser typescript --write",
-      "git add"
-    ]
   }
 }

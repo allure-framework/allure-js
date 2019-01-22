@@ -1,5 +1,5 @@
-import { suite, test } from 'mocha-typescript';
-import { MochaAllureInterface } from '../../../src/MochaAllureInterface';
+import { suite, test } from "mocha-typescript";
+import { MochaAllureInterface } from "../../../src/MochaAllureInterface";
 
 // @ts-ignore
 const allure: MochaAllureInterface = global.allure;
@@ -8,6 +8,6 @@ const allure: MochaAllureInterface = global.allure;
 class Story {
   @test
   shouldAssignStory() {
-    allure.story('Common story');
+    allure.story("Common story");
   }
 }

@@ -8,9 +8,11 @@
     "moduleResolution": "node",
     "declaration": true,
     "strict": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "removeComments": true
   },
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "compileOnSave": false
 }
