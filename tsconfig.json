@@ -1,16 +1,18 @@
 {
-	"compilerOptions": {
-		"target": "es5",
-		"lib": [
-			"es6"
-		],
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"declaration": true,
-		"strict": true,
-		"sourceMap": true
-	},
-	"exclude": [
-		"node_modules"
-	]
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [
+      "es6", "es2015"
+    ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "declaration": true,
+    "strict": true,
+    "sourceMap": true,
+    "removeComments": true
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "compileOnSave": false
 }

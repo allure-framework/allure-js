@@ -8,9 +8,9 @@ import {
   isPromise,
   LabelName,
   Severity
-} from 'allure-js-commons';
-import { AllureReporter } from './AllureReporter';
-import { StepWrapper } from './StepWrapper';
+} from "allure-js-commons";
+import { AllureReporter } from "./AllureReporter";
+import { StepWrapper } from "./StepWrapper";
 
 export class MochaAllureInterface extends AllureInterface {
   constructor(private readonly reporter: AllureReporter) {
@@ -113,7 +113,7 @@ export class MochaAllureInterface extends AllureInterface {
 
   private get currentTest(): AllureTest {
     if (this.reporter.currentTest === null) {
-      throw new Error('No test running!');
+      throw new Error("No test running!");
     }
     return this.reporter.currentTest;
   }
@@ -121,7 +121,7 @@ export class MochaAllureInterface extends AllureInterface {
   private get currentExecutable(): ExecutableItemWrapper {
     const executable = this.reporter.currentStep || this.reporter.currentTest;
     if (executable === null) {
-      throw new Error('No executable!');
+      throw new Error("No executable!");
     }
     return executable;
   }

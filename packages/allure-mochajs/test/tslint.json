@@ -1,7 +1,0 @@
-{
-  "extends": "../tslint.json",
-  "jsRules": {},
-  "rules": {
-    "member-access": false
-  }
-}

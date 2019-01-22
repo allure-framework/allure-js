@@ -1,30 +1,29 @@
 {
-	"private": true,
-	"scripts": {
-		"build": "npm run clean && lerna run build",
-		"test": "npm run build && npm run run-test",
-		"clean": "lerna run clean",
-		"release": "lerna publish",
-		"lint": "lerna run lint",
-		"lint-fix": "lerna run lint-fix",
-
-		"run-test": "lerna run test",
-		"prepublish": "npm run bootstrap",
-		"bootstrap": "npm run pre-bootstrap && lerna bootstrap --hoist",
-		"pre-bootstrap": "run-p pre-bootstrap:*",
-		"pre-bootstrap:pkglock": "rimraf ./packages/*/package-lock.json",
-		"pre-bootstrap:node_modules": "rimraf ./packages/*/node_modules",
-		"pack": "lerna exec -- npm pack"
-	},
-	"devDependencies": {
-		"@types/node": "^10.12.18",
-		"allure-commandline": "^2.9.0",
-		"lerna": "^3.10.6",
-		"npm-run-all": "^4.1.5",
-		"rimraf": "^2.6.3",
-		"typescript": "^3.2.4",
-		"eslint": "^5.12.1",
-		"eslint-plugin-typescript": "^0.14.0",
-		"@typescript-eslint/parser": "^1.0.0"
-	}
+  "private": true,
+  "scripts": {
+    "build": "npm run clean && lerna run build",
+    "test": "npm run build && npm run run-test",
+    "clean": "lerna run clean",
+    "release": "lerna publish",
+    "lint": "lerna run lint",
+    "lint-fix": "lerna run lint-fix",
+    "run-test": "lerna run test",
+    "prepare": "npm run bootstrap",
+    "bootstrap": "npm run pre-bootstrap && lerna bootstrap --hoist",
+    "pre-bootstrap": "run-p pre-bootstrap:*",
+    "pre-bootstrap:pkglock": "rimraf ./packages/*/package-lock.json",
+    "pre-bootstrap:node_modules": "rimraf ./packages/*/node_modules",
+    "pack": "lerna exec -- npm pack"
+  },
+  "devDependencies": {
+    "@types/node": "^10.12.18",
+    "allure-commandline": "^2.9.0",
+    "lerna": "^3.10.6",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^2.6.3",
+    "typescript": "^3.2.4",
+    "eslint": "^5.12.1",
+    "@typescript-eslint/eslint-plugin": "^1.0.0",
+    "@typescript-eslint/parser": "^1.0.0"
+  }
 }

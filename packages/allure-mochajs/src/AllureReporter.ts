@@ -9,9 +9,9 @@ import {
   LabelName,
   Stage,
   Status
-} from 'allure-js-commons';
-import { createHash } from 'crypto';
-import { MochaAllureInterface } from './MochaAllureInterface';
+} from "allure-js-commons";
+import { createHash } from "crypto";
+import { MochaAllureInterface } from "./MochaAllureInterface";
 
 export class AllureReporter {
   private suites: AllureGroup[] = [];
@@ -57,7 +57,7 @@ export class AllureReporter {
     if (suiteName) {
       const scope = this.currentSuite || this.runtime;
       if (scope == null) {
-        throw Error('Suite scope is not defined');
+        throw Error("Suite scope is not defined");
       }
       const suite = scope.startGroup(suiteName);
       this.pushSuite(suite);
@@ -76,14 +76,14 @@ export class AllureReporter {
 
   public startCase(suiteName: string, testName: string) {
     if (this.currentSuite === null) {
-      throw new Error('No active suite');
+      throw new Error("No active suite");
     }
 
     this.currentTest = this.currentSuite.startTest(testName);
     this.currentTest.fullName = testName;
-    this.currentTest.historyId = createHash('md5')
+    this.currentTest.historyId = createHash("md5")
       .update(JSON.stringify({ suite: suiteName, test: testName }))
-      .digest('hex');
+      .digest("hex");
     this.currentTest.stage = Stage.RUNNING;
     this.currentTest.addLabel(LabelName.SUITE, this.currentSuite.name);
   }
@@ -95,7 +95,7 @@ export class AllureReporter {
   public pendingTestCase(test: Mocha.Test) {
     if (this.currentTest === null && this.currentSuite !== null) {
       this.currentTest = this.currentSuite.startTest(test.title);
-      this.currentTest.statusDetails = { message: 'Test ignored' };
+      this.currentTest.statusDetails = { message: "Test ignored" };
     }
 
     this.endTest(undefined, Status.SKIPPED);
@@ -111,7 +111,7 @@ export class AllureReporter {
 
   public writeAttachment(content: Buffer | string, type: ContentType): string {
     if (this.runtime == null) {
-      throw Error('AllureReporter runtime is not defined');
+      throw Error("AllureReporter runtime is not defined");
     }
     return this.runtime.writeAttachment(content, type);
   }
@@ -134,15 +134,17 @@ export class AllureReporter {
 
   private endTest(error?: Error, status?: Status): void {
     if (this.currentTest === null) {
-      throw new Error('endTest while no test is running');
+      throw new Error("endTest while no test is running");
     }
 
     if (error) {
       this.currentTest.statusDetails = { message: error.message, trace: error.stack };
     }
 
-    this.currentTest.status =
-      status || (error ? (error.name === 'AssertionError' ? Status.FAILED : Status.BROKEN) : Status.PASSED);
+    let errorStatus = Status.PASSED;
+    if (error) errorStatus = error.name === "AssertionError" ? Status.FAILED : Status.BROKEN;
+
+    this.currentTest.status = status || errorStatus;
     this.currentTest.stage = Stage.FINISHED;
     this.currentTest.endTest();
     this.currentTest = null;

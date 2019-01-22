@@ -27,7 +27,7 @@ pipeline {
         stage('Release') {
             when { expression { return params.RELEASE } }
             steps {
-            	sh 'echo "todo"'
+                sh 'echo "todo"'
                 //sh 'npm run release'
             }
         }

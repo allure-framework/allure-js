@@ -1,6 +1,0 @@
-allure-results
-coverage
-.nyc_output
-package
-*.js
-*.d.ts

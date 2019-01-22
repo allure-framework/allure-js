@@ -1,15 +1,15 @@
 {
-	"extends": "../../tsconfig.json",
-	"include": [
-		"./src/**/*",
-		"index.ts"
-	],
-	"compilerOptions": {
-		"types": [
-			"node",
-			"jasmine"
-		],
-		"outDir": "./dist",
-		"declarationDir": "./dist/declarations"
-	}
+  "extends": "../../tsconfig.json",
+  "include": [
+    "./src/**/*",
+    "index.ts"
+  ],
+  "compilerOptions": {
+    "types": [
+      "node",
+      "jasmine"
+    ],
+    "outDir": "./dist",
+    "declarationDir": "./dist/declarations"
+  }
 }

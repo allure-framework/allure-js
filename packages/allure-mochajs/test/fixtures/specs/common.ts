@@ -1,5 +1,5 @@
-import { expect } from 'chai';
-import { suite, test } from 'mocha-typescript';
+import { expect } from "chai";
+import { suite, test } from "mocha-typescript";
 
 @suite
 class Common {
@@ -18,6 +18,6 @@ class Common {
 
   @test
   shouldBreak() {
-    throw Error('Broken');
+    throw Error("Broken");
   }
 }
