@@ -12,8 +12,8 @@
   "typings": "./dist/declarations/",
   "scripts": {
     "clean": "rimraf ./dist ./out",
-    "lint": "eslint ./src/**/*.ts ./features/step_definitions/**/*.ts ./index.ts",
-    "lint-fix": "eslint --fix ./src/**/*.ts ./features/step_definitions/**/*.ts ./index.ts",
+    "lint": "eslint ./src ./features/step_definitions ./index.ts --ext .ts",
+    "lint-fix": "eslint ./src ./features/step_definitions ./index.ts --ext .ts --fix",
     "compile": "tsc",
     "build": "npm run lint && npm run compile",
     "prepublishOnly": "npm run clean && npm run build",

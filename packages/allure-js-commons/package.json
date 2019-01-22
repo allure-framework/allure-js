@@ -9,8 +9,8 @@
   "typings": "./dist/declarations/",
   "scripts": {
     "clean": "rimraf ./dist",
-    "lint": "eslint ./src/**/*.ts ./index.ts",
-    "lint-fix": "eslint --fix ./src/**/*.ts ./index.ts",
+    "lint": "eslint ./src ./index.ts --ext .ts",
+    "lint-fix": "eslint ./src ./index.ts --ext .ts --fix",
     "compile": "tsc",
     "build": "npm run lint && npm run compile",
     "prepublishOnly": "npm run clean && npm run build"
