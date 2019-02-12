@@ -1,27 +1,25 @@
-import { TestResultContainer } from "./entities/TestResultContainer";
-import { Link } from "./entities/Link";
-import { ExecutableItem } from "./entities/ExecutableItem";
-import { FixtureResult } from "./entities/FixtureResult";
+import { TestResultContainer } from "./model";
 import { AllureRuntime } from "./AllureRuntime";
 import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
 import { AllureTest } from "./AllureTest";
+import { fixtureResult, testResultContainer } from "./constructors";
 
 export class AllureGroup {
-  private testResultContainer: TestResultContainer = new TestResultContainer();
+  private testResultContainer: TestResultContainer = testResultContainer();
 
-  constructor(private readonly runtime: AllureRuntime, private readonly parent?: AllureGroup) {
+  constructor(private readonly runtime: AllureRuntime) {
     this.testResultContainer.start = Date.now();
   }
 
   startGroup(name?: string): AllureGroup {
-    const group = new AllureGroup(this.runtime, this);
+    const group = new AllureGroup(this.runtime);
     this.testResultContainer.children.push(group.uuid);
     group.name = name || "Unnamed";
     return group;
   }
 
   startTest(name?: string): AllureTest {
-    const test = new AllureTest(this.runtime, this);
+    const test = new AllureTest(this.runtime);
     this.testResultContainer.children.push(test.uuid);
     test.name = name || "Unnamed";
     return test;
@@ -54,17 +52,17 @@ export class AllureGroup {
   }
 
   addLink(name: string, url: string, type?: string): void {
-    this.testResultContainer.links.push(new Link(name, url, type));
+    this.testResultContainer.links.push({ name, url, type });
   }
 
   addBefore(): ExecutableItemWrapper {
-    const result = new ExecutableItem() as FixtureResult;
+    const result = fixtureResult();
     this.testResultContainer.befores.push(result);
     return new ExecutableItemWrapper(result);
   }
 
   addAfter(): ExecutableItemWrapper {
-    const result = new ExecutableItem() as FixtureResult;
+    const result = fixtureResult();
     this.testResultContainer.afters.push(result);
     return new ExecutableItemWrapper(result);
   }

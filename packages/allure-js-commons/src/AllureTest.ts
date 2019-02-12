@@ -1,15 +1,13 @@
 import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
-import { TestResult } from "./entities/TestResult";
-import { AllureGroup } from "./AllureGroup";
-import { Label } from "./entities/Label";
-import { Link } from "./entities/Link";
+import { TestResult } from "./model";
 import { AllureRuntime } from "./AllureRuntime";
+import { testResult } from "./constructors";
 
 export class AllureTest extends ExecutableItemWrapper {
-  private testResult: TestResult;
+  private readonly testResult: TestResult;
 
-  constructor(private readonly runtime: AllureRuntime, private readonly parent?: AllureGroup) {
-    super(new TestResult());
+  constructor(private readonly runtime: AllureRuntime) {
+    super(testResult());
     this.testResult = this.wrappedItem as TestResult;
     this.testResult.start = Date.now();
   }
@@ -33,10 +31,10 @@ export class AllureTest extends ExecutableItemWrapper {
   }
 
   addLabel(name: string, value: string): void {
-    this.testResult.labels.push(new Label(name, value));
+    this.testResult.labels.push({ name, value });
   }
 
   addLink(name: string, url: string, type?: string): void {
-    this.testResult.links.push(new Link(name, url, type));
+    this.testResult.links.push({ name, url, type });
   }
 }

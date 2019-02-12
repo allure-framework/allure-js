@@ -1,6 +1,6 @@
-import { Severity } from "./entities/Severity";
-import { ContentType } from "./entities/ContentType";
-import { LabelName } from "./entities/LabelName";
+import { Severity } from "./model";
+import { ContentType } from "./model";
+import { LabelName } from "./model";
 import { GlobalInfoWriter } from "./GlobalInfoWriter";
 
 export abstract class AllureInterface {

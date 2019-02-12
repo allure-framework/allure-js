@@ -1,16 +1,41 @@
-import { TestResult } from "./entities/TestResult";
+import { Category, ExecutorInfo, TestResult, TestResultContainer } from "./model";
 import { existsSync, writeFileSync } from "fs";
 import { sync as mkdirSync } from "mkdirp";
 import { join as buildPath } from "path";
-import { TestResultContainer } from "./entities/TestResultContainer";
 import { v4 as randomUUID } from "uuid";
 import { stringify } from "properties";
-import { ContentType, typeToExtension } from "./entities/ContentType";
-import { ExecutorInfo } from "./entities/ExecutorInfo";
-import { Category } from "./entities/Category";
+import { ContentType } from "./model";
 import { IAllureConfig } from "./AllureConfig";
 import { AllureGroup } from "./AllureGroup";
 import { GlobalInfoWriter } from "./GlobalInfoWriter";
+
+function typeToExtension(type: ContentType): string {
+  switch (type) {
+    case ContentType.TEXT:
+      return "txt";
+    case ContentType.XML:
+      return "xml";
+    case ContentType.CSV:
+      return "csv";
+    case ContentType.TSV:
+      return "tsv";
+    case ContentType.CSS:
+      return "css";
+    case ContentType.URI:
+      return "uri";
+    case ContentType.SVG:
+      return "svg";
+    case ContentType.PNG:
+      return "png";
+    case ContentType.JSON:
+      return "json";
+    case ContentType.WEBM:
+      return "webm";
+    case ContentType.JPEG:
+      return "jpg";
+  }
+  throw new Error(`Unrecognized extension: ${type}`);
+}
 
 export class AllureRuntime implements GlobalInfoWriter {
   private config: IAllureConfig;
