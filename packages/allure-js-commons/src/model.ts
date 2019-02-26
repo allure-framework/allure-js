@@ -5,25 +5,24 @@ export interface Attachment {
 }
 
 export interface Label {
-  name: string
+  name: LabelName | string
   value: string
 }
 
 export interface Link {
-  name: string
+  name?: string
   url: string
-  type?: string
+  type?: LinkType | string
 }
 
 export interface Parameter {
   name: string
   value: string
+  hidden?: boolean
+  excluded?: boolean
 }
 
 export interface StatusDetails {
-  known?: boolean
-  muted?: boolean
-  flaky?: boolean
   message?: string
   trace?: string
 }
@@ -49,6 +48,7 @@ export interface TestResult extends ExecutableItem {
   uuid: string
   historyId: string
   fullName?: string
+  testCaseId?: string
   labels: Label[]
   links: Link[]
 }
@@ -57,13 +57,8 @@ export interface TestResultContainer {
   uuid: string
   name?: string
   children: string[]
-  description?: string
-  descriptionHtml?: string
   befores: FixtureResult[]
   afters: FixtureResult[]
-  links: Link[]
-  start?: number
-  stop?: number
 }
 
 export interface Category {
@@ -106,25 +101,24 @@ export enum Stage {
 
 /* eslint-disable no-undef */
 export enum LabelName {
-  OWNER = "owner",
-  SEVERITY = "severity",
-  ISSUE = "issue",
-  TAG = "tag",
-  TEST_TYPE = "testType",
-  PARENT_SUITE = "parentSuite",
+  AS_ID = "AS_ID",
   SUITE = "suite",
+  PARENT_SUITE = "parentSuite",
   SUB_SUITE = "subSuite",
-  PACKAGE = "package",
   EPIC = "epic",
   FEATURE = "feature",
   STORY = "story",
-  TEST_CLASS = "testClass",
-  TEST_METHOD = "testMethod",
+  SEVERITY = "severity",
+  TAG = "tag",
+  OWNER = "owner",
+  LEAD = "lead",
   HOST = "host",
   THREAD = "thread",
-  LANGUAGE = "language",
+  TEST_METHOD = "testMethod",
+  TEST_CLASS = "testClass",
+  PACKAGE = "package",
   FRAMEWORK = "framework",
-  RESULT_FORMAT = "resultFormat"
+  LANGUAGE = "language",
 }
 
 /* eslint-disable no-undef */
@@ -148,4 +142,9 @@ export enum ContentType {
   JSON = "application/json",
   WEBM = "video/webm",
   JPEG = "image/jpeg"
+}
+
+export enum LinkType {
+  ISSUE = "issue",
+  TMS = "tms",
 }

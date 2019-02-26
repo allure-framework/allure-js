@@ -1,6 +1,6 @@
 import { JasmineAllureReporter } from "../src/JasmineAllureReporter";
 import { JasmineConsoleReporter } from "../src/JasmineConsoleReporter";
-import { AllureRuntime, Status, GlobalInfoWriter, AllureInterface } from "allure-js-commons";
+import { AllureRuntime, Status, GlobalInfoWriter, Allure } from "allure-js-commons";
 import { TestResult } from "allure-js-commons";
 
 jasmine.getEnv().addReporter(new JasmineConsoleReporter());
@@ -14,7 +14,7 @@ const reporter = new JasmineAllureReporter(new AllureRuntime({
 }));
 jasmine.getEnv().addReporter(reporter);
 
-export const allure: AllureInterface = reporter.getInterface();
+export const allure: Allure = reporter.getInterface();
 const giw: GlobalInfoWriter = allure.getGlobalInfoWriter();
 
 giw.writeExecutorInfo({

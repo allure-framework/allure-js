@@ -8,8 +8,8 @@ const allure: MochaAllureInterface = global.allure;
 class IssueAndTms {
   @test
   shouldAssignIssueAndTms() {
-    allure.addLink("1", "http://localhost/issues/1", "issue");
-    allure.addLink("2", "http://localhost/issues/2", "tms");
-    allure.addIssue("3");
+    allure.issue("1", "http://localhost/issues/1");
+    allure.tms("2", "http://localhost/issues/2");
+    //allure.addIssue("3"); // fixme
   }
 }

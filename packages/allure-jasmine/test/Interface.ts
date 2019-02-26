@@ -3,57 +3,37 @@ import { Severity } from "allure-js-commons";
 
 describe("Suite interface", function() {
   it("Test description", function() {
-    allure.setDescription("<h1>This is HTML description of test</h1>");
+    allure.description("**This is MD description of test**");
     expect(1).toEqual(1);
   });
 
   it("Test description HTML", function() {
-    allure.setDescription("<h1>This is HTML description of test</h1>");
+    allure.descriptionHtml("<h1>This is HTML description of test</h1>");
     expect(1).toEqual(1);
-  });
-
-  it("Test flaky", function() {
-    allure.setFlaky();
-    expect(1).toEqual(1);
-  });
-
-  it("Test known", function() {
-    allure.setKnown();
-    expect(1).toEqual(1);
-  });
-
-  it("Test muted", function() {
-    allure.setMuted();
-    expect(1).toEqual(2);
   });
 
   it("Test owner", function() {
-    allure.addOwner("korobochka");
+    allure.owner("korobochka");
     expect(1).toEqual(1);
   });
 
   it("Test severity", function() {
-    allure.setSeverity(Severity.CRITICAL);
+    allure.severity(Severity.CRITICAL);
     expect(1).toEqual(1);
   });
 
   it("Test issue", function() {
-    allure.addIssue("ISSUE-12345");
+    allure.issue("ISSUE-12345", "");
     expect(1).toEqual(2);
   });
 
   it("Test tag", function() {
-    allure.addTag("SMOKE");
-    expect(1).toEqual(1);
-  });
-
-  it("Test testType", function() {
-    allure.addTestType("smoke");
+    allure.tag("SMOKE");
     expect(1).toEqual(1);
   });
 
   it("Test link", function() {
-    allure.addLink("Yandex", "https://yandex.ru");
+    allure.link("https://yandex.ru", "Yandex");
     expect(1).toEqual(1);
   });
 });

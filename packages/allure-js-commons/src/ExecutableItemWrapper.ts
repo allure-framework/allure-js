@@ -46,18 +46,6 @@ export class ExecutableItemWrapper {
     this.info.statusDetails.trace = trace;
   }
 
-  public set detailsMuted(muted: boolean) {
-    this.info.statusDetails.muted = muted;
-  }
-
-  public set detailsKnown(known: boolean) {
-    this.info.statusDetails.known = known;
-  }
-
-  public set detailsFlaky(flaky: boolean) {
-    this.info.statusDetails.flaky = flaky;
-  }
-
   public set stage(stage: Stage) {
     this.info.stage = stage;
   }

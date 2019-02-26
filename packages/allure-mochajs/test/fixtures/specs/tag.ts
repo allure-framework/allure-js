@@ -8,6 +8,6 @@ const allure: MochaAllureInterface = global.allure;
 class Tag {
   @test
   shouldAssignTag() {
-    allure.addTag("smoke");
+    allure.tag("smoke");
   }
 }

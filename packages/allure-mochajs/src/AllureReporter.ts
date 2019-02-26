@@ -1,6 +1,6 @@
 import {
   AllureGroup,
-  AllureInterface,
+  Allure,
   AllureRuntime,
   AllureStep,
   AllureTest,
@@ -23,7 +23,7 @@ export class AllureReporter {
     this.runtime = new AllureRuntime({ resultsDir: path });
   }
 
-  public getInterface(): AllureInterface {
+  public getInterface(): Allure {
     return new MochaAllureInterface(this);
   }
 

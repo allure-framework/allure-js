@@ -9,6 +9,6 @@ const allure: MochaAllureInterface = global.allure;
 class SeveritySubSuite {
   @test
   shouldAssignSeverity() {
-    allure.setSeverity(Severity.BLOCKER);
+    allure.severity(Severity.BLOCKER);
   }
 }

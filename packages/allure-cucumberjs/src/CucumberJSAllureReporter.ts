@@ -1,7 +1,7 @@
 import { Formatter, World as CucumberWorld } from "cucumber";
 import {
   AllureGroup,
-  AllureInterface,
+  Allure,
   AllureRuntime,
   AllureStep,
   AllureTest,
@@ -26,10 +26,10 @@ import {
   stripIndent
 } from "./utilities";
 
-export { AllureInterface } from "allure-js-commons";
+export { Allure } from "allure-js-commons";
 
 export interface World extends CucumberWorld {
-  allure: AllureInterface;
+  allure: Allure;
 }
 
 export class CucumberJSAllureFormatterConfig {
@@ -54,7 +54,7 @@ export class CucumberJSAllureFormatter extends Formatter {
   currentBefore: ExecutableItemWrapper | null = null;
   currentAfter: ExecutableItemWrapper | null = null;
 
-  public readonly allureInterface: AllureInterface;
+  public readonly allureInterface: Allure;
 
   constructor(options: any, private readonly allureRuntime: AllureRuntime,
     config: CucumberJSAllureFormatterConfig) {
@@ -142,7 +142,7 @@ export class CucumberJSAllureFormatter extends Formatter {
       throw new Error("Unknown scenario");
     }
 
-    this.currentGroup = this.allureRuntime.startGroup("");
+    this.currentGroup = this.allureRuntime.startGroup();
     this.currentTest =
       this.currentGroup.startTest(applyExample(test.name || "Unnamed test", test.example));
 

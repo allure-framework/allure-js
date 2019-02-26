@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import {
   AllureGroup, AllureRuntime, AllureStep, AllureTest, ContentType, ExecutableItemWrapper,
-  isPromise, LabelName, Severity, Stage, Status, AllureInterface, GlobalInfoWriter
+  isPromise, LabelName, Severity, Stage, Status, GlobalInfoWriter, Allure, StepInterface
 } from "allure-js-commons";
 import FailedExpectation = jasmine.FailedExpectation;
 
@@ -37,7 +37,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
     return currentGroup;
   }
 
-  getInterface(): AllureInterface {
+  getInterface(): Allure {
     return new JasmineAllureInterface(this);
   }
 
@@ -238,62 +238,19 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
 }
 
 
-export class JasmineAllureInterface extends AllureInterface {
+export class JasmineAllureInterface extends Allure {
   constructor(private readonly reporter: JasmineAllureReporter) {
     super();
   }
 
-  private get currentExecutable(): ExecutableItemWrapper {
+  protected get currentExecutable(): ExecutableItemWrapper {
     return this.reporter.currentStep
       || this.reporter.currentExecutable
       || this.reporter.currentTest;
   }
 
-  setDescription(text: string) {
-    this.currentExecutable.description = text;
-    this.currentExecutable.descriptionHtml = text;
-  }
-
-  setFlaky() {
-    this.currentExecutable.detailsFlaky = true;
-  }
-
-  setKnown() {
-    this.currentExecutable.detailsKnown = true;
-  }
-
-  setMuted() {
-    this.currentExecutable.detailsMuted = true;
-  }
-
-  addOwner(owner: string) {
-    if (this.reporter.currentTest === null) throw new Error("No test running!");
-    this.reporter.currentTest.addLabel(LabelName.OWNER, owner);
-  }
-
-  setSeverity(severity: Severity) {
-    if (this.reporter.currentTest === null) throw new Error("No test running!");
-    this.reporter.currentTest.addLabel(LabelName.SEVERITY, severity);
-  }
-
-  addIssue(issue: string) {
-    if (this.reporter.currentTest === null) throw new Error("No test running!");
-    this.reporter.currentTest.addLabel(LabelName.ISSUE, issue);
-  }
-
-  addTag(tag: string) {
-    if (this.reporter.currentTest === null) throw new Error("No test running!");
-    this.reporter.currentTest.addLabel(LabelName.TAG, tag);
-  }
-
-  addTestType(type: string) {
-    if (this.reporter.currentTest === null) throw new Error("No test running!");
-    this.reporter.currentTest.addLabel(LabelName.TEST_TYPE, type);
-  }
-
-  addLink(name: string, url: string, type?: string) {
-    if (this.reporter.currentTest === null) throw new Error("No test running!");
-    this.reporter.currentTest.addLink(name, url, type);
+  protected get currentTest(): AllureTest {
+    return this.reporter.currentTest;
   }
 
   private startStep(name: string): WrappedStep {
@@ -302,7 +259,7 @@ export class JasmineAllureInterface extends AllureInterface {
     return new WrappedStep(this.reporter, allureStep);
   }
 
-  step<T>(name: string, body: () => any): any {
+  step<T>(name: string, body: (step: StepInterface) => any): any {
     const wrappedStep = this.startStep(name);
     let result;
     try {
@@ -326,19 +283,13 @@ export class JasmineAllureInterface extends AllureInterface {
     }
   }
 
+  logStep(name: string, status?: Status): void {
+    this.step(name, () => {}); // todo status
+  }
+
   attachment(name: string, content: Buffer | string, type: ContentType) {
     const file = this.reporter.writeAttachment(content, type);
     this.currentExecutable.addAttachment(name, type, file);
-  }
-
-  addParameter(name: string, value: string): void {
-    if (this.reporter.currentTest === null) throw new Error("No test running!");
-    this.reporter.currentTest.addParameter(name, value);
-  }
-
-  addLabel(name: string, value: string): void {
-    if (this.reporter.currentTest === null) throw new Error("No test running!");
-    this.reporter.currentTest.addLabel(name, value);
   }
 
   getGlobalInfoWriter(): GlobalInfoWriter {
@@ -362,7 +313,7 @@ class WrappedStep { // needed?
     this.step.endStep();
   }
 
-  run<T>(body: () => T): T {
+  run<T>(body: (step: StepInterface) => T): T {
     return this.step.wrap(body)();
   }
 }

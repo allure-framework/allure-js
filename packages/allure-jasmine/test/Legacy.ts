@@ -13,18 +13,6 @@ describe("Suite legacy", function() {
     allure.createAttachment("attachment", (c: string) => c, ContentType.TEXT)!("Content value");
   });
 
-  it("Add argument", function() {
-    allure.addArgument("arg", "argval");
-  });
-
-  it("Add environment", function() {
-    allure.addEnvironment("name", "val");
-  });
-
-  it("Add description", function() {
-    allure.description("This is description text", ContentType.TEXT);
-  });
-
   it("Add severity", function() {
     allure.severity(Severity.CRITICAL);
   });

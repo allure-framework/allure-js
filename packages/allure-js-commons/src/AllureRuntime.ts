@@ -1,10 +1,9 @@
-import { Category, ExecutorInfo, TestResult, TestResultContainer } from "./model";
+import { Category, ContentType, ExecutorInfo, TestResult, TestResultContainer } from "./model";
 import { existsSync, writeFileSync } from "fs";
 import { sync as mkdirSync } from "mkdirp";
 import { join as buildPath } from "path";
 import { v4 as randomUUID } from "uuid";
 import { stringify } from "properties";
-import { ContentType } from "./model";
 import { IAllureConfig } from "./AllureConfig";
 import { AllureGroup } from "./AllureGroup";
 import { GlobalInfoWriter } from "./GlobalInfoWriter";

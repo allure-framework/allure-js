@@ -35,7 +35,7 @@ rules:
   arrow-spacing: error
   no-confusing-arrow: error
   no-var: error
-  object-shorthand: [error, consistent-as-needed]
+  object-shorthand: [warn, consistent-as-needed]
   prefer-const: error
   prefer-destructuring: warn
   prefer-rest-params: warn

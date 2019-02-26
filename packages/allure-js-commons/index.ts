@@ -5,7 +5,7 @@ export { ExecutableItemWrapper } from "./src/ExecutableItemWrapper";
 export { AllureTest } from "./src/AllureTest";
 export { AllureStep } from "./src/ExecutableItemWrapper";
 export { isPromise } from "./src/isPromise";
-export { AllureInterface } from "./src/AllureInterface";
+export { Allure, StepInterface } from "./src/Allure";
 export { GlobalInfoWriter } from "./src/GlobalInfoWriter";
 export {
   Attachment,
@@ -23,5 +23,6 @@ export {
   LabelName,
   Severity,
   Stage,
-  Status
+  Status,
+  LinkType
 } from "./src/model";

@@ -1,4 +1,4 @@
-import { AllureStep } from "allure-js-commons";
+import { AllureStep, StepInterface } from "allure-js-commons";
 import { AllureReporter } from "./AllureReporter";
 
 export class StepWrapper {
@@ -15,7 +15,7 @@ export class StepWrapper {
     this.step.endStep();
   }
 
-  public run<T>(body: () => T): T {
+  public run<T>(body: (step: StepInterface) => T): T {
     return this.step.wrap(body)();
   }
 }

@@ -34,7 +34,7 @@ export class AllureTest extends ExecutableItemWrapper {
     this.testResult.labels.push({ name, value });
   }
 
-  addLink(name: string, url: string, type?: string): void {
+  addLink(url: string, name?: string, type?: string): void {
     this.testResult.links.push({ name, url, type });
   }
 }

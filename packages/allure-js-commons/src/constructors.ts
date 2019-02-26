@@ -8,8 +8,7 @@ export function testResultContainer(): TestResultContainer {
     uuid: randomUUID(),
     children: [],
     befores: [],
-    afters: [],
-    links: []
+    afters: []
   };
 }
 

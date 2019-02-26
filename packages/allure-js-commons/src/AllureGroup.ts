@@ -7,9 +7,7 @@ import { fixtureResult, testResultContainer } from "./constructors";
 export class AllureGroup {
   private testResultContainer: TestResultContainer = testResultContainer();
 
-  constructor(private readonly runtime: AllureRuntime) {
-    this.testResultContainer.start = Date.now();
-  }
+  constructor(private readonly runtime: AllureRuntime) {}
 
   startGroup(name?: string): AllureGroup {
     const group = new AllureGroup(this.runtime);
@@ -26,7 +24,6 @@ export class AllureGroup {
   }
 
   endGroup(): void {
-    this.testResultContainer.stop = Date.now();
     // TODO: test that children ended
     this.runtime.writeGroup(this.testResultContainer);
   }
@@ -41,18 +38,6 @@ export class AllureGroup {
 
   set name(name: string) {
     this.testResultContainer.name = name;
-  }
-
-  set description(description: string) {
-    this.testResultContainer.description = description;
-  }
-
-  set descriptionHtml(descriptionHtml: string) {
-    this.testResultContainer.descriptionHtml = descriptionHtml;
-  }
-
-  addLink(name: string, url: string, type?: string): void {
-    this.testResultContainer.links.push({ name, url, type });
   }
 
   addBefore(): ExecutableItemWrapper {
