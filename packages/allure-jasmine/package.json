@@ -20,8 +20,8 @@
     "test": "rimraf ./out ; npm run runTest ; npm run generate-report"
   },
   "devDependencies": {
-    "@types/jasmine": "^3.3.7",
-    "jasmine": "^3.3.1"
+    "@types/jasmine": "^3.3.12",
+    "jasmine": "^3.4.0"
   },
   "dependencies": {
     "allure-js-commons": "^2.0.0-beta.3"

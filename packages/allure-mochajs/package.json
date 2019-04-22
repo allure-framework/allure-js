@@ -25,19 +25,18 @@
     "lint-fix": "eslint ./src ./test ./index.ts --ext .ts --fix"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.6",
-    "@types/mocha": "^5.2.5",
-    "@types/properties-reader": "0.0.1",
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.6",
     "chai": "^4.2.0",
-    "codecov": "^3.1.0",
-    "dotenv": "^6.1.0",
-    "fs-jetpack": "^2.2.0",
+    "codecov": "^3.3.0",
+    "dotenv": "^7.0.0",
+    "fs-jetpack": "^2.2.2",
     "mocha": "^5.2.0",
     "mocha-typescript": "^1.1.17",
-    "nyc": "^13.1.0",
-    "prettier": "^1.14.3",
-    "properties-reader": "0.0.16",
-    "source-map-support": "^0.5.9"
+    "nyc": "^14.0.0",
+    "prettier": "^1.17.0",
+    "properties-reader": "^0.0.16",
+    "source-map-support": "^0.5.12"
   },
   "dependencies": {
     "allure-js-commons": "^2.0.0-beta.3"
