@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import {
-  AllureGroup, AllureRuntime, AllureStep, AllureTest, ContentType, ExecutableItemWrapper,
+  AllureGroup, IAllureRuntime, AllureStep, AllureTest, ContentType, ExecutableItemWrapper,
   isPromise, LabelName, Severity, Stage, Status, GlobalInfoWriter, Allure, StepInterface
 } from "allure-js-commons";
 import FailedExpectation = jasmine.FailedExpectation;
@@ -22,7 +22,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
   private stepStack: AllureStep[] = [];
   private runningExecutable: ExecutableItemWrapper | null = null;
 
-  constructor(private readonly runtime: AllureRuntime) {
+  constructor(private readonly runtime: IAllureRuntime) {
     this.installHooks();
   }
 

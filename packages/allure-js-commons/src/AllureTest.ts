@@ -1,12 +1,12 @@
 import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
 import { TestResult } from "./model";
-import { AllureRuntime } from "./AllureRuntime";
 import { testResult } from "./constructors";
+import { IAllureRuntime } from "./IAllureRuntime";
 
 export class AllureTest extends ExecutableItemWrapper {
   private readonly testResult: TestResult;
 
-  constructor(private readonly runtime: AllureRuntime) {
+  constructor(private readonly runtime: IAllureRuntime) {
     super(testResult());
     this.testResult = this.wrappedItem as TestResult;
     this.testResult.start = Date.now();

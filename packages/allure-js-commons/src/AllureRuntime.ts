@@ -6,7 +6,7 @@ import { v4 as randomUUID } from "uuid";
 import { stringify } from "properties";
 import { IAllureConfig } from "./AllureConfig";
 import { AllureGroup } from "./AllureGroup";
-import { GlobalInfoWriter } from "./GlobalInfoWriter";
+import { IAllureRuntime } from "./IAllureRuntime";
 
 function typeToExtension(type: ContentType): string {
   switch (type) {
@@ -36,12 +36,11 @@ function typeToExtension(type: ContentType): string {
   throw new Error(`Unrecognized extension: ${type}`);
 }
 
-export class AllureRuntime implements GlobalInfoWriter {
-  private config: IAllureConfig;
-
-  constructor(config: IAllureConfig) {
-    this.config = config;
-    if (!existsSync(this.config.resultsDir)) mkdirSync(this.config.resultsDir);
+export class AllureRuntime implements IAllureRuntime {
+  constructor(private config: IAllureConfig) {
+    if (!existsSync(this.config.resultsDir)) {
+      mkdirSync(this.config.resultsDir);
+    }
   }
 
   startGroup(name?: string): AllureGroup {

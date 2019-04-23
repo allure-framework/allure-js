@@ -26,3 +26,5 @@ export {
   Status,
   LinkType
 } from "./src/model";
+export { InMemoryAllureRuntime } from "./src/InMemoryAllureRuntime";
+export { IAllureRuntime } from "./src/IAllureRuntime";
