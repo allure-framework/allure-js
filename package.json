@@ -4,7 +4,7 @@
     "build": "npm run clean && lerna run build",
     "test": "npm run build && npm run run-test",
     "clean": "lerna run clean",
-    "release": "lerna publish",
+    "release": "lerna publish --yes",
     "lint": "lerna run lint",
     "lint-fix": "lerna run lint-fix",
     "run-test": "lerna run test",

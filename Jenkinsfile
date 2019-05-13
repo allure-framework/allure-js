@@ -5,8 +5,7 @@ pipeline {
     }
     parameters {
         booleanParam(name: 'RELEASE', defaultValue: false, description: 'Perform release?')
-        //string(name: 'RELEASE_VERSION', defaultValue: '', description: 'Release version')
-        //string(name: 'NEXT_VERSION', defaultValue: '', description: 'Next version (without SNAPSHOT)')
+        string(name: 'RELEASE_VERSION', defaultValue: '', description: 'Release version')
     }
     stages {
         stage('Install') {
@@ -28,8 +27,13 @@ pipeline {
         stage('Release') {
             when { expression { return params.RELEASE } }
             steps {
-                sh 'echo "todo"'
-                //sh 'npm run release'
+                withCredentials([usernamePassword(credentialsId: 'qameta-ci_npmjs',
+                        usernameVariable: 'NPMJS_USER', passwordVariable: 'NPMJS_API_KEY')]) {
+                    sshagent(['qameta-ci_ssh']) {
+                        sh 'git checkout master && git pull origin master'
+                        sh 'npm run release -- ${RELEASE_VERSION}'
+                    }
+                }
             }
         }
     }
