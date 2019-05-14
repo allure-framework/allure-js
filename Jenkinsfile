@@ -1,5 +1,5 @@
 pipeline {
-    agent { docker 'timbru31/java-node:alpine' }
+    agent { docker 'timbru31/java-node:8' }
     environment {
         HOME = pwd()
     }
