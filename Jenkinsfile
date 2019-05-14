@@ -33,7 +33,7 @@ pipeline {
                     sshagent(['qameta-ci_ssh']) {
                         sh 'git checkout master && git pull origin master'
                         sh 'npm install -g npm-cli-login'
-                        sh 'npm-cli-login -e qameta@yandex.ru'
+                        sh 'npm-cli-login -e ci@qameta.io'
                         sh 'npm run release -- ${RELEASE_VERSION}'
                     }
                 }
