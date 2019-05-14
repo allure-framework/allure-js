@@ -26,7 +26,7 @@ pipeline {
             steps {
                 sh 'apt-get update && apt-get install --no-install-recommends -y git ssh'
                 withCredentials([usernamePassword(credentialsId: 'qameta-ci_npm',
-                        usernameVariable: 'NPM_USER', passwordVariable: 'NPM_PASSWORD')]) {
+                        usernameVariable: 'NPM_USER', passwordVariable: 'NPM_PASS')]) {
                     sshagent(['qameta-ci_ssh']) {
                         sh 'npm install -g npm-cli-login'
                         sh 'npm-cli-login -e ci@qameta.io'
