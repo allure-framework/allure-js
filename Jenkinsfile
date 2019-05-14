@@ -27,12 +27,12 @@ pipeline {
         stage('Release') {
             when { expression { return params.RELEASE } }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'qameta-ci_npmjs',
-                        usernameVariable: 'NPMJS_USER', passwordVariable: 'NPMJS_API_KEY')]) {
+                withCredentials([usernamePassword(credentialsId: 'qameta-ci_npm',
+                        usernameVariable: 'NPM_USER', passwordVariable: 'NPM_PASSWORD')]) {
                     sshagent(['qameta-ci_ssh']) {
                         sh 'git checkout master && git pull origin master'
                         sh 'npm install -g npm-cli-login'
-                        sh 'npm-cli-login -u ${NPMJS_USER} -p ${NPMJS_API_KEY} -e test@test.org'
+                        sh 'npm-cli-login -u ${NPMJS_USER} -p ${NPMJS_PASSWORD} -e test@test.org'
                         sh 'npm run release -- ${RELEASE_VERSION}'
                     }
                 }
