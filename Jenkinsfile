@@ -28,7 +28,6 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'qameta-ci_npm',
                         usernameVariable: 'NPM_USER', passwordVariable: 'NPM_PASSWORD')]) {
                     sshagent(['qameta-ci_ssh']) {
-                        sh 'git checkout master && git pull origin master'
                         sh 'npm install -g npm-cli-login'
                         sh 'npm-cli-login -e ci@qameta.io'
                         sh 'npm run release -- 2.0.0-beta.1'
