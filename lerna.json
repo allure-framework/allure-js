@@ -5,7 +5,7 @@
   "command": {
     "version": {
       "allowBranch": "master",
-      "gitRemote": "upstream"
+      "gitRemote": "origin"
     }
   },
   "version": "2.0.0-beta.1"
