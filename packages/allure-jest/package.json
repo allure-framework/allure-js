@@ -20,6 +20,7 @@
     "test": "rimraf ./out; npm run defaultTest"
   },
   "devDependencies": {
+    "@types/jasmine": "^3.3.12",
     "allure-jasmine": "^2.0.0-beta.2"
   },
   "dependencies": {
