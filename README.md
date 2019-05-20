@@ -2,11 +2,15 @@
 
 This project aggregates Allure Javascript commons and reporters. 
 
-## Currently supported frameworks
+## Supported frameworks
 
-- Jasmine
-- Cucumber.JS
-- Mocha
+### [Cucumber.JS](/packages/allure-cucumberjs/README.md)
+![npm](https://img.shields.io/npm/dm/allure-cucumberjs.svg) ![npm](https://img.shields.io/npm/v/allure-cucumberjs.svg)
+### [Jasmine](/packages/allure-jasmine/README.md)
+![npm](https://img.shields.io/npm/dm/allure-jasmine.svg) ![npm](https://img.shields.io/npm/v/allure-jasmine.svg)
+### [Mocha](/packages/allure-mochajs/README.md)
+![npm](https://img.shields.io/npm/dm/allure-mochajs.svg) ![npm](https://img.shields.io/npm/v/allure-mochajs.svg)
+
 
 ## Local Development
 
