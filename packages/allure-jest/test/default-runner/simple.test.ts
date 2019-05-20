@@ -1,6 +1,3 @@
-
-describe( "test", () => {
-  it("simple", ()=> {
-
-  })
+describe("test", () => {
+  it("simple", () => {});
 });
