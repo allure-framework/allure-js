@@ -27,6 +27,7 @@
   "devDependencies": {
     "@types/chai": "^4.1.6",
     "@types/mocha": "^5.2.5",
+    "@types/properties-reader": "0.0.1",
     "chai": "^4.2.0",
     "codecov": "^3.1.0",
     "dotenv": "^6.1.0",
@@ -35,7 +36,7 @@
     "mocha-typescript": "^1.1.17",
     "nyc": "^13.1.0",
     "prettier": "^1.14.3",
-    "properties-reader": "^0.0.16",
+    "properties-reader": "0.0.16",
     "source-map-support": "^0.5.9"
   },
   "dependencies": {
@@ -46,10 +47,10 @@
   },
   "nyc": {
     "check-coverage": true,
-    "lines": 15,
-    "statements": 15,
-    "functions": 5,
-    "branches": 0,
+    "lines": 80,
+    "statements": 80,
+    "functions": 75,
+    "branches": 70,
     "extension": [
       ".ts"
     ],

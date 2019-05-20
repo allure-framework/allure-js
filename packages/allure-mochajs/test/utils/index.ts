@@ -1,6 +1,7 @@
 import jetpack = require("fs-jetpack");
 import * as path from "path";
-import * as propertiesReader from "properties-reader";
+import Mocha from "mocha";
+import propertiesReader from "properties-reader";
 import { MochaAllureReporter } from "../../src/MochaAllureReporter";
 
 const testDir = "./dist/test/fixtures/specs";
