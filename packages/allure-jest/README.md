@@ -4,11 +4,11 @@ Allure integration for jest framework
 
 # How to use
 
-## Default test runner
+## Default test runner (Jasmine)
 
 By default jest uses jasmine as test runner, so you can configure allure-jasmine reporter for it:
 
-Make allure-reporter.ts module:
+Make allure-report.ts module:
 
 ```typescript
 import {JasmineAllureReporter} from "allure-jasmine";
@@ -25,7 +25,7 @@ And provide path in jest.config.js:
 ```js
 module.exports = {
   // ...
-  setupFilesAfterEnv: ["<rootDir>/path/to/allure-reporter.js"]
+  setupFilesAfterEnv: ["<rootDir>/path/to/allure-report.js"]
 }
 ```
 

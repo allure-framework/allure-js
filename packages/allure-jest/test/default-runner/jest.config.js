@@ -1,5 +1,5 @@
 module.exports = {
-  setupFilesAfterEnv: ["<rootDir>../../dist/test/default-runner/report.js"],
+  setupFilesAfterEnv: ["<rootDir>../../dist/test/default-runner/allure-report.js"],
   "roots": [
     "<rootDir>../../dist/test/default-runner/"
   ]
