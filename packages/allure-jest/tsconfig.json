@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": [
+    "./test/**/*"
+  ],
+  "compilerOptions": {
+    "types": [
+      "node",
+      "jest"
+    ],
+    "skipLibCheck": true,
+    "outDir": "./dist",
+    "rootDir": "./",
+    "declarationDir": "./dist/declarations"
+  }
+}

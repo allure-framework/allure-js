@@ -1,0 +1,31 @@
+{
+  "private": true,
+  "name": "allure-jest",
+  "version": "2.0.0-beta.2",
+  "description": "Allure Jest integration",
+  "license": "Apache-2.0",
+  "author": "Stanislav Seliverstov <s.seliverstov@gmail.com>",
+  "repository": "https://github.com/allure-framework/allure-js",
+  "main": "./dist/index.js",
+  "typings": "./dist/declarations/",
+  "scripts": {
+    "clean": "rimraf ./dist ./out",
+    "lint": "eslint ./test --ext .ts",
+    "lint-fix": "eslint ./src ./test ./index.ts --ext .ts --fix",
+    "compile": "tsc",
+    "build": "npm run lint && npm run compile",
+    "prepublishOnly": "npm run clean && npm run build",
+    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
+    "jasmineTest": "jest --config ./test/default-runner/jest.config.js",
+    "test": "rimraf ./out; npm run jasmineTest"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^3.3.12",
+    "allure-jasmine": "^2.0.0-beta.2"
+  },
+  "dependencies": {
+    "@types/jest": "^24.0.13",
+    "allure-js-commons": "^2.0.0-beta.2",
+    "jest": "^24.8.0"
+  }
+}
