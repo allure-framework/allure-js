@@ -26,22 +26,12 @@ This project aggregates Allure Javascript commons and reporters.
 [Read more](/packages/allure-mochajs/README.md)
 
 
-## Local Development
+## Development
 
-Install dependencies and bootstrap Lerna links:
+### allure-js-commons
 
-```bash
-npm install
-```
+Interface for Allure 2 to be used from Javascript and TypeScript.
 
-Build:
+![npm](https://img.shields.io/npm/dm/allure-js-commons.svg) ![npm](https://img.shields.io/npm/v/allure-js-commons.svg)
 
-```bash
-npm run build
-```  
-
-Run tests for all the packages:
-
-```bash
-npm run test
-```
+[Read more](/packages/allure-js-commons/README.md)
