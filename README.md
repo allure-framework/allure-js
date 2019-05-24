@@ -6,32 +6,32 @@ This project aggregates Allure Javascript commons and reporters.
 
 ### Cucumber.JS
 ![npm](https://img.shields.io/npm/dm/allure-cucumberjs.svg) ![npm](https://img.shields.io/npm/v/allure-cucumberjs.svg)
-[Quick start](/packages/allure-cucumberjs/README.md)
+
+[Read more](/packages/allure-cucumberjs/README.md)
+
 
 ### Jasmine
 ![npm](https://img.shields.io/npm/dm/allure-jasmine.svg) ![npm](https://img.shields.io/npm/v/allure-jasmine.svg)
-[Quick start](/packages/allure-jasmine/README.md)
+
+[Read more](/packages/allure-jasmine/README.md)
+
+
+### Jest
+[Read more](/packages/allure-jest/README.md)
+
 
 ### Mocha
 ![npm](https://img.shields.io/npm/dm/allure-mochajs.svg) ![npm](https://img.shields.io/npm/v/allure-mochajs.svg)
-[Quick start](/packages/allure-mochajs/README.md)
 
-## Local Development
+[Read more](/packages/allure-mochajs/README.md)
 
-Install dependencies and bootstrap Lerna links:
 
-```bash
-npm install
-```
+## Development
 
-Build:
+### allure-js-commons
 
-```bash
-npm run build
-```  
+Interface for Allure 2 to be used from Javascript and TypeScript.
 
-Run tests for all the packages:
+![npm](https://img.shields.io/npm/dm/allure-js-commons.svg) ![npm](https://img.shields.io/npm/v/allure-js-commons.svg)
 
-```bash
-npm run test
-```
+[Read more](/packages/allure-js-commons/README.md)
