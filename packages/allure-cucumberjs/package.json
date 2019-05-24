@@ -1,6 +1,6 @@
 {
   "name": "allure-cucumberjs",
-  "version": "2.0.0-beta.2",
+  "version": "2.0.0-beta.3",
   "description": "Allure Cucumber.JS integration",
   "license": "Apache-2.0",
   "author": "Ilya Korobitsyn <mail@korobochka.org>",
@@ -27,6 +27,6 @@
     "cucumber": "^4.2.1"
   },
   "dependencies": {
-    "allure-js-commons": "^2.0.0-beta.2"
+    "allure-js-commons": "^2.0.0-beta.3"
   }
 }
