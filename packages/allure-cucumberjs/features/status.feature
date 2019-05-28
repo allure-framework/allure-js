@@ -8,9 +8,9 @@ Feature: Status
           When do <kind> step
           Then do passing step
       """
-    Given a allure formatter file
     When I run cucumber-js with allure
     Then it passes
+    Then it has result for "Run scenario with <kind> step"
 
     When I choose result for "Run scenario with <kind> step"
     Then it has status "<status>"

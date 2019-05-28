@@ -8,9 +8,9 @@ Feature: Description
           When do passing step
           Then do passing step
       """
-    Given a allure formatter file
     When I run cucumber-js with allure
     Then it passes
+    Then it has result for "Example for feature description check"
 
     When I choose result for "Example for feature description check"
     Then it has description "This is description"

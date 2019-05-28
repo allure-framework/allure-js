@@ -24,9 +24,9 @@ Feature: Label
           When do passing step
           Then do passing step
       """
-    Given a allure formatter file
     When I run cucumber-js with allure
     Then it passes
+    Then it has result for "Example for feature tag label check"
 
     When I choose result for "Example for feature tag label check"
     Then it has label "tag" with value "@tag-for-feature"
@@ -41,9 +41,9 @@ Feature: Label
           When do passing step
           Then do passing step
       """
-    Given a allure formatter file
     When I run cucumber-js with allure
     Then it passes
+    Then it has result for "Example for scenario tag label check"
 
     When I choose result for "Example for scenario tag label check"
     Then it has label "tag" with value "@tag-for-scenario"
