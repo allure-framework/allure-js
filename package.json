@@ -1,7 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "build": "npm run clean && lerna run build",
+    "link": "lerna link --force-local",
+    "build": "npm run clean && npm run link && lerna run build",
     "test": "npm run build && npm run run-test",
     "clean": "lerna run clean",
     "release": "lerna publish --yes",
