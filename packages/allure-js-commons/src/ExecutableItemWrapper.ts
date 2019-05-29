@@ -55,6 +55,7 @@ export class ExecutableItemWrapper {
   }
 
   public addAttachment(name: string, type: ContentType, fileName: string) {
+    // eslint-disable-next-line object-shorthand
     this.info.attachments.push({ name, type, source: fileName });
   }
 
