@@ -3,6 +3,7 @@ export { ContentType } from "./src/entities/ContentType";
 export { LabelName } from "./src/entities/LabelName";
 export { Status } from "./src/entities/Status";
 export { Stage } from "./src/entities/Stage";
+export { StepResult } from "./src/entities/StepResult";
 export { Severity } from "./src/entities/Severity";
 export { AllureConfig, IAllureConfig } from "./src/AllureConfig";
 export { AllureGroup } from "./src/AllureGroup";

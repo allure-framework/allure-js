@@ -12,19 +12,30 @@
   "typings": "./dist/declarations/",
   "scripts": {
     "clean": "rimraf ./dist ./out",
-    "lint": "eslint ./src ./features/step_definitions ./index.ts --ext .ts",
+    "lint": "eslint ./src ./features ./index.ts --ext .ts",
     "lint-fix": "eslint ./src ./features/step_definitions ./index.ts --ext .ts --fix",
     "compile": "tsc",
     "build": "npm run lint && npm run compile",
     "prepublishOnly": "npm run clean && npm run build",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "runTest": "cucumber-js --require ./dist/features/step_definitions/ --format ./dist/features/step_definitions/Reporter.js:./dist/dummy.txt",
+    "runTest": "cucumber-js --require ./dist/features/step_definitions/ --require ./dist/features/support/ --format ./dist/features/support/report.js:./dist/dummy.txt",
     "runTestNoReporter": "cucumber-js --require ./dist/features/step_definitions/ --format event-protocol:./out/event-protocol.txt",
     "test": "rimraf ./out ; npm run runTest ; npm run generate-report"
   },
   "devDependencies": {
-    "@types/cucumber": "^4.0.4",
-    "cucumber": "^4.2.1"
+    "@types/chai": "^4.1.7",
+    "@types/cucumber": "^4.0.5",
+    "@types/fs-extra": "^7.0.0",
+    "@types/glob": "^7.1.1",
+    "@types/verror": "^1.10.3",
+    "chai": "^4.2.0",
+    "chai-like": "^1.1.1",
+    "cucumber": "5.1.0",
+    "fs-extra": "^8.0.1",
+    "glob": "^7.1.4",
+    "path": "^0.12.7",
+    "ts-node-register": "^1.0.0",
+    "verror": "^1.10.0"
   },
   "dependencies": {
     "allure-js-commons": "^2.0.0-beta.3"
