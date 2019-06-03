@@ -17,9 +17,9 @@ When("do passing step", () => {});
 
 When("do failing step", () => assert(false, "hello from failed step"));
 
-When("do async passing step", async () => await delayPass(10));
+When("do async passing step", () => delayPass(10));
 
-When("do async failing step", async () => await delayFail(10));
+When("do async failing step", () => delayFail(10));
 
 When("do ambiguous step", () => {});
 

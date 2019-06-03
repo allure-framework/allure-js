@@ -7,8 +7,8 @@ import { StepResult } from "allure-js-commons";
 
 chai.use(ChaiPartial);
 
-Then(/^it has result for "(.*)"$/, function (name: string) {
-  expect(this.allureReport.testResults).to.partial([{name}])
+Then(/^it has result for "(.*)"$/, function(name: string) {
+  expect(this.allureReport.testResults).to.partial([{name}]);
 });
 
 When(/^I choose result for "(.*)"$/, function(name: string) {

@@ -61,7 +61,7 @@ rules:
     - SwitchCase: 1
   key-spacing: error
   keyword-spacing: warn
-  max-len: [error, 100]
+  max-len: [error, 120]
   new-cap: warn
   new-parens: error
   no-multiple-empty-lines: error
