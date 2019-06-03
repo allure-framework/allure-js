@@ -32,12 +32,10 @@ async function runSingleTest(fun: Function): Promise<TestResult> {
 
 describe("Basics", function() {
   it("test example", async function() {
-
     const test = await runSingleTest(function(this: any) {
       this.expect(1).toEqual(2);
     });
     expect(test.status).toBe(Status.FAILED);
-
 
     const test2 = await runSingleTest(function(this: any) {
       this.expect(1).toEqual(1);
@@ -45,7 +43,6 @@ describe("Basics", function() {
     expect(test2.status).toBe(Status.PASSED);
   });
 });
-
 
 /*
 todo:
