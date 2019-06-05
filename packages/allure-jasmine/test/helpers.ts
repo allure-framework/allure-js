@@ -1,8 +1,8 @@
-import {InMemoryAllureRuntime} from "allure-js-commons";
+import {Allure, InMemoryAllureRuntime} from "allure-js-commons";
 import {JasmineAllureReporter} from "../src/JasmineAllureReporter";
 import Env = jasmine.Env;
 
-export async function runTest(fun: (j: any, k: any) => void): Promise<InMemoryAllureRuntime> {
+export async function runTest(fun: (j: Env, k: Allure) => void): Promise<InMemoryAllureRuntime> {
   const runtime = new InMemoryAllureRuntime({
     resultsDir: "./out/allure-results"
   });
