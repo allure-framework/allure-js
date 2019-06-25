@@ -1,5 +1,4 @@
-import { ExecutorInfo } from "./entities/ExecutorInfo";
-import { Category } from "./entities/Category";
+import { ExecutorInfo, Category } from "./model";
 
 export interface GlobalInfoWriter {
   writeExecutorInfo(info: ExecutorInfo): void;

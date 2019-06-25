@@ -1,5 +1,5 @@
 import {
-  AllureInterface,
+  Allure,
   AllureStep,
   AllureTest,
   ContentType,
@@ -7,58 +7,17 @@ import {
   GlobalInfoWriter,
   isPromise,
   LabelName,
-  Severity
+  Severity, Status, StepInterface
 } from "allure-js-commons";
 import { AllureReporter } from "./AllureReporter";
 import { StepWrapper } from "./StepWrapper";
 
-export class MochaAllureInterface extends AllureInterface {
+export class MochaAllureInterface extends Allure {
   constructor(private readonly reporter: AllureReporter) {
     super();
   }
 
-  public setDescription(text: string) {
-    this.currentTest.description = text;
-    this.currentTest.descriptionHtml = text;
-  }
-
-  public setFlaky() {
-    this.currentExecutable.detailsFlaky = true;
-  }
-
-  public setKnown() {
-    this.currentExecutable.detailsKnown = true;
-  }
-
-  public setMuted() {
-    this.currentExecutable.detailsMuted = true;
-  }
-
-  public addOwner(owner: string) {
-    this.currentTest.addLabel(LabelName.OWNER, owner);
-  }
-
-  public setSeverity(severity: Severity) {
-    this.currentTest.addLabel(LabelName.SEVERITY, severity);
-  }
-
-  public addIssue(issue: string) {
-    this.currentTest.addLabel(LabelName.ISSUE, issue);
-  }
-
-  public addTag(tag: string) {
-    this.currentTest.addLabel(LabelName.TAG, tag);
-  }
-
-  public addTestType(type: string) {
-    this.currentTest.addLabel(LabelName.TEST_TYPE, type);
-  }
-
-  public addLink(name: string, url: string, type?: string) {
-    this.currentTest.addLink(name, url, type);
-  }
-
-  public step<T>(name: string, body: () => any): any {
+  public step<T>(name: string, body: (step: StepInterface) => any): any {
     const wrappedStep = this.startStep(name);
     let result;
     try {
@@ -83,6 +42,10 @@ export class MochaAllureInterface extends AllureInterface {
     return result;
   }
 
+  logStep(name: string, status?: Status): void {
+    this.step(name, () => {}); // todo status
+  }
+
   public attachment(name: string, content: Buffer | string, type: ContentType) {
     const file = this.reporter.writeAttachment(content, type);
     this.currentExecutable.addAttachment(name, type, file);
@@ -91,14 +54,6 @@ export class MochaAllureInterface extends AllureInterface {
   public testAttachment(name: string, content: Buffer | string, type: ContentType) {
     const file = this.reporter.writeAttachment(content, type);
     this.currentTest.addAttachment(name, type, file);
-  }
-
-  public addParameter(name: string, value: string): void {
-    this.currentTest.addParameter(name, value);
-  }
-
-  public addLabel(name: string, value: string): void {
-    this.currentTest.addLabel(name, value);
   }
 
   public getGlobalInfoWriter(): GlobalInfoWriter {
@@ -111,14 +66,14 @@ export class MochaAllureInterface extends AllureInterface {
     return new StepWrapper(this.reporter, allureStep);
   }
 
-  private get currentTest(): AllureTest {
+  protected get currentTest(): AllureTest {
     if (this.reporter.currentTest === null) {
       throw new Error("No test running!");
     }
     return this.reporter.currentTest;
   }
 
-  private get currentExecutable(): ExecutableItemWrapper {
+  protected get currentExecutable(): ExecutableItemWrapper {
     const executable = this.reporter.currentStep || this.reporter.currentTest;
     if (executable === null) {
       throw new Error("No executable!");

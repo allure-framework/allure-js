@@ -8,6 +8,6 @@ const allure: MochaAllureInterface = global.allure;
 class Description {
   @test
   shouldAssignDescription() {
-    allure.setDescription("Test description");
+    allure.description("Test description");
   }
 }

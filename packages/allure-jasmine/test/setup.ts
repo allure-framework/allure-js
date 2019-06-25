@@ -1,20 +1,26 @@
 import { JasmineAllureReporter } from "../src/JasmineAllureReporter";
 import { JasmineConsoleReporter } from "../src/JasmineConsoleReporter";
-import { AllureRuntime, Status, GlobalInfoWriter, AllureInterface } from "allure-js-commons";
+import {
+  Status,
+  GlobalInfoWriter,
+  Allure,
+  InMemoryAllureRuntime
+} from "allure-js-commons";
 import { TestResult } from "allure-js-commons";
 
 jasmine.getEnv().addReporter(new JasmineConsoleReporter());
 
-const reporter = new JasmineAllureReporter(new AllureRuntime({
+export const runtime = new InMemoryAllureRuntime({
   resultsDir: "./out/allure-results",
   testMapper: (result: TestResult) => {
     if (result.status == Status.SKIPPED) result.fullName = `(WAS SKIPPED) ${result.fullName}`;
     return result;
   }
-}));
+});
+const reporter = new JasmineAllureReporter(runtime);
 jasmine.getEnv().addReporter(reporter);
 
-export const allure: AllureInterface = reporter.getInterface();
+export const allure: Allure = reporter.getInterface();
 const giw: GlobalInfoWriter = allure.getGlobalInfoWriter();
 
 giw.writeExecutorInfo({

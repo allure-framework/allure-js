@@ -1,4 +1,4 @@
-import { TestResult } from "./entities/TestResult";
+import { TestResult } from "./model";
 
 export interface IAllureConfig {
   readonly resultsDir: string;

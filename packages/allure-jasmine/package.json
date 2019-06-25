@@ -15,15 +15,35 @@
     "build": "npm run lint && npm run compile",
     "prepublishOnly": "npm run clean && npm run build",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "runTest": "jasmine ./dist/test/*.js",
-    "runTestDebug": "node $NODE_DEBUG_OPTION ./node_modules/jasmine/bin/jasmine ./dist/test/*.js",
+    "runTest": "nyc jasmine ./dist/test/*.test.js",
+    "runTestDebug": "node $NODE_DEBUG_OPTION ./node_modules/.bin/jasmine ./dist/test/*.js",
     "test": "rimraf ./out ; npm run runTest ; npm run generate-report"
   },
   "devDependencies": {
-    "@types/jasmine": "^3.3.7",
-    "jasmine": "^3.3.1"
+    "@types/jasmine": "^3.3.12",
+    "jasmine": "^3.4.0"
   },
   "dependencies": {
     "allure-js-commons": "^2.0.0-beta.3"
+  },
+  "nyc": {
+    "check-coverage": false,
+    "lines": 85,
+    "statements": 85,
+    "functions": 85,
+    "branches": 75,
+    "extension": [
+      ".ts"
+    ],
+    "include": [
+      "**/src/**/*"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "all": true,
+    "report-dir": "./out/coverage",
+    "temp-dir": "./out/.nyc"
   }
 }

@@ -8,6 +8,6 @@ const allure: MochaAllureInterface = global.allure;
 class Parameter {
   @test
   shouldAssignParameter() {
-    allure.addParameter("key", "value");
+    allure.parameter("key", "value");
   }
 }

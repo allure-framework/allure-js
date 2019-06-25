@@ -31,8 +31,6 @@ class IssueAndTmsSuite {
       expect(links.map(link => link.url))
         .contains("http://localhost/issues/1", "http://localhost/issues/2");
       expect(links.map(link => link.type)).contains("issue", "tms");
-
-      expect(findLabel(testName, "issue").value).eq("3");
     });
   }
 }

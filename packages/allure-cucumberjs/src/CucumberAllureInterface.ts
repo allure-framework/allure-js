@@ -1,5 +1,5 @@
 import {
-  AllureInterface,
+  Allure,
   AllureStep,
   AllureTest,
   ContentType,
@@ -7,70 +7,24 @@ import {
   GlobalInfoWriter,
   isPromise,
   LabelName,
-  Severity
+  Severity, Status, StepInterface
 } from "allure-js-commons";
 import { CucumberJSAllureFormatter } from "./CucumberJSAllureReporter";
 
-export class CucumberAllureInterface extends AllureInterface {
+export class CucumberAllureInterface extends Allure {
   constructor(private readonly reporter: CucumberJSAllureFormatter) {
     super();
   }
 
-  private get currentExecutable(): ExecutableItemWrapper {
+  protected get currentExecutable(): ExecutableItemWrapper {
     const result = this.reporter.currentStep || this.reporter.currentTest;
     if (result === null) throw new Error("No executable!");
     return result;
   }
 
-  private get currentTest(): AllureTest {
+  protected get currentTest(): AllureTest {
     if (this.reporter.currentTest === null) throw new Error("No test running!");
     return this.reporter.currentTest;
-  }
-
-  setDescription(text: string) {
-    this.currentExecutable.description = text;
-    this.currentExecutable.descriptionHtml = text;
-  }
-
-  setTestDescription(text: string) {
-    this.currentTest.description = text;
-    this.currentTest.descriptionHtml = text;
-  }
-
-  setFlaky() {
-    this.currentExecutable.detailsFlaky = true;
-  }
-
-  setKnown() {
-    this.currentExecutable.detailsKnown = true;
-  }
-
-  setMuted() {
-    this.currentExecutable.detailsMuted = true;
-  }
-
-  addOwner(owner: string) {
-    this.currentTest.addLabel(LabelName.OWNER, owner);
-  }
-
-  setSeverity(severity: Severity) {
-    this.currentTest.addLabel(LabelName.SEVERITY, severity);
-  }
-
-  addIssue(issue: string) {
-    this.currentTest.addLabel(LabelName.ISSUE, issue);
-  }
-
-  addTag(tag: string) {
-    this.currentTest.addLabel(LabelName.TAG, tag);
-  }
-
-  addTestType(type: string) {
-    this.currentTest.addLabel(LabelName.TEST_TYPE, type);
-  }
-
-  addLink(name: string, url: string, type?: string) {
-    this.currentTest.addLink(name, url, type);
   }
 
   private startStep(name: string): WrappedStep {
@@ -79,7 +33,7 @@ export class CucumberAllureInterface extends AllureInterface {
     return new WrappedStep(this.reporter, allureStep);
   }
 
-  step<T>(name: string, body: () => any): any {
+  step<T>(name: string, body: (step: StepInterface) => any): any {
     const wrappedStep = this.startStep(name);
     let result;
     try {
@@ -101,6 +55,10 @@ export class CucumberAllureInterface extends AllureInterface {
       wrappedStep.endStep();
       return result;
     }
+  }
+
+  logStep(name: string, status?: Status): void {
+    this.step(name, () => {}); // todo status
   }
 
   attachment(name: string, content: Buffer | string, type: ContentType) {
@@ -142,7 +100,7 @@ export class WrappedStep {
     this.step.endStep();
   }
 
-  run<T>(body: () => T): T {
+  run<T>(body: (step: StepInterface) => T): T {
     return this.step.wrap(body)();
   }
 }

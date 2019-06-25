@@ -8,6 +8,6 @@ const allure: MochaAllureInterface = global.allure;
 class Owner {
   @test
   shouldAssignOwner() {
-    allure.addOwner("sskorol");
+    allure.owner("sskorol");
   }
 }

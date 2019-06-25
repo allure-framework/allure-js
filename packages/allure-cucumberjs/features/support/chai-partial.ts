@@ -32,7 +32,6 @@ export function ChaiPartial(_chai: any, utils: any) {
       if (object.length < expected.length) {
         return false;
       }
-
       return expected.every((exp: any) => object.some((obj: any) => partial(obj, exp)));
     }
 

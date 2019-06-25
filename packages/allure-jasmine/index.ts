@@ -5,7 +5,7 @@ export {
   AllureConfig,
   ContentType,
   Severity,
-  AllureInterface,
+  Allure,
   GlobalInfoWriter,
   ExecutorInfo,
   Category

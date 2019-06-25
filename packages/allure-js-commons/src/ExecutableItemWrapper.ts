@@ -1,18 +1,20 @@
-import { ExecutableItem } from "./entities/ExecutableItem";
-import { Status } from "./entities/Status";
-import { StatusDetails } from "./entities/StatusDetails";
-import { Stage } from "./entities/Stage";
-import { Parameter } from "./entities/Parameter";
-import { ContentType } from "./entities/ContentType";
-import { Attachment } from "./entities/Attachment";
-import { StepResult } from "./entities/StepResult";
+import {
+  StatusDetails,
+  StepResult,
+  FixtureResult,
+  TestResult,
+  Status,
+  Stage,
+  ContentType
+} from "./model";
 import { isPromise } from "./isPromise";
+import { stepResult } from "./constructors";
 
 export class ExecutableItemWrapper {
-  constructor(private readonly info: ExecutableItem) {
+  constructor(private readonly info: FixtureResult | TestResult) {
   }
 
-  protected get wrappedItem() {
+  protected get wrappedItem(): FixtureResult | TestResult {
     return this.info;
   }
 
@@ -44,35 +46,24 @@ export class ExecutableItemWrapper {
     this.info.statusDetails.trace = trace;
   }
 
-  public set detailsMuted(muted: boolean) {
-    this.info.statusDetails.muted = muted;
-  }
-
-  public set detailsKnown(known: boolean) {
-    this.info.statusDetails.known = known;
-  }
-
-  public set detailsFlaky(flaky: boolean) {
-    this.info.statusDetails.flaky = flaky;
-  }
-
   public set stage(stage: Stage) {
     this.info.stage = stage;
   }
 
   public addParameter(name: string, value: string) {
-    this.info.parameters.push(new Parameter(name, value));
+    this.info.parameters.push({ name, value });
   }
 
   public addAttachment(name: string, type: ContentType, fileName: string) {
-    this.info.attachments.push(new Attachment(name, type, fileName));
+    // eslint-disable-next-line object-shorthand
+    this.info.attachments.push({ name, type, source: fileName });
   }
 
   public startStep(name: string): AllureStep {
-    const stepResult = new ExecutableItem() as StepResult;
-    this.info.steps.push(stepResult);
+    const result = stepResult();
+    this.info.steps.push(result);
 
-    const allureStep = new AllureStep(stepResult);
+    const allureStep = new AllureStep(result);
     allureStep.name = name;
     return allureStep;
   }
