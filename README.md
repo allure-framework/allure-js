@@ -23,7 +23,7 @@ This project aggregates Allure Javascript commons and reporters.
 ### Mocha
 ![npm](https://img.shields.io/npm/dm/allure-mochajs.svg) ![npm](https://img.shields.io/npm/v/allure-mochajs.svg)
 
-[Read more](/packages/allure-mochajs/README.md)
+[Read more](/packages/allure-mocha/README.md)
 
 
 ## Development
