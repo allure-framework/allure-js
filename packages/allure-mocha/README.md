@@ -1,15 +1,15 @@
-# allure-mochajs
+# allure-mocha
 
 This project implements Allure integration with Mocha framework.
 
 ## Installation
 
 ```bash
-npm i allure-mochajs mocha --save-dev
+npm i allure-mocha mocha --save-dev
 ```
 or via yarn:
 ```bash
-yarn add allure-mochajs mocha --dev
+yarn add allure-mocha mocha --dev
 ```
 
 Note that it's recommended to add the following dependencies as well for better user experience:
@@ -29,18 +29,18 @@ Add the following into your **tsconfig.json** to access exported Allure types.
 
 ## Usage
 
-Either add **allure-mochajs** into **mocha.opts**:
+Either add **allure-mocha** into **mocha.opts**:
 
 ```text
 --ui mocha-typescript
 --require source-map-support/register
---reporter allure-mochajs
+--reporter allure-mocha
 ```
 
 Or pass the same value via commandline / scripts:
 
 ```bash
-mocha -R allure-mochajs
+mocha -R allure-mocha
 ```
 
 Now you can access a global **allure** object from within your project:
