@@ -1,4 +1,4 @@
-import { JasmineAllureReporter } from "allure-jasmine";
+import {Allure, JasmineAllureReporter} from "allure-jasmine";
 import { AllureRuntime, Status, TestResult } from "allure-js-commons";
 
 const reporter = new JasmineAllureReporter(
@@ -10,4 +10,9 @@ const reporter = new JasmineAllureReporter(
     }
   })
 );
+
+const allure: Allure = reporter.getInterface();
+
 jasmine.getEnv().addReporter(reporter);
+
+export default allure;

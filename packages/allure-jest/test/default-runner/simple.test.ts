@@ -1,3 +1,7 @@
+import allure from "./allure-report"
+
 describe("test", () => {
-  it("simple", () => {});
+  it("simple", () => {
+    allure.feature("Feature")
+  });
 });
