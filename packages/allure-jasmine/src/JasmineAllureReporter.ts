@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import {
   AllureGroup, IAllureRuntime, AllureStep, AllureTest, ContentType, ExecutableItemWrapper,
-  isPromise, LabelName, Severity, Stage, Status, GlobalInfoWriter, Allure, StepInterface
+  isPromise, LabelName, Severity, Stage, Status, GlobalInfoWriter, Allure, StepInterface, Label
 } from "allure-js-commons";
 import FailedExpectation = jasmine.FailedExpectation;
 
@@ -18,6 +18,7 @@ type JasmineBeforeAfterFn = (action: (done: DoneFn) => void, timeout?: number) =
 
 export class JasmineAllureReporter implements jasmine.CustomReporter {
   private groupStack: AllureGroup[] = [];
+  private labelStack: Label[][] = [[]];
   private runningTest: AllureTest | null = null;
   private stepStack: AllureStep[] = [];
   private runningExecutable: ExecutableItemWrapper | null = null;
@@ -66,6 +67,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
     const name = suite.description;
     const group = (this.getCurrentGroup() || this.runtime).startGroup(name);
     this.groupStack.push(group);
+    this.labelStack.push([]);
   }
 
   specStarted(spec: jasmine.CustomReporterResult): void {
@@ -95,6 +97,12 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
       allureTest.addLabel(LabelName.SUB_SUITE, this.groupStack[2].name);
     }
     // TODO: if more depth add something to test name
+
+    for (const labels of this.labelStack) {
+      for (const label of labels) {
+        allureTest.addLabel(label.name, label.value);
+      }
+    }
   }
 
   specDone(spec: jasmine.CustomReporterResult): void {
@@ -153,6 +161,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
 
     currentGroup.endGroup();
     this.groupStack.pop();
+    this.labelStack.pop();
   }
 
   jasmineDone(runDetails: jasmine.RunDetails): void {
@@ -169,6 +178,12 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
     expectations = expectations || [];
     if (expectations.length > 0) return expectations[0];
     return null;
+  }
+
+  addLabel(name: string, value: string): void {
+    if (this.labelStack.length) {
+      this.labelStack[this.labelStack.length - 1].push({ name, value });
+    }
   }
 
   pushStep(step: AllureStep): void {
@@ -241,6 +256,14 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
 export class JasmineAllureInterface extends Allure {
   constructor(private readonly reporter: JasmineAllureReporter) {
     super();
+  }
+
+  public label(name: string, value: string): void {
+    try {
+      this.reporter.currentTest.addLabel(name, value);
+    } catch {
+      this.reporter.addLabel(name, value);
+    }
   }
 
   protected get currentExecutable(): ExecutableItemWrapper {
@@ -317,4 +340,3 @@ class WrappedStep { // needed?
     return this.step.wrap(body)();
   }
 }
-
