@@ -4,13 +4,13 @@ import {
   Status,
   GlobalInfoWriter,
   Allure,
-  InMemoryAllureRuntime
+  AllureRuntime
 } from "allure-js-commons";
 import { TestResult } from "allure-js-commons";
 
 jasmine.getEnv().addReporter(new JasmineConsoleReporter());
 
-export const runtime = new InMemoryAllureRuntime({
+export const runtime = new AllureRuntime({
   resultsDir: "./out/allure-results",
   testMapper: (result: TestResult) => {
     if (result.status == Status.SKIPPED) result.fullName = `(WAS SKIPPED) ${result.fullName}`;
