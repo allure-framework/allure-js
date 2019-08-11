@@ -35,7 +35,7 @@
     "mocha-typescript": "^1.1.17",
     "nyc": "^14.0.0",
     "prettier": "^1.17.0",
-    "properties-reader": "^0.0.16",
+    "properties-reader": "^0.3.1",
     "source-map-support": "^0.5.12"
   },
   "dependencies": {
