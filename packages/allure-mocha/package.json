@@ -29,7 +29,7 @@
     "@types/mocha": "^5.2.6",
     "chai": "^4.2.0",
     "codecov": "^3.3.0",
-    "dotenv": "^7.0.0",
+    "dotenv": "^8.0.0",
     "fs-jetpack": "^2.2.2",
     "mocha": "^5.2.0",
     "mocha-typescript": "^1.1.17",
