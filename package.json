@@ -17,7 +17,7 @@
     "pack": "lerna exec -- npm pack"
   },
   "devDependencies": {
-    "@types/node": "^11.13.6",
+    "@types/node": "^12.7.1",
     "allure-commandline": "^2.9.0",
     "lerna": "^3.13.3",
     "npm-run-all": "^4.1.5",
