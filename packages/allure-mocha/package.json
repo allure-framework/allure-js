@@ -31,7 +31,7 @@
     "codecov": "^3.3.0",
     "dotenv": "^8.0.0",
     "fs-jetpack": "^2.2.2",
-    "mocha": "^5.2.0",
+    "mocha": "^6.2.0",
     "mocha-typescript": "^1.1.17",
     "nyc": "^14.0.0",
     "prettier": "^1.17.0",
@@ -42,7 +42,7 @@
     "allure-js-commons": "^2.0.0-beta.4"
   },
   "peerDependencies": {
-    "mocha": "^5.2.0"
+    "mocha": "^6.2.0"
   },
   "nyc": {
     "check-coverage": true,
