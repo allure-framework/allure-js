@@ -6,7 +6,6 @@
   "author": "Ilya Korobitsyn <mail@korobochka.org>",
   "repository": "https://github.com/allure-framework/allure-js",
   "main": "./dist/index.js",
-  "typings": "./dist/declarations/",
   "scripts": {
     "clean": "rimraf ./dist",
     "lint": "eslint ./src ./index.ts --ext .ts",

@@ -17,7 +17,6 @@
       "chai",
       "cucumber"
     ],
-    "outDir": "./dist",
-    "declarationDir": "./dist/declarations"
+    "outDir": "./dist"
   }
 }

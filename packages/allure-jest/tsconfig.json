@@ -10,7 +10,6 @@
     ],
     "skipLibCheck": true,
     "outDir": "./dist",
-    "rootDir": "./",
-    "declarationDir": "./dist/declarations"
+    "rootDir": "./"
   }
 }
