@@ -10,7 +10,6 @@
       "node",
       "jasmine"
     ],
-    "outDir": "./dist",
-    "declarationDir": "./dist/declarations"
+    "outDir": "./dist"
   }
 }

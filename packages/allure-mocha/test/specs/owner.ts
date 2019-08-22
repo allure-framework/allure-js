@@ -1,23 +1,16 @@
 import { Status } from "allure-js-commons";
 import { expect } from "chai";
 import { suite } from "mocha-typescript";
-import { cleanResults, findLabel, findTest, runTests, whenResultsAppeared } from "../utils/index";
+import { findLabel, runTests } from "../utils";
 
 @suite
 class OwnerSuite {
-  before() {
-    cleanResults();
-    runTests("owner");
-  }
-
   @test
-  shouldHaveOwner() {
-    const testName = "shouldAssignOwner";
-    return whenResultsAppeared().then(() => {
-      expect(findTest("Owner")).not.eq(undefined);
+  async shouldHaveOwner() {
+    const writerStub = await runTests("owner");
+    const test = writerStub.getTestByName("shouldAssignOwner");
 
-      expect(findTest(testName).status).eq(Status.PASSED);
-      expect(findLabel(testName, "owner").value).eq("sskorol");
-    });
+    expect(test.status).eq(Status.PASSED);
+    expect(findLabel(test, "owner")!.value).eq("sskorol");
   }
 }

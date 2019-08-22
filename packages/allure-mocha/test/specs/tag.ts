@@ -1,23 +1,16 @@
 import { Status } from "allure-js-commons";
 import { expect } from "chai";
 import { suite } from "mocha-typescript";
-import { cleanResults, findLabel, findTest, runTests, whenResultsAppeared } from "../utils/index";
+import { findLabel, runTests } from "../utils";
 
 @suite
 class TagSuite {
-  before() {
-    cleanResults();
-    runTests("tag");
-  }
-
   @test
-  shouldHaveTags() {
-    const testName = "shouldAssignTag";
-    return whenResultsAppeared().then(() => {
-      expect(findTest("Tag")).not.eq(undefined);
+  async shouldHaveTags() {
+    const writerStub = await runTests("tag");
+    const test = writerStub.getTestByName("shouldAssignTag");
 
-      expect(findTest(testName).status).eq(Status.PASSED);
-      expect(findLabel(testName, "tag").value).eq("smoke");
-    });
+    expect(test.status).eq(Status.PASSED);
+    expect(findLabel(test, "tag")!.value).eq("smoke");
   }
 }

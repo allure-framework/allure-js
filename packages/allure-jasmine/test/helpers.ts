@@ -1,14 +1,11 @@
-import {Allure, InMemoryAllureRuntime} from "allure-js-commons";
-import {JasmineAllureReporter} from "../src/JasmineAllureReporter";
+import { Allure, InMemoryAllureWriter } from "allure-js-commons";
+import { JasmineAllureReporter } from "../src/JasmineAllureReporter";
 import Env = jasmine.Env;
 
-export async function runTest(fun: (j: Env, k: Allure) => void): Promise<InMemoryAllureRuntime> {
-  const runtime = new InMemoryAllureRuntime({
-    resultsDir: "./out/allure-results"
-  });
-
-  const d = new Promise((resolve, reject) => {
-    const reporter = new JasmineAllureReporter(runtime);
+export async function runTest(fun: (j: Env, k: Allure) => void) {
+  const writer = new InMemoryAllureWriter();
+  await new Promise((resolve, reject) => {
+    const reporter = new JasmineAllureReporter({ writer, resultsDir: "unused" });
     const env: Env = eval("new jasmine.Env()");
     env.addReporter(reporter);
     env.addReporter({ jasmineDone: resolve });
@@ -16,9 +13,7 @@ export async function runTest(fun: (j: Env, k: Allure) => void): Promise<InMemor
     fun(env, allure);
     env.execute();
   });
-
-  await d;
-  return runtime;
+  return writer;
 }
 
 export function delay(ms: number) {
@@ -32,7 +27,6 @@ export function delayFail(ms: number) {
     setTimeout(() => reject(new Error("Async error")), ms);
   });
 }
-
 
 /*
 todo:

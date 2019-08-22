@@ -8,13 +8,11 @@
   "compilerOptions": {
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "noImplicitAny": false,
     "types": [
       "node",
       "mocha",
       "chai"
     ],
-    "outDir": "./dist",
-    "declarationDir": "./dist/declarations"
+    "outDir": "./dist"
   }
 }

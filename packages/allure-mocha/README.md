@@ -18,15 +18,6 @@ Note that it's recommended to add the following dependencies as well for better 
  - mocha-typescript
  - source-map-support
 
-## Allure types configuration
-
-Add the following into your **tsconfig.json** to access exported Allure types.
-```json
-    "typeRoots": [
-      "./node_modules/allure-js-commons/dist/declarations/**/"
-    ]
-```
-
 ## Usage
 
 Either add **allure-mocha** into **mocha.opts**:
@@ -46,7 +37,9 @@ mocha -R allure-mocha
 Now you can access a global **allure** object from within your project:
 
 ```typescript
-const allure: AllureInterface = global.allure;
+import { MochaAllureInterface } from 'allure-mocha';
+
+declare const allure: MochaAllureInterface;
 ``` 
 
 ## Decorators Support

@@ -6,7 +6,6 @@ export {
   ContentType,
   Severity,
   Allure,
-  GlobalInfoWriter,
   ExecutorInfo,
   Category
 } from "allure-js-commons";

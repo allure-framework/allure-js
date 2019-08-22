@@ -1,23 +1,16 @@
 import { Status } from "allure-js-commons";
 import { expect } from "chai";
 import { suite } from "mocha-typescript";
-import { cleanResults, findLabel, findTest, runTests, whenResultsAppeared } from "../utils/index";
+import { findLabel, runTests } from "../utils";
 
 @suite
 class FeatureSuite {
-  before() {
-    cleanResults();
-    runTests("feature");
-  }
-
   @test
-  shouldHaveFeature() {
-    const testName = "shouldAssignFeature";
-    return whenResultsAppeared().then(() => {
-      expect(findTest("Feature")).not.eq(undefined);
+  async shouldHaveFeature() {
+    const writerStub = await runTests("feature");
+    const test = writerStub.getTestByName("shouldAssignFeature");
 
-      expect(findTest(testName).status).eq(Status.PASSED);
-      expect(findLabel(testName, "feature").value).eq("Login");
-    });
+    expect(test.status).eq(Status.PASSED);
+    expect(findLabel(test, "feature")!.value).eq("Login");
   }
 }

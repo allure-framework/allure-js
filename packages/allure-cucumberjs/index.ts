@@ -3,5 +3,5 @@ export {
 }
   from "./src/CucumberJSAllureReporter";
 export {
-  AllureRuntime, AllureConfig, ContentType, Severity, GlobalInfoWriter, ExecutorInfo, Category
+  AllureRuntime, AllureConfig, ContentType, Severity, ExecutorInfo, Category
 } from "allure-js-commons";

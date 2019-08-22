@@ -1,20 +1,19 @@
 import {
-  Allure,
+  Allure, AllureRuntime,
   AllureStep,
   AllureTest,
   ContentType,
   ExecutableItemWrapper,
-  GlobalInfoWriter,
   isPromise,
-  LabelName,
-  Severity, Status, StepInterface
+  Status,
+  StepInterface
 } from "allure-js-commons";
 import { AllureReporter } from "./AllureReporter";
 import { StepWrapper } from "./StepWrapper";
 
 export class MochaAllureInterface extends Allure {
-  constructor(private readonly reporter: AllureReporter) {
-    super();
+  constructor(private readonly reporter: AllureReporter, runtime: AllureRuntime) {
+    super(runtime);
   }
 
   public step<T>(name: string, body: (step: StepInterface) => any): any {
@@ -54,10 +53,6 @@ export class MochaAllureInterface extends Allure {
   public testAttachment(name: string, content: Buffer | string, type: ContentType) {
     const file = this.reporter.writeAttachment(content, type);
     this.currentTest.addAttachment(name, type, file);
-  }
-
-  public getGlobalInfoWriter(): GlobalInfoWriter {
-    return this.reporter.getGlobalInfoWriter();
   }
 
   private startStep(name: string): StepWrapper {

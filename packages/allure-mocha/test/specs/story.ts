@@ -1,23 +1,16 @@
-import { Status } from "allure-js-commons";
+import { Severity, Status } from "allure-js-commons";
 import { expect } from "chai";
 import { suite } from "mocha-typescript";
-import { cleanResults, findLabel, findTest, runTests, whenResultsAppeared } from "../utils/index";
+import { findLabel, runTests } from "../utils";
 
 @suite
 class StorySuite {
-  before() {
-    cleanResults();
-    runTests("story");
-  }
-
   @test
-  shouldHaveStories() {
-    const testName = "shouldAssignStory";
-    return whenResultsAppeared().then(() => {
-      expect(findTest("Story")).not.eq(undefined);
+  async shouldHaveStories() {
+    const writerStub = await runTests("story");
+    const test = writerStub.getTestByName("shouldAssignStory");
 
-      expect(findTest(testName).status).eq(Status.PASSED);
-      expect(findLabel(testName, "story").value).eq("Common story");
-    });
+    expect(test.status).eq(Status.PASSED);
+    expect(findLabel(test, "story")!.value).eq("Common story");
   }
 }
