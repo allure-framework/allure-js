@@ -8,7 +8,6 @@
   "compilerOptions": {
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "noImplicitAny": false,
     "types": [
       "node",
       "mocha",

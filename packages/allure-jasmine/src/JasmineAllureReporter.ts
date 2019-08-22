@@ -1,7 +1,18 @@
-/* eslint-disable no-undef */
 import {
-  AllureGroup, IAllureRuntime, AllureStep, AllureTest, ContentType, ExecutableItemWrapper,
-  isPromise, LabelName, Severity, Stage, Status, GlobalInfoWriter, Allure, StepInterface, Label
+  AllureGroup,
+  AllureRuntime,
+  AllureStep,
+  AllureTest,
+  ContentType,
+  ExecutableItemWrapper,
+  isPromise,
+  LabelName,
+  Stage,
+  Status,
+  Allure,
+  StepInterface,
+  Label,
+  IAllureConfig
 } from "allure-js-commons";
 import FailedExpectation = jasmine.FailedExpectation;
 
@@ -22,8 +33,10 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
   private runningTest: AllureTest | null = null;
   private stepStack: AllureStep[] = [];
   private runningExecutable: ExecutableItemWrapper | null = null;
+  private readonly runtime: AllureRuntime;
 
-  constructor(private readonly runtime: IAllureRuntime) {
+  constructor(config: IAllureConfig) {
+    this.runtime = new AllureRuntime(config);
     this.installHooks();
   }
 
@@ -39,11 +52,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
   }
 
   getInterface(): Allure {
-    return new JasmineAllureInterface(this);
-  }
-
-  getGlobalInfoWriter(): GlobalInfoWriter {
-    return this.runtime as GlobalInfoWriter;
+    return new JasmineAllureInterface(this, this.runtime);
   }
 
   get currentTest(): AllureTest {
@@ -164,8 +173,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
     this.labelStack.pop();
   }
 
-  jasmineDone(runDetails: jasmine.RunDetails): void {
-  }
+  jasmineDone(runDetails: jasmine.RunDetails): void {}
 
   private findMessageAboutThrow(expectations?: FailedExpectation[]): FailedExpectation | null {
     for (const e of expectations || []) {
@@ -252,10 +260,9 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
   }
 }
 
-
 export class JasmineAllureInterface extends Allure {
-  constructor(private readonly reporter: JasmineAllureReporter) {
-    super();
+  constructor(private readonly reporter: JasmineAllureReporter, runtime: AllureRuntime) {
+    super(runtime);
   }
 
   public label(name: string, value: string): void {
@@ -267,9 +274,7 @@ export class JasmineAllureInterface extends Allure {
   }
 
   protected get currentExecutable(): ExecutableItemWrapper {
-    return this.reporter.currentStep
-      || this.reporter.currentExecutable
-      || this.reporter.currentTest;
+    return this.reporter.currentStep || this.reporter.currentExecutable || this.reporter.currentTest;
   }
 
   protected get currentTest(): AllureTest {
@@ -313,10 +318,6 @@ export class JasmineAllureInterface extends Allure {
   attachment(name: string, content: Buffer | string, type: ContentType) {
     const file = this.reporter.writeAttachment(content, type);
     this.currentExecutable.addAttachment(name, type, file);
-  }
-
-  getGlobalInfoWriter(): GlobalInfoWriter {
-    return this.reporter.getGlobalInfoWriter();
   }
 }
 

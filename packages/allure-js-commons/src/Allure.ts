@@ -1,13 +1,15 @@
-import { LinkType, Status } from "./model";
+import { Category, LinkType, Status } from "./model";
 import { ContentType } from "./model";
 import { LabelName } from "./model";
-import { GlobalInfoWriter } from "./GlobalInfoWriter";
 import { AllureTest } from "./AllureTest";
 import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
+import { AllureRuntime } from "./AllureRuntime";
 
 export abstract class Allure {
   protected abstract get currentTest(): AllureTest; // test only
   protected abstract get currentExecutable(): ExecutableItemWrapper; // step or test
+
+  protected constructor(protected runtime: AllureRuntime) {}
 
   public epic(epic: string) {
     this.label(LabelName.EPIC, epic);
@@ -75,10 +77,16 @@ export abstract class Allure {
     this.label(LabelName.TAG, tag);
   }
 
+  public writeEnvironmentInfo(info: Record<string, string>) {
+    this.runtime.writeEnvironmentInfo(info);
+  }
+
+  public writeCategoriesDefinitions(categories: Category[]) {
+    this.runtime.writeCategoriesDefinitions(categories);
+  }
+
   public abstract logStep(name: string, status?: Status): void;
   public abstract step<T>(name: string, body: (step: StepInterface) => any): any;
-
-  public abstract getGlobalInfoWriter(): GlobalInfoWriter;
 
   // below are compatibility functions
 

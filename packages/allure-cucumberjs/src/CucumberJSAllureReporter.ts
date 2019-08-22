@@ -7,7 +7,6 @@ import {
   AllureTest,
   ContentType,
   ExecutableItemWrapper,
-  GlobalInfoWriter,
   LabelName
 } from "allure-js-commons";
 import { Result } from "./events/Result";
@@ -81,7 +80,7 @@ export class CucumberJSAllureFormatter extends Formatter {
       return message;
     };
 
-    this.allureInterface = new CucumberAllureInterface(this);
+    this.allureInterface = new CucumberAllureInterface(this, this.allureRuntime);
     options.supportCodeLibrary.World.prototype.allure = this.allureInterface;
     this.beforeHooks = options.supportCodeLibrary.beforeTestCaseHookDefinitions;
     this.afterHooks = options.supportCodeLibrary.afterTestCaseHookDefinitions;
@@ -316,10 +315,6 @@ export class CucumberJSAllureFormatter extends Formatter {
 
   writeAttachment(content: Buffer | string, type: ContentType): string {
     return this.allureRuntime.writeAttachment(content, type);
-  }
-
-  getGlobalInfoWriter(): GlobalInfoWriter {
-    return this.allureRuntime as GlobalInfoWriter;
   }
 }
 

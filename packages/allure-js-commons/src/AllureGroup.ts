@@ -2,12 +2,12 @@ import { TestResultContainer } from "./model";
 import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
 import { AllureTest } from "./AllureTest";
 import { fixtureResult, testResultContainer } from "./constructors";
-import { IAllureRuntime } from "./IAllureRuntime";
+import { AllureRuntime } from "./AllureRuntime";
 
 export class AllureGroup {
   private testResultContainer: TestResultContainer = testResultContainer();
 
-  constructor(private readonly runtime: IAllureRuntime) {}
+  constructor(private readonly runtime: AllureRuntime) {}
 
   startGroup(name?: string): AllureGroup {
     const group = new AllureGroup(this.runtime);

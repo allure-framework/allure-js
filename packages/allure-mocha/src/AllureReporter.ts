@@ -1,11 +1,9 @@
 import {
   AllureGroup,
-  Allure,
   AllureRuntime,
   AllureStep,
   AllureTest,
   ContentType,
-  GlobalInfoWriter,
   LabelName,
   Stage,
   Status
@@ -17,18 +15,11 @@ export class AllureReporter {
   private suites: AllureGroup[] = [];
   private steps: AllureStep[] = [];
   private runningTest: AllureTest | null = null;
-  private runtime: AllureRuntime | null = null;
 
-  public setupRuntime(path: string) {
-    this.runtime = new AllureRuntime({ resultsDir: path });
-  }
+  constructor(private runtime: AllureRuntime) {}
 
-  public getInterface(): Allure {
-    return new MochaAllureInterface(this);
-  }
-
-  public getGlobalInfoWriter(): GlobalInfoWriter {
-    return this.runtime as GlobalInfoWriter;
+  public getInterface(): MochaAllureInterface {
+    return new MochaAllureInterface(this, this.runtime);
   }
 
   get currentSuite(): AllureGroup | null {
@@ -56,9 +47,6 @@ export class AllureReporter {
   public startSuite(suiteName: string) {
     if (suiteName) {
       const scope = this.currentSuite || this.runtime;
-      if (scope == null) {
-        throw Error("Suite scope is not defined");
-      }
       const suite = scope.startGroup(suiteName);
       this.pushSuite(suite);
     }
@@ -110,9 +98,6 @@ export class AllureReporter {
   }
 
   public writeAttachment(content: Buffer | string, type: ContentType): string {
-    if (this.runtime == null) {
-      throw Error("AllureReporter runtime is not defined");
-    }
     return this.runtime.writeAttachment(content, type);
   }
 

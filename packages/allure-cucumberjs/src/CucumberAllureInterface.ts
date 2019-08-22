@@ -4,16 +4,16 @@ import {
   AllureTest,
   ContentType,
   ExecutableItemWrapper,
-  GlobalInfoWriter,
   isPromise,
-  LabelName,
-  Severity, Status, StepInterface
+  Status,
+  StepInterface,
+  AllureRuntime
 } from "allure-js-commons";
 import { CucumberJSAllureFormatter } from "./CucumberJSAllureReporter";
 
 export class CucumberAllureInterface extends Allure {
-  constructor(private readonly reporter: CucumberJSAllureFormatter) {
-    super();
+  constructor(private readonly reporter: CucumberJSAllureFormatter, runtime: AllureRuntime) {
+    super(runtime);
   }
 
   protected get currentExecutable(): ExecutableItemWrapper {
@@ -77,10 +77,6 @@ export class CucumberAllureInterface extends Allure {
 
   addLabel(name: string, value: string): void {
     this.currentTest.addLabel(name, value);
-  }
-
-  getGlobalInfoWriter(): GlobalInfoWriter {
-    return this.reporter.getGlobalInfoWriter();
   }
 }
 
