@@ -41,6 +41,7 @@ pipeline {
     }
     post {
         always {
+            allure results: [[path: '**/out/allure-results']]
             deleteDir()
         }
     }

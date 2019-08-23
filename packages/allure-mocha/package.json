@@ -18,7 +18,7 @@
     "build": "npm run lint && npm run compile",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "allure-report": "allure serve ./out/allure-results",
-    "test": "nyc mocha",
+    "test": "nyc node dist/test/runner",
     "coverage": "codecov",
     "lint": "eslint ./src ./test ./index.ts --ext .ts",
     "lint-fix": "eslint ./src ./test ./index.ts --ext .ts --fix"
@@ -31,6 +31,7 @@
     "dotenv": "^8.0.0",
     "fs-jetpack": "^2.2.2",
     "mocha": "^6.2.0",
+    "mocha-multi": "^1.1.1",
     "mocha-typescript": "^1.1.17",
     "nyc": "^14.0.0",
     "prettier": "^1.17.0",
