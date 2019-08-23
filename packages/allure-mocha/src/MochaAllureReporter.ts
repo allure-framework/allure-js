@@ -32,8 +32,7 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   }
 
   private onTest(test: Mocha.Test) {
-    const suite = test.parent;
-    this.allure.startCase((suite && suite.title) || "Unnamed", test.title);
+    this.allure.startCase(test);
   }
 
   private onPassed(test: Mocha.Test) {
@@ -41,7 +40,6 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   }
 
   private onFailed(test: Mocha.Test, error: Error) {
-    console.error(error);
     this.allure.failTestCase(test, error);
   }
 

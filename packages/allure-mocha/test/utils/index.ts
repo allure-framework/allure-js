@@ -29,5 +29,10 @@ function assignSpecs(mocha: Mocha, specs: string[]) {
   jetpack
     .dir(testDir)
     .find({ matching: specs.map(spec => `${spec}.js`) })
-    .forEach(file => mocha.addFile(path.join(testDir, file)));
+    .forEach(file => {
+      const testPath = path.resolve(testDir, file);
+      // remove the test from node_modules cache, so it can be executed again
+      delete require.cache[testPath];
+      mocha.addFile(testPath);
+    });
 }

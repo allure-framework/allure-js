@@ -6,7 +6,8 @@ import {
   ContentType,
   LabelName,
   Stage,
-  Status
+  Status,
+  StatusDetails
 } from "allure-js-commons";
 import { createHash } from "crypto";
 import { MochaAllureInterface } from "./MochaAllureInterface";
@@ -45,11 +46,9 @@ export class AllureReporter {
   }
 
   public startSuite(suiteName: string) {
-    if (suiteName) {
-      const scope = this.currentSuite || this.runtime;
-      const suite = scope.startGroup(suiteName);
-      this.pushSuite(suite);
-    }
+    const scope = this.currentSuite || this.runtime;
+    const suite = scope.startGroup(suiteName || "Global");
+    this.pushSuite(suite);
   }
 
   public endSuite() {
@@ -62,39 +61,50 @@ export class AllureReporter {
     }
   }
 
-  public startCase(suiteName: string, testName: string) {
+  public startCase(test: Mocha.Test) {
     if (this.currentSuite === null) {
       throw new Error("No active suite");
     }
 
-    this.currentTest = this.currentSuite.startTest(testName);
-    this.currentTest.fullName = testName;
+    this.currentTest = this.currentSuite.startTest(test.title);
+    this.currentTest.fullName = test.name;
     this.currentTest.historyId = createHash("md5")
-      .update(JSON.stringify({ suite: suiteName, test: testName }))
+      .update(test.fullTitle())
       .digest("hex");
     this.currentTest.stage = Stage.RUNNING;
-    this.currentTest.addLabel(LabelName.SUITE, this.currentSuite.name);
+
+    if (test.parent) {
+      const [parentSuite, suite, ...subSuites] = test.parent.titlePath();
+      if (parentSuite) {
+        this.currentTest.addLabel(LabelName.PARENT_SUITE, parentSuite);
+      }
+      if (suite) {
+        this.currentTest.addLabel(LabelName.SUITE, suite);
+      }
+      if (subSuites.length > 0) {
+        this.currentTest.addLabel(LabelName.SUB_SUITE, subSuites.join(" > "));
+      }
+    }
   }
 
   public passTestCase() {
-    this.endTest();
+    this.endTest(Status.PASSED);
   }
 
   public pendingTestCase(test: Mocha.Test) {
-    if (this.currentTest === null && this.currentSuite !== null) {
-      this.currentTest = this.currentSuite.startTest(test.title);
-      this.currentTest.statusDetails = { message: "Test ignored" };
+    if (this.currentTest === null) {
+      this.startCase(test);
     }
-
-    this.endTest(undefined, Status.SKIPPED);
+    this.endTest(Status.SKIPPED, { message: "Test ignored" });
   }
 
   public failTestCase(test: Mocha.Test, error: Error) {
-    if (this.currentTest === null && this.currentSuite !== null) {
-      this.currentTest = this.currentSuite.startTest(test.fullTitle());
+    if (this.currentTest === null) {
+      this.startCase(test);
     }
+    const status = error.name === "AssertionError" ? Status.FAILED : Status.BROKEN;
 
-    this.endTest(error);
+    this.endTest(status, { message: error.message, trace: error.stack });
   }
 
   public writeAttachment(content: Buffer | string, type: ContentType): string {
@@ -117,19 +127,15 @@ export class AllureReporter {
     this.suites.pop();
   }
 
-  private endTest(error?: Error, status?: Status): void {
+  private endTest(status: Status, details?: StatusDetails): void {
     if (this.currentTest === null) {
       throw new Error("endTest while no test is running");
     }
 
-    if (error) {
-      this.currentTest.statusDetails = { message: error.message, trace: error.stack };
+    if (details) {
+      this.currentTest.statusDetails = details;
     }
-
-    let errorStatus = Status.PASSED;
-    if (error) errorStatus = error.name === "AssertionError" ? Status.FAILED : Status.BROKEN;
-
-    this.currentTest.status = status || errorStatus;
+    this.currentTest.status = status;
     this.currentTest.stage = Stage.FINISHED;
     this.currentTest.endTest();
     this.currentTest = null;
