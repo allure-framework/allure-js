@@ -1,7 +1,7 @@
 import { Status } from "allure-js-commons";
 import { expect } from "chai";
 import { suite } from "mocha-typescript";
-import { findLabel, runTests } from "../utils";
+import { findLabelValue, runTests } from "../utils";
 
 @suite
 class FeatureSuite {
@@ -11,6 +11,6 @@ class FeatureSuite {
     const test = writerStub.getTestByName("shouldAssignFeature");
 
     expect(test.status).eq(Status.PASSED);
-    expect(findLabel(test, "feature")!.value).eq("Login");
+    expect(findLabelValue(test, "feature")).eq("Login");
   }
 }

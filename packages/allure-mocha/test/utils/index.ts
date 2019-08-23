@@ -16,8 +16,9 @@ export function runTests(...specs: string[]): Promise<InMemoryAllureWriter> {
   });
 }
 
-export function findLabel(test: TestResult, labelName: string) {
-  return test.labels.find(label => label.name === labelName);
+export function findLabelValue(test: TestResult, labelName: string) {
+  const label = test.labels.find(label => label.name === labelName);
+  return label && label.value;
 }
 
 export function findParameter(test: TestResult, parameterName: string): any {
