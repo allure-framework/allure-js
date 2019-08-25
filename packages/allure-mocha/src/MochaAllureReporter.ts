@@ -36,7 +36,7 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   }
 
   private onPassed(test: Mocha.Test) {
-    this.allure.passTestCase();
+    this.allure.passTestCase(test);
   }
 
   private onFailed(test: Mocha.Test, error: Error) {

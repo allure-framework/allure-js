@@ -30,8 +30,12 @@ export class ExecutableItemWrapper {
     this.info.descriptionHtml = descriptionHtml;
   }
 
-  public set status(status: Status) {
+  public set status(status: Status | undefined) {
     this.info.status = status;
+  }
+
+  public get status() {
+    return this.info.status;
   }
 
   public set statusDetails(details: StatusDetails) {
