@@ -1,7 +1,5 @@
 import { suite, test } from "mocha-typescript";
-import { MochaAllureInterface } from "../../../src/MochaAllureInterface";
-
-declare const allure: MochaAllureInterface;
+import { allure } from "../../../runtime";
 
 @suite
 class Story {

@@ -1,10 +1,10 @@
 import jetpack = require("fs-jetpack");
 import * as path from "path";
 import Mocha from "mocha";
-import { MochaAllureReporter } from "../../src/MochaAllureReporter";
+import MochaAllureReporter from "../..";
 import { InMemoryAllureWriter, TestResult } from "allure-js-commons";
 
-const testDir = "./dist/test/fixtures/specs";
+const testDir = "./test/fixtures/specs";
 
 export function runTests(...specs: string[]): Promise<InMemoryAllureWriter> {
   const writer = new InMemoryAllureWriter();
@@ -28,7 +28,7 @@ export function findParameter(test: TestResult, parameterName: string): any {
 function assignSpecs(mocha: Mocha, specs: string[]) {
   jetpack
     .dir(testDir)
-    .find({ matching: specs.map(spec => `${spec}.js`) })
+    .find({ matching: specs.map(spec => `${spec}.ts`) })
     .forEach(file => {
       const testPath = path.resolve(testDir, file);
       // remove the test from node_modules cache, so it can be executed again

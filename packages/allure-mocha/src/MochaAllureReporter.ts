@@ -1,18 +1,21 @@
 import * as Mocha from "mocha";
 import { AllureRuntime, IAllureConfig } from "allure-js-commons";
 import { AllureReporter } from "./AllureReporter";
+import { MochaAllureInterface } from "./MochaAllureInterface";
+
+export let allure: MochaAllureInterface;
 
 export class MochaAllureReporter extends Mocha.reporters.Base {
-  private allure: AllureReporter;
+  private coreReporter: AllureReporter;
 
   constructor(readonly runner: Mocha.Runner, readonly opts: Mocha.MochaOptions) {
     super(runner, opts);
 
     const allureConfig: IAllureConfig = { resultsDir: "allure-results", ...opts.reporterOptions };
 
-    this.allure = new AllureReporter(new AllureRuntime(allureConfig));
+    this.coreReporter = new AllureReporter(new AllureRuntime(allureConfig));
 
-    (global as any).allure = this.allure.getInterface();
+    allure = this.coreReporter.getInterface();
 
     this.runner
       .on("suite", this.onSuite.bind(this))
@@ -24,26 +27,26 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   }
 
   private onSuite(suite: Mocha.Suite) {
-    this.allure.startSuite(suite.fullTitle());
+    this.coreReporter.startSuite(suite.fullTitle());
   }
 
   private onSuiteEnd() {
-    this.allure.endSuite();
+    this.coreReporter.endSuite();
   }
 
   private onTest(test: Mocha.Test) {
-    this.allure.startCase(test);
+    this.coreReporter.startCase(test);
   }
 
   private onPassed(test: Mocha.Test) {
-    this.allure.passTestCase(test);
+    this.coreReporter.passTestCase(test);
   }
 
   private onFailed(test: Mocha.Test, error: Error) {
-    this.allure.failTestCase(test, error);
+    this.coreReporter.failTestCase(test, error);
   }
 
   private onPending(test: Mocha.Test) {
-    this.allure.pendingTestCase(test);
+    this.coreReporter.pendingTestCase(test);
   }
 }

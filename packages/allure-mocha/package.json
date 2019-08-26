@@ -18,9 +18,9 @@
     "build": "npm run lint && npm run compile",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "allure-report": "allure serve ./out/allure-results",
-    "test": "nyc node dist/test/runner",
+    "test": "nyc ts-node --project test/tsconfig.json test/runner.ts",
     "coverage": "codecov",
-    "lint": "eslint ./src ./test ./index.ts --ext .ts",
+    "lint": "eslint ./src ./test --ext .ts",
     "lint-fix": "eslint ./src ./test ./index.ts --ext .ts --fix"
   },
   "devDependencies": {

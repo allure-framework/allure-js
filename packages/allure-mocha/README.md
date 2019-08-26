@@ -23,8 +23,6 @@ Note that it's recommended to add the following dependencies as well for better 
 Either add **allure-mocha** into **mocha.opts**:
 
 ```text
---ui mocha-typescript
---require source-map-support/register
 --reporter allure-mocha
 ```
 
@@ -34,12 +32,18 @@ Or pass the same value via commandline / scripts:
 mocha -R allure-mocha
 ```
 
-Now you can access a global **allure** object from within your project:
+If you want to provide extra information, such as steps and attachments, import the `allure` object 
+into your code:
 
-```typescript
-import { MochaAllureInterface } from 'allure-mocha';
+```javascript
+// es-modules
+import { allure } from 'allure-mocha/runtime';
+// or commonjs
+const { allure } = require('allure-mocha/runtime');
 
-declare const allure: MochaAllureInterface;
+it('is a test', () => {
+  allure.epic('Some info');
+});
 ``` 
 
 ## Decorators Support
