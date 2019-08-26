@@ -1,7 +1,7 @@
 import { Status } from "allure-js-commons";
 import { expect } from "chai";
 import { suite } from "mocha-typescript";
-import { findLabel, runTests } from "../utils";
+import { findLabelValue, runTests } from "../utils";
 
 @suite
 class OwnerSuite {
@@ -11,6 +11,6 @@ class OwnerSuite {
     const test = writerStub.getTestByName("shouldAssignOwner");
 
     expect(test.status).eq(Status.PASSED);
-    expect(findLabel(test, "owner")!.value).eq("sskorol");
+    expect(findLabelValue(test, "owner")).eq("sskorol");
   }
 }

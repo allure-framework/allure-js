@@ -16,8 +16,9 @@ export function runTests(...specs: string[]): Promise<InMemoryAllureWriter> {
   });
 }
 
-export function findLabel(test: TestResult, labelName: string) {
-  return test.labels.find(label => label.name === labelName);
+export function findLabelValue(test: TestResult, labelName: string) {
+  const label = test.labels.find(label => label.name === labelName);
+  return label && label.value;
 }
 
 export function findParameter(test: TestResult, parameterName: string): any {
@@ -28,5 +29,10 @@ function assignSpecs(mocha: Mocha, specs: string[]) {
   jetpack
     .dir(testDir)
     .find({ matching: specs.map(spec => `${spec}.js`) })
-    .forEach(file => mocha.addFile(path.join(testDir, file)));
+    .forEach(file => {
+      const testPath = path.resolve(testDir, file);
+      // remove the test from node_modules cache, so it can be executed again
+      delete require.cache[testPath];
+      mocha.addFile(testPath);
+    });
 }
