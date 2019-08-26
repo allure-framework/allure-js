@@ -87,20 +87,27 @@ export class AllureReporter {
     }
   }
 
-  public passTestCase() {
+  public passTestCase(test: Mocha.Test) {
+    if (this.currentTest === null) {
+      this.startCase(test);
+    }
     this.endTest(Status.PASSED);
   }
 
   public pendingTestCase(test: Mocha.Test) {
-    if (this.currentTest === null) {
-      this.startCase(test);
-    }
+    this.startCase(test);
     this.endTest(Status.SKIPPED, { message: "Test ignored" });
   }
 
   public failTestCase(test: Mocha.Test, error: Error) {
     if (this.currentTest === null) {
       this.startCase(test);
+    } else {
+      const latestStatus = this.currentTest.status;
+      // if test already has a failed state, we should not overwrite it
+      if (latestStatus === Status.FAILED || latestStatus === Status.BROKEN) {
+        return;
+      }
     }
     const status = error.name === "AssertionError" ? Status.FAILED : Status.BROKEN;
 
@@ -138,6 +145,5 @@ export class AllureReporter {
     this.currentTest.status = status;
     this.currentTest.stage = Stage.FINISHED;
     this.currentTest.endTest();
-    this.currentTest = null;
   }
 }

@@ -29,7 +29,7 @@ export interface StatusDetails {
 
 interface ExecutableItem {
   name?: string
-  status: Status
+  status?: Status
   statusDetails: StatusDetails
   stage: Stage
   description?: string

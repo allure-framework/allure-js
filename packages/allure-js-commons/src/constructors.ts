@@ -1,7 +1,5 @@
-import { FixtureResult, StepResult, TestResult, TestResultContainer } from "./model";
+import { FixtureResult, Stage, Status, StepResult, TestResult, TestResultContainer } from "./model";
 import { v4 as randomUUID } from "uuid";
-import { Status } from "./model";
-import { Stage } from "./model";
 
 export function testResultContainer(): TestResultContainer {
   return {
@@ -25,7 +23,7 @@ export function fixtureResult(): FixtureResult {
 
 export function stepResult(): StepResult {
   return {
-    status: Status.BROKEN,
+    status: undefined,
     statusDetails: {},
     stage: Stage.PENDING,
     steps: [],
@@ -38,7 +36,7 @@ export function testResult(): TestResult {
   return {
     uuid: randomUUID(),
     historyId: randomUUID(),
-    status: Status.BROKEN,
+    status: undefined,
     statusDetails: {},
     stage: Stage.PENDING,
     steps: [],
