@@ -7,6 +7,8 @@ categories:
     label: 'type:improvement'
   - title: '🐞 Bug Fixes'
     label: 'type:bug'
+  - title: '📦 Dependency updates'
+    label: ' type:dependency'
 
 change-template: '* $TITLE (via #$NUMBER) - @$AUTHOR'
 template: |
