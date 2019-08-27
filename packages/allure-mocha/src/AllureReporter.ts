@@ -67,7 +67,7 @@ export class AllureReporter {
     }
 
     this.currentTest = this.currentSuite.startTest(test.title);
-    this.currentTest.fullName = test.name;
+    this.currentTest.fullName = test.title;
     this.currentTest.historyId = createHash("md5")
       .update(test.fullTitle())
       .digest("hex");

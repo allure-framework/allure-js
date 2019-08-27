@@ -1,18 +1,9 @@
 {
   "extends": "../../tsconfig.json",
-  "include": [
-    "./src/**/*",
-    "./test/**/*.ts",
-    "index.ts"
-  ],
+  "exclude": ["test/**", "runtime.d.ts"],
   "compilerOptions": {
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "types": [
-      "node",
-      "mocha",
-      "chai"
-    ],
+    "types": [],
+    "rootDir": "./src",
     "outDir": "./dist"
   }
 }

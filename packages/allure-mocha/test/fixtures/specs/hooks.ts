@@ -1,8 +1,6 @@
-import { MochaAllureInterface } from "../../..";
 import { ContentType } from "allure-js-commons";
 import { expect } from "chai";
-
-declare const allure: MochaAllureInterface;
+import { allure } from "../../../runtime";
 
 describe("hooks test", () => {
   describe("before fails", () => {
@@ -50,5 +48,3 @@ describe("hooks test", () => {
     });
   });
 });
-
-
