@@ -1,8 +1,7 @@
 *
-!dist/**/*
-dist/test
-dist/declarations/test
+!runtime.d.ts
+!runtime.js
+!dist/**
 !package.json
-!package-lock.json
 !*.md
 !*.txt
