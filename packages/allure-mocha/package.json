@@ -1,6 +1,6 @@
 {
   "name": "allure-mocha",
-  "version": "2.0.0-beta.5",
+  "version": "2.0.0-beta.6",
   "description": "Allure Mocha integration",
   "license": "Apache-2.0",
   "author": "Sergey Korol <serhii.s.korol@gmail.com>",
@@ -38,7 +38,7 @@
     "source-map-support": "^0.5.12"
   },
   "dependencies": {
-    "allure-js-commons": "^2.0.0-beta.5"
+    "allure-js-commons": "^2.0.0-beta.6"
   },
   "peerDependencies": {
     "mocha": "^6.2.0"
