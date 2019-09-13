@@ -1,0 +1,33 @@
+name: Release to NPM
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+      - name: npm install, build
+        run: |
+          npm install
+          npm run prepare
+          npm run build
+          npm run run-test
+        env:
+          CI: true
+      - name: npm release
+        run: |
+          npm install -g npm-cli-login
+          npm-cli-login -e ci@qameta.io
+          npm run release -- ${GITHUB_REF:10}
+        env:
+          NPM_USER: ${{ secrets.NPM_USER }}
+          NPM_PASS: ${{ secrets.NPM_PASS }}
+          CI: true
