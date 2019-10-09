@@ -29,7 +29,7 @@
     "@types/verror": "^1.10.3",
     "chai": "^4.2.0",
     "chai-like": "^1.1.1",
-    "cucumber": "5.1.0",
+    "cucumber": "6.0.2",
     "fs-extra": "^8.0.1",
     "glob": "^7.1.4",
     "path": "^0.12.7",
