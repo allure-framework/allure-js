@@ -67,6 +67,13 @@ class NewmanAllureInterface extends Allure {
         return this;
     }
 
+    
+    addParameter(name, value) {
+        this.currentTest.addParameter(name, value);
+        return this;
+    }
+    
+
     startStep(name) {
         const allureStep = this.currentExecutable.startStep(name);
         this.reporter.pushStep(allureStep);

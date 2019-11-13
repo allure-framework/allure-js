@@ -19,8 +19,12 @@ class AllureReporter {
         this.runtime = new AllureRuntime(config);
         this.reporterOptions = reporterOptions;
         this.options = options;
-        const events = 'start beforeIteration iteration beforeItem item beforePrerequest prerequest beforeScript script beforeRequest request beforeTest test beforeAssertion assertion console exception beforeDone done'.split(' ');
+            const events = 'start beforeIteration iteration beforeItem item beforePrerequest prerequest beforeScript script beforeRequest request beforeTest test beforeAssertion assertion console exception beforeDone done'.split(' ');
         events.forEach((e) => { if (typeof this[e] == 'function') emitter.on(e, (err, args) => this[e](err, args)) });
+        this.prevRunningTest = '';
+        this.testctr = 1;
+        this.pre_req_scrt = '';
+        this.test_scrt = '';
     }
 
     getInterface() {
@@ -70,21 +74,22 @@ class AllureReporter {
         this.pushSuite(suite);
     }
 
+    prerequest(err, args){
+        if(args.executions != undefined && _.isArray(args.executions) && args.executions.length > 0)
+            this.pre_req_scrt = args.executions[0].script.exec.join('\n');
+    }
+
+    test(err, args){
+        if(args.executions != undefined && _.isArray(args.executions) && args.executions.length > 0)
+            this.test_scrt = args.executions[0].script.exec.join('\n');
+    }
+
     console(err, args) {
         if (err) { return; }
         if (args.level) {
             this.consoleLogs = this.consoleLogs || [];
             this.consoleLogs.push(`level: ${args.level}, messages: ${args.messages}`);
         }
-    }
-
-    beforeIteration(err, args) {
-    }
-
-    beforePrerequest(err, args) {
-    }
-
-    beforeScript(err, args) {
     }
 
     request(err, args) {
@@ -104,9 +109,6 @@ class AllureReporter {
         
         this.requestData = {url:url, method: req.method, body: req.body};
         this.responseData = {status: args.response.status, code: args.response.code, body: resp_body};
-    }
-
-    beforeTest(err, args) { 
     }
 
     assertion(err, args) {
@@ -152,10 +154,22 @@ class AllureReporter {
             const len = testName.split("/").length;
             testName = testName.split("/")[len-1];
         }
-        this.currentTest = this.currentSuite.startTest(testName);
-        this.currentTest.fullName = this.currItem.name;
+
+        let testFullName = ''
+        if(this.prevRunningTest === testName){
+            this.testctr++;
+            this.currentTest = this.currentSuite.startTest(testName + "_setNextRequest_" + this.testctr);
+            testFullName = this.currItem.name + "_setNextRequest_" + this.testctr;
+        } else {
+            this.testctr = 1;
+            this.currentTest = this.currentSuite.startTest(testName);
+            this.prevRunningTest = testName;
+            testFullName = this.currItem.name;
+        }
+
+        
         this.currentTest.historyId = createHash("md5")
-                                    .update(this.currItem.name)
+                                    .update(testFullName)
                                     .digest("hex");
         this.currentTest.stage = Stage.RUNNING;
     
@@ -232,6 +246,21 @@ class AllureReporter {
         }    
     }
 
+    attachPrerequest(pre_req) {
+        if(pre_req !== undefined) {
+            const buf = Buffer.from(pre_req, "utf8");
+            this.getInterface().testAttachment("PreRequest", buf, "text/plain");
+        }    
+    }
+
+    attachTestScript(test_scrpt) {
+        if(test_scrpt !== undefined) {
+            const buf = Buffer.from(test_scrpt, "utf8");
+            this.getInterface().testAttachment("TestScript", buf, "text/plain");
+        }    
+    }
+
+
     setDescription(description){
         if(description !== undefined) {
             this.getInterface().setDescription(description);
@@ -273,7 +302,11 @@ class AllureReporter {
     item(err, args) {
         if (this.currentTest === null)
             throw new Error("specDone while no test is running");
+ 
+        this.attachPrerequest(this.pre_req_scrt);
+        this.attachTestScript(this.test_scrt);
         this.attachConsoleLogs();
+
         const requestDataURL = this.requestData.method + " - " + this.requestData.url;
         const bodyModeProp = this.requestData.body.mode;
 
@@ -286,11 +319,21 @@ class AllureReporter {
             bodyModePropObj = ""
         }
 
-        const reqTableStr = ` <table> <tr> <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;color:Orange"> ${bodyModeProp} </th> <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;"> <pre style="color:Orange"> ${bodyModePropObj} </pre> </td> </tr>  </table>`;
+        const reqTableStr = ` <table> <tr> <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;color:Orange;"> ${bodyModeProp} </th> <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;"> <pre style="color:Orange"> <b> ${bodyModePropObj} </b> </pre> </td> </tr>  </table>`;
 
         const responseCodeStatus= this.responseData.code + " - " + this.responseData.status;
 
-        this.setDescriptionHtml(`<h4 style="color:DodgerBlue;"><b><i>Request:</i></b></h4> <p style="color:DodgerBlue"> <b> ${requestDataURL} </b> </p> ${reqTableStr} </p> <h4 style="color:DodgerBlue;"> <b> <i> Response: </i> </b> </h4> <p style="color:DodgerBlue"> <b> ${responseCodeStatus} </b> </p> <p > <pre style="color:Orange"> ${this.responseData.body} </pre> </p>`);
+        var testDescription;
+        if(args.item.request.description !== undefined){
+            testDescription = args.item.request.description.content;
+            testDescription = testDescription.replace(/[*]/g,"");
+            testDescription = testDescription.replace(/\n/g,"<br>")
+        } else {
+            testDescription = '';
+        }
+
+       
+        this.setDescriptionHtml(`<p style="color:MediumPurple;"> <b> ${testDescription} </b> </p> <h4 style="color:DodgerBlue;"><b><i>Request:</i></b></h4> <p style="color:DodgerBlue"> <b> ${requestDataURL} </b> </p> ${reqTableStr} </p> <h4 style="color:DodgerBlue;"> <b> <i> Response: </i> </b> </h4> <p style="color:DodgerBlue"> <b> ${responseCodeStatus} </b> </p> <p > <pre style="color:Orange;"> <b> ${this.responseData.body} </b> </pre> </p>`);
         if (this.currItem.failedAssertions.length > 0 ) {
             const msg = this.escape(this.currItem.failedAssertions.join(", "));
             const details = this.escape(`Response code: ${this.responseData.code}, status: ${this.responseData.status}`);
@@ -336,7 +379,6 @@ class AllureReporter {
 
     escape(string) {
         return string
-            // .replace(/['|\[\]]/g, '|$&')
             .replace('\n', '')
             .replace('\r', '')
             .replace('\"', '"')
