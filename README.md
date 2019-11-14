@@ -27,4 +27,4 @@ Generate the static report web-application folder using allure-commandline
   Report will be generated under folder "allure-report" in the root location.
 
 ## Preview
-![Screenshot](screenshot.png)
+![Screenshot](screenshot.jpg)
