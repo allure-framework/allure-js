@@ -25,3 +25,6 @@ Generate the static report web-application folder using allure-commandline
   $ allure generate --clean
   ```
   Report will be generated under folder "allure-report" in the root location.
+
+## Preview
+![Screenshot](screenshot.png)
