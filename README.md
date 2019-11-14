@@ -16,7 +16,7 @@ $ newman run <Collection> -e <Environment> -r allure
 ## Generating and Serving Allure report
 
 Allure results will be generated under folder "allure-results" in the root location.
-Use allure-commanline to serve the report locally.
+Use allure-commandline to serve the report locally.
   ```console
   $ allure serve
   ```
