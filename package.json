@@ -9,7 +9,11 @@
   "keywords": [
     "allure",
     "newman",
-    "reporter"
+    "reporter",
+    "reports",
+    "api",
+    "postman",
+    "tests"
   ],
   "author": "Virender",
   "license": "ISC",
