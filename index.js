@@ -97,6 +97,7 @@ class AllureReporter {
            return;
 
         const req = args.request;
+
         let url = req.url.protocol + "://" + req.url.host.join('.');
         if(req.url.path !== undefined) {
             if(req.url.path.length > 0) {
@@ -148,7 +149,6 @@ class AllureReporter {
         }
 
         var testName = this.currItem.name;
-        console.log(`### Starting Execution For Test - ${testName} ###`);
 
         if(testName.indexOf("/")>0){
             const len = testName.split("/").length;
@@ -167,13 +167,14 @@ class AllureReporter {
             testFullName = this.currItem.name;
         }
 
-        
         this.currentTest.historyId = createHash("md5")
                                     .update(testFullName)
                                     .digest("hex");
+
         this.currentTest.stage = Stage.RUNNING;
     
         var itemGroup = args.item.parent();
+
         var root = !itemGroup || (itemGroup === this.options.collection);
         var fullName = '';
         if (itemGroup && (this.currentNMGroup !== itemGroup)) {
@@ -181,7 +182,8 @@ class AllureReporter {
             this.currentNMGroup = itemGroup;
         }
 
-        fullName = this.getFullName(this.currentNMGroup );
+        fullName = this.getFullName(this.currentNMGroup);
+
         var parentSuite, suite;
         var subSuites = [];
         if(fullName !== ''){
@@ -300,17 +302,27 @@ class AllureReporter {
     }
 
     item(err, args) {
+       
         if (this.currentTest === null)
             throw new Error("specDone while no test is running");
- 
-        this.attachPrerequest(this.pre_req_scrt);
-        this.attachTestScript(this.test_scrt);
+
+        if(this.pre_req_scrt !== ''){
+            this.attachPrerequest(this.pre_req_scrt);
+        }
+
+        if(this.test_scrt !== ''){
+            this.attachTestScript(this.test_scrt);
+        }
+
         this.attachConsoleLogs();
-
+        
         const requestDataURL = this.requestData.method + " - " + this.requestData.url;
-        const bodyModeProp = this.requestData.body.mode;
+        let bodyModeProp = '';
+        let bodyModePropObj;
 
-        var bodyModePropObj;
+        if(this.requestData.body !== undefined){
+            bodyModeProp = this.requestData.body.mode;
+        }
 
         if(bodyModeProp === "raw")
         {

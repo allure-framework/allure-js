@@ -73,6 +73,11 @@ class NewmanAllureInterface extends Allure {
         return this;
     }
     
+    setHistoryId(id) {
+        this.currentTest.historyId = id;
+        return this;
+    }
+    
 
     startStep(name) {
         const allureStep = this.currentExecutable.startStep(name);
