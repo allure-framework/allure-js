@@ -14,7 +14,7 @@ class AllureReporter {
         this.runningTest = null;
         this.currentNMGroup = options.collection;
         var config = {
-            resultsDir: "allure-results"
+            resultsDir: reporterOptions.export || "allure-results"
         }
         this.runtime = new AllureRuntime(config);
         this.reporterOptions = reporterOptions;
