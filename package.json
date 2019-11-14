@@ -15,6 +15,10 @@
     "postman",
     "tests"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ervirendersingh/newman-reporter-allure.git"
+  },
   "author": "Virender",
   "license": "ISC",
   "dependencies": {
