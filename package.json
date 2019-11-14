@@ -1,6 +1,6 @@
 {
   "name": "newman-reporter-allure",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "newman reporter for Allure",
   "main": "index.js",
   "scripts": {
