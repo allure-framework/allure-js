@@ -23,7 +23,7 @@
     "allure-jasmine": "^2.0.0-beta.6"
   },
   "dependencies": {
-    "@types/jest": "^24.0.13",
+    "@types/jest": "^25.1.0",
     "allure-js-commons": "^2.0.0-beta.6",
     "jest": "^24.8.0"
   }
