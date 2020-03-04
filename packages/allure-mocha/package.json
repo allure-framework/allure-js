@@ -33,7 +33,7 @@
     "mocha": "^6.2.0",
     "mocha-multi": "^1.1.1",
     "mocha-typescript": "^1.1.17",
-    "nyc": "^14.0.0",
+    "nyc": "^15.0.0",
     "prettier": "^1.17.0",
     "source-map-support": "^0.5.12"
   },
