@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@types/mkdirp": "^0.5.2",
-    "@types/uuid": "^3.4.4"
+    "@types/uuid": "^7.0.0"
   },
   "dependencies": {
     "mkdirp": "^0.5.1",
