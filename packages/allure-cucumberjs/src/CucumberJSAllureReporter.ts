@@ -154,7 +154,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     if (test.example !== undefined) {
       info.a = test.example.arguments;
       for (const prop in test.example.arguments) {
-        if (!test.example.arguments.hasOwnProperty(prop)) continue;
+        if (!test.example.arguments[prop]) continue;
         this.currentTest.addParameter(prop, test.example.arguments[prop]);
       }
     }
@@ -169,7 +169,7 @@ export class CucumberJSAllureFormatter extends Formatter {
       this.currentTest.addLabel(LabelName.TAG, tag.name);
 
       for (const label in this.labels) {
-        if (!this.labels.hasOwnProperty(label)) continue;
+        if (!this.labels[label]) continue;
         for (const reg of this.labels[label]) {
           const match = tag.name.match(reg);
           if (match != null && match.length > 1) {

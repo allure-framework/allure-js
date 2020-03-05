@@ -1,7 +1,9 @@
 import MatchersUtil = jasmine.MatchersUtil;
 import CustomEqualityTester = jasmine.CustomEqualityTester;
+import CustomMatcher = jasmine.CustomMatcher;
 
 declare global {
+  // eslint-disable-next-line no-redeclare
   namespace jasmine {
     interface Matchers<T> {
       toHaveTestLike(expected: any, expectationFailOutput?: any): boolean;
@@ -37,7 +39,7 @@ const compare: (actual: any, expected: any) => boolean = (actual, expected) => {
 };
 
 export const matchers = {
-  toHaveTestLike: (util: MatchersUtil, customEqualityTesters: CustomEqualityTester[]) => ({
+  toHaveTestLike: (util: MatchersUtil, customEqualityTesters: Readonly<CustomEqualityTester[]>) => ({
     compare: (actual: any, expected: any) => ({
       pass: compare(actual, { tests: [expected] }),
       message:
