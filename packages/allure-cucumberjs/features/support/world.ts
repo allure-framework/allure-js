@@ -20,24 +20,17 @@ const getAllureReport: (reportPath: string) => AllureReport = reportPath => {
   return allureReport;
 };
 
-
 class AllureWorld implements World, AllureWorld {
   tmpDir: string = "";
   formatterPath = "support/allure-formatter.ts";
   formatterOutPath = "../out/allure-results";
   allureReport: AllureReport = { testResults: [] };
-  result: {stdout: string, stderr: string, error: string} = {stdout: "", stderr: "", error: ""}
+  result: { stdout: string; stderr: string; error: string } = { stdout: "", stderr: "", error: "" };
 
   async run() {
     const formatterPath = path.join(this.tmpDir, this.formatterPath);
     const formatterOutPath = path.join(this.tmpDir, this.formatterOutPath);
-    const argv = [
-      "",
-      "",
-      "--backtrace",
-      "--require-module=ts-node/register",
-      `--format=${formatterPath}:.dummy.txt`
-    ];
+    const argv = ["", "", "--backtrace", "--require-module=ts-node/register", `--format=${formatterPath}:.dummy.txt`];
 
     const cwd = this.tmpDir;
 

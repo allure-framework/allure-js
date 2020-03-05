@@ -1,6 +1,6 @@
 import { Status } from "allure-js-commons";
 import { matchers } from "./matchers";
-import {runTest} from "./helpers";
+import { runTest } from "./helpers";
 
 describe("Allure Result", () => {
   beforeAll(() => jasmine.addMatchers(matchers));

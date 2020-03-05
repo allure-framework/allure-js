@@ -27,6 +27,7 @@ rules:
   valid-jsdoc: off
   no-multi-spaces: error
   no-return-await: error
+  no-redeclare: [error, { "builtinGlobals": true }]
   require-await: warn
   no-self-compare: error
   no-useless-concat: error
@@ -35,7 +36,7 @@ rules:
   arrow-spacing: error
   no-confusing-arrow: error
   no-var: error
-  object-shorthand: [warn, consistent-as-needed]
+  object-shorthand: [off, consistent-as-needed]
   prefer-const: error
   prefer-destructuring: warn
   prefer-rest-params: warn

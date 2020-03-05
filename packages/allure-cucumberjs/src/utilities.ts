@@ -23,7 +23,7 @@ export function hash(data: string): string {
 export function applyExample(text: string, example: Example | undefined): string {
   if (example === undefined) return text;
   for (const argName in example.arguments) {
-    if (!example.arguments.hasOwnProperty(argName)) continue;
+    if (!example.arguments[argName]) continue;
     text = text.replace(new RegExp(`<${argName}>`, "g"), `<${example.arguments[argName]}>`);
   }
   return text;
