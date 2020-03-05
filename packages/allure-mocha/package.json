@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
-    "@types/mocha": "^5.2.6",
+    "@types/mocha": "^7.0.2",
     "chai": "^4.2.0",
     "codecov": "^3.3.0",
     "dotenv": "^8.0.0",
