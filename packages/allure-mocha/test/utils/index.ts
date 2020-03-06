@@ -1,6 +1,7 @@
 import jetpack = require("fs-jetpack");
 import * as path from "path";
 import Mocha from "mocha";
+// @ts-ignore
 import MochaAllureReporter from "../..";
 import { InMemoryAllureWriter, TestResult } from "allure-js-commons";
 
