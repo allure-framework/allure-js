@@ -5,6 +5,7 @@
   ],
   "compilerOptions": {
     "types": [
+      "jasmine",
       "node",
       "jest"
     ],
