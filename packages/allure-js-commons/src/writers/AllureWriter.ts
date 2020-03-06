@@ -4,6 +4,7 @@ import { existsSync, writeFileSync } from "fs";
 import { Category, TestResult, TestResultContainer } from "../model";
 import { IAllureWriter } from "./IAllureWriter";
 import { IAllureConfig } from "../AllureConfig";
+// @ts-ignore
 import { stringify } from "properties";
 
 function writeJson(path: string, data: object) {
