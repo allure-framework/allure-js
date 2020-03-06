@@ -1,8 +1,5 @@
 import { JasmineAllureReporter } from "../src/JasmineAllureReporter";
-import { JasmineConsoleReporter } from "../src/JasmineConsoleReporter";
 import { Status, TestResult } from "allure-js-commons";
-
-jasmine.getEnv().addReporter(new JasmineConsoleReporter());
 
 const reporter = new JasmineAllureReporter({
   resultsDir: "./out/allure-results",
