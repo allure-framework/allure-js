@@ -2,16 +2,20 @@ import { Allure, InMemoryAllureWriter } from "allure-js-commons";
 import { JasmineAllureReporter } from "../src/JasmineAllureReporter";
 import Env = jasmine.Env;
 
-export async function runTest(fun: (j: Env, k: Allure) => void) {
+export interface JasmineTestEnv extends Env {
+  expect(actual: any): any;
+}
+
+export async function runTest(fun: (testEnv: JasmineTestEnv, testAllure: Allure) => void) {
   const writer = new InMemoryAllureWriter();
   await new Promise((resolve, reject) => {
     const reporter = new JasmineAllureReporter({ writer, resultsDir: "unused" });
-    const env: Env = eval("new jasmine.Env()");
-    env.addReporter(reporter);
-    env.addReporter({ jasmineDone: resolve });
-    const allure = reporter.getInterface();
-    fun(env, allure);
-    env.execute();
+    const testEnv: JasmineTestEnv = eval("new jasmine.Env()");
+    testEnv.addReporter(reporter);
+    testEnv.addReporter({ jasmineDone: resolve });
+    const testAllure = reporter.getInterface();
+    fun(testEnv, testAllure);
+    testEnv.execute();
   });
   return writer;
 }

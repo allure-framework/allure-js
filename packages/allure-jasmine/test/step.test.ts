@@ -1,22 +1,22 @@
 import { matchers } from "./matchers";
 import { Allure, Status } from "allure-js-commons";
-import { runTest } from "./helpers";
+import { JasmineTestEnv, runTest } from "./helpers";
 
 describe("Allure result", () => {
   beforeAll(() => jasmine.addMatchers(matchers));
 
   describe("for test with passed step", () => {
-    const example = (__: any, __allure: Allure) => {
-      __.describe("Jasmine example", () => {
-        __.it("have a passed allure step", () => {
-          __allure.step("passed step name", () => {
-            __.expect(true).toBeTruthy();
+    const example = (testEnv: JasmineTestEnv, testAllure: Allure) => {
+      testEnv.describe("Jasmine example", () => {
+        testEnv.it("have a passed allure step", () => {
+          testAllure.step("passed step name", () => {
+            testEnv.expect(true).toBeTruthy();
           });
         });
       });
     };
 
-    it("contains passed step", async function() {
+    it("should contain passed step", async function() {
       const result = await runTest(example);
       expect(result).toHaveTestLike({
         status: Status.PASSED,
@@ -31,11 +31,11 @@ describe("Allure result", () => {
   });
 
   describe("for test with failed step", () => {
-    const example = (__: any, __allure: Allure) => {
-      __.describe("Jasmine example", () => {
-        __.it("have allure step with failed assertion", () => {
-          __allure.step("failed step name", () => {
-            __.expect(true).not.toBeTruthy();
+    const example = (testEnv: JasmineTestEnv, testAllure: Allure) => {
+      testEnv.describe("Jasmine example", () => {
+        testEnv.it("have allure step with failed assertion", () => {
+          testAllure.step("failed step name", () => {
+            testEnv.expect(true).not.toBeTruthy();
           });
         });
       });
@@ -47,7 +47,7 @@ describe("Allure result", () => {
       result = await runTest(example);
     });
 
-    xit("contains failed step", () => {
+    xit("should contain failed step", () => {
       expect(result).toHaveTestLike({
         status: Status.FAILED,
         steps: [
@@ -59,7 +59,7 @@ describe("Allure result", () => {
       });
     });
 
-    it("contains details message", () => {
+    it("should contain details message", () => {
       expect(result).toHaveTestLike({
         statusDetails: {
           message: "Expected true not to be truthy.",
@@ -70,19 +70,19 @@ describe("Allure result", () => {
   });
 
   describe("for test with nested step", () => {
-    const example = (__: any, __allure: Allure) => {
-      __.describe("Jasmine example", () => {
-        __.it("have a nested allure step", () => {
-          __allure.step("parent step name", () => {
-            __allure.step("step name", () => {
-              __.expect(true).toBeTruthy();
+    const example = (testEnv: JasmineTestEnv, testAllure: Allure) => {
+      testEnv.describe("Jasmine example", () => {
+        testEnv.it("have a nested allure step", () => {
+          testAllure.step("parent step name", () => {
+            testAllure.step("step name", () => {
+              testEnv.expect(true).toBeTruthy();
             });
           });
         });
       });
     };
 
-    it("contains all nested step", async function() {
+    it("should contain all nested step", async function() {
       const result = await runTest(example);
       expect(result).toHaveTestLike({
         status: Status.PASSED,
