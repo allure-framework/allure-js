@@ -1,4 +1,3 @@
-import "./src/properties";
 export { AllureRuntime } from "./src/AllureRuntime";
 export { InMemoryAllureWriter } from "./src/writers";
 export { AllureConfig, IAllureConfig } from "./src/AllureConfig";
