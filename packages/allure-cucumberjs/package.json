@@ -9,6 +9,7 @@
   ],
   "repository": "https://github.com/allure-framework/allure-js",
   "main": "./dist/index.js",
+  "types": "./dist/types.d.ts",
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "lint": "eslint ./src ./features ./index.ts --ext .ts",
