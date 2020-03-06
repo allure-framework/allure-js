@@ -11,6 +11,7 @@
     "allure"
   ],
   "main": "./dist/index.js",
+  "types": "./dist/types.d.ts",
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
