@@ -23,9 +23,8 @@ jobs:
           CI: true
       - name: npm release
         run: |
-          npm install -g npm-cli-login
-          npm-cli-login -e ci@qameta.io
-          npm run release -- ${GITHUB_REF:10}
+          npm run version -- ${GITHUB_REF:10}
+          npm run release
         env:
           NPM_USER: ${{ secrets.NPM_USER }}
           NPM_PASS: ${{ secrets.NPM_PASS }}
