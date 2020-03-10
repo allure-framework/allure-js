@@ -23,7 +23,6 @@ jobs:
           CI: true
       - name: npm release
         run: |
-          npm run version -- ${GITHUB_REF:10}
           npm run release
         env:
           NPM_USER: ${{ secrets.NPM_USER }}
