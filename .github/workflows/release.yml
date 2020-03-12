@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout
         run: git checkout "${GITHUB_REF:11}"
 
       - name: Use Node.js ${{ matrix.node-version }}
