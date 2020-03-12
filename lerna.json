@@ -4,7 +4,7 @@
   ],
   "command": {
     "version": {
-      "allowBranch": "master",
+      "allowBranch": "lerna-release-no-3",
       "gitRemote": "origin"
     }
   },
