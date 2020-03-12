@@ -146,6 +146,7 @@ export class CucumberJSAllureFormatter extends Formatter {
       this.currentGroup.startTest(applyExample(test.name || "Unnamed test", test.example));
 
     const info = {
+      uri: data.sourceLocation!.uri,
       f: feature.feature.name,
       t: test.name,
       a: <any>null
@@ -162,6 +163,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     this.currentTest.historyId = hash(JSON.stringify(info));
     this.currentTest.addLabel(LabelName.THREAD, `${process.pid}`); // parallel tests support
 
+    this.currentTest.fullName = `${data.sourceLocation!.uri}:${feature.feature.name}:${test.name}`;
     this.currentTest.addLabel(LabelName.FEATURE, feature.feature.name);
     //this.currentTest.addLabel(LabelName.STORY, feature.feature.name);
     this.currentTest.description = stripIndent(test.description || "");
