@@ -9,11 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: 10.x
+
       - name: npm install, build
         run: |
           npm install
@@ -22,6 +25,7 @@ jobs:
           npm run run-test
         env:
           CI: true
+
       - name: npm release
         run: |
           npm run version -- ${GITHUB_REF:10}
