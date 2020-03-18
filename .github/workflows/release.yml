@@ -25,7 +25,7 @@ jobs:
           CI: true
 
       - name: checkout
-        run: git checkout "${GITHUB_REF:11}"
+        run: git checkout "$(echo ${{ github.head_ref }} | sed -E 's|refs/[a-zA-Z]+/||')"
 
       - name: npm release
         run: |
