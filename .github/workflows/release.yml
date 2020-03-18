@@ -24,8 +24,13 @@ jobs:
         env:
           CI: true
 
-      - name: checkout
+      - uses: actions/checkout@master
+      - name: reattach HEAD to Head Ref
         run: git checkout "$(echo ${{ github.head_ref }} | sed -E 's|refs/[a-zA-Z]+/||')"
+        if: github.head_ref != ''
+      - name: reattach HEAD to Ref
+        run: git checkout "$(echo ${{ github.ref }} | sed -E 's|refs/[a-zA-Z]+/||')"
+        if: github.head_ref == ''
 
       - name: npm release
         run: |
