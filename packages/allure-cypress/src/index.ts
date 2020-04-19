@@ -1,3 +1,3 @@
-import {CypressAllureReporter} from "./allure-reporter/reporter";
+import { CypressAllureReporter } from "./allure-reporter/reporter";
 
 export = CypressAllureReporter;
