@@ -2,7 +2,7 @@ import { AllureRuntime, IAllureConfig } from "allure-js-commons";
 import bodyParser from "body-parser";
 import express, { Request } from "express";
 import { allureApiUrls } from "../consts/allure-api-urls";
-import { AllureReporter } from "allure-mocha";
+import { AllureReporter } from "allure-mocha/dist/AllureReporter";
 
 const multer = require("multer");
 const app = express();
@@ -158,11 +158,8 @@ function deserializeTest(test: any): Mocha.Test {
   return test;
 }
 
-const server = app.listen(3002, () => {
-  console.log(1);
-});
+const server = app.listen(3002, () => {});
 
 function close() {
   server.close();
-  process.exit(1);
 }
