@@ -1,0 +1,41 @@
+{
+  "private": true,
+  "name": "allure-cypress",
+  "version": "2.0.0-beta.6",
+  "description": "Allure Cypress integration",
+  "keywords": [
+    "allure",
+    "cypress"
+  ],
+  "author": "v.ageev <v.ageev@tinkoff.ru>",
+  "homepage": "https://github.com/allure-framework/allure-js#readme",
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "repository": "https://github.com/allure-framework/allure-js",
+  "scripts": {
+    "clean": "rimraf ./dist ./out",
+    "lint": "eslint ./test --ext .ts",
+    "lint-fix": "eslint ./src ./test ./index.ts --ext .ts --fix",
+    "compile": "tsc",
+    "build": "npm run lint && npm run compile",
+    "prepublishOnly": "npm run clean && npm run build",
+    "test": "echo no tests"
+  },
+  "devDependencies": {
+    "cypress": "^4.0.0",
+    "@types/express": "4.17.2"
+  },
+  "dependencies": {
+    "allure-js-commons": "2.0.0-beta.6",
+    "allure-mocha": "2.0.0-beta.6",
+    "express": "4.17.1",
+    "mime": "^2.4.4",
+    "multer": "^1.4.2",
+    "body-parser": "1.19.0",
+    "wait-on": "4.0.0"
+  },
+  "peerDependencies": {
+    "cypress": "^4.0.0"
+  }
+}
