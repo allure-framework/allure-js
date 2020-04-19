@@ -6,6 +6,10 @@
     "skipLibCheck": true,
     "outDir": "./dist",
     "rootDir": "./",
-    "sourceMap": false
+    "sourceMap": false,
+    "paths": {
+      "allure-mocha": ["./node_modules/allure-mocha"],
+      "allure-js-commons": ["./node_modules/allure-js-commons"]
+    }
   }
 }
