@@ -35,7 +35,7 @@
     "mocha-multi": "^1.1.1",
     "mocha-typescript": "^1.1.17",
     "nyc": "^15.0.0",
-    "prettier": "^1.17.0",
+    "prettier": "^2.0.5",
     "source-map-support": "^0.5.12"
   },
   "dependencies": {
