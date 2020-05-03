@@ -45,8 +45,18 @@ export class InMemoryAllureWriter implements IAllureWriter {
   }
 
   public getTestByName(name: string): TestResult {
-    const res = this.getMaybeTestByName(name);
-    if (res === undefined) throw new Error(`Test not found: ${name}`);
+    const res: TestResult | undefined = this.getMaybeTestByName(name);
+    if (!res) throw new Error(`Test not found: ${name}`);
+    return res;
+  }
+
+  public getMaybeGroupByName(name: string): TestResultContainer | undefined {
+    return this.groups.find(g => g.name === name);
+  }
+
+  public getGroupByName(name: string): TestResultContainer {
+    const res: TestResultContainer | undefined = this.getMaybeGroupByName(name);
+    if (!res) throw new Error(`Group not found: ${name}`);
     return res;
   }
 }

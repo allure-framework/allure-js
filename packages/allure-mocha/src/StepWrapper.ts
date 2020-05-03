@@ -5,7 +5,7 @@ export class StepWrapper {
   constructor(private readonly reporter: AllureReporter, private readonly step: AllureStep) {}
 
   public startStep(name: string): StepWrapper {
-    const step = this.step.startStep(name);
+    const step: AllureStep = this.step.startStep(name);
     this.reporter.pushStep(step);
     return new StepWrapper(this.reporter, step);
   }

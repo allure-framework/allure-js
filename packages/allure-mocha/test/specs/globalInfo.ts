@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { suite } from "mocha-typescript";
+import { suite, test } from "@testdeck/mocha";
 import { runTests } from "../utils";
 
 @suite

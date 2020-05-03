@@ -1,6 +1,6 @@
 import { Severity, Status } from "allure-js-commons";
 import { expect } from "chai";
-import { suite } from "mocha-typescript";
+import { suite, test } from "@testdeck/mocha";
 import { findLabelValue, runTests } from "../utils";
 
 @suite

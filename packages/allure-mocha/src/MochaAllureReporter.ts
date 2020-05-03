@@ -1,9 +1,9 @@
 import * as Mocha from "mocha";
 import { AllureRuntime, IAllureConfig } from "allure-js-commons";
 import { AllureReporter } from "./AllureReporter";
-import { MochaAllureInterface } from "./MochaAllureInterface";
+import { MochaAllure } from "./MochaAllure";
 
-export let allure: MochaAllureInterface;
+export let allure: MochaAllure;
 
 export class MochaAllureReporter extends Mocha.reporters.Base {
   private coreReporter: AllureReporter;
@@ -14,8 +14,7 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
     const allureConfig: IAllureConfig = { resultsDir: "allure-results", ...opts.reporterOptions };
 
     this.coreReporter = new AllureReporter(new AllureRuntime(allureConfig));
-
-    allure = this.coreReporter.getInterface();
+    allure = this.coreReporter.getImplementation();
 
     this.runner
       .on("suite", this.onSuite.bind(this))
@@ -23,30 +22,40 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
       .on("test", this.onTest.bind(this))
       .on("pass", this.onPassed.bind(this))
       .on("fail", this.onFailed.bind(this))
-      .on("pending", this.onPending.bind(this));
+      .on("pending", this.onPending.bind(this))
+      .on("hook", this.onHookStart.bind(this))
+      .on("hook end", this.onHookEnd.bind(this));
   }
 
-  private onSuite(suite: Mocha.Suite) {
+  private onSuite(suite: Mocha.Suite): void {
     this.coreReporter.startSuite(suite.fullTitle());
   }
 
-  private onSuiteEnd() {
+  private onSuiteEnd(): void {
     this.coreReporter.endSuite();
   }
 
-  private onTest(test: Mocha.Test) {
+  private onTest(test: Mocha.Test): void {
     this.coreReporter.startCase(test);
   }
 
-  private onPassed(test: Mocha.Test) {
+  private onPassed(test: Mocha.Test): void {
     this.coreReporter.passTestCase(test);
   }
 
-  private onFailed(test: Mocha.Test, error: Error) {
+  private onFailed(test: Mocha.Test, error: Error): void {
     this.coreReporter.failTestCase(test, error);
   }
 
-  private onPending(test: Mocha.Test) {
+  private onPending(test: Mocha.Test): void {
     this.coreReporter.pendingTestCase(test);
+  }
+
+  private onHookStart(hook: Mocha.Hook): void {
+    this.coreReporter.startHook(hook.title);
+  }
+
+  private onHookEnd(hook: Mocha.Hook): void {
+    this.coreReporter.endHook(hook.error());
   }
 }
