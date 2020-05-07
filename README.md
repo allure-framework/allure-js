@@ -11,6 +11,7 @@ To generate Allure results, specify `allure` in Newman's `-r` or `--reporters` o
 
 ```console
 $ newman run <Collection> -e <Environment> -r allure
+$ newman run <Collection> -e <Environment> -r allure --reporter-allure-export <allure-results-out-dir>
 ```
 
 ## Generating and Serving Allure report
