@@ -38,6 +38,6 @@
     "verror": "^1.10.0"
   },
   "dependencies": {
-    "allure-js-commons": "^2.0.0-beta.6"
+    "allure-js-commons": "^2.0.0-beta.0"
   }
 }
