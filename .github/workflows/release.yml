@@ -24,17 +24,13 @@ jobs:
         env:
           CI: true
 
-      - uses: actions/checkout@master
-      - name: reattach HEAD to Head Ref
-        run: git checkout "$(echo ${{ github.head_ref }} | sed -E 's|refs/[a-zA-Z]+/||')"
-        if: github.head_ref != ''
-      - name: reattach HEAD to Ref
-        run: git checkout "$(echo ${{ github.ref }} | sed -E 's|refs/[a-zA-Z]+/||')"
-        if: github.head_ref == ''
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
 
       - name: npm release
         run: |
-          npm run version -- ${GITHUB_REF:10}
+          npm run version -- ${{ steps.get_version.outputs.VERSION }}
           npm run release
         env:
           NPM_USER: ${{ secrets.NPM_USER }}
