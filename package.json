@@ -6,7 +6,7 @@
     "test": "npm run build && npm run run-test",
     "clean": "lerna run clean",
     "version": "lerna version --no-git-tag-version --no-changelog --yes",
-    "release": "lerna publish from-package --yes",
+    "release": "lerna publish from-package --skip-git --yes",
     "lint": "lerna run lint",
     "lint-fix": "lerna run lint-fix",
     "run-test": "lerna run test",
