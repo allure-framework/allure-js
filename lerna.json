@@ -2,11 +2,5 @@
   "packages": [
     "packages/*"
   ],
-  "command": {
-    "version": {
-      "allowBranch": "master",
-      "gitRemote": "origin"
-    }
-  },
   "version": "2.0.0-beta.0"
 }
