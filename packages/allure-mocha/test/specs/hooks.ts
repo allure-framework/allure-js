@@ -1,6 +1,6 @@
 import { InMemoryAllureWriter, Status } from "allure-js-commons";
 import { expect } from "chai";
-import { suite } from "mocha-typescript";
+import { suite, test } from "@testdeck/mocha";
 import { runTests } from "../utils";
 
 @suite
@@ -14,31 +14,40 @@ class HooksSuite {
   @test
   shouldHandleBeforeEach() {
     const test = this.writerStub.getTestByName("test with beforeEach");
+    const group = this.writerStub.getGroupByName("hooks test beforeEach fails");
+    const [beforeHook] = group.befores;
 
     expect(test.status).eq(Status.BROKEN);
     expect(test.statusDetails.message).eq("In before each");
+    expect(beforeHook).is.not.undefined;
+    expect(beforeHook.status).eq(Status.BROKEN);
     expect(test.attachments).have.length(1);
     expect(test.attachments[0].name).eq("saved in beforeEach");
   }
 
   @test
   shouldHandleAfterEach() {
-    const test = this.writerStub.getTestByName("passed test with afterEach");
+    const group = this.writerStub.getGroupByName("hooks test afterEach fails");
+    const [afterHook] = group.afters;
 
-    expect(test.status).eq(Status.BROKEN);
-    expect(test.statusDetails.message).eq("In after each");
-    expect(test.attachments).have.length(1);
-    expect(test.attachments[0].name).eq("saved in afterEach");
+    expect(afterHook).is.not.undefined;
+    expect(afterHook.status).eq(Status.BROKEN);
+    expect(afterHook.attachments).have.length(1);
+    expect(afterHook.attachments[0].name).eq("saved in afterEach");
   }
 
   @test
   shouldPreserveTestErrorIfAfterEachFails() {
     const test = this.writerStub.getTestByName("failed test with afterEach");
+    const group = this.writerStub.getGroupByName("hooks test both afterEach and test fail");
+    const [afterHook] = group.afters;
 
     expect(test.status).eq(Status.FAILED);
     expect(test.statusDetails.message).eq("expected 1 to equal 2");
-    expect(test.attachments).have.length(1);
-    expect(test.attachments[0].name).eq("saved in afterEach");
+    expect(afterHook).is.not.undefined;
+    expect(afterHook.status).eq(Status.BROKEN);
+    expect(afterHook.attachments).have.length(1);
+    expect(afterHook.attachments[0].name).eq("saved in afterEach");
   }
 
   @test
@@ -52,8 +61,11 @@ class HooksSuite {
   @test
   shouldHandleAfter() {
     const test = this.writerStub.getTestByName("fails in after");
+    const group = this.writerStub.getGroupByName("hooks test after fails");
+    const [afterHook] = group.afters;
 
-    expect(test.status).eq(Status.BROKEN);
-    expect(test.statusDetails.message).eq("In after");
+    expect(test.status).eq(Status.PASSED);
+    expect(afterHook).is.not.undefined;
+    expect(afterHook.status).eq(Status.BROKEN);
   }
 }

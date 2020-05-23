@@ -5,11 +5,27 @@
 // https://babeljs.io/repl#?code_lz=KYDwDg9gTgLgBAbwIYBsUFcrAL5wGZQQC2cA5AHQD0AJgJYDOMl9UAxpQLISsAWSAgmkzAASsEixgUUkA
 "use strict";
 
-const reporter = require("./dist/MochaAllureReporter");
+const _MochaAllure = require("./dist/MochaAllure");
+const _MochaAllureReporter = require("./dist/MochaAllureReporter");
 
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(module.exports, "MochaAllure", {
+  enumerable: true,
+  get: function () {
+    return _MochaAllure.MochaAllure;
+  }
+});
 Object.defineProperty(module.exports, "allure", {
-  get() {
-    return reporter.allure;
+  enumerable: true,
+  get: function () {
+    return _MochaAllureReporter.allure;
+  }
+});
+Object.defineProperty(module.exports, "MochaAllureReporter", {
+  enumerable: true,
+  get: function () {
+    return _MochaAllureReporter.MochaAllureReporter;
   }
 });

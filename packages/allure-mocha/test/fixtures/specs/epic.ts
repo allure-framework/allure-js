@@ -2,9 +2,9 @@ import { suite, test } from "@testdeck/mocha";
 import { allure } from "../../../runtime";
 
 @suite
-class Tag {
+class Epic {
   @test
-  shouldAssignTag() {
-    allure.tag("smoke");
+  shouldAssignEpic() {
+    allure.epic("epic name");
   }
 }

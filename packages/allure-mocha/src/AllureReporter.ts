@@ -4,37 +4,34 @@ import {
   AllureStep,
   AllureTest,
   ContentType,
+  ExecutableItemWrapper,
   LabelName,
   Stage,
   Status,
   StatusDetails
 } from "allure-js-commons";
 import { createHash } from "crypto";
-import { MochaAllureInterface } from "./MochaAllureInterface";
+import { MochaAllure } from "./MochaAllure";
 
 export class AllureReporter {
   private suites: AllureGroup[] = [];
   private steps: AllureStep[] = [];
   private runningTest: AllureTest | null = null;
+  public currentExecutable: ExecutableItemWrapper | null = null;
 
-  constructor(private runtime: AllureRuntime) {}
+  constructor(private readonly allureRuntime: AllureRuntime) {
+  }
 
-  public getInterface(): MochaAllureInterface {
-    return new MochaAllureInterface(this, this.runtime);
+  public getImplementation(): MochaAllure {
+    return new MochaAllure(this, this.allureRuntime);
   }
 
   get currentSuite(): AllureGroup | null {
-    if (this.suites.length === 0) {
-      return null;
-    }
-    return this.suites[this.suites.length - 1];
+    return this.suites.length > 0 ? this.suites[this.suites.length - 1] : null;
   }
 
   get currentStep(): AllureStep | null {
-    if (this.steps.length > 0) {
-      return this.steps[this.steps.length - 1];
-    }
-    return null;
+    return this.steps.length > 0 ? this.steps[this.steps.length - 1] : null;
   }
 
   get currentTest(): AllureTest | null {
@@ -45,13 +42,13 @@ export class AllureReporter {
     this.runningTest = test;
   }
 
-  public startSuite(suiteName: string) {
-    const scope = this.currentSuite || this.runtime;
-    const suite = scope.startGroup(suiteName || "Global");
+  public startSuite(suiteName: string): void {
+    const scope: AllureGroup | AllureRuntime = this.currentSuite || this.allureRuntime;
+    const suite: AllureGroup = scope.startGroup(suiteName || "Global");
     this.pushSuite(suite);
   }
 
-  public endSuite() {
+  public endSuite(): void {
     if (this.currentSuite !== null) {
       if (this.currentStep !== null) {
         this.currentStep.endStep();
@@ -61,7 +58,30 @@ export class AllureReporter {
     }
   }
 
-  public startCase(test: Mocha.Test) {
+  public startHook(title: string): void {
+    const suite: AllureGroup | null = this.currentSuite;
+
+    if (suite && title && title.indexOf("before") !== -1) {
+      this.currentExecutable = suite.addBefore();
+    } else if (suite && title && title.indexOf("after") !== -1) {
+      this.currentExecutable = suite.addAfter();
+    }
+  }
+
+  public endHook(error?: Error): void {
+    if (this.currentExecutable) {
+      this.currentExecutable.stage = Stage.FINISHED;
+
+      if (error) {
+        this.currentExecutable.status = Status.FAILED;
+        this.currentExecutable.statusDetails = { message: error.message, trace: error.stack };
+      } else {
+        this.currentExecutable.status = Status.PASSED;
+      }
+    }
+  }
+
+  public startCase(test: Mocha.Test): void {
     if (this.currentSuite === null) {
       throw new Error("No active suite");
     }
@@ -87,19 +107,19 @@ export class AllureReporter {
     }
   }
 
-  public passTestCase(test: Mocha.Test) {
+  public passTestCase(test: Mocha.Test): void {
     if (this.currentTest === null) {
       this.startCase(test);
     }
     this.endTest(Status.PASSED);
   }
 
-  public pendingTestCase(test: Mocha.Test) {
+  public pendingTestCase(test: Mocha.Test): void {
     this.startCase(test);
     this.endTest(Status.SKIPPED, { message: "Test ignored" });
   }
 
-  public failTestCase(test: Mocha.Test, error: Error) {
+  public failTestCase(test: Mocha.Test, error: Error): void {
     if (this.currentTest === null) {
       this.startCase(test);
     } else {
@@ -115,7 +135,7 @@ export class AllureReporter {
   }
 
   public writeAttachment(content: Buffer | string, type: ContentType): string {
-    return this.runtime.writeAttachment(content, type);
+    return this.allureRuntime.writeAttachment(content, type);
   }
 
   public pushStep(step: AllureStep): void {
@@ -145,5 +165,6 @@ export class AllureReporter {
     this.currentTest.status = status;
     this.currentTest.stage = Stage.FINISHED;
     this.currentTest.endTest();
+    this.currentTest = null;
   }
 }

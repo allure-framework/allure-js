@@ -1,5 +1,6 @@
 import {
-  Allure, AllureRuntime,
+  Allure,
+  AllureRuntime,
   AllureStep,
   AllureTest,
   ContentType,
@@ -11,9 +12,22 @@ import {
 import { AllureReporter } from "./AllureReporter";
 import { StepWrapper } from "./StepWrapper";
 
-export class MochaAllureInterface extends Allure {
+export class MochaAllure extends Allure {
   constructor(private readonly reporter: AllureReporter, runtime: AllureRuntime) {
     super(runtime);
+  }
+
+  public get currentExecutable(): ExecutableItemWrapper {
+    const executable: AllureStep | AllureTest | ExecutableItemWrapper | null =
+      this.reporter.currentStep || this.reporter.currentTest || this.reporter.currentExecutable;
+    if (!executable) {
+      throw new Error("No executable!");
+    }
+    return executable;
+  }
+
+  public set currentExecutable(executable: ExecutableItemWrapper) {
+    this.reporter.currentExecutable = executable;
   }
 
   public step<T>(name: string, body: (step: StepInterface) => any): any {
@@ -42,37 +56,30 @@ export class MochaAllureInterface extends Allure {
   }
 
   logStep(name: string, status?: Status): void {
-    this.step(name, () => {}); // todo status
+    this.step(name, () => {
+    }); // todo status
   }
 
-  public attachment(name: string, content: Buffer | string, type: ContentType) {
+  public attachment(name: string, content: Buffer | string, type: ContentType): void {
     const file = this.reporter.writeAttachment(content, type);
     this.currentExecutable.addAttachment(name, type, file);
   }
 
-  public testAttachment(name: string, content: Buffer | string, type: ContentType) {
+  public testAttachment(name: string, content: Buffer | string, type: ContentType): void {
     const file = this.reporter.writeAttachment(content, type);
     this.currentTest.addAttachment(name, type, file);
   }
 
-  private startStep(name: string): StepWrapper {
-    const allureStep: AllureStep = this.currentExecutable.startStep(name);
-    this.reporter.pushStep(allureStep);
-    return new StepWrapper(this.reporter, allureStep);
-  }
-
-  protected get currentTest(): AllureTest {
+  public get currentTest(): AllureTest {
     if (this.reporter.currentTest === null) {
       throw new Error("No test running!");
     }
     return this.reporter.currentTest;
   }
 
-  protected get currentExecutable(): ExecutableItemWrapper {
-    const executable = this.reporter.currentStep || this.reporter.currentTest;
-    if (executable === null) {
-      throw new Error("No executable!");
-    }
-    return executable;
+  private startStep(name: string): StepWrapper {
+    const allureStep: AllureStep = this.currentExecutable.startStep(name);
+    this.reporter.pushStep(allureStep);
+    return new StepWrapper(this.reporter, allureStep);
   }
 }

@@ -5,14 +5,7 @@ import path from "path";
 import glob from "glob";
 import "source-map-support/register";
 
-declare module "mocha" {
-  interface InterfaceContributions {
-    "mocha-typescript": never;
-  }
-}
-
 const mocha = new Mocha({
-  ui: "mocha-typescript",
   timeout: 16000,
   reporter: "mocha-multi",
   ignoreLeaks: false,

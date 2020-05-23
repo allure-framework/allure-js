@@ -25,24 +25,24 @@
     "lint-fix": "eslint ./src ./test ./index.ts --ext .ts --fix"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.7",
+    "@testdeck/mocha": "0.0.10",
+    "@types/chai": "^4.2.11",
     "@types/mocha": "^7.0.2",
     "chai": "^4.2.0",
-    "codecov": "^3.3.0",
-    "dotenv": "^8.0.0",
-    "fs-jetpack": "^2.2.2",
-    "mocha": "^6.2.0",
-    "mocha-multi": "^1.1.1",
-    "mocha-typescript": "^1.1.17",
-    "nyc": "^15.0.0",
-    "prettier": "^1.17.0",
-    "source-map-support": "^0.5.12"
+    "codecov": "^3.6.5",
+    "dotenv": "^8.2.0",
+    "fs-jetpack": "^2.2.3",
+    "mocha": "^7.1.2",
+    "mocha-multi": "^1.1.3",
+    "nyc": "^15.0.1",
+    "prettier": "^2.0.5",
+    "source-map-support": "^0.5.19"
   },
   "dependencies": {
     "allure-js-commons": "^2.0.0-beta.0"
   },
   "peerDependencies": {
-    "mocha": "^6.2.0"
+    "mocha": ">=6.2.x"
   },
   "nyc": {
     "check-coverage": true,
@@ -53,8 +53,10 @@
     "extension": [
       ".ts"
     ],
-    "include": [
-      "dist/src/**/*.js"
+    "exclude": [
+      "test/**/*.*",
+      "**/*.d.ts",
+      "runtime.js"
     ],
     "reporter": [
       "lcov",
