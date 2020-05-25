@@ -16,7 +16,7 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "devDependencies": {
-    "@types/mkdirp": "^0.5.2",
+    "@types/mkdirp": "^1.0.0",
     "@types/uuid": "^7.0.0"
   },
   "dependencies": {
