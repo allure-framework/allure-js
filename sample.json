@@ -131,7 +131,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "Duis posuere augue vel cursus pharetra. In luctus a ex nec pretium..."
+							"raw": "Тестовые запросы. "
 						},
 						"url": {
 							"raw": "https://postman-echo.com/post",

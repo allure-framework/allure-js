@@ -317,7 +317,9 @@ class AllureReporter {
         }
         if(bodyModeProp === "raw")
         {
-            bodyModePropObj = this.escape(rItem.pm_item.request_data.body[bodyModeProp]);
+            // bodyModePropObj = this.escape(rItem.pm_item.request_data.body[bodyModeProp]);
+            bodyModePropObj = rItem.pm_item.request_data.body[bodyModeProp];
+            console.log(bodyModePropObj);
         } else {
             bodyModePropObj = ""
         }
