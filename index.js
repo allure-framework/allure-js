@@ -3,32 +3,23 @@ const isPromise = require("allure-js-commons").isPromise;
 const Status = require("allure-js-commons").Status;
 const LabelName = require("allure-js-commons").LabelName;
 const Stage = require("allure-js-commons").Allure;
-const NewmanAllureInterface = require("./src/NewmanAllureInterface")
 const createHash = require("crypto").createHash;
 const _ = require('lodash');
+// const WrappedStep = require("./src/WrappedStep");
 
 class AllureReporter {
     constructor(emitter, reporterOptions, options) {
         this.suites = [];
-        this.steps = [];
-        this.runningTest = null;
+        this.runningItems = [];
         this.currentNMGroup = options.collection;
         var config = {
             resultsDir: reporterOptions.export || "allure-results"
         }
-        this.runtime = new AllureRuntime(config);
+        this.allure_runtime = new AllureRuntime(config);
         this.reporterOptions = reporterOptions;
         this.options = options;
             const events = 'start beforeIteration iteration beforeItem item beforePrerequest prerequest beforeScript script beforeRequest request beforeTest test beforeAssertion assertion console exception beforeDone done'.split(' ');
         events.forEach((e) => { if (typeof this[e] == 'function') emitter.on(e, (err, args) => this[e](err, args)) });
-        this.prevRunningTest = '';
-        this.testctr = 1;
-        this.pre_req_scrt = '';
-        this.test_scrt = '';
-    }
-
-    getInterface() {
-        return new NewmanAllureInterface(this, this.runtime);
     }
     
     get currentSuite() {
@@ -39,23 +30,29 @@ class AllureReporter {
     }
 
     get currentStep() {
-        if (this.steps.length > 0)
-            return this.steps[this.steps.length - 1];
-        return null;
+        if (this.runningItems.length === 0)
+            return null;    
+        if (!Array.isArray(this.runningItems[this.runningItems.length-1].steps))
+            return null;     
+        if (this.runningItems[this.runningItems.length-1].steps.length === 0)
+            return null;     
+        const steps = this.runningItems[this.runningItems.length-1].steps;
+        return steps[steps.length - 1];
     }
 
     get currentTest() {
-        if (this.runningTest === null)
+        if (this.runningItems.length === 0)
             throw new Error("No active test");
-        return this.runningTest;
+        const tests_size = this.runningItems.length;
+        return this.runningItems[tests_size-1].allure_test;
     }
 
-    set currentTest(test) {
-        this.runningTest = test;
+    set currentTest(allure_test) {
+        this.runningItems[this.runningItems.length-1].allure_test = allure_test;
     }
 
     writeAttachment(content, type) {
-        return this.runtime.writeAttachment(content, type);
+        return this.allure_runtime.writeAttachment(content, type);
     }
     
     pushSuite(suite) {
@@ -69,56 +66,70 @@ class AllureReporter {
     start(err, args) {
         const suiteName = this.options.collection.name;
         console.log(`### Starting Execution For - ${suiteName} ###`);
-        const scope = this.currentSuite || this.runtime;
+        const scope = this.currentSuite || this.allure_runtime;
         const suite = scope.startGroup(suiteName || "Global");
         this.pushSuite(suite);
+        this.runningItems = [];
     }
 
     prerequest(err, args){
-        if(args.executions != undefined && _.isArray(args.executions) && args.executions.length > 0)
-            this.pre_req_scrt = args.executions[0].script.exec.join('\n');
+        if(args.executions != undefined && _.isArray(args.executions) && args.executions.length > 0){
+            this.runningItems[this.runningItems.length - 1].pm_item.prerequest = args.executions[0].script.exec.join('\n');
+        }
     }
 
     test(err, args){
         if(args.executions != undefined && _.isArray(args.executions) && args.executions.length > 0)
-            this.test_scrt = args.executions[0].script.exec.join('\n');
+            this.runningItems[this.runningItems.length - 1].pm_item.testscript = args.executions[0].script.exec.join('\n');
     }
 
     console(err, args) {
         if (err) { return; }
         if (args.level) {
-            this.consoleLogs = this.consoleLogs || [];
-            this.consoleLogs.push(`level: ${args.level}, messages: ${args.messages}`);
-        }
+            if(!Array.isArray(this.runningItems[this.runningItems.length - 1].pm_item.console_logs)){
+                this.runningItems[this.runningItems.length - 1].pm_item.console_logs = [];
+                this.runningItems[this.runningItems.length - 1].pm_item.console_logs.push(`level: ${args.level}, messages: ${args.messages}`);
+            } else {
+                this.runningItems[this.runningItems.length - 1].pm_item.console_logs.push(`level: ${args.level}, messages: ${args.messages}`);
+            }
+        }     
     }
 
     request(err, args) {
         if(err)
            return;
-
         const req = args.request;
-
         let url = req.url.protocol + "://" + req.url.host.join('.');
         if(req.url.path !== undefined) {
             if(req.url.path.length > 0) {
                 url = url + "/" + req.url.path.join('/');
             }
-        }
-        
+        }    
         const resp_stream = args.response.stream;
         const resp_body = Buffer.from(resp_stream).toString();
-        
-        this.requestData = {url:url, method: req.method, body: req.body};
-        this.responseData = {status: args.response.status, code: args.response.code, body: resp_body};
+        this.runningItems[this.runningItems.length - 1].pm_item.request_data = {url:url, method: req.method, body: req.body};
+        this.runningItems[this.runningItems.length - 1].pm_item.response_data = {status: args.response.status, code: args.response.code, body: resp_body};
+    }
+
+    startStep(name) {
+        const allureStep = this.currentExecutable.startStep(name);
+        this.pushStep(allureStep);
+        return this;
+        // return new WrappedStep(this, allureStep);
+    }
+
+    endStep(status) {
+        let step = this.popStep();
+        step.status = status;
+        step.endStep();
     }
 
     assertion(err, args) {
         const stepName = args.assertion;
-        const curStep = this.getInterface().startStep(stepName);
-
+        const curStep = this.startStep(stepName);
         if (err) {
-            this.currItem.passed = false;
-            this.currItem.failedAssertions.push(args.assertion);
+            this.runningItems[this.runningItems.length - 1].pm_item.passed = false;
+            this.runningItems[this.runningItems.length - 1].pm_item.failedAssertions.push(args.assertion);
             curStep.endStep(Status.FAILED);
         } else {
             curStep.endStep(Status.PASSED);
@@ -127,63 +138,44 @@ class AllureReporter {
 
 
     done(err, args) {
-        if (this.runningTest !== null) {
-            console.error("Allure reporter issue: running test on suiteDone");
-        }
         if (this.currentSuite !== null) {
-            if (this.currentStep !== null) {
-              this.currentStep.endStep();
-            }
+            // if (this.currentStep !== null) {
+            //   this.currentStep.endStep();
+            // }
             this.currentSuite.endGroup();
             this.popSuite();
         }
         console.log(`#### Finished Execution ####`);
     }
 
-     beforeItem(err, args) {
-        this.currItem = {name: this.itemName(args.item, args.cursor), passed: true, failedAssertions: []};
-        this.consoleLogs = [];
-
+     beforeItem(err, args) {  
+        let pm_item = {name: this.itemName(args.item, args.cursor), passed: true, failedAssertions: [], console_logs: []};
         if (this.currentSuite === null) {
             throw new Error("No active suite");
         }
-
-        var testName = this.currItem.name;
-
+        var testName = pm_item.name;
         if(testName.indexOf("/")>0){
             const len = testName.split("/").length;
             testName = testName.split("/")[len-1];
         }
-
         let testFullName = ''
-        if(this.prevRunningTest === testName){
-            this.testctr++;
-            this.currentTest = this.currentSuite.startTest(testName + "_setNextRequest_" + this.testctr);
-            testFullName = this.currItem.name + "_setNextRequest_" + this.testctr;
-        } else {
-            this.testctr = 1;
-            this.currentTest = this.currentSuite.startTest(testName);
-            this.prevRunningTest = testName;
-            testFullName = this.currItem.name;
-        }
-
-        this.currentTest.historyId = createHash("md5")
+        let allure_test = this.currentSuite.startTest(testName);
+        testFullName = pm_item.name;     
+        const rndStr = Math.random().toString(36).substr(2, 5);
+        testFullName = testFullName + '_' + rndStr;
+        allure_test.historyId = createHash("md5")
                                     .update(testFullName)
                                     .digest("hex");
 
-        this.currentTest.stage = Stage.RUNNING;
-    
+        allure_test.stage = Stage.RUNNING;    
         var itemGroup = args.item.parent();
-
         var root = !itemGroup || (itemGroup === this.options.collection);
         var fullName = '';
         if (itemGroup && (this.currentNMGroup !== itemGroup)) {
              !root && (fullName = this.getFullName(itemGroup));
             this.currentNMGroup = itemGroup;
         }
-
         fullName = this.getFullName(this.currentNMGroup);
-
         var parentSuite, suite;
         var subSuites = [];
         if(fullName !== ''){
@@ -203,12 +195,12 @@ class AllureReporter {
             
         if (parentSuite !== undefined) {
             parentSuite = parentSuite.charAt(0).toUpperCase() + parentSuite.slice(1);
-            this.currentTest.addLabel(LabelName.PARENT_SUITE, parentSuite);
-            this.currentTest.addLabel(LabelName.FEATURE, parentSuite);
+            allure_test.addLabel(LabelName.PARENT_SUITE, parentSuite);
+            allure_test.addLabel(LabelName.FEATURE, parentSuite);
         }
         if (suite !== undefined) {
             suite = suite.charAt(0).toUpperCase() + suite.slice(1);
-            this.currentTest.addLabel(LabelName.SUITE, suite);
+            allure_test.addLabel(LabelName.SUITE, suite);
         }
 
         if(subSuites !== undefined){
@@ -218,7 +210,7 @@ class AllureReporter {
                 for(var i=0; i<subSuites.length; i++){
                     captalizedSubSuites.push(subSuites[i].charAt(0).toUpperCase() + subSuites[i].slice(1))
                 }
-                this.currentTest.addLabel(LabelName.SUB_SUITE, captalizedSubSuites.join(" > "));
+                allure_test.addLabel(LabelName.SUB_SUITE, captalizedSubSuites.join(" > "));
             }       
         }
        
@@ -230,7 +222,13 @@ class AllureReporter {
         }
         
         if(path !== undefined)
-            this.currentTest.addLabel(LabelName.STORY, path);
+            allure_test.addLabel(LabelName.STORY, path);
+
+        this.runningItems.push({
+            name: fullName,
+            allure_test: allure_test,
+            pm_item: pm_item
+        })
      }
 
     getFullName(item, separator) {
@@ -241,99 +239,92 @@ class AllureReporter {
         return chain.join(_.isString(separator) ? separator : '/');
     }
 
-    attachConsoleLogs() {
-        if(this.consoleLogs.length > 0) {
-            const buf = Buffer.from(this.consoleLogs.join('\n'), "utf8");
-            this.getInterface().testAttachment("consoleLogs", buf, "text/plain");
+    attachConsoleLogs(logsArr) {
+        if(logsArr.length > 0) {
+            const buf = Buffer.from(logsArr.join('\n'), "utf8");
+            const file = this.allure_runtime.writeAttachment(buf, "text/plain");
+            this.currentTest.addAttachment("console_logs", "text/plain", file);
         }    
     }
 
     attachPrerequest(pre_req) {
         if(pre_req !== undefined) {
             const buf = Buffer.from(pre_req, "utf8");
-            this.getInterface().testAttachment("PreRequest", buf, "text/plain");
+            const file = this.allure_runtime.writeAttachment(buf, "text/plain");
+            this.currentTest.addAttachment("pre_request", "text/plain", file);
         }    
     }
 
     attachTestScript(test_scrpt) {
         if(test_scrpt !== undefined) {
             const buf = Buffer.from(test_scrpt, "utf8");
-            this.getInterface().testAttachment("TestScript", buf, "text/plain");
+            const file = this.allure_runtime.writeAttachment(buf, "text/plain");
+            this.currentTest.addAttachment("test_scrpt", "text/plain", file);
         }    
     }
 
+    get currentExecutable() {
+        const executable = this.currentStep || this.currentTest;
+        if (executable === null) {
+            throw new Error("No executable!");
+        }
+        return executable;
+    }
 
     setDescription(description){
         if(description !== undefined) {
-            this.getInterface().setDescription(description);
+            this.currentExecutable.description = description;
         }
     }
 
     setDescriptionHtml(html){
         if(html !== undefined) {
-            this.getInterface().setDescriptionHtml(html);
+            this.currentExecutable.descriptionHtml = html;
         }
     }
 
-    pendingTestCase(test) {
-        this.startCase(test);
-        this.endTest(Status.SKIPPED, { message: "Test ignored" });
+    passTestCase(allure_test) {
+        this.endTest(allure_test, Status.PASSED);
     }
 
-    passTestCase(test) {
-        if (this.currentTest === null) {
-           this.startCase(test);
-        }
-        this.endTest(Status.PASSED);
-    }
-
-    failTestCase(test, error) {
-        if (this.currentTest === null) {
-            this.startCase(test);
-        } else {
-          const latestStatus = this.currentTest.status;
+    failTestCase(allure_test, error) {
+          const latestStatus = allure_test.status;
           // if test already has a failed state, we should not overwrite it
           if (latestStatus === Status.FAILED || latestStatus === Status.BROKEN) {
             return;
           }
-        }
         const status = error.name === "AssertionError" ? Status.FAILED : Status.BROKEN;
-        this.endTest(status, { message: error.message, trace: error.stack });
+        this.endTest(allure_test, status, { message: error.message, trace: error.stack });
     }
 
     item(err, args) {
-       
-        if (this.currentTest === null)
-            throw new Error("specDone while no test is running");
-
-        if(this.pre_req_scrt !== ''){
-            this.attachPrerequest(this.pre_req_scrt);
+        const rItem = this.runningItems[this.runningItems.length-1];
+        if(rItem.pm_item.prerequest !== ''){
+            this.attachPrerequest(rItem.pm_item.prerequest);
         }
-
-        if(this.test_scrt !== ''){
-            this.attachTestScript(this.test_scrt);
+        if(rItem.pm_item.testscript !== ''){
+            this.attachTestScript(rItem.pm_item.testscript);
         }
-
-        this.attachConsoleLogs();
-        
-        const requestDataURL = this.requestData.method + " - " + this.requestData.url;
+        if(rItem.pm_item.console_logs.length > 0){
+            this.attachConsoleLogs(rItem.pm_item.console_logs);
+        }
+        const requestDataURL = rItem.pm_item.request_data.method + " - " + rItem.pm_item.request_data.url;
         let bodyModeProp = '';
         let bodyModePropObj;
 
-        if(this.requestData.body !== undefined){
-            bodyModeProp = this.requestData.body.mode;
+        if(rItem.pm_item.request_data.body !== undefined){
+            bodyModeProp = rItem.pm_item.request_data.body.mode;
         }
-
         if(bodyModeProp === "raw")
         {
-            bodyModePropObj = this.escape(this.requestData.body[bodyModeProp]);
+            bodyModePropObj = this.escape(rItem.pm_item.request_data.body[bodyModeProp]);
         } else {
             bodyModePropObj = ""
         }
 
         const reqTableStr = ` <table> <tr> <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;color:Orange;"> ${bodyModeProp} </th> <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;"> <pre style="color:Orange"> <b> ${bodyModePropObj} </b> </pre> </td> </tr>  </table>`;
 
-        const responseCodeStatus= this.responseData.code + " - " + this.responseData.status;
+        const responseCodeStatus= rItem.pm_item.response_data.code + " - " + rItem.pm_item.response_data.status;
 
         var testDescription;
         if(args.item.request.description !== undefined){
@@ -345,41 +336,38 @@ class AllureReporter {
         }
 
        
-        this.setDescriptionHtml(`<p style="color:MediumPurple;"> <b> ${testDescription} </b> </p> <h4 style="color:DodgerBlue;"><b><i>Request:</i></b></h4> <p style="color:DodgerBlue"> <b> ${requestDataURL} </b> </p> ${reqTableStr} </p> <h4 style="color:DodgerBlue;"> <b> <i> Response: </i> </b> </h4> <p style="color:DodgerBlue"> <b> ${responseCodeStatus} </b> </p> <p > <pre style="color:Orange;"> <b> ${this.responseData.body} </b> </pre> </p>`);
-        if (this.currItem.failedAssertions.length > 0 ) {
-            const msg = this.escape(this.currItem.failedAssertions.join(", "));
-            const details = this.escape(`Response code: ${this.responseData.code}, status: ${this.responseData.status}`);
+        this.setDescriptionHtml(`<p style="color:MediumPurple;"> <b> ${testDescription} </b> </p> <h4 style="color:DodgerBlue;"><b><i>Request:</i></b></h4> <p style="color:DodgerBlue"> <b> ${requestDataURL} </b> </p> ${reqTableStr} </p> <h4 style="color:DodgerBlue;"> <b> <i> Response: </i> </b> </h4> <p style="color:DodgerBlue"> <b> ${responseCodeStatus} </b> </p> <p > <pre style="color:Orange;"> <b> ${rItem.pm_item.response_data.body} </b> </pre> </p>`);
+        if (rItem.pm_item.failedAssertions.length > 0 ) {
+            const msg = this.escape(rItem.pm_item.failedAssertions.join(", "));
+            const details = this.escape(`Response code: ${rItem.pm_item.response_data.code}, status: ${rItem.pm_item.response_data.status}`);
             
-            this.failTestCase(this.currentTest, {
+            this.failTestCase(rItem.allure_test, {
                 name: "AssertionError",
                 message: msg,
                 trace: details,
             });
 
         } else {
-            this.passTestCase();
+            this.passTestCase(rItem.allure_test);
         }
-
-        this.runningTest = null;
+        this.runningItems.pop();
     }
 
     pushStep(step) {
-        this.steps.push(step);
+        if(!Array.isArray(this.runningItems[this.runningItems.length - 1].steps)) this.runningItems[this.runningItems.length - 1].steps = [];
+        this.runningItems[this.runningItems.length - 1].steps.push(step);
     }
     popStep() {
-        this.steps.pop();
+        return this.runningItems[this.runningItems.length - 1].steps.pop();
     }
     
-    endTest(status, details) {
-        if (this.currentTest === null) {
-          throw new Error("endTest while no test is running");
-        }
+    endTest(allure_test, status, details) {
         if (details) {
-          this.currentTest.statusDetails = details;
+            allure_test.statusDetails = details;
         }
-        this.currentTest.status = status;
-        this.currentTest.stage = Stage.FINISHED;
-        this.currentTest.endTest();
+        allure_test.status = status;
+        allure_test.stage = Stage.FINISHED;
+        allure_test.endTest();
     }
 
     itemName(item, cursor) {

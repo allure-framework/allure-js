@@ -1,0 +1,216 @@
+{
+	"info": {
+		"_postman_id": "986caec7-363c-4648-9939-bb445fa03e67",
+		"name": "Sample Postman Collection",
+		"description": "A sample collection to demonstrate collections as a set of related requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "ParentSuite",
+			"item": [
+				{
+					"name": "SubSuite",
+					"item": [
+						{
+							"name": "A simple GET request",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "83b25722-b7d9-4fd7-b2c3-f003088c488c",
+										"exec": [
+											"pm.test('expect response be 200', function () {",
+											"    pm.response.to.be.ok",
+											"})",
+											"pm.test('expect response json contain args', function () {",
+											"    pm.expect(pm.response.json().args).to.have.property('source')",
+											"      .and.equal('newman-sample-github-collection')",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "782f7180-466c-4275-90bf-f32180d34f2e",
+										"exec": [
+											"console.log(postman.getEnvironmentVariable(\"random\"));",
+											"if(postman.getEnvironmentVariable(\"random\") == null) {",
+											"    postman.setEnvironmentVariable(\"random\", 1);",
+											"    console.log(\"setting random variable\");",
+											"}",
+											"    "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://postman-echo.com/get?source=newman-sample-github-collection",
+									"protocol": "https",
+									"host": [
+										"postman-echo",
+										"com"
+									],
+									"path": [
+										"get"
+									],
+									"query": [
+										{
+											"key": "source",
+											"value": "newman-sample-github-collection"
+										}
+									]
+								},
+								"description": "Request to get the URL for Newman Sample Github Collection"
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "2cf42337-3eba-49b8-9819-32f543aabb09",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "b64bca10-a17e-4408-bf91-d9e3055ceb09",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "PostRequests",
+			"item": [
+				{
+					"name": "A simple POST request",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d93d83cf-4925-44a9-a022-92370c60550f",
+								"exec": [
+									"var condition = true;",
+									"",
+									"let rnd = postman.getEnvironmentVariable(\"random\");",
+									"rnd = parseInt(rnd) + 1;",
+									"",
+									"postman.setEnvironmentVariable(\"random\", rnd);",
+									"",
+									"console.log(rnd);",
+									"",
+									"if(condition) {",
+									"//   postman.setEnvironmentVariable(\"random\", \"this is a random variable\");",
+									"} ",
+									"",
+									"console.log(\"Done pre-request\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "a298d2f2-4000-41de-86a9-5ec4e0f90bf1",
+								"exec": [
+									"",
+									"",
+									"let tc = postman.getEnvironmentVariable(\"random\");",
+									"console.log(parseInt(tc))",
+										"if(parseInt(tc) < 4)",
+									"{",
+									"    postman.setNextRequest('A simple GET request');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "text/plain"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "Duis posuere augue vel cursus pharetra. In luctus a ex nec pretium..."
+						},
+						"url": {
+							"raw": "https://postman-echo.com/post",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"post"
+							]
+						},
+						"description": "Posting Raw data to post endpoint"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PostWithBody",
+			"item": [
+				{
+					"name": "A simple POST request with JSON body",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"text\":\"Duis posuere augue vel cursus pharetra. In luctus a ex nec pretium...\"}"
+						},
+						"url": {
+							"raw": "https://postman-echo.com/post",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"post"
+							]
+						},
+						"description": "Posting text data to post endpoint"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
