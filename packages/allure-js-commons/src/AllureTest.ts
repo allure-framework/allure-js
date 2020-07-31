@@ -6,14 +6,14 @@ import { AllureRuntime } from "./AllureRuntime";
 export class AllureTest extends ExecutableItemWrapper {
   private readonly testResult: TestResult;
 
-  constructor(private readonly runtime: AllureRuntime) {
+  constructor(private readonly runtime: AllureRuntime, start: number = Date.now()) {
     super(testResult());
     this.testResult = this.wrappedItem as TestResult;
-    this.testResult.start = Date.now();
+    this.testResult.start = start;
   }
 
-  endTest(): void {
-    this.testResult.stop = Date.now();
+  endTest(stop: number = Date.now()): void {
+    this.testResult.stop = stop;
     this.runtime.writeResult(this.testResult);
     // TODO: test that child steps ended
   }

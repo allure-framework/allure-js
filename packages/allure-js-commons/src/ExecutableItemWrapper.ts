@@ -113,13 +113,13 @@ export class ExecutableItemWrapper {
 
 // This class is here because of circular dependency with ExecutableItemWrapper
 export class AllureStep extends ExecutableItemWrapper {
-  constructor(private readonly stepResult: StepResult) {
+  constructor(private readonly stepResult: StepResult, start: number = Date.now()) {
     super(stepResult);
-    this.stepResult.start = Date.now();
+    this.stepResult.start = start;
   }
 
-  endStep() {
-    this.stepResult.stop = Date.now();
+  endStep(stop: number = Date.now()) {
+    this.stepResult.stop = stop;
     // TODO: test that child steps ended
   }
 }
