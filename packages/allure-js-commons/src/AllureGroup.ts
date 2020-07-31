@@ -16,8 +16,8 @@ export class AllureGroup {
     return group;
   }
 
-  startTest(name?: string): AllureTest {
-    const test = new AllureTest(this.runtime);
+  startTest(name?: string, start?: number): AllureTest {
+    const test = new AllureTest(this.runtime, start);
     this.testResultContainer.children.push(test.uuid);
     test.name = name || "Unnamed";
     return test;

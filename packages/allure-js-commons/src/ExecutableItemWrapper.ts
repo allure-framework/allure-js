@@ -63,11 +63,11 @@ export class ExecutableItemWrapper {
     this.info.attachments.push({ name, type, source: fileName });
   }
 
-  public startStep(name: string): AllureStep {
+  public startStep(name: string, start?: number): AllureStep {
     const result = stepResult();
     this.info.steps.push(result);
 
-    const allureStep = new AllureStep(result);
+    const allureStep = new AllureStep(result, start);
     allureStep.name = name;
     return allureStep;
   }
