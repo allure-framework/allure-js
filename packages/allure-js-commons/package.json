@@ -20,7 +20,7 @@
     "@types/uuid": "^7.0.0"
   },
   "dependencies": {
-    "mkdirp": "^0.5.1",
+    "mkdirp": "^1.0.4",
     "properties": "^1.2.1",
     "uuid": "^7.0.2"
   }
