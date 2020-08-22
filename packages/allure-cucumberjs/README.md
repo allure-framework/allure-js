@@ -41,8 +41,8 @@ node cucumber.js --format ./path/to/Reporter.js:./dummy.txt
 #### Reporter without classes
 If you can not use classes (ES6 or TypeScript), here is an example of Reporter.js file written in plain JS:
 ```javascript
-var CucumberJSAllureFormatter = require(allure-cucumberjs).CucumberJSAllureFormatter;
-var AllureRuntime = require(allure-cucumberjs).AllureRuntime;
+var CucumberJSAllureFormatter = require("allure-cucumberjs").CucumberJSAllureFormatter;
+var AllureRuntime = require("allure-cucumberjs").AllureRuntime;
 
 function Reporter(options) {
   CucumberJSAllureFormatter.call(this,
