@@ -27,7 +27,7 @@ export class AllureWriter implements IAllureWriter {
   }
 
   writeEnvironmentInfo(info?: Record<string, string | undefined>) {
-    const text = stringify(info, { unicode: true });
+    const text = JSON.stringify(info);
     const path = this.buildPath("environment.properties");
     writeFileSync(path, text);
   }
