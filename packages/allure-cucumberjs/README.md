@@ -45,11 +45,13 @@ var CucumberJSAllureFormatter = require(allure-cucumberjs).CucumberJSAllureForma
 var AllureRuntime = require(allure-cucumberjs).AllureRuntime;
 
 function Reporter(options) {
-  CucumberJSAllureFormatter.call(this,
+  return new CucumberJSAllureFormatter(
     options,
-    new AllureRuntime({ resultsDir: "./out/allure-results" }),
-    {});
+    new AllureRuntime({ resultsDir: "./allure-results" }),
+    {}
+  );
 }
+
 Reporter.prototype = Object.create(CucumberJSAllureFormatter.prototype);
 Reporter.prototype.constructor = Reporter;
 
