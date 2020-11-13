@@ -15,11 +15,14 @@ class AttachmentsSuite {
     expect(test).not.eq(undefined);
     expect(test.status).eq(Status.PASSED);
 
-    expect(test.attachments).length(2);
+    expect(test.attachments).length(3);
     expect(test.attachments[0].name).eq("test attachment 1");
     expect(test.attachments[0].type).eq("text/plain");
     expect(test.attachments[1].name).eq("test attachment 2");
     expect(test.attachments[1].type).eq("application/json");
+    expect(test.attachments[2].name).eq("custom-attachment");
+    expect(test.attachments[2].type).eq("application/vnd.something.custom");
+    expect(test.attachments[2].source).matches(/\.json$/);
 
     expect(test.steps).length(2);
 

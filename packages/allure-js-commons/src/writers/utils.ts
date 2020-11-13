@@ -1,7 +1,10 @@
-import { ContentType } from "../model";
+import { AttachmentOptions, ContentType } from "../model";
 
-export function typeToExtension(type: ContentType): string {
-  switch (type) {
+export function typeToExtension(options: AttachmentOptions): string {
+  if (options.fileExtension) {
+    return options.fileExtension;
+  }
+  switch (options.contentType) {
     case ContentType.TEXT:
       return "txt";
     case ContentType.XML:
@@ -25,5 +28,5 @@ export function typeToExtension(type: ContentType): string {
     case ContentType.JPEG:
       return "jpg";
   }
-  throw new Error(`Unrecognized extension: ${type}`);
+  throw new Error(`Unrecognized extension: ${options.contentType}`);
 }

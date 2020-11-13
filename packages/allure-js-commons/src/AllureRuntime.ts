@@ -1,4 +1,4 @@
-import { Category, ContentType, TestResult, TestResultContainer } from "./model";
+import { AttachmentOptions, Category, ContentType, TestResult, TestResultContainer } from "./model";
 import { v4 as randomUUID } from "uuid";
 import { IAllureConfig } from "./AllureConfig";
 import { AllureGroup } from "./AllureGroup";
@@ -28,8 +28,11 @@ export class AllureRuntime {
     this.writer.writeGroup(result);
   }
 
-  writeAttachment(content: Buffer | string, contentType: ContentType): string {
-    const extension = typeToExtension(contentType);
+  writeAttachment(content: Buffer | string, options: ContentType | string | AttachmentOptions) {
+    if (typeof options === "string") {
+      options = { contentType: options };
+    }
+    const extension = typeToExtension(options);
     const fileName = `${randomUUID()}-attachment.${extension}`;
     this.writer.writeAttachment(fileName, content);
     return fileName;

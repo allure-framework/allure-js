@@ -3,6 +3,7 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
+  AttachmentOptions,
   ContentType,
   ExecutableItemWrapper,
   LabelName,
@@ -134,8 +135,8 @@ export class AllureReporter {
     this.endTest(status, { message: error.message, trace: error.stack });
   }
 
-  public writeAttachment(content: Buffer | string, type: ContentType): string {
-    return this.allureRuntime.writeAttachment(content, type);
+  public writeAttachment(content: Buffer | string, options: ContentType | string | AttachmentOptions): string {
+    return this.allureRuntime.writeAttachment(content, options);
   }
 
   public pushStep(step: AllureStep): void {

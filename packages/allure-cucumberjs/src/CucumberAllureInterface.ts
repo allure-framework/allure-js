@@ -2,6 +2,7 @@ import {
   Allure,
   AllureStep,
   AllureTest,
+  AttachmentOptions,
   ContentType,
   ExecutableItemWrapper,
   isPromise,
@@ -61,14 +62,14 @@ export class CucumberAllureInterface extends Allure {
     this.step(name, () => {}); // todo status
   }
 
-  attachment(name: string, content: Buffer | string, type: ContentType) {
-    const file = this.reporter.writeAttachment(content, type);
-    this.currentExecutable.addAttachment(name, type, file);
+  attachment(name: string, content: Buffer | string, options: ContentType | string | AttachmentOptions) {
+    const file = this.reporter.writeAttachment(content, options);
+    this.currentExecutable.addAttachment(name, options, file);
   }
 
-  testAttachment(name: string, content: Buffer | string, type: ContentType) {
-    const file = this.reporter.writeAttachment(content, type);
-    this.currentTest.addAttachment(name, type, file);
+  testAttachment(name: string, content: Buffer | string, options: ContentType | string | AttachmentOptions) {
+    const file = this.reporter.writeAttachment(content, options);
+    this.currentTest.addAttachment(name, options, file);
   }
 
   addParameter(name: string, value: string): void {
