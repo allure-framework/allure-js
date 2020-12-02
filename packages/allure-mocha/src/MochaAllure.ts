@@ -3,6 +3,7 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
+  AttachmentOptions,
   ContentType,
   ExecutableItemWrapper,
   isPromise,
@@ -60,14 +61,18 @@ export class MochaAllure extends Allure {
     }); // todo status
   }
 
-  public attachment(name: string, content: Buffer | string, type: ContentType): void {
-    const file = this.reporter.writeAttachment(content, type);
-    this.currentExecutable.addAttachment(name, type, file);
+  public attachment(name: string, content: Buffer | string, options: ContentType | string | AttachmentOptions): void {
+    const file = this.reporter.writeAttachment(content, options);
+    this.currentExecutable.addAttachment(name, options, file);
   }
 
-  public testAttachment(name: string, content: Buffer | string, type: ContentType): void {
-    const file = this.reporter.writeAttachment(content, type);
-    this.currentTest.addAttachment(name, type, file);
+  public testAttachment(
+    name: string,
+    content: Buffer | string,
+    options: ContentType | string | AttachmentOptions
+  ): void {
+    const file = this.reporter.writeAttachment(content, options);
+    this.currentTest.addAttachment(name, options, file);
   }
 
   public get currentTest(): AllureTest {

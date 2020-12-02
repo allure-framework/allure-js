@@ -1,4 +1,4 @@
-import { Category, LinkType, Status } from "./model";
+import { AttachmentOptions, Category, LinkType, Status } from "./model";
 import { ContentType } from "./model";
 import { LabelName } from "./model";
 import { AllureTest } from "./AllureTest";
@@ -63,7 +63,11 @@ export abstract class Allure {
     this.currentExecutable.descriptionHtml = html;
   }
 
-  public abstract attachment(name: string, content: Buffer | string, type: ContentType): void;
+  public abstract attachment(
+    name: string,
+    content: Buffer | string,
+    options: ContentType | string | AttachmentOptions
+  ): void;
 
   public owner(owner: string): void {
     this.label(LabelName.OWNER, owner);

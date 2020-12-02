@@ -1,4 +1,5 @@
 import {
+  AttachmentOptions,
   StatusDetails,
   StepResult,
   FixtureResult,
@@ -58,9 +59,11 @@ export class ExecutableItemWrapper {
     this.info.parameters.push({ name, value });
   }
 
-  public addAttachment(name: string, type: ContentType, fileName: string) {
-    // eslint-disable-next-line object-shorthand
-    this.info.attachments.push({ name, type, source: fileName });
+  public addAttachment(name: string, options: ContentType | string | AttachmentOptions, fileName: string) {
+    if (typeof options === "string") {
+      options = { contentType: options };
+    }
+    this.info.attachments.push({ name, type: options.contentType, source: fileName });
   }
 
   public startStep(name: string, start?: number): AllureStep {

@@ -3,6 +3,7 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
+  AttachmentOptions,
   ContentType,
   ExecutableItemWrapper,
   isPromise,
@@ -65,8 +66,8 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
     return this.runningExecutable;
   }
 
-  writeAttachment(content: Buffer | string, type: ContentType): string {
-    return this.runtime.writeAttachment(content, type);
+  writeAttachment(content: Buffer | string, options: ContentType | string | AttachmentOptions): string {
+    return this.runtime.writeAttachment(content, options);
   }
 
   jasmineStarted(suiteInfo: jasmine.SuiteInfo): void {
@@ -315,9 +316,9 @@ export class JasmineAllureInterface extends Allure {
     this.step(name, () => {}); // todo status
   }
 
-  attachment(name: string, content: Buffer | string, type: ContentType) {
-    const file = this.reporter.writeAttachment(content, type);
-    this.currentExecutable.addAttachment(name, type, file);
+  attachment(name: string, content: Buffer | string, options: ContentType | string | AttachmentOptions) {
+    const file = this.reporter.writeAttachment(content, options);
+    this.currentExecutable.addAttachment(name, options, file);
   }
 }
 

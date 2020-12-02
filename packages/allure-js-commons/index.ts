@@ -8,6 +8,7 @@ export { AllureStep } from "./src/ExecutableItemWrapper";
 export { isPromise } from "./src/isPromise";
 export { Allure, StepInterface } from "./src/Allure";
 export {
+  AttachmentOptions,
   Attachment,
   Category,
   StepResult,

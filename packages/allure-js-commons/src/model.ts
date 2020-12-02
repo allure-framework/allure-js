@@ -4,6 +4,11 @@ export interface Attachment {
   source: string
 }
 
+export interface AttachmentOptions {
+  contentType: ContentType | string,
+  fileExtension?: string;
+}
+
 export interface Label {
   name: LabelName | string
   value: string
@@ -121,7 +126,6 @@ export enum LabelName {
   LANGUAGE = "language",
 }
 
-/* eslint-disable no-undef */
 export enum Severity {
   BLOCKER = "blocker",
   CRITICAL = "critical",

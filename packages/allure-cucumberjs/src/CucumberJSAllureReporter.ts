@@ -5,6 +5,7 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
+  AttachmentOptions,
   ContentType,
   ExecutableItemWrapper,
   LabelName
@@ -239,7 +240,9 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     if (step.argument !== undefined) {
       if (step.argument.content !== undefined) {
-        const file = this.allureRuntime.writeAttachment(step.argument.content, ContentType.TEXT);
+        const file = this.allureRuntime.writeAttachment(step.argument.content, {
+          contentType: ContentType.TEXT,
+        });
         allureStep.addAttachment("Text", ContentType.TEXT, file);
       }
       if (step.argument.rows !== undefined) {
@@ -249,7 +252,7 @@ export class CucumberJSAllureFormatter extends Formatter {
               cell => cell.value.replace(/\t/g, "    ")
             ).join("\t")
           ).join("\n"),
-          ContentType.TSV
+          { contentType: ContentType.TSV }
         );
         allureStep.addAttachment("Table", ContentType.TSV, file);
       }
@@ -264,7 +267,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     if ([ContentType.JPEG, ContentType.PNG, ContentType.WEBM].indexOf(type) >= 0) {
       content = Buffer.from(content, "base64");
     }
-    const file = this.allureRuntime.writeAttachment(content, type);
+    const file = this.allureRuntime.writeAttachment(content, { contentType: type });
     this.currentStep.addAttachment("attached", type, file);
   }
 
@@ -315,8 +318,8 @@ export class CucumberJSAllureFormatter extends Formatter {
     return null;
   }
 
-  writeAttachment(content: Buffer | string, type: ContentType): string {
-    return this.allureRuntime.writeAttachment(content, type);
+  writeAttachment(content: Buffer | string, options: ContentType | string | AttachmentOptions): string {
+    return this.allureRuntime.writeAttachment(content, options);
   }
 }
 
