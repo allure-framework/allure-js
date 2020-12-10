@@ -1,9 +1,7 @@
+import { StepResult, TestResult } from "allure-js-commons";
+import chai, { expect } from "chai";
 import { Then, When } from "cucumber";
-import { expect } from "chai";
-import chai from "chai";
-import { TestResult } from "allure-js-commons";
 import { ChaiPartial } from "../support/chai-partial";
-import { StepResult } from "allure-js-commons";
 
 chai.use(ChaiPartial);
 
@@ -35,3 +33,8 @@ Then(/^it has label "(.*)" with value "(.*)"$/, function(name: string, value: st
 Then(/^it has description "(.*)"$/, function(description: string) {
   expect(this.ctx).partial({ description });
 });
+
+Then(/^it has link with url "(.*)" with name "(.*)" and with type "(.*)"$/,
+  function(url: string, name: string, type: string) {
+    expect(this.ctx).partial({ links: [{ url, name, type }] });
+  });

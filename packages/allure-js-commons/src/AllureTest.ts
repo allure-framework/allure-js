@@ -1,7 +1,7 @@
-import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
-import { TestResult } from "./model";
-import { testResult } from "./constructors";
 import { AllureRuntime } from "./AllureRuntime";
+import { testResult } from "./constructors";
+import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
+import { LinkType, TestResult } from "./model";
 
 export class AllureTest extends ExecutableItemWrapper {
   private readonly testResult: TestResult;
@@ -36,5 +36,13 @@ export class AllureTest extends ExecutableItemWrapper {
 
   addLink(url: string, name?: string, type?: string): void {
     this.testResult.links.push({ name, url, type });
+  }
+
+  addIssue(url: string, name: string) {
+    this.addLink(url, name, LinkType.ISSUE);
+  }
+
+  addTMS(url: string, name: string) {
+    this.addLink(url, name, LinkType.TMS);
   }
 }
