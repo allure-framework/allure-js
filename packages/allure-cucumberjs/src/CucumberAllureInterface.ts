@@ -80,12 +80,12 @@ export class CucumberAllureInterface extends Allure {
     this.currentTest.addLabel(name, value);
   }
 
-  addIssue(url: string, name: string) {
-    this.currentTest.addIssue(url, name);
+  addIssueLink(url: string, name: string) {
+    this.currentTest.addIssueLink(url, name);
   }
 
-  addTMS(url: string, name: string) {
-    this.currentTest.addTMS(url, name);
+  addTmsLink(url: string, name: string) {
+    this.currentTest.addTmsLink(url, name);
   }
 }
 

@@ -36,9 +36,8 @@ export interface World extends CucumberWorld {
 export class CucumberJSAllureFormatterConfig {
   exceptionFormatter?: (message: string) => string;
   issuesTrackerUrlPattern?: string;
-  labels?: {
-    [key: string]: RegExp[];
-  };
+  labels?: { [key: string]: RegExp[]; };
+  links?: { [key: string]: RegExp[]; };
   testsManagementUrlPattern?: string;
 }
 
@@ -54,6 +53,7 @@ export class CucumberJSAllureFormatter extends Formatter {
   private readonly featureMap: Map<string, GherkinDocument> = new Map();
   private readonly issuesTrackerUrlPattern?: string;
   private readonly labels: { [key: string]: RegExp[]; };
+  private readonly links: { [key: string]: RegExp[]; };
   private readonly sourceMap: Map<string, string[]> = new Map();
   private stepStack: AllureStep[] = [];
   private readonly stepsMap: Map<string, SourceLocation[]> = new Map();
@@ -73,6 +73,7 @@ export class CucumberJSAllureFormatter extends Formatter {
       .on("test-case-finished", this.onTestCaseFinished.bind(this));
 
     this.labels = config.labels || {};
+    this.links = config.links || {};
     this.issuesTrackerUrlPattern = config.issuesTrackerUrlPattern;
     this.testsManagementUrlPattern = config.testsManagementUrlPattern;
     this.exceptionFormatter = function(message) {
@@ -205,11 +206,22 @@ export class CucumberJSAllureFormatter extends Formatter {
           const match = tag.name.match(reg);
           if (match != null && match.length > 1) {
             this.currentTest.addLabel(label, match[1]);
-            if (label === LinkType.ISSUE && this.issuesTrackerUrlPattern) {
-              this.currentTest.addIssue(this.issuesTrackerUrlPattern.replace("%s", match[1]), match[1]);
+          }
+        }
+      }
+
+      for (const link in this.links) {
+        if (!this.links[link]) {
+          continue;
+        }
+        for (const reg of this.links[link]) {
+          const match = tag.name.match(reg);
+          if (match != null && match.length > 1) {
+            if (link === LinkType.ISSUE && this.issuesTrackerUrlPattern) {
+              this.currentTest.addIssueLink(this.issuesTrackerUrlPattern.replace("%s", match[1]), match[1]);
             }
-            if (label === LinkType.TMS && this.testsManagementUrlPattern) {
-              this.currentTest.addTMS(this.testsManagementUrlPattern.replace("%s", match[1]), match[1]);
+            if (link === LinkType.TMS && this.testsManagementUrlPattern) {
+              this.currentTest.addTmsLink(this.testsManagementUrlPattern.replace("%s", match[1]), match[1]);
             }
           }
         }

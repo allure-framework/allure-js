@@ -4,7 +4,7 @@ Feature: Links
     Given a allure formatter file with config:
       """
       {
-        labels: {
+        links: {
           issue: [/@issue=(.*)/],
           tms: [/@tms=(.*)/]
         },

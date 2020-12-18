@@ -15,8 +15,11 @@ export default class Reporter extends CucumberJSAllureFormatter {
       {
         labels: {
           epic: [/@feature:(.*)/],
+          severity: [/@severity:(.*)/]
+        },
+        links: {
           issue: [/@issue:(.*)/],
-          tms: [/@tms:(.*)/],
+          tms: [/@tms:(.*)/]
         },
         issuesTrackerUrlPattern: "http://localhost:8080/issue/%s",
         testsManagementUrlPattern: "http://localhost:8080/tms/%s"

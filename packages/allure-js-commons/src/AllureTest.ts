@@ -38,11 +38,11 @@ export class AllureTest extends ExecutableItemWrapper {
     this.testResult.links.push({ name, url, type });
   }
 
-  addIssue(url: string, name: string) {
+  addIssueLink(url: string, name: string) {
     this.addLink(url, name, LinkType.ISSUE);
   }
 
-  addTMS(url: string, name: string) {
+  addTmsLink(url: string, name: string) {
     this.addLink(url, name, LinkType.TMS);
   }
 }
