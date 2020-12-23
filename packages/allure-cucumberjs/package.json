@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
-    "@types/cucumber": "^6.0.1",
+    "@types/cucumber": "^7.0.0",
     "@types/fs-extra": "^9.0.1",
     "@types/glob": "^7.1.1",
     "@types/verror": "^1.10.3",
