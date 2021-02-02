@@ -7,8 +7,7 @@ import {
   AttachmentOptions,
   ContentType,
   ExecutableItemWrapper,
-  LabelName,
-  LinkType
+  LabelName
 } from "allure-js-commons";
 import { Formatter, World as CucumberWorld } from "cucumber";
 import { CucumberAllureInterface } from "./CucumberAllureInterface";
@@ -35,10 +34,17 @@ export interface World extends CucumberWorld {
 
 export class CucumberJSAllureFormatterConfig {
   exceptionFormatter?: (message: string) => string;
-  issuesTrackerUrlPattern?: string;
   labels?: { [key: string]: RegExp[]; };
-  links?: { [key: string]: RegExp[]; };
-  testsManagementUrlPattern?: string;
+  links?: {
+    issue?: {
+      pattern: RegExp[];
+      urlTemplate: string;
+    },
+    tms?: {
+      pattern: RegExp[];
+      urlTemplate: string;
+    }
+  };
 }
 
 export class CucumberJSAllureFormatter extends Formatter {
@@ -51,16 +57,22 @@ export class CucumberJSAllureFormatter extends Formatter {
   private readonly beforeHooks: TestHookDefinition[];
   private readonly exceptionFormatter: (message: string) => string;
   private readonly featureMap: Map<string, GherkinDocument> = new Map();
-  private readonly issuesTrackerUrlPattern?: string;
   private readonly labels: { [key: string]: RegExp[]; };
-  private readonly links: { [key: string]: RegExp[]; };
+  private readonly links: {
+    issue?: {
+      pattern: RegExp[];
+      urlTemplate: string;
+    },
+    tms?: {
+      pattern: RegExp[];
+      urlTemplate: string;
+    }
+  };
   private readonly sourceMap: Map<string, string[]> = new Map();
   private stepStack: AllureStep[] = [];
   private readonly stepsMap: Map<string, SourceLocation[]> = new Map();
-  private readonly testsManagementUrlPattern?: string;
 
-  constructor(options: any, private readonly allureRuntime: AllureRuntime,
-    config: CucumberJSAllureFormatterConfig) {
+  constructor(options: any, private readonly allureRuntime: AllureRuntime, config: CucumberJSAllureFormatterConfig) {
     super(options);
     options.eventBroadcaster
       .on("source", this.onSource.bind(this))
@@ -74,8 +86,6 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     this.labels = config.labels || {};
     this.links = config.links || {};
-    this.issuesTrackerUrlPattern = config.issuesTrackerUrlPattern;
-    this.testsManagementUrlPattern = config.testsManagementUrlPattern;
     this.exceptionFormatter = function(message) {
       if (config.exceptionFormatter !== undefined) {
         try {
@@ -210,19 +220,20 @@ export class CucumberJSAllureFormatter extends Formatter {
         }
       }
 
-      for (const link in this.links) {
-        if (!this.links[link]) {
-          continue;
-        }
-        for (const reg of this.links[link]) {
+      if (this.links.issue) {
+        for (const reg of this.links.issue.pattern) {
           const match = tag.name.match(reg);
           if (match != null && match.length > 1) {
-            if (link === LinkType.ISSUE && this.issuesTrackerUrlPattern) {
-              this.currentTest.addIssueLink(this.issuesTrackerUrlPattern.replace("%s", match[1]), match[1]);
-            }
-            if (link === LinkType.TMS && this.testsManagementUrlPattern) {
-              this.currentTest.addTmsLink(this.testsManagementUrlPattern.replace("%s", match[1]), match[1]);
-            }
+            this.currentTest.addIssueLink(this.links.issue.urlTemplate.replace("%s", match[1]), match[1]);
+          }
+        }
+      }
+
+      if (this.links.tms) {
+        for (const reg of this.links.tms.pattern) {
+          const match = tag.name.match(reg);
+          if (match != null && match.length > 1) {
+            this.currentTest.addTmsLink(this.links.tms.urlTemplate.replace("%s", match[1]), match[1]);
           }
         }
       }

@@ -18,11 +18,15 @@ export default class Reporter extends CucumberJSAllureFormatter {
           severity: [/@severity:(.*)/]
         },
         links: {
-          issue: [/@issue:(.*)/],
-          tms: [/@tms:(.*)/]
-        },
-        issuesTrackerUrlPattern: "http://localhost:8080/issue/%s",
-        testsManagementUrlPattern: "http://localhost:8080/tms/%s"
+          issue: {
+            pattern: [/@issue=(.*)/],
+            urlTemplate: "http://localhost:8080/issue/%s"
+          },
+          tms: {
+            pattern: [/@tms=(.*)/],
+            urlTemplate: "http://localhost:8080/tms/%s"
+          }
+        }
       }
     );
   }
