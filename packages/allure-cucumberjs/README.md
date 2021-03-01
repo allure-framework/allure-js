@@ -11,23 +11,40 @@ export default class Reporter extends CucumberJSAllureFormatter {
   constructor(options) {
     super(
       options,
-      new AllureRuntime({ resultsDir: "./out/allure-results" }),
+      new AllureRuntime({ resultsDir: "./allure-results" }),
       {
         labels: {
-          issue: [/@bug_(.*)/],
-          epic: [/@feature:(.*)/]
+          epic: [/@feature:(.*)/],
+          severity: [/@severity:(.*)/]
+        },
+        links: {
+          issue: {
+            pattern: [/@issue=(.*)/],
+            urlTemplate: "http://localhost:8080/issue/%s"
+          },
+          tms: {
+            pattern: [/@tms=(.*)/],
+            urlTemplate: "http://localhost:8080/tms/%s"
+          }
         }
       }
     );
   }
 }
 ```
-This class MUST:
-* Be a default export
-* Extend `CucumberJSAllureFormatter`
-* Take 1 argument in constructor and pass it to `super()` as first argument
-* Second `super()` argument is `AllureRuntime` instance
-* Third is a config, currently allows to map tags to Allure labels
+This class **MUST**:
+* Be a default export.
+* Extend `CucumberJSAllureFormatter`.
+* First `super()` argument is the first argument in the `constructor`.
+* Second `super()` argument is an `AllureRuntime` instance.
+* Third argument is a config object which allows:
+  * Map tags to Allure labels.
+  * Add links to external sites like JIRA, XRAY, etc. `%s` will be auto-replaced by the issue id. Example:
+```gherkin
+@issue=TEST-1
+Scenario: Example for scenario issue link check
+Then the issue link should be "http://localhost:8080/issue/TEST-1"
+```
 
 Then pass with reporter as a Cucumber formatter:
 ```
@@ -68,3 +85,5 @@ Ilya Korobitsyn <mail@korobochka.org>
 #### Contributors
 
 * Claudia Hardman <claudia.hardman@mattel.com>
+* Max Di Maria <ciclids@gmail.com>
+* Daniel Montesinos <damonpam@gmail.com>

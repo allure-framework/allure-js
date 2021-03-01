@@ -79,6 +79,14 @@ export class CucumberAllureInterface extends Allure {
   addLabel(name: string, value: string): void {
     this.currentTest.addLabel(name, value);
   }
+
+  addIssueLink(url: string, name: string) {
+    this.currentTest.addIssueLink(url, name);
+  }
+
+  addTmsLink(url: string, name: string) {
+    this.currentTest.addTmsLink(url, name);
+  }
 }
 
 export class WrappedStep {
