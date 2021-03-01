@@ -27,7 +27,7 @@
   "devDependencies": {
     "@testdeck/mocha": "0.1.2",
     "@types/chai": "^4.2.11",
-    "@types/mocha": "^7.0.2",
+    "@types/mocha": "^8.2.1",
     "chai": "^4.2.0",
     "codecov": "^3.6.5",
     "dotenv": "^8.2.0",
