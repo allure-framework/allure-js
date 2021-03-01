@@ -25,7 +25,7 @@
     "lint-fix": "eslint ./src ./test ./index.ts --ext .ts --fix"
   },
   "devDependencies": {
-    "@testdeck/mocha": "0.1.0",
+    "@testdeck/mocha": "0.1.2",
     "@types/chai": "^4.2.11",
     "@types/mocha": "^7.0.2",
     "chai": "^4.2.0",
