@@ -25,6 +25,8 @@ jobs:
 
       - name: Create version
         run: |
+          git config user.name qameta-ci
+          git config user.email qameta-ci@qameta.io
           npm run version -- ${{ github.event.inputs.version }}
 
 #name: Release to NPM
