@@ -1,40 +1,70 @@
-name: Release to NPM
-
+name: Release
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Allure JS/TS version'
+        required: true
+        default: 'Mona the Octocat'
 
 jobs:
   build:
+    name: Create Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - run: |
-          git fetch --prune --unshallow --tags
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
-          node-version: 10.x
+          node-version: 14.x
 
-      - name: npm install, build
+      - name: NPM install
         run: |
           npm install
-          npm run prepare
-          npm run build
-          npm run run-test
-        env:
-          CI: true
 
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
-
-      - name: npm release
+      - name: Create version
         run: |
-          npm run version -- ${{ steps.get_version.outputs.VERSION }}
-          npm run release
-        env:
-          NPM_USER: ${{ secrets.NPM_USER }}
-          NPM_PASS: ${{ secrets.NPM_PASS }}
-          CI: true
+          npm run version --  ${{ github.event.inputs.version }}!"
+
+#name: Release to NPM
+#
+#on:
+#  release:
+#    types: [published]
+#
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - run: |
+#          git fetch --prune --unshallow --tags
+#
+#      - name: Use Node.js ${{ matrix.node-version }}
+#        uses: actions/setup-node@v1
+#        with:
+#          node-version: 10.x
+#
+#      - name: npm install, build
+#        run: |
+#          npm install
+#          npm run prepare
+#          npm run build
+#          npm run run-test
+#        env:
+#          CI: true
+#
+#      - name: Get the version
+#        id: get_version
+#        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
+#
+#      - name: npm release
+#        run: |
+#          npm run version -- ${{ steps.get_version.outputs.VERSION }}
+#          npm run release
+#        env:
+#          NPM_USER: ${{ secrets.NPM_USER }}
+#          NPM_PASS: ${{ secrets.NPM_PASS }}
+#          CI: true
