@@ -13,6 +13,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.QAMETA_CI }}
+      
+      - name: Configure CI Git User
+        run: |
+          git config --global user.name qameta-ci
+          git config --global user.email qameta-ci@qameta.io
+
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
@@ -25,8 +33,6 @@ jobs:
 
       - name: Create version
         run: |
-          git config --global user.name qameta-ci
-          git config --global user.email qameta-ci@qameta.io
           npm run version -- ${{ github.event.inputs.version }}
 
 #name: Release to NPM
