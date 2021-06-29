@@ -26,6 +26,6 @@
   "dependencies": {
     "@types/jest": "^26.0.10",
     "allure-js-commons": "^2.0.0-beta.10",
-    "jest": "^26.4.2"
+    "jest": "^27.0.6"
   }
 }
