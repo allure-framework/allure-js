@@ -1,67 +1,79 @@
+import { runTest } from "./helpers";
 import { Status } from "allure-js-commons";
-import { matchers } from "./matchers";
-import { JasmineTestEnv, runTest } from "./helpers";
 
 describe("Allure Result", () => {
-  beforeAll(() => jasmine.addMatchers(matchers));
-
-  describe("for passed test", function() {
-    const example = (testEnv: JasmineTestEnv) => {
-      testEnv.describe("Jasmine example", () => {
-        testEnv.it("passed test", () => {
-          testEnv.expect(true).toBeTruthy();
+  describe("for passed test", () => {
+    it("should have passed status", async () => {
+      const report = await runTest(() => {
+        describe("Example", () => {
+          it("passed test", () => {
+            expect(true).toBeTrue();
+          });
         });
       });
-    };
 
-    it("should have passed status", async function() {
-      const result = await runTest(example);
-      expect(result).toHaveTestLike({ status: Status.PASSED });
+      expect(report.tests).toContain(jasmine.objectContaining(
+        {
+          name: "passed test",
+          status: Status.PASSED
+        }
+      ));
     });
   });
 
   describe("for test with assertion", () => {
-    const example = (testEnv: JasmineTestEnv) => {
-      testEnv.describe("Jasmine example", () => {
-        testEnv.it("failed test", () => {
-          testEnv.expect(true).not.toBeTruthy();
+    it("should have failed status", async () => {
+      const report = await runTest(() => {
+        describe("Example", () => {
+          it("failed test", () => {
+            expect(false).toBeTrue();
+          });
         });
       });
-    };
 
-    it("should have failed status", async function() {
-      const result = await runTest(example);
-      expect(result).toHaveTestLike({ status: Status.FAILED });
+      expect(report.tests).toContain(jasmine.objectContaining(
+        {
+          name: "failed test",
+          status: Status.FAILED,
+          statusDetails: jasmine.objectContaining({
+            message: "[1] - Expected false to be true.",
+            trace: jasmine.stringMatching(/^\[1\] - Error: Expected false to be true./)
+          })
+        }
+      ));
     });
   });
 
-  describe("for test with disabled 'it'", () => {
-    const example = (testEnv: JasmineTestEnv) => {
-      testEnv.describe("Jasmine example", () => {
-        testEnv.xit("disabled 'it' test", () => {
-          testEnv.expect(true).not.toBeTruthy();
+  xdescribe("for test with error", () => {
+    it("should have broken status", async () => {
+      const report = await runTest(() => {
+        describe("Example", () => {
+          it("broken test", () => {
+            throw new Error("Error in test");
+          });
         });
       });
-    };
-
-    it("should have skipped status", async function() {
-      const result = await runTest(example);
-      expect(result).toHaveTestLike({ status: Status.SKIPPED });
     });
   });
 
-  describe("for test with disabled 'describe'", () => {
-    const example = (testEnv: JasmineTestEnv) => {
-      testEnv.xdescribe("Jasmine example", () => {
-        testEnv.it("disabled 'describe' test", () => {
-          testEnv.expect(true).not.toBeTruthy();
+  describe("for test with 'xit'", () => {
+    it("should have skipped status", async () => {
+      const report = await runTest(() => {
+        describe("Example", () => {
+          xit("skipped test", () => {
+          });
         });
       });
-    };
 
-    it("should have skipped status", async function() {
-      const result = await runTest(example);
-      expect(result).toHaveTestLike({ status: Status.SKIPPED });
+      expect(report.tests).toContain(jasmine.objectContaining(
+        {
+          name: "skipped test",
+          status: Status.SKIPPED,
+          statusDetails: jasmine.objectContaining({
+            message: "Temporarily disabled with xit"
+          })
+        }
+      ));
     });
   });
 });

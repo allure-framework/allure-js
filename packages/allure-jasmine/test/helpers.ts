@@ -1,36 +1,51 @@
-import { Allure, InMemoryAllureWriter } from "allure-js-commons";
-import { JasmineAllureReporter } from "../src/JasmineAllureReporter";
-import Env = jasmine.Env;
+import {
+  Allure2,
+  InMemoryAllureWriter,
+  Status,
+  TestResult,
+  TestResultContainer
+} from "allure-js-commons";
 
-export interface JasmineTestEnv extends Env {
-  expect(actual: any): any;
+import { Worker } from "worker_threads";
+import { IAllureWriter } from "allure-js-commons";
+
+type AllureResultType = "TestResult" | "Container"
+interface AllureResultEvent {
+  name: AllureResultType
+  data: TestResult | TestResultContainer
 }
 
-export async function runTest(fun: (testEnv: JasmineTestEnv, testAllure: Allure) => void) {
-  const writer = new InMemoryAllureWriter();
-  await new Promise((resolve, reject) => {
-    const reporter = new JasmineAllureReporter({ writer, resultsDir: "unused" });
-    const testEnv: JasmineTestEnv = eval("new jasmine.Env()");
-    testEnv.addReporter(reporter);
-    testEnv.addReporter({ jasmineDone: resolve });
-    const testAllure = reporter.getInterface();
-    fun(testEnv, testAllure);
-    testEnv.execute();
-  });
-  return writer;
+export class ResultsDispatcher {
+  writer: IAllureWriter;
+
+  constructor(writer: IAllureWriter) {
+    this.writer = writer;
+  }
+
+  public onMessage(message: AllureResultEvent) {
+    switch (message.name) {
+      case "TestResult":
+        this.writer.writeResult(message.data as TestResult);
+        break;
+      case "Container":
+        this.writer.writeGroup(message.data as TestResultContainer);
+        break;
+    }
+  }
 }
 
-export function delay(ms: number) {
-  return new Promise<void>(function(resolve) {
-    setTimeout(resolve, ms);
-  });
-}
-
-export function delayFail(ms: number) {
-  return new Promise<void>(function(resolve, reject) {
-    setTimeout(() => reject(new Error("Async error")), ms);
-  });
-}
+export const runTest = (specDefinitions: (testAllure: Allure2) => void): Promise<InMemoryAllureWriter> => (
+  new Promise((resolve, reject) => {
+    const writer = new InMemoryAllureWriter();
+    const dispatcher = new ResultsDispatcher(writer);
+    const worker = new Worker("./dist/test/worker.js",
+      { workerData: specDefinitions.toString(), /*stdout: true, stderr: true*/ });
+    worker.on("message", message => dispatcher.onMessage(message));
+    worker.on("exit", () => {
+      resolve(writer);
+    });
+  })
+);
 
 /*
 todo:
@@ -40,7 +55,6 @@ throwing test
 
 skipped test ++
 
-test pending with reason +
 test nested in 3 describes
 
 async passing test

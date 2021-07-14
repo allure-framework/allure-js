@@ -9,19 +9,19 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "clean": "rimraf ./dist ./out",
-    "lint": "eslint ./src ./test ./index.ts --ext .ts",
-    "lint-fix": "eslint ./src ./test ./index.ts --ext .ts --fix",
+    "lint": "echo eslint ./src ./test ./index.ts --ext .ts",
+    "lint-fix": "echo eslint ./src ./test ./index.ts --ext .ts --fix",
     "compile": "tsc",
     "build": "npm run lint && npm run compile",
     "prepublishOnly": "npm run clean && npm run build",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "runTest": "jasmine ./dist/test/*.js",
+    "runTest": "npm run compile && jasmine --config=./jasmine.json",
     "runTestDebug": "node $NODE_DEBUG_OPTION ./node_modules/.bin/jasmine ./dist/test/*.js",
     "test": "rimraf ./out ; npm run runTest ; npm run generate-report"
   },
   "devDependencies": {
-    "@types/jasmine": "^3.3.12",
-    "jasmine": "^3.4.0"
+    "@types/jasmine": "^3.7.7",
+    "jasmine": "^3.7.0"
   },
   "dependencies": {
     "allure-js-commons": "^2.0.0-beta.10"

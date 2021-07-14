@@ -32,7 +32,7 @@ export interface StatusDetails {
   trace?: string
 }
 
-interface ExecutableItem {
+export interface ExecutableItem {
   name?: string
   status?: Status
   statusDetails: StatusDetails

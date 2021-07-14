@@ -1,5 +1,5 @@
 export { AllureRuntime } from "./src/AllureRuntime";
-export { InMemoryAllureWriter } from "./src/writers";
+export { InMemoryAllureWriter, IAllureWriter } from "./src/writers";
 export { AllureConfig, IAllureConfig } from "./src/AllureConfig";
 export { AllureGroup } from "./src/AllureGroup";
 export { ExecutableItemWrapper } from "./src/ExecutableItemWrapper";
@@ -7,6 +7,8 @@ export { AllureTest } from "./src/AllureTest";
 export { AllureStep } from "./src/ExecutableItemWrapper";
 export { isPromise } from "./src/isPromise";
 export { Allure, StepInterface } from "./src/Allure";
+export { Allure2, StepWrapper } from "./src/Allure2";
+export { AllureLiveCycle } from "./src/AllureLiveCycle";
 export {
   AttachmentOptions,
   Attachment,

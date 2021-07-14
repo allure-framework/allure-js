@@ -1,58 +1,30 @@
-import { Allure } from "allure-js-commons";
-import { matchers } from "./matchers";
-import { JasmineTestEnv, runTest } from "./helpers";
+import { runTest } from "./helpers";
 
 describe("Allure Result", () => {
-  beforeAll(() => jasmine.addMatchers(matchers));
-
-  describe("for test with bdd labels in 'it'", function() {
-    const example = (tetEnv: JasmineTestEnv, testAllure: Allure) => {
-      tetEnv.describe("Jasmine example", () => {
-        tetEnv.it("passed test", () => {
-          testAllure.epic("epic from it");
-          testAllure.feature("feature from it");
-          testAllure.story("story from it");
-          tetEnv.expect(true).toBeTruthy();
+  describe("for test with bdd labels in 'it'", () => {
+    it("should have all defined bdd labels", async () => {
+      const report = await runTest(testAllure => {
+        describe("Example", () => {
+          it("it with BDD Labels", () => {
+            testAllure.epic("it Epic");
+            testAllure.feature("it Feature");
+            testAllure.story("it Story");
+          });
         });
       });
-    };
 
-    it("should have all defined bdd labels", async function() {
-      const result = await runTest(example);
-      expect(result).toHaveTestLike({
-        labels: [
-          { name: "epic", value: "epic from it" },
-          { name: "feature", value: "feature from it" },
-          { name: "story", value: "story from it" }
-        ]
-      });
-    });
-  });
-
-  describe("for test with bdd labels in 'describe'", function() {
-    const example = (tetEnv: any, testAllure: Allure) => {
-      tetEnv.describe("Jasmine example", () => {
-        tetEnv.beforeAll(() => {
-          testAllure.epic("epic from describe");
-          testAllure.feature("feature from describe");
-          testAllure.story("story from describe");
-        });
-
-        tetEnv.it("passed test", () => {
-          tetEnv.expect(true).toBeTruthy();
-        });
-      });
-    };
-
-    it("should have all defined bdd labels", async function() {
-      const result = await runTest(example);
-      expect(result).toHaveTestLike({
-        labels: [
-          { name: "epic", value: "epic from describe" },
-          { name: "feature", value: "feature from describe" },
-          { name: "story", value: "story from describe" }
-        ]
-      });
+      expect(report.tests).toContain(jasmine.objectContaining(
+        {
+          name: "it with BDD Labels",
+          labels: jasmine.arrayContaining(
+            [
+              { name: "epic", value: "it Epic" },
+              { name: "feature", value: "it Feature" },
+              { name: "story", value: "it Story" }
+            ]
+          )
+        }
+      ));
     });
   });
 });
