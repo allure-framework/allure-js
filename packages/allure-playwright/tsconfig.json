@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": [
+    "./src/**/*",
+  ],
+  "exclude": [
+    "./test/**/*",
+  ],
+  "compilerOptions": {
+    "types": [],
+    "lib": ["esnext", "dom", "DOM.Iterable"],
+    "rootDir": "./src",
+    "outDir": "./dist"
+  }
+}

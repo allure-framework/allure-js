@@ -26,6 +26,10 @@ This project aggregates Allure Javascript commons and reporters.
 [Read more](/packages/allure-mocha/README.md)
 
 
+### Playwright
+[Read more](/packages/allure-playwright/README.md)
+
+
 ## Development
 
 ### allure-js-commons
