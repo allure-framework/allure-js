@@ -3,7 +3,14 @@ import { JasmineAllureReporter } from "../src/JasmineAllureReporter";
 import Env = jasmine.Env;
 
 export interface JasmineTestEnv extends Env {
+  // These functions are not available in the public Jasmine API
+  // https://github.com/DefinitelyTyped/DefinitelyTyped/pull/51999#issuecomment-832961442
+  // TODO: figure out how to refactor tests without using them
   expect(actual: any): any;
+  describe(name: string, content: () => void): void;
+  xdescribe(name: string, content: () => void): void;
+  it(name: string, content: () => void): void;
+  xit(name: string, content: () => void): void;
 }
 
 export async function runTest(fun: (testEnv: JasmineTestEnv, testAllure: Allure) => void) {
