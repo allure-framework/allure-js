@@ -4,7 +4,7 @@ import { allure } from "../../../runtime";
 
 describe("hooks test", () => {
   describe("before fails", () => {
-    before(function() {
+    before(function () {
       throw new Error("In before");
     });
 
@@ -14,13 +14,13 @@ describe("hooks test", () => {
   describe("after fails", () => {
     it("fails in after", () => {});
 
-    after(function() {
+    after(function () {
       throw new Error("In after");
     });
   });
 
   describe("beforeEach fails", () => {
-    beforeEach(function() {
+    beforeEach(function () {
       allure.attachment("saved in beforeEach", "should be saved", ContentType.TEXT);
       throw new Error("In before each");
     });
@@ -29,7 +29,7 @@ describe("hooks test", () => {
   });
 
   describe("afterEach fails", () => {
-    afterEach(function() {
+    afterEach(function () {
       allure.attachment("saved in afterEach", "should be saved", ContentType.TEXT);
       throw new Error("In after each");
     });
@@ -38,7 +38,7 @@ describe("hooks test", () => {
   });
 
   describe("both afterEach and test fail", () => {
-    afterEach(function() {
+    afterEach(function () {
       allure.attachment("saved in afterEach", "should be saved", ContentType.TEXT);
       throw new Error("In after each");
     });

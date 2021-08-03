@@ -5,7 +5,7 @@ import { matchers } from "./matchers";
 describe("Allure Result", () => {
   beforeAll(() => jasmine.addMatchers(matchers));
 
-  describe("for test with bdd labels in 'it'", function() {
+  describe("for test with bdd labels in 'it'", function () {
     const example = (tetEnv: JasmineTestEnv, testAllure: Allure) => {
       tetEnv.describe("Jasmine example", () => {
         tetEnv.it("passed test", () => {
@@ -17,7 +17,7 @@ describe("Allure Result", () => {
       });
     };
 
-    it("should have all defined bdd labels", async function() {
+    it("should have all defined bdd labels", async function () {
       const result = await runTest(example);
       expect(result).toHaveTestLike({
         labels: [
@@ -29,7 +29,7 @@ describe("Allure Result", () => {
     });
   });
 
-  describe("for test with bdd labels in 'describe'", function() {
+  describe("for test with bdd labels in 'describe'", function () {
     const example = (tetEnv: any, testAllure: Allure) => {
       tetEnv.describe("Jasmine example", () => {
         tetEnv.beforeAll(() => {
@@ -44,7 +44,7 @@ describe("Allure Result", () => {
       });
     };
 
-    it("should have all defined bdd labels", async function() {
+    it("should have all defined bdd labels", async function () {
       const result = await runTest(example);
       expect(result).toHaveTestLike({
         labels: [

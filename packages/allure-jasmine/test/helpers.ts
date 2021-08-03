@@ -31,13 +31,13 @@ export const runTest = async (
 };
 
 export const delay = (ms: number): Promise<void> => {
-  return new Promise<void>(function(resolve) {
+  return new Promise<void>(function (resolve) {
     setTimeout(resolve, ms);
   });
 };
 
 export const delayFail = (ms: number): Promise<void> => {
-  return new Promise<void>(function(resolve, reject) {
+  return new Promise<void>(function (resolve, reject) {
     setTimeout(() => reject(new Error("Async error")), ms);
   });
 };

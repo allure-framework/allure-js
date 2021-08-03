@@ -16,7 +16,7 @@ describe("Allure result", () => {
       });
     };
 
-    it("should contain passed step", async function() {
+    it("should contain passed step", async function () {
       const result = await runTest(example);
       expect(result).toHaveTestLike({
         status: Status.PASSED,
@@ -43,7 +43,7 @@ describe("Allure result", () => {
 
     let result: any;
 
-    beforeAll(async function() {
+    beforeAll(async function () {
       result = await runTest(example);
     });
 
@@ -82,7 +82,7 @@ describe("Allure result", () => {
       });
     };
 
-    it("should contain all nested step", async function() {
+    it("should contain all nested step", async function () {
       const result = await runTest(example);
       expect(result).toHaveTestLike({
         status: Status.PASSED,

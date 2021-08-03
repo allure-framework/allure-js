@@ -52,7 +52,7 @@ class HooksSuite {
 
   @test
   shouldHandleBefore() {
-    const test = this.writerStub.getTestByName("\"before all\" hook for \"never runs\"");
+    const test = this.writerStub.getTestByName('"before all" hook for "never runs"');
 
     expect(test.status).eq(Status.BROKEN);
     expect(test.statusDetails.message).eq("In before");

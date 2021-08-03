@@ -10,5 +10,5 @@ const reporter = new JasmineAllureReporter({
     return result;
   },
 });
-// eslint-disable-next-line no-undef
+
 jasmine.getEnv().addReporter(reporter);
