@@ -1,5 +1,5 @@
-import { expect } from "chai";
 import { suite, test } from "@testdeck/mocha";
+import { expect } from "chai";
 
 @suite
 class Common {

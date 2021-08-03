@@ -1,6 +1,6 @@
+import { suite, test } from "@testdeck/mocha";
 import { Status } from "allure-js-commons";
 import { expect } from "chai";
-import { suite, test } from "@testdeck/mocha";
 import { runTests } from "../utils";
 
 @suite
@@ -9,7 +9,7 @@ class AttachmentsSuite {
   async shouldHaveAttachments() {
     const writerStub = await runTests("attachment");
 
-    expect(writerStub.groups.find(test => test.name === "AttachmentSubSuite")).not.eq(undefined);
+    expect(writerStub.groups.find((test) => test.name === "AttachmentSubSuite")).not.eq(undefined);
 
     const test = writerStub.getTestByName("shouldAssignAttachments");
     expect(test).not.eq(undefined);

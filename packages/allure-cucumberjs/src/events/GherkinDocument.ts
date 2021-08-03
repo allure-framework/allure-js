@@ -1,12 +1,12 @@
-import { GherkinTestCase } from "./GherkinTestCase";
 import { GherkinStep } from "./GherkinStep";
+import { GherkinTestCase } from "./GherkinTestCase";
 
 export class GherkinDocument {
   type?: string;
   feature?: {
     type: string;
     tags: {
-      name: string
+      name: string;
     }[];
     name: string;
     description: string;

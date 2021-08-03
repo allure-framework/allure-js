@@ -1,16 +1,16 @@
 export class GherkinStep {
   location?: {
-    line: number
+    line: number;
   };
   keyword?: string;
   text?: string;
   argument?: {
-    type: String;
+    type: string;
     content?: string;
     rows?: {
       cells: {
-        value: string
-      }[]
+        value: string;
+      }[];
     }[];
   };
 

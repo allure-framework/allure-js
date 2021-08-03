@@ -1,5 +1,5 @@
-import { expect } from "chai";
 import { suite, test } from "@testdeck/mocha";
+import { expect } from "chai";
 import { runTests } from "../utils";
 
 @suite
@@ -11,19 +11,19 @@ class GlobalInfoSuite {
       {
         name: "Sad tests",
         messageRegex: ".*Sad.*",
-        matchedStatuses: ["failed"]
+        matchedStatuses: ["failed"],
       },
       {
         name: "Infrastructure problems",
         messageRegex: ".*Error.*",
-        matchedStatuses: ["broken"]
-      }
+        matchedStatuses: ["broken"],
+      },
     ]);
 
     expect(writerStub.envInfo).deep.eq({
       Browser: "chrome",
       GitHub: "https://github.com/sskorol",
-      Author: "Sergey Korol"
+      Author: "Sergey Korol",
     });
   }
 }

@@ -1,6 +1,6 @@
 import { Allure } from "allure-js-commons";
-import { matchers } from "./matchers";
 import { JasmineTestEnv, runTest } from "./helpers";
+import { matchers } from "./matchers";
 
 describe("Allure Result", () => {
   beforeAll(() => jasmine.addMatchers(matchers));
@@ -23,8 +23,8 @@ describe("Allure Result", () => {
         labels: [
           { name: "epic", value: "epic from it" },
           { name: "feature", value: "feature from it" },
-          { name: "story", value: "story from it" }
-        ]
+          { name: "story", value: "story from it" },
+        ],
       });
     });
   });
@@ -50,8 +50,8 @@ describe("Allure Result", () => {
         labels: [
           { name: "epic", value: "epic from describe" },
           { name: "feature", value: "feature from describe" },
-          { name: "story", value: "story from describe" }
-        ]
+          { name: "story", value: "story from describe" },
+        ],
       });
     });
   });

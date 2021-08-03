@@ -10,11 +10,11 @@ Then(/^it has result for "(.*)"$/, function(name: string) {
 });
 
 When(/^I choose result for "(.*)"$/, function(name: string) {
-  this.ctx = this.allureReport.testResults.find((result: TestResult) => result.name == name);
+  this.ctx = this.allureReport.testResults.find((result: TestResult) => result.name === name);
 });
 
 When(/^I choose step "(.*)"$/, function(name: string) {
-  this.ctx = this.ctx.steps.find((step: StepResult) => step.name == name);
+  this.ctx = this.ctx.steps.find((step: StepResult) => step.name === name);
 });
 
 Then(/^it has step "(.*)"$/, function(name: string) {

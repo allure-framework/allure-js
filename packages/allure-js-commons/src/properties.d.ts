@@ -1,12 +1,12 @@
 declare module "properties" {
-  function stringify(obj: any, options?: Config): String;
-  function stringify(obj: any, options: Config, callback: Function): undefined ;
+  function stringify(obj: any, options?: Config): string;
+  function stringify(obj: any, options: Config, callback: () => void): undefined;
 
   class Config {
     path?: string;
     comment?: string;
     separator?: string;
     unicode?: boolean;
-    replacer?: Function;
+    replacer?: () => void;
   }
 }

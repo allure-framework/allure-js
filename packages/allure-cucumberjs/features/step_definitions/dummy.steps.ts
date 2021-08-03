@@ -1,17 +1,17 @@
-import { Given, Then, When } from "cucumber";
 import assert from "assert";
+import { Given, Then, When } from "cucumber";
 
-export function delayPass(ms: number) {
-  return new Promise<void>(function(resolve) {
+export const delayPass = (ms: number): Promise<void> => {
+  return new Promise<void>((resolve) => {
     setTimeout(resolve, ms);
   });
-}
+};
 
-export function delayFail(ms: number) {
-  return new Promise<void>(function(resolve, reject) {
+export const delayFail = (ms: number): Promise<void> => {
+  return new Promise<void>((resolve, reject) => {
     setTimeout(() => reject(new Error("Async error")), ms);
   });
-}
+};
 
 When("do passing step", () => {});
 

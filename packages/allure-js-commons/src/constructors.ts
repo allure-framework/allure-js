@@ -1,38 +1,38 @@
-import { FixtureResult, Stage, Status, StepResult, TestResult, TestResultContainer } from "./model";
 import { v4 as randomUUID } from "uuid";
+import { FixtureResult, Stage, Status, StepResult, TestResult, TestResultContainer } from "./model";
 
-export function testResultContainer(): TestResultContainer {
+export const testResultContainer = (): TestResultContainer => {
   return {
     uuid: randomUUID(),
     children: [],
     befores: [],
-    afters: []
+    afters: [],
   };
-}
+};
 
-export function fixtureResult(): FixtureResult {
+export const fixtureResult = (): FixtureResult => {
   return {
     status: Status.BROKEN,
     statusDetails: {},
     stage: Stage.PENDING,
     steps: [],
     attachments: [],
-    parameters: []
+    parameters: [],
   };
-}
+};
 
-export function stepResult(): StepResult {
+export const stepResult = (): StepResult => {
   return {
     status: undefined,
     statusDetails: {},
     stage: Stage.PENDING,
     steps: [],
     attachments: [],
-    parameters: []
+    parameters: [],
   };
-}
+};
 
-export function testResult(): TestResult {
+export const testResult = (): TestResult => {
   return {
     uuid: randomUUID(),
     historyId: randomUUID(),
@@ -43,6 +43,6 @@ export function testResult(): TestResult {
     attachments: [],
     parameters: [],
     labels: [],
-    links: []
+    links: [],
   };
-}
+};

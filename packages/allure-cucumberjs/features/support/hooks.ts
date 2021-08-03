@@ -1,6 +1,6 @@
-import { After, Before, BeforeAll } from "cucumber";
-import { removeSync, copySync } from "fs-extra";
 import * as path from "path";
+import { After, Before, BeforeAll } from "cucumber";
+import { copySync, removeSync } from "fs-extra";
 
 const projectPath = path.join(__dirname, "..", "..");
 
@@ -9,7 +9,7 @@ Before(function({ sourceLocation: { uri, line } }) {
   const dummyStepsPath = path.join(__dirname, "..", "step_definitions/dummy.steps.js");
   copySync(
     dummyStepsPath,
-    path.join(this.tmpDir, "/features/step_definitions/dummy.steps.js")
+    path.join(this.tmpDir, "/features/step_definitions/dummy.steps.js"),
   );
 });
 

@@ -1,6 +1,6 @@
 import { AttachmentOptions, ContentType } from "../model";
 
-export function typeToExtension(options: AttachmentOptions): string {
+export const typeToExtension = (options: AttachmentOptions): string => {
   if (options.fileExtension) {
     return options.fileExtension;
   }
@@ -29,4 +29,4 @@ export function typeToExtension(options: AttachmentOptions): string {
       return "jpg";
   }
   throw new Error(`Unrecognized extension: ${options.contentType}`);
-}
+};

@@ -26,9 +26,18 @@ jobs:
           npm run prepare
         env:
           CI: true
-      - name: npm build, test
+      - name: npm build
         run: |
           npm run build
+        env:
+          CI: true
+      - name: npm lint
+        run: |
+          npm run lint
+        env:
+          CI: true
+      - name: npm test
+        run: |
           npm run run-test
         env:
           CI: true

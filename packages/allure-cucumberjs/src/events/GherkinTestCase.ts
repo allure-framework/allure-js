@@ -1,14 +1,14 @@
-import { GherkinStep } from "./GherkinStep";
-import { GherkinExample } from "./GherkinExample";
 import { Example } from "./Example";
+import { GherkinExample } from "./GherkinExample";
+import { GherkinStep } from "./GherkinStep";
 
 export class GherkinTestCase {
   type?: string;
   location?: {
-    line: number
+    line: number;
   };
   tags?: {
-    name: string
+    name: string;
   }[];
   name?: string;
   description?: string;
