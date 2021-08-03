@@ -6,12 +6,12 @@ declare global {
   }
 }
 
-export function ChaiPartial(_chai: any, utils: any) {
-  function isType(type: string, target: any) {
+export const ChaiPartial = (_chai: any, utils: any): void => {
+  const isType = (type: string, target: any): boolean => {
     return utils.type(target).toUpperCase() === type.toUpperCase();
-  }
+  };
 
-  function partial(object: any, expected: any) {
+  const partial = (object: any, expected: any): boolean => {
     if (object === expected) {
       return true;
     }
@@ -48,11 +48,11 @@ export function ChaiPartial(_chai: any, utils: any) {
       (isType("number", object) && isType("number", expected)) ||
       (isType("boolean", object) && isType("boolean", expected))
     ) {
-      return object == expected;
+      return object === expected;
     }
 
     return false;
-  }
+  };
 
   _chai.Assertion.addMethod("partial", function(this: any, expected: any) {
     const object = utils.flag(this, "object");
@@ -62,7 +62,7 @@ export function ChaiPartial(_chai: any, utils: any) {
       "expected #{this} to not like #{exp}",
       expected,
       object,
-      _chai.config.showDiff
+      _chai.config.showDiff,
     );
   });
-}
+};

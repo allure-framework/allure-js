@@ -1,4 +1,4 @@
 export { AllureWriter } from "./AllureWriter";
-export { IAllureWriter } from "./IAllureWriter";
+export { FileSystemAllureWriter } from "./FileSystemAllureWriter";
 export { InMemoryAllureWriter } from "./InMemoryAllureWriter";
 export * from "./utils";

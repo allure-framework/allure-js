@@ -1,9 +1,9 @@
-import { Then, When } from "cucumber";
 import * as path from "path";
-import { makeFormatterFile } from "./file.steps";
-import { pathExistsSync } from "fs-extra";
 import chai from "chai";
+import { Then, When } from "cucumber";
+import { pathExistsSync } from "fs-extra";
 import { ChaiPartial } from "../support/chai-partial";
+import { makeFormatterFile } from "./file.steps";
 chai.use(ChaiPartial);
 
 When(/^I run cucumber-js with allure$/, { timeout: 10000 }, function() {

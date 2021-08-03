@@ -1,6 +1,6 @@
 export { AllureRuntime } from "./src/AllureRuntime";
 export { InMemoryAllureWriter } from "./src/writers";
-export { AllureConfig, IAllureConfig } from "./src/AllureConfig";
+export { AllureConfig } from "./src/AllureConfig";
 export { AllureGroup } from "./src/AllureGroup";
 export { ExecutableItemWrapper } from "./src/ExecutableItemWrapper";
 export { AllureTest } from "./src/AllureTest";

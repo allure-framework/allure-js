@@ -1,8 +1,8 @@
-import { TestResultContainer } from "./model";
-import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
+import { AllureRuntime } from "./AllureRuntime";
 import { AllureTest } from "./AllureTest";
 import { fixtureResult, testResultContainer } from "./constructors";
-import { AllureRuntime } from "./AllureRuntime";
+import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
+import { TestResultContainer } from "./model";
 
 export class AllureGroup {
   private testResultContainer: TestResultContainer = testResultContainer();

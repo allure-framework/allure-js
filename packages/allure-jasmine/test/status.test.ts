@@ -1,11 +1,11 @@
 import { Status } from "allure-js-commons";
-import { matchers } from "./matchers";
 import { JasmineTestEnv, runTest } from "./helpers";
+import { matchers } from "./matchers";
 
 describe("Allure Result", () => {
   beforeAll(() => jasmine.addMatchers(matchers));
 
-  describe("for passed test", function() {
+  describe("for passed test", function () {
     const example = (testEnv: JasmineTestEnv) => {
       testEnv.describe("Jasmine example", () => {
         testEnv.it("passed test", () => {
@@ -14,7 +14,7 @@ describe("Allure Result", () => {
       });
     };
 
-    it("should have passed status", async function() {
+    it("should have passed status", async function () {
       const result = await runTest(example);
       expect(result).toHaveTestLike({ status: Status.PASSED });
     });
@@ -29,7 +29,7 @@ describe("Allure Result", () => {
       });
     };
 
-    it("should have failed status", async function() {
+    it("should have failed status", async function () {
       const result = await runTest(example);
       expect(result).toHaveTestLike({ status: Status.FAILED });
     });
@@ -44,7 +44,7 @@ describe("Allure Result", () => {
       });
     };
 
-    it("should have skipped status", async function() {
+    it("should have skipped status", async function () {
       const result = await runTest(example);
       expect(result).toHaveTestLike({ status: Status.SKIPPED });
     });
@@ -59,7 +59,7 @@ describe("Allure Result", () => {
       });
     };
 
-    it("should have skipped status", async function() {
+    it("should have skipped status", async function () {
       const result = await runTest(example);
       expect(result).toHaveTestLike({ status: Status.SKIPPED });
     });

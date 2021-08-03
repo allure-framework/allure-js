@@ -1,5 +1,5 @@
-import { Allure, Status } from "allure-js-commons";
 import { suite, test } from "@testdeck/mocha";
+import { Allure, Status } from "allure-js-commons";
 import { allure } from "../../../runtime";
 
 @suite
@@ -9,7 +9,7 @@ class GlobalInfo {
     allure.writeEnvironmentInfo({
       Browser: "chrome",
       GitHub: "https://github.com/sskorol",
-      Author: "Sergey Korol"
+      Author: "Sergey Korol",
     });
   }
 
@@ -19,13 +19,13 @@ class GlobalInfo {
       {
         name: "Sad tests",
         messageRegex: /.*Sad.*/,
-        matchedStatuses: [Status.FAILED]
+        matchedStatuses: [Status.FAILED],
       },
       {
         name: "Infrastructure problems",
         messageRegex: ".*Error.*",
-        matchedStatuses: [Status.BROKEN]
-      }
+        matchedStatuses: [Status.BROKEN],
+      },
     ]);
   }
 }

@@ -1,5 +1,5 @@
-import { Severity } from "allure-js-commons";
 import { suite, test } from "@testdeck/mocha";
+import { Severity } from "allure-js-commons";
 import { allure } from "../../../runtime";
 
 @suite

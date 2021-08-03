@@ -7,9 +7,9 @@ import {
   AttachmentOptions,
   ContentType,
   ExecutableItemWrapper,
-  LabelName
+  LabelName,
 } from "allure-js-commons";
-import { Formatter, World as CucumberWorld } from "cucumber";
+import { World as CucumberWorld, Formatter } from "cucumber";
 import { CucumberAllureInterface } from "./CucumberAllureInterface";
 import { examplesToSensibleFormat } from "./events/Example";
 import { GherkinDocument } from "./events/GherkinDocument";
@@ -23,7 +23,7 @@ import {
   hash,
   statusTextToAllure,
   statusTextToStage,
-  stripIndent
+  stripIndent,
 } from "./utilities";
 
 export { Allure } from "allure-js-commons";
@@ -34,16 +34,16 @@ export interface World extends CucumberWorld {
 
 export class CucumberJSAllureFormatterConfig {
   exceptionFormatter?: (message: string) => string;
-  labels?: { [key: string]: RegExp[]; };
+  labels?: { [key: string]: RegExp[] };
   links?: {
     issue?: {
       pattern: RegExp[];
       urlTemplate: string;
-    },
+    };
     tms?: {
       pattern: RegExp[];
       urlTemplate: string;
-    }
+    };
   };
 }
 
@@ -57,22 +57,26 @@ export class CucumberJSAllureFormatter extends Formatter {
   private readonly beforeHooks: TestHookDefinition[];
   private readonly exceptionFormatter: (message: string) => string;
   private readonly featureMap: Map<string, GherkinDocument> = new Map();
-  private readonly labels: { [key: string]: RegExp[]; };
+  private readonly labels: { [key: string]: RegExp[] };
   private readonly links: {
     issue?: {
       pattern: RegExp[];
       urlTemplate: string;
-    },
+    };
     tms?: {
       pattern: RegExp[];
       urlTemplate: string;
-    }
+    };
   };
   private readonly sourceMap: Map<string, string[]> = new Map();
   private stepStack: AllureStep[] = [];
   private readonly stepsMap: Map<string, SourceLocation[]> = new Map();
 
-  constructor(options: any, private readonly allureRuntime: AllureRuntime, config: CucumberJSAllureFormatterConfig) {
+  constructor(
+    options: any,
+    private readonly allureRuntime: AllureRuntime,
+    config: CucumberJSAllureFormatterConfig,
+  ) {
     super(options);
     options.eventBroadcaster
       .on("source", this.onSource.bind(this))
@@ -86,11 +90,12 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     this.labels = config.labels || {};
     this.links = config.links || {};
-    this.exceptionFormatter = function(message) {
+    this.exceptionFormatter = (message): string => {
       if (config.exceptionFormatter !== undefined) {
         try {
           return config.exceptionFormatter(message);
         } catch (e) {
+          // eslint-disable-next-line no-console
           console.warn(`Error in exceptionFormatter: ${e}`);
         }
       }
@@ -110,7 +115,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     return null;
   }
 
-  onGherkinDocument(data: { uri: string, document: GherkinDocument }) {
+  onGherkinDocument(data: { uri: string; document: GherkinDocument }): void {
     // "ScenarioOutline"
     data.document.caseMap = new Map<number, GherkinTestCase>();
     data.document.stepMap = new Map<number, GherkinStep>();
@@ -143,11 +148,11 @@ export class CucumberJSAllureFormatter extends Formatter {
     this.featureMap.set(data.uri, data.document);
   }
 
-  onSource(data: { uri: string, data: string, media: { encoding: string, type: string } }) {
+  onSource(data: { uri: string; data: string; media: { encoding: string; type: string } }): void {
     this.sourceMap.set(data.uri, data.data.split(/\n/));
   }
 
-  onTestCaseFinished(data: { result: Result } & SourceLocation) {
+  onTestCaseFinished(data: { result: Result } & SourceLocation): void {
     if (this.currentTest === null || this.currentGroup === null) {
       throw new Error("No current test info");
     }
@@ -159,33 +164,34 @@ export class CucumberJSAllureFormatter extends Formatter {
     this.currentGroup.endGroup();
   }
 
-  onTestCasePrepared(data: { steps: SourceLocation[] } & SourceLocation) {
+  onTestCasePrepared(data: { steps: SourceLocation[] } & SourceLocation): void {
     this.stepsMap.clear();
     this.stepsMap.set(SourceLocation.toKey(data), data.steps);
     this.currentBefore = null;
     this.currentAfter = null;
   }
 
-  onTestCaseStarted(data: SourceLocation) {
+  onTestCaseStarted(data: SourceLocation): void {
     const feature = this.featureMap.get(data.sourceLocation!.uri);
     if (feature === undefined || feature.feature === undefined) {
       throw new Error("Unknown feature");
     }
-    const test = feature.caseMap === undefined
-      ? undefined : feature.caseMap.get(data.sourceLocation!.line);
+    const test =
+      feature.caseMap === undefined ? undefined : feature.caseMap.get(data.sourceLocation!.line);
     if (test === undefined) {
       throw new Error("Unknown scenario");
     }
 
     this.currentGroup = this.allureRuntime.startGroup();
-    this.currentTest =
-      this.currentGroup.startTest(applyExample(test.name || "Unnamed test", test.example));
+    this.currentTest = this.currentGroup.startTest(
+      applyExample(test.name || "Unnamed test", test.example),
+    );
 
     const info = {
       uri: data.sourceLocation!.uri,
       f: feature.feature.name,
       t: test.name,
-      a: <any> null
+      a: null as any,
     };
 
     if (test.example !== undefined) {
@@ -201,9 +207,11 @@ export class CucumberJSAllureFormatter extends Formatter {
     this.currentTest.historyId = hash(JSON.stringify(info));
     this.currentTest.addLabel(LabelName.THREAD, `${process.pid}`); // parallel tests support
 
-    this.currentTest.fullName = `${data.sourceLocation!.uri}:${feature.feature.name}:${test.name}`;
+    this.currentTest.fullName = `${data.sourceLocation!.uri}:${feature.feature.name}:${
+      test.name || "unknown"
+    }`;
     this.currentTest.addLabel(LabelName.FEATURE, feature.feature.name);
-    //this.currentTest.addLabel(LabelName.STORY, feature.feature.name);
+    // this.currentTest.addLabel(LabelName.STORY, feature.feature.name);
     this.currentTest.description = stripIndent(test.description || "");
     for (const tag of [...(test.tags || []), ...feature.feature.tags]) {
       this.currentTest.addLabel(LabelName.TAG, tag.name);
@@ -224,7 +232,10 @@ export class CucumberJSAllureFormatter extends Formatter {
         for (const reg of this.links.issue.pattern) {
           const match = tag.name.match(reg);
           if (match != null && match.length > 1) {
-            this.currentTest.addIssueLink(this.links.issue.urlTemplate.replace("%s", match[1]), match[1]);
+            this.currentTest.addIssueLink(
+              this.links.issue.urlTemplate.replace("%s", match[1]),
+              match[1],
+            );
           }
         }
       }
@@ -233,28 +244,35 @@ export class CucumberJSAllureFormatter extends Formatter {
         for (const reg of this.links.tms.pattern) {
           const match = tag.name.match(reg);
           if (match != null && match.length > 1) {
-            this.currentTest.addTmsLink(this.links.tms.urlTemplate.replace("%s", match[1]), match[1]);
+            this.currentTest.addTmsLink(
+              this.links.tms.urlTemplate.replace("%s", match[1]),
+              match[1],
+            );
           }
         }
       }
     }
   }
 
-  onTestStepAttachment(
-    data: { index: number, data: string, media: { type: string }, testCase: SourceLocation }) {
+  onTestStepAttachment(data: {
+    index: number;
+    data: string;
+    media: { type: string };
+    testCase: SourceLocation;
+  }): void {
     if (this.currentStep === null) {
       throw new Error("There is no step to add attachment to");
     }
-    const type: ContentType = <ContentType> data.media.type;
+    const type: ContentType = data.media.type as ContentType;
     let content: string | Buffer = data.data;
-    if ([ContentType.JPEG, ContentType.PNG, ContentType.WEBM].indexOf(type) >= 0) {
+    if ([ContentType.JPEG, ContentType.PNG, ContentType.WEBM].includes(type)) {
       content = Buffer.from(content, "base64");
     }
     const file = this.allureRuntime.writeAttachment(content, { contentType: type });
     this.currentStep.addAttachment("attached", type, file);
   }
 
-  onTestStepFinished(data: { index: number, result: Result, testCase: SourceLocation }) {
+  onTestStepFinished(data: { index: number; result: Result; testCase: SourceLocation }): void {
     const currentStep = this.currentStep; // eslint-disable-line prefer-destructuring
     if (currentStep === null) {
       throw new Error("No current step defined");
@@ -266,55 +284,56 @@ export class CucumberJSAllureFormatter extends Formatter {
     this.popStep();
   }
 
-  onTestStepStarted(data: { index: number, testCase: SourceLocation }) {
+  onTestStepStarted(data: { index: number; testCase: SourceLocation }): void {
     const location = (this.stepsMap.get(SourceLocation.toKey(data.testCase)) || [])[data.index];
 
     const feature = this.featureMap.get(data.testCase.sourceLocation!.uri);
     if (feature === undefined) {
       throw new Error("Unknown feature");
     }
-    const test = feature.caseMap === undefined
-      ? undefined : feature.caseMap.get(data.testCase.sourceLocation!.line);
+    const test =
+      feature.caseMap === undefined
+        ? undefined
+        : feature.caseMap.get(data.testCase.sourceLocation!.line);
     if (test === undefined) {
       throw new Error("Unknown scenario");
     }
     let step: GherkinStep | undefined;
     if (location.sourceLocation !== undefined && feature.stepMap !== undefined) {
-      step = test.stepMap.get(location.sourceLocation.line)
-        || feature.stepMap.get(location.sourceLocation.line);
+      step =
+        test.stepMap.get(location.sourceLocation.line) ||
+        feature.stepMap.get(location.sourceLocation.line);
     } else {
       if (location.actionLocation === undefined) {
         location.actionLocation = {
           uri: "unknown",
-          line: -1
+          line: -1,
         };
       }
       step = {
         location: { line: -1 },
         text: `${location.actionLocation.uri}:${location.actionLocation.line}`,
-        keyword: ""
+        keyword: "",
       };
     }
     if (step === undefined) {
       throw new Error("Unknown step");
     }
 
-    let stepText = applyExample(`${step.keyword}${step.text}`, test.example);
+    let stepText = applyExample(`${step.keyword || ""}${step.text || "unknown"}`, test.example);
 
     const isAfter = this.afterHooks.find(({ uri, line }) => {
       if (location.actionLocation === undefined) {
         return false;
       }
-      return uri === location.actionLocation.uri &&
-        line === location.actionLocation.line;
+      return uri === location.actionLocation.uri && line === location.actionLocation.line;
     });
 
     const isBefore = this.beforeHooks.find(({ uri, line }) => {
       if (location.actionLocation === undefined) {
         return false;
       }
-      return uri === location.actionLocation.uri &&
-        line === location.actionLocation.line;
+      return uri === location.actionLocation.uri && line === location.actionLocation.line;
     });
 
     if (step.isBackground) {
@@ -325,12 +344,12 @@ export class CucumberJSAllureFormatter extends Formatter {
       if (this.currentBefore === null) {
         this.currentBefore = this.currentGroup!.addBefore();
       }
-      stepText = `Before: ${isBefore.code!.name || step.text}`;
+      stepText = `Before: ${isBefore.code.name || step.text || "unknown"}`;
     } else if (isAfter) {
       if (this.currentAfter === null) {
         this.currentAfter = this.currentGroup!.addAfter();
       }
-      stepText = `After: ${isAfter.code!.name || step.text}`;
+      stepText = `After: ${isAfter.code.name || step.text || "unknown"}`;
     } else {
       if (this.currentBefore !== null) {
         this.currentBefore = null;
@@ -339,25 +358,24 @@ export class CucumberJSAllureFormatter extends Formatter {
         this.currentAfter = null;
       }
     }
-    const allureStep =
-      (this.currentAfter || this.currentBefore || this.currentTest)!.startStep(stepText);
+    const allureStep = (this.currentAfter || this.currentBefore || this.currentTest)!.startStep(
+      stepText,
+    );
     this.pushStep(allureStep);
 
     if (step.argument !== undefined) {
       if (step.argument.content !== undefined) {
         const file = this.allureRuntime.writeAttachment(step.argument.content, {
-          contentType: ContentType.TEXT
+          contentType: ContentType.TEXT,
         });
         allureStep.addAttachment("Text", ContentType.TEXT, file);
       }
       if (step.argument.rows !== undefined) {
         const file = this.allureRuntime.writeAttachment(
-          step.argument.rows.map(
-            row => row.cells.map(
-              cell => cell.value.replace(/\t/g, "    ")
-            ).join("\t")
-          ).join("\n"),
-          { contentType: ContentType.TSV }
+          step.argument.rows
+            .map((row) => row.cells.map((cell) => cell.value.replace(/\t/g, "    ")).join("\t"))
+            .join("\n"),
+          { contentType: ContentType.TSV },
         );
         allureStep.addAttachment("Table", ContentType.TSV, file);
       }
@@ -372,21 +390,23 @@ export class CucumberJSAllureFormatter extends Formatter {
     this.stepStack.push(step);
   }
 
-  writeAttachment(content: Buffer | string, options: ContentType | string | AttachmentOptions): string {
+  writeAttachment(
+    content: Buffer | string,
+    options: ContentType | string | AttachmentOptions,
+  ): string {
     return this.allureRuntime.writeAttachment(content, options);
   }
 
-  private setException(target: ExecutableItemWrapper, exception?: Error | string) {
+  private setException(target: ExecutableItemWrapper, exception?: Error | string): void {
     if (exception !== undefined) {
       if (typeof exception === "string") {
         target.detailsMessage = this.exceptionFormatter(exception);
       } else {
-        target.detailsMessage =
-          this.exceptionFormatter(exception.message || "Error.message === undefined");
+        target.detailsMessage = this.exceptionFormatter(
+          exception.message || "Error.message === undefined",
+        );
         target.detailsTrace = exception.stack || "";
       }
     }
   }
 }
-
-

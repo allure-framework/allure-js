@@ -1,6 +1,6 @@
+import * as path from "path";
 import { Given } from "cucumber";
 import { outputFile } from "fs-extra";
-import * as path from "path";
 
 export const makeFormatterFile: (
   formatterPath: string,

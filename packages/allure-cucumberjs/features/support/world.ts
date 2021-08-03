@@ -1,10 +1,10 @@
-import { setWorldConstructor, World, Cli as CucumberCli } from "cucumber";
-import { PassThrough } from "stream";
-import VError from "verror";
 import * as path from "path";
-import glob from "glob";
+import { PassThrough } from "stream";
 import { TestResult } from "allure-js-commons";
+import { Cli as CucumberCli, setWorldConstructor, World } from "cucumber";
 import * as fs from "fs-extra";
+import glob from "glob";
+import VError from "verror";
 
 interface AllureReport {
   testResults: TestResult[];
@@ -27,7 +27,7 @@ class AllureWorld implements World, AllureWorld {
   allureReport: AllureReport = { testResults: [] };
   result: { stdout: string; stderr: string; error: string } = { stdout: "", stderr: "", error: "" };
 
-  async run() {
+  async run(): Promise<void> {
     const formatterPath = path.join(this.tmpDir, this.formatterPath);
     const formatterOutPath = path.join(this.tmpDir, this.formatterOutPath);
     const argv = ["", "", "--backtrace", "--require-module=ts-node/register", `--format=${formatterPath}:.dummy.txt`];

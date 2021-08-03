@@ -1,5 +1,5 @@
+import { AllureConfig, AllureRuntime } from "allure-js-commons";
 import * as Mocha from "mocha";
-import { AllureRuntime, IAllureConfig } from "allure-js-commons";
 import { AllureReporter } from "./AllureReporter";
 import { MochaAllure } from "./MochaAllure";
 
@@ -11,7 +11,7 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   constructor(readonly runner: Mocha.Runner, readonly opts: Mocha.MochaOptions) {
     super(runner, opts);
 
-    const allureConfig: IAllureConfig = { resultsDir: "allure-results", ...opts.reporterOptions };
+    const allureConfig: AllureConfig = { resultsDir: "allure-results", ...opts.reporterOptions };
 
     this.coreReporter = new AllureReporter(new AllureRuntime(allureConfig));
     allure = this.coreReporter.getImplementation();

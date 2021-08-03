@@ -1,90 +1,90 @@
 export interface Attachment {
-  name: string
-  type: string
-  source: string
+  name: string;
+  type: string;
+  source: string;
 }
 
 export interface AttachmentOptions {
-  contentType: ContentType | string,
+  contentType: ContentType | string;
   fileExtension?: string;
 }
 
 export interface Label {
-  name: LabelName | string
-  value: string
+  name: LabelName | string;
+  value: string;
 }
 
 export interface Link {
-  name?: string
-  url: string
-  type?: LinkType | string
+  name?: string;
+  url: string;
+  type?: LinkType | string;
 }
 
 export interface Parameter {
-  name: string
-  value: string
-  hidden?: boolean
-  excluded?: boolean
+  name: string;
+  value: string;
+  hidden?: boolean;
+  excluded?: boolean;
 }
 
 export interface StatusDetails {
-  message?: string
-  trace?: string
+  message?: string;
+  trace?: string;
 }
 
 interface ExecutableItem {
-  name?: string
-  status?: Status
-  statusDetails: StatusDetails
-  stage: Stage
-  description?: string
-  descriptionHtml?: string
-  steps: StepResult[]
-  attachments: Attachment[]
-  parameters: Parameter[]
-  start?: number
-  stop?: number
+  name?: string;
+  status?: Status;
+  statusDetails: StatusDetails;
+  stage: Stage;
+  description?: string;
+  descriptionHtml?: string;
+  steps: StepResult[];
+  attachments: Attachment[];
+  parameters: Parameter[];
+  start?: number;
+  stop?: number;
 }
 
 export type FixtureResult = ExecutableItem;
 export type StepResult = ExecutableItem;
 
 export interface TestResult extends ExecutableItem {
-  uuid: string
-  historyId: string
-  fullName?: string
-  testCaseId?: string
-  labels: Label[]
-  links: Link[]
+  uuid: string;
+  historyId: string;
+  fullName?: string;
+  testCaseId?: string;
+  labels: Label[];
+  links: Link[];
 }
 
 export interface TestResultContainer {
-  uuid: string
-  name?: string
-  children: string[]
-  befores: FixtureResult[]
-  afters: FixtureResult[]
+  uuid: string;
+  name?: string;
+  children: string[];
+  befores: FixtureResult[];
+  afters: FixtureResult[];
 }
 
 export interface Category {
-  name?: string
-  description?: string
-  descriptionHtml?: string
-  messageRegex?: string | RegExp
-  traceRegex?: string | RegExp
-  matchedStatuses?: Status[]
-  flaky?: boolean
+  name?: string;
+  description?: string;
+  descriptionHtml?: string;
+  messageRegex?: string | RegExp;
+  traceRegex?: string | RegExp;
+  matchedStatuses?: Status[];
+  flaky?: boolean;
 }
 
 export interface ExecutorInfo {
-  name?: string
-  type?: string
-  url?: string
-  buildOrder?: number
-  buildName?: string
-  buildUrl?: string
-  reportUrl?: string
-  reportName?: string
+  name?: string;
+  type?: string;
+  url?: string;
+  buildOrder?: number;
+  buildName?: string;
+  buildUrl?: string;
+  reportUrl?: string;
+  reportName?: string;
 }
 
 /* eslint-disable no-undef */
@@ -92,7 +92,7 @@ export enum Status {
   FAILED = "failed",
   BROKEN = "broken",
   PASSED = "passed",
-  SKIPPED = "skipped"
+  SKIPPED = "skipped",
 }
 
 /* eslint-disable no-undef */
@@ -101,7 +101,7 @@ export enum Stage {
   RUNNING = "running",
   FINISHED = "finished",
   PENDING = "pending",
-  INTERRUPTED = "interrupted"
+  INTERRUPTED = "interrupted",
 }
 
 /* eslint-disable no-undef */
@@ -131,7 +131,7 @@ export enum Severity {
   CRITICAL = "critical",
   NORMAL = "normal",
   MINOR = "minor",
-  TRIVIAL = "trivial"
+  TRIVIAL = "trivial",
 }
 
 export enum ContentType {
@@ -145,7 +145,7 @@ export enum ContentType {
   PNG = "image/png",
   JSON = "application/json",
   WEBM = "video/webm",
-  JPEG = "image/jpeg"
+  JPEG = "image/jpeg",
 }
 
 export enum LinkType {

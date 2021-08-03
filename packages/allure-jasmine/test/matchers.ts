@@ -24,7 +24,9 @@ const compare: (actual: any, expected: any) => boolean = (actual, expected) => {
   }
 
   if (typeof actual == "object" && typeof expected == "object") {
-    return Object.keys(expected).every(key => key in actual && compare(actual[key], expected[key]));
+    return Object.keys(expected).every(
+      (key) => key in actual && compare(actual[key], expected[key]),
+    );
   }
 
   if (expected instanceof RegExp) {
@@ -33,18 +35,21 @@ const compare: (actual: any, expected: any) => boolean = (actual, expected) => {
 
   return (
     typeof actual == typeof expected &&
-    ["string", "number", "boolean"].indexOf(typeof actual) > -1 &&
+    ["string", "number", "boolean"].includes(typeof actual) &&
     actual == expected
   );
 };
 
 export const matchers = {
-  toHaveTestLike: (util: MatchersUtil, customEqualityTesters: Readonly<CustomEqualityTester[]>) => ({
+  toHaveTestLike: (
+    util: MatchersUtil,
+    customEqualityTesters: Readonly<CustomEqualityTester[]>,
+  ) => ({
     compare: (actual: any, expected: any) => ({
       pass: compare(actual, { tests: [expected] }),
       message:
         `expected test result like:\n ${JSON.stringify(expected, null, 2)}\n` +
-        `but: \n ${JSON.stringify(actual.tests, null, 2)}`
-    })
-  })
+        `but: \n ${JSON.stringify(actual.tests, null, 2)}`,
+    }),
+  }),
 };

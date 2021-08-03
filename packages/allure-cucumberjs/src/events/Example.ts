@@ -2,10 +2,10 @@ import { GherkinExample } from "./GherkinExample";
 
 export class Example {
   line: number = 0;
-  arguments: { [key: string]: string; } = {};
+  arguments: { [key: string]: string } = {};
 }
 
-export function examplesToSensibleFormat(examples: GherkinExample[]): Example[] {
+export const examplesToSensibleFormat = (examples: GherkinExample[]): Example[] => {
   const result = [];
   for (const table of examples) {
     for (const row of table.tableBody || []) {
@@ -18,4 +18,4 @@ export function examplesToSensibleFormat(examples: GherkinExample[]): Example[] 
     }
   }
   return result;
-}
+};

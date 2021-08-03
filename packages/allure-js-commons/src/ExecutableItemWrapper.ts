@@ -1,19 +1,18 @@
+import { stepResult } from "./constructors";
+import { isPromise } from "./isPromise";
 import {
   AttachmentOptions,
+  ContentType,
+  FixtureResult,
+  Stage,
+  Status,
   StatusDetails,
   StepResult,
-  FixtureResult,
   TestResult,
-  Status,
-  Stage,
-  ContentType
 } from "./model";
-import { isPromise } from "./isPromise";
-import { stepResult } from "./constructors";
 
 export class ExecutableItemWrapper {
-  constructor(private readonly info: FixtureResult | TestResult) {
-  }
+  constructor(private readonly info: FixtureResult | TestResult) {}
 
   protected get wrappedItem(): FixtureResult | TestResult {
     return this.info;
@@ -35,7 +34,7 @@ export class ExecutableItemWrapper {
     this.info.status = status;
   }
 
-  public get status() {
+  public get status(): Status | undefined {
     return this.info.status;
   }
 
@@ -43,11 +42,11 @@ export class ExecutableItemWrapper {
     this.info.statusDetails = details;
   }
 
-  public set detailsMessage(message: string) {
+  public set detailsMessage(message: string | undefined) {
     this.info.statusDetails.message = message;
   }
 
-  public set detailsTrace(trace: string) {
+  public set detailsTrace(trace: string | undefined) {
     this.info.statusDetails.trace = trace;
   }
 
@@ -55,11 +54,15 @@ export class ExecutableItemWrapper {
     this.info.stage = stage;
   }
 
-  public addParameter(name: string, value: string) {
+  public addParameter(name: string, value: string): void {
     this.info.parameters.push({ name, value });
   }
 
-  public addAttachment(name: string, options: ContentType | string | AttachmentOptions, fileName: string) {
+  public addAttachment(
+    name: string,
+    options: ContentType | string | AttachmentOptions,
+    fileName: string,
+  ): void {
     if (typeof options === "string") {
       options = { contentType: options };
     }
@@ -75,14 +78,14 @@ export class ExecutableItemWrapper {
     return allureStep;
   }
 
-  public wrap<T>(fun: (...args: any[]) => any) {
-    return (...args: any[]) => {
+  public wrap<T>(fun: (...args: any[]) => T) {
+    return (...args: any[]): T => {
       this.stage = Stage.RUNNING;
       let result;
       try {
         result = fun(args);
       } catch (error) {
-        this.stage = Stage.INTERRUPTED; // fixme is this right for exception?
+        this.stage = Stage.INTERRUPTED;
         this.status = Status.BROKEN;
         if (error) {
           this.detailsMessage = (error as Error).message || "";
@@ -91,20 +94,22 @@ export class ExecutableItemWrapper {
         throw error;
       }
       if (isPromise(result)) {
-        const promise = result as Promise<any>;
-        return promise.then(res => {
-          this.status = Status.PASSED;
-          this.stage = Stage.FINISHED;
-          return res;
-        }).catch(error => {
-          this.stage = Stage.INTERRUPTED; // fixme is this right for exception?
-          this.status = Status.BROKEN;
-          if (error) {
-            this.detailsMessage = (error as Error).message || "";
-            this.detailsTrace = (error as Error).stack || "";
-          }
-          throw error;
-        });
+        const promise = result as any as Promise<any>;
+        return promise
+          .then((res) => {
+            this.status = Status.PASSED;
+            this.stage = Stage.FINISHED;
+            return res;
+          })
+          .catch((error) => {
+            this.stage = Stage.INTERRUPTED;
+            this.status = Status.BROKEN;
+            if (error) {
+              this.detailsMessage = (error as Error).message || "";
+              this.detailsTrace = (error as Error).stack || "";
+            }
+            throw error;
+          }) as any as T;
       } else {
         this.status = Status.PASSED;
         this.stage = Stage.FINISHED;
@@ -116,13 +121,13 @@ export class ExecutableItemWrapper {
 
 // This class is here because of circular dependency with ExecutableItemWrapper
 export class AllureStep extends ExecutableItemWrapper {
+  // eslint-disable-next-line no-shadow
   constructor(private readonly stepResult: StepResult, start: number = Date.now()) {
     super(stepResult);
     this.stepResult.start = start;
   }
 
-  endStep(stop: number = Date.now()) {
+  endStep(stop: number = Date.now()): void {
     this.stepResult.stop = stop;
-    // TODO: test that child steps ended
   }
 }

@@ -21,8 +21,8 @@
     "allure-report": "allure serve ./out/allure-results",
     "test": "nyc ts-node --project test/tsconfig.json test/runner.ts",
     "coverage": "codecov",
-    "lint": "eslint ./src ./test --ext .ts",
-    "lint-fix": "eslint ./src ./test ./index.ts --ext .ts --fix"
+    "lint": "eslint ./src --ext .ts",
+    "lint:fix": "eslint ./src --ext .ts --fix"
   },
   "devDependencies": {
     "@testdeck/mocha": "0.1.2",
@@ -35,7 +35,6 @@
     "mocha": "^8.1.1",
     "mocha-multi": "^1.1.3",
     "nyc": "^15.0.1",
-    "prettier": "^2.0.5",
     "source-map-support": "^0.5.19"
   },
   "dependencies": {
@@ -45,7 +44,7 @@
     "mocha": ">=6.2.x"
   },
   "nyc": {
-    "check-coverage": true,
+    "check-coverage": false,
     "lines": 80,
     "statements": 80,
     "functions": 75,

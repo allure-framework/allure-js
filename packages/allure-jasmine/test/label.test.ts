@@ -1,11 +1,11 @@
 import { Allure } from "allure-js-commons";
-import { matchers } from "./matchers";
 import { JasmineTestEnv, runTest } from "./helpers";
+import { matchers } from "./matchers";
 
 describe("Allure Result", () => {
   beforeAll(() => jasmine.addMatchers(matchers));
 
-  describe("for test with bdd labels in 'it'", function() {
+  describe("for test with bdd labels in 'it'", function () {
     const example = (tetEnv: JasmineTestEnv, testAllure: Allure) => {
       tetEnv.describe("Jasmine example", () => {
         tetEnv.it("passed test", () => {
@@ -17,19 +17,19 @@ describe("Allure Result", () => {
       });
     };
 
-    it("should have all defined bdd labels", async function() {
+    it("should have all defined bdd labels", async function () {
       const result = await runTest(example);
       expect(result).toHaveTestLike({
         labels: [
           { name: "epic", value: "epic from it" },
           { name: "feature", value: "feature from it" },
-          { name: "story", value: "story from it" }
-        ]
+          { name: "story", value: "story from it" },
+        ],
       });
     });
   });
 
-  describe("for test with bdd labels in 'describe'", function() {
+  describe("for test with bdd labels in 'describe'", function () {
     const example = (tetEnv: any, testAllure: Allure) => {
       tetEnv.describe("Jasmine example", () => {
         tetEnv.beforeAll(() => {
@@ -44,14 +44,14 @@ describe("Allure Result", () => {
       });
     };
 
-    it("should have all defined bdd labels", async function() {
+    it("should have all defined bdd labels", async function () {
       const result = await runTest(example);
       expect(result).toHaveTestLike({
         labels: [
           { name: "epic", value: "epic from describe" },
           { name: "feature", value: "feature from describe" },
-          { name: "story", value: "story from describe" }
-        ]
+          { name: "story", value: "story from describe" },
+        ],
       });
     });
   });

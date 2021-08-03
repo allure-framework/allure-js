@@ -1,6 +1,6 @@
-import { matchers } from "./matchers";
 import { Allure, Status } from "allure-js-commons";
 import { JasmineTestEnv, runTest } from "./helpers";
+import { matchers } from "./matchers";
 
 describe("Allure result", () => {
   beforeAll(() => jasmine.addMatchers(matchers));
@@ -16,16 +16,16 @@ describe("Allure result", () => {
       });
     };
 
-    it("should contain passed step", async function() {
+    it("should contain passed step", async function () {
       const result = await runTest(example);
       expect(result).toHaveTestLike({
         status: Status.PASSED,
         steps: [
           {
             name: "passed step name",
-            status: Status.PASSED
-          }
-        ]
+            status: Status.PASSED,
+          },
+        ],
       });
     });
   });
@@ -41,9 +41,9 @@ describe("Allure result", () => {
       });
     };
 
-    let result: any = undefined;
+    let result: any;
 
-    beforeAll(async function() {
+    beforeAll(async function () {
       result = await runTest(example);
     });
 
@@ -53,9 +53,9 @@ describe("Allure result", () => {
         steps: [
           {
             name: "failed step name",
-            status: Status.FAILED
-          }
-        ]
+            status: Status.FAILED,
+          },
+        ],
       });
     });
 
@@ -63,8 +63,8 @@ describe("Allure result", () => {
       expect(result).toHaveTestLike({
         statusDetails: {
           message: "Expected true not to be truthy.",
-          trace: /^Error: .+/
-        }
+          trace: /^Error: .+/,
+        },
       });
     });
   });
@@ -82,7 +82,7 @@ describe("Allure result", () => {
       });
     };
 
-    it("should contain all nested step", async function() {
+    it("should contain all nested step", async function () {
       const result = await runTest(example);
       expect(result).toHaveTestLike({
         status: Status.PASSED,
@@ -93,11 +93,11 @@ describe("Allure result", () => {
             steps: [
               {
                 name: "step name",
-                status: Status.PASSED
-              }
-            ]
-          }
-        ]
+                status: Status.PASSED,
+              },
+            ],
+          },
+        ],
       });
     });
   });

@@ -1,6 +1,7 @@
 import { Allure, InMemoryAllureWriter } from "allure-js-commons";
 import { JasmineAllureReporter } from "../src/JasmineAllureReporter";
 import Env = jasmine.Env;
+import { AllureWriter } from "allure-js-commons/dist/src/writers";
 
 export interface JasmineTestEnv extends Env {
   // These functions are not available in the public Jasmine API
@@ -13,7 +14,9 @@ export interface JasmineTestEnv extends Env {
   xit(name: string, content: () => void): void;
 }
 
-export async function runTest(fun: (testEnv: JasmineTestEnv, testAllure: Allure) => void) {
+export const runTest = async (
+  fun: (testEnv: JasmineTestEnv, testAllure: Allure) => void,
+): Promise<AllureWriter> => {
   const writer = new InMemoryAllureWriter();
   await new Promise((resolve, reject) => {
     const reporter = new JasmineAllureReporter({ writer, resultsDir: "unused" });
@@ -25,19 +28,19 @@ export async function runTest(fun: (testEnv: JasmineTestEnv, testAllure: Allure)
     testEnv.execute();
   });
   return writer;
-}
+};
 
-export function delay(ms: number) {
-  return new Promise<void>(function(resolve) {
+export const delay = (ms: number): Promise<void> => {
+  return new Promise<void>(function (resolve) {
     setTimeout(resolve, ms);
   });
-}
+};
 
-export function delayFail(ms: number) {
-  return new Promise<void>(function(resolve, reject) {
+export const delayFail = (ms: number): Promise<void> => {
+  return new Promise<void>(function (resolve, reject) {
     setTimeout(() => reject(new Error("Async error")), ms);
   });
-}
+};
 
 /*
 todo:

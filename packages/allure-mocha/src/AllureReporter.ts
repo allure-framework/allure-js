@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import {
   AllureGroup,
   AllureRuntime,
@@ -9,19 +10,18 @@ import {
   LabelName,
   Stage,
   Status,
-  StatusDetails
+  StatusDetails,
 } from "allure-js-commons";
-import { createHash } from "crypto";
 import { MochaAllure } from "./MochaAllure";
 
 export class AllureReporter {
+  public currentExecutable: ExecutableItemWrapper | null = null;
+
   private suites: AllureGroup[] = [];
   private steps: AllureStep[] = [];
   private runningTest: AllureTest | null = null;
-  public currentExecutable: ExecutableItemWrapper | null = null;
 
-  constructor(private readonly allureRuntime: AllureRuntime) {
-  }
+  constructor(private readonly allureRuntime: AllureRuntime) {}
 
   public getImplementation(): MochaAllure {
     return new MochaAllure(this, this.allureRuntime);
@@ -62,9 +62,9 @@ export class AllureReporter {
   public startHook(title: string): void {
     const suite: AllureGroup | null = this.currentSuite;
 
-    if (suite && title && title.indexOf("before") !== -1) {
+    if (suite && title && title.includes("before")) {
       this.currentExecutable = suite.addBefore();
-    } else if (suite && title && title.indexOf("after") !== -1) {
+    } else if (suite && title && title.includes("after")) {
       this.currentExecutable = suite.addAfter();
     }
   }
@@ -89,9 +89,7 @@ export class AllureReporter {
 
     this.currentTest = this.currentSuite.startTest(test.title);
     this.currentTest.fullName = test.title;
-    this.currentTest.historyId = createHash("md5")
-      .update(test.fullTitle())
-      .digest("hex");
+    this.currentTest.historyId = createHash("md5").update(test.fullTitle()).digest("hex");
     this.currentTest.stage = Stage.RUNNING;
 
     if (test.parent) {
@@ -135,7 +133,10 @@ export class AllureReporter {
     this.endTest(status, { message: error.message, trace: error.stack });
   }
 
-  public writeAttachment(content: Buffer | string, options: ContentType | string | AttachmentOptions): string {
+  public writeAttachment(
+    content: Buffer | string,
+    options: ContentType | string | AttachmentOptions,
+  ): string {
     return this.allureRuntime.writeAttachment(content, options);
   }
 

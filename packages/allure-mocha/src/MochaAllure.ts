@@ -8,7 +8,7 @@ import {
   ExecutableItemWrapper,
   isPromise,
   Status,
-  StepInterface
+  StepInterface,
 } from "allure-js-commons";
 import { AllureReporter } from "./AllureReporter";
 import { StepWrapper } from "./StepWrapper";
@@ -43,11 +43,11 @@ export class MochaAllure extends Allure {
     if (isPromise(result)) {
       const promise = result as Promise<any>;
       return promise
-        .then(a => {
+        .then((a) => {
           wrappedStep.endStep();
           return a;
         })
-        .catch(e => {
+        .catch((e) => {
           wrappedStep.endStep();
           throw e;
         });
@@ -57,11 +57,14 @@ export class MochaAllure extends Allure {
   }
 
   logStep(name: string, status?: Status): void {
-    this.step(name, () => {
-    }); // todo status
+    this.step(name, () => {}); // todo status
   }
 
-  public attachment(name: string, content: Buffer | string, options: ContentType | string | AttachmentOptions): void {
+  public attachment(
+    name: string,
+    content: Buffer | string,
+    options: ContentType | string | AttachmentOptions,
+  ): void {
     const file = this.reporter.writeAttachment(content, options);
     this.currentExecutable.addAttachment(name, options, file);
   }
@@ -69,7 +72,7 @@ export class MochaAllure extends Allure {
   public testAttachment(
     name: string,
     content: Buffer | string,
-    options: ContentType | string | AttachmentOptions
+    options: ContentType | string | AttachmentOptions,
   ): void {
     const file = this.reporter.writeAttachment(content, options);
     this.currentTest.addAttachment(name, options, file);

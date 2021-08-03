@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "lint": "eslint ./test --ext .ts",
-    "lint-fix": "eslint ./src ./test ./index.ts --ext .ts --fix",
+    "lint:fix": "eslint ./test --ext .ts --fix",
     "compile": "tsc",
     "build": "npm run lint && npm run compile",
     "prepublishOnly": "npm run clean && npm run build",

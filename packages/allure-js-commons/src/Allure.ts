@@ -1,9 +1,9 @@
+import { AllureRuntime } from "./AllureRuntime";
+import { AllureTest } from "./AllureTest";
+import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
 import { AttachmentOptions, Category, LinkType, Status } from "./model";
 import { ContentType } from "./model";
 import { LabelName } from "./model";
-import { AllureTest } from "./AllureTest";
-import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
-import { AllureRuntime } from "./AllureRuntime";
 
 export abstract class Allure {
   protected abstract get currentTest(): AllureTest; // test only
@@ -11,27 +11,27 @@ export abstract class Allure {
 
   protected constructor(protected runtime: AllureRuntime) {}
 
-  public epic(epic: string) {
+  public epic(epic: string): void {
     this.label(LabelName.EPIC, epic);
   }
 
-  public feature(feature: string) {
+  public feature(feature: string): void {
     this.label(LabelName.FEATURE, feature);
   }
 
-  public story(story: string) {
+  public story(story: string): void {
     this.label(LabelName.STORY, story);
   }
 
-  public suite(name: string) {
+  public suite(name: string): void {
     this.label(LabelName.SUITE, name);
   }
 
-  public parentSuite(name: string) {
+  public parentSuite(name: string): void {
     this.label(LabelName.PARENT_SUITE, name);
   }
 
-  public subSuite(name: string) {
+  public subSuite(name: string): void {
     this.label(LabelName.SUB_SUITE, name);
   }
 
@@ -63,17 +63,11 @@ export abstract class Allure {
     this.currentExecutable.descriptionHtml = html;
   }
 
-  public abstract attachment(
-    name: string,
-    content: Buffer | string,
-    options: ContentType | string | AttachmentOptions
-  ): void;
-
   public owner(owner: string): void {
     this.label(LabelName.OWNER, owner);
   }
 
-  public severity(severity: string) {
+  public severity(severity: string): void {
     this.label(LabelName.SEVERITY, severity);
   }
 
@@ -81,22 +75,29 @@ export abstract class Allure {
     this.label(LabelName.TAG, tag);
   }
 
-  public writeEnvironmentInfo(info: Record<string, string>) {
+  public writeEnvironmentInfo(info: Record<string, string>): void {
     this.runtime.writeEnvironmentInfo(info);
   }
 
-  public writeCategoriesDefinitions(categories: Category[]) {
+  public writeCategoriesDefinitions(categories: Category[]): void {
     this.runtime.writeCategoriesDefinitions(categories);
   }
 
+  public abstract attachment(
+    name: string,
+    content: Buffer | string,
+    options: ContentType | string | AttachmentOptions,
+  ): void;
+
   public abstract logStep(name: string, status?: Status): void;
-  public abstract step<T>(name: string, body: (step: StepInterface) => any): any;
+  public abstract step<T>(name: string, body: (step: StepInterface) => T): T;
 
   // below are compatibility functions
 
   /**
    * @deprecated Use step function
    */
+  // eslint-disable-next-line @typescript-eslint/member-ordering,@typescript-eslint/ban-types
   public createStep(name: string, stepFunction: Function) {
     return (...args: any[]): any => this.step(name, () => stepFunction.apply(this, args));
   }
@@ -104,9 +105,10 @@ export abstract class Allure {
   /**
    * @deprecated Use attachment function
    */
+  // eslint-disable-next-line @typescript-eslint/member-ordering,@typescript-eslint/ban-types,@typescript-eslint/explicit-function-return-type
   public createAttachment(name: string, content: Buffer | string | Function, type: ContentType) {
     if (typeof content === "function") {
-      return (...args: any[]) => {
+      return (...args: any[]): void => {
         this.attachment(name, content.apply(this, args), type);
       };
     } else {
