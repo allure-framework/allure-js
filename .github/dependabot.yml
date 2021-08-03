@@ -5,29 +5,9 @@ updates:
   schedule:
     interval: daily
     time: "02:00"
-  open-pull-requests-limit: 10
-  reviewers:
-  - baev
-  assignees:
-  - baev
+  open-pull-requests-limit: 5
   labels:
   - type:dependency
   ignore:
   - dependency-name: "@types/node"
-    versions:
-    - 15.0.0
-  - dependency-name: "@typescript-eslint/eslint-plugin"
-    versions:
-    - 4.16.1
-    - 4.17.0
-    - 4.18.0
-    - 4.19.0
-    - 4.20.0
-    - 4.21.0
-  - dependency-name: "@types/mocha"
-    versions:
-    - 8.2.0
-    - 8.2.1
-  - dependency-name: eslint
-    versions:
-    - 7.20.0
+
