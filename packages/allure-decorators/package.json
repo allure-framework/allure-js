@@ -1,0 +1,73 @@
+{
+  "name": "allure-decorators",
+  "version": "2.0.0-beta.10",
+  "description": "Write your tests in a Java-like annotation-driven manner via JS decorators.",
+  "license": "Apache-2.0",
+  "author": "Sergey Korol <serhii.s.korol@gmail.com>",
+  "repository": "https://github.com/allure-framework/allure-js",
+  "keywords": [
+    "typescript",
+    "allure",
+    "decorators"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "clean": "rimraf ./dist ./out",
+    "compile": "tsc",
+    "prepublishOnly": "npm run clean && npm run build",
+    "build": "npm run lint && npm run compile",
+    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
+    "allure-report": "allure serve ./out/allure-results",
+    "test": "nyc ts-node --project test/tsconfig.json test/runner.ts",
+    "coverage": "codecov",
+    "lint": "eslint ./src --ext .ts",
+    "lint-fix": "eslint ./src --ext .ts --fix"
+  },
+  "dependencies": {
+    "allure-js-commons": "^2.0.0-beta.10"
+  },
+  "devDependencies": {
+    "@testdeck/mocha": "0.1.2",
+    "@types/chai": "^4.2.11",
+    "@types/chai-arrays": "2.0.0",
+    "@types/mocha": "^7.0.2",
+    "allure-mocha": "^2.0.0-beta.10",
+    "chai": "^4.2.0",
+    "chai-arrays": "^2.2.0",
+    "codecov": "^3.6.5",
+    "dotenv": "^10.0.0",
+    "eslint": "^7.24.0",
+    "fs-jetpack": "^4.1.0",
+    "glob": "^7.1.6",
+    "mocha": "^8.1.1",
+    "mocha-multi-reporters": "^1.1.7",
+    "npm-run-all": "^4.1.5",
+    "nyc": "^15.0.1",
+    "prettier": "^2.0.5",
+    "rimraf": "^3.0.2",
+    "source-map-support": "^0.5.19"
+  },
+  "nyc": {
+    "check-coverage": true,
+    "lines": 80,
+    "statements": 80,
+    "functions": 75,
+    "branches": 70,
+    "extension": [
+      ".ts"
+    ],
+    "exclude": [
+      "test/**/*.*",
+      "**/*.d.ts",
+      "index.ts"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "all": true,
+    "report-dir": "./out/coverage",
+    "temp-dir": "./out/.nyc"
+  }
+}

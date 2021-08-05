@@ -35,6 +35,7 @@ const findMessageAboutThrow = (expectations?: FailedExpectation[]): FailedExpect
   return null;
 };
 
+/* eslint-disable no-shadow */
 enum SpecStatus {
   PASSED = "passed",
   FAILED = "failed",

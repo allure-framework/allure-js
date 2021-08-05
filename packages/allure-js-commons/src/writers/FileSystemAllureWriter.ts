@@ -6,7 +6,7 @@ import { AllureConfig } from "../AllureConfig";
 import { Category, TestResult, TestResultContainer } from "../model";
 import { AllureWriter } from "./AllureWriter";
 
-const writeJson = (path: string, data: object): void => {
+const writeJson = (path: string, data: unknown): void => {
   writeFileSync(path, JSON.stringify(data), { encoding: "utf-8" });
 };
 

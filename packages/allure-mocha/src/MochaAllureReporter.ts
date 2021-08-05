@@ -11,7 +11,11 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   constructor(readonly runner: Mocha.Runner, readonly opts: Mocha.MochaOptions) {
     super(runner, opts);
 
-    const allureConfig: AllureConfig = { resultsDir: "allure-results", ...opts.reporterOptions };
+    const { resultsDir } = opts.reporterOptions;
+    const allureConfig: AllureConfig = {
+      resultsDir: resultsDir || "allure-results",
+      ...opts.reporterOptions,
+    };
 
     this.coreReporter = new AllureReporter(new AllureRuntime(allureConfig));
     allure = this.coreReporter.getImplementation();
