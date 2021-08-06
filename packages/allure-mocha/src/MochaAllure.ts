@@ -18,7 +18,7 @@ export class MochaAllure extends Allure {
     super(runtime);
   }
 
-  public get currentExecutable(): ExecutableItemWrapper {
+  protected get currentExecutable(): ExecutableItemWrapper {
     const executable: AllureStep | AllureTest | ExecutableItemWrapper | null =
       this.reporter.currentStep || this.reporter.currentTest || this.reporter.currentExecutable;
     if (!executable) {
@@ -27,7 +27,7 @@ export class MochaAllure extends Allure {
     return executable;
   }
 
-  public set currentExecutable(executable: ExecutableItemWrapper) {
+  protected set currentExecutable(executable: ExecutableItemWrapper) {
     this.reporter.currentExecutable = executable;
   }
 
@@ -78,7 +78,7 @@ export class MochaAllure extends Allure {
     this.currentTest.addAttachment(name, options, file);
   }
 
-  public get currentTest(): AllureTest {
+  protected get currentTest(): AllureTest {
     if (this.reporter.currentTest === null) {
       throw new Error("No test running!");
     }

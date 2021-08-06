@@ -87,7 +87,7 @@ export interface ExecutorInfo {
   reportName?: string;
 }
 
-/* eslint-disable no-undef */
+/* eslint-disable no-shadow */
 export enum Status {
   FAILED = "failed",
   BROKEN = "broken",
@@ -95,7 +95,7 @@ export enum Status {
   SKIPPED = "skipped",
 }
 
-/* eslint-disable no-undef */
+/* eslint-disable no-shadow */
 export enum Stage {
   SCHEDULED = "scheduled",
   RUNNING = "running",
@@ -104,7 +104,7 @@ export enum Stage {
   INTERRUPTED = "interrupted",
 }
 
-/* eslint-disable no-undef */
+/* eslint-disable no-shadow */
 export enum LabelName {
   AS_ID = "AS_ID",
   SUITE = "suite",
@@ -126,6 +126,7 @@ export enum LabelName {
   LANGUAGE = "language",
 }
 
+/* eslint-disable no-shadow */
 export enum Severity {
   BLOCKER = "blocker",
   CRITICAL = "critical",
@@ -134,6 +135,7 @@ export enum Severity {
   TRIVIAL = "trivial",
 }
 
+/* eslint-disable no-shadow */
 export enum ContentType {
   TEXT = "text/plain",
   XML = "application/xml",
@@ -148,6 +150,7 @@ export enum ContentType {
   JPEG = "image/jpeg",
 }
 
+/* eslint-disable no-shadow */
 export enum LinkType {
   ISSUE = "issue",
   TMS = "tms",
