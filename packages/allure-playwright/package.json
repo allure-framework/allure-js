@@ -1,0 +1,33 @@
+{
+  "name": "allure-playwright",
+  "version": "2.0.0-beta.10",
+  "description": "Allure Playwright integration",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Microsoft Corporation"
+  },
+  "repository": "https://github.com/allure-framework/allure-playwright",
+  "keywords": [
+    "playwright",
+    "allure"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "clean": "rimraf ./dist ./out",
+    "compile": "tsc",
+    "prepublishOnly": "npm run clean && npm run build",
+    "build": "npm run compile",
+    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
+    "allure-report": "allure serve ./out/allure-results",
+    "test": "playwright test -c test",
+    "lint": "eslint ./src --ext .ts",
+    "lint:fix": "eslint ./src --ext .ts --fix"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.13.0"
+  },
+  "dependencies": {
+    "allure-js-commons": "^2.0.0-beta.10"
+  }
+}
