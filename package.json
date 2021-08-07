@@ -1,4 +1,5 @@
 {
+  "name": "allure-js",
   "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap --hoist --strict",
