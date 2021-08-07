@@ -24,6 +24,10 @@ jobs:
           git config --global user.name qameta-ci
           git config --global user.email qameta-ci@qameta.io
 
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
       - name: "Set release version"
         run: |
           npm ci
