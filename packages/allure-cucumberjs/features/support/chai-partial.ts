@@ -54,7 +54,7 @@ export const ChaiPartial = (_chai: any, utils: any): void => {
     return false;
   };
 
-  _chai.Assertion.addMethod("partial", function(this: any, expected: any) {
+  _chai.Assertion.addMethod("partial", function (this: any, expected: any) {
     const object = utils.flag(this, "object");
     this.assert(
       partial(object, expected),

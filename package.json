@@ -9,7 +9,7 @@
     "lint:fix": "lerna run lint:fix",
     "pack": "lerna exec -- npm pack",
     "prepare": "husky install && npm run bootstrap",
-    "prettier:format": "prettier --write './packages/*/{src,test}/**/*.{js,ts}'",
+    "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}'",
     "publish": "lerna publish from-git --no-git-reset --yes",
     "run-test": "lerna run test",
     "test": "npm run build && npm run run-test",

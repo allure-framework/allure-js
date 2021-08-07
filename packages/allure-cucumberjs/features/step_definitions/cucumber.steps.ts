@@ -6,7 +6,7 @@ import { ChaiPartial } from "../support/chai-partial";
 import { makeFormatterFile } from "./file.steps";
 chai.use(ChaiPartial);
 
-When(/^I run cucumber-js with allure$/, { timeout: 10000 }, function() {
+When(/^I run cucumber-js with allure$/, { timeout: 10000 }, function () {
   const formatterPath = path.join(this.tmpDir, this.formatterPath);
   const formatterOutPath = path.join(this.tmpDir, this.formatterOutPath);
 

@@ -5,7 +5,7 @@ import { outputFile } from "fs-extra";
 export const makeFormatterFile: (
   formatterPath: string,
   formatterOutPath: string,
-  config?: string
+  config?: string,
 ) => Promise<void> = (formatterPath, formatterOutPath, config = "{}") => {
   const formatter = `
   import { CucumberJSAllureFormatter } from "../../../../src/CucumberJSAllureReporter";
@@ -22,24 +22,24 @@ export const makeFormatterFile: (
   return outputFile(formatterPath, formatter);
 };
 
-Given(/^a feature file "(.*)":$/, function(fileName, fileContent) {
+Given(/^a feature file "(.*)":$/, function (fileName, fileContent) {
   const absoluteFilePath = path.join(this.tmpDir, "features", fileName);
   return outputFile(absoluteFilePath, fileContent);
 });
 
-Given(/^a feature:$/, function(fileContent) {
+Given(/^a feature:$/, function (fileContent) {
   const fileName = "example.feature";
   const absoluteFilePath = path.join(this.tmpDir, "features", fileName);
   return outputFile(absoluteFilePath, fileContent);
 });
 
-Given(/^a allure formatter file$/, function() {
+Given(/^a allure formatter file$/, function () {
   const formatterPath = path.join(this.tmpDir, this.formatterPath);
   const formatterOutPath = path.join(this.tmpDir, this.formatterOutPath);
   return makeFormatterFile(formatterPath, formatterOutPath);
 });
 
-Given(/^a allure formatter file with config:$/, function(config) {
+Given(/^a allure formatter file with config:$/, function (config) {
   const formatterPath = path.join(this.tmpDir, this.formatterPath);
   const formatterOutPath = path.join(this.tmpDir, this.formatterOutPath);
   return makeFormatterFile(formatterPath, formatterOutPath, config);

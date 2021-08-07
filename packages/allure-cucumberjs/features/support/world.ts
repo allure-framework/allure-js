@@ -10,10 +10,10 @@ interface AllureReport {
   testResults: TestResult[];
 }
 
-const getAllureReport: (reportPath: string) => AllureReport = reportPath => {
+const getAllureReport: (reportPath: string) => AllureReport = (reportPath) => {
   const allureReport: AllureReport = { testResults: [] };
   const files = glob.sync(path.join(reportPath, "/*-result.json"));
-  files.forEach(file => {
+  files.forEach((file) => {
     const content = fs.readJSONSync(file);
     allureReport.testResults.push(content);
   });
@@ -30,7 +30,13 @@ class AllureWorld implements World, AllureWorld {
   async run(): Promise<void> {
     const formatterPath = path.join(this.tmpDir, this.formatterPath);
     const formatterOutPath = path.join(this.tmpDir, this.formatterOutPath);
-    const argv = ["", "", "--backtrace", "--require-module=ts-node/register", `--format=${formatterPath}:.dummy.txt`];
+    const argv = [
+      "",
+      "",
+      "--backtrace",
+      "--require-module=ts-node/register",
+      `--format=${formatterPath}:.dummy.txt`,
+    ];
 
     const cwd = this.tmpDir;
 
