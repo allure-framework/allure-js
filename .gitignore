@@ -1,11 +1,11 @@
+.allure
+
 #IDEA Files
-.idea
-target
+.idea/*
+!.idea/vcs.xml
+!.idea/icon.png
 *.iml
 *.ipr
-build
-schema
-.gradle
 
 #Eclipse files
 *.settings
@@ -28,3 +28,7 @@ out
 dist
 *.tgz
 *.log
+.gradle
+schema
+build
+/*/allure-results/

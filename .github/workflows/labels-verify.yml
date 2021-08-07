@@ -1,0 +1,13 @@
+name: "Verify type labels"
+
+on:
+  pull_request:
+    types: [ opened, labeled, unlabeled, synchronize ]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: baev/match-label-action@master
+        with:
+          allowed: 'type:bug,type:new feature,type:improvement,type:dependencies,type:internal,type:invalid'

@@ -1,77 +1,53 @@
 name: Release
+
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Allure JS/TS version'
+      releaseVersion:
+        description: "The release version in <MAJOR>.<MINOR>.<PATCH> format"
+        required: true
+      nextVersion:
+        description: "The next version in <MAJOR>.<MINOR> format WITHOUT SNAPSHOT SUFFIX"
         required: true
 
 jobs:
-  build:
-    name: Create Release
+  triage:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: "Check release version"
+        run: |
+          expr "${{ github.event.inputs.releaseVersion }}" : '[[:digit:]][[:digit:]]*\.[[:digit:]][[:digit:]]*\.[[:digit:]][[:digit:]]*$'
+
+      - name: "Check next version"
+        run: |
+          expr "${{ github.event.inputs.nextVersion }}" : '[[:digit:]][[:digit:]]*\.[[:digit:]][[:digit:]]*$'
+
+      - uses: actions/checkout@v2.3.4
         with:
           token: ${{ secrets.QAMETA_CI }}
-      
-      - name: Configure CI Git User
+
+      - name: "Configure CI Git User"
         run: |
           git config --global user.name qameta-ci
           git config --global user.email qameta-ci@qameta.io
 
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
-
-      - name: NPM install
+      - name: "Set release version"
         run: |
+          npm ci
           npm install
+          npm run version ${{ github.event.inputs.releaseVersion }}
 
-      - name: Create version
+      - name: "Commit release version and create tag"
         run: |
-          npm run version -- ${{ github.event.inputs.version }}
+          git commit -am "release ${{ github.event.inputs.releaseVersion }}"
+          git tag ${{ github.event.inputs.releaseVersion }}
+          git push origin ${{ github.event.inputs.releaseVersion }}
 
-#name: Release to NPM
-#
-#on:
-#  release:
-#    types: [published]
-#
-#jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#      - run: |
-#          git fetch --prune --unshallow --tags
-#
-#      - name: Use Node.js ${{ matrix.node-version }}
-#        uses: actions/setup-node@v1
-#        with:
-#          node-version: 10.x
-#
-#      - name: npm install, build
-#        run: |
-#          npm install
-#          npm run prepare
-#          npm run build
-#          npm run run-test
-#        env:
-#          CI: true
-#
-#      - name: Get the version
-#        id: get_version
-#        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
-#
-#      - name: npm release
-#        run: |
-#          npm run version -- ${{ steps.get_version.outputs.VERSION }}
-#          npm run release
-#        env:
-#          NPM_USER: ${{ secrets.NPM_USER }}
-#          NPM_PASS: ${{ secrets.NPM_PASS }}
-#          CI: true
+      - name: "Publish Github Release"
+        uses: toolmantim/release-drafter@v5.15.0
+        with:
+          tag: ${{ github.event.inputs.releaseVersion }}
+          publish: "true"
+          version: ${{ github.event.inputs.releaseVersion }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.QAMETA_CI }}
