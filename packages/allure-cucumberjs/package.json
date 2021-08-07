@@ -23,7 +23,7 @@
     "test": "rimraf ./out ; npm run runTest ; npm run generate-report"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.7",
+    "@types/chai": "^4.2.11",
     "@types/cucumber": "^6.0.1",
     "@types/fs-extra": "^9.0.1",
     "@types/glob": "^7.1.1",
@@ -32,7 +32,7 @@
     "chai-like": "^1.1.1",
     "cucumber": "6.0.5",
     "fs-extra": "^9.0.1",
-    "glob": "^7.1.4",
+    "glob": "^7.1.6",
     "path": "^0.12.7",
     "ts-node-register": "^1.0.0",
     "verror": "^1.10.0"
