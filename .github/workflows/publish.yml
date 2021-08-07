@@ -5,24 +5,18 @@ on:
     types: [ published ]
 
 jobs:
-  build:
+  publish:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
       - uses: actions/setup-node@v2
         with:
           node-version: 14
-      - run: npm ci
-      - run: npm test
-  publish:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 14
-      - run: npm ci
+      - name: npm install, prepare
+        run: |
+          npm install
+          npm run prepare
       - run: npm run publish
         env:
           NPM_USER: ${{ secrets.NPM_USER }}
