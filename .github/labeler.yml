@@ -1,0 +1,33 @@
+"theme:workflow":
+  - ".github/**"
+
+"theme:build":
+  - ".editorconfig"
+  - ".eslintrc.js"
+  - ".gitignore"
+  - ".prettierrc"
+  - "lerna.json"
+  - "package.json"
+  - "tsconfig.json"
+  - ".husky/**"
+
+"theme:decorators":
+  - "packages/allure-decorators/**"
+
+"theme:cucumberjs":
+  - "packages/allure-cucumberjs/**"
+
+"theme:jasmine":
+  - "packages/allure-jasmine/**"
+
+"theme:jest":
+  - "packages/allure-jest/**"
+
+"theme:api":
+  - "packages/allure-js-commons/**"
+
+"theme:mocha":
+  - "packages/allure-mocha/**"
+
+"theme:playwright":
+  - "packages/allure-playwright/**"
