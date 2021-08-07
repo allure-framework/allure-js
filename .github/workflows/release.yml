@@ -32,7 +32,7 @@ jobs:
         run: |
           npm install
           npm run prepare
-          npm run version -- '${{ github.event.inputs.releaseVersion }}'
+          npm run set-version '${{ github.event.inputs.releaseVersion }}'
 
       - name: "Publish Github Release"
         uses: toolmantim/release-drafter@v5.15.0

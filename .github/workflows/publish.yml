@@ -17,7 +17,7 @@ jobs:
         run: |
           npm install
           npm run prepare
-      - run: npm run publish
+      - run: npm run npm-publish
         env:
           NPM_USER: ${{ secrets.NPM_USER }}
           NPM_PASS: ${{ secrets.NPM_PASS }}
