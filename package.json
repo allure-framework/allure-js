@@ -10,10 +10,10 @@
     "pack": "lerna exec -- npm pack",
     "prepare": "husky install && npm run bootstrap",
     "prettier:format": "prettier --write './packages/*/{src,test}/**/*.{js,ts}'",
-    "release": "lerna publish from-package --no-git-reset --yes",
+    "publish": "lerna publish from-git --no-git-reset --yes",
     "run-test": "lerna run test",
     "test": "npm run build && npm run run-test",
-    "version": "lerna version --no-changelog --yes"
+    "version": "lerna version --no-changelog --yes --no-commit-hooks --force-publish"
   },
   "devDependencies": {
     "@types/node": "^14.6.0",
