@@ -24,7 +24,7 @@ export const step = <T>(nameFn: string | ((arg: T) => string)) => {
     let callable: (args: T) => void;
 
     if (typeof original === "function") {
-      descriptor.value = function (...args: [T]) {
+      descriptor.value = function(...args: [T]) {
         try {
           const value: string = typeof nameFn === "function" ? nameFn.apply(this, args) : nameFn;
           callable = () => getAllure().step(value, () => original.apply(this, args));
@@ -45,7 +45,7 @@ export const attachment = <T>(name: string, type: ContentType) => {
     let callable: (args: T) => void;
 
     if (typeof original === "function") {
-      descriptor.value = function (...args: [T]) {
+      descriptor.value = function(...args: [T]) {
         try {
           const content: Buffer | string = original.apply(this, args);
           callable = () => getAllure().attachment(name, content, type);

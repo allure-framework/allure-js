@@ -6,7 +6,7 @@ export const processDescriptor = <T>(
 ): PropertyDescriptor => {
   const original: any = descriptor.value;
   if (typeof original === "function") {
-    descriptor.value = function (...args: [T]) {
+    descriptor.value = function(...args: [T]) {
       try {
         const value: string =
           typeof parameterFn === "function" ? parameterFn.apply(this, args) : parameterFn;
