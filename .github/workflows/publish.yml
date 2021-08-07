@@ -12,9 +12,9 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 14
-      - name: npm install, prepare
+      - name: npm ci, prepare
         run: |
-          npm install
+          npm ci
           npm run prepare
       - run: npm run npm-publish
         env:

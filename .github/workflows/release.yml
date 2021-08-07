@@ -28,10 +28,13 @@ jobs:
         with:
           node-version: 14
 
+      - name: "Prepare"
+        run: |
+          npm ci
+          npm run prepare
+
       - name: "Set release version"
         run: |
-          npm install
-          npm run prepare
           npm run set-version '${{ github.event.inputs.releaseVersion }}'
 
       - name: "Publish Github Release"
