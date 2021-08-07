@@ -7,7 +7,7 @@
     "link": "lerna link --force-local",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint:fix",
-    "npm-publish": "lerna publish from-git --no-git-reset --yes",
+    "npm-publish": "lerna publish from-git --yes",
     "pack": "lerna exec -- npm pack",
     "prepare": "husky install && npm run bootstrap",
     "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}'",
