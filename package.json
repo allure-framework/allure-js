@@ -12,7 +12,7 @@
     "prepare": "husky install && npm run bootstrap",
     "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}'",
     "run-test": "lerna run test",
-    "set-version": "lerna version --no-changelog --yes --no-commit-hooks --force-publish",
+    "set-version": "lerna version --no-changelog --no-commit-hooks --force-publish --yes",
     "test": "npm run build && npm run run-test"
   },
   "devDependencies": {
