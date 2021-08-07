@@ -12,11 +12,11 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 14
+          registry-url: 'https://registry.npmjs.org'
       - name: npm ci, prepare
         run: |
           npm ci
           npm run prepare
       - run: npm run npm-publish
         env:
-          NPM_USER: ${{ secrets.NPM_USER }}
-          NPM_PASS: ${{ secrets.NPM_PASS }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
