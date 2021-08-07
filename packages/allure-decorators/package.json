@@ -1,6 +1,6 @@
 {
   "name": "allure-decorators",
-  "version": "2.0.0-beta.10",
+  "version": "2.0.0-beta.11",
   "description": "Write your tests in a Java-like annotation-driven manner via JS decorators.",
   "license": "Apache-2.0",
   "author": "Sergey Korol <serhii.s.korol@gmail.com>",
@@ -25,14 +25,14 @@
     "lint-fix": "eslint ./src --ext .ts --fix"
   },
   "dependencies": {
-    "allure-js-commons": "^2.0.0-beta.10"
+    "allure-js-commons": "^2.0.0-beta.11"
   },
   "devDependencies": {
     "@testdeck/mocha": "0.1.2",
     "@types/chai": "^4.2.11",
     "@types/chai-arrays": "2.0.0",
     "@types/mocha": "^7.0.2",
-    "allure-mocha": "^2.0.0-beta.10",
+    "allure-mocha": "^2.0.0-beta.11",
     "chai": "^4.2.0",
     "chai-arrays": "^2.2.0",
     "codecov": "^3.6.5",
