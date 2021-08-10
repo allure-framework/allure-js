@@ -178,21 +178,36 @@ class AllureReporter {
         fullName = this.getFullName(this.currentNMGroup);
         var parentSuite, suite;
         var subSuites = [];
+        if(this.reporterOptions.collectionAsParentSuite === true)
+            parentSuite = this.options.collection.name;
         if(fullName !== ''){
-            if(fullName.indexOf('/') > 0 ){
-                const numFolders =  fullName.split("/").length;
-                if(numFolders > 0){
-                    parentSuite = fullName.split("/")[0];
-                    if(numFolders > 1)
-                        suite = fullName.split("/")[1];
-                        if(numFolders > 2)
-                            subSuites =fullName.split("/").slice(2);
+            if(this.reporterOptions.collectionAsParentSuite === true){
+                if(fullName.indexOf('/') > 0 ){
+                    const numFolders = fullName.split("/").length;
+                    if(numFolders > 0){
+                        suite = fullName.split("/")[0];
+                        if(numFolders > 1)
+                            subSuites =fullName.split("/").slice(1);
+                    }
+                } else {
+                    suite = fullName;
                 }
-            } else {
-                parentSuite = fullName;
-            }     
+            }
+            else {
+                if(fullName.indexOf('/') > 0 ){
+                    const numFolders =  fullName.split("/").length;
+                    if(numFolders > 0){
+                        parentSuite = fullName.split("/")[0];
+                        if(numFolders > 1)
+                            suite = fullName.split("/")[1];
+                            if(numFolders > 2)
+                                subSuites =fullName.split("/").slice(2);
+                    }
+                } else {
+                    parentSuite = fullName;
+                }
+            }
         }
-            
         if (parentSuite !== undefined) {
             parentSuite = parentSuite.charAt(0).toUpperCase() + parentSuite.slice(1);
             allure_test.addLabel(LabelName.PARENT_SUITE, parentSuite);
