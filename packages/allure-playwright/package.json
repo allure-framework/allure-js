@@ -25,9 +25,10 @@
     "lint:fix": "eslint ./src --ext .ts --fix"
   },
   "devDependencies": {
+    "@types/node": "^14.6.0",
     "@playwright/test": "^1.13.0"
   },
   "dependencies": {
-    "allure-js-commons": "^2.0.0-beta.11"
+    "allure-js-commons": "file:../allure-js-commons"
   }
 }

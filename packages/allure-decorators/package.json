@@ -25,12 +25,13 @@
     "lint-fix": "eslint ./src --ext .ts --fix"
   },
   "dependencies": {
-    "allure-js-commons": "^2.0.0-beta.11"
+    "allure-js-commons": "file:../allure-js-commons"
   },
   "devDependencies": {
     "@testdeck/mocha": "0.1.2",
     "@types/chai": "^4.2.11",
     "@types/chai-arrays": "2.0.0",
+    "@types/glob": "^7.1.4",
     "@types/mocha": "^7.0.2",
     "allure-mocha": "^2.0.0-beta.11",
     "chai": "^4.2.0",

@@ -27,18 +27,20 @@
   "devDependencies": {
     "@testdeck/mocha": "0.1.2",
     "@types/chai": "^4.2.11",
+    "@types/glob": "^7.1.4",
     "@types/mocha": "^7.0.2",
     "chai": "^4.2.0",
     "codecov": "^3.6.5",
     "dotenv": "^10.0.0",
     "fs-jetpack": "^4.1.0",
+    "glob": "^7.1.7",
     "mocha": "^8.1.1",
     "mocha-multi": "^1.1.3",
     "nyc": "^15.0.1",
     "source-map-support": "^0.5.19"
   },
   "dependencies": {
-    "allure-js-commons": "^2.0.0-beta.11"
+    "allure-js-commons": "file:../allure-js-commons"
   },
   "peerDependencies": {
     "mocha": ">=6.2.x"
