@@ -13,11 +13,17 @@
     "lint:fix": "eslint ./src ./index.ts --ext .ts --fix",
     "compile": "tsc",
     "build": "npm run lint && npm run compile",
-    "prepublishOnly": "npm run clean && npm run build"
+    "prepublishOnly": "npm run clean && npm run build",
+    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
+    "runTest": "jasmine ./dist/test/*.js",
+    "runTestDebug": "node $NODE_DEBUG_OPTION ./node_modules/.bin/jasmine ./dist/test/*.js",
+    "test": "rimraf ./out ; npm run runTest"
   },
   "devDependencies": {
+    "@types/jasmine": "^3.8.2",
     "@types/mkdirp": "^1.0.0",
-    "@types/uuid": "^8.3.0"
+    "@types/uuid": "^8.3.0",
+    "jasmine": "^3.8.0"
   },
   "dependencies": {
     "mkdirp": "^1.0.4",
