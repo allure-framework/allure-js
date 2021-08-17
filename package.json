@@ -2,7 +2,7 @@
   "name": "allure-js",
   "private": true,
   "scripts": {
-    "bootstrap": "lerna bootstrap --hoist --strict",
+    "bootstrap": "lerna exec npm install",
     "build": "npm run clean && lerna run build --stream",
     "clean": "lerna run clean",
     "link": "lerna link --force-local",
