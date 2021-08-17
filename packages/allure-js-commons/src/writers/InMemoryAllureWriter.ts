@@ -1,3 +1,4 @@
+import { PathLike, readFileSync } from "fs";
 import { Category, TestResult, TestResultContainer } from "../model";
 import { AllureWriter } from "./AllureWriter";
 
@@ -18,6 +19,10 @@ export class InMemoryAllureWriter implements AllureWriter {
 
   public writeAttachment(name: string, content: Buffer | string): void {
     this.attachments[name] = content;
+  }
+
+  public writeAttachmentPath(targetFileName: string, sourceFilePath: PathLike): void {
+    this.attachments[targetFileName] = readFileSync(sourceFilePath);
   }
 
   public writeCategoriesDefinitions(categories: Category[]): void {
