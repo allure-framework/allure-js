@@ -21,11 +21,11 @@
   },
   "devDependencies": {
     "@types/jasmine": "^3.3.12",
-    "allure-jasmine": "^2.0.0-beta.11"
+    "@types/jest": "^26.0.10",
+    "allure-jasmine": "^2.0.0-beta.11",
+    "jest": "^26.4.2"
   },
   "dependencies": {
-    "@types/jest": "^26.0.10",
-    "allure-js-commons": "^2.0.0-beta.11",
-    "jest": "^26.4.2"
+    "allure-js-commons": "file:../allure-js-commons"
   }
 }

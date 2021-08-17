@@ -24,7 +24,7 @@
     "jasmine": "^3.4.0"
   },
   "dependencies": {
-    "allure-js-commons": "^2.0.0-beta.11"
+    "allure-js-commons": "file:../allure-js-commons"
   },
   "nyc": {
     "check-coverage": false,

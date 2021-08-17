@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap --hoist --strict",
-    "build": "npm run clean && npm run link && lerna run build --stream",
+    "build": "npm run clean && lerna run build --stream",
     "clean": "lerna run clean",
     "link": "lerna link --force-local",
     "lint": "lerna run lint",
@@ -35,5 +35,14 @@
     "rimraf": "^3.0.2",
     "ts-node": "^10.1.0",
     "typescript": "^4.0.2"
+  },
+  "dependencies": {
+    "allure-cucumberjs": "file:packages/allure-cucumberjs",
+    "allure-decorators": "file:packages/allure-decorators",
+    "allure-jasmine": "file:packages/allure-jasmine",
+    "allure-jest": "file:packages/allure-jest",
+    "allure-js-commons": "file:packages/allure-js-commons",
+    "allure-mocha": "file:packages/allure-mocha",
+    "allure-playwright": "file:packages/allure-playwright"
   }
 }

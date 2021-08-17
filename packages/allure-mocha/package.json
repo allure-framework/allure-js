@@ -38,7 +38,7 @@
     "source-map-support": "^0.5.19"
   },
   "dependencies": {
-    "allure-js-commons": "^2.0.0-beta.11"
+    "allure-js-commons": "file:../allure-js-commons"
   },
   "peerDependencies": {
     "mocha": ">=6.2.x"

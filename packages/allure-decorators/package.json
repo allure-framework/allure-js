@@ -25,7 +25,7 @@
     "lint-fix": "eslint ./src --ext .ts --fix"
   },
   "dependencies": {
-    "allure-js-commons": "^2.0.0-beta.11"
+    "allure-js-commons": "file:../allure-js-commons"
   },
   "devDependencies": {
     "@testdeck/mocha": "0.1.2",
