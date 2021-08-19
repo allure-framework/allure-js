@@ -88,7 +88,7 @@ class AllureReporter implements Reporter {
 
             const fileName = attachment.body
               ? runtime.writeAttachment(attachment.body, attachment.contentType)
-              : runtime.writeAttachmentPath(attachment.path!, attachment.contentType);
+              : runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
             allureTest.addAttachment(attachment.name, attachment.contentType, fileName);
             if (attachment.name === "diff") {
               allureTest.addLabel("testType", "screenshotDiff");

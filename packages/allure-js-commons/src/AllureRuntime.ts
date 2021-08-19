@@ -47,12 +47,12 @@ export class AllureRuntime {
     return fileName;
   }
 
-  writeAttachmentPath(
+  writeAttachmentFromPath(
     filePath: PathLike,
     options: ContentType | string | AttachmentOptions,
   ): string {
     const fileName = buildAttachmentFileName(options);
-    this.writer.writeAttachmentPath(fileName, filePath);
+    this.writer.writeAttachmentFromPath(fileName, filePath);
     return fileName;
   }
 

@@ -21,7 +21,7 @@ export class InMemoryAllureWriter implements AllureWriter {
     this.attachments[name] = content;
   }
 
-  public writeAttachmentPath(targetFileName: string, sourceFilePath: PathLike): void {
+  public writeAttachmentFromPath(targetFileName: string, sourceFilePath: PathLike): void {
     this.attachments[targetFileName] = readFileSync(sourceFilePath);
   }
 
