@@ -1,8 +1,17 @@
+import { PathLike } from "fs";
 import { v4 as randomUUID } from "uuid";
 import { AllureConfig } from "./AllureConfig";
 import { AllureGroup } from "./AllureGroup";
 import { AttachmentOptions, Category, ContentType, TestResult, TestResultContainer } from "./model";
 import { AllureWriter, FileSystemAllureWriter, typeToExtension } from "./writers";
+
+const buildAttachmentFileName = (options: ContentType | string | AttachmentOptions): string => {
+  if (typeof options === "string") {
+    options = { contentType: options };
+  }
+  const extension = typeToExtension(options);
+  return `${randomUUID()}-attachment.${extension}`;
+};
 
 export class AllureRuntime {
   private writer: AllureWriter;
@@ -33,12 +42,17 @@ export class AllureRuntime {
     content: Buffer | string,
     options: ContentType | string | AttachmentOptions,
   ): string {
-    if (typeof options === "string") {
-      options = { contentType: options };
-    }
-    const extension = typeToExtension(options);
-    const fileName = `${randomUUID()}-attachment.${extension}`;
+    const fileName = buildAttachmentFileName(options);
     this.writer.writeAttachment(fileName, content);
+    return fileName;
+  }
+
+  writeAttachmentFromPath(
+    filePath: PathLike,
+    options: ContentType | string | AttachmentOptions,
+  ): string {
+    const fileName = buildAttachmentFileName(options);
+    this.writer.writeAttachmentFromPath(fileName, filePath);
     return fileName;
   }
 

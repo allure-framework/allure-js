@@ -1,3 +1,4 @@
+import { PathLike } from "fs";
 import { Category, TestResult, TestResultContainer } from "../model";
 
 export interface AllureWriter {
@@ -6,6 +7,8 @@ export interface AllureWriter {
   writeGroup(result: TestResultContainer): void;
 
   writeAttachment(name: string, content: Buffer | string): void;
+
+  writeAttachmentFromPath(targetFileName: string, sourceFilePath: PathLike): void;
 
   writeEnvironmentInfo(info: Record<string, string | undefined>): void;
 

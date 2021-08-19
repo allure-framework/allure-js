@@ -1,4 +1,4 @@
-import { existsSync, writeFileSync } from "fs";
+import { copyFileSync, existsSync, PathLike, writeFileSync } from "fs";
 import { join } from "path";
 import { sync as mkdirSync } from "mkdirp";
 import { stringify } from "properties";
@@ -20,6 +20,11 @@ export class FileSystemAllureWriter implements AllureWriter {
   writeAttachment(name: string, content: Buffer | string): void {
     const path = this.buildPath(name);
     writeFileSync(path, content);
+  }
+
+  writeAttachmentFromPath(targetFileName: string, sourceFilePath: PathLike): void {
+    const path = this.buildPath(targetFileName);
+    copyFileSync(path, sourceFilePath);
   }
 
   writeEnvironmentInfo(info?: Record<string, string | undefined>): void {
