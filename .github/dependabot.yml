@@ -7,7 +7,7 @@ updates:
     time: "02:00"
   open-pull-requests-limit: 5
   labels:
-  - type:dependency
+  - type:dependencies
   ignore:
   - dependency-name: "@types/node"
 
