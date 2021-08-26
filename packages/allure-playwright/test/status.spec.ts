@@ -33,11 +33,18 @@ test("should report test status", async ({ runInlineTest }) => {
       test('should skip', async ({}) => {
         test.skip(true);
       });
+      test('should fixme', async ({}) => {
+        test.fixme(true);
+      });
+      test('should expect fail', async ({}) => {
+        test.fail(true);
+        expect(true).toBe(false);
+      });
     `,
     },
     (writer) => {
       return writer.tests.map((t) => t.status);
     },
   );
-  expect(result).toEqual(["passed", "failed", "broken", "skipped"]);
+  expect(result).toEqual(["passed", "failed", "broken", "skipped", "skipped", "passed"]);
 });

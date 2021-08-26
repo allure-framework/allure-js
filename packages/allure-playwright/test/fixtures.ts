@@ -91,6 +91,9 @@ async function runPlaywrightTest(
     output += String(chunk);
     if (process.env.PW_RUNNER_DEBUG) process.stdout.write(String(chunk));
   });
+  testProcess.stderr.on("data", (chunk) => {
+    if (process.env.PW_RUNNER_DEBUG) process.stderr.write(String(chunk));
+  });
   await new Promise<number>((x) => testProcess.on("close", x));
   return JSON.parse(output.toString());
 }

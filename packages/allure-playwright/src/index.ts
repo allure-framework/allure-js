@@ -16,10 +16,12 @@
 
 import path from "path";
 import { FullConfig, TestStatus } from "@playwright/test";
-import { Reporter, Suite } from "@playwright/test/reporter";
+import { Reporter, Suite, TestStep } from "@playwright/test/reporter";
 import {
   AllureGroup,
   AllureRuntime,
+  AllureStep,
+  ExecutableItemWrapper,
   InMemoryAllureWriter,
   LabelName,
   Status,
@@ -67,7 +69,7 @@ class AllureReporter implements Reporter {
 
           allureTest.historyId = test.titlePath().slice(1).join(" ");
           allureTest.fullName = test.title;
-          allureTest.status = statusToAllureStats(result.status!);
+          allureTest.status = statusToAllureStats(result.status, test.expectedStatus);
 
           if (result.error) {
             const message = result.error.message && stripAscii(result.error.message);
@@ -79,6 +81,10 @@ class AllureReporter implements Reporter {
               message,
               trace,
             };
+          }
+
+          for (const step of result.steps) {
+            appendStep(allureTest, step);
           }
 
           for (const attachment of result.attachments) {
@@ -130,17 +136,17 @@ class AllureReporter implements Reporter {
   }
 }
 
-const statusToAllureStats = (status: TestStatus): Status => {
-  switch (status) {
-    case "failed":
-      return Status.FAILED;
-    case "passed":
-      return Status.PASSED;
-    case "skipped":
-      return Status.SKIPPED;
-    case "timedOut":
-      return Status.BROKEN;
+const statusToAllureStats = (status: TestStatus, expectedStatus: TestStatus): Status => {
+  if (status === "skipped") {
+    return Status.SKIPPED;
   }
+  if (status === "timedOut") {
+    return Status.BROKEN;
+  }
+  if (status === expectedStatus) {
+    return Status.PASSED;
+  }
+  return Status.FAILED;
 };
 
 export default AllureReporter;
@@ -152,4 +158,13 @@ const asciiRegex = new RegExp(
 
 const stripAscii = (str: string): string => {
   return str.replace(asciiRegex, "");
+};
+
+const appendStep = (parent: ExecutableItemWrapper, step: TestStep) => {
+  const allureStep = parent.startStep(step.title, step.startTime.getTime());
+  allureStep.endStep(step.startTime.getTime() + step.duration);
+  allureStep.status = step.error ? Status.FAILED : Status.PASSED;
+  for (const child of step.steps || []) {
+    appendStep(allureStep, child);
+  }
 };
