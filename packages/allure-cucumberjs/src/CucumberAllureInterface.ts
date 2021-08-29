@@ -56,7 +56,7 @@ export class CucumberAllureInterface extends Allure {
     content: Buffer | string,
     options: ContentType | string | AttachmentOptions,
   ): void {
-    const file = this.reporter.writeAttachment(content, options);
+    const file = this.runtime.writeAttachment(content, options);
     this.currentExecutable.addAttachment(name, options, file);
   }
 
@@ -65,7 +65,7 @@ export class CucumberAllureInterface extends Allure {
     content: Buffer | string,
     options: ContentType | string | AttachmentOptions,
   ): void {
-    const file = this.reporter.writeAttachment(content, options);
+    const file = this.runtime.writeAttachment(content, options);
     this.currentTest.addAttachment(name, options, file);
   }
 
@@ -86,11 +86,11 @@ export class CucumberAllureInterface extends Allure {
   }
 
   protected get currentExecutable(): ExecutableItemWrapper {
-    const result = this.reporter.currentStep || this.reporter.currentTest;
-    if (result === null) {
+    // const result = this.reporter.currentStep || this.reporter.currentTest;
+    // if (result === null) {
       throw new Error("No executable!");
-    }
-    return result;
+    // }
+    // return result;
   }
 
   protected get currentTest(): AllureTest {
@@ -102,7 +102,7 @@ export class CucumberAllureInterface extends Allure {
 
   private startStep(name: string): WrappedStep {
     const allureStep: AllureStep = this.currentExecutable.startStep(name);
-    this.reporter.pushStep(allureStep);
+    // this.reporter.pushStep(allureStep);
     return new WrappedStep(this.reporter, allureStep);
   }
 }
@@ -115,7 +115,7 @@ export class WrappedStep {
 
   startStep(name: string): WrappedStep {
     const step = this.step.startStep(name);
-    this.reporter.pushStep(step);
+    // this.reporter.pushStep(step);
     return new WrappedStep(this.reporter, step);
   }
 
@@ -130,7 +130,7 @@ export class WrappedStep {
   }
 
   endStep(): void {
-    this.reporter.popStep();
+    // this.reporter.popStep();
     this.step.endStep();
   }
 
