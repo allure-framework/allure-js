@@ -25,5 +25,5 @@ export {
   Severity,
   Stage,
   Status,
-  LinkType
+  LinkType,
 } from "./src/model";
