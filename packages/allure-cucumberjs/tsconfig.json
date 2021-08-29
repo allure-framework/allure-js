@@ -2,21 +2,14 @@
   "extends": "../../tsconfig.json",
   "include": [
     "./src/**/*",
-    "./features/step_definitions/cucumber.steps.ts",
-    "./features/step_definitions/file.steps.ts",
-    "./features/step_definitions/report.steps.ts",
-    "./features/step_definitions/dummy.steps.ts",
-
-    "./features/declarations/**/*",
-    "./features/support/**/*",
     "./index.ts"
   ],
   "compilerOptions": {
     "types": [
       "node",
-      "chai",
-      "cucumber"
+      "chai"
     ],
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "resolveJsonModule": true
   }
 }
