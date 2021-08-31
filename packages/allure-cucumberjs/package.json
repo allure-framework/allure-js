@@ -1,6 +1,6 @@
 {
   "name": "allure-cucumberjs",
-  "version": "workspace:*",
+  "version": "2.0.0-beta.12",
   "description": "Allure Cucumber.JS integration",
   "license": "Apache-2.0",
   "author": "Ilya Korobitsyn <mail@korobochka.org>",
@@ -41,5 +41,9 @@
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
-  }
+  },
+  "files": [
+    "dist/src/**/*",
+    "dist/index.*"
+  ]
 }

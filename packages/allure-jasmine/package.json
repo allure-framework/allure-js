@@ -1,6 +1,6 @@
 {
   "name": "allure-jasmine",
-  "version": "workspace:*",
+  "version": "2.0.0-beta.12",
   "description": "Allure Jasmine integration",
   "license": "Apache-2.0",
   "author": "Ilya Korobitsyn <mail@korobochka.org>",
@@ -47,5 +47,8 @@
     "all": true,
     "report-dir": "./out/coverage",
     "temp-dir": "./out/.nyc"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }

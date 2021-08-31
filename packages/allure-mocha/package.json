@@ -1,6 +1,6 @@
 {
   "name": "allure-mocha",
-  "version": "workspace:*",
+  "version": "2.0.0-beta.12",
   "description": "Allure Mocha integration",
   "license": "Apache-2.0",
   "author": "Sergey Korol <serhii.s.korol@gmail.com>",
@@ -71,5 +71,8 @@
     "all": true,
     "report-dir": "./out/coverage",
     "temp-dir": "./out/.nyc"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }

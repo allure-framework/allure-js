@@ -1,7 +1,0 @@
-*
-!runtime.d.ts
-!runtime.js
-!dist/**
-!package.json
-!*.md
-!*.txt

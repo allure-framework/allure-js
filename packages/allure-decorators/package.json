@@ -1,6 +1,6 @@
 {
   "name": "allure-decorators",
-  "version": "workspace:*",
+  "version": "2.0.0-beta.12",
   "description": "Write your tests in a Java-like annotation-driven manner via JS decorators.",
   "license": "Apache-2.0",
   "author": "Sergey Korol <serhii.s.korol@gmail.com>",
@@ -70,5 +70,8 @@
     "all": true,
     "report-dir": "./out/coverage",
     "temp-dir": "./out/.nyc"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
