@@ -1,6 +1,6 @@
 {
   "name": "allure-playwright",
-  "version": "2.0.0-beta.11",
+  "version": "workspace:*",
   "description": "Allure Playwright integration",
   "license": "Apache-2.0",
   "author": {
@@ -30,6 +30,6 @@
     "typescript": "^4.4.2"
   },
   "dependencies": {
-    "allure-js-commons": "2.0.0-beta.11"
+    "allure-js-commons": "workspace:*"
   }
 }

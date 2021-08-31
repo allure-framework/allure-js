@@ -1,6 +1,6 @@
 {
   "name": "allure-jasmine",
-  "version": "2.0.0-beta.11",
+  "version": "workspace:*",
   "description": "Allure Jasmine integration",
   "license": "Apache-2.0",
   "author": "Ilya Korobitsyn <mail@korobochka.org>",
@@ -27,7 +27,7 @@
     "typescript": "^4.4.2"
   },
   "dependencies": {
-    "allure-js-commons": "2.0.0-beta.11"
+    "allure-js-commons": "workspace:*"
   },
   "nyc": {
     "check-coverage": false,
