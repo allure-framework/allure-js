@@ -326,7 +326,7 @@ export class JasmineAllureInterface extends Allure {
     try {
       result = wrappedStep.run(body);
     } catch (err) {
-      wrappedStep.setError(err);
+      wrappedStep.setError(err as Error);
       wrappedStep.endStep();
       throw err;
     }

@@ -26,6 +26,7 @@ node_modules
 
 out
 dist
+dist-tests
 *.tgz
 *.log
 .gradle

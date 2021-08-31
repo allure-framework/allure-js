@@ -13,7 +13,7 @@
     "lint:fix": "eslint ./src ./index.ts --ext .ts --fix",
     "compile": "tsc",
     "build": "npm run lint && npm run compile",
-    "prepublishOnly": "npm run clean && npm run build"
+    "test": "echo 'no tests'"
   },
   "devDependencies": {
     "@types/mkdirp": "^1.0.0",

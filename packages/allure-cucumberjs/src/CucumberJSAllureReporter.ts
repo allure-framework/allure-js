@@ -95,7 +95,7 @@ export class CucumberJSAllureFormatter extends Formatter {
         try {
           return config.exceptionFormatter(message);
         } catch (e) {
-          // eslint-disable-next-line no-console
+          // eslint-disable-next-line no-console,@typescript-eslint/restrict-template-expressions
           console.warn(`Error in exceptionFormatter: ${e}`);
         }
       }

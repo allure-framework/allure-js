@@ -130,7 +130,7 @@ class AllureReporter implements Reporter {
         const postProcess = eval(process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST); // eslint-disable-line no-eval
         console.log(JSON.stringify(postProcess(writerForTest))); // eslint-disable-line no-console
       } catch (e) {
-        console.log(JSON.stringify({ error: e.toString() })); // eslint-disable-line no-console
+        console.log(JSON.stringify({ error: (e as Error).toString() })); // eslint-disable-line no-console
       }
     }
   }

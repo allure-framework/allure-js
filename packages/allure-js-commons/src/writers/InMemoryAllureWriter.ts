@@ -2,6 +2,12 @@ import { PathLike, readFileSync } from "fs";
 import { Category, TestResult, TestResultContainer } from "../model";
 import { AllureWriter } from "./AllureWriter";
 
+export interface AllureResults {
+  tests: TestResult[];
+  groups: TestResultContainer[];
+  attachments: Record<string, Buffer | string>;
+}
+
 export class InMemoryAllureWriter implements AllureWriter {
   public groups: TestResultContainer[] = [];
   public tests: TestResult[] = [];

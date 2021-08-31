@@ -1,5 +1,5 @@
 export { AllureRuntime } from "./src/AllureRuntime";
-export { InMemoryAllureWriter } from "./src/writers";
+export { InMemoryAllureWriter, AllureResults } from "./src/writers";
 export { AllureConfig } from "./src/AllureConfig";
 export { AllureGroup } from "./src/AllureGroup";
 export { ExecutableItemWrapper } from "./src/ExecutableItemWrapper";

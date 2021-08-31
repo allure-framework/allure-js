@@ -7,15 +7,12 @@ import "source-map-support/register";
 
 const mocha = new Mocha({
   timeout: 16000,
-  reporter: "mocha-multi",
+  reporter: "mocha-multi-reporters",
   ignoreLeaks: false,
   reporterOptions: {
-    list: "-",
-    [require.resolve("../")]: {
-      stdout: "-",
-      options: {
-        resultsDir: path.resolve(__dirname, "../out/allure-results"),
-      },
+    reporterEnabled: "list, ../allure-mocha",
+    allureMochaReporterOptions: {
+      resultsDir: path.resolve(__dirname, "../out/allure-results"),
     },
   },
 });

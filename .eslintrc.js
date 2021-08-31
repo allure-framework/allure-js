@@ -17,6 +17,7 @@ module.exports = {
   parserOptions: {
     project: "tsconfig.json",
     sourceType: "module",
+    warnOnUnsupportedTypeScriptVersion: false
   },
   plugins: [
     "eslint-plugin-no-null",

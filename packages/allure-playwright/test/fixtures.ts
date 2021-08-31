@@ -108,9 +108,11 @@ type Fixtures = {
 };
 
 export const test = base.extend<Fixtures>({
+  // @ts-ignore
   runInlineTest: async ({}, use, testInfo: TestInfo) => {
     let runResult: RunResult | undefined;
     await use(
+      // @ts-ignore
       async (files: Files, postProcess, params: Params = {}, env: NodeJS.ProcessEnv = {}) => {
         const baseDir = await writeFiles(testInfo, files);
         runResult = await runPlaywrightTest(baseDir, postProcess, params, env);

@@ -26,17 +26,16 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: npm install, prepare
+      - name: yarn install
         run: |
-          npm ci
-          npm run prepare
-      - name: npm build
+          yarn
+      - name: yarn build
         run: |
-          npm run build
+          yarn run build
       - name: npm lint
         run: |
-          npm run lint
+          yarn run lint
       - name: npm test
         run: |
-          npm run run-test
+          yarn run test
 

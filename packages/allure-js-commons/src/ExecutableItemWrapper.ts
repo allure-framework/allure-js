@@ -22,11 +22,11 @@ export class ExecutableItemWrapper {
     this.info.name = name;
   }
 
-  public set description(description: string) {
+  public set description(description: string | undefined) {
     this.info.description = description;
   }
 
-  public set descriptionHtml(descriptionHtml: string) {
+  public set descriptionHtml(descriptionHtml: string | undefined) {
     this.info.descriptionHtml = descriptionHtml;
   }
 

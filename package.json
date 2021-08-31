@@ -1,48 +1,46 @@
 {
   "name": "allure-js",
   "private": true,
+  "version": "2.0.0-beta.11",
+  "workspaces": [
+    "packages/allure-js-commons",
+    "packages/allure-mocha",
+    "packages/allure-jasmine",
+    "packages/*"
+  ],
   "scripts": {
-    "bootstrap": "lerna exec npm install",
-    "build": "npm run clean && lerna run build --stream",
-    "clean": "lerna run clean",
-    "link": "lerna link --force-local",
-    "lint": "lerna run lint",
-    "lint:fix": "lerna run lint:fix",
-    "npm-publish": "lerna publish from-git --yes",
-    "pack": "lerna exec -- npm pack",
-    "prepare": "husky install && npm run bootstrap",
+    "prepare": "husky install",
     "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}'",
-    "run-test": "lerna run test",
-    "set-version": "lerna version --no-changelog --no-commit-hooks --force-publish --yes",
-    "test": "npm run build && npm run run-test"
+    "clean": "yarn workspaces run clean",
+    "compile": "yarn workspaces run compile",
+    "lint": "yarn workspaces run lint",
+    "test": "yarn workspaces run test",
+    "build": "yarn run clean && yarn run compile"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write"
+    ]
   },
   "devDependencies": {
     "@types/node": "^14.6.0",
-    "@typescript-eslint/eslint-plugin": "^4.1.1",
-    "@typescript-eslint/parser": "^4.1.1",
-    "allure-commandline": "^2.13.0",
-    "eslint": "^7.24.0",
+    "@typescript-eslint/eslint-plugin": "^4.29.3",
+    "@typescript-eslint/parser": "^4.29.3",
+    "allure-commandline": "^2.13.8",
+    "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-jsdoc": "^36.0.6",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-jsdoc": "^36.0.8",
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "husky": "^7.0.1",
-    "lerna": "^4.0.0",
+    "husky": "^7.0.2",
+    "lint-staged": "^11.1.2",
     "npm-run-all": "^4.1.5",
-    "nyc": "^15.0.1",
+    "nyc": "^15.1.0",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
-    "ts-node": "^10.1.0",
-    "typescript": "^4.0.2"
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.2"
   },
-  "dependencies": {
-    "allure-cucumberjs": "file:packages/allure-cucumberjs",
-    "allure-decorators": "file:packages/allure-decorators",
-    "allure-jasmine": "file:packages/allure-jasmine",
-    "allure-jest": "file:packages/allure-jest",
-    "allure-js-commons": "file:packages/allure-js-commons",
-    "allure-mocha": "file:packages/allure-mocha",
-    "allure-playwright": "file:packages/allure-playwright"
-  }
+  "dependencies": {}
 }
