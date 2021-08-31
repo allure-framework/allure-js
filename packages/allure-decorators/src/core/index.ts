@@ -29,7 +29,7 @@ export const step = <T>(nameFn: string | ((arg: T) => string)) => {
           const value: string = typeof nameFn === "function" ? nameFn.apply(this, args) : nameFn;
           callable = () => getAllure().step(value, () => original.apply(this, args));
         } catch (e) {
-          /* eslint-disable no-console */
+          // eslint-disable-next-line no-console, @typescript-eslint/restrict-template-expressions
           console.error(`[ERROR] Failed to apply step decorator: ${e}`);
         }
         return callable ? callable.apply(this, args) : original.apply(this, args);
@@ -50,7 +50,7 @@ export const attachment = <T>(name: string, type: ContentType) => {
           const content: Buffer | string = original.apply(this, args);
           callable = () => getAllure().attachment(name, content, type);
         } catch (e) {
-          /* eslint-disable no-console */
+          // eslint-disable-next-line no-console, @typescript-eslint/restrict-template-expressions
           console.error(`[ERROR] Failed to apply attachment decorator: ${e}`);
         }
         return callable ? callable.apply(this, args) : {};

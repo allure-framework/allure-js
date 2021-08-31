@@ -25,7 +25,7 @@ class AllureWorld implements World, AllureWorld {
   formatterPath = "support/allure-formatter.ts";
   formatterOutPath = "../out/allure-results";
   allureReport: AllureReport = { testResults: [] };
-  result: { stdout: string; stderr: string; error: string } = { stdout: "", stderr: "", error: "" };
+  result: { stdout: string; stderr: string; error?: Error } = { stdout: "", stderr: "" };
 
   async run(): Promise<void> {
     const formatterPath = path.join(this.tmpDir, this.formatterPath);
@@ -62,13 +62,13 @@ class AllureWorld implements World, AllureWorld {
       }
     } catch (err) {
       error = err;
-      stderr = VError.fullStack(error);
+      stderr = VError.fullStack(error as Error);
     }
 
     stdoutStream.end();
 
     this.allureReport = getAllureReport(formatterOutPath);
-    this.result = { stdout, stderr, error };
+    this.result = { stdout, stderr, error: error as Error };
   }
 }
 

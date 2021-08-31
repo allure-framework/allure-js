@@ -1,6 +1,6 @@
 {
   "name": "allure-playwright",
-  "version": "2.0.0-beta.11",
+  "version": "workspace:*",
   "description": "Allure Playwright integration",
   "license": "Apache-2.0",
   "author": {
@@ -16,8 +16,6 @@
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
-    "prepublishOnly": "npm run clean && npm run build",
-    "build": "npm run compile",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "allure-report": "allure serve ./out/allure-results",
     "test": "playwright test -c test",
@@ -25,9 +23,13 @@
     "lint:fix": "eslint ./src --ext .ts --fix"
   },
   "devDependencies": {
-    "@playwright/test": "=1.14.1"
+    "@playwright/test": "=1.14.1",
+    "eslint": "^7.32.0",
+    "prettier": "^2.3.2",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.4.2"
   },
   "dependencies": {
-    "allure-js-commons": "file:../allure-js-commons"
+    "allure-js-commons": "workspace:*"
   }
 }

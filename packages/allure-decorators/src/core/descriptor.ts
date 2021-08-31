@@ -12,7 +12,7 @@ export const processDescriptor = <T>(
           typeof parameterFn === "function" ? parameterFn.apply(this, args) : parameterFn;
         reporterFn(value);
       } catch (e) {
-        /* eslint-disable no-console */
+        // eslint-disable-next-line no-console, @typescript-eslint/restrict-template-expressions
         console.error(`[ERROR] Failed to apply decorator: ${e}`);
       }
       return original.apply(this, args);

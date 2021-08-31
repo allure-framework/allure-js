@@ -1,6 +1,6 @@
 {
   "name": "allure-mocha",
-  "version": "2.0.0-beta.11",
+  "version": "workspace:*",
   "description": "Allure Mocha integration",
   "license": "Apache-2.0",
   "author": "Sergey Korol <serhii.s.korol@gmail.com>",
@@ -15,10 +15,9 @@
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
-    "prepublishOnly": "npm run clean && npm run build",
-    "build": "npm run lint && npm run compile",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "allure-report": "allure serve ./out/allure-results",
+    "test:compile": "nyc ts-node --project test/tsconfig.json",
     "test": "nyc ts-node --project test/tsconfig.json test/runner.ts",
     "coverage": "codecov",
     "lint": "eslint ./src --ext .ts",
@@ -29,18 +28,24 @@
     "@types/chai": "^4.2.11",
     "@types/glob": "^7.1.4",
     "@types/mocha": "^7.0.2",
+    "@types/node": "^16.7.8",
     "chai": "^4.2.0",
     "codecov": "^3.6.5",
     "dotenv": "^10.0.0",
+    "eslint": "^7.32.0",
     "fs-jetpack": "^4.1.0",
     "glob": "^7.1.7",
     "mocha": "^9.1.0",
-    "mocha-multi": "^1.1.3",
+    "mocha-multi-reporters": "^1.5.1",
     "nyc": "^15.0.1",
-    "source-map-support": "^0.5.19"
+    "prettier": "^2.3.2",
+    "rimraf": "^3.0.2",
+    "source-map-support": "^0.5.19",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.2"
   },
   "dependencies": {
-    "allure-js-commons": "file:../allure-js-commons"
+    "allure-js-commons": "workspace:*"
   },
   "peerDependencies": {
     "mocha": ">=6.2.x"

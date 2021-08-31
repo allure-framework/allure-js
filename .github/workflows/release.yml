@@ -27,15 +27,21 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 14
+          cache: 'yarn'
 
       - name: "Prepare"
         run: |
-          npm ci
-          npm run prepare
+          yarn install
 
       - name: "Set release version"
         run: |
-          npm run set-version '${{ github.event.inputs.releaseVersion }}'
+          yarn version '${{ github.event.inputs.releaseVersion }}'
+
+      - name: "Commit release version and create tag"
+        run: |
+          git commit -am "release ${{ github.event.inputs.releaseVersion }}"
+          git tag ${{ github.event.inputs.releaseVersion }}
+          git push origin ${{ github.event.inputs.releaseVersion }}
 
       - name: "Publish Github Release"
         uses: toolmantim/release-drafter@v5.15.0

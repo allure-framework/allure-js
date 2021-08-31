@@ -1,5 +1,12 @@
 .allure
 
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 #IDEA Files
 .idea/*
 !.idea/vcs.xml
@@ -26,6 +33,7 @@ node_modules
 
 out
 dist
+dist-tests
 *.tgz
 *.log
 .gradle
