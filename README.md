@@ -28,7 +28,7 @@ This project aggregates Allure Javascript commons and reporters.
 
 ### Playwright
 [Read more](/packages/allure-playwright/README.md)
-
+![npm](https://img.shields.io/npm/dm/allure-playwright.svg) ![npm](https://img.shields.io/npm/v/allure-playwright.svg)
 
 ## Development
 
