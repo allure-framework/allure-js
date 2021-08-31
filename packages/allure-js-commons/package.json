@@ -1,6 +1,6 @@
 {
   "name": "allure-js-commons",
-  "version": "2.0.0-beta.11",
+  "version": "2.0.0-beta.12",
   "description": "Allure JS Commons",
   "license": "Apache-2.0",
   "author": "Ilya Korobitsyn <mail@korobochka.org>",
@@ -29,5 +29,6 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "stableVersion": "2.0.0-beta.11"
 }

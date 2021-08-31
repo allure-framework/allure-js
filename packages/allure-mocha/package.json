@@ -1,6 +1,6 @@
 {
   "name": "allure-mocha",
-  "version": "2.0.0-beta.11",
+  "version": "2.0.0-beta.12",
   "description": "Allure Mocha integration",
   "license": "Apache-2.0",
   "author": "Sergey Korol <serhii.s.korol@gmail.com>",
@@ -74,5 +74,6 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "stableVersion": "2.0.0-beta.11"
 }

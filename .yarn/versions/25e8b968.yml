@@ -1,0 +1,8 @@
+undecided:
+  - allure-js
+  - allure-cucumberjs
+  - allure-decorators
+  - allure-jasmine
+  - allure-jest
+  - allure-js-commons
+  - allure-mocha
