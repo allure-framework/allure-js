@@ -11,10 +11,10 @@
   "scripts": {
     "prepare": "husky install",
     "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}'",
-    "clean": "yarn workspaces run clean",
-    "compile": "yarn workspaces run compile",
-    "lint": "yarn workspaces run lint",
-    "test": "yarn workspaces run test",
+    "clean": "yarn workspaces foreach run clean",
+    "compile": "yarn workspaces foreach run compile",
+    "lint": "yarn workspaces foreach run lint",
+    "test": "yarn workspaces foreach run test",
     "build": "yarn run clean && yarn run compile"
   },
   "lint-staged": {
@@ -41,6 +41,5 @@
     "rimraf": "^3.0.2",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.2"
-  },
-  "dependencies": {}
+  }
 }
