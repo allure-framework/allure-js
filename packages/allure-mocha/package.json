@@ -15,8 +15,6 @@
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
-    "prepublishOnly": "npm run clean && npm run build",
-    "build": "npm run lint && npm run compile",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "allure-report": "allure serve ./out/allure-results",
     "test:compile": "nyc ts-node --project test/tsconfig.json",
@@ -30,6 +28,7 @@
     "@types/chai": "^4.2.11",
     "@types/glob": "^7.1.4",
     "@types/mocha": "^7.0.2",
+    "@types/node": "^16.7.8",
     "chai": "^4.2.0",
     "codecov": "^3.6.5",
     "dotenv": "^10.0.0",

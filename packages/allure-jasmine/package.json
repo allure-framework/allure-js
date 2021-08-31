@@ -12,11 +12,10 @@
     "lint": "eslint ./src ./index.ts --ext .ts",
     "lint:fix": "eslint ./src ./index.ts --ext .ts --fix",
     "compile": "tsc",
-    "build": "npm run lint && npm run compile",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "runTest": "tsc -p tsconfig-tests.json && jasmine ./dist-tests/test/*.js",
+    "runTest": "tsc -p tsconfig-tests.json && yarn run jasmine ./dist-tests/test/*.js",
     "runTestDebug": "node $NODE_DEBUG_OPTION ./node_modules/.bin/jasmine ./dist/test/*.js",
-    "test": "rimraf ./out ; npm run runTest ; npm run generate-report"
+    "test": "rimraf ./out ; yarn run runTest ; yarn run generate-report"
   },
   "devDependencies": {
     "@types/jasmine": "^3.3.12",

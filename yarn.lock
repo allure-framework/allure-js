@@ -1295,6 +1295,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^16.7.8":
+  version: 16.7.8
+  resolution: "@types/node@npm:16.7.8"
+  checksum: 060ea222ce8f3eb05bd86a7785ca5807503a50602dd805c5be997a5ae684fa6224c9ad8890bcc5551c05d14a8bcd735f94567691342d197f5f7f7f893ed0d46b
+  languageName: node
+  linkType: hard
+
 "@types/normalize-package-data@npm:^2.4.0":
   version: 2.4.1
   resolution: "@types/normalize-package-data@npm:2.4.1"
@@ -1605,8 +1612,9 @@ __metadata:
     "@types/fs-extra": ^9.0.1
     "@types/glob": ^7.1.4
     "@types/mocha": ^7.0.2
+    "@types/node": ^16.7.8
     "@types/verror": ^1.10.3
-    allure-js-commons: 2.0.0-beta.11
+    allure-js-commons: "workspace:*"
     chai: ^4.2.0
     chai-like: ^1.1.1
     cucumber: ^6.0.5
@@ -1631,8 +1639,9 @@ __metadata:
     "@types/chai-arrays": 2.0.0
     "@types/glob": ^7.1.4
     "@types/mocha": ^7.0.2
-    allure-js-commons: 2.0.0-beta.11
-    allure-mocha: 2.0.0-beta.11
+    "@types/node": ^16.7.8
+    allure-js-commons: "workspace:*"
+    allure-mocha: "workspace:*"
     chai: ^4.2.0
     chai-arrays: ^2.2.0
     codecov: ^3.6.5
@@ -1652,12 +1661,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"allure-jasmine@2.0.0-beta.11, allure-jasmine@workspace:packages/allure-jasmine":
+"allure-jasmine@workspace:*, allure-jasmine@workspace:packages/allure-jasmine":
   version: 0.0.0-use.local
   resolution: "allure-jasmine@workspace:packages/allure-jasmine"
   dependencies:
     "@types/jasmine": ^3.3.12
-    allure-js-commons: 2.0.0-beta.11
+    allure-js-commons: "workspace:*"
     eslint: ^7.32.0
     jasmine: ^3.4.0
     prettier: ^2.3.2
@@ -1672,8 +1681,8 @@ __metadata:
   dependencies:
     "@types/jasmine": ^3.3.12
     "@types/jest": ^26.0.10
-    allure-jasmine: 2.0.0-beta.11
-    allure-js-commons: 2.0.0-beta.11
+    allure-jasmine: "workspace:*"
+    allure-js-commons: "workspace:*"
     eslint: ^7.32.0
     jest: ^26.4.2
     prettier: ^2.3.2
@@ -1682,7 +1691,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"allure-js-commons@2.0.0-beta.11, allure-js-commons@workspace:packages/allure-js-commons":
+"allure-js-commons@workspace:*, allure-js-commons@workspace:packages/allure-js-commons":
   version: 0.0.0-use.local
   resolution: "allure-js-commons@workspace:packages/allure-js-commons"
   dependencies:
@@ -1723,7 +1732,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"allure-mocha@2.0.0-beta.11, allure-mocha@workspace:packages/allure-mocha":
+"allure-mocha@workspace:*, allure-mocha@workspace:packages/allure-mocha":
   version: 0.0.0-use.local
   resolution: "allure-mocha@workspace:packages/allure-mocha"
   dependencies:
@@ -1731,7 +1740,8 @@ __metadata:
     "@types/chai": ^4.2.11
     "@types/glob": ^7.1.4
     "@types/mocha": ^7.0.2
-    allure-js-commons: 2.0.0-beta.11
+    "@types/node": ^16.7.8
+    allure-js-commons: "workspace:*"
     chai: ^4.2.0
     codecov: ^3.6.5
     dotenv: ^10.0.0
@@ -1756,7 +1766,7 @@ __metadata:
   resolution: "allure-playwright@workspace:packages/allure-playwright"
   dependencies:
     "@playwright/test": =1.14.1
-    allure-js-commons: 2.0.0-beta.11
+    allure-js-commons: "workspace:*"
     eslint: ^7.32.0
     prettier: ^2.3.2
     rimraf: ^3.0.2

@@ -24,6 +24,7 @@
     "@types/fs-extra": "^9.0.1",
     "@types/glob": "^7.1.4",
     "@types/mocha": "^7.0.2",
+    "@types/node": "^16.7.8",
     "@types/verror": "^1.10.3",
     "chai": "^4.2.0",
     "chai-like": "^1.1.1",
