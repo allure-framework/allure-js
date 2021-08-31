@@ -40,8 +40,9 @@ jobs:
       - name: "Commit release version and create tag"
         run: |
           git commit -am "release ${{ github.event.inputs.releaseVersion }}"
-          git tag ${{ github.event.inputs.releaseVersion }}
-          git push origin ${{ github.event.inputs.releaseVersion }}
+          git tag v${{ github.event.inputs.releaseVersion }}
+          git push origin v${{ github.event.inputs.releaseVersion }}
+          git push origin ${GITHUB_REF}
 
       - name: "Publish Github Release"
         uses: toolmantim/release-drafter@v5.15.0
