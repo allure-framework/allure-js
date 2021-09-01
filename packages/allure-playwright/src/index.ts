@@ -92,9 +92,14 @@ class AllureReporter implements Reporter {
               continue;
             }
 
-            const fileName = attachment.body
-              ? runtime.writeAttachment(attachment.body, attachment.contentType)
-              : runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
+            let fileName;
+            try {
+              fileName = attachment.body
+                ? runtime.writeAttachment(attachment.body, attachment.contentType)
+                : runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
+            } catch(e) {
+              continue;
+            }
             allureTest.addAttachment(attachment.name, attachment.contentType, fileName);
             if (attachment.name === "diff") {
               allureTest.addLabel("testType", "screenshotDiff");
