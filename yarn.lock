@@ -1274,10 +1274,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mocha@npm:^7.0.2":
-  version: 7.0.2
-  resolution: "@types/mocha@npm:7.0.2"
-  checksum: 9be72c563976a809caa3594e3ee1fd71748887aaf105b4cfa99c69e882659d3ddbb331d4c1e3b3af9a67c78f3b7b4ab30fe1baa13cb50561dcc386512a75142a
+"@types/mocha@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "@types/mocha@npm:9.0.0"
+  checksum: 73e6edaba045bc250b69085a770d5029edfed006ed8e75344435474a2cb8d38064acd7b34b6cc62756caa845a5cf335bde66db11e8c8c6565c62a790e933704a
   languageName: node
   linkType: hard
 
@@ -1611,7 +1611,7 @@ __metadata:
     "@types/cucumber": ^6.0.1
     "@types/fs-extra": ^9.0.1
     "@types/glob": ^7.1.4
-    "@types/mocha": ^7.0.2
+    "@types/mocha": ^9.0.0
     "@types/node": ^16.7.8
     "@types/verror": ^1.10.3
     allure-js-commons: "workspace:*"
@@ -1638,7 +1638,7 @@ __metadata:
     "@types/chai": ^4.2.11
     "@types/chai-arrays": 2.0.0
     "@types/glob": ^7.1.4
-    "@types/mocha": ^7.0.2
+    "@types/mocha": ^9.0.0
     "@types/node": ^16.7.8
     allure-js-commons: "workspace:*"
     allure-mocha: "workspace:*"
@@ -1649,7 +1649,7 @@ __metadata:
     eslint: ^7.32.0
     fs-jetpack: ^4.1.0
     glob: ^7.1.6
-    mocha: ^9.1.0
+    mocha: 9.1.1
     mocha-multi-reporters: ^1.5.1
     nyc: ^15.0.1
     prettier: ^2.3.2
@@ -1738,7 +1738,7 @@ __metadata:
     "@testdeck/mocha": 0.1.2
     "@types/chai": ^4.2.11
     "@types/glob": ^7.1.4
-    "@types/mocha": ^7.0.2
+    "@types/mocha": ^9.0.0
     "@types/node": ^16.7.8
     allure-js-commons: "workspace:*"
     chai: ^4.2.0
@@ -1747,7 +1747,7 @@ __metadata:
     eslint: ^7.32.0
     fs-jetpack: ^4.1.0
     glob: ^7.1.7
-    mocha: ^9.1.0
+    mocha: 9.1.1
     mocha-multi-reporters: ^1.5.1
     nyc: ^15.0.1
     prettier: ^2.3.2
@@ -6092,9 +6092,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:^9.1.0":
-  version: 9.1.0
-  resolution: "mocha@npm:9.1.0"
+"mocha@npm:9.1.1":
+  version: 9.1.1
+  resolution: "mocha@npm:9.1.1"
   dependencies:
     "@ungap/promise-all-settled": 1.1.2
     ansi-colors: 4.1.1
@@ -6124,7 +6124,7 @@ __metadata:
   bin:
     _mocha: bin/_mocha
     mocha: bin/mocha
-  checksum: 1eefb364b9ec64fde67b7f916585624cc243527b1d4f6e68a187823658aa54c7b713486f263460bfd498509e9779d0039cde6b024c7cc5c4cd3f36a2370f7c30
+  checksum: b45b6aabe9012a4074cd21a5f11726fd26b7e33081961ce364819169ceacd654fa89fb7f07b7f1395ea46bb2613a59e37af5e3249ce366a8be8ef6ed890e72f1
   languageName: node
   linkType: hard
 
