@@ -8,7 +8,7 @@ export interface AllureWriter {
 
   writeAttachment(name: string, content: Buffer | string): void;
 
-  writeAttachmentFromPath(targetFileName: string, sourceFilePath: PathLike): void;
+  writeAttachmentFromPath(from: PathLike, distFileName: string): void;
 
   writeEnvironmentInfo(info: Record<string, string | undefined>): void;
 
