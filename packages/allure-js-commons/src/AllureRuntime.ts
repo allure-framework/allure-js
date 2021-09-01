@@ -48,11 +48,11 @@ export class AllureRuntime {
   }
 
   writeAttachmentFromPath(
-    filePath: PathLike,
+    fromPath: PathLike,
     options: ContentType | string | AttachmentOptions,
   ): string {
     const fileName = buildAttachmentFileName(options);
-    this.writer.writeAttachmentFromPath(fileName, filePath);
+    this.writer.writeAttachmentFromPath(fromPath, fileName);
     return fileName;
   }
 

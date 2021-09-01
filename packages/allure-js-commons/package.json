@@ -12,14 +12,25 @@
     "lint": "eslint ./src ./index.ts --ext .ts",
     "lint:fix": "eslint ./src ./index.ts --ext .ts --fix",
     "compile": "tsc",
-    "test": "echo 'no tests'"
+    "test": "nyc ts-node --project test/tsconfig.json test/runner.ts"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.21",
+    "@types/glob": "^7.1.4",
     "@types/mkdirp": "^1.0.0",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^16.7.10",
     "@types/uuid": "^8.3.0",
+    "allure-mocha": "workspace:packages/allure-mocha",
+    "chai": "^4.3.4",
     "eslint": "^7.32.0",
+    "glob": "^7.1.7",
+    "mocha": "^9.1.1",
+    "mocha-multi-reporters": "^1.5.1",
+    "nyc": "^15.1.0",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
+    "ts-node": "^10.2.1",
     "typescript": "^4.4.2"
   },
   "dependencies": {

@@ -1160,7 +1160,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai@npm:*, @types/chai@npm:^4.2.11":
+"@types/chai@npm:*, @types/chai@npm:^4.2.11, @types/chai@npm:^4.2.21":
   version: 4.2.21
   resolution: "@types/chai@npm:4.2.21"
   checksum: dbd852dfea5065c2e86059bdc011c42a380c43bbcf80d427da228dc2a9e1efae27e7baf16570a3158571d92c206782e07fab3b703c28452a75a74380b33d1443
@@ -1292,6 +1292,13 @@ __metadata:
   version: 14.17.12
   resolution: "@types/node@npm:14.17.12"
   checksum: 7efbce3781a0ea5d7a39bca3c5ed9c4e4d99fed3483fb2a89670aeb049cd9d25f1ddecd8fb58420fd92de371278721ddd6e3ad95c4f55992592f1ac5d1dedf98
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^16.7.10":
+  version: 16.7.10
+  resolution: "@types/node@npm:16.7.10"
+  checksum: 0518803caa1a14f4070e770a280eda1c4b4581a425cbda481cdd54b1f34a7ea497ff067fd23b90e3d4f4fdcfba15c1316182875e9cf9f5b2e880de1e595de053
   languageName: node
   linkType: hard
 
@@ -1694,13 +1701,24 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-js-commons@workspace:packages/allure-js-commons"
   dependencies:
+    "@types/chai": ^4.2.21
+    "@types/glob": ^7.1.4
     "@types/mkdirp": ^1.0.0
+    "@types/mocha": ^9.0.0
+    "@types/node": ^16.7.10
     "@types/uuid": ^8.3.0
+    allure-mocha: "workspace:packages/allure-mocha"
+    chai: ^4.3.4
     eslint: ^7.32.0
+    glob: ^7.1.7
     mkdirp: ^1.0.4
+    mocha: ^9.1.1
+    mocha-multi-reporters: ^1.5.1
+    nyc: ^15.1.0
     prettier: ^2.3.2
     properties: ^1.2.1
     rimraf: ^3.0.2
+    ts-node: ^10.2.1
     typescript: ^4.4.2
     uuid: ^8.3.0
   languageName: unknown
@@ -2368,7 +2386,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chai@npm:^4.2.0":
+"chai@npm:^4.2.0, chai@npm:^4.3.4":
   version: 4.3.4
   resolution: "chai@npm:4.3.4"
   dependencies:
@@ -6092,7 +6110,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:9.1.1":
+"mocha@npm:9.1.1, mocha@npm:^9.1.1":
   version: 9.1.1
   resolution: "mocha@npm:9.1.1"
   dependencies:

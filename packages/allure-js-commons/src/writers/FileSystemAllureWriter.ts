@@ -22,9 +22,9 @@ export class FileSystemAllureWriter implements AllureWriter {
     writeFileSync(path, content);
   }
 
-  writeAttachmentFromPath(targetFileName: string, sourceFilePath: PathLike): void {
-    const path = this.buildPath(targetFileName);
-    copyFileSync(path, sourceFilePath);
+  writeAttachmentFromPath(from: PathLike, distFileName: string): void {
+    const to = this.buildPath(distFileName);
+    copyFileSync(from, to);
   }
 
   writeEnvironmentInfo(info?: Record<string, string | undefined>): void {
