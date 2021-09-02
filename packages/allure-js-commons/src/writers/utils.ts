@@ -23,6 +23,8 @@ export const typeToExtension = (options: AttachmentOptions): string => {
       return "png";
     case ContentType.JSON:
       return "json";
+    case ContentType.ZIP:
+      return "ZIP";
     case ContentType.WEBM:
       return "webm";
     case ContentType.JPEG:
