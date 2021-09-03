@@ -29,13 +29,13 @@ jobs:
           node-version: 14
           cache: 'yarn'
 
-      - name: "Prepare"
+      - name: "Yarn install"
         run: |
           yarn install
 
       - name: "Set release version"
         run: |
-          yarn workspaces foreach version '${{ github.event.inputs.releaseVersion }}'
+          yarn run replace-in-file --isRegex=true '/"version":\s*".+"/g' '"version": "${{ github.event.inputs.releaseVersion }}"' 'package.json' 'packages/*/package.json'
 
       - name: "Commit release version and create tag"
         run: |
