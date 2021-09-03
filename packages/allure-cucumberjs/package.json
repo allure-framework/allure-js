@@ -45,6 +45,5 @@
   "files": [
     "dist/src/**/*",
     "dist/index.*"
-  ],
-  "stableVersion": "2.0.0-beta.11"
+  ]
 }
