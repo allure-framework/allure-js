@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import fs from "fs";
 import path from "path";
 import { FullConfig, TestStatus } from "@playwright/test";
 import { Reporter, Suite, TestStep } from "@playwright/test/reporter";
@@ -92,9 +93,15 @@ class AllureReporter implements Reporter {
               continue;
             }
 
-            const fileName = attachment.body
-              ? runtime.writeAttachment(attachment.body, attachment.contentType)
-              : runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
+            let fileName;
+            if (attachment.body) {
+              fileName = runtime.writeAttachment(attachment.body, attachment.contentType);
+            } else {
+              if (!fs.existsSync(attachment.path!)) {
+                continue;
+              }
+              fileName = runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
+            }
             allureTest.addAttachment(attachment.name, attachment.contentType, fileName);
             if (attachment.name === "diff") {
               allureTest.addLabel("testType", "screenshotDiff");
