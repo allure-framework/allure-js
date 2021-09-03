@@ -146,6 +146,7 @@ export enum ContentType {
   SVG = "image/svg+xml",
   PNG = "image/png",
   JSON = "application/json",
+  ZIP = "application/zip",
   WEBM = "video/webm",
   JPEG = "image/jpeg",
 }
