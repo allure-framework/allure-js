@@ -18,7 +18,7 @@
     "test": "rimraf ./out ; yarn run runTest ; yarn run generate-report"
   },
   "devDependencies": {
-    "@types/jasmine": "^3.3.12",
+    "@types/jasmine": "^3.9.1",
     "eslint": "^7.32.0",
     "jasmine": "^3.4.0",
     "prettier": "^2.3.2",
