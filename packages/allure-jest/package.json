@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@types/jasmine": "^3.3.12",
-    "@types/jest": "^26.0.10",
+    "@types/jest": "^27.0.2",
     "allure-jasmine": "workspace:*",
     "eslint": "^7.32.0",
     "jest": "^26.4.2",
