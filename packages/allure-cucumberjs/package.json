@@ -19,7 +19,7 @@
     "test": "cucumber-js --require ./dist/features/step_definitions/ --require ./dist/features/support/ --format ./dist/features/support/report.js:./dist/dummy.txt"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.11",
+    "@types/chai": "^4.2.22",
     "@types/cucumber": "^6.0.1",
     "@types/fs-extra": "^9.0.1",
     "@types/glob": "^7.1.4",

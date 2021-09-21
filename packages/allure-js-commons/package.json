@@ -15,7 +15,7 @@
     "test": "nyc ts-node --project test/tsconfig.json test/runner.ts"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.21",
+    "@types/chai": "^4.2.22",
     "@types/glob": "^7.1.4",
     "@types/mkdirp": "^1.0.0",
     "@types/mocha": "^9.0.0",
