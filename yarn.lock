@@ -991,9 +991,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:=1.14.1":
-  version: 1.14.1
-  resolution: "@playwright/test@npm:1.14.1"
+"@playwright/test@npm:^1.15.2":
+  version: 1.15.2
+  resolution: "@playwright/test@npm:1.15.2"
   dependencies:
     "@babel/code-frame": ^7.14.5
     "@babel/core": ^7.14.8
@@ -1022,6 +1022,7 @@ __metadata:
     mime: ^2.4.6
     minimatch: ^3.0.3
     ms: ^2.1.2
+    open: ^8.2.1
     pirates: ^4.0.1
     pixelmatch: ^5.2.1
     pngjs: ^5.0.0
@@ -1035,7 +1036,7 @@ __metadata:
     yazl: ^2.5.1
   bin:
     playwright: lib/cli/cli.js
-  checksum: 8b88e8f1fe509c2e48f5b67a619e766c59c5164938485f5fb6e2b55df3fd394fc2de0b999f296be92a8657be5975102ae3ef06a616fd78440728069ec7fd57fb
+  checksum: 3785c8ae7a7f4e69817d621956add21ae8541d0ec2b5b6d64d823b0e324553a1a38bbb72331a28471c79798fa2dc0cbbabb19b5dd28a53cf901afd47b3e4663f
   languageName: node
   linkType: hard
 
@@ -1783,7 +1784,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-playwright@workspace:packages/allure-playwright"
   dependencies:
-    "@playwright/test": =1.14.1
+    "@playwright/test": ^1.15.2
     allure-js-commons: "workspace:*"
     eslint: ^7.32.0
     prettier: ^2.3.2
@@ -2966,6 +2967,13 @@ __metadata:
   dependencies:
     strip-bom: ^4.0.0
   checksum: 0b5bdb6786ebb0ff6ef55386f37c8d221963fbbd3009588fe71032c85ca16da05eff2ad01bfe9bfc8bac5ce95a18f66b38c50d454482e3e9d2de1142424a3e7c
+  languageName: node
+  linkType: hard
+
+"define-lazy-prop@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "define-lazy-prop@npm:2.0.0"
+  checksum: 0115fdb065e0490918ba271d7339c42453d209d4cb619dfe635870d906731eff3e1ade8028bb461ea27ce8264ec5e22c6980612d332895977e89c1bbc80fcee2
   languageName: node
   linkType: hard
 
@@ -4638,7 +4646,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-docker@npm:^2.0.0":
+"is-docker@npm:^2.0.0, is-docker@npm:^2.1.1":
   version: 2.2.1
   resolution: "is-docker@npm:2.2.1"
   bin:
@@ -6524,6 +6532,17 @@ __metadata:
   dependencies:
     mimic-fn: ^2.1.0
   checksum: 2478859ef817fc5d4e9c2f9e5728512ddd1dbc9fb7829ad263765bb6d3b91ce699d6e2332eef6b7dff183c2f490bd3349f1666427eaba4469fba0ac38dfd0d34
+  languageName: node
+  linkType: hard
+
+"open@npm:^8.2.1":
+  version: 8.3.0
+  resolution: "open@npm:8.3.0"
+  dependencies:
+    define-lazy-prop: ^2.0.0
+    is-docker: ^2.1.1
+    is-wsl: ^2.2.0
+  checksum: 10fcb7ad453534cc1103ff90e0ebc36e542d67a4ccacf3b3d78c8e6401cec686e2849479cbc4a3386c7a3210064cbcc52e6ac38b788fc5fff1cf1dcbfef3c83b
   languageName: node
   linkType: hard
 
