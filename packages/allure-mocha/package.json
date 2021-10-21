@@ -73,6 +73,8 @@
     "temp-dir": "./out/.nyc"
   },
   "files": [
-    "dist"
+    "dist",
+    "runtime.js",
+    "runtime.d.ts"
   ]
 }
