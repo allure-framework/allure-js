@@ -667,12 +667,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cspotcode/source-map-support@npm:0.6.1":
-  version: 0.6.1
-  resolution: "@cspotcode/source-map-support@npm:0.6.1"
+"@cspotcode/source-map-support@npm:0.7.0":
+  version: 0.7.0
+  resolution: "@cspotcode/source-map-support@npm:0.7.0"
   dependencies:
     "@cspotcode/source-map-consumer": 0.8.0
-  checksum: da9fb4f6404ebd210537bfa8b2821a747407bf422d2d3d46f29bf85c7c3a68a126de1a9ec41398d57ca116c3bef56d58c2fb4def0800630b1ec82533ad2447c2
+  checksum: 9faddda7757cd778b5fd6812137b2cc265810043680d6399acc20441668fafcdc874053be9dccd0d9110087287bfad27eb3bf342f72bceca9aa9059f5d0c4be8
   languageName: node
   linkType: hard
 
@@ -1631,7 +1631,7 @@ __metadata:
     path: ^0.12.7
     prettier: ^2.3.2
     rimraf: ^3.0.2
-    ts-node: ^10.2.1
+    ts-node: 10.3.0
     typescript: ^4.4.2
     verror: ^1.10.0
   languageName: unknown
@@ -1662,7 +1662,7 @@ __metadata:
     prettier: ^2.3.2
     rimraf: ^3.0.2
     source-map-support: ^0.5.19
-    ts-node: ^10.2.1
+    ts-node: 10.3.0
     typescript: ^4.4.2
   languageName: unknown
   linkType: soft
@@ -1718,7 +1718,7 @@ __metadata:
     prettier: ^2.3.2
     properties: ^1.2.1
     rimraf: ^3.0.2
-    ts-node: ^10.2.1
+    ts-node: 10.3.0
     typescript: ^4.4.2
     uuid: ^8.3.0
   languageName: unknown
@@ -1745,7 +1745,7 @@ __metadata:
     prettier: ^2.3.2
     replace-in-file: ^6.2.0
     rimraf: ^3.0.2
-    ts-node: ^10.2.1
+    ts-node: 10.3.0
     typescript: ^4.4.2
   languageName: unknown
   linkType: soft
@@ -1772,7 +1772,7 @@ __metadata:
     prettier: ^2.3.2
     rimraf: ^3.0.2
     source-map-support: ^0.5.19
-    ts-node: ^10.2.1
+    ts-node: 10.3.0
     typescript: ^4.4.2
   peerDependencies:
     mocha: ">=6.2.x"
@@ -8290,11 +8290,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.2.1":
-  version: 10.2.1
-  resolution: "ts-node@npm:10.2.1"
+"ts-node@npm:10.3.0":
+  version: 10.3.0
+  resolution: "ts-node@npm:10.3.0"
   dependencies:
-    "@cspotcode/source-map-support": 0.6.1
+    "@cspotcode/source-map-support": 0.7.0
     "@tsconfig/node10": ^1.0.7
     "@tsconfig/node12": ^1.0.7
     "@tsconfig/node14": ^1.0.0
@@ -8322,7 +8322,7 @@ __metadata:
     ts-node-script: dist/bin-script.js
     ts-node-transpile-only: dist/bin-transpile.js
     ts-script: dist/bin-script-deprecated.js
-  checksum: f37d2827a583c51d012cdd3d9b96629fba7a5b5dfad2c26ca48c7c89f904118924689ca56f4b9b2136217194870a76f26aae06e3490ee613b0e960f02dc96bbe
+  checksum: aea1b9eac4d4c735c453a0e7efef6fd76c7b59db3be158eabe21abad9d35209d243b210a9a5ef39742ffbda542250c2e771fa387e3b4829e8cb699e82f3820c4
   languageName: node
   linkType: hard
 
