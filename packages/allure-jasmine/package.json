@@ -18,12 +18,12 @@
     "test": "rimraf ./out ; yarn run runTest ; yarn run generate-report"
   },
   "devDependencies": {
-    "@types/jasmine": "^3.3.12",
-    "eslint": "^7.32.0",
-    "jasmine": "^3.4.0",
-    "prettier": "^2.3.2",
-    "rimraf": "^3.0.2",
-    "typescript": "^4.4.2"
+    "@types/jasmine": "3.8.2",
+    "eslint": "7.32.0",
+    "jasmine": "3.9.0",
+    "prettier": "2.3.2",
+    "rimraf": "3.0.2",
+    "typescript": "4.4.2"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"

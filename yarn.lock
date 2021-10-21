@@ -1160,21 +1160,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai@npm:*, @types/chai@npm:^4.2.11, @types/chai@npm:^4.2.21":
+"@types/chai@npm:*, @types/chai@npm:4.2.21":
   version: 4.2.21
   resolution: "@types/chai@npm:4.2.21"
   checksum: dbd852dfea5065c2e86059bdc011c42a380c43bbcf80d427da228dc2a9e1efae27e7baf16570a3158571d92c206782e07fab3b703c28452a75a74380b33d1443
   languageName: node
   linkType: hard
 
-"@types/cucumber@npm:^6.0.1":
+"@types/cucumber@npm:6.0.1":
   version: 6.0.1
   resolution: "@types/cucumber@npm:6.0.1"
   checksum: 85e0d3ab5104a3fc619058273476ef93ae9f6188ead7734bbe8d02512d9b9a1ec694981db2c756f4c2cde0a36d26e0b96ef4bd72395783de61011220fa4b164d
   languageName: node
   linkType: hard
 
-"@types/fs-extra@npm:^9.0.1":
+"@types/fs-extra@npm:9.0.12":
   version: 9.0.12
   resolution: "@types/fs-extra@npm:9.0.12"
   dependencies:
@@ -1183,7 +1183,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/glob@npm:^7.1.4":
+"@types/glob@npm:7.1.4":
   version: 7.1.4
   resolution: "@types/glob@npm:7.1.4"
   dependencies:
@@ -1227,14 +1227,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jasmine@npm:^3.3.12":
+"@types/jasmine@npm:3.8.2":
   version: 3.8.2
   resolution: "@types/jasmine@npm:3.8.2"
   checksum: f4a91ba3c508ad503790e299dadccbc5f4e6496408757c43a5f378e144f338cacf946cc36ca15d51d89e9faaf1fe49e61288ea4c19d4deedf92cc16035c203b7
   languageName: node
   linkType: hard
 
-"@types/jest@npm:^26.0.10":
+"@types/jest@npm:26.0.24":
   version: 26.0.24
   resolution: "@types/jest@npm:26.0.24"
   dependencies:
@@ -1265,7 +1265,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mkdirp@npm:^1.0.0":
+"@types/mkdirp@npm:1.0.2":
   version: 1.0.2
   resolution: "@types/mkdirp@npm:1.0.2"
   dependencies:
@@ -1274,7 +1274,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mocha@npm:^9.0.0":
+"@types/mocha@npm:9.0.0":
   version: 9.0.0
   resolution: "@types/mocha@npm:9.0.0"
   checksum: 73e6edaba045bc250b69085a770d5029edfed006ed8e75344435474a2cb8d38064acd7b34b6cc62756caa845a5cf335bde66db11e8c8c6565c62a790e933704a
@@ -1288,21 +1288,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^14.6.0":
+"@types/node@npm:14.17.12":
   version: 14.17.12
   resolution: "@types/node@npm:14.17.12"
   checksum: 7efbce3781a0ea5d7a39bca3c5ed9c4e4d99fed3483fb2a89670aeb049cd9d25f1ddecd8fb58420fd92de371278721ddd6e3ad95c4f55992592f1ac5d1dedf98
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.7.10":
+"@types/node@npm:16.7.10":
   version: 16.7.10
   resolution: "@types/node@npm:16.7.10"
   checksum: 0518803caa1a14f4070e770a280eda1c4b4581a425cbda481cdd54b1f34a7ea497ff067fd23b90e3d4f4fdcfba15c1316182875e9cf9f5b2e880de1e595de053
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.7.8":
+"@types/node@npm:16.7.8":
   version: 16.7.8
   resolution: "@types/node@npm:16.7.8"
   checksum: 060ea222ce8f3eb05bd86a7785ca5807503a50602dd805c5be997a5ae684fa6224c9ad8890bcc5551c05d14a8bcd735f94567691342d197f5f7f7f893ed0d46b
@@ -1337,14 +1337,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/uuid@npm:^8.3.0":
+"@types/uuid@npm:8.3.1":
   version: 8.3.1
   resolution: "@types/uuid@npm:8.3.1"
   checksum: b41bdc5e86c6f0f1899306be10455636da0f2168c9489b869edd6837ddeb7c0e501b1ff7d857402462986bada2a379125743dd895fa801d03437cd632116a373
   languageName: node
   linkType: hard
 
-"@types/verror@npm:^1.10.3":
+"@types/verror@npm:1.10.5":
   version: 1.10.5
   resolution: "@types/verror@npm:1.10.5"
   checksum: f9f7073d86f7ef67a4ad930e02aa4579648e635ab5749fc365e248431bd3a4b01d76c483b2600a11e700bc738f10f1b38c1ef70f17ed2c7984fc4abde2bfa348
@@ -1376,7 +1376,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^4.29.3":
+"@typescript-eslint/eslint-plugin@npm:4.29.3":
   version: 4.29.3
   resolution: "@typescript-eslint/eslint-plugin@npm:4.29.3"
   dependencies:
@@ -1413,7 +1413,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^4.29.3":
+"@typescript-eslint/parser@npm:4.29.3":
   version: 4.29.3
   resolution: "@typescript-eslint/parser@npm:4.29.3"
   dependencies:
@@ -1601,7 +1601,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"allure-commandline@npm:^2.13.8":
+"allure-commandline@npm:2.13.8":
   version: 2.13.8
   resolution: "allure-commandline@npm:2.13.8"
   bin:
@@ -1614,26 +1614,26 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-cucumberjs@workspace:packages/allure-cucumberjs"
   dependencies:
-    "@types/chai": ^4.2.11
-    "@types/cucumber": ^6.0.1
-    "@types/fs-extra": ^9.0.1
-    "@types/glob": ^7.1.4
-    "@types/mocha": ^9.0.0
-    "@types/node": ^16.7.8
-    "@types/verror": ^1.10.3
+    "@types/chai": 4.2.21
+    "@types/cucumber": 6.0.1
+    "@types/fs-extra": 9.0.12
+    "@types/glob": 7.1.4
+    "@types/mocha": 9.0.0
+    "@types/node": 16.7.8
+    "@types/verror": 1.10.5
     allure-js-commons: "workspace:*"
-    chai: ^4.2.0
-    chai-like: ^1.1.1
-    cucumber: ^6.0.5
-    eslint: ^7.32.0
-    fs-extra: ^10.0.0
-    glob: ^7.1.6
-    path: ^0.12.7
-    prettier: ^2.3.2
-    rimraf: ^3.0.2
-    ts-node: ^10.2.1
-    typescript: ^4.4.2
-    verror: ^1.10.0
+    chai: 4.3.4
+    chai-like: 1.1.1
+    cucumber: 6.0.5
+    eslint: 7.32.0
+    fs-extra: 10.0.0
+    glob: 7.1.7
+    path: 0.12.7
+    prettier: 2.3.2
+    rimraf: 3.0.2
+    ts-node: 10.2.1
+    typescript: 4.4.2
+    verror: 1.10.0
   languageName: unknown
   linkType: soft
 
@@ -1642,28 +1642,28 @@ __metadata:
   resolution: "allure-decorators@workspace:packages/allure-decorators"
   dependencies:
     "@testdeck/mocha": 0.1.2
-    "@types/chai": ^4.2.11
+    "@types/chai": 4.2.21
     "@types/chai-arrays": 2.0.0
-    "@types/glob": ^7.1.4
-    "@types/mocha": ^9.0.0
-    "@types/node": ^16.7.8
+    "@types/glob": 7.1.4
+    "@types/mocha": 9.0.0
+    "@types/node": 16.7.8
     allure-js-commons: "workspace:*"
     allure-mocha: "workspace:*"
-    chai: ^4.2.0
-    chai-arrays: ^2.2.0
-    codecov: ^3.6.5
-    dotenv: ^10.0.0
-    eslint: ^7.32.0
-    fs-jetpack: ^4.1.0
-    glob: ^7.1.6
+    chai: 4.3.4
+    chai-arrays: 2.2.0
+    codecov: 3.8.3
+    dotenv: 10.0.0
+    eslint: 7.32.0
+    fs-jetpack: 4.1.1
+    glob: 7.1.7
     mocha: 9.1.1
-    mocha-multi-reporters: ^1.5.1
-    nyc: ^15.0.1
-    prettier: ^2.3.2
-    rimraf: ^3.0.2
-    source-map-support: ^0.5.19
-    ts-node: ^10.2.1
-    typescript: ^4.4.2
+    mocha-multi-reporters: 1.5.1
+    nyc: 15.1.0
+    prettier: 2.3.2
+    rimraf: 3.0.2
+    source-map-support: 0.5.19
+    ts-node: 10.2.1
+    typescript: 4.4.2
   languageName: unknown
   linkType: soft
 
@@ -1671,13 +1671,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-jasmine@workspace:packages/allure-jasmine"
   dependencies:
-    "@types/jasmine": ^3.3.12
+    "@types/jasmine": 3.8.2
     allure-js-commons: "workspace:*"
-    eslint: ^7.32.0
-    jasmine: ^3.4.0
-    prettier: ^2.3.2
-    rimraf: ^3.0.2
-    typescript: ^4.4.2
+    eslint: 7.32.0
+    jasmine: 3.9.0
+    prettier: 2.3.2
+    rimraf: 3.0.2
+    typescript: 4.4.2
   languageName: unknown
   linkType: soft
 
@@ -1685,15 +1685,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-jest@workspace:packages/allure-jest"
   dependencies:
-    "@types/jasmine": ^3.3.12
-    "@types/jest": ^26.0.10
+    "@types/jasmine": 3.8.2
+    "@types/jest": 26.0.24
     allure-jasmine: "workspace:*"
     allure-js-commons: "workspace:*"
-    eslint: ^7.32.0
-    jest: ^26.4.2
-    prettier: ^2.3.2
-    rimraf: ^3.0.2
-    typescript: ^4.4.2
+    eslint: 7.32.0
+    jest: 26.6.3
+    prettier: 2.3.2
+    rimraf: 3.0.2
+    typescript: 4.4.2
   languageName: unknown
   linkType: soft
 
@@ -1701,25 +1701,25 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-js-commons@workspace:packages/allure-js-commons"
   dependencies:
-    "@types/chai": ^4.2.21
-    "@types/glob": ^7.1.4
-    "@types/mkdirp": ^1.0.0
-    "@types/mocha": ^9.0.0
-    "@types/node": ^16.7.10
-    "@types/uuid": ^8.3.0
+    "@types/chai": 4.2.21
+    "@types/glob": 7.1.4
+    "@types/mkdirp": 1.0.2
+    "@types/mocha": 9.0.0
+    "@types/node": 16.7.10
+    "@types/uuid": 8.3.1
     allure-mocha: "workspace:packages/allure-mocha"
-    chai: ^4.3.4
-    eslint: ^7.32.0
-    glob: ^7.1.7
+    chai: 4.3.4
+    eslint: 7.32.0
+    glob: 7.1.7
     mkdirp: ^1.0.4
-    mocha: ^9.1.1
-    mocha-multi-reporters: ^1.5.1
-    nyc: ^15.1.0
-    prettier: ^2.3.2
+    mocha: 9.1.1
+    mocha-multi-reporters: 1.5.1
+    nyc: 15.1.0
+    prettier: 2.3.2
     properties: ^1.2.1
-    rimraf: ^3.0.2
-    ts-node: ^10.2.1
-    typescript: ^4.4.2
+    rimraf: 3.0.2
+    ts-node: 10.2.1
+    typescript: 4.4.2
     uuid: ^8.3.0
   languageName: unknown
   linkType: soft
@@ -1728,25 +1728,25 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-js@workspace:."
   dependencies:
-    "@types/node": ^14.6.0
-    "@typescript-eslint/eslint-plugin": ^4.29.3
-    "@typescript-eslint/parser": ^4.29.3
-    allure-commandline: ^2.13.8
-    eslint: ^7.32.0
-    eslint-config-prettier: ^8.3.0
-    eslint-plugin-import: ^2.24.2
-    eslint-plugin-jsdoc: ^36.0.8
-    eslint-plugin-no-null: ^1.0.2
-    eslint-plugin-prefer-arrow: ^1.2.3
-    husky: ^7.0.2
-    lint-staged: ^11.1.2
-    npm-run-all: ^4.1.5
-    nyc: ^15.1.0
-    prettier: ^2.3.2
-    replace-in-file: ^6.2.0
-    rimraf: ^3.0.2
-    ts-node: ^10.2.1
-    typescript: ^4.4.2
+    "@types/node": 14.17.12
+    "@typescript-eslint/eslint-plugin": 4.29.3
+    "@typescript-eslint/parser": 4.29.3
+    allure-commandline: 2.13.8
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
+    eslint-plugin-import: 2.24.2
+    eslint-plugin-jsdoc: 36.0.8
+    eslint-plugin-no-null: 1.0.2
+    eslint-plugin-prefer-arrow: 1.2.3
+    husky: 7.0.2
+    lint-staged: 11.1.2
+    npm-run-all: 4.1.5
+    nyc: 15.1.0
+    prettier: 2.3.2
+    replace-in-file: 6.2.0
+    rimraf: 3.0.2
+    ts-node: 10.2.1
+    typescript: 4.4.2
   languageName: unknown
   linkType: soft
 
@@ -1755,25 +1755,25 @@ __metadata:
   resolution: "allure-mocha@workspace:packages/allure-mocha"
   dependencies:
     "@testdeck/mocha": 0.1.2
-    "@types/chai": ^4.2.11
-    "@types/glob": ^7.1.4
-    "@types/mocha": ^9.0.0
-    "@types/node": ^16.7.8
+    "@types/chai": 4.2.21
+    "@types/glob": 7.1.4
+    "@types/mocha": 9.0.0
+    "@types/node": 16.7.8
     allure-js-commons: "workspace:*"
-    chai: ^4.2.0
-    codecov: ^3.6.5
-    dotenv: ^10.0.0
-    eslint: ^7.32.0
-    fs-jetpack: ^4.1.0
-    glob: ^7.1.7
+    chai: 4.3.4
+    codecov: 3.8.3
+    dotenv: 10.0.0
+    eslint: 7.32.0
+    fs-jetpack: 4.1.1
+    glob: 7.1.7
     mocha: 9.1.1
-    mocha-multi-reporters: ^1.5.1
-    nyc: ^15.0.1
-    prettier: ^2.3.2
-    rimraf: ^3.0.2
-    source-map-support: ^0.5.19
-    ts-node: ^10.2.1
-    typescript: ^4.4.2
+    mocha-multi-reporters: 1.5.1
+    nyc: 15.1.0
+    prettier: 2.3.2
+    rimraf: 3.0.2
+    source-map-support: 0.5.19
+    ts-node: 10.2.1
+    typescript: 4.4.2
   peerDependencies:
     mocha: ">=6.2.x"
   languageName: unknown
@@ -1785,10 +1785,10 @@ __metadata:
   dependencies:
     "@playwright/test": =1.14.1
     allure-js-commons: "workspace:*"
-    eslint: ^7.32.0
-    prettier: ^2.3.2
-    rimraf: ^3.0.2
-    typescript: ^4.4.2
+    eslint: 7.32.0
+    prettier: 2.3.2
+    rimraf: 3.0.2
+    typescript: 4.4.2
   languageName: unknown
   linkType: soft
 
@@ -2371,14 +2371,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chai-arrays@npm:^2.2.0":
+"chai-arrays@npm:2.2.0":
   version: 2.2.0
   resolution: "chai-arrays@npm:2.2.0"
   checksum: fe7bc06cd256b7e06d03687ed03bf83f9125d8c6ca50557099aa97de8aeec2746116c671050239a2f334b81f8509e5e03548ea2773ad743aa7694bd6b94020f6
   languageName: node
   linkType: hard
 
-"chai-like@npm:^1.1.1":
+"chai-like@npm:1.1.1":
   version: 1.1.1
   resolution: "chai-like@npm:1.1.1"
   peerDependencies:
@@ -2387,7 +2387,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chai@npm:^4.2.0, chai@npm:^4.3.4":
+"chai@npm:4.3.4":
   version: 4.3.4
   resolution: "chai@npm:4.3.4"
   dependencies:
@@ -2564,7 +2564,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"codecov@npm:^3.6.5":
+"codecov@npm:3.8.3":
   version: 3.8.3
   resolution: "codecov@npm:3.8.3"
   dependencies:
@@ -2821,7 +2821,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cucumber@npm:^6.0.5":
+"cucumber@npm:6.0.5":
   version: 6.0.5
   resolution: "cucumber@npm:6.0.5"
   dependencies:
@@ -3103,7 +3103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^10.0.0":
+"dotenv@npm:10.0.0":
   version: 10.0.0
   resolution: "dotenv@npm:10.0.0"
   checksum: f412c5fe8c24fbe313d302d2500e247ba8a1946492db405a4de4d30dd0eb186a88a43f13c958c5a7de303938949c4231c56994f97d05c4bc1f22478d631b4005
@@ -3322,7 +3322,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:^8.3.0":
+"eslint-config-prettier@npm:8.3.0":
   version: 8.3.0
   resolution: "eslint-config-prettier@npm:8.3.0"
   peerDependencies:
@@ -3353,7 +3353,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-import@npm:^2.24.2":
+"eslint-plugin-import@npm:2.24.2":
   version: 2.24.2
   resolution: "eslint-plugin-import@npm:2.24.2"
   dependencies:
@@ -3378,7 +3378,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jsdoc@npm:^36.0.8":
+"eslint-plugin-jsdoc@npm:36.0.8":
   version: 36.0.8
   resolution: "eslint-plugin-jsdoc@npm:36.0.8"
   dependencies:
@@ -3397,7 +3397,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-no-null@npm:^1.0.2":
+"eslint-plugin-no-null@npm:1.0.2":
   version: 1.0.2
   resolution: "eslint-plugin-no-null@npm:1.0.2"
   peerDependencies:
@@ -3406,7 +3406,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-prefer-arrow@npm:^1.2.3":
+"eslint-plugin-prefer-arrow@npm:1.2.3":
   version: 1.2.3
   resolution: "eslint-plugin-prefer-arrow@npm:1.2.3"
   peerDependencies:
@@ -3459,7 +3459,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^7.32.0":
+"eslint@npm:7.32.0":
   version: 7.32.0
   resolution: "eslint@npm:7.32.0"
   dependencies:
@@ -3948,7 +3948,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:^10.0.0":
+"fs-extra@npm:10.0.0":
   version: 10.0.0
   resolution: "fs-extra@npm:10.0.0"
   dependencies:
@@ -3959,7 +3959,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-jetpack@npm:^4.1.0":
+"fs-jetpack@npm:4.1.1":
   version: 4.1.1
   resolution: "fs-jetpack@npm:4.1.1"
   dependencies:
@@ -4129,7 +4129,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:7.1.7, glob@npm:^7.1.1, glob@npm:^7.1.2, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6, glob@npm:^7.1.7":
+"glob@npm:7.1.7, glob@npm:^7.1.1, glob@npm:^7.1.2, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6":
   version: 7.1.7
   resolution: "glob@npm:7.1.7"
   dependencies:
@@ -4379,7 +4379,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"husky@npm:^7.0.2":
+"husky@npm:7.0.2":
   version: 7.0.2
   resolution: "husky@npm:7.0.2"
   bin:
@@ -4988,7 +4988,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jasmine@npm:^3.4.0":
+"jasmine@npm:3.9.0":
   version: 3.9.0
   resolution: "jasmine@npm:3.9.0"
   dependencies:
@@ -5434,7 +5434,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:^26.4.2":
+"jest@npm:26.6.3":
   version: 26.6.3
   resolution: "jest@npm:26.6.3"
   dependencies:
@@ -5692,7 +5692,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:^11.1.2":
+"lint-staged@npm:11.1.2":
   version: 11.1.2
   resolution: "lint-staged@npm:11.1.2"
   dependencies:
@@ -6099,7 +6099,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha-multi-reporters@npm:^1.5.1":
+"mocha-multi-reporters@npm:1.5.1":
   version: 1.5.1
   resolution: "mocha-multi-reporters@npm:1.5.1"
   dependencies:
@@ -6111,7 +6111,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:9.1.1, mocha@npm:^9.1.1":
+"mocha@npm:9.1.1":
   version: 9.1.1
   resolution: "mocha@npm:9.1.1"
   dependencies:
@@ -6347,7 +6347,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-run-all@npm:^4.1.5":
+"npm-run-all@npm:4.1.5":
   version: 4.1.5
   resolution: "npm-run-all@npm:4.1.5"
   dependencies:
@@ -6412,7 +6412,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nyc@npm:^15.0.1, nyc@npm:^15.1.0":
+"nyc@npm:15.1.0":
   version: 15.1.0
   resolution: "nyc@npm:15.1.0"
   dependencies:
@@ -6792,7 +6792,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path@npm:^0.12.7":
+"path@npm:0.12.7":
   version: 0.12.7
   resolution: "path@npm:0.12.7"
   dependencies:
@@ -6930,7 +6930,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.3.2":
+"prettier@npm:2.3.2":
   version: 2.3.2
   resolution: "prettier@npm:2.3.2"
   bin:
@@ -7216,7 +7216,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"replace-in-file@npm:^6.2.0":
+"replace-in-file@npm:6.2.0":
   version: 6.2.0
   resolution: "replace-in-file@npm:6.2.0"
   dependencies:
@@ -7331,6 +7331,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rimraf@npm:3.0.2, rimraf@npm:^3.0.0, rimraf@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "rimraf@npm:3.0.2"
+  dependencies:
+    glob: ^7.1.3
+  bin:
+    rimraf: bin.js
+  checksum: 87f4164e396f0171b0a3386cc1877a817f572148ee13a7e113b238e48e8a9f2f31d009a92ec38a591ff1567d9662c6b67fd8818a2dbbaed74bc26a87a2a4a9a0
+  languageName: node
+  linkType: hard
+
 "rimraf@npm:^2.6.3":
   version: 2.7.1
   resolution: "rimraf@npm:2.7.1"
@@ -7339,17 +7350,6 @@ __metadata:
   bin:
     rimraf: ./bin.js
   checksum: cdc7f6eacb17927f2a075117a823e1c5951792c6498ebcce81ca8203454a811d4cf8900314154d3259bb8f0b42ab17f67396a8694a54cae3283326e57ad250cd
-  languageName: node
-  linkType: hard
-
-"rimraf@npm:^3.0.0, rimraf@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "rimraf@npm:3.0.2"
-  dependencies:
-    glob: ^7.1.3
-  bin:
-    rimraf: bin.js
-  checksum: 87f4164e396f0171b0a3386cc1877a817f572148ee13a7e113b238e48e8a9f2f31d009a92ec38a591ff1567d9662c6b67fd8818a2dbbaed74bc26a87a2a4a9a0
   languageName: node
   linkType: hard
 
@@ -7693,22 +7693,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-support@npm:^0.4.18":
-  version: 0.4.18
-  resolution: "source-map-support@npm:0.4.18"
-  dependencies:
-    source-map: ^0.5.6
-  checksum: 669aa7e992fec586fac0ba9a8dea8ce81b7328f92806335f018ffac5709afb2920e3870b4e56c68164282607229f04b8bbcf5d0e5c845eb1b5119b092e7585c0
-  languageName: node
-  linkType: hard
-
-"source-map-support@npm:^0.5.19, source-map-support@npm:^0.5.6":
+"source-map-support@npm:0.5.19, source-map-support@npm:^0.5.6":
   version: 0.5.19
   resolution: "source-map-support@npm:0.5.19"
   dependencies:
     buffer-from: ^1.0.0
     source-map: ^0.6.0
   checksum: c72802fdba9cb62b92baef18cc14cc4047608b77f0353e6c36dd993444149a466a2845332c5540d4a6630957254f0f68f4ef5a0120c33d2e83974c51a05afbac
+  languageName: node
+  linkType: hard
+
+"source-map-support@npm:^0.4.18":
+  version: 0.4.18
+  resolution: "source-map-support@npm:0.4.18"
+  dependencies:
+    source-map: ^0.5.6
+  checksum: 669aa7e992fec586fac0ba9a8dea8ce81b7328f92806335f018ffac5709afb2920e3870b4e56c68164282607229f04b8bbcf5d0e5c845eb1b5119b092e7585c0
   languageName: node
   linkType: hard
 
@@ -8290,7 +8290,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.2.1":
+"ts-node@npm:10.2.1":
   version: 10.2.1
   resolution: "ts-node@npm:10.2.1"
   dependencies:
@@ -8439,7 +8439,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-typescript@^4.4.2:
+typescript@4.4.2:
   version: 4.4.2
   resolution: "typescript@npm:4.4.2"
   bin:
@@ -8449,7 +8449,7 @@ typescript@^4.4.2:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.4.2#~builtin<compat/typescript>":
+"typescript@patch:typescript@4.4.2#~builtin<compat/typescript>":
   version: 4.4.2
   resolution: "typescript@patch:typescript@npm%3A4.4.2#~builtin<compat/typescript>::version=4.4.2&hash=d8b4e7"
   bin:
@@ -8633,7 +8633,7 @@ typescript@^4.4.2:
   languageName: node
   linkType: hard
 
-"verror@npm:^1.10.0, verror@npm:^1.9.0":
+"verror@npm:1.10.0, verror@npm:^1.9.0":
   version: 1.10.0
   resolution: "verror@npm:1.10.0"
   dependencies:
