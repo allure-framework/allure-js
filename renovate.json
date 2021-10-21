@@ -1,0 +1,7 @@
+{
+  "extends": [
+    "config:base"
+  ],
+  "labels": ["type:dependencies"],
+  "branchConcurrentLimit": 5
+}
