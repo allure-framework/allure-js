@@ -37,9 +37,9 @@ into your code:
 
 ```javascript
 // es-modules
-import { allure } from 'allure-mocha/runtime';
+import { allure } from 'allure-mocha/dist/runtime';
 // or commonjs
-const { allure } = require('allure-mocha/runtime');
+const { allure } = require('allure-mocha/dist/runtime');
 
 it('is a test', () => {
   allure.epic('Some info');
