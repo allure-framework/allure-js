@@ -991,7 +991,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:=1.15.2":
+"@playwright/test@npm:^1.15.2":
   version: 1.15.2
   resolution: "@playwright/test@npm:1.15.2"
   dependencies:
@@ -1784,7 +1784,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-playwright@workspace:packages/allure-playwright"
   dependencies:
-    "@playwright/test": =1.15.2
+    "@playwright/test": ^1.15.2
     allure-js-commons: "workspace:*"
     eslint: ^7.32.0
     prettier: ^2.3.2
