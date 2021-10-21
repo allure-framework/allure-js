@@ -1629,7 +1629,7 @@ __metadata:
     fs-extra: ^10.0.0
     glob: ^7.1.6
     path: ^0.12.7
-    prettier: ^2.3.2
+    prettier: 2.4.1
     rimraf: ^3.0.2
     ts-node: ^10.2.1
     typescript: ^4.4.2
@@ -1659,7 +1659,7 @@ __metadata:
     mocha: 9.1.1
     mocha-multi-reporters: ^1.5.1
     nyc: ^15.0.1
-    prettier: ^2.3.2
+    prettier: 2.4.1
     rimraf: ^3.0.2
     source-map-support: ^0.5.19
     ts-node: ^10.2.1
@@ -1675,7 +1675,7 @@ __metadata:
     allure-js-commons: "workspace:*"
     eslint: ^7.32.0
     jasmine: ^3.4.0
-    prettier: ^2.3.2
+    prettier: 2.4.1
     rimraf: ^3.0.2
     typescript: ^4.4.2
   languageName: unknown
@@ -1691,7 +1691,7 @@ __metadata:
     allure-js-commons: "workspace:*"
     eslint: ^7.32.0
     jest: ^26.4.2
-    prettier: ^2.3.2
+    prettier: 2.4.1
     rimraf: ^3.0.2
     typescript: ^4.4.2
   languageName: unknown
@@ -1715,7 +1715,7 @@ __metadata:
     mocha: ^9.1.1
     mocha-multi-reporters: ^1.5.1
     nyc: ^15.1.0
-    prettier: ^2.3.2
+    prettier: 2.4.1
     properties: ^1.2.1
     rimraf: ^3.0.2
     ts-node: ^10.2.1
@@ -1742,7 +1742,7 @@ __metadata:
     lint-staged: ^11.1.2
     npm-run-all: ^4.1.5
     nyc: ^15.1.0
-    prettier: ^2.3.2
+    prettier: 2.4.1
     replace-in-file: ^6.2.0
     rimraf: ^3.0.2
     ts-node: ^10.2.1
@@ -1769,7 +1769,7 @@ __metadata:
     mocha: 9.1.1
     mocha-multi-reporters: ^1.5.1
     nyc: ^15.0.1
-    prettier: ^2.3.2
+    prettier: 2.4.1
     rimraf: ^3.0.2
     source-map-support: ^0.5.19
     ts-node: ^10.2.1
@@ -1786,7 +1786,7 @@ __metadata:
     "@playwright/test": =1.14.1
     allure-js-commons: "workspace:*"
     eslint: ^7.32.0
-    prettier: ^2.3.2
+    prettier: 2.4.1
     rimraf: ^3.0.2
     typescript: ^4.4.2
   languageName: unknown
@@ -6930,12 +6930,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.3.2":
-  version: 2.3.2
-  resolution: "prettier@npm:2.3.2"
+"prettier@npm:2.4.1":
+  version: 2.4.1
+  resolution: "prettier@npm:2.4.1"
   bin:
     prettier: bin-prettier.js
-  checksum: 17ce5784ac67621c292df58e2da60b2ee150c2d6aebea22a6ad9e52fcd6a5e66c349d0a8436ea3bd8ff9d778920a5f68000d7625b74f43558718a49755aa5259
+  checksum: cc6830588b401b0d742862fe9c46bc9118204fb307c3abe0e49e95b35ed23629573807ffdf9cdd65289c252a0bb51fc0171437f6626ee36378dea80f0ee80b91
   languageName: node
   linkType: hard
 
