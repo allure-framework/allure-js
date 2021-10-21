@@ -1174,12 +1174,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/fs-extra@npm:^9.0.1":
-  version: 9.0.12
-  resolution: "@types/fs-extra@npm:9.0.12"
+"@types/fs-extra@npm:9.0.13":
+  version: 9.0.13
+  resolution: "@types/fs-extra@npm:9.0.13"
   dependencies:
     "@types/node": "*"
-  checksum: c63834f0be8d0993c55abcc0b2c90f3c095cf3aa9e827973472167bd93687df9da546bd5e0823ddc9e83e1651c9cfb09bbac99fa57a15ab28fd21280426e472c
+  checksum: add79e212acd5ac76b97b9045834e03a7996aef60a814185e0459088fd290519a3c1620865d588fa36c4498bf614210d2a703af5cf80aa1dbc125db78f6edac3
   languageName: node
   linkType: hard
 
@@ -1616,7 +1616,7 @@ __metadata:
   dependencies:
     "@types/chai": ^4.2.11
     "@types/cucumber": ^6.0.1
-    "@types/fs-extra": ^9.0.1
+    "@types/fs-extra": 9.0.13
     "@types/glob": ^7.1.4
     "@types/mocha": ^9.0.0
     "@types/node": ^16.7.8
