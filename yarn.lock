@@ -1674,7 +1674,7 @@ __metadata:
     "@types/jasmine": ^3.3.12
     allure-js-commons: "workspace:*"
     eslint: ^7.32.0
-    jasmine: ^3.4.0
+    jasmine: 3.10.0
     prettier: ^2.3.2
     rimraf: ^3.0.2
     typescript: ^4.4.2
@@ -4981,22 +4981,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jasmine-core@npm:~3.9.0":
-  version: 3.9.0
-  resolution: "jasmine-core@npm:3.9.0"
-  checksum: af08d9aee93f956f4cb0eae7dcb4b669213fddab80e5e6b16c52e33a0f2f5c969e54de009a65dfde0111cb03cabe577a2aaa8803614c685111e85ebd51323649
+"jasmine-core@npm:~3.10.0":
+  version: 3.10.0
+  resolution: "jasmine-core@npm:3.10.0"
+  checksum: 31e09870d27cb818d9a10ab02e2a9185bb15ee41a767c62b66a4d1192a21cfa5cadaa1b003cd9f9a8af0122aa57aca944ee516e6f1617d3dfcb651a741be23ba
   languageName: node
   linkType: hard
 
-"jasmine@npm:^3.4.0":
-  version: 3.9.0
-  resolution: "jasmine@npm:3.9.0"
+"jasmine@npm:3.10.0":
+  version: 3.10.0
+  resolution: "jasmine@npm:3.10.0"
   dependencies:
     glob: ^7.1.6
-    jasmine-core: ~3.9.0
+    jasmine-core: ~3.10.0
   bin:
     jasmine: bin/jasmine.js
-  checksum: b483c20f801c9ebee92dca6dc84b3e7af78e48edba3d8f92f410dbb7919c978ced7f45b3cdfd0102b1e28941a13c0459173403235ed98dd44eb87892ddb9088a
+  checksum: 38c534148238ae3fa1bdce0a22176e447eb2961eccd4513d3c52e8f2580dfe04655c25d6da955aa850402231e3d5f9f7d58ae55bbe6f23ac2e24d66b7045b2ab
   languageName: node
   linkType: hard
 
