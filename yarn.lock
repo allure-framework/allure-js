@@ -1160,10 +1160,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai@npm:*, @types/chai@npm:^4.2.11, @types/chai@npm:^4.2.21":
+"@types/chai@npm:*":
   version: 4.2.21
   resolution: "@types/chai@npm:4.2.21"
   checksum: dbd852dfea5065c2e86059bdc011c42a380c43bbcf80d427da228dc2a9e1efae27e7baf16570a3158571d92c206782e07fab3b703c28452a75a74380b33d1443
+  languageName: node
+  linkType: hard
+
+"@types/chai@npm:4.2.22":
+  version: 4.2.22
+  resolution: "@types/chai@npm:4.2.22"
+  checksum: dca66a263b25c26112c0a8c6df20316412fa54b557443a108836c07cee961aa56cc5b1763273f69eb450c83ca9f28069ff78b617bffc01806cdd83afc1c20c2a
   languageName: node
   linkType: hard
 
@@ -1614,7 +1621,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-cucumberjs@workspace:packages/allure-cucumberjs"
   dependencies:
-    "@types/chai": ^4.2.11
+    "@types/chai": 4.2.22
     "@types/cucumber": ^6.0.1
     "@types/fs-extra": ^9.0.1
     "@types/glob": ^7.1.4
@@ -1642,7 +1649,7 @@ __metadata:
   resolution: "allure-decorators@workspace:packages/allure-decorators"
   dependencies:
     "@testdeck/mocha": 0.1.2
-    "@types/chai": ^4.2.11
+    "@types/chai": 4.2.22
     "@types/chai-arrays": 2.0.0
     "@types/glob": ^7.1.4
     "@types/mocha": ^9.0.0
@@ -1701,7 +1708,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-js-commons@workspace:packages/allure-js-commons"
   dependencies:
-    "@types/chai": ^4.2.21
+    "@types/chai": 4.2.22
     "@types/glob": ^7.1.4
     "@types/mkdirp": ^1.0.0
     "@types/mocha": ^9.0.0
@@ -1755,7 +1762,7 @@ __metadata:
   resolution: "allure-mocha@workspace:packages/allure-mocha"
   dependencies:
     "@testdeck/mocha": 0.1.2
-    "@types/chai": ^4.2.11
+    "@types/chai": 4.2.22
     "@types/glob": ^7.1.4
     "@types/mocha": ^9.0.0
     "@types/node": ^16.7.8
