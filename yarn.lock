@@ -1656,7 +1656,7 @@ __metadata:
     eslint: ^7.32.0
     fs-jetpack: ^4.1.0
     glob: ^7.1.6
-    mocha: 9.1.1
+    mocha: 9.1.3
     mocha-multi-reporters: ^1.5.1
     nyc: ^15.0.1
     prettier: ^2.3.2
@@ -1712,7 +1712,7 @@ __metadata:
     eslint: ^7.32.0
     glob: ^7.1.7
     mkdirp: ^1.0.4
-    mocha: ^9.1.1
+    mocha: 9.1.3
     mocha-multi-reporters: ^1.5.1
     nyc: ^15.1.0
     prettier: ^2.3.2
@@ -1766,7 +1766,7 @@ __metadata:
     eslint: ^7.32.0
     fs-jetpack: ^4.1.0
     glob: ^7.1.7
-    mocha: 9.1.1
+    mocha: 9.1.3
     mocha-multi-reporters: ^1.5.1
     nyc: ^15.0.1
     prettier: ^2.3.2
@@ -2879,7 +2879,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2":
+"debug@npm:4, debug@npm:4.3.2, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2":
   version: 4.3.2
   resolution: "debug@npm:4.3.2"
   dependencies:
@@ -2888,18 +2888,6 @@ __metadata:
     supports-color:
       optional: true
   checksum: 820ea160e267e23c953c9ed87e7ad93494d8cda2f7349af5e7e3bb236d23707ee3022f477d5a7d2ee86ef2bf7d60aa9ab22d1f58080d7deb9dccd073585e1e43
-  languageName: node
-  linkType: hard
-
-"debug@npm:4.3.1":
-  version: 4.3.1
-  resolution: "debug@npm:4.3.1"
-  dependencies:
-    ms: 2.1.2
-  peerDependenciesMeta:
-    supports-color:
-      optional: true
-  checksum: 2c3352e37d5c46b0d203317cd45ea0e26b2c99f2d9dfec8b128e6ceba90dfb65425f5331bf3020fe9929d7da8c16758e737f4f3bfc0fce6b8b3d503bae03298b
   languageName: node
   linkType: hard
 
@@ -6111,15 +6099,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:9.1.1, mocha@npm:^9.1.1":
-  version: 9.1.1
-  resolution: "mocha@npm:9.1.1"
+"mocha@npm:9.1.3":
+  version: 9.1.3
+  resolution: "mocha@npm:9.1.3"
   dependencies:
     "@ungap/promise-all-settled": 1.1.2
     ansi-colors: 4.1.1
     browser-stdout: 1.3.1
     chokidar: 3.5.2
-    debug: 4.3.1
+    debug: 4.3.2
     diff: 5.0.0
     escape-string-regexp: 4.0.0
     find-up: 5.0.0
@@ -6130,12 +6118,11 @@ __metadata:
     log-symbols: 4.1.0
     minimatch: 3.0.4
     ms: 2.1.3
-    nanoid: 3.1.23
+    nanoid: 3.1.25
     serialize-javascript: 6.0.0
     strip-json-comments: 3.1.1
     supports-color: 8.1.1
     which: 2.0.2
-    wide-align: 1.1.3
     workerpool: 6.1.5
     yargs: 16.2.0
     yargs-parser: 20.2.4
@@ -6143,7 +6130,7 @@ __metadata:
   bin:
     _mocha: bin/_mocha
     mocha: bin/mocha
-  checksum: b45b6aabe9012a4074cd21a5f11726fd26b7e33081961ce364819169ceacd654fa89fb7f07b7f1395ea46bb2613a59e37af5e3249ce366a8be8ef6ed890e72f1
+  checksum: 4185038f1d49c7c5ab2f8d77e42c182a77ed78f08f0ce713cc34919bc89b618ed9d6d4f24cbb92049f0d2ed03fb1a2a5b20e0fb07f8cf4a86ba83eb99dacde99
   languageName: node
   linkType: hard
 
@@ -6179,12 +6166,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:3.1.23":
-  version: 3.1.23
-  resolution: "nanoid@npm:3.1.23"
+"nanoid@npm:3.1.25":
+  version: 3.1.25
+  resolution: "nanoid@npm:3.1.25"
   bin:
     nanoid: bin/nanoid.cjs
-  checksum: 8fa8dc3283a4fa159700a36cb22f61197547c8155831cb74f1b9c51fbc29ea80c136fd91001468d147a31d3a77f884958aec6c1beabac903c89780acacca9327
+  checksum: e2353828c7d8fde65265e9c981380102e2021f292038a93fd27288bad390339833286e8cbc7531abe1cb2c6b317e55f38b895dcb775151637bb487388558e0ff
   languageName: node
   linkType: hard
 
@@ -8754,7 +8741,7 @@ typescript@^4.4.2:
   languageName: node
   linkType: hard
 
-"wide-align@npm:1.1.3, wide-align@npm:^1.1.0":
+"wide-align@npm:^1.1.0":
   version: 1.1.3
   resolution: "wide-align@npm:1.1.3"
   dependencies:
