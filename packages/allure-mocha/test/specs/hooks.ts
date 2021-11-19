@@ -68,4 +68,22 @@ class HooksSuite {
     expect(afterHook).is.not.undefined;
     expect(afterHook.status).eq(Status.BROKEN);
   }
+
+  @test
+  shouldHandleBeforeEachName() {
+    const group = this.writerStub.getGroupByName("hooks test named hooks");
+
+    const [beforeHook] = group.befores;
+
+    expect(beforeHook.name).eq("\"before each\" hook: some beforeEach name")
+  }
+
+  @test
+  shouldHandleAfterEachName() {
+    const group = this.writerStub.getGroupByName("hooks test named hooks");
+
+    const [afterEach] = group.afters;
+
+    expect(afterEach.name).eq("\"after each\" hook: some afterEach name")
+  }
 }

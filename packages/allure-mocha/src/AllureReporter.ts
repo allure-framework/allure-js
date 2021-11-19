@@ -59,13 +59,17 @@ export class AllureReporter {
     }
   }
 
-  public startHook(title: string): void {
+  public startHook(hook: Mocha.Hook): void {
     const suite: AllureGroup | null = this.currentSuite;
-
+    const title = hook.title;
     if (suite && title && title.includes("before")) {
       this.currentExecutable = suite.addBefore();
     } else if (suite && title && title.includes("after")) {
       this.currentExecutable = suite.addAfter();
+    }
+
+    if (this.currentExecutable) {
+      this.currentExecutable.name = hook.originalTitle || hook.title;
     }
   }
 
