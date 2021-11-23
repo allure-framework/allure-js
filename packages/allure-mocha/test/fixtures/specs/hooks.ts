@@ -47,4 +47,13 @@ describe("hooks test", () => {
       expect(1).eq(2);
     });
   });
+
+  describe("named hooks", () => {
+    beforeEach("some beforeEach name", () => {
+    })
+    it("named hooks test", () => {
+    })
+    afterEach("some afterEach name", () => {
+    })
+  })
 });
