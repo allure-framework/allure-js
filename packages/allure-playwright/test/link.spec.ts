@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import { Label, LabelName } from "allure-js-commons";
+import { Label } from "allure-js-commons";
 import { test, expect } from "./fixtures";
-test.only("should have link", async ({ runInlineTest }) => {
+test("should have link", async ({ runInlineTest }) => {
   const result: Label[] = await runInlineTest(
     {
       "a.test.ts": `
-        import { test, expect } from '@playwright/test';
-        import { link } from '../../dist/index'
-        test('should add epic link', async ({}, testInfo) => {
-            link(testInfo, "https://playwright.dev/docs/api/class-page#page-workers");
-        });
+      import { test } from '@playwright/test';
+      import { allure } from '../../dist/index'
+      test('should add epic link', async ({}, testInfo) => {
+          allure(testInfo).link({url:"https://playwright.dev/docs/api/class-page#page-workers"});
+      });
       `,
     },
     (writer) => {
-      return writer.tests.map((t) => t.links);
+      return writer.tests.map(val => val.links);
     },
   );
 

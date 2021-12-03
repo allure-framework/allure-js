@@ -6,9 +6,9 @@ test("should have label", async ({ runInlineTest }) => {
     {
       "a.test.ts": `
        import { test, expect } from '@playwright/test';
-       import { label, LabelName } from '../../dist/index'
+       import { allure, LabelName } from '../../dist/index'
        test('should add epic label', async ({}, testInfo) => {
-           label(testInfo,{name:LabelName.EPIC,value:'Test epic label'});
+           allure(testInfo).label({name:LabelName.EPIC,value:'Test epic label'});
        });
      `,
     },

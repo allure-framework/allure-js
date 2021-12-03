@@ -64,26 +64,27 @@ You can use allure labels to provide extra information about tests such via
 
 ```js
 import { test, expect } from "@playwright/test";
-import { epic, label, link, story } from "allure-playwright";
+import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  epic(testInfo, "Some Epic");
-  story(testInfo, "Some Story");
+  allure(testInfo).epic("Some Epic");
+  allure(testInfo).story("Some Story");
 });
-
 ```
 
 ### Links Usage
 
 ```js
 import { test, expect } from "@playwright/test";
-import { epic, issue, label, link, story } from "allure-playwright";
+import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  link(testInfo, "https://playwright.dev", "playwright-site");
-  issue(testInfo, "https://github.com/allure-framework/allure-js/issues/352", "Target issue");
+  allure(testInfo).link({ url: "https://playwright.dev", name: "playwright-site" });
+  allure(testInfo).issue({
+    url: "https://github.com/allure-framework/allure-js/issues/352",
+    name: "Target issue",
+  });
 });
-
 ```
 
 ### Attachments Usage
@@ -96,5 +97,4 @@ test("basic test", async ({ page }, testInfo) => {
   await page.screenshot({ path });
   testInfo.attachments.push({ name: "screenshot", path, contentType: "image/png" });
 });
-
 ```

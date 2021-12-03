@@ -29,7 +29,7 @@ import {
   Status,
 } from "allure-js-commons";
 
-import { ContentTypes, LinkData } from "./helpers";
+import { ALLURE_METADATA_CONTENT_TYPE, Metadata } from "./helpers";
 
 class AllureReporter implements Reporter {
   config!: FullConfig;
@@ -96,31 +96,15 @@ class AllureReporter implements Reporter {
               continue;
             }
 
-            if (attachment.contentType.includes("allure")) {
-              if (!attachment.path) {
+            if (attachment.contentType === ALLURE_METADATA_CONTENT_TYPE) {
+              if (!attachment.body) {
                 continue;
               }
 
-              switch (attachment.contentType) {
-                case ContentTypes.label: {
-                  allureTest.addLabel(attachment.name, attachment.path);
-                  
-                  break;
-                }
-                case ContentTypes.link: {
-                  const link = JSON.parse(attachment.path) as LinkData;
-
-                  if (attachment.name === LinkType.ISSUE) {
-                    allureTest.addIssueLink(link.url, link.name!);
-                  } else if (attachment.name === LinkType.TMS) {
-                    allureTest.addTmsLink(link.url, link.name!);
-                  } else {
-                    allureTest.addLink(link.url, link.name!);
-                  }
-
-                  break;
-                }
-              }
+              const metadata: Metadata = JSON.parse(attachment.body.toString());
+              metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
+              metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
+              continue;
             }
 
             let fileName;
