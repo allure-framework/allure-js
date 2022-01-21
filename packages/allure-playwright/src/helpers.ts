@@ -10,8 +10,7 @@ export interface Metadata {
 
 export class allure {
   static addMetadataAttachment(metadata: Metadata) {
-    test.info().attachments.push({
-      name: "allure-metadata.json",
+    test.info().attach("allure-metadata.json",{
       contentType: ALLURE_METADATA_CONTENT_TYPE,
       body: Buffer.from(JSON.stringify(metadata), "utf8"),
     });
