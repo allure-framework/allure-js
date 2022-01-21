@@ -1,113 +1,105 @@
-import { TestInfo } from "@playwright/test";
+import test from "@playwright/test";
 import { Label, LabelName, Link, LinkType } from "allure-js-commons";
 
 
 export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
-
-
 export interface Metadata {
   labels?: Label[];
   links?: Link[];
 }
 
-export class AllurePlaywrightHelper {
-  private testInfo!: TestInfo;
-
-  constructor(testInfo: TestInfo) {
-    this.testInfo = testInfo;
-  }
-
-  addMetataAttachment(metadata: Metadata) {
-    this.testInfo.attachments.push({
+export class allure {
+  static addMetadataAttachment(metadata: Metadata) {
+    test.info().attachments.push({
       name: "allure-metadata.json",
       contentType: ALLURE_METADATA_CONTENT_TYPE,
       body: Buffer.from(JSON.stringify(metadata), "utf8"),
     });
   }
 
-  label(label: Label | Label[]) {
-    this.addMetataAttachment({
+  static label(label: Label | Label[]) {
+    this.addMetadataAttachment({
       labels: Array.isArray(label) ? label : [label],
     });
   }
 
-  link(link: Link) {
-    this.addMetataAttachment({
+  static link(link: Link) {
+    this.addMetadataAttachment({
       links: Array.isArray(link) ? link : [link],
     });
   }
 
-  id(id: string) {
+  static id(id: string) {
     this.label({
       value: id,
       name: LabelName.AS_ID,
     });
   }
 
-  epic(epic: string) {
+  static epic(epic: string) {
     this.label({
       name: LabelName.EPIC,
       value: epic,
     });
   }
 
-  feature(epic: string) {
+  static feature(epic: string) {
     this.label({
       name: LabelName.FEATURE,
       value: epic,
     });
   }
 
-  story(story: string): void {
+  static story(story: string): void {
     this.label({
       name: LabelName.STORY,
       value: story,
     });
   }
 
-  suite(name: string): void {
+  static suite(name: string): void {
     this.label({
       name: LabelName.SUITE,
       value: name,
     });
   }
 
-  parentSuite(name: string) {
+  static parentSuite(name: string) {
     this.label({
       name: LabelName.PARENT_SUITE,
       value: name,
     });
   }
 
-  subSuite(name: string) {
+  static subSuite(name: string) {
     this.label({
       name: LabelName.SUB_SUITE,
       value: name,
     });
   }
 
-  owner(owner: string) {
+  static owner(owner: string) {
     this.label({
       name: LabelName.OWNER,
       value: owner,
     });
   }
 
-  severity(severity: string) {
+  static severity(severity: string) {
     this.label({
       name: LabelName.SEVERITY,
       value: severity,
     });
   }
 
-  tag(tag: string) {
+  static tag(tag: string) {
     this.label({
       name: LabelName.TAG,
       value: tag,
     });
   }
 
-  issue(issueData: Omit<Link, "type">) {
+  static issue(issueData: Omit<Link, "type">) {
     this.link({
       url: issueData.url,
       name: issueData.name,
@@ -115,7 +107,7 @@ export class AllurePlaywrightHelper {
     });
   }
 
-  tms(issueData: Omit<Link, "type">) {
+  static tms(issueData: Omit<Link, "type">) {
     this.link({
       url: issueData.url,
       name: issueData.name,
@@ -123,9 +115,5 @@ export class AllurePlaywrightHelper {
     });
   }
 }
-
-export const allure = (testInfo: TestInfo) => {
-  return new AllurePlaywrightHelper(testInfo);
-};
 
 export {LabelName} from "allure-js-commons";

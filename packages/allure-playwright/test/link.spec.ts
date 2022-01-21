@@ -23,7 +23,7 @@ test("should have link", async ({ runInlineTest }) => {
       import { test } from '@playwright/test';
       import { allure } from '../../dist/index'
       test('should add epic link', async ({}, testInfo) => {
-          allure(testInfo).link({url:"https://playwright.dev/docs/api/class-page#page-workers"});
+          allure.link({url:"https://playwright.dev/docs/api/class-page#page-workers"});
       });
       `,
     },

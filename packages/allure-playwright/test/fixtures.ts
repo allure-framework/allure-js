@@ -70,7 +70,7 @@ async function runPlaywrightTest(
     }
   }
   const outputDir = path.join(baseDir, "test-results");
-  const args = [require.resolve("@playwright/test/lib/cli/cli.js"), "test"];
+  const args = [require.resolve("@playwright/test/cli"), "test"];
   args.push(
     "--output=" + outputDir,
     "--reporter=" + require.resolve("../dist/index.js"),

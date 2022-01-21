@@ -67,8 +67,8 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure(testInfo).epic("Some Epic");
-  allure(testInfo).story("Some Story");
+  allure.epic("Some Epic");
+  allure.story("Some Story");
 });
 ```
 
@@ -79,8 +79,8 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure(testInfo).link({ url: "https://playwright.dev", name: "playwright-site" });
-  allure(testInfo).issue({
+  allure.link({ url: "https://playwright.dev", name: "playwright-site" });
+  allure.issue({
     url: "https://github.com/allure-framework/allure-js/issues/352",
     name: "Target issue",
   });
