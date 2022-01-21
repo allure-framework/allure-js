@@ -50,6 +50,8 @@ npx playwright test --reporter=line,allure-playwright
 You can use allure labels to provide extra information about tests such via
 
 - label
+- link
+- id
 - epic
 - feature
 - story
@@ -59,6 +61,8 @@ You can use allure labels to provide extra information about tests such via
 - owner
 - severity
 - tag
+- issue
+- tms
 
 ### Labels Usage
 
