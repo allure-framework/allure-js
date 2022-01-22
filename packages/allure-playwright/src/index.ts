@@ -25,8 +25,11 @@ import {
   ExecutableItemWrapper,
   InMemoryAllureWriter,
   LabelName,
+  LinkType,
   Status,
 } from "allure-js-commons";
+
+import { ALLURE_METADATA_CONTENT_TYPE, Metadata } from "./helpers";
 
 class AllureReporter implements Reporter {
   config!: FullConfig;
@@ -90,6 +93,17 @@ class AllureReporter implements Reporter {
 
           for (const attachment of result.attachments) {
             if (!attachment.body && !attachment.path) {
+              continue;
+            }
+
+            if (attachment.contentType === ALLURE_METADATA_CONTENT_TYPE) {
+              if (!attachment.body) {
+                continue;
+              }
+
+              const metadata: Metadata = JSON.parse(attachment.body.toString());
+              metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
+              metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
               continue;
             }
 
@@ -175,3 +189,5 @@ const appendStep = (parent: ExecutableItemWrapper, step: TestStep) => {
     appendStep(allureStep, child);
   }
 };
+
+export * from "./helpers";
