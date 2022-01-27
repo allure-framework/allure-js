@@ -104,6 +104,13 @@ class AllureReporter implements Reporter {
               const metadata: Metadata = JSON.parse(attachment.body.toString());
               metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
               metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
+              if (metadata.description) {
+                if (metadata.description.html === true) {
+                  allureTest.descriptionHtml = metadata.description.value;
+                } else {
+                  allureTest.description = metadata.description.value;
+                }
+              }
               continue;
             }
 

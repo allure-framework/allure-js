@@ -1,16 +1,16 @@
 import test from "@playwright/test";
 import { Label, LabelName, Link, LinkType } from "allure-js-commons";
 
-
 export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
 export interface Metadata {
   labels?: Label[];
   links?: Link[];
+  description?: { value: string; html: boolean };
 }
 
 export class allure {
   static addMetadataAttachment(metadata: Metadata) {
-    test.info().attach("allure-metadata.json",{
+    test.info().attach("allure-metadata.json", {
       contentType: ALLURE_METADATA_CONTENT_TYPE,
       body: Buffer.from(JSON.stringify(metadata), "utf8"),
     });
@@ -19,6 +19,12 @@ export class allure {
   static label(label: Label | Label[]) {
     this.addMetadataAttachment({
       labels: Array.isArray(label) ? label : [label],
+    });
+  }
+
+  static description(value: string, html = false) {
+    this.addMetadataAttachment({
+      description: { value, html },
     });
   }
 
