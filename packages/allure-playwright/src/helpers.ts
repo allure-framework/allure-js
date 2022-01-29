@@ -22,9 +22,9 @@ export class allure {
     });
   }
 
-  static description(value: string, html = false) {
+  static description(value: string) {
     this.addMetadataAttachment({
-      description: { value, html },
+      description: value,
     });
   }
 
@@ -121,4 +121,4 @@ export class allure {
   }
 }
 
-export {LabelName} from "allure-js-commons";
+export { LabelName } from "allure-js-commons";
