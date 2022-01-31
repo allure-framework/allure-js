@@ -105,11 +105,7 @@ class AllureReporter implements Reporter {
               metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
               metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
               if (metadata.description) {
-                if (metadata.description.html === true) {
-                  allureTest.descriptionHtml = metadata.description.value;
-                } else {
-                  allureTest.description = metadata.description.value;
-                }
+                allureTest.description = metadata.description
               }
               continue;
             }

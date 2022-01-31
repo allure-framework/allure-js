@@ -5,7 +5,7 @@ export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+jso
 export interface Metadata {
   labels?: Label[];
   links?: Link[];
-  description?: { value: string; html: boolean };
+  description?: string;
 }
 
 export class allure {
@@ -22,9 +22,9 @@ export class allure {
     });
   }
 
-  static description(value: string, html = false) {
+  static description(value: string) {
     this.addMetadataAttachment({
-      description: { value, html },
+      description: value,
     });
   }
 
@@ -121,4 +121,4 @@ export class allure {
   }
 }
 
-export {LabelName} from "allure-js-commons";
+export { LabelName } from "allure-js-commons";
