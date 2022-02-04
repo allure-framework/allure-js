@@ -91,10 +91,12 @@ export class allure {
     });
   }
 
-  static tag(tag: string) {
-    this.label({
-      name: LabelName.TAG,
-      value: tag,
+  static tag(...tag: string[]) {
+    tag.forEach((tags) => {
+      this.label({
+        name: LabelName.TAG,
+        value: tags,
+      });
     });
   }
 
