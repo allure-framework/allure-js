@@ -31,7 +31,7 @@ test("should have multiply tags", async ({ runInlineTest }) => {
       return writer.tests.map((t) => t.labels);
     },
   );
-  expect(result[0]).toContainEqual([{ name: "tag", value: "Allure" }]);
+  expect(result[0]).toContainEqual({ name: "tag", value: "Allure" });
   expect(result[0]).toContainEqual({ name: "tag", value: "Playwright" });
   expect(result[0]).toContainEqual({ name: "tag", value: "TestInfo" });
 });
