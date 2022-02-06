@@ -91,13 +91,13 @@ export class allure {
     });
   }
 
-  static tag(...tag: string[]) {
-    tag.forEach((tags) => {
+  static tag(...tags: string[]) {
+    for (let tag of tags) {
       this.label({
         name: LabelName.TAG,
-        value: tags,
+        value: tag,
       });
-    });
+    }
   }
 
   static issue(issueData: Omit<Link, "type">) {
