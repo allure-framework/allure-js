@@ -1092,9 +1092,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.18.0":
-  version: 1.18.0
-  resolution: "@playwright/test@npm:1.18.0"
+"@playwright/test@npm:^1.18.1":
+  version: 1.18.1
+  resolution: "@playwright/test@npm:1.18.1"
   dependencies:
     "@babel/code-frame": ^7.14.5
     "@babel/core": ^7.14.8
@@ -1128,7 +1128,7 @@ __metadata:
     open: ^8.3.0
     pirates: ^4.0.1
     pixelmatch: ^5.2.1
-    playwright-core: =1.18.0
+    playwright-core: =1.18.1
     pngjs: ^5.0.0
     rimraf: ^3.0.2
     source-map-support: ^0.4.18
@@ -1136,7 +1136,7 @@ __metadata:
     yazl: ^2.5.1
   bin:
     playwright: cli.js
-  checksum: 576153bdbd4105ef376a4e3423ead165b81c5ed3d9bc881ddd4cffec356eb2e009f56504b7da9674df53547df076641e7c198f2fef5c087199a8c13b986eb302
+  checksum: 94a6fb8686b1304f843a48a12c576ec58fc16978f0347746e270a8990e62d932558c28eff27f14fc4d05e496c79ea50a9f0ed4af82934f2617689103f084f6f2
   languageName: node
   linkType: hard
 
@@ -1893,7 +1893,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-playwright@workspace:packages/allure-playwright"
   dependencies:
-    "@playwright/test": ^1.18.0
+    "@playwright/test": ^1.18.1
     allure-js-commons: "workspace:*"
     eslint: ^7.32.0
     prettier: ^2.3.2
@@ -7181,9 +7181,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:=1.18.0":
-  version: 1.18.0
-  resolution: "playwright-core@npm:1.18.0"
+"playwright-core@npm:=1.18.1":
+  version: 1.18.1
+  resolution: "playwright-core@npm:1.18.1"
   dependencies:
     commander: ^8.2.0
     debug: ^4.1.1
@@ -7203,7 +7203,7 @@ __metadata:
     yazl: ^2.5.1
   bin:
     playwright: cli.js
-  checksum: 6e76dc5ab993d30a150f46b98ad8921801b2bb6ded517813814db1c074b3bb76975453ba826b0f085600d0a586816e04f9b33ef6e88a624e443bcce2effbef6f
+  checksum: 7b3d5a228bb0559eece28c82f6aa963a9f3cb68f56e470feb968fe414e4f0074edb9a2d9b27266f4927be31d57203cdfb739e57d5b30744d5f30800a8025b3b8
   languageName: node
   linkType: hard
 
