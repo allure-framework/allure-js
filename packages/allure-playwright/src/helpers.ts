@@ -92,7 +92,7 @@ export class allure {
   }
 
   static tag(...tags: string[]) {
-    for (let tag of tags) {
+    for (const tag of tags) {
       this.label({
         name: LabelName.TAG,
         value: tag,
