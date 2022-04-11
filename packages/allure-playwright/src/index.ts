@@ -66,7 +66,7 @@ class AllureReporter implements Reporter {
 
   onTestBegin(test: TestCase): void {
     const suite = test.parent;
-    const group = this.getAllureGroup(suite);
+    const group = this.ensureAllureGroupCreated(suite);
     const allureTest = group.startTest(test.title);
     allureTest.addLabel(LabelName.LANGUAGE, "JavaScript");
     allureTest.addLabel(LabelName.FRAMEWORK, "Playwright");
@@ -90,7 +90,7 @@ class AllureReporter implements Reporter {
     if (!allureTest) {
       return;
     }
-    this.getAllureStep(step, allureTest);
+    this.ensureAllureStepCreated(step, allureTest);
   }
 
   onStepEnd(_test: TestCase, _result: TestResult, step: TestStep): void {
@@ -193,20 +193,24 @@ class AllureReporter implements Reporter {
     return this.allureRuntime;
   }
 
-  private getAllureGroup(suite: Suite): AllureGroup {
+  private ensureAllureGroupCreated(suite: Suite): AllureGroup {
     let group = this.allureGroupCache.get(suite);
     if (!group) {
-      const parent = suite.parent ? this.getAllureGroup(suite.parent) : this.getAllureRuntime();
+      const parent = suite.parent
+        ? this.ensureAllureGroupCreated(suite.parent)
+        : this.getAllureRuntime();
       group = parent.startGroup(suite.title);
       this.allureGroupCache.set(suite, group);
     }
     return group;
   }
 
-  private getAllureStep(step: TestStep, allureTest: AllureTest): AllureStep {
+  private ensureAllureStepCreated(step: TestStep, allureTest: AllureTest): AllureStep {
     let allureStep = this.allureStepCache.get(step);
     if (!allureStep) {
-      const parent = step.parent ? this.getAllureStep(step.parent, allureTest) : allureTest;
+      const parent = step.parent
+        ? this.ensureAllureStepCreated(step.parent, allureTest)
+        : allureTest;
       allureStep = parent.startStep(step.title);
       this.allureStepCache.set(step, allureStep);
     }
