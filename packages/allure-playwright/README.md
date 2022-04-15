@@ -45,6 +45,14 @@ set ALLURE_RESULTS_DIR=my-allure-results
 npx playwright test --reporter=line,allure-playwright
 ```
 
+or inside the config via:
+
+```js
+const config = {
+  reporter: [ ['allure-playwright', { outputFolder: 'my-allure-results' }] ],
+};
+```
+
 ## Proving extra information
 
 You can use allure labels to provide extra information about tests such via
