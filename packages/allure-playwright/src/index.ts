@@ -17,11 +17,12 @@
 import fs from "fs";
 import path from "path";
 import { FullConfig, TestStatus } from "@playwright/test";
-import { Reporter, Suite, TestStep } from "@playwright/test/reporter";
+import { Reporter, Suite, TestCase, TestResult, TestStep } from "@playwright/test/reporter";
 import {
   AllureGroup,
   AllureRuntime,
   AllureStep,
+  AllureTest,
   ExecutableItemWrapper,
   InMemoryAllureWriter,
   LabelName,
@@ -31,129 +32,189 @@ import {
 
 import { ALLURE_METADATA_CONTENT_TYPE, Metadata } from "./helpers";
 
+type AllureReporterOptions = {
+  outputFolder?: string;
+};
+
 class AllureReporter implements Reporter {
   config!: FullConfig;
   suite!: Suite;
+  resultsDir!: string;
+  options: AllureReporterOptions;
+
+  private allureWriter = process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST
+    ? new InMemoryAllureWriter()
+    : undefined;
+  private allureRuntime: AllureRuntime | undefined;
+  private allureGroupCache = new Map<Suite, AllureGroup>();
+  private allureTestCache = new Map<TestCase, AllureTest>();
+  private allureStepCache = new Map<TestStep, AllureStep>();
+
+  constructor(options: AllureReporterOptions = {}) {
+    this.options = options;
+  }
 
   onBegin(config: FullConfig, suite: Suite): void {
     this.config = config;
     this.suite = suite;
+    this.resultsDir = allureReportFolder(this.options.outputFolder);
+    this.allureRuntime = new AllureRuntime({
+      resultsDir: this.resultsDir,
+      writer: this.allureWriter,
+    });
   }
 
-  onTimeout(): void {
-    this.onEnd();
+  onTestBegin(test: TestCase): void {
+    const suite = test.parent;
+    const group = this.ensureAllureGroupCreated(suite);
+    const allureTest = group.startTest(test.title);
+    allureTest.addLabel(LabelName.LANGUAGE, "JavaScript");
+    allureTest.addLabel(LabelName.FRAMEWORK, "Playwright");
+    const [, projectSuiteTitle, fileSuiteTitle, ...suiteTitles] = suite.titlePath();
+    if (projectSuiteTitle) {
+      allureTest.addLabel(LabelName.PARENT_SUITE, projectSuiteTitle);
+    }
+    if (fileSuiteTitle) {
+      allureTest.addLabel(LabelName.SUITE, fileSuiteTitle);
+    }
+    if (suiteTitles.length > 0) {
+      allureTest.addLabel(LabelName.SUB_SUITE, suiteTitles.join(" > "));
+    }
+    allureTest.historyId = test.titlePath().slice(1).join(" ");
+    allureTest.fullName = test.title;
+    this.allureTestCache.set(test, allureTest);
+  }
+
+  onStepBegin(test: TestCase, _result: TestResult, step: TestStep): void {
+    const allureTest = this.allureTestCache.get(test);
+    if (!allureTest) {
+      return;
+    }
+    this.ensureAllureStepCreated(step, allureTest);
+  }
+
+  onStepEnd(_test: TestCase, _result: TestResult, step: TestStep): void {
+    const allureStep = this.allureStepCache.get(step);
+    if (!allureStep) {
+      return;
+    }
+    allureStep.endStep();
+    allureStep.status = step.error ? Status.FAILED : Status.PASSED;
+  }
+
+  onTestEnd(test: TestCase, result: TestResult): void {
+    const runtime = this.getAllureRuntime();
+    const allureTest = this.allureTestCache.get(test);
+    if (!allureTest) {
+      return;
+    }
+    allureTest.status = statusToAllureStats(result.status, test.expectedStatus);
+    if (result.error) {
+      const message = result.error.message && stripAscii(result.error.message);
+      let trace = result.error.stack && stripAscii(result.error.stack);
+      if (trace && message && trace.startsWith(`Error: ${message}`)) {
+        trace = trace.substr(message.length + "Error: ".length);
+      }
+      allureTest.statusDetails = {
+        message,
+        trace,
+      };
+    }
+    for (const attachment of result.attachments) {
+      if (!attachment.body && !attachment.path) {
+        continue;
+      }
+
+      if (attachment.contentType === ALLURE_METADATA_CONTENT_TYPE) {
+        if (!attachment.body) {
+          continue;
+        }
+
+        const metadata: Metadata = JSON.parse(attachment.body.toString());
+        metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
+        metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
+        if (metadata.description) {
+          allureTest.description = metadata.description;
+        }
+        continue;
+      }
+
+      let fileName;
+      if (attachment.body) {
+        fileName = runtime.writeAttachment(attachment.body, attachment.contentType);
+      } else {
+        if (!fs.existsSync(attachment.path!)) {
+          continue;
+        }
+        fileName = runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
+      }
+      allureTest.addAttachment(attachment.name, attachment.contentType, fileName);
+      if (attachment.name === "diff") {
+        allureTest.addLabel("testType", "screenshotDiff");
+      }
+    }
+    for (const stdout of result.stdout) {
+      allureTest.addAttachment(
+        "stdout",
+        "text/plain",
+        runtime.writeAttachment(stdout, "text/plain"),
+      );
+    }
+    for (const stderr of result.stderr) {
+      allureTest.addAttachment(
+        "stderr",
+        "text/plain",
+        runtime.writeAttachment(stderr, "text/plain"),
+      );
+    }
+    allureTest.endTest();
   }
 
   onEnd(): void {
-    const writerForTest = process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST
-      ? new InMemoryAllureWriter()
-      : undefined;
-    const resultsDir = process.env.ALLURE_RESULTS_DIR || path.join(process.cwd(), "allure-results");
-    const runtime = new AllureRuntime({ resultsDir, writer: writerForTest });
-    const processSuite = (suite: Suite, parent: AllureGroup | AllureRuntime): void => {
-      const groupName = "Root";
-      const group = parent.startGroup(groupName);
-      for (const test of suite.tests) {
-        for (const result of test.results) {
-          const startTime = result.startTime.getTime();
-          const endTime = startTime + result.duration;
-          const allureTest = group.startTest(test.title, startTime);
-          allureTest.addLabel(LabelName.LANGUAGE, "JavaScript");
-          allureTest.addLabel(LabelName.FRAMEWORK, "Playwright");
-          const [, projectSuiteTitle, fileSuiteTitle, ...suiteTitles] = suite.titlePath();
-          if (projectSuiteTitle) {
-            allureTest.addLabel(LabelName.PARENT_SUITE, projectSuiteTitle);
-          }
-          if (fileSuiteTitle) {
-            allureTest.addLabel(LabelName.SUITE, fileSuiteTitle);
-          }
-          if (suiteTitles.length > 0) {
-            allureTest.addLabel(LabelName.SUB_SUITE, suiteTitles.join(" > "));
-          }
-
-          allureTest.historyId = test.titlePath().slice(1).join(" ");
-          allureTest.fullName = test.title;
-          allureTest.status = statusToAllureStats(result.status, test.expectedStatus);
-
-          if (result.error) {
-            const message = result.error.message && stripAscii(result.error.message);
-            let trace = result.error.stack && stripAscii(result.error.stack);
-            if (trace && message && trace.startsWith(`Error: ${message}`)) {
-              trace = trace.substr(message.length + "Error: ".length);
-            }
-            allureTest.statusDetails = {
-              message,
-              trace,
-            };
-          }
-
-          for (const step of result.steps) {
-            appendStep(allureTest, step);
-          }
-
-          for (const attachment of result.attachments) {
-            if (!attachment.body && !attachment.path) {
-              continue;
-            }
-
-            if (attachment.contentType === ALLURE_METADATA_CONTENT_TYPE) {
-              if (!attachment.body) {
-                continue;
-              }
-
-              const metadata: Metadata = JSON.parse(attachment.body.toString());
-              metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
-              metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
-              continue;
-            }
-
-            let fileName;
-            if (attachment.body) {
-              fileName = runtime.writeAttachment(attachment.body, attachment.contentType);
-            } else {
-              if (!fs.existsSync(attachment.path!)) {
-                continue;
-              }
-              fileName = runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
-            }
-            allureTest.addAttachment(attachment.name, attachment.contentType, fileName);
-            if (attachment.name === "diff") {
-              allureTest.addLabel("testType", "screenshotDiff");
-            }
-          }
-
-          for (const stdout of result.stdout) {
-            allureTest.addAttachment(
-              "stdout",
-              "text/plain",
-              runtime.writeAttachment(stdout, "text/plain"),
-            );
-          }
-          for (const stderr of result.stderr) {
-            allureTest.addAttachment(
-              "stderr",
-              "text/plain",
-              runtime.writeAttachment(stderr, "text/plain"),
-            );
-          }
-          allureTest.endTest(endTime);
-        }
-      }
-      for (const child of suite.suites) {
-        processSuite(child, group);
-      }
+    for (const group of this.allureGroupCache.values()) {
       group.endGroup();
-    };
-    processSuite(this.suite, runtime);
-
+    }
     if (process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST) {
       try {
+        const writer = this.allureWriter;
+        void writer; // Used in `eval()`, below.
         const postProcess = eval(process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST); // eslint-disable-line no-eval
-        console.log(JSON.stringify(postProcess(writerForTest))); // eslint-disable-line no-console
+        console.log(JSON.stringify(postProcess(this.allureWriter))); // eslint-disable-line no-console
       } catch (e) {
-        console.log(JSON.stringify({ error: (e as Error).toString() })); // eslint-disable-line no-console
+        console.log(JSON.stringify({ error: (e as Error).stack || String(e) })); // eslint-disable-line no-console
       }
     }
+  }
+
+  private getAllureRuntime(): AllureRuntime {
+    if (!this.allureRuntime) {
+      throw new Error("Unexpected state: `allureRuntime` is not initialized");
+    }
+    return this.allureRuntime;
+  }
+
+  private ensureAllureGroupCreated(suite: Suite): AllureGroup {
+    let group = this.allureGroupCache.get(suite);
+    if (!group) {
+      const parent = suite.parent
+        ? this.ensureAllureGroupCreated(suite.parent)
+        : this.getAllureRuntime();
+      group = parent.startGroup(suite.title);
+      this.allureGroupCache.set(suite, group);
+    }
+    return group;
+  }
+
+  private ensureAllureStepCreated(step: TestStep, allureTest: AllureTest): AllureStep {
+    let allureStep = this.allureStepCache.get(step);
+    if (!allureStep) {
+      const parent = step.parent
+        ? this.ensureAllureStepCreated(step.parent, allureTest)
+        : allureTest;
+      allureStep = parent.startStep(step.title);
+      this.allureStepCache.set(step, allureStep);
+    }
+    return allureStep;
   }
 }
 
@@ -188,6 +249,20 @@ const appendStep = (parent: ExecutableItemWrapper, step: TestStep) => {
   for (const child of step.steps || []) {
     appendStep(allureStep, child);
   }
+};
+
+const allureReportFolder = (outputFolder?: string): string => {
+  if (process.env.ALLURE_RESULTS_DIR) {
+    return path.resolve(process.cwd(), process.env.ALLURE_RESULTS_DIR);
+  }
+  if (outputFolder) {
+    return outputFolder;
+  }
+  return defaultReportFolder();
+};
+
+const defaultReportFolder = (): string => {
+  return path.resolve(process.cwd(), "allure-results");
 };
 
 export * from "./helpers";

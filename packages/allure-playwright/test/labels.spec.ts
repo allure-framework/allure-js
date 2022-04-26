@@ -44,60 +44,62 @@ test("should report structure", async ({ runInlineTest }) => {
       }));
     },
   );
-  expect(result).toEqual([
-    {
-      name: "should work",
-      fullName: "should work",
-      historyId: "project a.test.ts suite should work",
-      labels: [
-        {
-          name: "language",
-          value: "JavaScript",
-        },
-        {
-          name: "framework",
-          value: "Playwright",
-        },
-        {
-          name: "parentSuite",
-          value: "project",
-        },
-        {
-          name: "suite",
-          value: "a.test.ts",
-        },
-        {
-          name: "subSuite",
-          value: "suite",
-        },
-      ],
-    },
-    {
-      name: "should work 2",
-      fullName: "should work 2",
-      historyId: "project b.test.ts parent suite 2 suite 2 sub suite 2 should work 2",
-      labels: [
-        {
-          name: "language",
-          value: "JavaScript",
-        },
-        {
-          name: "framework",
-          value: "Playwright",
-        },
-        {
-          name: "parentSuite",
-          value: "project",
-        },
-        {
-          name: "suite",
-          value: "b.test.ts",
-        },
-        {
-          name: "subSuite",
-          value: "parent suite 2 > suite 2 > sub suite 2",
-        },
-      ],
-    },
-  ]);
+  expect(result).toEqual(
+    expect.arrayContaining([
+      {
+        name: "should work",
+        fullName: "should work",
+        historyId: "project a.test.ts suite should work",
+        labels: expect.arrayContaining([
+          {
+            name: "language",
+            value: "JavaScript",
+          },
+          {
+            name: "framework",
+            value: "Playwright",
+          },
+          {
+            name: "parentSuite",
+            value: "project",
+          },
+          {
+            name: "suite",
+            value: "a.test.ts",
+          },
+          {
+            name: "subSuite",
+            value: "suite",
+          },
+        ]),
+      },
+      {
+        name: "should work 2",
+        fullName: "should work 2",
+        historyId: "project b.test.ts parent suite 2 suite 2 sub suite 2 should work 2",
+        labels: expect.arrayContaining([
+          {
+            name: "language",
+            value: "JavaScript",
+          },
+          {
+            name: "framework",
+            value: "Playwright",
+          },
+          {
+            name: "parentSuite",
+            value: "project",
+          },
+          {
+            name: "suite",
+            value: "b.test.ts",
+          },
+          {
+            name: "subSuite",
+            value: "parent suite 2 > suite 2 > sub suite 2",
+          },
+        ]),
+      },
+    ]),
+  );
 });
