@@ -168,6 +168,13 @@ class AllureReporter implements Reporter {
       );
     }
     allureTest.endTest();
+    const atLeastAllureAttachment = result.attachments.find(a => a.name === "environment.json");
+    if (atLeastAllureAttachment) {
+      const envInfo = atLeastAllureAttachment.body!.toString("utf8");
+      runtime.writeEnvironmentInfo(JSON.parse(envInfo));
+    } else {
+      runtime.writeEnvironmentInfo(process.env as Record<string, string>);
+    }
   }
 
   onEnd(): void {
