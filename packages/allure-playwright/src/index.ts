@@ -147,8 +147,18 @@ class AllureReporter implements Reporter {
         }
         fileName = runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
       }
-      allureTest.addAttachment(attachment.name, attachment.contentType, fileName);
-      if (attachment.name === "diff") {
+
+      if (attachment.name.endsWith("-expected.png")) {
+        allureTest.addAttachment("expected", attachment.contentType, fileName);
+      } else if (attachment.name.endsWith("-actual.png")) {
+        allureTest.addAttachment("actual", attachment.contentType, fileName);
+      } else if (attachment.name.endsWith("-diff.png")) {
+        allureTest.addAttachment("diff", attachment.contentType, fileName);
+      } else {
+        allureTest.addAttachment(attachment.name, attachment.contentType, fileName);
+      }
+
+      if (attachment.name === "diff" || attachment.name.endsWith("-diff.png")) {
         allureTest.addLabel("testType", "screenshotDiff");
       }
     }

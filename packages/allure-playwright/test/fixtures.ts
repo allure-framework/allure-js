@@ -111,6 +111,7 @@ type Fixtures = {
     params?: Params,
     env?: Env,
   ) => Promise<RunResult>;
+  attachment: (name: string) => string;
 };
 
 export const test = base.extend<Fixtures>({
@@ -128,5 +129,9 @@ export const test = base.extend<Fixtures>({
       // eslint-disable-next-line no-console
       console.error(runResult.output);
     }
+  },
+  // eslint-disable-next-line no-empty-pattern
+  attachment: async ({ }, use) => {
+    await use((name) => path.join(__dirname, "assets", name));
   },
 });

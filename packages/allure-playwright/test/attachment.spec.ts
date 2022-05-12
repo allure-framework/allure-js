@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import fs from "fs";
 import { expect, test } from "./fixtures";
 
 test("should not throw on missing attachment", async ({ runInlineTest }) => {
@@ -45,4 +46,30 @@ test("should not throw on missing attachment", async ({ runInlineTest }) => {
   expect(result).toEqual([
     { name: "buffer-attachment", type: "text/plain", buffer: Buffer.from("foo").toJSON() },
   ]);
+});
+
+test("should add snapshots correctly and provide a screenshot diff", async ({ runInlineTest, attachment }) => {
+  const result = await runInlineTest(
+    {
+      "a.test.ts": `
+      import test from '@playwright/test';
+      test('should add attachment', async ({ page }, testInfo) => {
+        testInfo.snapshotSuffix = '';
+        test.expect(await page.screenshot()).toMatchSnapshot("foo.png");
+      });
+    `,
+    "a.test.ts-snapshots/foo-project.png": fs.readFileSync(attachment("attachment-1-not-expected.png")),
+  },
+    (writer) => {
+      return writer.tests[0].attachments.map((a) => {
+        return { name: a.name, type: a.type };
+      });
+    },
+  );
+  expect(result.length).toBe(3);
+  expect(result).toEqual(expect.arrayContaining([
+    { name: "expected", type: "image/png" },
+    { name: "actual", type: "image/png" },
+    { name: "diff", type: "image/png" },
+  ]));
 });
