@@ -1,5 +1,5 @@
 import { Label, LabelName } from "allure-js-commons";
-import { test, expect } from "./fixtures";
+import { expect, test } from "./fixtures";
 
 test("should have label", async ({ runInlineTest }) => {
   const result: Label[] = await runInlineTest(

@@ -15,7 +15,12 @@
  */
 
 import { StepResult, TestResult } from "allure-js-commons";
-import { test, expect } from "./fixtures";
+import { expect, test } from "./fixtures";
+
+type SerializableStep = {
+  name?: string;
+  children: SerializableStep[];
+};
 
 test("should report test status", async ({ runInlineTest }) => {
   const result = await runInlineTest(
@@ -39,10 +44,10 @@ test("should report test status", async ({ runInlineTest }) => {
     `,
     },
     (writer) => {
-      const convert = (test: StepResult | TestResult) => {
+      const convert = (testResult: StepResult | TestResult): SerializableStep => {
         return {
-          name: test.name,
-          children: test.steps.map(convert),
+          name: testResult.name,
+          children: testResult.steps.map(convert),
         };
       };
       return convert(writer.tests[0]);
