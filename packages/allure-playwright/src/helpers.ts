@@ -97,11 +97,13 @@ export class allure {
     });
   }
 
-  static tag(tag: string) {
-    this.label({
-      name: LabelName.TAG,
-      value: tag,
-    });
+  static tag(...tags: string[]) {
+    for (const tag of tags) {
+      this.label({
+        name: LabelName.TAG,
+        value: tag,
+      });
+    }
   }
 
   static issue(issueData: Omit<Link, "type">) {

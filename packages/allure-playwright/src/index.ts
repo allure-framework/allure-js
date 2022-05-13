@@ -26,7 +26,6 @@ import {
   ExecutableItemWrapper,
   InMemoryAllureWriter,
   LabelName,
-  LinkType,
   Status,
 } from "allure-js-commons";
 

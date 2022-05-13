@@ -24,6 +24,14 @@ Either add **allure-playwright** into **playwright.config.ts**:
 }
 ```
 
+Or pass the same value via config file:
+
+```js
+{
+  reporter: [['line'], ['allure-playwright']]
+}
+```
+
 Or pass the same value via command line:
 
 ```bash
