@@ -173,7 +173,7 @@ class AllureReporter implements Reporter {
       const envInfo = atLeastAllureAttachment.body!.toString("utf8");
       runtime.writeEnvironmentInfo(JSON.parse(envInfo));
     } else {
-      runtime.writeEnvironmentInfo(process.env as Record<string, string>);
+      runtime.writeEnvironmentInfo(undefined);
     }
   }
 
