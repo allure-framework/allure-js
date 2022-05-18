@@ -49,7 +49,7 @@ class AllureReporter implements Reporter {
   private allureGroupCache = new Map<Suite, AllureGroup>();
   private allureTestCache = new Map<TestCase, AllureTest>();
   private allureStepCache = new Map<TestStep, AllureStep>();
-
+  private allureWriteEnv = false;
   constructor(options: AllureReporterOptions = {}) {
     this.options = options;
   }
@@ -170,16 +170,25 @@ class AllureReporter implements Reporter {
     allureTest.endTest();
     const atLeastAllureAttachment = result.attachments.find(a => a.name === "environment.json");
     if (atLeastAllureAttachment) {
-      const envInfo = atLeastAllureAttachment.body!.toString("utf8");
-      runtime.writeEnvironmentInfo(JSON.parse(envInfo));
-    } else {
-      runtime.writeEnvironmentInfo(undefined);
+      const hasBody = !!atLeastAllureAttachment.body;
+      if (hasBody) {
+        // write environment.json to allure environment
+        runtime.writeEnvironmentInfo(JSON.parse(atLeastAllureAttachment.body!.toString("utf8")));
+        this.allureWriteEnv = true;
+      } else {
+        this.allureWriteEnv = false;
+      }
     }
   }
 
   onEnd(): void {
+    const runtime = this.getAllureRuntime();
     for (const group of this.allureGroupCache.values()) {
       group.endGroup();
+    }
+    if (!this.allureWriteEnv) {
+      // write process.env in case of no environment.json attachments
+      runtime.writeEnvironmentInfo();
     }
     if (process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST) {
       try {
