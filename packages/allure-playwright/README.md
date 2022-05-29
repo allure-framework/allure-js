@@ -61,6 +61,16 @@ const config = {
 };
 ```
 
+Generate Allure Report:
+```bash
+allure generate my-allure-results -o allure-report --clean
+```
+
+Open Allure Report:
+```bash
+allure open allure-report
+```
+
 ## Proving extra information
 
 You can use allure labels to provide extra information about tests such via
@@ -84,14 +94,12 @@ You can use allure labels to provide extra information about tests such via
 
 ```js
 import { test, expect } from "@playwright/test";
-import { allure } from "allure-playwright";
+import {allure, LabelName} from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.epic("Some Epic");
-  allure.story("Some Story");
+    allure.label({name: LabelName.LANGUAGE, value: "typescript"});
 });
 ```
-
 ### Links Usage
 
 ```js
@@ -106,6 +114,41 @@ test("basic test", async ({ page }, testInfo) => {
   });
 });
 ```
+
+### Id Usage
+
+```js
+import { test, expect } from "@playwright/test";
+import {allure, LabelName} from "allure-playwright";
+
+test("basic test", async ({ page }, testInfo) => {
+    allure.id("Some id");
+});
+```
+
+### Epics Usage
+
+```js
+import { test, expect } from "@playwright/test";
+import { allure } from "allure-playwright";
+
+test("basic test", async ({ page }, testInfo) => {
+  allure.epic("Some Epic");
+});
+```
+
+### Stories Usage
+
+```js
+import { test, expect } from "@playwright/test";
+import { allure } from "allure-playwright";
+
+test("basic test", async ({ page }, testInfo) => {
+  allure.story("Some Story");
+});
+```
+
+
 
 ### Attachments Usage
 
