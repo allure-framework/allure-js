@@ -82,7 +82,7 @@ well as collisions in the name of the suits.
 
 #### Hooks and API calls
 
-By default, each step of the `test.step()` functions contains subsections with calls to Playwright’s API methods.
+By default, each step of the `test.step()` functions contains subsections Playwright’s API methods calls.
 
 The report looks like:
 
