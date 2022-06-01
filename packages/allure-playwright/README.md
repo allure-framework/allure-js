@@ -106,13 +106,6 @@ To hide steps with `Before / After hooks` and API calls `page / expect / browser
 
 By default, the reporter uses the test file path as the suite name.
 
-The report looks like:
-
-```text
-> tests/example.test.ts
-  > Open example.com page
-```
-
 If tests uses the `allure.suite()` and it's value must be used in Allure TestOps custom fields, then set the option `suiteTitle: false`
 
 ## Proving extra information
