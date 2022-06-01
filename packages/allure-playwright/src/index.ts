@@ -51,7 +51,7 @@ class AllureReporter implements Reporter {
   private allureTestCache = new Map<TestCase, AllureTest>();
   private allureStepCache = new Map<TestStep, AllureStep>();
 
-  constructor(options: AllureReporterOptions = { suiteTitle: true }) {
+  constructor(options: AllureReporterOptions = { suiteTitle: true, detail: true }) {
     this.options = options;
   }
 
@@ -91,7 +91,7 @@ class AllureReporter implements Reporter {
     if (!allureTest) {
       return;
     }
-    if (this.options.detail && step.category !== "test.step") {
+    if (!this.options.detail && step.category !== "test.step") {
       return;
     }
     this.ensureAllureStepCreated(step, allureTest);
@@ -102,7 +102,7 @@ class AllureReporter implements Reporter {
     if (!allureStep) {
       return;
     }
-    if (this.options.detail && step.category !== "test.step") {
+    if (!this.options.detail && step.category !== "test.step") {
       return;
     }
     allureStep.endStep();
