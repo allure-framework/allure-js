@@ -113,7 +113,7 @@ The report looks like:
   > Open example.com page
 ```
 
-If tests uses the `allure.label()` and it's value must be used in TestOps, then set the option `suiteTitle: false`
+If tests uses the `allure.suite()` and it's value must be used in TestOps, then set the option `suiteTitle: false`
 
 ## Proving extra information
 
