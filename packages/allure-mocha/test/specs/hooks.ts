@@ -75,7 +75,7 @@ class HooksSuite {
 
     const [beforeHook] = group.befores;
 
-    expect(beforeHook.name).eq("\"before each\" hook: some beforeEach name")
+    expect(beforeHook.name).eq('"before each" hook: some beforeEach name');
   }
 
   @test
@@ -84,6 +84,6 @@ class HooksSuite {
 
     const [afterEach] = group.afters;
 
-    expect(afterEach.name).eq("\"after each\" hook: some afterEach name")
+    expect(afterEach.name).eq('"after each" hook: some afterEach name');
   }
 }
