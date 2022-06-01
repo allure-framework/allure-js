@@ -8,6 +8,7 @@
   "scripts": {
     "prepare": "husky install",
     "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}'",
+    "prettier:check": "prettier --check './packages/*/{src,test,features}/**/*.{js,ts}'",
     "clean": "yarn workspaces foreach -vpt run clean",
     "compile": "yarn workspaces foreach -vpt run compile",
     "lint": "yarn workspaces foreach -vpt run lint",
