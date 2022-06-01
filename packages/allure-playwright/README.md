@@ -78,11 +78,11 @@ const config = {
 ### Options for Allure TestOps compatibility
 
 After exporting test results into Allure TestOps, the results may contain extra steps with Playwright’s API calls, as 
-well as collisions in the name of the tests. 
+well as collisions in the name of the suits. 
 
 #### Hooks and API calls
 
-By default, each step of the `test.step()` block contains subsections with calls to Playwright’s API methods.
+By default, each step of the `test.step()` functions contains subsections with calls to Playwright’s API methods.
 
 The report looks like:
 
@@ -113,7 +113,7 @@ The report looks like:
   > Open example.com page
 ```
 
-If tests uses the `allure.suite()` and it's value must be used in TestOps, then set the option `suiteTitle: false`
+If tests uses the `allure.suite()` and it's value must be used in Allure TestOps custom fields, then set the option `suiteTitle: false`
 
 ## Proving extra information
 
