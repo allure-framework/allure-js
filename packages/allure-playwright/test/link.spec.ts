@@ -28,7 +28,7 @@ test("should have link", async ({ runInlineTest }) => {
       `,
     },
     (writer) => {
-      return writer.tests.map(val => val.links);
+      return writer.tests.map((val) => val.links);
     },
   );
 
