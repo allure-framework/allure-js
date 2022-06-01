@@ -49,11 +49,8 @@ describe("hooks test", () => {
   });
 
   describe("named hooks", () => {
-    beforeEach("some beforeEach name", () => {
-    })
-    it("named hooks test", () => {
-    })
-    afterEach("some afterEach name", () => {
-    })
-  })
+    beforeEach("some beforeEach name", () => {});
+    it("named hooks test", () => {});
+    afterEach("some afterEach name", () => {});
+  });
 });
