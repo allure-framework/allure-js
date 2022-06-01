@@ -57,11 +57,11 @@ npx playwright test --reporter=line,allure-playwright
 
 Some reporter settings can set by following options:
 
-| Option       | Description                                         | Default            |
-|--------------|-----------------------------------------------------|--------------------|
-| detail       | Hide `pw:api` and `hooks` steps in report           | `false`            |
-| outputFolder | Path to results folder                              | `./allure-results` |
-| suiteTitle   | Use test tittle instead of test file path in report | `false`            |
+| Option       | Description                                                                  | Default            |
+|--------------|------------------------------------------------------------------------------|--------------------|
+| outputFolder | Path to results folder.                                                      | `./allure-results` |
+| detail       | Hide `pw:api` and `hooks` steps in report. [See below](#hooks-and-api-calls) | `true`             |
+| suiteTitle   | Use test title instead of `allure.suite()`. [See below](#suit-title)         | `true`             |
 
 ### Options Usage
 
@@ -74,6 +74,46 @@ const config = {
   }]],
 };
 ```
+
+### Options for Allure TestOps compatibility
+
+After exporting test results into Allure TestOps, the results may contain extra steps with Playwright’s API calls, as 
+well as collisions in the name of the tests. 
+
+#### Hooks and API calls
+
+By default, each step of the `test.step()` block contains subsections with calls to Playwright’s API methods.
+
+The report looks like:
+
+```text
+> Before Hooks
+  > browserContext.newPage
+
+> Open example.com
+  > page.goto( https://example.com/)
+  
+> Expect page text
+  > expect.toBeVisible
+  
+> After Hooks
+  > browserContext.close
+```
+
+To hide steps with `Before / After hooks` and API calls `page / expect / browser` set the option `detail: false`
+
+#### Suit title
+
+By default, the reporter uses the test file path as the suite name.
+
+The report looks like:
+
+```text
+> tests/example.test.ts
+  > Open example.com page
+```
+
+If tests uses the `allure.label()` and it's value must be used in TestOps, then set the option `suiteTitle: false`
 
 ## Proving extra information
 
@@ -97,10 +137,10 @@ Tests extra information can be provided by labels:
 ### Labels Usage
 
 ```js
-import {test, expect} from "@playwright/test";
-import {allure} from "allure-playwright";
+import { test, expect } from "@playwright/test";
+import { allure } from "allure-playwright";
 
-test("basic test", async ({page}, testInfo) => {
+test("basic test", async ({ page }, testInfo) => {
   allure.epic("Some Epic");
   allure.story("Some Story");
 });
@@ -109,11 +149,11 @@ test("basic test", async ({page}, testInfo) => {
 ### Links Usage
 
 ```js
-import {test, expect} from "@playwright/test";
-import {allure} from "allure-playwright";
+import { test, expect } from "@playwright/test";
+import { allure } from "allure-playwright";
 
-test("basic test", async ({page}, testInfo) => {
-  allure.link({url: "https://playwright.dev", name: "playwright-site"});
+test("basic test", async ({ page }, testInfo) => {
+  allure.link({ url: "https://playwright.dev", name: "playwright-site" });
   allure.issue({
     url: "https://github.com/allure-framework/allure-js/issues/352",
     name: "Target issue",
@@ -124,11 +164,12 @@ test("basic test", async ({page}, testInfo) => {
 ### Attachments Usage
 
 ```js
-import {test, expect} from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
-test("basic test", async ({page}, testInfo) => {
+test("basic test", async ({ page }, testInfo) => {
   const path = testInfo.outputPath("screenshot.png");
-  await page.screenshot({path});
-  testInfo.attachments.push({name: "screenshot", path, contentType: "image/png"});
+  await page.screenshot({ path });
+  testInfo.attachments.push({ name: "screenshot", path, contentType: "image/png" });
 });
 ```
+
