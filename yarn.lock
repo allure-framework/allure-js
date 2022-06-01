@@ -762,14 +762,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.22.0":
-  version: 1.22.0
-  resolution: "@playwright/test@npm:1.22.0"
+"@playwright/test@npm:^1.22.2":
+  version: 1.22.2
+  resolution: "@playwright/test@npm:1.22.2"
   dependencies:
-    playwright-core: 1.22.0
+    "@types/node": "*"
+    playwright-core: 1.22.2
   bin:
     playwright: cli.js
-  checksum: 153197ea7c2c7dd94a2f504b9bf181b1585ce89ebbd7d7715c5072bf949c95fd8db56f028e44e01e1dc5a96b8e1caa00edc8728c3c9e86dd4f6f572bdacee79f
+  checksum: 55392a97d920b77374926415e16e649320a9d8243f4ddca09c61827580674ad6f50057c09d5d194212d4ce60abc2cdf5f939ddd87f3670e073e9dd6c418480d5
   languageName: node
   linkType: hard
 
@@ -1508,7 +1509,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-playwright@workspace:packages/allure-playwright"
   dependencies:
-    "@playwright/test": ^1.22.0
+    "@playwright/test": ^1.22.2
     allure-js-commons: "workspace:*"
     eslint: ^7.32.0
     prettier: ^2.3.2
@@ -6515,12 +6516,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.22.0":
-  version: 1.22.0
-  resolution: "playwright-core@npm:1.22.0"
+"playwright-core@npm:1.22.2":
+  version: 1.22.2
+  resolution: "playwright-core@npm:1.22.2"
   bin:
     playwright: cli.js
-  checksum: e4eb2069961204d49818fb5575cf7310e7bd90c0b1dd2a84229c29e47a0257a02069f4bb3b802651f30efada850daf1555097748c27ca9a1b1151c67bce0cfe0
+  checksum: 7381c35359b4338282f73dc902c1c1311e8e7cbf852f445dd6b430ebcb7eafc842b8e512d238fdc0b70d1da2b14046f297b19dac027c6a0a62ff217e70f6a07c
   languageName: node
   linkType: hard
 

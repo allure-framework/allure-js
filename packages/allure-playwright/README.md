@@ -53,17 +53,31 @@ set ALLURE_RESULTS_DIR=my-allure-results
 npx playwright test --reporter=line,allure-playwright
 ```
 
-or inside the config via:
+## Reporter options
+
+Some reporter settings can set by following options:
+
+| Option       | Description                                         | Default            |
+|--------------|-----------------------------------------------------|--------------------|
+| detail       | Hide `pw:api` and `hooks` steps in report           | `false`            |
+| outputFolder | Path to results folder                              | `./allure-results` |
+| suiteTitle   | Use test tittle instead of test file path in report | `false`            |
+
+### Options Usage
 
 ```js
 const config = {
-  reporter: [ ['allure-playwright', { outputFolder: 'my-allure-results' }] ],
+  reporter: [['allure-playwright', {
+    detail: true,
+    outputFolder: 'my-allure-results',
+    suiteTitle: false
+  }]],
 };
 ```
 
 ## Proving extra information
 
-You can use allure labels to provide extra information about tests such via
+Tests extra information can be provided by labels:
 
 - label
 - link
@@ -83,10 +97,10 @@ You can use allure labels to provide extra information about tests such via
 ### Labels Usage
 
 ```js
-import { test, expect } from "@playwright/test";
-import { allure } from "allure-playwright";
+import {test, expect} from "@playwright/test";
+import {allure} from "allure-playwright";
 
-test("basic test", async ({ page }, testInfo) => {
+test("basic test", async ({page}, testInfo) => {
   allure.epic("Some Epic");
   allure.story("Some Story");
 });
@@ -95,11 +109,11 @@ test("basic test", async ({ page }, testInfo) => {
 ### Links Usage
 
 ```js
-import { test, expect } from "@playwright/test";
-import { allure } from "allure-playwright";
+import {test, expect} from "@playwright/test";
+import {allure} from "allure-playwright";
 
-test("basic test", async ({ page }, testInfo) => {
-  allure.link({ url: "https://playwright.dev", name: "playwright-site" });
+test("basic test", async ({page}, testInfo) => {
+  allure.link({url: "https://playwright.dev", name: "playwright-site"});
   allure.issue({
     url: "https://github.com/allure-framework/allure-js/issues/352",
     name: "Target issue",
@@ -110,11 +124,11 @@ test("basic test", async ({ page }, testInfo) => {
 ### Attachments Usage
 
 ```js
-import { test, expect } from "@playwright/test";
+import {test, expect} from "@playwright/test";
 
-test("basic test", async ({ page }, testInfo) => {
+test("basic test", async ({page}, testInfo) => {
   const path = testInfo.outputPath("screenshot.png");
-  await page.screenshot({ path });
-  testInfo.attachments.push({ name: "screenshot", path, contentType: "image/png" });
+  await page.screenshot({path});
+  testInfo.attachments.push({name: "screenshot", path, contentType: "image/png"});
 });
 ```
