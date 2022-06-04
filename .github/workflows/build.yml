@@ -36,11 +36,9 @@ jobs:
       - name: yarn build
         run: |
           yarn run build
-
       - name: prettier:check
         run: |
           yarn prettier:check
-
       - name: yarn lint
         run: |
           yarn run lint
