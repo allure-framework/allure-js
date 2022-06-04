@@ -27,6 +27,6 @@ describe("FileSystemAllureWriter", () => {
     const [actualAttachment] = resultFiles;
 
     const actualContent = readFileSync(path.join(allureResults, actualAttachment));
-    expect(actualContent.toString('utf-8')).to.be.eq(data, "data should match");
+    expect(actualContent.toString("utf-8")).to.be.eq(data, "data should match");
   });
 });

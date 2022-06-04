@@ -65,15 +65,15 @@ const runPlaywrightTest = async (
       continue;
     }
     for (const value of Array.isArray(params[key]) ? params[key] : [params[key]]) {
-      const k = key.startsWith("-") ? key : `--${  key}`;
+      const k = key.startsWith("-") ? key : `--${key}`;
       paramList.push(params[key] === true ? `${k}` : `${k}=${value}`);
     }
   }
   const outputDir = path.join(baseDir, "test-results");
   const args = [require.resolve("@playwright/test/cli"), "test"];
   args.push(
-    `--output=${  outputDir}`,
-    `--reporter=${  require.resolve("../dist/index.js")}`,
+    `--output=${outputDir}`,
+    `--reporter=${require.resolve("../dist/index.js")}`,
     "--workers=2",
     ...paramList,
   );
@@ -118,13 +118,11 @@ export const test = base.extend<Fixtures>({
   // eslint-disable-next-line no-empty-pattern
   runInlineTest: async ({}, use, testInfo: TestInfo) => {
     let runResult: RunResult | undefined;
-    await use(
-      async (files: Files, postProcess, params: Params = {}, env: Env = {}) => {
-        const baseDir = await writeFiles(testInfo, files);
-        runResult = await runPlaywrightTest(baseDir, postProcess, params, env);
-        return runResult;
-      },
-    );
+    await use(async (files: Files, postProcess, params: Params = {}, env: Env = {}) => {
+      const baseDir = await writeFiles(testInfo, files);
+      runResult = await runPlaywrightTest(baseDir, postProcess, params, env);
+      return runResult;
+    });
     if (testInfo.status !== testInfo.expectedStatus && runResult && !process.env.PW_RUNNER_DEBUG) {
       // eslint-disable-next-line no-console
       console.error(runResult.output);
