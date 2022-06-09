@@ -30,6 +30,9 @@ jobs:
       - name: yarn install
         run: |
           yarn install
+
+      - run: yarn workspace allure-playwright playwright install chromium --with-deps
+
       - name: yarn build
         run: |
           yarn run build

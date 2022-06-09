@@ -15,7 +15,7 @@
  */
 
 import { Label } from "allure-js-commons";
-import { test, expect } from "./fixtures";
+import { expect, test } from "./fixtures";
 test("should have multiply tags", async ({ runInlineTest }) => {
   const result: Label[] = await runInlineTest(
     {
