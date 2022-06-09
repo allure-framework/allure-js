@@ -129,7 +129,7 @@ export const test = base.extend<Fixtures>({
     }
   },
   // eslint-disable-next-line no-empty-pattern
-  attachment: async ({ }, use) => {
+  attachment: async ({}, use) => {
     await use((name) => path.join(__dirname, "assets", name));
   },
 });

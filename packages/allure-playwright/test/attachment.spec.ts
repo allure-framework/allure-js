@@ -48,7 +48,10 @@ test("should not throw on missing attachment", async ({ runInlineTest }) => {
   ]);
 });
 
-test("should add snapshots correctly and provide a screenshot diff", async ({ runInlineTest, attachment }) => {
+test("should add snapshots correctly and provide a screenshot diff", async ({
+  runInlineTest,
+  attachment,
+}) => {
   const result = await runInlineTest(
     {
       "a.test.ts": `
@@ -58,8 +61,10 @@ test("should add snapshots correctly and provide a screenshot diff", async ({ ru
         test.expect(await page.screenshot()).toMatchSnapshot("foo.png");
       });
     `,
-    "a.test.ts-snapshots/foo-project.png": fs.readFileSync(attachment("attachment-1-not-expected.png")),
-  },
+      "a.test.ts-snapshots/foo-project.png": fs.readFileSync(
+        attachment("attachment-1-not-expected.png"),
+      ),
+    },
     (writer) => {
       return writer.tests[0].attachments.map((a) => {
         return { name: a.name, type: a.type };
@@ -67,9 +72,11 @@ test("should add snapshots correctly and provide a screenshot diff", async ({ ru
     },
   );
   expect(result.length).toBe(3);
-  expect(result).toEqual(expect.arrayContaining([
-    { name: "expected", type: "image/png" },
-    { name: "actual", type: "image/png" },
-    { name: "diff", type: "image/png" },
-  ]));
+  expect(result).toEqual(
+    expect.arrayContaining([
+      { name: "expected", type: "image/png" },
+      { name: "actual", type: "image/png" },
+      { name: "diff", type: "image/png" },
+    ]),
+  );
 });
