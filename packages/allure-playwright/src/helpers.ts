@@ -9,15 +9,17 @@ export interface Metadata {
 }
 
 export class allure {
- /** 
-  * add environment info for test
-  * @default process.env
-  */
-  static environment(environment: Record<string, string | undefined> = process.env) {
-    test.info().attach("environment.json", {
-      contentType: ALLURE_METADATA_CONTENT_TYPE,
-      body: Buffer.from(JSON.stringify(environment), "utf8"),
-    })
+  /**
+   * add environment info for test
+   * @default process.env
+   */
+  static environment(environment?: Record<string, string | undefined>) {
+    if (environment) {
+      test.info().attach("environment.json", {
+        contentType: ALLURE_METADATA_CONTENT_TYPE,
+        body: Buffer.from(JSON.stringify(environment), "utf8"),
+      });
+    }
   }
   static addMetadataAttachment(metadata: Metadata) {
     test.info().attach("allure-metadata.json", {
