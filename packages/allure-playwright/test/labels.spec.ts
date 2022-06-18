@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { test, expect } from "./fixtures";
+import { expect, test } from "./fixtures";
 
 test("should report structure", async ({ runInlineTest }) => {
   const result = await runInlineTest(

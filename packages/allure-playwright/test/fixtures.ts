@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { test as base, TestInfo } from "@playwright/test";
-import type { InMemoryAllureWriter } from "allure-js-commons";
 import { spawn } from "child_process";
 import fs from "fs";
 import path from "path";
+import { test as base, TestInfo } from "@playwright/test";
+import type { InMemoryAllureWriter } from "allure-js-commons";
 export { expect } from "@playwright/test";
 
 type RunResult = any;
@@ -27,7 +27,7 @@ type Files = { [key: string]: string | Buffer };
 type Params = { [key: string]: string | number | boolean | string[] };
 type Env = { [key: string]: string | number | boolean | undefined };
 
-async function writeFiles(testInfo: TestInfo, files: Files) {
+const writeFiles = async (testInfo: TestInfo, files: Files) => {
   const baseDir = testInfo.outputPath();
 
   const hasConfig = Object.keys(files).some((name) => name.includes(".config."));
@@ -49,14 +49,14 @@ async function writeFiles(testInfo: TestInfo, files: Files) {
   );
 
   return baseDir;
-}
+};
 
-async function runPlaywrightTest(
+const runPlaywrightTest = async (
   baseDir: string,
   postProcess: (writer: InMemoryAllureWriter) => any,
   params: any,
-  env: NodeJS.ProcessEnv,
-): Promise<RunResult> {
+  env: Env,
+): Promise<RunResult> => {
   const paramList = [];
   let additionalArgs = "";
   for (const key of Object.keys(params)) {
@@ -65,19 +65,21 @@ async function runPlaywrightTest(
       continue;
     }
     for (const value of Array.isArray(params[key]) ? params[key] : [params[key]]) {
-      const k = key.startsWith("-") ? key : "--" + key;
+      const k = key.startsWith("-") ? key : `--${key}`;
       paramList.push(params[key] === true ? `${k}` : `${k}=${value}`);
     }
   }
   const outputDir = path.join(baseDir, "test-results");
   const args = [require.resolve("@playwright/test/cli"), "test"];
   args.push(
-    "--output=" + outputDir,
-    "--reporter=" + require.resolve("../dist/index.js"),
+    `--output=${outputDir}`,
+    `--reporter=${require.resolve("../dist/index.js")}`,
     "--workers=2",
     ...paramList,
   );
-  if (additionalArgs) args.push(...additionalArgs);
+  if (additionalArgs) {
+    args.push(...additionalArgs);
+  }
   const testProcess = spawn("node", args, {
     env: {
       ...process.env,
@@ -89,14 +91,18 @@ async function runPlaywrightTest(
   let output = "";
   testProcess.stdout.on("data", (chunk) => {
     output += String(chunk);
-    if (process.env.PW_RUNNER_DEBUG) process.stdout.write(String(chunk));
+    if (process.env.PW_RUNNER_DEBUG) {
+      process.stdout.write(String(chunk));
+    }
   });
   testProcess.stderr.on("data", (chunk) => {
-    if (process.env.PW_RUNNER_DEBUG) process.stderr.write(String(chunk));
+    if (process.env.PW_RUNNER_DEBUG) {
+      process.stderr.write(String(chunk));
+    }
   });
   await new Promise<number>((x) => testProcess.on("close", x));
   return JSON.parse(output.toString());
-}
+};
 
 type Fixtures = {
   runInlineTest: (
@@ -105,21 +111,25 @@ type Fixtures = {
     params?: Params,
     env?: Env,
   ) => Promise<RunResult>;
+  attachment: (name: string) => string;
 };
 
 export const test = base.extend<Fixtures>({
-  // @ts-ignore
+  // eslint-disable-next-line no-empty-pattern
   runInlineTest: async ({}, use, testInfo: TestInfo) => {
     let runResult: RunResult | undefined;
-    await use(
-      // @ts-ignore
-      async (files: Files, postProcess, params: Params = {}, env: NodeJS.ProcessEnv = {}) => {
-        const baseDir = await writeFiles(testInfo, files);
-        runResult = await runPlaywrightTest(baseDir, postProcess, params, env);
-        return runResult;
-      },
-    );
-    if (testInfo.status !== testInfo.expectedStatus && runResult && !process.env.PW_RUNNER_DEBUG)
-      console.log(runResult.output);
+    await use(async (files: Files, postProcess, params: Params = {}, env: Env = {}) => {
+      const baseDir = await writeFiles(testInfo, files);
+      runResult = await runPlaywrightTest(baseDir, postProcess, params, env);
+      return runResult;
+    });
+    if (testInfo.status !== testInfo.expectedStatus && runResult && !process.env.PW_RUNNER_DEBUG) {
+      // eslint-disable-next-line no-console
+      console.error(runResult.output);
+    }
+  },
+  // eslint-disable-next-line no-empty-pattern
+  attachment: async ({}, use) => {
+    await use((name) => path.join(__dirname, "assets", name));
   },
 });

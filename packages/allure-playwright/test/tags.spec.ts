@@ -16,23 +16,22 @@
 
 import { Label } from "allure-js-commons";
 import { expect, test } from "./fixtures";
-test("should have link", async ({ runInlineTest }) => {
+test("should have multiply tags", async ({ runInlineTest }) => {
   const result: Label[] = await runInlineTest(
     {
       "a.test.ts": `
       import { test } from '@playwright/test';
       import { allure } from '../../dist/index'
-      test('should add epic link', async ({}, testInfo) => {
-          allure.link({url:"https://playwright.dev/docs/api/class-page#page-workers"});
+      test('should add multiply tags', async ({}, testInfo) => {
+          allure.tag('Allure', 'Playwright', 'TestInfo');
       });
       `,
     },
     (writer) => {
-      return writer.tests.map((val) => val.links);
+      return writer.tests.map((t) => t.labels);
     },
   );
-
-  expect(result[0]).toContainEqual({
-    url: "https://playwright.dev/docs/api/class-page#page-workers",
-  });
+  expect(result[0]).toContainEqual({ name: "tag", value: "Allure" });
+  expect(result[0]).toContainEqual({ name: "tag", value: "Playwright" });
+  expect(result[0]).toContainEqual({ name: "tag", value: "TestInfo" });
 });
