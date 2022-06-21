@@ -19,7 +19,7 @@ jobs:
       matrix:
         node-version: [12.x, 14.x, 16.x]
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v2.4.2
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
@@ -30,6 +30,9 @@ jobs:
       - name: yarn install
         run: |
           yarn install
+
+      - run: yarn workspace allure-playwright playwright install chromium --with-deps
+
       - name: yarn build
         run: |
           yarn run build
