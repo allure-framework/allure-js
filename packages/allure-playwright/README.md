@@ -53,14 +53,6 @@ set ALLURE_RESULTS_DIR=my-allure-results
 npx playwright test --reporter=line,allure-playwright
 ```
 
-or inside the config via:
-
-```js
-const config = {
-  reporter: [ ['allure-playwright', { outputFolder: 'my-allure-results' }] ],
-};
-```
-
 Generate Allure Report:
 ```bash
 allure generate my-allure-results -o allure-report --clean
@@ -71,9 +63,64 @@ Open Allure Report:
 allure open allure-report
 ```
 
+## Reporter options
+
+Some reporter settings can set by following options:
+
+| Option       | Description                                                                  | Default            |
+|--------------|------------------------------------------------------------------------------|--------------------|
+| outputFolder | Path to results folder.                                                      | `./allure-results` |
+| detail       | Hide `pw:api` and `hooks` steps in report. [See below](#hooks-and-api-calls) | `true`             |
+| suiteTitle   | Use test title instead of `allure.suite()`. [See below](#suit-title)         | `true`             |
+
+### Options Usage
+
+```js
+const config = {
+  reporter: [['allure-playwright', {
+    detail: true,
+    outputFolder: 'my-allure-results',
+    suiteTitle: false
+  }]],
+};
+```
+
+### Options for Allure TestOps compatibility
+
+After exporting test results into Allure TestOps, the results may contain extra steps with Playwright’s API calls, as 
+well as collisions in the name of the suits. 
+
+#### Hooks and API calls
+
+By default, each step of the `test.step()` functions contains subsections Playwright’s API methods calls.
+
+The report looks like:
+
+```text
+> Before Hooks
+  > browserContext.newPage
+
+> Open example.com
+  > page.goto( https://example.com/)
+  
+> Expect page text
+  > expect.toBeVisible
+  
+> After Hooks
+  > browserContext.close
+```
+
+To hide steps with `Before / After hooks` and API calls `page / expect / browser` set the option `detail: false`
+
+#### Suit title
+
+By default, the reporter uses the test file path as the suite name.
+
+If tests uses the `allure.suite()` and it's value must be used in Allure TestOps custom fields, then set the option `suiteTitle: false`
+
 ## Proving extra information
 
-You can use allure labels to provide extra information about tests such via
+Tests extra information can be provided by labels:
 
 - label
 - link
@@ -161,3 +208,4 @@ test("basic test", async ({ page }, testInfo) => {
   testInfo.attachments.push({ name: "screenshot", path, contentType: "image/png" });
 });
 ```
+

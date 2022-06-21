@@ -32,7 +32,9 @@ import {
 import { ALLURE_METADATA_CONTENT_TYPE, Metadata } from "./helpers";
 
 type AllureReporterOptions = {
+  detail?: boolean;
   outputFolder?: string;
+  suiteTitle?: boolean;
 };
 
 class AllureReporter implements Reporter {
@@ -49,7 +51,7 @@ class AllureReporter implements Reporter {
   private allureTestCache = new Map<TestCase, AllureTest>();
   private allureStepCache = new Map<TestStep, AllureStep>();
 
-  constructor(options: AllureReporterOptions = {}) {
+  constructor(options: AllureReporterOptions = { suiteTitle: true, detail: true }) {
     this.options = options;
   }
 
@@ -73,7 +75,7 @@ class AllureReporter implements Reporter {
     if (projectSuiteTitle) {
       allureTest.addLabel(LabelName.PARENT_SUITE, projectSuiteTitle);
     }
-    if (fileSuiteTitle) {
+    if (this.options.suiteTitle && fileSuiteTitle) {
       allureTest.addLabel(LabelName.SUITE, fileSuiteTitle);
     }
     if (suiteTitles.length > 0) {
@@ -89,12 +91,18 @@ class AllureReporter implements Reporter {
     if (!allureTest) {
       return;
     }
+    if (!this.options.detail && step.category !== "test.step") {
+      return;
+    }
     this.ensureAllureStepCreated(step, allureTest);
   }
 
   onStepEnd(_test: TestCase, _result: TestResult, step: TestStep): void {
     const allureStep = this.allureStepCache.get(step);
     if (!allureStep) {
+      return;
+    }
+    if (!this.options.detail && step.category !== "test.step") {
       return;
     }
     allureStep.endStep();
