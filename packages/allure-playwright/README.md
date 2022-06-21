@@ -53,6 +53,16 @@ set ALLURE_RESULTS_DIR=my-allure-results
 npx playwright test --reporter=line,allure-playwright
 ```
 
+Generate Allure Report:
+```bash
+allure generate my-allure-results -o allure-report --clean
+```
+
+Open Allure Report:
+```bash
+allure open allure-report
+```
+
 ## Reporter options
 
 Some reporter settings can set by following options:
@@ -131,14 +141,12 @@ Tests extra information can be provided by labels:
 
 ```js
 import { test, expect } from "@playwright/test";
-import { allure } from "allure-playwright";
+import { allure, LabelName } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.epic("Some Epic");
-  allure.story("Some Story");
+    allure.label({ name: LabelName.LANGUAGE, value: "typescript" });
 });
 ```
-
 ### Links Usage
 
 ```js
@@ -153,6 +161,41 @@ test("basic test", async ({ page }, testInfo) => {
   });
 });
 ```
+
+### Id Usage
+
+```js
+import { test, expect } from "@playwright/test";
+import { allure, LabelName } from "allure-playwright";
+
+test("basic test", async ({ page }, testInfo) => {
+    allure.id("Some id");
+});
+```
+
+### Epics Usage
+
+```js
+import { test, expect } from "@playwright/test";
+import { allure } from "allure-playwright";
+
+test("basic test", async ({ page }, testInfo) => {
+  allure.epic("Some Epic");
+});
+```
+
+### Stories Usage
+
+```js
+import { test, expect } from "@playwright/test";
+import { allure } from "allure-playwright";
+
+test("basic test", async ({ page }, testInfo) => {
+  allure.story("Some Story");
+});
+```
+
+
 
 ### Attachments Usage
 
