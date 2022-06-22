@@ -1,21 +1,22 @@
-import { buildOptions, buildSupportCodeLibrary } from "./runtime_helpers";
 import { EventEmitter } from "events";
-import { IdGenerator } from "@cucumber/messages";
-import * as messages from "@cucumber/messages";
+import process from "node:process";
 import { PassThrough } from "stream";
 import { promisify } from "util";
-import { Runtime, FormatterBuilder, IRuntimeOptions } from "@cucumber/cucumber";
-import { ISupportCodeLibrary } from "@cucumber/cucumber/lib/support_code_library_builder/types";
-import { IParsedArgvFormatOptions } from "@cucumber/cucumber/lib/cli/argv_parser";
-import { EventDataCollector } from "@cucumber/cucumber/lib/formatter/helpers";
+import { FormatterBuilder, IRuntimeOptions, Runtime } from "@cucumber/cucumber";
 import { emitSupportCodeMessages } from "@cucumber/cucumber/lib/cli/helpers";
-import { generateEvents } from "./gherkin_helpers";
+import { FormatOptions } from "@cucumber/cucumber/lib/formatter";
+import getColorFns from "@cucumber/cucumber/lib/formatter/get_color_fns";
+import { EventDataCollector } from "@cucumber/cucumber/lib/formatter/helpers";
+import { ISupportCodeLibrary } from "@cucumber/cucumber/lib/support_code_library_builder/types";
+import * as messages from "@cucumber/messages";
+import { IdGenerator } from "@cucumber/messages";
+import { AllureResults, AllureRuntime, InMemoryAllureWriter } from "allure-js-commons";
 import {
   CucumberJSAllureFormatter,
   CucumberJSAllureFormatterConfig,
 } from "../../src/CucumberJSAllureReporter";
-import getColorFns from "@cucumber/cucumber/lib/formatter/get_color_fns";
-import { AllureRuntime, InMemoryAllureWriter, AllureResults } from "allure-js-commons";
+import { generateEvents } from "./gherkin_helpers";
+import { buildOptions } from "./runtime_helpers";
 
 const { uuid } = IdGenerator;
 
@@ -32,15 +33,15 @@ export interface ITestRunOptions {
 }
 
 export interface ITestFormatterOptions extends ITestRunOptions {
-  parsedArgvOptions?: IParsedArgvFormatOptions;
+  parsedArgvOptions?: FormatOptions;
 }
 
-export async function runFeatures({
+export const runFeatures = async ({
   parsedArgvOptions = {},
   runtimeOptions = {},
   supportCodeLibrary,
   sources = [],
-}: ITestFormatterOptions): Promise<AllureResults> {
+}: ITestFormatterOptions): Promise<AllureResults> => {
   const eventBroadcaster = new EventEmitter();
   const eventDataCollector = new EventDataCollector(eventBroadcaster);
   emitSupportCodeMessages({
@@ -49,7 +50,7 @@ export async function runFeatures({
     newId: uuid(),
   });
   let output = "";
-  const snippetBuilder = FormatterBuilder.getStepDefinitionSnippetBuilder({
+  const snippetBuilder = await FormatterBuilder.getStepDefinitionSnippetBuilder({
     cwd: "",
     snippetInterface: parsedArgvOptions.snippetInterface,
     snippetSyntax: parsedArgvOptions.snippetSyntax,
@@ -71,7 +72,7 @@ export async function runFeatures({
       stream: passThrough,
       cleanup: promisify(passThrough.end.bind(passThrough)),
       supportCodeLibrary,
-      colorFns: getColorFns(false),
+      colorFns: getColorFns(passThrough, process.env, false),
       snippetBuilder,
     },
     allureRuntime,
@@ -99,4 +100,4 @@ export async function runFeatures({
   await runtime.start();
 
   return { ...writer };
-}
+};

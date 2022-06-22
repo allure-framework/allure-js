@@ -1,9 +1,9 @@
 // https://github.com/cucumber/cucumber-js/blob/main/test/gherkin_helpers.ts
+import EventEmitter from "events";
+import { IGherkinOptions } from "@cucumber/gherkin";
+import { GherkinStreams } from "@cucumber/gherkin-streams";
 import * as messages from "@cucumber/messages";
 import { SourceMediaType } from "@cucumber/messages";
-import { GherkinStreams } from "@cucumber/gherkin-streams";
-import { IGherkinOptions } from "@cucumber/gherkin";
-import EventEmitter from "events";
 
 export interface IGenerateEventsRequest {
   data: string;
@@ -11,11 +11,11 @@ export interface IGenerateEventsRequest {
   uri: string;
 }
 
-export async function generateEvents({
+export const generateEvents = async ({
   data,
   eventBroadcaster,
   uri,
-}: IGenerateEventsRequest): Promise<IParsedSource> {
+}: IGenerateEventsRequest): Promise<IParsedSource> => {
   const { envelopes, source, gherkinDocument, pickles } = await parse({
     data,
     uri,
@@ -40,11 +40,11 @@ export interface IParseRequest {
   options?: IGherkinOptions;
 }
 
-export async function parse({
+export const parse = async ({
   data,
   uri,
   options,
-}: IParseRequest): Promise<IParsedSourceWithEnvelopes> {
+}: IParseRequest): Promise<IParsedSourceWithEnvelopes> => {
   const sources: messages.Envelope[] = [
     {
       source: {

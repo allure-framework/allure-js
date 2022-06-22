@@ -9,6 +9,9 @@
       "node",
       "chai"
     ],
+    "lib": [
+      "dom"
+    ],
     "outDir": "./dist",
     "resolveJsonModule": true
   }

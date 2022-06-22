@@ -1,22 +1,21 @@
+import EventEmitter from "events";
+import { IRuntimeOptions } from "@cucumber/cucumber";
+import { assembleTestCases } from "@cucumber/cucumber/lib/runtime/assemble_test_cases";
+import { PredictableTestRunStopwatch } from "@cucumber/cucumber/lib/runtime/stopwatch";
+import TestCaseRunner from "@cucumber/cucumber/lib/runtime/test_case_runner";
+import { SupportCodeLibraryBuilder } from "@cucumber/cucumber/lib/support_code_library_builder";
 import {
   IDefineSupportCodeMethods,
   ISupportCodeLibrary,
 } from "@cucumber/cucumber/lib/support_code_library_builder/types";
+import { valueOrDefault } from "@cucumber/cucumber/lib/value_checker";
 import { IdGenerator } from "@cucumber/messages";
-import { SupportCodeLibraryBuilder } from "@cucumber/cucumber/lib/support_code_library_builder";
 import * as messages from "@cucumber/messages";
 import IEnvelope = messages.Envelope;
-import EventEmitter from "events";
-import { assembleTestCases } from "@cucumber/cucumber/lib/runtime/assemble_test_cases";
-import TestCaseRunner from "@cucumber/cucumber/lib/runtime/test_case_runner";
-import { PredictableTestRunStopwatch } from "@cucumber/cucumber/lib/runtime/stopwatch";
-import { valueOrDefault } from "@cucumber/cucumber/lib/value_checker";
-import { IRuntimeOptions } from "@cucumber/cucumber";
 
-export function buildOptions(overrides: Partial<IRuntimeOptions>): IRuntimeOptions {
+export const buildOptions = (overrides: Partial<IRuntimeOptions>): IRuntimeOptions => {
   return {
     dryRun: false,
-    predictableIds: false,
     failFast: false,
     filterStacktraces: false,
     retry: 0,
@@ -25,7 +24,7 @@ export function buildOptions(overrides: Partial<IRuntimeOptions>): IRuntimeOptio
     worldParameters: {},
     ...overrides,
   };
-}
+};
 
 type DefineSupportCodeFunction = (methods: IDefineSupportCodeMethods) => void;
 
