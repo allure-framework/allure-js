@@ -188,6 +188,38 @@ export class CucumberJSAllureFormatter extends Formatter {
         contentType: "text/csv",
       }, attachmentFilename);
     });
+
+    const scenarioId = pickle?.astNodeIds?.[0];
+    const scenario = this.scenarioMap.get(scenarioId);
+
+    if (!scenario) {
+      return;
+    }
+
+    if (scenario.examples.length === 0) {
+      return;
+    }
+
+    // writting scenario examples as csv attachments
+    scenario.examples.forEach(example => {
+      if (!this.currentTest) {
+        return;
+      }
+
+      const csvDataTableHeader = example?.tableHeader?.cells.map(cell => cell.value).join(",") || "";
+      const csvDataTableBody = example?.tableBody.map(row => row.cells.map(cell => cell.value).join(",")).join("\n") || "";
+
+      if (!csvDataTableHeader && !csvDataTableBody) {
+        return;
+      }
+
+      const csvDataTable = `${csvDataTableHeader}\n${csvDataTableBody}\n`;
+      const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, "text/csv");
+
+      this.currentTest.addAttachment(`${scenario.name} examples`, {
+        contentType: "text/csv",
+      }, attachmentFilename);
+    });
   }
 
   private onAttachment(data: messages.Attachment): void {

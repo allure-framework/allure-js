@@ -186,6 +186,19 @@ describe("CucumberJSAllureReporter", () => {
     const [first, second] = results.tests;
     expect(first.name).eq("Scenario with Positive Examples");
     expect(second.name).eq("Scenario with Positive Examples");
+
+    const attachmentsKeys = Object.keys(results.attachments);
+    expect(attachmentsKeys).length(2);
+    expect(results.attachments[attachmentsKeys[0]]).eq("a,b,result\n1,3,4\n2,4,6\n");
+    expect(results.attachments[attachmentsKeys[1]]).eq("a,b,result\n1,3,4\n2,4,6\n");
+
+    const [firstAttachment] = results.tests[0].attachments;
+    expect(firstAttachment.type).eq("text/csv");
+    expect(firstAttachment.source).eq(attachmentsKeys[0]);
+
+    const [secondAttachment] = results.tests[1].attachments;
+    expect(secondAttachment.type).eq("text/csv");
+    expect(secondAttachment.source).eq(attachmentsKeys[1]);
   });
 
   it("should process text attachments", async () => {
@@ -201,7 +214,7 @@ describe("CucumberJSAllureReporter", () => {
     expect(attachment.source).eq(attachmentsKeys[0]);
   });
 
-  it("should process data table as attachment", async () => {
+  it("should process data table as csv attachment", async () => {
     const results = await runFeatures(dataSet.dataTable);
     expect(results.tests).length(1);
 
