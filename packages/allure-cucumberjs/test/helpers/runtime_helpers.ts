@@ -3,7 +3,7 @@ import { IRuntimeOptions } from "@cucumber/cucumber";
 import { assembleTestCases } from "@cucumber/cucumber/lib/runtime/assemble_test_cases";
 import { PredictableTestRunStopwatch } from "@cucumber/cucumber/lib/runtime/stopwatch";
 import TestCaseRunner from "@cucumber/cucumber/lib/runtime/test_case_runner";
-import { SupportCodeLibraryBuilder } from "@cucumber/cucumber/lib/support_code_library_builder";
+import { SupportCodeLibraryBuilder } from "@cucumber/cucumber/lib/support_code_library_builder/index";
 import {
   IDefineSupportCodeMethods,
   ISupportCodeLibrary,

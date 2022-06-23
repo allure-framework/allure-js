@@ -19,8 +19,6 @@
     "test": "nyc ts-node --project test/tsconfig.json test/runner.ts"
   },
   "devDependencies": {
-    "@cucumber/cucumber": "^8.3.1",
-    "@cucumber/gherkin-utils": "^8.0.0",
     "@types/chai": "^4.2.21",
     "@types/fs-extra": "^9.0.1",
     "@types/glob": "^7.1.4",
@@ -43,8 +41,10 @@
     "verror": "^1.10.0"
   },
   "dependencies": {
+    "@cucumber/cucumber": "^8.3.1",
     "@cucumber/gherkin": "^24.0.0",
     "@cucumber/gherkin-streams": "^5.0.1",
+    "@cucumber/gherkin-utils": "^8.0.0",
     "@cucumber/messages": "^19.1.2",
     "allure-js-commons": "workspace:*"
   },

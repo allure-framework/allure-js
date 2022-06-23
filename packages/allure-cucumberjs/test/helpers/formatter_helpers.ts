@@ -1,12 +1,12 @@
 import { EventEmitter } from "events";
-import process from "node:process";
+import process from "process";
 import { PassThrough } from "stream";
 import { promisify } from "util";
 import { FormatterBuilder, IRuntimeOptions, Runtime } from "@cucumber/cucumber";
 import { emitSupportCodeMessages } from "@cucumber/cucumber/lib/cli/helpers";
 import { FormatOptions } from "@cucumber/cucumber/lib/formatter";
 import getColorFns from "@cucumber/cucumber/lib/formatter/get_color_fns";
-import { EventDataCollector } from "@cucumber/cucumber/lib/formatter/helpers";
+import EventDataCollector from "@cucumber/cucumber/lib/formatter/helpers/event_data_collector";
 import { ISupportCodeLibrary } from "@cucumber/cucumber/lib/support_code_library_builder/types";
 import * as messages from "@cucumber/messages";
 import { IdGenerator } from "@cucumber/messages";
