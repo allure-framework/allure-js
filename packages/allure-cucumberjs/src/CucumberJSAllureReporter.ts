@@ -171,8 +171,19 @@ export class CucumberJSAllureFormatter extends Formatter {
   }
 
   private onAttachment(data: messages.Attachment): void {
-    // eslint-disable-next-line no-console
-    console.log("onAttachment", data);
+    if (!this.currentTest) {
+      return;
+    }
+
+    if (!data) {
+      // eslint-disable-next-line no-console
+      console.error("onAttachment", "attachment can't be empty");
+      return;
+    }
+
+    this.currentTest?.addAttachment("attachment", {
+      contentType: data.mediaType,
+    }, data.body);
   }
 
   private onTestCaseFinished(data: messages.TestCaseFinished): void {

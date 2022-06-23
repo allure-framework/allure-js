@@ -76,9 +76,10 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
   },
   attachments: {
     supportCodeLibrary: buildSupportCodeLibrary(({ Given }) => {
-      Given("a step", (world) => {
-        console.log("bhas", world.attach);
-        world.attach("some text");
+      // according the documentation, world can't be used with arrow functions
+      // https://github.com/cucumber/cucumber-js/blob/main/docs/faq.md#the-world-instance-isnt-available-in-my-hooks-or-step-definitions
+      Given("a step", function () {
+        this.attach("some text");
       });
     }),
     sources: [
@@ -90,7 +91,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
   },
 };
 
-describe("CucumberJSAllureReporter", async () => {
+describe("CucumberJSAllureReporter", () => {
   it("should set name", async () => {
     const results = await runFeatures(dataSet.simple);
 
@@ -171,10 +172,10 @@ describe("CucumberJSAllureReporter", async () => {
 
   it("should process text attachments", async () => {
     const results = await runFeatures(dataSet.attachments);
-
     expect(results.tests).length(1);
 
-    // const [testResult] = results.tests;
-    // expect(testResult.at).eq("plus operator");
+    const [attachment] = results.tests[0].attachments;
+    expect(attachment.type).eq("text/plain");
+    expect(attachment.source).eq("some text");
   });
 });
