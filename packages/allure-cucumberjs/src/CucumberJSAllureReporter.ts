@@ -185,7 +185,6 @@ export class CucumberJSAllureFormatter extends Formatter {
     const { fileName = "attachment", body, mediaType }  = data;
     const attachmentFilename = this.allureRuntime.writeAttachment(body, mediaType);
 
-    // this.allureInterface.createAttachment(attachmentFilename, body, (mediaType as ContentType));
     this.currentTest.addAttachment(fileName, {
       contentType: mediaType,
     }, attachmentFilename);
