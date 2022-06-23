@@ -9,6 +9,7 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
+  ContentType,
   ExecutableItemWrapper,
   Status,
 } from "allure-js-commons";
@@ -181,9 +182,13 @@ export class CucumberJSAllureFormatter extends Formatter {
       return;
     }
 
-    this.currentTest?.addAttachment("attachment", {
-      contentType: data.mediaType,
-    }, data.body);
+    const { fileName = "attachment", body, mediaType }  = data;
+    const attachmentFilename = this.allureRuntime.writeAttachment(body, mediaType);
+
+    // this.allureInterface.createAttachment(attachmentFilename, body, (mediaType as ContentType));
+    this.currentTest.addAttachment(fileName, {
+      contentType: mediaType,
+    }, attachmentFilename);
   }
 
   private onTestCaseFinished(data: messages.TestCaseFinished): void {

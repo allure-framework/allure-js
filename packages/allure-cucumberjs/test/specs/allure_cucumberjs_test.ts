@@ -174,8 +174,12 @@ describe("CucumberJSAllureReporter", () => {
     const results = await runFeatures(dataSet.attachments);
     expect(results.tests).length(1);
 
+    const attachmentsKeys = Object.keys(results.attachments);
+    expect(attachmentsKeys).length(1);
+    expect(results.attachments[attachmentsKeys[0]]).eq("some text");
+
     const [attachment] = results.tests[0].attachments;
     expect(attachment.type).eq("text/plain");
-    expect(attachment.source).eq("some text");
+    expect(attachment.source).eq(attachmentsKeys[0]);
   });
 });
