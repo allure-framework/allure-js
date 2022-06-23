@@ -169,6 +169,25 @@ export class CucumberJSAllureFormatter extends Formatter {
     this.testCaseTestStepsResults.set(data.id, []);
     this.currentTest = new AllureTest(this.allureRuntime, Date.now());
     this.currentTest.name = pickle.name;
+
+    // writting data tables as csv attachments
+    pickle.steps.forEach(ps => {
+      const { argument } = ps;
+
+      if (!this.currentTest || !argument?.dataTable) {
+        return;
+      };
+
+      const csvDataTable = argument.dataTable.rows.reduce(
+        (acc, row) => `${acc + row.cells.map((cell) => cell.value).join(",")  }\n`,
+        "",
+      );
+      const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, "text/csv");
+
+      this.currentTest.addAttachment("data_table", {
+        contentType: "text/csv",
+      }, attachmentFilename);
+    });
   }
 
   private onAttachment(data: messages.Attachment): void {
