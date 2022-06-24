@@ -178,11 +178,11 @@ export class CucumberJSAllureFormatter extends Formatter {
     this.currentTest = new AllureTest(this.allureRuntime, Date.now());
     this.currentTest.name = pickle.name;
 
-    this.currentTest?.addLabel(LabelName.LANGUAGE, "JavaScript");
-    this.currentTest?.addLabel(LabelName.FRAMEWORK, "CucumberJS");
+    this.currentTest?.addLabel(LabelName.LANGUAGE, "javascript");
+    this.currentTest?.addLabel(LabelName.FRAMEWORK, "cucumberjs");
 
-    if (doc && doc.feature) {
-      this.currentTest.addLabel(LabelName.FEATURE, doc.feature?.name);
+    if (doc?.feature) {
+      this.currentTest.addLabel(LabelName.FEATURE, doc.feature.name);
     }
 
     if (scenario) {
