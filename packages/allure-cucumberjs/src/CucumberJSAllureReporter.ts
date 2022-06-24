@@ -11,6 +11,7 @@ import {
   AllureTest,
   ContentType,
   ExecutableItemWrapper,
+  LabelName,
   Status,
 } from "allure-js-commons";
 import { CucumberAllureInterface } from "./CucumberAllureInterface";
@@ -128,7 +129,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     if (data.uri) {
       this.documentMap.set(data.uri, data);
     }
-    data?.feature?.children?.forEach((fc) => {
+    data.feature?.children?.forEach((fc) => {
       if (fc.scenario) {
         this.onScenario(fc.scenario);
       }
@@ -143,6 +144,10 @@ export class CucumberJSAllureFormatter extends Formatter {
   private onPickle(data: messages.Pickle): void {
     this.pickleMap.set(data.id, data);
     data.steps.forEach((ps) => this.pickleStepMap.set(ps.id, ps));
+
+    // if (data.tags?.length) {
+    //   this.currentTest.
+    // }
   }
 
   private onTestCase(data: messages.TestCase): void {
@@ -165,10 +170,30 @@ export class CucumberJSAllureFormatter extends Formatter {
       return;
     }
 
+    const doc = this.documentMap.get(pickle.uri);
+    const scenarioId = pickle?.astNodeIds?.[0];
+    const scenario = this.scenarioMap.get(scenarioId);
     this.testCaseStartedMap.set(data.id, data);
     this.testCaseTestStepsResults.set(data.id, []);
     this.currentTest = new AllureTest(this.allureRuntime, Date.now());
     this.currentTest.name = pickle.name;
+
+    this.currentTest?.addLabel(LabelName.LANGUAGE, "JavaScript");
+    this.currentTest?.addLabel(LabelName.FRAMEWORK, "CucumberJS");
+
+    if (doc && doc.feature) {
+      this.currentTest.addLabel(LabelName.FEATURE, doc.feature?.name);
+    }
+
+    if (scenario) {
+      this.currentTest?.addLabel(LabelName.SUITE, scenario.name);
+    }
+
+    if (pickle.tags?.length) {
+      pickle.tags.forEach((tag) => {
+        this.currentTest?.addLabel(LabelName.TAG, tag.name);
+      });
+    }
 
     // writting data tables as csv attachments
     pickle.steps.forEach(ps => {
@@ -188,9 +213,6 @@ export class CucumberJSAllureFormatter extends Formatter {
         contentType: "text/csv",
       }, attachmentFilename);
     });
-
-    const scenarioId = pickle?.astNodeIds?.[0];
-    const scenario = this.scenarioMap.get(scenarioId);
 
     if (!scenario) {
       return;

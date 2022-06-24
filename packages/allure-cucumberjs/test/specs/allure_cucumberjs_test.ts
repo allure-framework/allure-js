@@ -1,4 +1,4 @@
-import { Status } from "allure-js-commons";
+import { Status, LabelName } from "allure-js-commons";
 import { expect } from "chai";
 import { ITestFormatterOptions, runFeatures } from "../helpers/formatter_helpers";
 import { buildSupportCodeLibrary } from "../helpers/runtime_helpers";
@@ -135,6 +135,23 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
       },
     ],
   },
+  withTags: {
+    supportCodeLibrary: buildSupportCodeLibrary(({ Given }) => {
+      Given("a step", () => {});
+    }),
+    sources: [
+      {
+        data:
+          "@foo\n" +
+          "Feature: a\n" +
+          "\n" +
+          "  @bar\n" +
+          "  Scenario: b\n" +
+          "    Given a step\n",
+        uri: "withTags.feature",
+      },
+    ],
+  },
 };
 
 describe("CucumberJSAllureReporter", () => {
@@ -268,5 +285,24 @@ describe("CucumberJSAllureReporter", () => {
     expect(firstAttachment.source).eq(attachmentsKeys[0]);
     expect(secondAttachment.type).eq("text/csv");
     expect(secondAttachment.source).eq(attachmentsKeys[1]);
+  });
+
+  it("should create labels", async () => {
+    const results = await runFeatures(dataSet.withTags);
+    expect(results.tests).length(1);
+
+    const language = results.tests[0].labels.find((label) => label.name === LabelName.LANGUAGE);
+    const framework = results.tests[0].labels.find((label) => label.name === LabelName.FRAMEWORK);
+    const feature = results.tests[0].labels.find((label) => label.name === LabelName.FEATURE);
+    const suite = results.tests[0].labels.find((label) => label.name === LabelName.SUITE);
+    const tags = results.tests[0].labels.filter((label) => label.name === LabelName.TAG);
+
+    expect(language?.value).eq("JavaScript");
+    expect(framework?.value).eq("CucumberJS");
+    expect(feature?.value).eq("a");
+    expect(suite?.value).eq("b");
+    expect(tags).length(2);
+    expect(tags[0].value).eq("@foo");
+    expect(tags[1].value).eq("@bar");
   });
 });
