@@ -1,4 +1,4 @@
-import { Status, LabelName } from "allure-js-commons";
+import { LabelName, Status } from "allure-js-commons";
 import { expect } from "chai";
 import { ITestFormatterOptions, runFeatures } from "../helpers/formatter_helpers";
 import { buildSupportCodeLibrary } from "../helpers/runtime_helpers";
@@ -147,7 +147,9 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
           "\n" +
           "  @bar\n" +
           "  Scenario: b\n" +
-          "    Given a step\n",
+          "    Given a step\n" +
+          "    When do something\n" +
+          "    Then get something\n",
         uri: "withTags.feature",
       },
     ],
