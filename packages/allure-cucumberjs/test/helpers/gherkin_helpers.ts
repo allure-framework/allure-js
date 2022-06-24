@@ -54,7 +54,7 @@ export const parse = async ({
       },
     },
   ];
-  return await new Promise<IParsedSourceWithEnvelopes>((resolve, reject) => {
+  return new Promise<IParsedSourceWithEnvelopes>((resolve, reject) => {
     let source: messages.Source;
     let gherkinDocument: messages.GherkinDocument;
     const pickles: messages.Pickle[] = [];

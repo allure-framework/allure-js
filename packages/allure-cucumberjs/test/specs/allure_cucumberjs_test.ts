@@ -90,20 +90,48 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
     ],
   },
   dataTable: {
-    supportCodeLibrary: buildSupportCodeLibrary(({ Given }) => {
+    supportCodeLibrary: buildSupportCodeLibrary(({ Given, When, Then }) => {
       Given(/^a table step$/, (_) => {});
+      When(/^I add (\d+) to (\d+)$/, () => {});
+      Then(/^result is (\d+)$/, (_) => {});
     }),
     sources: [
       {
         data:
-          "Feature: Test Scenarios with Examples\n" +
+          "Feature: Test Scenarios with Data table\n" +
           "\n" +
           "  Scenario Outline: Scenario with Positive Examples\n" +
           "    Given a table step\n" +
           "      | a | b | result |\n" +
           "      | 1 | 3 | 4      |\n" +
-          "      | 2 | 4 | 6      |\n",
+          "      | 2 | 4 | 6      |\n" +
+          "    When I add <a> to <b>\n" +
+          "    Then result is <result>\n",
         uri: "dataTable.feature",
+      },
+    ],
+  },
+  dataTableAndExamples: {
+    supportCodeLibrary: buildSupportCodeLibrary(({ Given, When, Then }) => {
+      Given(/^a table$/, (_) => {});
+      When(/^I add (\d+) to (\d+)$/, () => {});
+      Then(/^result is (\d+)$/, (_) => {});
+    }),
+    sources: [
+      {
+        data:
+          "Feature: Test Scenarios with Data table and Examples\n" +
+          "\n" +
+          "  Scenario Outline: Scenario with Positive Examples\n" +
+          "    Given a table\n" +
+          "      | a |\n" +
+          "      | 1 |\n" +
+          "    When I add <a> to <b>\n" +
+          "    Then result is <result>\n" +
+          "    Examples:\n" +
+          "      | b | result |\n" +
+          "      | 3 | 4      |\n",
+        uri: "dataTableAndExamples.feature",
       },
     ],
   },
@@ -180,7 +208,6 @@ describe("CucumberJSAllureReporter", () => {
 
   it("should process tests with examples", async () => {
     const results = await runFeatures(dataSet.examples);
-
     expect(results.tests).length(2);
 
     const [first, second] = results.tests;
@@ -225,5 +252,21 @@ describe("CucumberJSAllureReporter", () => {
     const [attachment] = results.tests[0].attachments;
     expect(attachment.type).eq("text/csv");
     expect(attachment.source).eq(attachmentsKeys[0]);
+  });
+
+  it("should process data table and examples as csv attachment", async () => {
+    const results = await runFeatures(dataSet.dataTableAndExamples);
+    expect(results.tests).length(1);
+
+    const attachmentsKeys = Object.keys(results.attachments);
+    expect(attachmentsKeys).length(2);
+    expect(results.attachments[attachmentsKeys[0]]).eq("a\n1\n");
+    expect(results.attachments[attachmentsKeys[1]]).eq("b,result\n3,4\n");
+
+    const [firstAttachment, secondAttachment] = results.tests[0].attachments;
+    expect(firstAttachment.type).eq("text/csv");
+    expect(firstAttachment.source).eq(attachmentsKeys[0]);
+    expect(secondAttachment.type).eq("text/csv");
+    expect(secondAttachment.source).eq(attachmentsKeys[1]);
   });
 });
