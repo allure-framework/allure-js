@@ -196,22 +196,26 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     // writting data tables as csv attachments
-    pickle.steps.forEach(ps => {
+    pickle.steps.forEach((ps) => {
       const { argument } = ps;
 
       if (!this.currentTest || !argument?.dataTable) {
         return;
-      };
+      }
 
       const csvDataTable = argument.dataTable.rows.reduce(
-        (acc, row) => `${acc + row.cells.map((cell) => cell.value).join(",")  }\n`,
+        (acc, row) => `${acc + row.cells.map((cell) => cell.value).join(",")}\n`,
         "",
       );
       const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, "text/csv");
 
-      this.currentTest.addAttachment("Data table", {
-        contentType: "text/csv",
-      }, attachmentFilename);
+      this.currentTest.addAttachment(
+        "Data table",
+        {
+          contentType: "text/csv",
+        },
+        attachmentFilename,
+      );
     });
 
     if (!scenario) {
@@ -223,13 +227,16 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     // writting scenario examples as csv attachments
-    scenario.examples.forEach(example => {
+    scenario.examples.forEach((example) => {
       if (!this.currentTest) {
         return;
       }
 
-      const csvDataTableHeader = example?.tableHeader?.cells.map(cell => cell.value).join(",") || "";
-      const csvDataTableBody = example?.tableBody.map(row => row.cells.map(cell => cell.value).join(",")).join("\n") || "";
+      const csvDataTableHeader =
+        example?.tableHeader?.cells.map((cell) => cell.value).join(",") || "";
+      const csvDataTableBody =
+        example?.tableBody.map((row) => row.cells.map((cell) => cell.value).join(",")).join("\n") ||
+        "";
 
       if (!csvDataTableHeader && !csvDataTableBody) {
         return;
@@ -238,9 +245,13 @@ export class CucumberJSAllureFormatter extends Formatter {
       const csvDataTable = `${csvDataTableHeader}\n${csvDataTableBody}\n`;
       const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, "text/csv");
 
-      this.currentTest.addAttachment("Examples", {
-        contentType: "text/csv",
-      }, attachmentFilename);
+      this.currentTest.addAttachment(
+        "Examples",
+        {
+          contentType: "text/csv",
+        },
+        attachmentFilename,
+      );
     });
   }
 
@@ -255,12 +266,16 @@ export class CucumberJSAllureFormatter extends Formatter {
       return;
     }
 
-    const { fileName = "attachment", body, mediaType }  = data;
+    const { fileName = "attachment", body, mediaType } = data;
     const attachmentFilename = this.allureRuntime.writeAttachment(body, mediaType);
 
-    this.currentTest.addAttachment(fileName, {
-      contentType: mediaType,
-    }, attachmentFilename);
+    this.currentTest.addAttachment(
+      fileName,
+      {
+        contentType: mediaType,
+      },
+      attachmentFilename,
+    );
   }
 
   private onTestCaseFinished(data: messages.TestCaseFinished): void {

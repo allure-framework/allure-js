@@ -88,7 +88,7 @@ export class CucumberAllureInterface extends Allure {
   protected get currentExecutable(): ExecutableItemWrapper {
     // const result = this.reporter.currentStep || this.reporter.currentTest;
     // if (result === null) {
-      throw new Error("No executable!");
+    throw new Error("No executable!");
     // }
     // return result;
   }

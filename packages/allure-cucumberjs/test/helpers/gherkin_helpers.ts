@@ -22,7 +22,7 @@ export const generateEvents = async ({
   });
   envelopes.forEach((envelope) => eventBroadcaster.emit("envelope", envelope));
   return { source, gherkinDocument, pickles };
-}
+};
 
 export interface IParsedSource {
   pickles: messages.Pickle[];
@@ -85,4 +85,4 @@ export const parse = async ({
     });
     messageStream.on("error", reject);
   });
-}
+};
