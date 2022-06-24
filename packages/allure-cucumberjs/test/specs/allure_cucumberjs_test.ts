@@ -299,8 +299,8 @@ describe("CucumberJSAllureReporter", () => {
     const suite = results.tests[0].labels.find((label) => label.name === LabelName.SUITE);
     const tags = results.tests[0].labels.filter((label) => label.name === LabelName.TAG);
 
-    expect(language?.value).eq("JavaScript");
-    expect(framework?.value).eq("CucumberJS");
+    expect(language?.value).eq("javascript");
+    expect(framework?.value).eq("cucumberjs");
     expect(feature?.value).eq("a");
     expect(suite?.value).eq("b");
     expect(tags).length(2);
