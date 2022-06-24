@@ -184,7 +184,7 @@ export class CucumberJSAllureFormatter extends Formatter {
       );
       const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, "text/csv");
 
-      this.currentTest.addAttachment("data_table", {
+      this.currentTest.addAttachment("Data table", {
         contentType: "text/csv",
       }, attachmentFilename);
     });
@@ -216,7 +216,7 @@ export class CucumberJSAllureFormatter extends Formatter {
       const csvDataTable = `${csvDataTableHeader}\n${csvDataTableBody}\n`;
       const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, "text/csv");
 
-      this.currentTest.addAttachment(`${scenario.name} examples`, {
+      this.currentTest.addAttachment("Examples", {
         contentType: "text/csv",
       }, attachmentFilename);
     });
