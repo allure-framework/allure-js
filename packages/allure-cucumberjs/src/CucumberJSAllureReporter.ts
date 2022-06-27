@@ -235,7 +235,6 @@ export class CucumberJSAllureFormatter extends Formatter {
     this.testCaseStartedMap.set(data.id, data);
     this.testCaseTestStepsResults.set(data.id, []);
 
-    currentTest?.addLabel(LabelName.HOST, os.hostname());
     currentTest.name = pickle.name;
     currentTest?.addLabel(LabelName.LANGUAGE, "javascript");
     currentTest?.addLabel(LabelName.FRAMEWORK, "cucumberjs");
