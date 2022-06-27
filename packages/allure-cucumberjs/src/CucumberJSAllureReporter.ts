@@ -90,6 +90,13 @@ export class CucumberJSAllureFormatter extends Formatter {
     this.afterHooks = options.supportCodeLibrary.afterTestCaseHookDefinitions;
   }
 
+  private get tagsIgnorePatterns(): RegExp[] {
+    // TODO: add labels to ignore too
+    const { links } = this;
+
+    return links.flatMap(({ pattern }) => pattern);
+  }
+
   private parseEnvelope(envelope: messages.Envelope): void {
     if (envelope.gherkinDocument) {
       this.onGherkinDocument(envelope.gherkinDocument);
@@ -202,7 +209,9 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     if (pickle.tags?.length) {
-      pickle.tags.forEach((tag) => {
+      const filteredTags = pickle.tags.filter((tag) => !this.tagsIgnorePatterns.some((pattern) => pattern.test(tag.name)));
+
+      filteredTags.forEach((tag) => {
         this.currentTest?.addLabel(LabelName.TAG, tag.name);
       });
     }

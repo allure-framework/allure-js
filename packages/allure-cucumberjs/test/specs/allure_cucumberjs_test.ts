@@ -161,6 +161,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
     sources: [
       {
         data:
+          "@foo\n" +
           "Feature: a\n" +
           "\n" +
           "  @issue=1 @tms=2\n" +
@@ -343,11 +344,14 @@ describe("CucumberJSAllureReporter", () => {
     });
     expect(results.tests).length(1);
 
-    const { links } = results.tests[0];
+    const { links, labels } = results.tests[0];
     expect(links).length(2);
     expect(links[0].type).eq("issue");
     expect(links[0].url).eq("https://github.com/my_repo/issues/1");
     expect(links[1].type).eq("tms");
     expect(links[1].url).eq("https://jira_url/browse/2");
+
+    const tags = results.tests[0].labels.filter((label) => label.name === LabelName.TAG);
+    expect(tags).length(1);
   });
 });
