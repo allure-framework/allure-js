@@ -36,12 +36,15 @@ export interface ITestFormatterOptions extends ITestRunOptions {
   parsedArgvOptions?: FormatOptions;
 }
 
-export const runFeatures = async ({
-  parsedArgvOptions = {},
-  runtimeOptions = {},
-  supportCodeLibrary,
-  sources = [],
-}: ITestFormatterOptions, config?: CucumberJSAllureFormatterConfig): Promise<AllureResults> => {
+export const runFeatures = async (
+  {
+    parsedArgvOptions = {},
+    runtimeOptions = {},
+    supportCodeLibrary,
+    sources = [],
+  }: ITestFormatterOptions,
+  config?: CucumberJSAllureFormatterConfig,
+): Promise<AllureResults> => {
   const eventBroadcaster = new EventEmitter();
   const eventDataCollector = new EventDataCollector(eventBroadcaster);
   emitSupportCodeMessages({

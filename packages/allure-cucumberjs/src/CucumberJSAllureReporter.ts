@@ -130,7 +130,9 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     this.links.forEach((matcher) => {
-      const matchedTags = tags.filter((tag) => matcher.pattern.some((pattern) => pattern.test(tag.name)));
+      const matchedTags = tags.filter((tag) =>
+        matcher.pattern.some((pattern) => pattern.test(tag.name)),
+      );
       const matchedLinks = matchedTags.map((tag) => {
         const tagValue = tag.name.replace(tagKeyRe, "");
 
@@ -209,7 +211,9 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     if (pickle.tags?.length) {
-      const filteredTags = pickle.tags.filter((tag) => !this.tagsIgnorePatterns.some((pattern) => pattern.test(tag.name)));
+      const filteredTags = pickle.tags.filter(
+        (tag) => !this.tagsIgnorePatterns.some((pattern) => pattern.test(tag.name)),
+      );
 
       filteredTags.forEach((tag) => {
         this.currentTest?.addLabel(LabelName.TAG, tag.name);
