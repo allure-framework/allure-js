@@ -2,7 +2,7 @@ import { World as CucumberWorld, Formatter } from "@cucumber/cucumber";
 import { IFormatterOptions } from "@cucumber/cucumber/lib/formatter";
 import TestCaseHookDefinition from "@cucumber/cucumber/lib/models/test_case_hook_definition";
 import * as messages from "@cucumber/messages";
-import { TestStepResultStatus } from "@cucumber/messages";
+import { Tag, TestStepResultStatus } from "@cucumber/messages";
 import {
   Allure,
   AllureGroup,
@@ -12,6 +12,7 @@ import {
   ContentType,
   ExecutableItemWrapper,
   LabelName,
+  Link,
   Status,
 } from "allure-js-commons";
 import { CucumberAllureInterface } from "./CucumberAllureInterface";
@@ -22,19 +23,16 @@ export interface World extends CucumberWorld {
   allure: Allure;
 }
 
+export type LinkMatcher = {
+  pattern: RegExp[];
+  urlTemplate: string;
+  type?: "tms" | "issue" | string;
+};
+
 export class CucumberJSAllureFormatterConfig {
   exceptionFormatter?: (message: string) => string;
   labels?: { [key: string]: RegExp[] };
-  links?: {
-    issue?: {
-      pattern: RegExp[];
-      urlTemplate: string;
-    };
-    tms?: {
-      pattern: RegExp[];
-      urlTemplate: string;
-    };
-  };
+  links?: LinkMatcher[];
 }
 
 export class CucumberJSAllureFormatter extends Formatter {
@@ -47,16 +45,7 @@ export class CucumberJSAllureFormatter extends Formatter {
   private readonly beforeHooks: TestCaseHookDefinition[];
   private readonly exceptionFormatter: (message: string) => string;
   private readonly labels: { [key: string]: RegExp[] };
-  private readonly links: {
-    issue?: {
-      pattern: RegExp[];
-      urlTemplate: string;
-    };
-    tms?: {
-      pattern: RegExp[];
-      urlTemplate: string;
-    };
-  };
+  private readonly links: LinkMatcher[];
   private stepStack: AllureStep[] = [];
   private readonly documentMap: Map<string, messages.GherkinDocument> = new Map();
   private readonly featureMap: Map<string, messages.Feature> = new Map();
@@ -82,7 +71,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     options.eventBroadcaster.on("envelope", this.parseEnvelope.bind(this));
 
     this.labels = config.labels || {};
-    this.links = config.links || {};
+    this.links = config.links || [];
     this.exceptionFormatter = (message): string => {
       if (config.exceptionFormatter !== undefined) {
         try {
@@ -99,6 +88,13 @@ export class CucumberJSAllureFormatter extends Formatter {
     options.supportCodeLibrary.World.prototype.allure = this.allureInterface;
     this.beforeHooks = options.supportCodeLibrary.beforeTestCaseHookDefinitions;
     this.afterHooks = options.supportCodeLibrary.afterTestCaseHookDefinitions;
+  }
+
+  private get tagsIgnorePatterns(): RegExp[] {
+    // TODO: add labels to ignore too
+    const { links } = this;
+
+    return links.flatMap(({ pattern }) => pattern);
   }
 
   private parseEnvelope(envelope: messages.Envelope): void {
@@ -125,6 +121,33 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
   }
 
+  private parseTagsLinks(tags: readonly Tag[]): Link[] {
+    const tagKeyRe = /^@\S+=/;
+    const links: Link[] = [];
+
+    if (this.links.length === 0) {
+      return links;
+    }
+
+    this.links.forEach((matcher) => {
+      const matchedTags = tags.filter((tag) =>
+        matcher.pattern.some((pattern) => pattern.test(tag.name)),
+      );
+      const matchedLinks = matchedTags.map((tag) => {
+        const tagValue = tag.name.replace(tagKeyRe, "");
+
+        return {
+          url: matcher.urlTemplate.replace(/%s$/, tagValue) || tagValue,
+          type: matcher.type,
+        };
+      });
+
+      links.push(...matchedLinks);
+    });
+
+    return links;
+  }
+
   private onGherkinDocument(data: messages.GherkinDocument): void {
     if (data.uri) {
       this.documentMap.set(data.uri, data);
@@ -144,10 +167,6 @@ export class CucumberJSAllureFormatter extends Formatter {
   private onPickle(data: messages.Pickle): void {
     this.pickleMap.set(data.id, data);
     data.steps.forEach((ps) => this.pickleStepMap.set(ps.id, ps));
-
-    // if (data.tags?.length) {
-    //   this.currentTest.
-    // }
   }
 
   private onTestCase(data: messages.TestCase): void {
@@ -173,6 +192,8 @@ export class CucumberJSAllureFormatter extends Formatter {
     const doc = this.documentMap.get(pickle.uri);
     const scenarioId = pickle?.astNodeIds?.[0];
     const scenario = this.scenarioMap.get(scenarioId);
+    const links = this.parseTagsLinks(scenario?.tags || []);
+
     this.testCaseStartedMap.set(data.id, data);
     this.testCaseTestStepsResults.set(data.id, []);
     this.currentTest = new AllureTest(this.allureRuntime, Date.now());
@@ -190,10 +211,16 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     if (pickle.tags?.length) {
-      pickle.tags.forEach((tag) => {
+      const filteredTags = pickle.tags.filter(
+        (tag) => !this.tagsIgnorePatterns.some((pattern) => pattern.test(tag.name)),
+      );
+
+      filteredTags.forEach((tag) => {
         this.currentTest?.addLabel(LabelName.TAG, tag.name);
       });
     }
+
+    links.forEach((link) => this.currentTest?.addLink(link.url, link.name, link.type));
 
     // writting data tables as csv attachments
     pickle.steps.forEach((ps) => {
