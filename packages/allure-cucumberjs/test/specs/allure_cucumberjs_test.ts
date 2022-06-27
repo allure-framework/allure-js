@@ -332,12 +332,12 @@ describe("CucumberJSAllureReporter", () => {
       links: [
         {
           pattern: [/@issue=(.*)/],
-          urlTemplate: "https://github.com/my_repo/issues/%s",
+          urlTemplate: "https://example.org/issues/%s",
           type: "issue",
         },
         {
           pattern: [/@tms=(.*)/],
-          urlTemplate: "https://jira_url/browse/%s",
+          urlTemplate: "https://example.org/tasks/%s",
           type: "tms",
         },
       ],
@@ -347,9 +347,9 @@ describe("CucumberJSAllureReporter", () => {
     const { links, labels } = results.tests[0];
     expect(links).length(2);
     expect(links[0].type).eq("issue");
-    expect(links[0].url).eq("https://github.com/my_repo/issues/1");
+    expect(links[0].url).eq("https://example.org/issues/1");
     expect(links[1].type).eq("tms");
-    expect(links[1].url).eq("https://jira_url/browse/2");
+    expect(links[1].url).eq("https://example.org/tasks/2");
 
     const tags = results.tests[0].labels.filter((label) => label.name === LabelName.TAG);
     expect(tags).length(1);
