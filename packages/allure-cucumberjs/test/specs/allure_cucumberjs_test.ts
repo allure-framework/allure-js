@@ -1,7 +1,8 @@
-import sinon from "sinon";
 import os from "os";
+import process from "process";
 import { LabelName, Status } from "allure-js-commons";
 import { expect } from "chai";
+import sinon from "sinon";
 import { ITestFormatterOptions, runFeatures } from "../helpers/formatter_helpers";
 import { buildSupportCodeLibrary } from "../helpers/runtime_helpers";
 
@@ -357,6 +358,7 @@ describe("CucumberJSAllureReporter", () => {
 
   it("should create labels", async () => {
     sinon.stub(os, "hostname").returns("127.0.0.1");
+    sinon.stub(process, "getuid").returns(123);
 
     const results = await runFeatures(dataSet.withTags);
     expect(results.tests).length(1);
@@ -366,6 +368,7 @@ describe("CucumberJSAllureReporter", () => {
     const feature = results.tests[0].labels.find((label) => label.name === LabelName.FEATURE);
     const suite = results.tests[0].labels.find((label) => label.name === LabelName.SUITE);
     const host = results.tests[0].labels.find((label) => label.name === LabelName.HOST);
+    const thread = results.tests[0].labels.find((label) => label.name === LabelName.THREAD);
     const tags = results.tests[0].labels.filter((label) => label.name === LabelName.TAG);
 
     expect(language?.value).eq("javascript");
@@ -373,6 +376,7 @@ describe("CucumberJSAllureReporter", () => {
     expect(feature?.value).eq("a");
     expect(suite?.value).eq("b");
     expect(host?.value).eq("127.0.0.1");
+    expect(thread?.value).eq("123");
     expect(tags).length(2);
     expect(tags[0].value).eq("@foo");
     expect(tags[1].value).eq("@bar");

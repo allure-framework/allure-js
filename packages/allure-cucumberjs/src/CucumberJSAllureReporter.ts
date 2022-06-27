@@ -1,4 +1,5 @@
 import os from "os";
+import process from "process";
 import { World as CucumberWorld, Formatter } from "@cucumber/cucumber";
 import { IFormatterOptions } from "@cucumber/cucumber/lib/formatter";
 import TestCaseHookDefinition from "@cucumber/cucumber/lib/models/test_case_hook_definition";
