@@ -39,4 +39,5 @@ dist-tests
 .gradle
 schema
 build
-/*/allure-results/
+**/allure-results
+**/.nyc_output
