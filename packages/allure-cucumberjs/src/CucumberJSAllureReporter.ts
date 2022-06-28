@@ -209,6 +209,7 @@ export class CucumberJSAllureFormatter extends Formatter {
   }
 
   private onTestCaseStarted(data: messages.TestCaseStarted): void {
+    const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env;
     const testCase = this.testCaseMap.get(data.testCaseId);
     if (!testCase) {
       // eslint-disable-next-line no-console
