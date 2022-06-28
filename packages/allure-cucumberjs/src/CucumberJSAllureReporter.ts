@@ -144,10 +144,6 @@ export class CucumberJSAllureFormatter extends Formatter {
   private onPickle(data: messages.Pickle): void {
     this.pickleMap.set(data.id, data);
     data.steps.forEach((ps) => this.pickleStepMap.set(ps.id, ps));
-
-    // if (data.tags?.length) {
-    //   this.currentTest.
-    // }
   }
 
   private onTestCase(data: messages.TestCase): void {
@@ -180,6 +176,10 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     this.currentTest?.addLabel(LabelName.LANGUAGE, "javascript");
     this.currentTest?.addLabel(LabelName.FRAMEWORK, "cucumberjs");
+
+    if (doc?.uri) {
+      this.currentTest.fullName = doc?.uri;
+    }
 
     if (doc?.feature) {
       this.currentTest.addLabel(LabelName.FEATURE, doc.feature.name);

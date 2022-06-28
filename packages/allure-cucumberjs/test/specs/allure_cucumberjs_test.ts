@@ -163,6 +163,7 @@ describe("CucumberJSAllureReporter", () => {
     expect(results.tests).length(1);
     const [testResult] = results.tests;
 
+    expect(testResult.fullName).eq("b");
     expect(testResult.name).eq("b");
   });
 
