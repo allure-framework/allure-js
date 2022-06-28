@@ -173,6 +173,24 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
       },
     ],
   },
+  withLabels: {
+    supportCodeLibrary: buildSupportCodeLibrary(({ Given }) => {
+      Given("a step", () => {});
+    }),
+    sources: [
+      {
+        data:
+          "Feature: a\n" +
+          "\n" +
+          "  @severity:bar @feature:foo @foo\n" +
+          "  Scenario: b\n" +
+          "    Given a step\n" +
+          "    When do something\n" +
+          "    Then get something\n",
+        uri: "withIssueLink.feature",
+      },
+    ],
+  },
 };
 
 describe("CucumberJSAllureReporter", () => {
@@ -352,6 +370,30 @@ describe("CucumberJSAllureReporter", () => {
     expect(links[1].url).eq("https://example.org/tasks/2");
 
     const tags = results.tests[0].labels.filter((label) => label.name === LabelName.TAG);
+    expect(tags).length(1);
+  });
+
+  it("should add labels", async () => {
+    const results = await runFeatures(dataSet.withLabels, {
+      labels: [
+        {
+          pattern: [/@feature:(.*)/],
+          type: "epic",
+        },
+        {
+          pattern: [/@severity:(.*)/],
+          type: "severity",
+        },
+      ],
+    });
+    expect(results.tests).length(1);
+
+    const { labels } = results.tests[0];
+    const epic = labels.find((label) => label.name === LabelName.EPIC);
+    const severity = labels.find((label) => label.name === LabelName.SEVERITY);
+    const tags = labels.filter((label) => label.name === LabelName.TAG);
+    expect(epic?.value).eq("foo");
+    expect(severity?.value).eq("bar");
     expect(tags).length(1);
   });
 });

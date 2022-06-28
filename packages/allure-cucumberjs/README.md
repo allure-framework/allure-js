@@ -13,10 +13,16 @@ export default class Reporter extends CucumberJSAllureFormatter {
       options,
       new AllureRuntime({ resultsDir: "./allure-results" }),
       {
-        labels: {
-          epic: [/@feature:(.*)/],
-          severity: [/@severity:(.*)/]
-        },
+        labels: [
+          {
+            pattern: [/@feature:(.*)/],
+            type: "epic"
+          },
+          {
+            pattern: [/@severity:(.*)/],
+            type: "severity"
+          }
+        ],
         links: [
           {
             pattern: [/@issue=(.*)/],
