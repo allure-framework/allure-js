@@ -4,10 +4,11 @@ Allure integration for Cucumber.JS framework
 
 Compatible with Cucumber.JS 3+ and Allure 2+
 
-### How to use
+## How to use the formatter
+
 Create Reporter file:
-```ecmascript 6
-export default class Reporter extends CucumberJSAllureFormatter {
+```javascript
+class Reporter extends CucumberJSAllureFormatter {
   constructor(options) {
     super(
       options,
@@ -33,6 +34,12 @@ export default class Reporter extends CucumberJSAllureFormatter {
     );
   }
 }
+
+// cjs
+module.exports = Reporter
+
+// esm
+export default Reporter
 ```
 This class **MUST**:
 * Be a default export.
@@ -57,34 +64,51 @@ If you want to retain default formatter add some dummy file as output:
 node cucumber.js --format ./path/to/Reporter.js:./dummy.txt
 ```
 
-#### Reporter without classes
-If you can not use classes (ES6 or TypeScript), here is an example of Reporter.js file written in plain JS:
+## How to use filter
+
+Filter function provided by the package allows to use re-run feature.
+
+To use it, create `cucumber.js` config file with following content:
+
 ```javascript
-const { CucumberJSAllureFormatter } = require("allure-cucumberjs");
-const { AllureRuntime } = require("allure-cucumberjs");
+// cjs
+const path = require('path')
+const { createTestPlanFilter } = require('allure-cucumberjs')
 
-function Reporter(options) {
-  return new CucumberJSAllureFormatter(
-    options,
-    new AllureRuntime({ resultsDir: "./allure-results" }),
-    {}
-  );
+module.exports = {
+	default: createTestPlanFilter({
+		parallel: 4,
+		format: [path.resolve(__dirname, './reporter.js')],
+	})
 }
-Reporter.prototype = Object.create(CucumberJSAllureFormatter.prototype);
-Reporter.prototype.constructor = Reporter;
 
-exports.default = Reporter;
+// esm
+import path from 'path'
+import { createTestPlanFilter } from 'allure-cucumberjs'
+
+export default createTestPlanFilter({
+	parallel: 4,
+	format: [path.resolve(__dirname, './reporter.js')],
+})
 ```
 
-### API
-Instance of AllureInterface will be added to World prototype.
-You can use it for creating nested steps and adding info to the report. 
+Then, add `cucumber-js` with the config:
 
-### Author
+```javascript
+cucumber-js --config ./cucumber.js
+```
+
+If the script has been triggered via re-run action – the filter processes only files described in test plan.
+
+## Nested steps
+
+You can use `AllureInterface` in the `World` prototype for creating nested steps and adding info to the report. 
+
+## Author
 
 Ilya Korobitsyn <mail@korobochka.org>
 
-#### Contributors
+### Contributors
 
 * Claudia Hardman <claudia.hardman@mattel.com>
 * Max Di Maria <ciclids@gmail.com>
