@@ -11,6 +11,7 @@ import {
   AllureTest,
   ContentType,
   ExecutableItemWrapper,
+  Label,
   LabelName,
   Link,
   Status,
@@ -23,15 +24,20 @@ export interface World extends CucumberWorld {
   allure: Allure;
 }
 
+export type LabelMatcher = {
+  pattern: RegExp[];
+  name: "epic" | "severity" | string;
+};
+
 export type LinkMatcher = {
   pattern: RegExp[];
   urlTemplate: string;
-  type?: "tms" | "issue" | string;
+  type: "tms" | "issue" | string;
 };
 
 export class CucumberJSAllureFormatterConfig {
   exceptionFormatter?: (message: string) => string;
-  labels?: { [key: string]: RegExp[] };
+  labels?: LabelMatcher[];
   links?: LinkMatcher[];
 }
 
@@ -44,8 +50,8 @@ export class CucumberJSAllureFormatter extends Formatter {
   private readonly afterHooks: TestCaseHookDefinition[];
   private readonly beforeHooks: TestCaseHookDefinition[];
   private readonly exceptionFormatter: (message: string) => string;
-  private readonly labels: { [key: string]: RegExp[] };
-  private readonly links: LinkMatcher[];
+  private readonly labelsMathers: LabelMatcher[];
+  private readonly linksMatchers: LinkMatcher[];
   private stepStack: AllureStep[] = [];
   private readonly documentMap: Map<string, messages.GherkinDocument> = new Map();
   private readonly featureMap: Map<string, messages.Feature> = new Map();
@@ -71,8 +77,9 @@ export class CucumberJSAllureFormatter extends Formatter {
     super(options);
     options.eventBroadcaster.on("envelope", this.parseEnvelope.bind(this));
 
-    this.labels = config.labels || {};
-    this.links = config.links || [];
+    this.labelsMathers = config.labels || [];
+    this.linksMatchers = config.links || [];
+
     this.exceptionFormatter = (message): string => {
       if (config.exceptionFormatter !== undefined) {
         try {
@@ -92,10 +99,9 @@ export class CucumberJSAllureFormatter extends Formatter {
   }
 
   private get tagsIgnorePatterns(): RegExp[] {
-    // TODO: add labels to ignore too
-    const { links } = this;
+    const { linksMatchers, labelsMathers } = this;
 
-    return links.flatMap(({ pattern }) => pattern);
+    return [...linksMatchers, ...labelsMathers].flatMap(({ pattern }) => pattern);
   }
 
   private parseEnvelope(envelope: messages.Envelope): void {
@@ -122,15 +128,41 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
   }
 
+  private parseTagsLabels(tags: readonly Tag[]): Label[] {
+    const labels: Label[] = [];
+
+    if (this.labelsMathers.length === 0) {
+      return labels;
+    }
+
+    this.labelsMathers.forEach((matcher) => {
+      const matchedTags = tags.filter((tag) =>
+        matcher.pattern.some((pattern) => pattern.test(tag.name)),
+      );
+      const matchedLabels = matchedTags.map((tag) => {
+        const tagValue = tag.name.replace(/^@\S+:/, "");
+
+        return {
+          name: matcher.name,
+          value: tagValue,
+        };
+      });
+
+      labels.push(...matchedLabels);
+    });
+
+    return labels;
+  }
+
   private parseTagsLinks(tags: readonly Tag[]): Link[] {
     const tagKeyRe = /^@\S+=/;
     const links: Link[] = [];
 
-    if (this.links.length === 0) {
+    if (this.linksMatchers.length === 0) {
       return links;
     }
 
-    this.links.forEach((matcher) => {
+    this.linksMatchers.forEach((matcher) => {
       const matchedTags = tags.filter((tag) =>
         matcher.pattern.some((pattern) => pattern.test(tag.name)),
       );
@@ -193,6 +225,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     const doc = this.documentMap.get(pickle.uri);
     const scenarioId = pickle?.astNodeIds?.[0];
     const scenario = this.scenarioMap.get(scenarioId);
+    const labels = this.parseTagsLabels(scenario?.tags || []);
     const links = this.parseTagsLinks(scenario?.tags || []);
     const currentTest = new AllureTest(this.allureRuntime, Date.now());
 
@@ -210,6 +243,10 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     if (scenario) {
       currentTest?.addLabel(LabelName.SUITE, scenario.name);
+    }
+
+    if (labels.length > 0) {
+      labels.forEach((label) => this.currentTest?.addLabel(label.name, label.value));
     }
 
     if (pickle.tags?.length) {
