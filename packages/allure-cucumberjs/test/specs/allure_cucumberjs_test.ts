@@ -378,11 +378,11 @@ describe("CucumberJSAllureReporter", () => {
       labels: [
         {
           pattern: [/@feature:(.*)/],
-          type: "epic",
+          name: "epic",
         },
         {
           pattern: [/@severity:(.*)/],
-          type: "severity",
+          name: "severity",
         },
       ],
     });

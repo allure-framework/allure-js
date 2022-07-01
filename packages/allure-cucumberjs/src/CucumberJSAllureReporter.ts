@@ -26,7 +26,7 @@ export interface World extends CucumberWorld {
 
 export type LabelMatcher = {
   pattern: RegExp[];
-  type: "epic" | "severity" | string;
+  name: "epic" | "severity" | string;
 };
 
 export type LinkMatcher = {
@@ -142,7 +142,7 @@ export class CucumberJSAllureFormatter extends Formatter {
         const tagValue = tag.name.replace(/^@\S+:/, "");
 
         return {
-          name: matcher.type,
+          name: matcher.name,
           value: tagValue,
         };
       });

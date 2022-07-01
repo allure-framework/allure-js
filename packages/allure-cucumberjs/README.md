@@ -16,11 +16,11 @@ export default class Reporter extends CucumberJSAllureFormatter {
         labels: [
           {
             pattern: [/@feature:(.*)/],
-            type: "epic"
+            name: "epic"
           },
           {
             pattern: [/@severity:(.*)/],
-            type: "severity"
+            name: "severity"
           }
         ],
         links: [
