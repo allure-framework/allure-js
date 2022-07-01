@@ -61,6 +61,7 @@ export class CucumberJSAllureFormatter extends Formatter {
   private readonly testCaseMap: Map<string, messages.TestCase> = new Map();
   private readonly testCaseStartedMap: Map<string, messages.TestCaseStarted> = new Map();
   private readonly allureSteps: Map<string, AllureStep> = new Map();
+  private runningTestsMap: Map<string, AllureTest> = new Map();
 
   constructor(
     options: IFormatterOptions,
@@ -193,21 +194,22 @@ export class CucumberJSAllureFormatter extends Formatter {
     const scenarioId = pickle?.astNodeIds?.[0];
     const scenario = this.scenarioMap.get(scenarioId);
     const links = this.parseTagsLinks(scenario?.tags || []);
+    const currentTest = new AllureTest(this.allureRuntime, Date.now());
 
+    this.runningTestsMap.set(data.id, currentTest);
     this.testCaseStartedMap.set(data.id, data);
     this.testCaseTestStepsResults.set(data.id, []);
-    this.currentTest = new AllureTest(this.allureRuntime, Date.now());
-    this.currentTest.name = pickle.name;
 
-    this.currentTest?.addLabel(LabelName.LANGUAGE, "javascript");
-    this.currentTest?.addLabel(LabelName.FRAMEWORK, "cucumberjs");
+    currentTest.name = pickle.name;
+    currentTest?.addLabel(LabelName.LANGUAGE, "javascript");
+    currentTest?.addLabel(LabelName.FRAMEWORK, "cucumberjs");
 
     if (doc?.feature) {
-      this.currentTest.addLabel(LabelName.FEATURE, doc.feature.name);
+      currentTest.addLabel(LabelName.FEATURE, doc.feature.name);
     }
 
     if (scenario) {
-      this.currentTest?.addLabel(LabelName.SUITE, scenario.name);
+      currentTest?.addLabel(LabelName.SUITE, scenario.name);
     }
 
     if (pickle.tags?.length) {
@@ -216,17 +218,17 @@ export class CucumberJSAllureFormatter extends Formatter {
       );
 
       filteredTags.forEach((tag) => {
-        this.currentTest?.addLabel(LabelName.TAG, tag.name);
+        currentTest?.addLabel(LabelName.TAG, tag.name);
       });
     }
 
-    links.forEach((link) => this.currentTest?.addLink(link.url, link.name, link.type));
+    links.forEach((link) => currentTest?.addLink(link.url, link.name, link.type));
 
     // writting data tables as csv attachments
     pickle.steps.forEach((ps) => {
       const { argument } = ps;
 
-      if (!this.currentTest || !argument?.dataTable) {
+      if (!currentTest || !argument?.dataTable) {
         return;
       }
 
@@ -236,7 +238,7 @@ export class CucumberJSAllureFormatter extends Formatter {
       );
       const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, "text/csv");
 
-      this.currentTest.addAttachment(
+      currentTest.addAttachment(
         "Data table",
         {
           contentType: "text/csv",
@@ -255,7 +257,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     // writting scenario examples as csv attachments
     scenario.examples.forEach((example) => {
-      if (!this.currentTest) {
+      if (!currentTest) {
         return;
       }
 
@@ -272,7 +274,7 @@ export class CucumberJSAllureFormatter extends Formatter {
       const csvDataTable = `${csvDataTableHeader}\n${csvDataTableBody}\n`;
       const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, "text/csv");
 
-      this.currentTest.addAttachment(
+      currentTest.addAttachment(
         "Examples",
         {
           contentType: "text/csv",
@@ -283,7 +285,9 @@ export class CucumberJSAllureFormatter extends Formatter {
   }
 
   private onAttachment(data: messages.Attachment): void {
-    if (!this.currentTest) {
+    const currentTest = this.runningTestsMap.get(data?.testCaseStartedId || "");
+
+    if (!currentTest) {
       return;
     }
 
@@ -296,7 +300,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     const { fileName = "attachment", body, mediaType } = data;
     const attachmentFilename = this.allureRuntime.writeAttachment(body, mediaType);
 
-    this.currentTest.addAttachment(
+    currentTest.addAttachment(
       fileName,
       {
         contentType: mediaType,
@@ -306,7 +310,9 @@ export class CucumberJSAllureFormatter extends Formatter {
   }
 
   private onTestCaseFinished(data: messages.TestCaseFinished): void {
-    if (!this.currentTest) {
+    const currentTest = this.runningTestsMap.get(data.testCaseStartedId);
+
+    if (!currentTest) {
       // eslint-disable-next-line no-console
       console.error("onTestCaseFinished", "current test not found", data);
       return;
@@ -333,15 +339,16 @@ export class CucumberJSAllureFormatter extends Formatter {
     const testStepResults = this.testCaseTestStepsResults.get(testCaseStarted.id);
     if (testStepResults?.length) {
       const worstTestStepResult = messages.getWorstTestStepResult(testStepResults);
-      this.currentTest.status = this.convertStatus(worstTestStepResult.status);
-      this.currentTest.statusDetails = {
+      currentTest.status = this.convertStatus(worstTestStepResult.status);
+      currentTest.statusDetails = {
         message: worstTestStepResult.message,
       };
     } else {
-      this.currentTest.status = Status.PASSED;
+      currentTest.status = Status.PASSED;
     }
 
-    this.currentTest.endTest(Date.now());
+    currentTest.endTest(Date.now());
+    this.runningTestsMap.delete(data.testCaseStartedId);
   }
 
   private onHook(data: messages.Hook) {
@@ -355,7 +362,9 @@ export class CucumberJSAllureFormatter extends Formatter {
   }
 
   private onTestStepStarted(data: messages.TestStepStarted) {
-    if (!this.currentTest) {
+    const currentTest = this.runningTestsMap.get(data.testCaseStartedId);
+
+    if (!currentTest) {
       return;
     }
 
@@ -376,14 +385,16 @@ export class CucumberJSAllureFormatter extends Formatter {
           .map((astNodeId) => this.stepMap.get(astNodeId))
           .map((step) => step?.keyword)
           .find((kw) => kw !== undefined) || "";
-      const allureStep = this.currentTest.startStep(keyword + ps.text, Date.now());
+      const allureStep = currentTest.startStep(keyword + ps.text, Date.now());
       this.allureSteps.set(data.testStepId, allureStep);
     }
   }
 
   private onTestStepFinished(data: messages.TestStepFinished) {
+    const currentTest = this.runningTestsMap.get(data.testCaseStartedId);
+
     this.testCaseTestStepsResults.get(data.testCaseStartedId)?.push(data.testStepResult);
-    if (!this.currentTest) {
+    if (!currentTest) {
       return;
     }
 
