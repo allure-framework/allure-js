@@ -138,8 +138,10 @@ class AllureReporter implements Reporter {
         trace,
       };
     }
+
     for (const attachment of result.attachments) {
       if (!attachment.body && !attachment.path) {
+        console.log(`Attachment ${attachment.name} has no body or path`);
         continue;
       }
 
@@ -169,8 +171,10 @@ class AllureReporter implements Reporter {
         fileName = runtime.writeAttachment(attachment.body, attachment.contentType);
       } else {
         if (!fs.existsSync(attachment.path!)) {
+          console.log(`File does not exist: ${attachment.path!}`); // eslint-disable-line no-console
           continue;
         }
+
         fileName = runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
       }
 
