@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, ObjectEncodingOptions, PathLike, writeFileSync } from "fs";
+import { copyFileSync, existsSync, PathLike, writeFileSync } from "fs";
 import { join } from "path";
 import { sync as mkdirSync } from "mkdirp";
 import { stringify } from "properties";
