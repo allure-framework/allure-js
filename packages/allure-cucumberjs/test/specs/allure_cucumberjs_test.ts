@@ -81,10 +81,20 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
       Given("a step", function () {
         this.attach("some text");
       });
+      Given("add an image", function () {
+        // example base64 encoded image for testing
+        const base64Image = "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVEiJtZZPbBtFFMZ/M7ubXdtdb1xSFyeilBapySVU8h8OoFaooFSqiihIVIpQBKci6KEg9Q6H9kovIHoCIVQJJCKE1ENFjnAgcaSGC6rEnxBwA04Tx43t2FnvDAfjkNibxgHxnWb2e/u992bee7tCa00YFsffekFY+nUzFtjW0LrvjRXrCDIAaPLlW0nHL0SsZtVoaF98mLrx3pdhOqLtYPHChahZcYYO7KvPFxvRl5XPp1sN3adWiD1ZAqD6XYK1b/dvE5IWryTt2udLFedwc1+9kLp+vbbpoDh+6TklxBeAi9TL0taeWpdmZzQDry0AcO+jQ12RyohqqoYoo8RDwJrU+qXkjWtfi8Xxt58BdQuwQs9qC/afLwCw8tnQbqYAPsgxE1S6F3EAIXux2oQFKm0ihMsOF71dHYx+f3NND68ghCu1YIoePPQN1pGRABkJ6Bus96CutRZMydTl+TvuiRW1m3n0eDl0vRPcEysqdXn+jsQPsrHMquGeXEaY4Yk4wxWcY5V/9scqOMOVUFthatyTy8QyqwZ+kDURKoMWxNKr2EeqVKcTNOajqKoBgOE28U4tdQl5p5bwCw7BWquaZSzAPlwjlithJtp3pTImSqQRrb2Z8PHGigD4RZuNX6JYj6wj7O4TFLbCO/Mn/m8R+h6rYSUb3ekokRY6f/YukArN979jcW+V/S8g0eT/N3VN3kTqWbQ428m9/8k0P/1aIhF36PccEl6EhOcAUCrXKZXXWS3XKd2vc/TRBG9O5ELC17MmWubD2nKhUKZa26Ba2+D3P+4/MNCFwg59oWVeYhkzgN/JDR8deKBoD7Y+ljEjGZ0sosXVTvbc6RHirr2reNy1OXd6pJsQ+gqjk8VWFYmHrwBzW/n+uMPFiRwHB2I7ih8ciHFxIkd/3Omk5tCDV1t+2nNu5sxxpDFNx+huNhVT3/zMDz8usXC3ddaHBj1GHj/As08fwTS7Kt1HBTmyN29vdwAw+/wbwLVOJ3uAD1wi/dUH7Qei66PfyuRj4Ik9is+hglfbkbfR3cnZm7chlUWLdwmprtCohX4HUtlOcQjLYCu+fzGJH2QRKvP3UNz8bWk1qMxjGTOMThZ3kvgLI5AzFfo379UAAAAASUVORK5CYII=";
+        const decodedImage = Buffer.from(base64Image, "base64");
+        this.attach(decodedImage, "image/png");
+      });
     }),
     sources: [
       {
         data: ["Feature: attachments", "Scenario: add text attachment", "Given a step"].join("\n"),
+        uri: "attachment.feature",
+      },
+      {
+        data: ["Feature: image attachments", "Scenario: add image attachment", "Given add an image"].join("\n"),
         uri: "attachment.feature",
       },
     ],
@@ -286,15 +296,26 @@ describe("CucumberJSAllureReporter", () => {
 
   it("should process text attachments", async () => {
     const results = await runFeatures(dataSet.attachments);
-    expect(results.tests).length(1);
+    expect(results.tests).length(2);
 
     const attachmentsKeys = Object.keys(results.attachments);
-    expect(attachmentsKeys).length(1);
+    expect(attachmentsKeys).length(2);
     expect(results.attachments[attachmentsKeys[0]]).eq("some text");
 
     const [attachment] = results.tests[0].attachments;
     expect(attachment.type).eq("text/plain");
     expect(attachment.source).eq(attachmentsKeys[0]);
+  });
+
+  it("should process image attachments", async () => {
+    const results = await runFeatures(dataSet.attachments);
+    expect(results.tests).length(2);
+
+    const attachmentsKeys = Object.keys(results.attachments);
+    expect(attachmentsKeys).length(2);
+
+    const [imageAttachment] = results.tests[1].attachments;
+    expect(imageAttachment.type).eq("image/png");
   });
 
   it("should process data table as csv attachment", async () => {
@@ -374,6 +395,31 @@ describe("CucumberJSAllureReporter", () => {
   });
 
   it("should add labels", async () => {
+    const results = await runFeatures(dataSet.withLabels, {
+      labels: [
+        {
+          pattern: [/@feature:(.*)/],
+          name: "epic",
+        },
+        {
+          pattern: [/@severity:(.*)/],
+          name: "severity",
+        },
+      ],
+    });
+    expect(results.tests).length(1);
+
+    const { labels } = results.tests[0];
+    const epic = labels.find((label) => label.name === LabelName.EPIC);
+    const severity = labels.find((label) => label.name === LabelName.SEVERITY);
+    const tags = labels.filter((label) => label.name === LabelName.TAG);
+    expect(epic?.value).eq("foo");
+    expect(severity?.value).eq("bar");
+    expect(tags).length(1);
+  });
+
+
+  it("should add encoding type to images", async () => {
     const results = await runFeatures(dataSet.withLabels, {
       labels: [
         {
