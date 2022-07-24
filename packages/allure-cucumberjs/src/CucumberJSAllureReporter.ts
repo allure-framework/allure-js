@@ -16,8 +16,8 @@ import {
   Link,
   Status,
 } from "allure-js-commons";
+import { getBufferEncoding } from "./BufferEncodingUtility";
 import { CucumberAllureInterface } from "./CucumberAllureInterface";
-
 export { Allure } from "allure-js-commons";
 
 export interface World extends CucumberWorld {
@@ -246,7 +246,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     if (labels.length > 0) {
-      labels.forEach((label) => this.currentTest?.addLabel(label.name, label.value));
+      labels.forEach((label) => currentTest?.addLabel(label.name, label.value));
     }
 
     if (pickle.tags?.length) {
@@ -334,8 +334,9 @@ export class CucumberJSAllureFormatter extends Formatter {
       return;
     }
 
-    const { fileName = "attachment", body, mediaType } = data;
-    const attachmentFilename = this.allureRuntime.writeAttachment(body, mediaType);
+    const { fileName = "attachment", body, mediaType, contentEncoding } = data;
+    const encoding = getBufferEncoding(contentEncoding);
+    const attachmentFilename = this.allureRuntime.writeAttachment(body, mediaType, encoding);
 
     currentTest.addAttachment(
       fileName,

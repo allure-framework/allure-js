@@ -1,3 +1,4 @@
+import { Encoding } from "crypto";
 import { PathLike } from "fs";
 import { v4 as randomUUID } from "uuid";
 import { AllureConfig } from "./AllureConfig";
@@ -41,9 +42,10 @@ export class AllureRuntime {
   writeAttachment(
     content: Buffer | string,
     options: ContentType | string | AttachmentOptions,
+    encoding?: BufferEncoding,
   ): string {
     const fileName = buildAttachmentFileName(options);
-    this.writer.writeAttachment(fileName, content);
+    this.writer.writeAttachment(fileName, content, encoding);
     return fileName;
   }
 
