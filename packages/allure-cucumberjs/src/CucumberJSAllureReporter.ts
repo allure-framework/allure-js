@@ -16,7 +16,7 @@ import {
   Link,
   Status,
 } from "allure-js-commons";
-import { getBufferEncoding } from "./BufferEncodingUtility";
+import { normalizeBufferEncoding  } from "./BufferEncodingUtility";
 import { CucumberAllureInterface } from "./CucumberAllureInterface";
 export { Allure } from "allure-js-commons";
 
@@ -335,7 +335,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     const { fileName = "attachment", body, mediaType, contentEncoding } = data;
-    const encoding = getBufferEncoding(contentEncoding);
+    const encoding = normalizeBufferEncoding (contentEncoding);
     const attachmentFilename = this.allureRuntime.writeAttachment(body, mediaType, encoding);
 
     currentTest.addAttachment(

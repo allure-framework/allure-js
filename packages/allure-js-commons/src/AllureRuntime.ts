@@ -1,4 +1,3 @@
-import { Encoding } from "crypto";
 import { PathLike } from "fs";
 import { v4 as randomUUID } from "uuid";
 import { AllureConfig } from "./AllureConfig";

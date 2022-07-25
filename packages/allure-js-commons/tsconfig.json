@@ -2,8 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": [
     "./src/**/*",
-    "index.ts",
-    "../allure-cucumberjs/src/BufferEncodingUtility.ts"
+    "index.ts"
   ],
   "compilerOptions": {
     "types": [
