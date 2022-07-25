@@ -8,7 +8,7 @@ import "source-map-support/register";
 const mocha = new Mocha({
   timeout: 16000,
   reporter: "mocha-multi-reporters",
-  asyncOnly: true,
+  asyncOnly: false,
   reporterOptions: {
     reporterEnabled: "list, ../allure-mocha",
     allureMochaReporterOptions: {
