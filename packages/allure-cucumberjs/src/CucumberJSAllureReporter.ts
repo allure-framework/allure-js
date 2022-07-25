@@ -334,7 +334,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     const { fileName = "attachment", body, mediaType, contentEncoding } = data;
-    const encoding = Buffer.isEncoding(contentEncoding) ? contentEncoding : undefined;  // only pass through valid encodings
+    const encoding = Buffer.isEncoding(contentEncoding) ? contentEncoding : undefined; // only pass through valid encodings
     const attachmentFilename = this.allureRuntime.writeAttachment(body, mediaType, encoding);
 
     currentTest.addAttachment(

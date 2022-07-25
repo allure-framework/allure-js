@@ -84,7 +84,8 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
       Given("add an image", function () {
         // example base64 encoded image for testing.
         // single pixel #007 image
-        const base64Image = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjYGAo/w8AAfIBdzDXaSAAAAAASUVORK5CYII=";
+        const base64Image =
+          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjYGAo/w8AAfIBdzDXaSAAAAAASUVORK5CYII=";
         const decodedImage = Buffer.from(base64Image, "base64");
         this.attach(decodedImage, "image/png");
       });
@@ -95,7 +96,11 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
         uri: "attachment.feature",
       },
       {
-        data: ["Feature: image attachments", "Scenario: add image attachment", "Given add an image"].join("\n"),
+        data: [
+          "Feature: image attachments",
+          "Scenario: add image attachment",
+          "Given add an image",
+        ].join("\n"),
         uri: "attachment.feature",
       },
     ],
