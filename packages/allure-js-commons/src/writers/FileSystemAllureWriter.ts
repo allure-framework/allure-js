@@ -17,7 +17,11 @@ export class FileSystemAllureWriter implements AllureWriter {
     }
   }
 
-  writeAttachment(name: string, content: Buffer | string, encoding: BufferEncoding = "utf-8"): void {
+  writeAttachment(
+    name: string,
+    content: Buffer | string,
+    encoding: BufferEncoding = "utf-8",
+  ): void {
     const path = this.buildPath(name);
     writeFileSync(path, content, { encoding });
   }
