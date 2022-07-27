@@ -41,9 +41,10 @@ export class AllureRuntime {
   writeAttachment(
     content: Buffer | string,
     options: ContentType | string | AttachmentOptions,
+    encoding?: BufferEncoding,
   ): string {
     const fileName = buildAttachmentFileName(options);
-    this.writer.writeAttachment(fileName, content);
+    this.writer.writeAttachment(fileName, content, encoding);
     return fileName;
   }
 

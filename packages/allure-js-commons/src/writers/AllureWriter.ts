@@ -6,7 +6,7 @@ export interface AllureWriter {
 
   writeGroup(result: TestResultContainer): void;
 
-  writeAttachment(name: string, content: Buffer | string): void;
+  writeAttachment(name: string, content: Buffer | string, encoding?: BufferEncoding): void;
 
   writeAttachmentFromPath(from: PathLike, distFileName: string): void;
 
