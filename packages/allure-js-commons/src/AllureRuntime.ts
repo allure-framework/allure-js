@@ -1,3 +1,4 @@
+import { PathLike } from "fs";
 import { extname } from "path";
 import { v4 as randomUUID } from "uuid";
 import { AllureConfig } from "./AllureConfig";
@@ -49,21 +50,24 @@ export class AllureRuntime {
   }
 
   writeAttachmentFromPath(
-    fromPath: string,
+    fromPath: PathLike,
     options: ContentType | string | AttachmentOptions,
   ): string {
-    const fileExtension = extname(fromPath).substring(1);
-    if (typeof options === "string") {
-      options = {
-        fileExtension: fileExtension,
-        contentType: options,
-      };
-    } else {
-      options = {
-        fileExtension: fileExtension,
-        ...options,
-      };
+    if (typeof fromPath === "string") {
+      const fileExtension = extname(fromPath).substring(1);
+      if (typeof options === "string") {
+        options = {
+          fileExtension: fileExtension,
+          contentType: options,
+        };
+      } else {
+        options = {
+          fileExtension: fileExtension,
+          ...options,
+        };
+      }
     }
+
     const fileName = buildAttachmentFileName(options);
     this.writer.writeAttachmentFromPath(fromPath, fileName);
     return fileName;
