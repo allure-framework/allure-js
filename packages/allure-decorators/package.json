@@ -23,7 +23,7 @@
     "lint:fix": "eslint ./src --ext .ts --fix"
   },
   "dependencies": {
-    "allure-js-commons": "workspace:*"
+    "allure-js-commons": "../allure-js-commons"
   },
   "devDependencies": {
     "@testdeck/mocha": "0.1.2",
@@ -32,7 +32,8 @@
     "@types/glob": "^7.1.4",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.7.8",
-    "allure-mocha": "workspace:*",
+    "allure-commandline": "^2.18.1",
+    "allure-mocha": "../allure-mocha",
     "chai": "^4.2.0",
     "chai-arrays": "^2.2.0",
     "codecov": "^3.6.5",

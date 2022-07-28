@@ -21,7 +21,7 @@
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.7.10",
     "@types/uuid": "^8.3.0",
-    "allure-mocha": "workspace:packages/allure-mocha",
+    "allure-mocha": "../allure-mocha",
     "chai": "^4.3.4",
     "eslint": "^7.32.0",
     "glob": "^7.1.7",

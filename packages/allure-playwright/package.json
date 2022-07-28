@@ -24,13 +24,14 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.22.2",
+    "allure-commandline": "^2.18.1",
     "eslint": "^7.32.0",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "typescript": "^4.4.2"
   },
   "dependencies": {
-    "allure-js-commons": "workspace:*"
+    "allure-js-commons": "../allure-js-commons"
   },
   "files": [
     "dist"

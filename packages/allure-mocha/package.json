@@ -29,6 +29,7 @@
     "@types/glob": "^7.1.4",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.7.8",
+    "allure-commandline": "^2.18.1",
     "chai": "^4.2.0",
     "codecov": "^3.6.5",
     "dotenv": "^10.0.0",
@@ -45,7 +46,7 @@
     "typescript": "^4.4.2"
   },
   "dependencies": {
-    "allure-js-commons": "workspace:*"
+    "allure-js-commons": "../allure-js-commons"
   },
   "peerDependencies": {
     "mocha": ">=6.2.x"

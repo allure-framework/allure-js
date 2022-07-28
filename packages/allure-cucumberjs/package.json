@@ -26,7 +26,8 @@
     "@types/node": "^16.7.8",
     "@types/sinon": "^10.0.11",
     "@types/verror": "^1.10.3",
-    "allure-mocha": "workspace:packages/allure-mocha",
+    "allure-commandline": "^2.18.1",
+    "allure-mocha": "../allure-mocha",
     "chai": "^4.3.4",
     "chai-like": "^1.1.1",
     "eslint": "^7.32.0",
@@ -48,7 +49,7 @@
     "@cucumber/gherkin-streams": "^5.0.1",
     "@cucumber/gherkin-utils": "^8.0.0",
     "@cucumber/messages": "^19.1.2",
-    "allure-js-commons": "workspace:*"
+    "allure-js-commons": "../allure-js-commons"
   },
   "files": [
     "dist/src/**/*",

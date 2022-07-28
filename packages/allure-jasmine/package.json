@@ -13,12 +13,13 @@
     "lint:fix": "eslint ./src ./index.ts --ext .ts --fix",
     "compile": "tsc",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "runTest": "tsc -p tsconfig-tests.json && yarn run jasmine ./dist-tests/test/*.js",
+    "runTest": "tsc -p tsconfig-tests.json && npx jasmine ./dist-tests/test/*.js",
     "runTestDebug": "node $NODE_DEBUG_OPTION ./node_modules/.bin/jasmine ./dist/test/*.js",
-    "test": "rimraf ./out ; yarn run runTest ; yarn run generate-report"
+    "test": "rimraf ./out ; npm run runTest ; npm run generate-report"
   },
   "devDependencies": {
     "@types/jasmine": "^3.3.12",
+    "allure-commandline": "^2.18.1",
     "eslint": "^7.32.0",
     "jasmine": "^3.4.0",
     "prettier": "^2.3.2",
@@ -26,7 +27,7 @@
     "typescript": "^4.4.2"
   },
   "dependencies": {
-    "allure-js-commons": "workspace:*"
+    "allure-js-commons": "../allure-js-commons"
   },
   "nyc": {
     "check-coverage": false,
