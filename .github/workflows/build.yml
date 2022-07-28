@@ -25,23 +25,33 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+
+      - name: Restore npm cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: npm install
         run: |
           npm install --workspaces
 
-      - run: npx --prefix ./packages/allure-playwright playwright install chromium --with-deps
+      - name: install playwright
+        run: npx --prefix ./packages/allure-playwright playwright install chromium --with-deps
 
       - name: npm build
         run: |
           npm run build
+
       - name: prettier:check
         run: |
           npm run prettier:check
+
       - name: npm run lint
         run: |
           npm run lint
+
       - name: npm test
         run: |
           npm run test
