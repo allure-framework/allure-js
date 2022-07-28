@@ -25,24 +25,24 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
+          cache: 'npm'
 
-      - name: yarn install
+      - name: npm install
         run: |
-          yarn install
+          npm run install --workspaces
 
-      - run: yarn workspace allure-playwright playwright install chromium --with-deps
+      - run: npx --prefix ./packages/allure-playwright playwright install chromium --with-deps
 
-      - name: yarn build
+      - name: npm build
         run: |
-          yarn run build
+          npm run build
       - name: prettier:check
         run: |
-          yarn prettier:check
-      - name: yarn lint
+          npm run prettier:check
+      - name: npm run lint
         run: |
-          yarn run lint
-      - name: yarn test
+          npm run lint
+      - name: npm test
         run: |
-          yarn run test
+          npm run test
 

@@ -13,11 +13,11 @@ jobs:
         with:
           node-version: 14
           registry-url: 'https://registry.npmjs.org'
-          cache: 'yarn'
-      - name: yarn install, build
+          cache: 'npm'
+      - name: npm install, build
         run: |
-          yarn install
-          yarn build
-      - run: yarn workspaces foreach --no-private npm publish
+          npm install --workspaces
+          npm run build
+      - run: npm publish --workspaces
         env:
-          YARN_NPM_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}

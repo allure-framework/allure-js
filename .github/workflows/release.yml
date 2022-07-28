@@ -27,15 +27,15 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 14
-          cache: 'yarn'
+          cache: 'npm'
 
-      - name: "Yarn install"
+      - name: "Npm install"
         run: |
-          yarn install
+          npm install --workspaces
 
       - name: "Set release version"
         run: |
-          yarn run replace-in-file --isRegex=true '/"version":\s*".+"/g' '"version": "${{ github.event.inputs.releaseVersion }}"' 'package.json' 'packages/*/package.json'
+          npm run replace-in-file --isRegex=true '/"version":\s*".+"/g' '"version": "${{ github.event.inputs.releaseVersion }}"' 'package.json' 'packages/*/package.json'
 
       - name: "Commit release version and create tag"
         run: |
