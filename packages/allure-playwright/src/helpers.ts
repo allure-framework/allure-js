@@ -6,6 +6,10 @@ export interface Metadata {
   labels?: Label[];
   links?: Link[];
   description?: string;
+  parameter?: {
+    name: string;
+    value: string;
+  };
 }
 
 export class allure {
@@ -73,6 +77,15 @@ export class allure {
     this.label({
       name: LabelName.PARENT_SUITE,
       value: name,
+    });
+  }
+
+  static addParameter(name: string, value: string) {
+    this.addMetadataAttachment({
+      parameter: {
+        name,
+        value,
+      },
     });
   }
 
