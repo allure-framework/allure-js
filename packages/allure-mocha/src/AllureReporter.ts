@@ -79,7 +79,7 @@ export class AllureReporter {
 
       if (error) {
         this.currentExecutable.status = Status.FAILED;
-        this.currentExecutable.statusDetails = { message: error.message, trace: error.stack };
+        this.currentExecutable.statusDetails = {message: error.message, trace: error.stack};
       } else {
         this.currentExecutable.status = Status.PASSED;
       }
@@ -97,13 +97,16 @@ export class AllureReporter {
     this.currentTest.stage = Stage.RUNNING;
 
     if (test.parent) {
-      const [parentSuite, suite, ...subSuites] = test.parent.titlePath();
+      const [parentSuite, suite, ...subSuites] = this.getSuitePath(test);
+
       if (parentSuite) {
         this.currentTest.addLabel(LabelName.PARENT_SUITE, parentSuite);
       }
+
       if (suite) {
         this.currentTest.addLabel(LabelName.SUITE, suite);
       }
+
       if (subSuites.length > 0) {
         this.currentTest.addLabel(LabelName.SUB_SUITE, subSuites.join(" > "));
       }
@@ -158,6 +161,21 @@ export class AllureReporter {
 
   public popSuite(): void {
     this.suites.pop();
+  }
+
+  private getSuitePath(test: Mocha.Test): string[] {
+    const path = [];
+    let currentSuite: Mocha.Suite | undefined = test.parent;
+
+    while (currentSuite) {
+      if (currentSuite.title) {
+        path.unshift(currentSuite.title);
+      }
+
+      currentSuite = currentSuite.parent;
+    }
+
+    return path;
   }
 
   private endTest(status: Status, details?: StatusDetails): void {
