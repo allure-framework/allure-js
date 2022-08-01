@@ -27,6 +27,8 @@ export interface Parameter {
   excluded?: boolean;
 }
 
+export type ParameterOptions = Pick<Parameter, "hidden" | "excluded">;
+
 export interface StatusDetails {
   message?: string;
   trace?: string;

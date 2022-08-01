@@ -1,7 +1,7 @@
 import { AllureRuntime } from "./AllureRuntime";
 import { AllureTest } from "./AllureTest";
 import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
-import { AttachmentOptions, Category, LinkType, Status } from "./model";
+import { AttachmentOptions, Category, LinkType, ParameterOptions, Status } from "./model";
 import { ContentType } from "./model";
 import { LabelName } from "./model";
 
@@ -39,8 +39,8 @@ export abstract class Allure {
     this.currentTest.addLabel(name, value);
   }
 
-  public parameter(name: string, value: string): void {
-    this.currentExecutable.addParameter(name, value);
+  public parameter(name: string, value: string, options?: ParameterOptions): void {
+    this.currentExecutable.addParameter(name, value, options);
   }
 
   public link(url: string, name?: string, type?: string): void {
