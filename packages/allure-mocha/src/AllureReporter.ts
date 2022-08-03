@@ -79,7 +79,7 @@ export class AllureReporter {
 
       if (error) {
         this.currentExecutable.status = Status.FAILED;
-        this.currentExecutable.statusDetails = {message: error.message, trace: error.stack};
+        this.currentExecutable.statusDetails = { message: error.message, trace: error.stack };
       } else {
         this.currentExecutable.status = Status.PASSED;
       }

@@ -9,23 +9,23 @@ const _MochaAllure = require("./dist/MochaAllure");
 const _MochaAllureReporter = require("./dist/MochaAllureReporter");
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+  value: true,
 });
 Object.defineProperty(module.exports, "MochaAllure", {
   enumerable: true,
   get: function () {
     return _MochaAllure.MochaAllure;
-  }
+  },
 });
 Object.defineProperty(module.exports, "allure", {
   enumerable: true,
   get: function () {
     return _MochaAllureReporter.allure;
-  }
+  },
 });
 Object.defineProperty(module.exports, "MochaAllureReporter", {
   enumerable: true,
   get: function () {
     return _MochaAllureReporter.MochaAllureReporter;
-  }
+  },
 });

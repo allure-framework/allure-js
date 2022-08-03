@@ -6,7 +6,5 @@
     "rootDir": "."
   },
   "exclude": [],
-  "include": [
-    "**/*.ts"
-  ]
+  "include": ["**/*.ts"]
 }

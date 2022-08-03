@@ -7,7 +7,5 @@ module.exports = {
     node: true,
     es6: true,
   },
-  extends: [
-    "../../.eslintrc.js",
-  ],
+  extends: ["../../.eslintrc.js"],
 };

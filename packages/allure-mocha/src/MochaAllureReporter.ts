@@ -1,7 +1,7 @@
-import {AllureConfig, AllureRuntime} from "allure-js-commons";
+import { AllureConfig, AllureRuntime } from "allure-js-commons";
 import * as Mocha from "mocha";
-import {AllureReporter} from "./AllureReporter";
-import {MochaAllure} from "./MochaAllure";
+import { AllureReporter } from "./AllureReporter";
+import { MochaAllure } from "./MochaAllure";
 import Base = Mocha.reporters.Base;
 
 const {
@@ -28,7 +28,7 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   constructor(readonly runner: ParallelRunner, readonly opts: Mocha.MochaOptions) {
     super(runner, opts);
 
-    const {resultsDir = "allure-results"} = opts.reporterOptions || {};
+    const { resultsDir = "allure-results" } = opts.reporterOptions || {};
     const allureConfig: AllureConfig = {
       ...opts.reporterOptions,
       resultsDir,
