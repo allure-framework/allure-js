@@ -7,16 +7,18 @@ This project implements Allure integration with Mocha framework.
 ```bash
 npm i allure-mocha mocha --save-dev
 ```
+
 or via yarn:
+
 ```bash
 yarn add allure-mocha mocha --dev
 ```
 
 Note that it's recommended to add the following dependencies as well for better user experience:
 
- - typescript
- - mocha-typescript
- - source-map-support
+- typescript
+- mocha-typescript
+- source-map-support
 
 ## Usage
 
@@ -32,19 +34,19 @@ Or pass the same value via commandline / scripts:
 mocha -R allure-mocha
 ```
 
-If you want to provide extra information, such as steps and attachments, import the `allure` object 
+If you want to provide extra information, such as steps and attachments, import the `allure` object
 into your code:
 
 ```javascript
 // es-modules
-import { allure } from 'allure-mocha/runtime';
+import { allure } from "allure-mocha/runtime";
 // or commonjs
-const { allure } = require('allure-mocha/runtime');
+const { allure } = require("allure-mocha/runtime");
 
-it('is a test', () => {
-  allure.epic('Some info');
+it("is a test", () => {
+  allure.epic("Some info");
 });
-``` 
+```
 
 ## Decorators Support
 
