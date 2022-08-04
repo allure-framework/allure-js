@@ -267,8 +267,6 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     links.forEach((link) => currentTest?.addLink(link.url, link.name, link.type));
 
-    links.forEach((link) => currentTest?.addLink(link.url, link.name, link.type));
-
     // writting data tables as csv attachments
     pickle.steps.forEach((ps) => {
       const { argument } = ps;

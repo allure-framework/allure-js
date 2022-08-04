@@ -400,6 +400,7 @@ describe("CucumberJSAllureReporter", () => {
     expect(results.tests).length(1);
 
     const { links, labels } = results.tests[0];
+
     expect(links).length(2);
     expect(links[0].type).eq("issue");
     expect(links[0].url).eq("https://example.org/issues/1");
