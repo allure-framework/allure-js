@@ -42,6 +42,8 @@ export class CucumberJSAllureFormatterConfig {
   links?: LinkMatcher[];
 }
 
+const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env;
+
 export class CucumberJSAllureFormatter extends Formatter {
   public readonly allureInterface: Allure;
   currentAfter: ExecutableItemWrapper | null = null;
@@ -54,6 +56,7 @@ export class CucumberJSAllureFormatter extends Formatter {
   private readonly labelsMathers: LabelMatcher[];
   private readonly linksMatchers: LinkMatcher[];
   private stepStack: AllureStep[] = [];
+  private hostname: string = ALLURE_HOST_NAME || os.hostname();
   private readonly documentMap: Map<string, messages.GherkinDocument> = new Map();
   private readonly featureMap: Map<string, messages.Feature> = new Map();
   private readonly scenarioMap: Map<string, messages.Scenario> = new Map();
@@ -209,7 +212,6 @@ export class CucumberJSAllureFormatter extends Formatter {
   }
 
   private onTestCaseStarted(data: messages.TestCaseStarted): void {
-    const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env;
     const testCase = this.testCaseMap.get(data.testCaseId);
     if (!testCase) {
       // eslint-disable-next-line no-console
@@ -236,6 +238,8 @@ export class CucumberJSAllureFormatter extends Formatter {
     this.testCaseTestStepsResults.set(data.id, []);
 
     currentTest.name = pickle.name;
+    currentTest?.addLabel(LabelName.HOST, this.hostname);
+    currentTest?.addLabel(LabelName.THREAD, ALLURE_THREAD_NAME || process.getuid().toString());
     currentTest?.addLabel(LabelName.LANGUAGE, "javascript");
     currentTest?.addLabel(LabelName.FRAMEWORK, "cucumberjs");
 
