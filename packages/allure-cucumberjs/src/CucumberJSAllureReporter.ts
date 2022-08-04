@@ -1,3 +1,5 @@
+import os from "os";
+import process from "process";
 import { World as CucumberWorld, Formatter } from "@cucumber/cucumber";
 import { IFormatterOptions } from "@cucumber/cucumber/lib/formatter";
 import TestCaseHookDefinition from "@cucumber/cucumber/lib/models/test_case_hook_definition";
@@ -40,6 +42,8 @@ export class CucumberJSAllureFormatterConfig {
   links?: LinkMatcher[];
 }
 
+const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env;
+
 export class CucumberJSAllureFormatter extends Formatter {
   public readonly allureInterface: Allure;
   currentAfter: ExecutableItemWrapper | null = null;
@@ -52,6 +56,7 @@ export class CucumberJSAllureFormatter extends Formatter {
   private readonly labelsMathers: LabelMatcher[];
   private readonly linksMatchers: LinkMatcher[];
   private stepStack: AllureStep[] = [];
+  private hostname: string = ALLURE_HOST_NAME || os.hostname();
   private readonly documentMap: Map<string, messages.GherkinDocument> = new Map();
   private readonly featureMap: Map<string, messages.Feature> = new Map();
   private readonly scenarioMap: Map<string, messages.Scenario> = new Map();
@@ -233,6 +238,8 @@ export class CucumberJSAllureFormatter extends Formatter {
     this.testCaseTestStepsResults.set(data.id, []);
 
     currentTest.name = pickle.name;
+    currentTest?.addLabel(LabelName.HOST, this.hostname);
+    currentTest?.addLabel(LabelName.THREAD, ALLURE_THREAD_NAME || process.getuid().toString());
     currentTest?.addLabel(LabelName.LANGUAGE, "javascript");
     currentTest?.addLabel(LabelName.FRAMEWORK, "cucumberjs");
 
