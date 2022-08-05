@@ -104,7 +104,7 @@ export class AllureReporter {
       const normalizedTestPath = normalize(testPath || "")
         .replace(/^\//, "")
         .split("/")
-        .filter(item => item !== basename(testPath));
+        .filter((item) => item !== basename(testPath));
 
       this.currentTest.addLabel(LabelName.PACKAGE, normalizedTestPath.join("."));
     }

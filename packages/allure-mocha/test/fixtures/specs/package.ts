@@ -5,6 +5,6 @@ import { expect } from "chai";
 class Package {
   @test
   shouldPass() {
-    expect(1).eq(1)
+    expect(1).eq(1);
   }
 }

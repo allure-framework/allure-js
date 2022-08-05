@@ -9,8 +9,8 @@ class PackageSuite {
   async shouldHaveDescription() {
     const writerStub = await runTests("package");
     const currentTest = writerStub.getTestByName("shouldPass");
-    const packageLabel = currentTest.labels.find(label => label.name === LabelName.PACKAGE);
+    const packageLabel = currentTest.labels.find((label) => label.name === LabelName.PACKAGE);
 
-    expect(packageLabel?.value).eq("test.fixtures.specs")
+    expect(packageLabel?.value).eq("test.fixtures.specs");
   }
 }
