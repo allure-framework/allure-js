@@ -1,4 +1,5 @@
 import { createHash } from "crypto";
+import { basename, normalize } from "path";
 import {
   AllureGroup,
   AllureRuntime,
@@ -17,6 +18,7 @@ import { MochaAllure } from "./MochaAllure";
 export class AllureReporter {
   public currentExecutable: ExecutableItemWrapper | null = null;
 
+  private cwd: string = process.cwd();
   private suites: AllureGroup[] = [];
   private steps: AllureStep[] = [];
   private runningTest: AllureTest | null = null;
@@ -91,10 +93,21 @@ export class AllureReporter {
       throw new Error("No active suite");
     }
 
+    const testPath = test.file?.replace(this.cwd, "");
+
     this.currentTest = this.currentSuite.startTest(test.title);
     this.currentTest.fullName = test.title;
     this.currentTest.historyId = createHash("md5").update(test.fullTitle()).digest("hex");
     this.currentTest.stage = Stage.RUNNING;
+
+    if (testPath) {
+      const normalizedTestPath = normalize(testPath || "")
+        .replace(/^\//, "")
+        .split("/")
+        .filter(item => item !== basename(testPath));
+
+      this.currentTest.addLabel(LabelName.PACKAGE, normalizedTestPath.join("."));
+    }
 
     if (test.parent) {
       const [parentSuite, suite, ...subSuites] = this.getSuitePath(test);
