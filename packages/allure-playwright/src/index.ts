@@ -141,7 +141,7 @@ class AllureReporter implements Reporter {
 
     for (const attachment of result.attachments) {
       if (!attachment.body && !attachment.path) {
-        console.log(`Attachment ${attachment.name} has no body or path`);
+        console.log(`Attachment ${attachment.name} has no body or path`); // eslint-disable-line no-console
         continue;
       }
 
