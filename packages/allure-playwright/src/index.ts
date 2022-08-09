@@ -52,6 +52,7 @@ class AllureReporter implements Reporter {
   private allureGroupCache = new Map<Suite, AllureGroup>();
   private allureTestCache = new Map<TestCase, AllureTest>();
   private allureStepCache = new Map<TestStep, AllureStep>();
+  private hostname = process.env.ALLURE_HOST_NAME || os.hostname();
 
   constructor(options: AllureReporterOptions = { suiteTitle: true, detail: true }) {
     this.options = options;
@@ -118,13 +119,11 @@ class AllureReporter implements Reporter {
       return;
     }
 
-    const hostName = process.env.ALLURE_HOST_NAME || os.hostname();
-
     const thread =
       process.env.ALLURE_THREAD_NAME ||
-      `${hostName}-${process.pid}-playwright-worker-${result.workerIndex}`;
+      `${this.hostname}-${process.pid}-playwright-worker-${result.workerIndex}`;
 
-    allureTest.addLabel(LabelName.HOST, hostName);
+    allureTest.addLabel(LabelName.HOST, this.hostname);
     allureTest.addLabel(LabelName.THREAD, thread);
 
     allureTest.status = statusToAllureStats(result.status, test.expectedStatus);
