@@ -115,6 +115,7 @@ class AllureReporter implements Reporter {
     if (!allureTest) {
       return;
     }
+    allureTest.addLabel(LabelName.THREAD, result.workerIndex.toString());
     allureTest.status = statusToAllureStats(result.status, test.expectedStatus);
     if (result.error) {
       const message = result.error.message && stripAscii(result.error.message);
