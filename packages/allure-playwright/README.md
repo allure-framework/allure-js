@@ -195,6 +195,16 @@ test("basic test", async ({ page }, testInfo) => {
 });
 ```
 
+### Screenshot usage
+```ts
+test("basic test", async ({ page }, testInfo) => {
+  await testInfo.attach("basic-page-screen", {
+    body: await page.screenshot(),
+    contentType: "image/png",
+  });
+});
+
+```
 
 
 ### Attachments Usage
@@ -202,10 +212,45 @@ test("basic test", async ({ page }, testInfo) => {
 ```js
 import { test, expect } from "@playwright/test";
 
+export const TODO_ITEMS = [
+  "buy some cheese",
+  "feed the cat",
+  "book a doctors appointment",
+];
+
 test("basic test", async ({ page }, testInfo) => {
-  const path = testInfo.outputPath("screenshot.png");
-  await page.screenshot({ path });
-  testInfo.attachments.push({ name: "screenshot", path, contentType: "image/png" });
+   await testInfo.attach("TODO_ITEMS", {
+      body: JSON.stringify(TODO_ITEMS),
+      contentType: "application/json",
+    });
 });
+
 ```
 
+### Steps usage
+
+```ts
+import { test, expect } from "@playwright/test";
+
+export const TODO_ITEMS = [
+  "buy some cheese", 
+  "feed the cat", 
+  "book a doctors appointment"
+];
+
+test("basic test", async ({ page }, testInfo) => {
+  await test.step("Visit todolist page", async () => {
+    await page.goto("https://demo.playwright.dev/todomvc");
+  });
+
+  await test.step("Create 1st todo.", async () => {
+    await page.locator(".new-todo").fill(TODO_ITEMS[0]);
+    await page.locator(".new-todo").press("Enter");
+  });
+
+  await expect(
+    page.locator(".view label"),
+    "Make sure the list only has one todo item.",
+  ).toHaveText([TODO_ITEMS[0]]);
+});
+```

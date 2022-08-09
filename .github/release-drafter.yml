@@ -13,6 +13,9 @@ categories:
   - title: '⬆️ Dependency Updates'
     labels:
       - 'type:dependencies'
+  - title: '📝 Docs Update'
+    labels:
+      - 'type:docs'
 
 change-template: '* $TITLE (via #$NUMBER) - @$AUTHOR'
 exclude-labels:
