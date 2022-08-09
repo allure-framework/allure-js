@@ -4,6 +4,7 @@ import {
   AttachmentOptions,
   ContentType,
   FixtureResult,
+  ParameterOptions,
   Stage,
   Status,
   StatusDetails,
@@ -54,8 +55,8 @@ export class ExecutableItemWrapper {
     this.info.stage = stage;
   }
 
-  public addParameter(name: string, value: string): void {
-    this.info.parameters.push({ name, value });
+  public addParameter(name: string, value: string, options?: ParameterOptions): void {
+    this.info.parameters.push({ name, value, ...options });
   }
 
   public addAttachment(

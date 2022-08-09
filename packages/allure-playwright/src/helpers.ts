@@ -1,11 +1,12 @@
 import test from "@playwright/test";
-import { Label, LabelName, Link, LinkType } from "allure-js-commons";
+import { Label, LabelName, Link, LinkType, Parameter, ParameterOptions } from "allure-js-commons";
 
 export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
 export interface Metadata {
   labels?: Label[];
   links?: Link[];
   description?: string;
+  parameter?: Parameter[];
 }
 
 export class allure {
@@ -73,6 +74,18 @@ export class allure {
     this.label({
       name: LabelName.PARENT_SUITE,
       value: name,
+    });
+  }
+
+  static addParameter(name: string, value: string, options?: ParameterOptions) {
+    this.addMetadataAttachment({
+      parameter: [
+        {
+          name,
+          value,
+          ...options,
+        },
+      ],
     });
   }
 
