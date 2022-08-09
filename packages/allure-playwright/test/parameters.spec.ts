@@ -2,7 +2,7 @@ import { Label } from "allure-js-commons";
 import { expect, test } from "./fixtures";
 
 test("should have parameter", async ({ runInlineTest }) => {
-  const param = { name: "parameterName", value: "parameterValue", hidden:true, excluded: false };
+  const param = { name: "parameterName", value: "parameterValue", hidden: true, excluded: false };
   const result: Label[] = await runInlineTest(
     {
       "par.test.ts": `
