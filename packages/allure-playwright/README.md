@@ -239,7 +239,7 @@ export const TODO_ITEMS = [
 ];
 
 test("basic test", async ({ page }, testInfo) => {
-  test.step("Visit todolist page", () => {
+  await test.step("Visit todolist page", async () => {
     await page.goto("https://demo.playwright.dev/todomvc");
   });
 
