@@ -15,7 +15,9 @@
  */
 
 import fs from "fs";
+import os from "os";
 import path from "path";
+import process from "process";
 import { FullConfig, TestStatus } from "@playwright/test";
 import { Reporter, Suite, TestCase, TestResult, TestStep } from "@playwright/test/reporter";
 import {
@@ -50,6 +52,7 @@ class AllureReporter implements Reporter {
   private allureGroupCache = new Map<Suite, AllureGroup>();
   private allureTestCache = new Map<TestCase, AllureTest>();
   private allureStepCache = new Map<TestStep, AllureStep>();
+  private hostname = process.env.ALLURE_HOST_NAME || os.hostname();
 
   constructor(options: AllureReporterOptions = { suiteTitle: true, detail: true }) {
     this.options = options;
@@ -115,6 +118,14 @@ class AllureReporter implements Reporter {
     if (!allureTest) {
       return;
     }
+
+    const thread =
+      process.env.ALLURE_THREAD_NAME ||
+      `${this.hostname}-${process.pid}-playwright-worker-${result.workerIndex}`;
+
+    allureTest.addLabel(LabelName.HOST, this.hostname);
+    allureTest.addLabel(LabelName.THREAD, thread);
+
     allureTest.status = statusToAllureStats(result.status, test.expectedStatus);
     if (result.error) {
       const message = result.error.message && stripAscii(result.error.message);
