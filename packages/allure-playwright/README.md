@@ -227,3 +227,30 @@ test("basic test", async ({ page }, testInfo) => {
 
 ```
 
+### Steps usage
+
+```ts
+import { test, expect } from "@playwright/test";
+
+export const TODO_ITEMS = [
+  "buy some cheese", 
+  "feed the cat", 
+  "book a doctors appointment"
+];
+
+test("basic test", async ({ page }, testInfo) => {
+  test.step("Visit todolist page", () => {
+    await page.goto("https://demo.playwright.dev/todomvc");
+  });
+
+  await test.step("Create 1st todo.", async () => {
+    await page.locator(".new-todo").fill(TODO_ITEMS[0]);
+    await page.locator(".new-todo").press("Enter");
+  });
+
+  await expect(
+    page.locator(".view label"),
+    "Make sure the list only has one todo item.",
+  ).toHaveText([TODO_ITEMS[0]]);
+});
+```
