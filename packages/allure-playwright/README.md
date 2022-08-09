@@ -198,7 +198,7 @@ test("basic test", async ({ page }, testInfo) => {
 ### Screenshot usage
 ```ts
 test("basic test", async ({ page }, testInfo) => {
-  await testInfo.attach("All-completed-unchecked", {
+  await testInfo.attach("basic-page-screen", {
     body: await page.screenshot(),
     contentType: "image/png",
   });
