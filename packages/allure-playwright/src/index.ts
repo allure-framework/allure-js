@@ -141,7 +141,9 @@ class AllureReporter implements Reporter {
 
     for (const attachment of result.attachments) {
       if (!attachment.body && !attachment.path) {
-        console.log(`Attachment ${attachment.name} has no body or path`); // eslint-disable-line no-console
+        if (!process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST) {
+          console.log(`Attachment ${attachment.name} has no body or path`); // eslint-disable-line no-console
+        }
         continue;
       }
 
@@ -171,7 +173,9 @@ class AllureReporter implements Reporter {
         fileName = runtime.writeAttachment(attachment.body, attachment.contentType);
       } else {
         if (!fs.existsSync(attachment.path!)) {
-          console.log(`File does not exist: ${attachment.path!}`); // eslint-disable-line no-console
+          if (!process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST) {
+            console.log(`File does not exist: ${attachment.path!}`); // eslint-disable-line no-console
+          }
           continue;
         }
 
