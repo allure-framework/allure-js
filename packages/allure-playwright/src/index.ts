@@ -73,7 +73,7 @@ class AllureReporter implements Reporter {
     const group = this.ensureAllureGroupCreated(suite);
     const allureTest = group.startTest(test.title);
     allureTest.addLabel(LabelName.LANGUAGE, "JavaScript");
-    allureTest.addLabel(LabelName.FRAMEWORK, "Playwright");
+    allureTest.addLabel(LabelName.FRAMEWORK, "playwright");
     const projectUse = suite.project()?.use;
     if (projectUse && projectUse.defaultBrowserType) {
       allureTest.addLabel(LabelName.BROWSER, projectUse.defaultBrowserType);
