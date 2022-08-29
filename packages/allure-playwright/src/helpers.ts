@@ -1,38 +1,27 @@
 import test from "@playwright/test";
-import { Label, LabelName, Link, LinkType, Parameter, ParameterOptions } from "allure-js-commons";
-
-export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
-export interface Metadata {
-  labels?: Label[];
-  links?: Link[];
-  description?: string;
-  parameter?: Parameter[];
-}
+import { Label, LabelName, Link, LinkType, ParameterOptions } from "allure-js-commons";
 
 export class allure {
-  static addMetadataAttachment(metadata: Metadata) {
-    test.info().attach("allure-metadata.json", {
-      contentType: ALLURE_METADATA_CONTENT_TYPE,
-      body: Buffer.from(JSON.stringify(metadata), "utf8"),
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  static addCustomAnnotationsMetadata(type: string, value: string | object) {
+    test.info().annotations.push({
+      type,
+      description: JSON.stringify(value),
     });
   }
 
   static label(label: Label | Label[]) {
-    this.addMetadataAttachment({
-      labels: Array.isArray(label) ? label : [label],
-    });
+    (Array.isArray(label) ? label : [label]).forEach((val) =>
+      this.addCustomAnnotationsMetadata(val.name, val.value),
+    );
   }
 
   static description(value: string) {
-    this.addMetadataAttachment({
-      description: value,
-    });
+    this.addCustomAnnotationsMetadata("description", value);
   }
 
   static link(link: Link) {
-    this.addMetadataAttachment({
-      links: Array.isArray(link) ? link : [link],
-    });
+    this.addCustomAnnotationsMetadata("link", link);
   }
 
   static id(id: string) {
@@ -78,14 +67,10 @@ export class allure {
   }
 
   static addParameter(name: string, value: string, options?: ParameterOptions) {
-    this.addMetadataAttachment({
-      parameter: [
-        {
-          name,
-          value,
-          ...options,
-        },
-      ],
+    this.addCustomAnnotationsMetadata("parameter", {
+      name,
+      value,
+      ...options,
     });
   }
 

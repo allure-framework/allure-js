@@ -41,3 +41,4 @@ schema
 build
 **/allure-results
 **/.nyc_output
+.vscode/

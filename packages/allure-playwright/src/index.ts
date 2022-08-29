@@ -28,10 +28,10 @@ import {
   ExecutableItemWrapper,
   InMemoryAllureWriter,
   LabelName,
+  Link,
+  Parameter,
   Status,
 } from "allure-js-commons";
-
-import { ALLURE_METADATA_CONTENT_TYPE, Metadata } from "./helpers";
 
 type AllureReporterOptions = {
   detail?: boolean;
@@ -127,6 +127,39 @@ class AllureReporter implements Reporter {
     allureTest.addLabel(LabelName.THREAD, thread);
 
     allureTest.status = statusToAllureStats(result.status, test.expectedStatus);
+
+    for (const annotation of test.annotations) {
+      if (!annotation.description) {
+        continue;
+      }
+
+      const annotationValue = JSON.parse(annotation.description);
+
+      switch (annotation.type as "link" | "description" | "parameter") {
+        case "link": {
+          const linkData = annotationValue as Link;
+          allureTest.addLink(linkData.url, linkData.name, linkData.type);
+          break;
+        }
+        case "parameter": {
+          const parameterData = annotationValue as Parameter;
+          allureTest.addParameter(parameterData.name, parameterData.value, {
+            hidden: parameterData.hidden,
+            excluded: parameterData.excluded,
+          });
+        }
+        case "description": {
+          allureTest.description = annotationValue;
+          break;
+        }
+        default: {
+          allureTest.addLabel(annotation.type, annotationValue);
+
+          break;
+        }
+      }
+    }
+
     if (result.error) {
       const message = result.error.message && stripAscii(result.error.message);
       let trace = result.error.stack && stripAscii(result.error.stack);
@@ -140,27 +173,6 @@ class AllureReporter implements Reporter {
     }
     for (const attachment of result.attachments) {
       if (!attachment.body && !attachment.path) {
-        continue;
-      }
-
-      if (attachment.contentType === ALLURE_METADATA_CONTENT_TYPE) {
-        if (!attachment.body) {
-          continue;
-        }
-
-        const metadata: Metadata = JSON.parse(attachment.body.toString());
-        metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
-        metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
-        metadata.parameter?.forEach((val) =>
-          allureTest.addParameter(val.name, val.value, {
-            hidden: val.hidden,
-            excluded: val.excluded,
-          }),
-        );
-
-        if (metadata.description) {
-          allureTest.description = metadata.description;
-        }
         continue;
       }
 
