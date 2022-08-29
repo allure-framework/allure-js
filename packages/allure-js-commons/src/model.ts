@@ -141,6 +141,7 @@ export enum Severity {
 export enum ContentType {
   TEXT = "text/plain",
   XML = "application/xml",
+  HTML = "text/html",
   CSV = "text/csv",
   TSV = "text/tab-separated-values",
   CSS = "text/css",

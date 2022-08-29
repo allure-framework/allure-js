@@ -9,6 +9,8 @@ export const typeToExtension = (options: AttachmentOptions): string => {
       return "txt";
     case ContentType.XML:
       return "xml";
+    case ContentType.HTML:
+      return "html";
     case ContentType.CSV:
       return "csv";
     case ContentType.TSV:
