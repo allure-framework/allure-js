@@ -1,5 +1,6 @@
 import test from "@playwright/test";
 import {
+  ALLURE_METADATA_CONTENT_TYPE,
   AttachmentMetadata,
   Label,
   LabelName,
@@ -7,7 +8,6 @@ import {
   LinkType,
   Parameter,
   ParameterOptions,
-  ALLURE_METADATA_CONTENT_TYPE,
 } from "allure-js-commons";
 
 export class allure {
