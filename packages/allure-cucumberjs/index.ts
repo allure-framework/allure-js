@@ -1,5 +1,5 @@
 export {
-  Allure, World, CucumberJSAllureFormatter, CucumberJSAllureFormatterConfig
+  Allure, CucumberJSAllureFormatter, CucumberJSAllureFormatterConfig
 } from "./src/CucumberJSAllureReporter";
 export {
   CucumberAllureWorld
