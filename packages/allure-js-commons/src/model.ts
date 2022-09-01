@@ -4,6 +4,13 @@ export interface Attachment {
   source: string;
 }
 
+export interface AttachmentMetadata {
+  labels?: Label[];
+  links?: Link[];
+  description?: string;
+  parameter?: Parameter[];
+}
+
 export interface AttachmentOptions {
   contentType: ContentType | string;
   fileExtension?: string;
@@ -34,7 +41,7 @@ export interface StatusDetails {
   trace?: string;
 }
 
-interface ExecutableItem {
+export interface ExecutableItem {
   name?: string;
   status?: Status;
   statusDetails: StatusDetails;
