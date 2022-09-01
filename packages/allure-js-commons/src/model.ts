@@ -1,3 +1,5 @@
+export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
+
 export interface Attachment {
   name: string;
   type: string;
