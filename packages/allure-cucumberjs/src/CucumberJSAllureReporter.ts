@@ -1,29 +1,29 @@
 import os from "os";
 import process from "process";
-import { World as CucumberWorld, Formatter } from "@cucumber/cucumber";
+import { Formatter } from "@cucumber/cucumber";
 import { IFormatterOptions } from "@cucumber/cucumber/lib/formatter";
 import TestCaseHookDefinition from "@cucumber/cucumber/lib/models/test_case_hook_definition";
 import * as messages from "@cucumber/messages";
 import { Tag, TestStepResultStatus } from "@cucumber/messages";
 import {
   Allure,
+  ALLURE_METADATA_CONTENT_TYPE,
   AllureGroup,
   AllureRuntime,
   AllureStep,
   AllureTest,
-  ContentType,
+  ExecutableItem,
   ExecutableItemWrapper,
   Label,
   LabelName,
   Link,
+  Stage,
   Status,
 } from "allure-js-commons";
 import { CucumberAllureInterface } from "./CucumberAllureInterface";
-export { Allure } from "allure-js-commons";
+import { CucumberAttachmentMetadata, CucumberAttachmentStepMetadata } from "./CucumberAllureWorld";
 
-export interface World extends CucumberWorld {
-  allure: Allure;
-}
+export { Allure };
 
 export type LabelMatcher = {
   pattern: RegExp[];
@@ -97,7 +97,6 @@ export class CucumberJSAllureFormatter extends Formatter {
     };
 
     this.allureInterface = new CucumberAllureInterface(this, this.allureRuntime);
-    options.supportCodeLibrary.World.prototype.allure = this.allureInterface;
     this.beforeHooks = options.supportCodeLibrary.beforeTestCaseHookDefinitions;
     this.afterHooks = options.supportCodeLibrary.afterTestCaseHookDefinitions;
   }
@@ -213,6 +212,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 
   private onTestCaseStarted(data: messages.TestCaseStarted): void {
     const testCase = this.testCaseMap.get(data.testCaseId);
+
     if (!testCase) {
       // eslint-disable-next-line no-console
       console.error("onTestCaseStarted", "test case not found", data);
@@ -335,6 +335,8 @@ export class CucumberJSAllureFormatter extends Formatter {
       return;
     }
 
+    const currentStep = this.allureSteps.get(data?.testStepId || "");
+
     if (!data) {
       // eslint-disable-next-line no-console
       console.error("onAttachment", "attachment can't be empty");
@@ -342,6 +344,16 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     const { fileName = "attachment", body, mediaType, contentEncoding } = data;
+
+    if (mediaType === ALLURE_METADATA_CONTENT_TYPE) {
+      this.handleAllureAttachment({
+        test: currentTest,
+        step: currentStep,
+        metadata: JSON.parse(body) as CucumberAttachmentMetadata,
+      });
+      return;
+    }
+
     const encoding = Buffer.isEncoding(contentEncoding) ? contentEncoding : undefined; // only pass through valid encodings
     const attachmentFilename = this.allureRuntime.writeAttachment(body, mediaType, encoding);
 
@@ -352,6 +364,45 @@ export class CucumberJSAllureFormatter extends Formatter {
       },
       attachmentFilename,
     );
+  }
+
+  private handleAllureAttachment(payload: { test: AllureTest; step?: AllureStep; metadata: CucumberAttachmentMetadata }) {
+    const { labels = [], links = [], step } = payload.metadata;
+
+    if (links.length > 0) {
+      links.forEach((link) => payload.test.addLink(link.url, link.type, link.name));
+    }
+
+    if (labels.length > 0) {
+      labels.forEach((label) => payload.test.addLabel(label.name, label.value));
+    }
+
+    if (step) {
+      this. handleAllureStep({
+        test: payload.test,
+        step: payload.step,
+        metadata: step,
+      });
+    }
+  }
+
+  private handleAllureStep(payload: { test: AllureTest; step?: AllureStep; metadata: CucumberAttachmentStepMetadata }) {
+    const testStep: ExecutableItem = {
+      ...payload.metadata,
+      steps: [],
+      parameters: [],
+    };
+
+    if (payload.step) {
+      payload.step.addStep({
+        ...payload.metadata,
+        steps: [],
+        parameters: [],
+      });
+      return;
+    }
+
+    payload.test.addStep(testStep);
   }
 
   private onTestCaseFinished(data: messages.TestCaseFinished): void {
@@ -439,11 +490,13 @@ export class CucumberJSAllureFormatter extends Formatter {
     const currentTest = this.runningTestsMap.get(data.testCaseStartedId);
 
     this.testCaseTestStepsResults.get(data.testCaseStartedId)?.push(data.testStepResult);
+
     if (!currentTest) {
       return;
     }
 
     const allureStep = this.allureSteps.get(data.testStepId);
+
     if (!allureStep) {
       return;
     }
