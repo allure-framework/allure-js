@@ -5,7 +5,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import { ITestFormatterOptions, runFeatures } from "../helpers/formatter_helpers";
 import { buildSupportCodeLibrary } from "../helpers/runtime_helpers";
-import { CucumberAllureWorld } from "../../src/CucumberAllureWorld"
+import { CucumberAllureWorld } from "../../src/CucumberAllureWorld";
 
 const dataSet: { [name: string]: ITestFormatterOptions } = {
   simple: {
@@ -239,7 +239,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
           "    When do something\n" +
           "    Then get something\n",
         uri: "withNestedAnonymous.feature",
-      }
+      },
     ],
   },
   withStepsArrow: {
@@ -270,7 +270,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
           "    When do something\n" +
           "    Then get something\n",
         uri: "withNestedAnonymous.feature",
-      }
+      },
     ],
   },
   withFailedStep: {
@@ -281,7 +281,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
 
       When("do something", async function (this: CucumberAllureWorld) {
         await this.step("first nested step", async (step) => {
-          throw new Error("an error message")
+          throw new Error("an error message");
         });
       });
     }),
@@ -294,7 +294,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
           "    Given a step\n" +
           "    When do something\n",
         uri: "withNestedAnonymous.feature",
-      }
+      },
     ],
   },
 };
@@ -522,48 +522,56 @@ describe("CucumberJSAllureReporter", () => {
       expect(severity?.value).eq("bar");
       expect(tags).length(1);
     });
-  })
+  });
 
   describe("custom world", () => {
     it("should handle steps with anonymous handler function", async () => {
       const results = await runFeatures(dataSet.withStepsAnonymous);
       expect(results.tests).length(1);
 
-      const { labels, steps: [givenStep, whenStep, thenStep] } = results.tests[0];
+      const {
+        labels,
+        steps: [givenStep, whenStep, thenStep],
+      } = results.tests[0];
 
-      expect(givenStep.steps).length(0)
-      expect(whenStep.steps).length(1)
-      expect(whenStep.steps[0].name).eq("first nested step")
-      expect(whenStep.steps[0].attachments).length(0)
-      expect(thenStep.steps).length(1)
-      expect(thenStep.steps[0].name).eq("second nested step")
-      expect(thenStep.steps[0].attachments).length(1)
+      expect(givenStep.steps).length(0);
+      expect(whenStep.steps).length(1);
+      expect(whenStep.steps[0].name).eq("first nested step");
+      expect(whenStep.steps[0].attachments).length(0);
+      expect(thenStep.steps).length(1);
+      expect(thenStep.steps[0].name).eq("second nested step");
+      expect(thenStep.steps[0].attachments).length(1);
     });
 
     it("should handle steps with arrow handler function", async () => {
       const results = await runFeatures(dataSet.withStepsAnonymous);
       expect(results.tests).length(1);
 
-      const { labels, steps: [givenStep, whenStep, thenStep] } = results.tests[0];
+      const {
+        labels,
+        steps: [givenStep, whenStep, thenStep],
+      } = results.tests[0];
 
-      expect(givenStep.steps).length(0)
-      expect(whenStep.steps).length(1)
-      expect(whenStep.steps[0].name).eq("first nested step")
-      expect(whenStep.steps[0].attachments).length(0)
-      expect(thenStep.steps).length(1)
-      expect(thenStep.steps[0].name).eq("second nested step")
-      expect(thenStep.steps[0].attachments).length(1)
+      expect(givenStep.steps).length(0);
+      expect(whenStep.steps).length(1);
+      expect(whenStep.steps[0].name).eq("first nested step");
+      expect(whenStep.steps[0].attachments).length(0);
+      expect(thenStep.steps).length(1);
+      expect(thenStep.steps[0].name).eq("second nested step");
+      expect(thenStep.steps[0].attachments).length(1);
     });
 
     it("should handle errors inside steps", async () => {
       const results = await runFeatures(dataSet.withFailedStep);
       expect(results.tests).length(1);
 
-      const { steps: [, whenStep] } = results.tests[0];
+      const {
+        steps: [, whenStep],
+      } = results.tests[0];
 
       expect(whenStep.steps[0].status).eq(Status.FAILED);
       expect(whenStep.steps[0].statusDetails.message).eq("an error message");
       expect(whenStep.steps[0].statusDetails.trace).not.eq("");
     });
-  })
+  });
 });

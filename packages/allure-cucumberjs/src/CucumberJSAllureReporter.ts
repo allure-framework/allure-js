@@ -366,7 +366,11 @@ export class CucumberJSAllureFormatter extends Formatter {
     );
   }
 
-  private handleAllureAttachment(payload: { test: AllureTest; step?: AllureStep; metadata: CucumberAttachmentMetadata }) {
+  private handleAllureAttachment(payload: {
+    test: AllureTest;
+    step?: AllureStep;
+    metadata: CucumberAttachmentMetadata;
+  }) {
     const { labels = [], links = [], step } = payload.metadata;
 
     if (links.length > 0) {
@@ -378,7 +382,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     if (step) {
-      this. handleAllureStep({
+      this.handleAllureStep({
         test: payload.test,
         step: payload.step,
         metadata: step,
@@ -386,7 +390,11 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
   }
 
-  private handleAllureStep(payload: { test: AllureTest; step?: AllureStep; metadata: CucumberAttachmentStepMetadata }) {
+  private handleAllureStep(payload: {
+    test: AllureTest;
+    step?: AllureStep;
+    metadata: CucumberAttachmentStepMetadata;
+  }) {
     const testStep: ExecutableItem = {
       ...payload.metadata,
       steps: [],

@@ -13,7 +13,10 @@ import {
   Status,
 } from "allure-js-commons";
 
-export type CucumberAttachmentStepMetadata = Omit<ExecutableItem, "description" | "descriptionHtml" | "steps" | "parameters">;
+export type CucumberAttachmentStepMetadata = Omit<
+  ExecutableItem,
+  "description" | "descriptionHtml" | "steps" | "parameters"
+>;
 
 export interface CucumberAttachmentMetadata extends AttachmentMetadata {
   step?: CucumberAttachmentStepMetadata;
@@ -39,7 +42,7 @@ export class CucumberStep implements CucumberExecutableWrapper {
   }
 
   label(label: string, value: string): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this.metadata.labels?.push({
         name: label,
         value,
@@ -54,7 +57,7 @@ export class CucumberStep implements CucumberExecutableWrapper {
   }
 
   async attachment(source: string | Buffer, type: string): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this.attachments.push({
         name: "attachment",
         source: source.toString(),
@@ -92,10 +95,13 @@ export class CucumberStep implements CucumberExecutableWrapper {
           stop: new Date().getTime(),
           stage: Stage.FINISHED,
           status: Status.FAILED,
-          statusDetails: err instanceof Error ? {
-            message: err.message,
-            trace: err.stack,
-          } : {},
+          statusDetails:
+            err instanceof Error
+              ? {
+                  message: err.message,
+                  trace: err.stack,
+                }
+              : {},
           attachments: this.attachments,
         },
       };
