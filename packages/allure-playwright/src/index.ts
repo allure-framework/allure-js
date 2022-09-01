@@ -21,6 +21,7 @@ import process from "process";
 import { FullConfig, TestStatus } from "@playwright/test";
 import { Reporter, Suite, TestCase, TestResult, TestStep } from "@playwright/test/reporter";
 import {
+  AttachmentMetadata,
   AllureGroup,
   AllureRuntime,
   AllureStep,
@@ -29,9 +30,8 @@ import {
   InMemoryAllureWriter,
   LabelName,
   Status,
+  ALLURE_METADATA_CONTENT_TYPE,
 } from "allure-js-commons";
-
-import { ALLURE_METADATA_CONTENT_TYPE, Metadata } from "./helpers";
 
 type AllureReporterOptions = {
   detail?: boolean;
@@ -115,7 +115,6 @@ class AllureReporter implements Reporter {
   onTestEnd(test: TestCase, result: TestResult): void {
     const runtime = this.getAllureRuntime();
     const allureTest = this.allureTestCache.get(test);
-    if (!allureTest) {
       return;
     }
 
@@ -148,7 +147,7 @@ class AllureReporter implements Reporter {
           continue;
         }
 
-        const metadata: Metadata = JSON.parse(attachment.body.toString());
+        const metadata: AttachmentMetadata = JSON.parse(attachment.body.toString());
         metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
         metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
         metadata.parameter?.forEach((val) =>
