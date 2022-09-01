@@ -1,7 +1,9 @@
 export {
   Allure, World, CucumberJSAllureFormatter, CucumberJSAllureFormatterConfig
-}
-  from "./src/CucumberJSAllureReporter";
+} from "./src/CucumberJSAllureReporter";
 export {
-  AllureRuntime, AllureConfig, ContentType, Severity, ExecutorInfo, Category
+  CucumberAllureWorld
+} from "./src/CucumberAllureWorld";
+export {
+  AllureRuntime, AllureConfig, ContentType, Severity, ExecutorInfo, Category, ALLURE_METADATA_CONTENT_TYPE
 } from "allure-js-commons";
