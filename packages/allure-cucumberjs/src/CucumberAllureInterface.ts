@@ -18,37 +18,11 @@ export class CucumberAllureInterface extends Allure {
   }
 
   step<T>(name: string, body: (step: StepInterface) => T): T {
-    const wrappedStep = this.startStep(name);
-    let result;
-    try {
-      result = wrappedStep.run(body);
-    } catch (err) {
-      wrappedStep.setError(err as Error);
-      wrappedStep.endStep();
-      throw err;
-    }
-    if (isPromise(result)) {
-      const promise = result as any as Promise<any>;
-      return promise
-        .then((a) => {
-          wrappedStep.endStep();
-          return a;
-        })
-        .catch((e: Error) => {
-          wrappedStep.setError(e);
-          wrappedStep.endStep();
-          throw e;
-        }) as any as T;
-    } else {
-      wrappedStep.endStep();
-      return result;
-    }
+    throw new Error("Use CucumberAllureWorld step method to use the functionality!");
   }
 
   logStep(name: string, status?: Status): void {
-    const step = this.startStep(name);
-    step.setStatus(status);
-    step.endStep();
+    throw new Error("Use CucumberAllureWorld step method to use the functionality!");
   }
 
   attachment(
@@ -98,43 +72,5 @@ export class CucumberAllureInterface extends Allure {
       throw new Error("No test running!");
     }
     return this.reporter.currentTest;
-  }
-
-  private startStep(name: string): WrappedStep {
-    const allureStep: AllureStep = this.currentExecutable.startStep(name);
-    // this.reporter.pushStep(allureStep);
-    return new WrappedStep(this.reporter, allureStep);
-  }
-}
-
-export class WrappedStep {
-  constructor(
-    private readonly reporter: CucumberJSAllureFormatter,
-    private readonly step: AllureStep,
-  ) {}
-
-  startStep(name: string): WrappedStep {
-    const step = this.step.startStep(name);
-    // this.reporter.pushStep(step);
-    return new WrappedStep(this.reporter, step);
-  }
-
-  setStatus(status?: Status): void {
-    this.step.status = status;
-  }
-
-  setError(error: Error): void {
-    this.step.status = Status.FAILED;
-    this.step.detailsMessage = error.message;
-    this.step.detailsTrace = error.stack;
-  }
-
-  endStep(): void {
-    // this.reporter.popStep();
-    this.step.endStep();
-  }
-
-  run<T>(body: (step: StepInterface) => T): T {
-    return this.step.wrap(body)();
   }
 }
