@@ -9,8 +9,10 @@ export { isPromise } from "./src/isPromise";
 export { Allure, StepInterface } from "./src/Allure";
 export {
   AttachmentOptions,
+  AttachmentMetadata,
   Attachment,
   Category,
+  ExecutableItem,
   StepResult,
   Parameter,
   StatusDetails,
@@ -26,5 +28,6 @@ export {
   Stage,
   Status,
   LinkType,
-  ParameterOptions
+  ParameterOptions,
+  ALLURE_METADATA_CONTENT_TYPE
 } from "./src/model";
