@@ -21,16 +21,16 @@ import process from "process";
 import { FullConfig, TestStatus } from "@playwright/test";
 import { Reporter, Suite, TestCase, TestResult, TestStep } from "@playwright/test/reporter";
 import {
-  AttachmentMetadata,
+  ALLURE_METADATA_CONTENT_TYPE,
   AllureGroup,
   AllureRuntime,
   AllureStep,
   AllureTest,
+  AttachmentMetadata,
   ExecutableItemWrapper,
   InMemoryAllureWriter,
   LabelName,
   Status,
-  ALLURE_METADATA_CONTENT_TYPE,
 } from "allure-js-commons";
 
 type AllureReporterOptions = {
@@ -115,6 +115,8 @@ class AllureReporter implements Reporter {
   onTestEnd(test: TestCase, result: TestResult): void {
     const runtime = this.getAllureRuntime();
     const allureTest = this.allureTestCache.get(test);
+
+    if (!allureTest) {
       return;
     }
 
