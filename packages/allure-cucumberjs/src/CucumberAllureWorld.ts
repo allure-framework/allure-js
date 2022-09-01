@@ -121,7 +121,7 @@ export class CucumberAllureWorld extends World implements CucumberExecutableWrap
     await this.label(LabelName.EPIC, epic);
   }
 
-  async step(name: string, body: (step: CucumberStep) => Promise<any>) {
+  async step(name: string, body: (this: CucumberStep, step: CucumberStep) => Promise<any>) {
     const testStep = new CucumberStep(name);
     const msgBody = await testStep.start(body);
 

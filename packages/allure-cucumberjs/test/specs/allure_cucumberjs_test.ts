@@ -5,6 +5,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import { ITestFormatterOptions, runFeatures } from "../helpers/formatter_helpers";
 import { buildSupportCodeLibrary } from "../helpers/runtime_helpers";
+import { CucumberAllureWorld } from "../../src/CucumberAllureWorld"
 
 const dataSet: { [name: string]: ITestFormatterOptions } = {
   simple: {
@@ -210,165 +211,253 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
       },
     ],
   },
+  withStepsAnonymous: {
+    supportCodeLibrary: buildSupportCodeLibrary(({ Given, When, Then, setWorldConstructor }) => {
+      setWorldConstructor(CucumberAllureWorld);
+
+      Given("a step", function () {});
+
+      When("do something", async function (this: CucumberAllureWorld) {
+        await this.step("first nested step", async function () {
+          await this.label("label_name", "label_value");
+        });
+      });
+
+      Then("get something", async function (this: CucumberAllureWorld) {
+        await this.step("second nested step", async function () {
+          await this.attachment(JSON.stringify({ foo: "bar" }), "application/json");
+        });
+      });
+    }),
+    sources: [
+      {
+        data:
+          "Feature: a\n" +
+          "\n" +
+          "  Scenario: b\n" +
+          "    Given a step\n" +
+          "    When do something\n" +
+          "    Then get something\n",
+        uri: "withNestedAnonymous.feature",
+      }
+    ],
+  },
+  withStepsArrow: {
+    supportCodeLibrary: buildSupportCodeLibrary(({ Given, When, Then, setWorldConstructor }) => {
+      setWorldConstructor(CucumberAllureWorld);
+
+      Given("a step", function () {});
+
+      When("do something", async function (this: CucumberAllureWorld) {
+        await this.step("first nested step", async (step) => {
+          await step.label("label_name", "label_value");
+        });
+      });
+
+      Then("get something", async function (this: CucumberAllureWorld) {
+        await this.step("second nested step", async (step) => {
+          await step.attachment(JSON.stringify({ foo: "bar" }), "application/json");
+        });
+      });
+    }),
+    sources: [
+      {
+        data:
+          "Feature: a\n" +
+          "\n" +
+          "  Scenario: b\n" +
+          "    Given a step\n" +
+          "    When do something\n" +
+          "    Then get something\n",
+        uri: "withNestedAnonymous.feature",
+      }
+    ],
+  },
+  withFailedStep: {
+    supportCodeLibrary: buildSupportCodeLibrary(({ Given, When, Then, setWorldConstructor }) => {
+      setWorldConstructor(CucumberAllureWorld);
+
+      Given("a step", function () {});
+
+      When("do something", async function (this: CucumberAllureWorld) {
+        await this.step("first nested step", async (step) => {
+          throw new Error("an error message")
+        });
+      });
+    }),
+    sources: [
+      {
+        data:
+          "Feature: a\n" +
+          "\n" +
+          "  Scenario: b\n" +
+          "    Given a step\n" +
+          "    When do something\n",
+        uri: "withNestedAnonymous.feature",
+      }
+    ],
+  },
 };
 
 describe("CucumberJSAllureReporter", () => {
-  it("should set name", async () => {
-    const results = await runFeatures(dataSet.simple);
+  describe("basic functionality", () => {
+    it("should set name", async () => {
+      const results = await runFeatures(dataSet.simple);
 
-    expect(results.tests).length(1);
-    const [testResult] = results.tests;
+      expect(results.tests).length(1);
+      const [testResult] = results.tests;
 
-    expect(testResult.name).eq("b");
-  });
+      expect(testResult.name).eq("b");
+    });
 
-  it("should set steps", async () => {
-    const results = await runFeatures(dataSet.stepArguments);
+    it("should set steps", async () => {
+      const results = await runFeatures(dataSet.stepArguments);
 
-    const [testResult] = results.tests;
+      const [testResult] = results.tests;
 
-    expect(testResult.steps.map((step) => step.name)).to.have.all.members([
-      "Given a is 5",
-      "Given b is 10",
-      "When I add a to b",
-      "Then result is 15",
-    ]);
-  });
+      expect(testResult.steps.map((step) => step.name)).to.have.all.members([
+        "Given a is 5",
+        "Given b is 10",
+        "When I add a to b",
+        "Then result is 15",
+      ]);
+    });
 
-  it("should set passed status if no error", async () => {
-    const results = await runFeatures(dataSet.simple);
+    it("should set passed status if no error", async () => {
+      const results = await runFeatures(dataSet.simple);
 
-    expect(results.tests).length(1);
-    const [testResult] = results.tests;
+      expect(results.tests).length(1);
+      const [testResult] = results.tests;
 
-    expect(testResult.status).eq(Status.PASSED);
-  });
+      expect(testResult.status).eq(Status.PASSED);
+    });
 
-  it("should set failed status if expectation failed", async () => {
-    const results = await runFeatures(dataSet.failed);
+    it("should set failed status if expectation failed", async () => {
+      const results = await runFeatures(dataSet.failed);
 
-    expect(results.tests).length(1);
-    const [testResult] = results.tests;
+      expect(results.tests).length(1);
+      const [testResult] = results.tests;
 
-    expect(testResult.status).eq(Status.FAILED);
-    expect(testResult.statusDetails.message)
-      .contains("AssertionError")
-      .contains("123")
-      .contains("2225");
-  });
+      expect(testResult.status).eq(Status.FAILED);
+      expect(testResult.statusDetails.message)
+        .contains("AssertionError")
+        .contains("123")
+        .contains("2225");
+    });
 
-  it("should set timings", async () => {
-    const before = Date.now();
-    const results = await runFeatures(dataSet.simple);
-    const after = Date.now();
+    it("should set timings", async () => {
+      const before = Date.now();
+      const results = await runFeatures(dataSet.simple);
+      const after = Date.now();
 
-    expect(results.tests).length(1);
-    const [testResult] = results.tests;
+      expect(results.tests).length(1);
+      const [testResult] = results.tests;
 
-    expect(testResult.start).greaterThanOrEqual(before);
-    expect(testResult.start).lessThanOrEqual(after);
-    expect(testResult.stop).greaterThanOrEqual(before);
-    expect(testResult.stop).lessThanOrEqual(after);
-    expect(testResult.start).lessThanOrEqual(testResult.stop!);
-  });
+      expect(testResult.start).greaterThanOrEqual(before);
+      expect(testResult.start).lessThanOrEqual(after);
+      expect(testResult.stop).greaterThanOrEqual(before);
+      expect(testResult.stop).lessThanOrEqual(after);
+      expect(testResult.start).lessThanOrEqual(testResult.stop!);
+    });
 
-  it("should process simple scenario with parameters", async () => {
-    const results = await runFeatures(dataSet.stepArguments);
+    it("should process simple scenario with parameters", async () => {
+      const results = await runFeatures(dataSet.stepArguments);
 
-    expect(results.tests).length(1);
+      expect(results.tests).length(1);
 
-    const [testResult] = results.tests;
-    expect(testResult.name).eq("plus operator");
-  });
+      const [testResult] = results.tests;
+      expect(testResult.name).eq("plus operator");
+    });
 
-  it("should process tests with examples", async () => {
-    const results = await runFeatures(dataSet.examples);
-    expect(results.tests).length(2);
+    it("should process tests with examples", async () => {
+      const results = await runFeatures(dataSet.examples);
+      expect(results.tests).length(2);
 
-    const [first, second] = results.tests;
-    expect(first.name).eq("Scenario with Positive Examples");
-    expect(second.name).eq("Scenario with Positive Examples");
+      const [first, second] = results.tests;
+      expect(first.name).eq("Scenario with Positive Examples");
+      expect(second.name).eq("Scenario with Positive Examples");
 
-    const attachmentsKeys = Object.keys(results.attachments);
-    expect(attachmentsKeys).length(2);
-    expect(results.attachments[attachmentsKeys[0]]).eq("a,b,result\n1,3,4\n2,4,6\n");
-    expect(results.attachments[attachmentsKeys[1]]).eq("a,b,result\n1,3,4\n2,4,6\n");
+      const attachmentsKeys = Object.keys(results.attachments);
+      expect(attachmentsKeys).length(2);
+      expect(results.attachments[attachmentsKeys[0]]).eq("a,b,result\n1,3,4\n2,4,6\n");
+      expect(results.attachments[attachmentsKeys[1]]).eq("a,b,result\n1,3,4\n2,4,6\n");
 
-    const [firstAttachment] = results.tests[0].attachments;
-    expect(firstAttachment.type).eq("text/csv");
-    expect(firstAttachment.source).eq(attachmentsKeys[0]);
+      const [firstAttachment] = results.tests[0].attachments;
+      expect(firstAttachment.type).eq("text/csv");
+      expect(firstAttachment.source).eq(attachmentsKeys[0]);
 
-    const [secondAttachment] = results.tests[1].attachments;
-    expect(secondAttachment.type).eq("text/csv");
-    expect(secondAttachment.source).eq(attachmentsKeys[1]);
-  });
+      const [secondAttachment] = results.tests[1].attachments;
+      expect(secondAttachment.type).eq("text/csv");
+      expect(secondAttachment.source).eq(attachmentsKeys[1]);
+    });
 
-  it("should process text attachments", async () => {
-    const results = await runFeatures(dataSet.attachments);
-    expect(results.tests).length(2);
+    it("should process text attachments", async () => {
+      const results = await runFeatures(dataSet.attachments);
+      expect(results.tests).length(2);
 
-    const attachmentsKeys = Object.keys(results.attachments);
-    expect(attachmentsKeys).length(2);
-    expect(results.attachments[attachmentsKeys[0]]).eq("some text");
+      const attachmentsKeys = Object.keys(results.attachments);
+      expect(attachmentsKeys).length(2);
+      expect(results.attachments[attachmentsKeys[0]]).eq("some text");
 
-    const [attachment] = results.tests[0].attachments;
-    expect(attachment.type).eq("text/plain");
-    expect(attachment.source).eq(attachmentsKeys[0]);
-  });
+      const [attachment] = results.tests[0].attachments;
+      expect(attachment.type).eq("text/plain");
+      expect(attachment.source).eq(attachmentsKeys[0]);
+    });
 
-  it("should process image attachments", async () => {
-    const results = await runFeatures(dataSet.attachments);
-    expect(results.tests).length(2);
+    it("should process image attachments", async () => {
+      const results = await runFeatures(dataSet.attachments);
+      expect(results.tests).length(2);
 
-    const attachmentsKeys = Object.keys(results.attachments);
-    expect(attachmentsKeys).length(2);
+      const attachmentsKeys = Object.keys(results.attachments);
+      expect(attachmentsKeys).length(2);
 
-    const [imageAttachment] = results.tests[1].attachments;
-    expect(imageAttachment.type).eq("image/png");
-  });
+      const [imageAttachment] = results.tests[1].attachments;
+      expect(imageAttachment.type).eq("image/png");
+    });
 
-  it("should process data table as csv attachment", async () => {
-    const results = await runFeatures(dataSet.dataTable);
-    expect(results.tests).length(1);
+    it("should process data table as csv attachment", async () => {
+      const results = await runFeatures(dataSet.dataTable);
+      expect(results.tests).length(1);
 
-    const attachmentsKeys = Object.keys(results.attachments);
-    expect(attachmentsKeys).length(1);
-    expect(results.attachments[attachmentsKeys[0]]).eq("a,b,result\n1,3,4\n2,4,6\n");
+      const attachmentsKeys = Object.keys(results.attachments);
+      expect(attachmentsKeys).length(1);
+      expect(results.attachments[attachmentsKeys[0]]).eq("a,b,result\n1,3,4\n2,4,6\n");
 
-    const [attachment] = results.tests[0].attachments;
-    expect(attachment.type).eq("text/csv");
-    expect(attachment.source).eq(attachmentsKeys[0]);
-  });
+      const [attachment] = results.tests[0].attachments;
+      expect(attachment.type).eq("text/csv");
+      expect(attachment.source).eq(attachmentsKeys[0]);
+    });
 
-  it("should process data table and examples as csv attachment", async () => {
-    const results = await runFeatures(dataSet.dataTableAndExamples);
-    expect(results.tests).length(1);
+    it("should process data table and examples as csv attachment", async () => {
+      const results = await runFeatures(dataSet.dataTableAndExamples);
+      expect(results.tests).length(1);
 
-    const attachmentsKeys = Object.keys(results.attachments);
-    expect(attachmentsKeys).length(2);
-    expect(results.attachments[attachmentsKeys[0]]).eq("a\n1\n");
-    expect(results.attachments[attachmentsKeys[1]]).eq("b,result\n3,4\n");
+      const attachmentsKeys = Object.keys(results.attachments);
+      expect(attachmentsKeys).length(2);
+      expect(results.attachments[attachmentsKeys[0]]).eq("a\n1\n");
+      expect(results.attachments[attachmentsKeys[1]]).eq("b,result\n3,4\n");
 
-    const [firstAttachment, secondAttachment] = results.tests[0].attachments;
-    expect(firstAttachment.type).eq("text/csv");
-    expect(firstAttachment.source).eq(attachmentsKeys[0]);
-    expect(secondAttachment.type).eq("text/csv");
-    expect(secondAttachment.source).eq(attachmentsKeys[1]);
-  });
+      const [firstAttachment, secondAttachment] = results.tests[0].attachments;
+      expect(firstAttachment.type).eq("text/csv");
+      expect(firstAttachment.source).eq(attachmentsKeys[0]);
+      expect(secondAttachment.type).eq("text/csv");
+      expect(secondAttachment.source).eq(attachmentsKeys[1]);
+    });
 
-  it("should create labels", async () => {
-    sinon.stub(os, "hostname").returns("127.0.0.1");
+    it("should create labels", async () => {
+      sinon.stub(os, "hostname").returns("127.0.0.1");
+      sinon.stub(process, "getuid").returns(123);
 
-    const results = await runFeatures(dataSet.withTags);
-    expect(results.tests).length(1);
+      const results = await runFeatures(dataSet.withTags);
+      expect(results.tests).length(1);
 
-    const language = results.tests[0].labels.find((label) => label.name === LabelName.LANGUAGE);
-    const framework = results.tests[0].labels.find((label) => label.name === LabelName.FRAMEWORK);
-    const feature = results.tests[0].labels.find((label) => label.name === LabelName.FEATURE);
-    const suite = results.tests[0].labels.find((label) => label.name === LabelName.SUITE);
-    const host = results.tests[0].labels.find((label) => label.name === LabelName.HOST);
-    const thread = results.tests[0].labels.find((label) => label.name === LabelName.THREAD);
-    const tags = results.tests[0].labels.filter((label) => label.name === LabelName.TAG);
+      const language = results.tests[0].labels.find((label) => label.name === LabelName.LANGUAGE);
+      const framework = results.tests[0].labels.find((label) => label.name === LabelName.FRAMEWORK);
+      const feature = results.tests[0].labels.find((label) => label.name === LabelName.FEATURE);
+      const suite = results.tests[0].labels.find((label) => label.name === LabelName.SUITE);
+      const host = results.tests[0].labels.find((label) => label.name === LabelName.HOST);
+      const thread = results.tests[0].labels.find((label) => label.name === LabelName.THREAD);
+      const tags = results.tests[0].labels.filter((label) => label.name === LabelName.TAG);
 
     expect(language?.value).eq("javascript");
     expect(framework?.value).eq("cucumberjs");
@@ -381,56 +470,100 @@ describe("CucumberJSAllureReporter", () => {
     expect(tags[1].value).eq("@bar");
   });
 
-  it("should add links", async () => {
-    const results = await runFeatures(dataSet.withLinks, {
-      links: [
-        {
-          pattern: [/@issue=(.*)/],
-          urlTemplate: "https://example.org/issues/%s",
-          type: "issue",
-        },
-        {
-          pattern: [/@tms=(.*)/],
-          urlTemplate: "https://example.org/tasks/%s",
-          type: "tms",
-        },
-      ],
+    it("should add links", async () => {
+      const results = await runFeatures(dataSet.withLinks, {
+        links: [
+          {
+            pattern: [/@issue=(.*)/],
+            urlTemplate: "https://example.org/issues/%s",
+            type: "issue",
+          },
+          {
+            pattern: [/@tms=(.*)/],
+            urlTemplate: "https://example.org/tasks/%s",
+            type: "tms",
+          },
+        ],
+      });
+      expect(results.tests).length(1);
+
+      const { links, labels } = results.tests[0];
+
+      expect(links).length(2);
+      expect(links[0].type).eq("issue");
+      expect(links[0].url).eq("https://example.org/issues/1");
+      expect(links[1].type).eq("tms");
+      expect(links[1].url).eq("https://example.org/tasks/2");
+
+      const tags = results.tests[0].labels.filter((label) => label.name === LabelName.TAG);
+      expect(tags).length(1);
     });
-    expect(results.tests).length(1);
 
-    const { links, labels } = results.tests[0];
+    it("should add labels", async () => {
+      const results = await runFeatures(dataSet.withLabels, {
+        labels: [
+          {
+            pattern: [/@feature:(.*)/],
+            name: "epic",
+          },
+          {
+            pattern: [/@severity:(.*)/],
+            name: "severity",
+          },
+        ],
+      });
+      expect(results.tests).length(1);
 
-    expect(links).length(2);
-    expect(links[0].type).eq("issue");
-    expect(links[0].url).eq("https://example.org/issues/1");
-    expect(links[1].type).eq("tms");
-    expect(links[1].url).eq("https://example.org/tasks/2");
-
-    const tags = results.tests[0].labels.filter((label) => label.name === LabelName.TAG);
-    expect(tags).length(1);
-  });
-
-  it("should add labels", async () => {
-    const results = await runFeatures(dataSet.withLabels, {
-      labels: [
-        {
-          pattern: [/@feature:(.*)/],
-          name: "epic",
-        },
-        {
-          pattern: [/@severity:(.*)/],
-          name: "severity",
-        },
-      ],
+      const { labels } = results.tests[0];
+      const epic = labels.find((label) => label.name === LabelName.EPIC);
+      const severity = labels.find((label) => label.name === LabelName.SEVERITY);
+      const tags = labels.filter((label) => label.name === LabelName.TAG);
+      expect(epic?.value).eq("foo");
+      expect(severity?.value).eq("bar");
+      expect(tags).length(1);
     });
-    expect(results.tests).length(1);
+  })
 
-    const { labels } = results.tests[0];
-    const epic = labels.find((label) => label.name === LabelName.EPIC);
-    const severity = labels.find((label) => label.name === LabelName.SEVERITY);
-    const tags = labels.filter((label) => label.name === LabelName.TAG);
-    expect(epic?.value).eq("foo");
-    expect(severity?.value).eq("bar");
-    expect(tags).length(1);
-  });
+  describe("custom world", () => {
+    it("should handle steps with anonymous handler function", async () => {
+      const results = await runFeatures(dataSet.withStepsAnonymous);
+      expect(results.tests).length(1);
+
+      const { labels, steps: [givenStep, whenStep, thenStep] } = results.tests[0];
+
+      expect(givenStep.steps).length(0)
+      expect(whenStep.steps).length(1)
+      expect(whenStep.steps[0].name).eq("first nested step")
+      expect(whenStep.steps[0].attachments).length(0)
+      expect(thenStep.steps).length(1)
+      expect(thenStep.steps[0].name).eq("second nested step")
+      expect(thenStep.steps[0].attachments).length(1)
+    });
+
+    it("should handle steps with arrow handler function", async () => {
+      const results = await runFeatures(dataSet.withStepsAnonymous);
+      expect(results.tests).length(1);
+
+      const { labels, steps: [givenStep, whenStep, thenStep] } = results.tests[0];
+
+      expect(givenStep.steps).length(0)
+      expect(whenStep.steps).length(1)
+      expect(whenStep.steps[0].name).eq("first nested step")
+      expect(whenStep.steps[0].attachments).length(0)
+      expect(thenStep.steps).length(1)
+      expect(thenStep.steps[0].name).eq("second nested step")
+      expect(thenStep.steps[0].attachments).length(1)
+    });
+
+    it("should handle errors inside steps", async () => {
+      const results = await runFeatures(dataSet.withFailedStep);
+      expect(results.tests).length(1);
+
+      const { steps: [, whenStep] } = results.tests[0];
+
+      expect(whenStep.steps[0].status).eq(Status.FAILED);
+      expect(whenStep.steps[0].statusDetails.message).eq("an error message");
+      expect(whenStep.steps[0].statusDetails.trace).not.eq("");
+    });
+  })
 });
