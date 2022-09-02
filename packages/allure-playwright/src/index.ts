@@ -21,7 +21,6 @@ import process from "process";
 import { FullConfig, TestStatus } from "@playwright/test";
 import { Reporter, Suite, TestCase, TestResult, TestStep } from "@playwright/test/reporter";
 import {
-  ALLURE_METADATA_CONTENT_TYPE,
   AllureGroup,
   AllureRuntime,
   AllureStep,
@@ -32,6 +31,7 @@ import {
   LabelName,
   Status,
 } from "allure-js-commons";
+import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
 type AllureReporterOptions = {
   detail?: boolean;

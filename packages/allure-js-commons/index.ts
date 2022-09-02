@@ -28,6 +28,5 @@ export {
   Stage,
   Status,
   LinkType,
-  ParameterOptions,
-  ALLURE_METADATA_CONTENT_TYPE
+  ParameterOptions
 } from "./src/model";

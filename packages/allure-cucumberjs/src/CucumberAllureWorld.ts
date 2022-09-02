@@ -1,6 +1,5 @@
 import { World } from "@cucumber/cucumber";
 import {
-  ALLURE_METADATA_CONTENT_TYPE,
   AllureStep,
   Attachment,
   AttachmentMetadata,
@@ -12,6 +11,7 @@ import {
   Stage,
   Status,
 } from "allure-js-commons";
+import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
 export type CucumberAttachmentStepMetadata = Omit<
   ExecutableItem,

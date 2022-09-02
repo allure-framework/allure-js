@@ -1,6 +1,5 @@
 import test from "@playwright/test";
 import {
-  ALLURE_METADATA_CONTENT_TYPE,
   AttachmentMetadata,
   Label,
   LabelName,
@@ -9,6 +8,7 @@ import {
   Parameter,
   ParameterOptions,
 } from "allure-js-commons";
+import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
 export class allure {
   static addMetadataAttachment(metadata: AttachmentMetadata) {

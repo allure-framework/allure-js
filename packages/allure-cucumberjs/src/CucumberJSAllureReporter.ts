@@ -7,7 +7,6 @@ import * as messages from "@cucumber/messages";
 import { Tag, TestStepResultStatus } from "@cucumber/messages";
 import {
   Allure,
-  ALLURE_METADATA_CONTENT_TYPE,
   AllureGroup,
   AllureRuntime,
   AllureStep,
@@ -20,6 +19,7 @@ import {
   Stage,
   Status,
 } from "allure-js-commons";
+import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 import { CucumberAllureInterface } from "./CucumberAllureInterface";
 import {
   CucumberAllureWorld,
