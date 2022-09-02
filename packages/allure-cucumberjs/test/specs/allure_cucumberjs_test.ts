@@ -213,8 +213,6 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
   },
   withStepsAnonymous: {
     supportCodeLibrary: buildSupportCodeLibrary(({ Given, When, Then, setWorldConstructor }) => {
-      setWorldConstructor(CucumberAllureWorld);
-
       Given("a step", function () {});
 
       When("do something", async function (this: CucumberAllureWorld) {
@@ -244,8 +242,6 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
   },
   withStepsArrow: {
     supportCodeLibrary: buildSupportCodeLibrary(({ Given, When, Then, setWorldConstructor }) => {
-      setWorldConstructor(CucumberAllureWorld);
-
       Given("a step", function () {});
 
       When("do something", async function (this: CucumberAllureWorld) {
@@ -275,8 +271,6 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
   },
   withFailedStep: {
     supportCodeLibrary: buildSupportCodeLibrary(({ Given, When, Then, setWorldConstructor }) => {
-      setWorldConstructor(CucumberAllureWorld);
-
       Given("a step", function () {});
 
       When("do something", async function (this: CucumberAllureWorld) {

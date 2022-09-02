@@ -21,7 +21,7 @@ import {
   Status,
 } from "allure-js-commons";
 import { CucumberAllureInterface } from "./CucumberAllureInterface";
-import { CucumberAttachmentMetadata, CucumberAttachmentStepMetadata } from "./CucumberAllureWorld";
+import { CucumberAllureWorld, CucumberAttachmentMetadata, CucumberAttachmentStepMetadata } from "./CucumberAllureWorld";
 
 export { Allure };
 
@@ -97,6 +97,9 @@ export class CucumberJSAllureFormatter extends Formatter {
     };
 
     this.allureInterface = new CucumberAllureInterface(this, this.allureRuntime);
+    // eslint-disable-next-line
+    // @ts-ignore
+    options.supportCodeLibrary.World = CucumberAllureWorld;
     this.beforeHooks = options.supportCodeLibrary.beforeTestCaseHookDefinitions;
     this.afterHooks = options.supportCodeLibrary.afterTestCaseHookDefinitions;
   }
