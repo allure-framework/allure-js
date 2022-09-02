@@ -21,7 +21,11 @@ import {
   Status,
 } from "allure-js-commons";
 import { CucumberAllureInterface } from "./CucumberAllureInterface";
-import { CucumberAllureWorld, CucumberAttachmentMetadata, CucumberAttachmentStepMetadata } from "./CucumberAllureWorld";
+import {
+  CucumberAllureWorld,
+  CucumberAttachmentMetadata,
+  CucumberAttachmentStepMetadata,
+} from "./CucumberAllureWorld";
 
 export { Allure };
 

@@ -1,11 +1,11 @@
 import os from "os";
 import process from "process";
-import {LabelName, Status} from "allure-js-commons";
-import {expect} from "chai";
+import { LabelName, Status } from "allure-js-commons";
+import { expect } from "chai";
 import sinon from "sinon";
-import {ITestFormatterOptions, runFeatures} from "../helpers/formatter_helpers";
-import {buildSupportCodeLibrary} from "../helpers/runtime_helpers";
-import {CucumberAllureWorld} from "../../src/CucumberAllureWorld";
+import { ITestFormatterOptions, runFeatures } from "../helpers/formatter_helpers";
+import { buildSupportCodeLibrary } from "../helpers/runtime_helpers";
+import { CucumberAllureWorld } from "../../src/CucumberAllureWorld";
 
 const dataSet: { [name: string]: ITestFormatterOptions } = {
   simple: {
@@ -530,11 +530,11 @@ describe("CucumberJSAllureReporter", () => {
         steps: [givenStep, whenStep, thenStep],
       } = results.tests[0];
 
-      expect(labels.find(label => label.name === "label_name")).eql({
+      expect(labels.find((label) => label.name === "label_name")).eql({
         name: "label_name",
         value: "label_value",
       });
-      expect(labels.find(label => label.name === LabelName.EPIC)).eql({
+      expect(labels.find((label) => label.name === LabelName.EPIC)).eql({
         name: LabelName.EPIC,
         value: "foo",
       });
@@ -556,11 +556,11 @@ describe("CucumberJSAllureReporter", () => {
         steps: [givenStep, whenStep, thenStep],
       } = results.tests[0];
 
-      expect(labels.find(label => label.name === "label_name")).eql({
+      expect(labels.find((label) => label.name === "label_name")).eql({
         name: "label_name",
         value: "label_value",
       });
-      expect(labels.find(label => label.name === LabelName.EPIC)).eql({
+      expect(labels.find((label) => label.name === LabelName.EPIC)).eql({
         name: LabelName.EPIC,
         value: "foo",
       });
