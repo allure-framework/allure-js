@@ -1,11 +1,11 @@
 import os from "os";
 import process from "process";
-import { LabelName, Status } from "allure-js-commons";
-import { expect } from "chai";
+import {LabelName, Status} from "allure-js-commons";
+import {expect} from "chai";
 import sinon from "sinon";
-import { ITestFormatterOptions, runFeatures } from "../helpers/formatter_helpers";
-import { buildSupportCodeLibrary } from "../helpers/runtime_helpers";
-import { CucumberAllureWorld } from "../../src/CucumberAllureWorld";
+import {ITestFormatterOptions, runFeatures} from "../helpers/formatter_helpers";
+import {buildSupportCodeLibrary} from "../helpers/runtime_helpers";
+import {CucumberAllureWorld} from "../../src/CucumberAllureWorld";
 
 const dataSet: { [name: string]: ITestFormatterOptions } = {
   simple: {
@@ -223,6 +223,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
 
       Then("get something", async function (this: CucumberAllureWorld) {
         await this.step("second nested step", async function () {
+          await this.epic("foo");
           await this.attachment(JSON.stringify({ foo: "bar" }), "application/json");
         });
       });
@@ -252,6 +253,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
 
       Then("get something", async function (this: CucumberAllureWorld) {
         await this.step("second nested step", async (step) => {
+          await this.epic("foo");
           await step.attachment(JSON.stringify({ foo: "bar" }), "application/json");
         });
       });
@@ -528,6 +530,14 @@ describe("CucumberJSAllureReporter", () => {
         steps: [givenStep, whenStep, thenStep],
       } = results.tests[0];
 
+      expect(labels.find(label => label.name === "label_name")).eql({
+        name: "label_name",
+        value: "label_value",
+      });
+      expect(labels.find(label => label.name === LabelName.EPIC)).eql({
+        name: LabelName.EPIC,
+        value: "foo",
+      });
       expect(givenStep.steps).length(0);
       expect(whenStep.steps).length(1);
       expect(whenStep.steps[0].name).eq("first nested step");
@@ -546,6 +556,14 @@ describe("CucumberJSAllureReporter", () => {
         steps: [givenStep, whenStep, thenStep],
       } = results.tests[0];
 
+      expect(labels.find(label => label.name === "label_name")).eql({
+        name: "label_name",
+        value: "label_value",
+      });
+      expect(labels.find(label => label.name === LabelName.EPIC)).eql({
+        name: LabelName.EPIC,
+        value: "foo",
+      });
       expect(givenStep.steps).length(0);
       expect(whenStep.steps).length(1);
       expect(whenStep.steps[0].name).eq("first nested step");
