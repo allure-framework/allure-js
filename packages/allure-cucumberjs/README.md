@@ -161,14 +161,3 @@ Given(/my step/, async function () {
   })
 })
 ```
-
-### Author
-
-Ilya Korobitsyn <mail@korobochka.org>
-
-#### Contributors
-
-* Claudia Hardman <claudia.hardman@mattel.com>
-* Max Di Maria <ciclids@gmail.com>
-* Daniel Montesinos <damonpam@gmail.com>
-* 
