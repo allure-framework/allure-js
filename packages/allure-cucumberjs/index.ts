@@ -5,5 +5,5 @@ export {
   CucumberAllureWorld
 } from "./src/CucumberAllureWorld";
 export {
-  AllureRuntime, AllureConfig, ContentType, Severity, ExecutorInfo, Category, ALLURE_METADATA_CONTENT_TYPE
+  AllureRuntime, AllureConfig, ContentType, Severity, ExecutorInfo, Category
 } from "allure-js-commons";
