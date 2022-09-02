@@ -37,8 +37,58 @@ export type LinkMatcher = {
 };
 
 export class CucumberJSAllureFormatterConfig {
+  /**
+   * Formatter function to customize errors messages
+   *
+   * @example
+   * ```js
+   * {
+   *   exceptionFormatter: (message) => `Formatted message: ${message}`
+   * }
+   * ```
+   */
   exceptionFormatter?: (message: string) => string;
+  /**
+   * Labels matchers objects used to extract labels from features
+   *
+   * @example
+   * ```gherkin
+   * @feature=FEATURE-1
+   * Scenario: Example for scenario issue link check
+   * ```
+   * ```js
+   * {
+   *   labels: [
+   *     {
+   *       pattern: [/@feature:(.*)/],
+   *       name: "epic"
+   *     }
+   *   ]
+   * }
+   * ```
+   */
   labels?: LabelMatcher[];
+  /**
+   * Links matchers objects used to extract links from features.
+   * `%s` will be replaced by issue id.
+   *
+   * @example
+   * ```gherkin
+   * Scenario: Example for scenario issue link check
+   * Then the issue link should be "http://example.org/issue/TEST-1"
+   * ```
+   * ```js
+   * {
+   *   links: [
+   *     {
+   *       pattern: [/@issue=(.*)/],
+   *       type: "issue",
+   *       urlTemplate: "http://example.org/issue/%s"
+   *     }
+   *   ]
+   * }
+   * ```
+   */
   links?: LinkMatcher[];
 }
 
@@ -73,6 +123,11 @@ export class CucumberJSAllureFormatter extends Formatter {
   private readonly allureSteps: Map<string, AllureStep> = new Map();
   private runningTestsMap: Map<string, AllureTest> = new Map();
 
+  /**
+   * @param options Reporter options provided by Cucumber runtime
+   * @param allureRuntime `AllureRuntime` instance imported from `allure-js-commons` package
+   * @param config The formatter configuration
+   */
   constructor(
     options: IFormatterOptions,
     private readonly allureRuntime: AllureRuntime,

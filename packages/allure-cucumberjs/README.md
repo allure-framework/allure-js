@@ -1,13 +1,28 @@
 # allure-cucumberjs
 
-Allure integration for Cucumber.JS framework
+Allure integration for `cucumber-js` compatible with `@cucumber/cucumber@^8.x.x` and Allure 2+.
 
-Compatible with Cucumber.JS 3+ and Allure 2+
+## Basic usage
 
-### How to use
-Create Reporter file:
-```ecmascript 6
-export default class Reporter extends CucumberJSAllureFormatter {
+Install the required packages using your favorite package manager:
+
+```shell
+# using npm
+npm install --save-dev allure-js-commons allure-cucumberjs
+# using yarn
+yarn add -D allure-js-commons allure-cucumberjs
+# using pnpm
+pnpm add -D allure-js-commons allure-cucumberjs
+```
+
+Create the reporter file:
+
+```js
+// reporter.js
+import { AllureRuntime } from "allure-js-commons"
+import { CucumberJSAllureFormatter } from "allure-cucumberjs";
+
+export default class extends CucumberJSAllureFormatter {
   constructor(options) {
     super(
       options,
@@ -40,51 +55,112 @@ export default class Reporter extends CucumberJSAllureFormatter {
   }
 }
 ```
-This class **MUST**:
-* Be a default export.
-* Extend `CucumberJSAllureFormatter`.
-* First `super()` argument is the first argument in the `constructor`.
-* Second `super()` argument is an `AllureRuntime` instance.
-* Third argument is a config object which allows:
-  * Map tags to Allure labels.
-  * Add links to external sites like JIRA, XRAY, etc. `%s` will be auto-replaced by the issue id. Example:
-```gherkin
-@issue=TEST-1
-Scenario: Example for scenario issue link check
-Then the issue link should be "http://localhost:8080/issue/TEST-1"
+
+Then let know `cucumber-js` about the reporter via CLI parameter:
+
+```shell
+cucumber-js --format ./path/to/reporter.js
 ```
 
-Then pass with reporter as a Cucumber formatter:
-```
-node cucumber.js --format ./path/to/Reporter.js
-```
-If you want to retain default formatter add some dummy file as output:
-```
-node cucumber.js --format ./path/to/Reporter.js:./dummy.txt
-```
+Or via configuration file:
 
-#### Reporter without classes
-If you can not use classes (ES6 or TypeScript), here is an example of Reporter.js file written in plain JS:
-```javascript
-const { CucumberJSAllureFormatter } = require("allure-cucumberjs");
-const { AllureRuntime } = require("allure-cucumberjs");
-
-function Reporter(options) {
-  return new CucumberJSAllureFormatter(
-    options,
-    new AllureRuntime({ resultsDir: "./allure-results" }),
-    {}
-  );
+```js
+// config.js
+module.exports = {
+  default: {
+    format: "./path/to/reporter.js"
+  }
 }
-Reporter.prototype = Object.create(CucumberJSAllureFormatter.prototype);
-Reporter.prototype.constructor = Reporter;
-
-exports.default = Reporter;
 ```
 
-### API
-Instance of AllureInterface will be added to World prototype.
-You can use it for creating nested steps and adding info to the report. 
+And then run CLI with `config` parameter:
+
+```shell
+cucumber-js --config ./config.js
+```
+
+If you want to retain default formatter add some dummy file as output:
+
+```shell
+cucumber-js --format ./path/to/reporter.js:./dummy.txt
+```
+
+## Using Allure API
+
+You're able to call Allure API methods injected to the `World` object by the reporter.
+By default, the feature is available out of the box for single thread mode.
+
+Example:
+
+```js
+import { Given } from "@cucumber/cucumber"
+
+Given(/my step/, async function () {
+  await this.step("step can have anonymous body function", async function () {
+    await this.label("label_name", "label_value") 
+    await this.attachment(JSON.stringify({ foo: "bar "}), "application/json")
+  })
+  
+  await this.step("by the way, body function can be arrow one", async (step) => {
+    await step.label("label_name", "label_value")
+    await step.attachment(JSON.stringify({ foo: "bar "}), "application/json")
+  })
+})
+```
+
+If you want to keep the functoinality in `parallel` mode, set `CucumberAllureWorld` as
+world constructor:
+
+```diff
+- import { Given } from "@cucumber/cucumber"
++ import { Given, setWorldConstructor } from "@cucumber/cucumber"
++ import { CucumberAllureWorld } from "allure-cucumberjs"
+
++ setWorldConstructor(CucumberAllureWorld)
+
+Given(/my step/, async function () {
+  await this.step("step can have anonymous body function", async function () {
+    await this.label("label_name", "label_value")
+    await this.attachment(JSON.stringify({ foo: "bar "}), "application/json")
+  })
+
+  await this.step("by the way, body function can be arrow one", async (step) => {
+    await step.label("label_name", "label_value")
+    await step.attachment(JSON.stringify({ foo: "bar "}), "application/json")
+  })
+})
+```
+
+Follow the same approach when you need to use your own `World` implementation. Just extend it from
+`CucumberAllureWorld`:
+
+```diff
+- import { Given } from "@cucumber/cucumber"
++ import { Given, setWorldConstructor } from "@cucumber/cucumber"
++ import { CucumberAllureWorld } from "allure-cucumberjs"
+
++ class MyWorld extends CucumberAllureWorld {
++   hello() {
++     console.log('say hello!')
++   }
++ }
+
++ setWorldConstructor(MyWorld)
+
+Given(/my step/, async function () {
++  this.hello()
+  
+  await this.step("step can have anonymous body function", async function () {
+    await this.label("label_name", "label_value")
+    await this.attachment(JSON.stringify({ foo: "bar "}), "application/json")
+  })
+
+  await this.step("by the way, body function can be arrow one", async (step) => {
+    await step.label("label_name", "label_value")
+    await step.attachment(JSON.stringify({ foo: "bar "}), "application/json")
+  })
+})
+```
 
 ### Author
 
@@ -95,3 +171,4 @@ Ilya Korobitsyn <mail@korobochka.org>
 * Claudia Hardman <claudia.hardman@mattel.com>
 * Max Di Maria <ciclids@gmail.com>
 * Daniel Montesinos <damonpam@gmail.com>
+* 
