@@ -232,6 +232,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     const labels = this.parseTagsLabels(scenario?.tags || []);
     const links = this.parseTagsLinks(scenario?.tags || []);
     const currentTest = new AllureTest(this.allureRuntime, Date.now());
+    const thread = ALLURE_THREAD_NAME || process.pid.toString();
 
     this.runningTestsMap.set(data.id, currentTest);
     this.testCaseStartedMap.set(data.id, data);
@@ -239,9 +240,9 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     currentTest.name = pickle.name;
     currentTest?.addLabel(LabelName.HOST, this.hostname);
-    currentTest?.addLabel(LabelName.THREAD, ALLURE_THREAD_NAME || process.getuid().toString());
     currentTest?.addLabel(LabelName.LANGUAGE, "javascript");
     currentTest?.addLabel(LabelName.FRAMEWORK, "cucumberjs");
+    currentTest?.addLabel(LabelName.THREAD, thread);
 
     if (doc?.feature) {
       currentTest.addLabel(LabelName.FEATURE, doc.feature.name);
