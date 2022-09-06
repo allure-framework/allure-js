@@ -358,7 +358,6 @@ describe("CucumberJSAllureReporter", () => {
 
   it("should create labels", async () => {
     sinon.stub(os, "hostname").returns("127.0.0.1");
-    sinon.stub(process, "getuid").returns(123);
 
     const results = await runFeatures(dataSet.withTags);
     expect(results.tests).length(1);
@@ -376,7 +375,7 @@ describe("CucumberJSAllureReporter", () => {
     expect(feature?.value).eq("a");
     expect(suite?.value).eq("b");
     expect(host?.value).eq("127.0.0.1");
-    expect(thread?.value).eq("123");
+    expect(thread?.value).eq(process.pid.toString());
     expect(tags).length(2);
     expect(tags[0].value).eq("@foo");
     expect(tags[1].value).eq("@bar");
