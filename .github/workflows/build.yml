@@ -12,37 +12,53 @@ on:
 
 jobs:
   build:
-    name: "Build"
-    runs-on: ubuntu-latest
+    name: 'Build & Test'
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest]
         node-version: [14.x, 16.x]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2.4.2
-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
-
       - name: yarn install
         run: |
           yarn install
-
-      - run: yarn workspace allure-playwright playwright install chromium --with-deps
-
+      - name: install chromium
+        run: |
+          yarn workspace allure-playwright playwright install chromium --with-deps
       - name: yarn build
         run: |
           yarn run build
+      - name: yarn test
+        run: |
+          yarn run test
+
+  lint:
+    name: 'Lint'
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [16.x]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2.4.2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+      - name: yarn install
+        run: |
+          yarn install
       - name: prettier:check
         run: |
           yarn prettier:check
       - name: yarn lint
         run: |
           yarn run lint
-      - name: yarn test
-        run: |
-          yarn run test
-
