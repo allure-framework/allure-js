@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [16.x]
+        node-version: [16.x, 18.x]
     steps:
       - uses: actions/checkout@v2.4.2
 
@@ -41,7 +41,7 @@ jobs:
 
       - name: npm install
         run: |
-          npm install --workspaces
+          npm i
 
       - name: install playwright
         run: npx --prefix ./packages/allure-playwright playwright install chromium --with-deps
