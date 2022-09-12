@@ -31,7 +31,7 @@ jobs:
 
       - name: "Npm install"
         run: |
-          npm i
+          npm ci
 
       - name: "Set release version"
         run: |
