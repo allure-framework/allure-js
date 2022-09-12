@@ -26,12 +26,12 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
           cache: 'npm'
 
       - name: "Npm install"
         run: |
-          npm install --workspaces
+          npm i
 
       - name: "Set release version"
         run: |
