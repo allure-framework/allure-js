@@ -8,4 +8,9 @@ module.exports = {
     es6: true,
   },
   extends: ["../../.eslintrc.js"],
+  parserOptions: {
+    project: ["tsconfig.json"],
+    sourceType: "module",
+    warnOnUnsupportedTypeScriptVersion: false,
+  },
 };

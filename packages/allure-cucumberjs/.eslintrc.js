@@ -11,7 +11,7 @@ module.exports = {
     "../../.eslintrc.js",
   ],
   parserOptions: {
-    project: "./tsconfig.json",
+    project: ["tsconfig.json"],
     sourceType: "module",
     warnOnUnsupportedTypeScriptVersion: false,
   },
