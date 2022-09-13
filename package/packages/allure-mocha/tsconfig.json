@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "exclude": ["test/**", "runtime.d.ts"],
+  "compilerOptions": {
+    "types": [],
+    "rootDir": "./src",
+    "outDir": "./dist"
+  }
+}

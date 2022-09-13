@@ -2,18 +2,15 @@
   "name": "allure-js",
   "private": true,
   "version": "2.0.0-beta.19",
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "prepare": "husky install",
     "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}'",
     "prettier:check": "prettier --check './packages/*/{src,test,features}/**/*.{js,ts}'",
-    "clean": "yarn workspaces foreach -vpt run clean",
-    "compile": "yarn workspaces foreach -vpt run compile",
-    "lint": "yarn workspaces foreach -vpt run lint",
-    "test": "yarn workspaces foreach -vpt run test",
-    "build": "yarn run clean && yarn run compile"
+    "clean": "pnpm run -r --if-present clean",
+    "compile": "pnpm run --filter 'allure-js-commons' compile && pnpm run --filter '!allure-js-commons' --if-present compile",
+    "lint": "pnpm run -r --if-present lint",
+    "test": "pnpm run -r --if-present test",
+    "build": "pnpm run clean && pnpm run compile"
   },
   "lint-staged": {
     "*.ts": [
@@ -40,6 +37,5 @@
     "rimraf": "^3.0.2",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.2"
-  },
-  "packageManager": "yarn@3.2.1"
+  }
 }

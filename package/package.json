@@ -1,0 +1,40 @@
+{
+  "name": "allure-js",
+  "private": true,
+  "version": "2.0.0-beta.19",
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^14.6.0",
+    "@typescript-eslint/eslint-plugin": "^4.29.3",
+    "@typescript-eslint/parser": "^4.29.3",
+    "allure-commandline": "^2.13.8",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-jsdoc": "^37.0.0",
+    "eslint-plugin-no-null": "^1.0.2",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "husky": "^7.0.2",
+    "lint-staged": "^11.1.2",
+    "npm-run-all": "^4.1.5",
+    "nyc": "^15.1.0",
+    "prettier": "^2.3.2",
+    "replace-in-file": "^6.2.0",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.2"
+  },
+  "scripts": {
+    "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}'",
+    "prettier:check": "prettier --check './packages/*/{src,test,features}/**/*.{js,ts}'",
+    "clean": "pnpm run -r --if-present clean",
+    "compile": "pnpm run --filter 'allure-js-commons' compile && pnpm run --filter '!allure-js-commons' --if-present compile",
+    "lint": "pnpm run -r --if-present lint",
+    "test": "pnpm run -r --if-present test",
+    "build": "pnpm run clean && pnpm run compile"
+  }
+}

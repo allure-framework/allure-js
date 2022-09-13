@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": [
+    "./src/**/*",
+    "./index.ts"
+  ],
+  "compilerOptions": {
+    "types": [
+      "node",
+      "jasmine"
+    ],
+    "outDir": "./dist"
+  }
+}
