@@ -1,3 +1,4 @@
+import process from "node:process";
 import { World } from "@cucumber/cucumber";
 import {
   AllureStep,
@@ -11,7 +12,9 @@ import {
   Stage,
   Status,
 } from "allure-js-commons";
-import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
+// import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
+
+const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
 
 export type CucumberAttachmentStepMetadata = Omit<
   ExecutableItem,
@@ -19,6 +22,7 @@ export type CucumberAttachmentStepMetadata = Omit<
 >;
 
 export interface CucumberAttachmentMetadata extends AttachmentMetadata {
+  workerId?: string;
   step?: CucumberAttachmentStepMetadata;
 }
 
@@ -34,6 +38,7 @@ export class CucumberStep implements CucumberExecutableWrapper {
   attachments: Attachment[] = [];
 
   metadata: CucumberAttachmentMetadata = {
+    workerId: process.env.CUCUMBER_WORKER_ID,
     labels: [],
   };
 

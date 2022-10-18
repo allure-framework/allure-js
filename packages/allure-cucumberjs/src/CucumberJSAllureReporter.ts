@@ -19,13 +19,15 @@ import {
   Stage,
   Status,
 } from "allure-js-commons";
-import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
+// import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 import { CucumberAllureInterface } from "./CucumberAllureInterface";
 import {
   CucumberAllureWorld,
   CucumberAttachmentMetadata,
   CucumberAttachmentStepMetadata,
 } from "./CucumberAllureWorld";
+
+const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
 
 export { Allure };
 
@@ -125,6 +127,8 @@ export class CucumberJSAllureFormatter extends Formatter {
   private readonly testCaseMap: Map<string, messages.TestCase> = new Map();
   private readonly testCaseStartedMap: Map<string, messages.TestCaseStarted> = new Map();
   private readonly allureSteps: Map<string, AllureStep> = new Map();
+
+  private runningGroupsMap: Map<string, AllureGroup> = new Map();
   private runningTestsMap: Map<string, AllureTest> = new Map();
 
   /**
