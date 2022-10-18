@@ -63,7 +63,9 @@ export class CucumberStep implements CucumberExecutableWrapper {
     });
   }
 
-  async start(body: (step: CucumberStep) => any | Promise<any>): Promise<CucumberAttachmentMetadata> {
+  async start(
+    body: (step: CucumberStep) => any | Promise<any>,
+  ): Promise<CucumberAttachmentMetadata> {
     const startDate = new Date().getTime();
 
     try {

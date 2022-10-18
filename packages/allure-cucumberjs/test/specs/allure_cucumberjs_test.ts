@@ -456,16 +456,16 @@ describe("CucumberJSAllureReporter", () => {
       const thread = results.tests[0].labels.find((label) => label.name === LabelName.THREAD);
       const tags = results.tests[0].labels.filter((label) => label.name === LabelName.TAG);
 
-    expect(language?.value).eq("javascript");
-    expect(framework?.value).eq("cucumberjs");
-    expect(feature?.value).eq("a");
-    expect(suite?.value).eq("b");
-    expect(host?.value).eq("127.0.0.1");
-    expect(thread?.value).eq(process.pid.toString());
-    expect(tags).length(2);
-    expect(tags[0].value).eq("@foo");
-    expect(tags[1].value).eq("@bar");
-  });
+      expect(language?.value).eq("javascript");
+      expect(framework?.value).eq("cucumberjs");
+      expect(feature?.value).eq("a");
+      expect(suite?.value).eq("b");
+      expect(host?.value).eq("127.0.0.1");
+      expect(thread?.value).eq(process.pid.toString());
+      expect(tags).length(2);
+      expect(tags[0].value).eq("@foo");
+      expect(tags[1].value).eq("@bar");
+    });
 
     it("should add links", async () => {
       const results = await runFeatures(dataSet.withLinks, {
