@@ -1,6 +1,7 @@
 import os from "os";
 import process from "process";
 import { LabelName, Status } from "allure-js-commons";
+import { it, describe } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
 import { ITestFormatterOptions, runFeatures } from "../helpers/formatter_helpers";

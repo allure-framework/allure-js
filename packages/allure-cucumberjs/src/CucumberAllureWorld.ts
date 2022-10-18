@@ -12,9 +12,7 @@ import {
   Stage,
   Status,
 } from "allure-js-commons";
-// import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
-
-const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
+import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
 export type CucumberAttachmentStepMetadata = Omit<
   ExecutableItem,
@@ -27,9 +25,9 @@ export interface CucumberAttachmentMetadata extends AttachmentMetadata {
 }
 
 interface CucumberExecutableWrapper {
-  label: (name: string, value: string) => Promise<void>;
-  epic: (name: string) => Promise<void>;
-  attachment?: (body: string | Buffer, mimetype: string) => Promise<void>;
+  label: (name: string, value: string) => void;
+  epic: (name: string) => void;
+  attachment?: (body: string | Buffer, mimetype: string) => void;
 }
 
 export class CucumberStep implements CucumberExecutableWrapper {
@@ -46,38 +44,31 @@ export class CucumberStep implements CucumberExecutableWrapper {
     this.name = name;
   }
 
-  label(label: string, value: string): Promise<void> {
-    return new Promise((resolve) => {
-      this.metadata.labels?.push({
-        name: label,
-        value,
-      });
-
-      return resolve();
+  label(label: string, value: string): void {
+    this.metadata.labels?.push({
+      name: label,
+      value,
     });
   }
 
-  async epic(epic: string) {
-    await this.label(LabelName.EPIC, epic);
+  epic(epic: string) {
+    this.label(LabelName.EPIC, epic);
   }
 
-  async attachment(source: string | Buffer, type: string): Promise<void> {
-    return new Promise((resolve) => {
-      this.attachments.push({
-        name: "attachment",
-        source: source.toString(),
-        type: type,
-      });
-
-      return resolve();
+  attachment(source: string | Buffer, type: string): void {
+    this.attachments.push({
+      name: "attachment",
+      source: source.toString(),
+      type,
     });
   }
 
-  async start(body: (step: CucumberStep) => Promise<any>): Promise<CucumberAttachmentMetadata> {
+  async start(body: (step: CucumberStep) => any | Promise<any>): Promise<CucumberAttachmentMetadata> {
     const startDate = new Date().getTime();
 
     try {
-      const stepResult = await body.call(this, this);
+      const res = body.call(this, this);
+      const stepResult = res instanceof Promise ? await res : res;
 
       return {
         ...this.metadata,

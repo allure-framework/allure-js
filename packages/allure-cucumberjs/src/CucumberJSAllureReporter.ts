@@ -19,15 +19,13 @@ import {
   Stage,
   Status,
 } from "allure-js-commons";
-// import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
+import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 import { CucumberAllureInterface } from "./CucumberAllureInterface";
 import {
   CucumberAllureWorld,
   CucumberAttachmentMetadata,
   CucumberAttachmentStepMetadata,
 } from "./CucumberAllureWorld";
-
-const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
 
 export { Allure };
 
