@@ -17,11 +17,8 @@
   "packageManager": "yarn@3.2.1",
   "dependencies": {
     "allure-js-commons": "workspace:*",
-    "duplexer": "^0.1.2",
     "minimist": "^1.2.7",
-    "tap-out": "^3.0.0",
-    "tap-parser": "^11.0.1",
-    "through2": "^4.0.2"
+    "tap-parser": "^11.0.1"
   },
   "devDependencies": {
     "@types/chai": "^4.3.3",

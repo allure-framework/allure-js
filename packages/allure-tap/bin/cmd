@@ -2,9 +2,11 @@
 const process = require("node:process");
 const allureTap = require("../dist/index").default;
 
-process.stdin
-  .pipe(allureTap(process))
-  .pipe(process.stdout);
+allureTap(process);
+
+// process.stdin
+//   .pipe(allureTap(process))
+//   // .pipe(process.stdout);
 
 // TODO
 // process.on('exit', function (status) {

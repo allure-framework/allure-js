@@ -1,35 +1,27 @@
 import EventEmitter from "events";
-import duplexer from "duplexer";
+import { pipeline, Readable, Writable } from "stream";
 import minimist from "minimist";
-import parser from "tap-out";
-import through2 from "through2";
+import Parser from "tap-parser";
 
-const allureTap = (process: NodeJS.Process): EventEmitter => {
+const allureTap = (process: NodeJS.Process): NodeJS.WritableStream => {
   const args = minimist(process.argv.slice(2));
   const resultsDir = args["results-dir"] as string || "";
 
-  const out = through2();
-  const tap = parser();
-  const stream = duplexer(tap, out);
+  // TODO: create d.ts file for `tap-parser`
+  // eslint-disable-next-line
+  // @ts-ignore
+  const tap = new Parser();
 
   tap.on("assert", (...res: any[]) => {
     // eslint-disable-next-line
     console.log("assert", res);
   });
-  tap.on("comment", (...res: any[]) => {
+  tap.on("complete", (...res: any[]) => {
     // eslint-disable-next-line
-    console.log("comment", res);
-  });
-  tap.on("extra", (...res: any[]) => {
-    // eslint-disable-next-line
-    console.log("extra", res);
-  });
-  tap.on("output", (...res: any[]) => {
-    // eslint-disable-next-line
-    console.log("output", res);
+    console.log("complete", res);
   });
 
-  return stream;
+  return process.stdin.pipe(tap);
 };
 
 export default allureTap;
