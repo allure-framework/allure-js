@@ -1,0 +1,44 @@
+{
+  "name": "allure-tap",
+  "version": "2.0.0-beta.19",
+  "description": "Allure tap reporter integration",
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": "./bin/cmd",
+  "scripts": {
+    "clean": "rimraf ./dist ./out",
+    "lint": "eslint ./src ./index.ts --ext .ts",
+    "lint:fix": "eslint --fix ./src ./index.ts --ext .ts",
+    "compile": "tsc",
+    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
+    "test": "nyc ts-node --project test/tsconfig.json test/runner.ts"
+  },
+  "packageManager": "yarn@3.2.1",
+  "dependencies": {
+    "allure-js-commons": "workspace:*",
+    "duplexer": "^0.1.2",
+    "minimist": "^1.2.7",
+    "tap-out": "^3.0.0",
+    "tap-parser": "^11.0.1",
+    "through2": "^4.0.2"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.3",
+    "@types/minimist": "^1.2.2",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^18.11.5",
+    "@types/sinon": "^10.0.13",
+    "@types/through2": "^2.0.36",
+    "allure-mocha": "workspace:*",
+    "chai": "^4.3.6",
+    "fast-glob": "^3.2.12",
+    "mocha": "^10.1.0",
+    "mocha-multi-reporters": "^1.5.1",
+    "nyc": "^15.1.0",
+    "rimraf": "^3.0.2",
+    "sinon": "^14.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  }
+}
