@@ -1,13 +1,10 @@
-// eslint-disable-next-line
-// @ts-ignore
+import EventEmitter from "events";
 import duplexer from "duplexer";
 import minimist from "minimist";
-// eslint-disable-next-line
-// @ts-ignore
 import parser from "tap-out";
 import through2 from "through2";
 
-const allureTap = (process: NodeJS.Process) => {
+const allureTap = (process: NodeJS.Process): EventEmitter => {
   const args = minimist(process.argv.slice(2));
   const resultsDir = args["results-dir"] as string || "";
 
