@@ -33,7 +33,7 @@ declare module "tap-parser" {
     assertion: string;
     at: string;
     message?: string;
-    values?: any[] | Record<string, string>;
+    values?: Record<string, string>;
   };
 
   export type Result = {
