@@ -81,6 +81,6 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   }
 
   private onHookEnd(hook: Mocha.Hook): void {
-    this.coreReporter.endHook(hook.error());
+    this.coreReporter.endHook(hook?.error?.());
   }
 }
