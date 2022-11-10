@@ -26,7 +26,7 @@
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
-    "@testdeck/mocha": "0.1.2",
+    "@testdeck/mocha": "0.3.2",
     "@types/chai": "^4.2.11",
     "@types/chai-arrays": "2.0.0",
     "@types/glob": "^7.1.4",

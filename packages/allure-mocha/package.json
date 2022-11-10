@@ -24,7 +24,7 @@
     "lint:fix": "eslint ./src --ext .ts --fix"
   },
   "devDependencies": {
-    "@testdeck/mocha": "0.1.2",
+    "@testdeck/mocha": "0.3.2",
     "@types/chai": "^4.2.11",
     "@types/glob": "^7.1.4",
     "@types/mocha": "^9.0.0",
