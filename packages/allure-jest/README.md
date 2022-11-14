@@ -2,6 +2,10 @@
 
 Allure integration for jest framework
 
+> **Warning**
+> This integration don't work with default runner since jest 17+.
+> To use this integration after jest 17 you need to change default runner to `Jasmine`.
+
 # How to use
 
 You can find example setup and usage in this [repo](https://github.com/vovsemenv/allure-jest-example)
