@@ -39,7 +39,7 @@ declare global {
 
 ### Change jest.config.js
 
-```json
+```js
 module.exports = {
   testRunner: "jest-jasmine2",
   preset: "ts-jest",
