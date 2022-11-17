@@ -161,7 +161,7 @@ export class CucumberWorldStep implements CucumberExecutable {
 
     try {
       const res = body.call(this, this);
-      const stepResult = res instanceof Promise ? await res : res;
+      const stepResult = await res;
 
       return {
         ...this.metadata,
