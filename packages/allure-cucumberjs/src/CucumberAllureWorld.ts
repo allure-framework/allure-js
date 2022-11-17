@@ -5,6 +5,7 @@ import {
   Attachment,
   AttachmentMetadata,
   AttachmentOptions,
+  Category,
   ContentType,
   ExecutableItem,
   ExecutableItemWrapper,
@@ -23,6 +24,8 @@ export type CucumberAttachmentStepMetadata = Omit<ExecutableItem, "steps" | "par
 export interface CucumberAttachmentMetadata extends AttachmentMetadata {
   step?: CucumberAttachmentStepMetadata;
   descriptionHtml?: string;
+  environmentInfo?: Record<string, string>;
+  categories?: Category[];
 }
 
 export interface CucumberExecutable {
@@ -254,6 +257,22 @@ export class CucumberAllureWorld extends World implements Omit<CucumberExecutabl
     await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
   }
 
+  public async writeEnvironmentInfo(info: Record<string, string>): Promise<void> {
+    const msgBody: CucumberAttachmentMetadata = {
+      environmentInfo: info,
+    };
+
+    await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
+  }
+
+  public async writeCategoriesDefinitions(categories: Category[]): Promise<void> {
+    const msgBody: CucumberAttachmentMetadata = {
+      categories,
+    };
+
+    await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
+  }
+
   async step(
     name: string,
     body: (this: CucumberWorldStep, step: CucumberWorldStep) => Promise<any>,
@@ -307,13 +326,4 @@ export class CucumberAllureWorld extends World implements Omit<CucumberExecutabl
   public async tms(name: string, url: string) {
     await this.link(url, name, LinkType.TMS);
   }
-
-  // TODO: send it through attachments api too
-  // public writeEnvironmentInfo(info: Record<string, string>): void {
-  //   this.runtime.writeEnvironmentInfo(info);
-  // }
-
-  // public writeCategoriesDefinitions(categories: Category[]): void {
-  //   this.runtime.writeCategoriesDefinitions(categories);
-  // }
 }
