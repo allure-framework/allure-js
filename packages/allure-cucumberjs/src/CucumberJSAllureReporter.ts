@@ -296,7 +296,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     const labels = this.parseTagsLabels(scenario?.tags || []);
     const links = this.parseTagsLinks(scenario?.tags || []);
     const currentTest = new AllureTest(this.allureRuntime, Date.now());
-    const thread = ALLURE_THREAD_NAME || process.pid.toString();
+    const thread = data.workerId || ALLURE_THREAD_NAME || process.pid.toString();
 
     this.runningTestsMap.set(data.id, currentTest);
     this.testCaseStartedMap.set(data.id, data);
