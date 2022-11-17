@@ -74,6 +74,7 @@ export const testRunner = async (options: ITestRunnerRequest): Promise<ITestRunn
     skip: valueOrDefault(options.skip, false)!,
     supportCodeLibrary: options.supportCodeLibrary,
     worldParameters: {},
+    filterStackTraces: false,
   });
   const result = await runner.run();
   return { envelopes, result };
