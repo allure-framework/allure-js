@@ -521,7 +521,7 @@ describe("CucumberJSAllureReporter", () => {
     });
   });
 
-  describe("custom world", () => {
+  describe("world", () => {
     it("should handle steps with anonymous handler function", async () => {
       const results = await runFeatures(dataSet.withStepsAnonymous);
       expect(results.tests).length(1);
