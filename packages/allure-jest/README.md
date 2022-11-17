@@ -1,38 +1,48 @@
-# allure-jest
-
-Allure integration for jest framework
+# Allure integration for jest framework
 
 > **Warning**
-> This integration don't work with default runner since jest 17+.
-> To use this integration after jest 17 you need to change default runner to `Jasmine`.
+> This integration don't work with default runner since jest 27+.
+> To use this integration after jest 27 you need to change default runner to `Jasmine`.
 
-# How to use
+## Examples
 
 You can find example setup and usage in this [repo](https://github.com/vovsemenv/allure-jest-example)
 
-## Default test runner (Jasmine)
+## Circus test runner (default for jest@^27)
 
-By default jest uses jasmine as test runner, so you can configure allure-jasmine reporter for it:
+Currently we didn't have official solution for circus test runner. Consider using this [community plugin](https://github.com/ryparker/jest-circus-allure-environment) instead
 
-Make allure-report.ts module:
+## Jasmine test runner (default for jest@<27)
+
+### Install dependencies
+
+```bash
+npm i -D jest-jasmine2 allure-jasmine allure-js-commons
+```
+
+Create `allure-setup.ts` file:
 
 ```typescript
 import { JasmineAllureReporter } from "allure-jasmine";
-import { AllureRuntime, Status, TestResult } from "allure-js-commons";
+import { JasmineAllureReporter } from "allure-jasmine";
+import { JasmineAllureInterface } from "allure-jasmine/dist/src/JasmineAllureReporter";
 
-const reporter = new JasmineAllureReporter(
-  new AllureRuntime({
-    resultsDir: "path/to/allure-results",
-  }),
-);
+const reporter = new JasmineAllureReporter({ resultsDir: "allure-results" });
 jasmine.getEnv().addReporter(reporter);
+// @ts-expect-error
+global.allure = reporter.getInterface();
+
+declare global {
+  const allure: JasmineAllureInterface;
+}
 ```
 
-And provide path in jest.config.js:
+### Change jest.config.js
 
-```js
+```json
 module.exports = {
-  // ...
-  setupFilesAfterEnv: ["<rootDir>/path/to/allure-report.js"],
+  testRunner: "jest-jasmine2",
+  preset: "ts-jest",
+  setupFilesAfterEnv: ["./spec/helpers/allure.ts"],
 };
 ```
