@@ -225,7 +225,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
       Then("get something", async function (this: CucumberAllureWorld) {
         await this.step("second nested step", async function () {
           await this.epic("foo");
-          await this.attachment(JSON.stringify({ foo: "bar" }), "application/json");
+          await this.attach(JSON.stringify({ foo: "bar" }), "application/json");
         });
       });
     }),
@@ -255,7 +255,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
       Then("get something", async function (this: CucumberAllureWorld) {
         await this.step("second nested step", async (step) => {
           await this.epic("foo");
-          await step.attachment(JSON.stringify({ foo: "bar" }), "application/json");
+          await step.attach(JSON.stringify({ foo: "bar" }), "application/json");
         });
       });
     }),
