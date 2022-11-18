@@ -178,7 +178,6 @@ export class CucumberWorldStep implements CucumberExecutable {
           status: Status.PASSED,
           statusDetails: {},
           attachments: this.attachments,
-          // TODO: do we need parameters here?
           parameters: [],
         },
       };
@@ -199,7 +198,6 @@ export class CucumberWorldStep implements CucumberExecutable {
                 }
               : {},
           attachments: this.attachments,
-          // TODO: do we need parameters here?
           parameters: [],
         },
       };
