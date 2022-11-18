@@ -1,17 +1,12 @@
-import process from "node:process";
 import { World } from "@cucumber/cucumber";
 import {
-  AllureStep,
   Attachment,
   AttachmentMetadata,
   AttachmentOptions,
   Category,
   ContentType,
   ExecutableItem,
-  ExecutableItemWrapper,
-  Label,
   LabelName,
-  Link,
   LinkType,
   ParameterOptions,
   Stage,
@@ -19,7 +14,15 @@ import {
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
-export type CucumberAttachmentStepMetadata = Omit<ExecutableItem, "steps" | "parameters">;
+export type CucumberAttachment = {
+  name: string;
+  type: string;
+  content: string;
+};
+
+export type CucumberAttachmentStepMetadata = Omit<ExecutableItem, "steps" | "attachments"> & {
+  attachments: CucumberAttachment[];
+};
 
 export interface CucumberAttachmentMetadata extends AttachmentMetadata {
   step?: CucumberAttachmentStepMetadata;
@@ -57,7 +60,7 @@ export interface CucumberExecutable {
 
   tms(issue: string, url: string): void | Promise<void>;
 
-  attachment(
+  attach(
     name: string,
     content: Buffer | string,
     options: ContentType | string | AttachmentOptions,
@@ -67,7 +70,7 @@ export interface CucumberExecutable {
 export class CucumberWorldStep implements CucumberExecutable {
   name: string = "";
 
-  attachments: Attachment[] = [];
+  attachments: CucumberAttachment[] = [];
 
   metadata: CucumberAttachmentMetadata = {
     labels: [],
@@ -146,10 +149,12 @@ export class CucumberWorldStep implements CucumberExecutable {
     this.link(url, name, LinkType.TMS);
   }
 
-  attachment(source: string | Buffer, type: string): void {
+  attach(source: string | Buffer, type: string): void {
     this.attachments.push({
       name: "attachment",
-      source: source.toString(),
+      content: Buffer.isBuffer(source)
+        ? source.toString("base64")
+        : Buffer.from(source, "utf8").toString("base64"),
       type,
     });
   }
@@ -173,6 +178,8 @@ export class CucumberWorldStep implements CucumberExecutable {
           status: Status.PASSED,
           statusDetails: {},
           attachments: this.attachments,
+          // TODO: do we need parameters here?
+          parameters: [],
         },
       };
     } catch (err) {
@@ -192,13 +199,15 @@ export class CucumberWorldStep implements CucumberExecutable {
                 }
               : {},
           attachments: this.attachments,
+          // TODO: do we need parameters here?
+          parameters: [],
         },
       };
     }
   }
 }
 
-export class CucumberAllureWorld extends World implements Omit<CucumberExecutable, "attachment"> {
+export class CucumberAllureWorld extends World implements Omit<CucumberExecutable, "attach"> {
   public async label(label: string, value: string) {
     const msgBody: CucumberAttachmentMetadata = {
       labels: [

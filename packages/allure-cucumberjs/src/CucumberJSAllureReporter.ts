@@ -11,6 +11,7 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
+  Attachment,
   ExecutableItem,
   ExecutableItemWrapper,
   Label,
@@ -465,18 +466,24 @@ export class CucumberJSAllureFormatter extends Formatter {
     step?: AllureStep;
     metadata: CucumberAttachmentStepMetadata;
   }) {
+    const { attachments: metadataAttachments, ...metadata } = payload.metadata;
+    const attachments: Attachment[] = metadataAttachments.map(({ name, type, content }) => {
+      const attachmentFilename = this.allureRuntime.writeAttachment(content, type, "base64");
+
+      return {
+        source: attachmentFilename,
+        name,
+        type,
+      };
+    });
     const testStep: ExecutableItem = {
-      ...payload.metadata,
+      ...metadata,
+      attachments,
       steps: [],
-      parameters: [],
     };
 
     if (payload.step) {
-      payload.step.addStep({
-        ...payload.metadata,
-        steps: [],
-        parameters: [],
-      });
+      payload.step.addStep(testStep);
       return;
     }
 
