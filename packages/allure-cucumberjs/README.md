@@ -98,12 +98,12 @@ import { Given } from "@cucumber/cucumber"
 Given(/my step/, async function () {
   await this.step("step can have anonymous body function", async function () {
     await this.label("label_name", "label_value") 
-    await this.attachment(JSON.stringify({ foo: "bar "}), "application/json")
+    await this.attach(JSON.stringify({ foo: "bar "}), "application/json")
   })
   
   await this.step("by the way, body function can be arrow one", async (step) => {
     await step.label("label_name", "label_value")
-    await step.attachment(JSON.stringify({ foo: "bar "}), "application/json")
+    await step.attach(JSON.stringify({ foo: "bar "}), "application/json")
   })
 })
 ```
@@ -121,12 +121,12 @@ world constructor:
 Given(/my step/, async function () {
   await this.step("step can have anonymous body function", async function () {
     await this.label("label_name", "label_value")
-    await this.attachment(JSON.stringify({ foo: "bar "}), "application/json")
+    await this.attach(JSON.stringify({ foo: "bar "}), "application/json")
   })
 
   await this.step("by the way, body function can be arrow one", async (step) => {
     await step.label("label_name", "label_value")
-    await step.attachment(JSON.stringify({ foo: "bar "}), "application/json")
+    await step.attach(JSON.stringify({ foo: "bar "}), "application/json")
   })
 })
 ```
@@ -152,12 +152,12 @@ Given(/my step/, async function () {
   
   await this.step("step can have anonymous body function", async function () {
     await this.label("label_name", "label_value")
-    await this.attachment(JSON.stringify({ foo: "bar "}), "application/json")
+    await this.attach(JSON.stringify({ foo: "bar "}), "application/json")
   })
 
   await this.step("by the way, body function can be arrow one", async (step) => {
     await step.label("label_name", "label_value")
-    await step.attachment(JSON.stringify({ foo: "bar "}), "application/json")
+    await step.attach(JSON.stringify({ foo: "bar "}), "application/json")
   })
 })
 ```
