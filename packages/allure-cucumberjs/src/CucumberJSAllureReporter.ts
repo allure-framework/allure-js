@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import os from "os";
 import process from "process";
 import { Formatter } from "@cucumber/cucumber";
@@ -286,12 +287,14 @@ export class CucumberJSAllureFormatter extends Formatter {
     const links = this.parseTagsLinks(scenario?.tags || []);
     const currentTest = new AllureTest(this.allureRuntime, Date.now());
     const thread = data.workerId || ALLURE_THREAD_NAME || process.pid.toString();
-
     this.testCaseStartedMap.set(data.id, data);
     this.testCaseTestStepsResults.set(data.id, []);
     this.currentTestsMap.set(data.id, currentTest);
-
+    const fullName = `${pickle.uri}#${pickle.name}`;
     currentTest.name = pickle.name;
+    currentTest.fullName = fullName;
+    currentTest.testCaseId = createHash("md5").update(fullName).digest("hex");
+
     currentTest.addLabel(LabelName.HOST, this.hostname);
     currentTest.addLabel(LabelName.LANGUAGE, "javascript");
     currentTest.addLabel(LabelName.FRAMEWORK, "cucumberjs");
