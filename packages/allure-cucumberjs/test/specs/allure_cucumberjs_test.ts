@@ -529,10 +529,9 @@ describe("CucumberJSAllureReporter", () => {
       const source = dataSet.simple.sources?.[0];
 
       const name = source!.data.match(/\nScenario: (.+)\n/)?.[1];
-      expect(testResult.fullName).eq(`${source!.uri}#${name!}`);
-      expect(testResult.testCaseId).eq(
-        createHash("md5").update(`${source!.uri}#${name!}`).digest("hex"),
-      );
+      const fullName = `${source!.uri}#${name!}`;
+      expect(testResult.fullName).eq(fullName);
+      expect(testResult.testCaseId).eq(createHash("md5").update(fullName).digest("hex"));
     });
   });
 
