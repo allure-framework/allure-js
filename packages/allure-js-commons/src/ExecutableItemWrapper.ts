@@ -3,6 +3,7 @@ import { isPromise } from "./isPromise";
 import {
   AttachmentOptions,
   ContentType,
+  ExecutableItem,
   FixtureResult,
   ParameterOptions,
   Stage,
@@ -117,6 +118,10 @@ export class ExecutableItemWrapper {
         return result;
       }
     };
+  }
+
+  public addStep(step: ExecutableItem): void {
+    this.info.steps.push(step);
   }
 }
 

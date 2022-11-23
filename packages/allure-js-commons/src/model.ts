@@ -1,7 +1,16 @@
+export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
+
 export interface Attachment {
   name: string;
   type: string;
   source: string;
+}
+
+export interface AttachmentMetadata {
+  labels?: Label[];
+  links?: Link[];
+  description?: string;
+  parameter?: Parameter[];
 }
 
 export interface AttachmentOptions {
@@ -34,7 +43,7 @@ export interface StatusDetails {
   trace?: string;
 }
 
-interface ExecutableItem {
+export interface ExecutableItem {
   name?: string;
   status?: Status;
   statusDetails: StatusDetails;

@@ -1,16 +1,17 @@
 import test from "@playwright/test";
-import { Label, LabelName, Link, LinkType, Parameter, ParameterOptions } from "allure-js-commons";
-
-export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
-export interface Metadata {
-  labels?: Label[];
-  links?: Link[];
-  description?: string;
-  parameter?: Parameter[];
-}
+import {
+  AttachmentMetadata,
+  Label,
+  LabelName,
+  Link,
+  LinkType,
+  Parameter,
+  ParameterOptions,
+} from "allure-js-commons";
+import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
 export class allure {
-  static addMetadataAttachment(metadata: Metadata) {
+  static addMetadataAttachment(metadata: AttachmentMetadata) {
     test.info().attach("allure-metadata.json", {
       contentType: ALLURE_METADATA_CONTENT_TYPE,
       body: Buffer.from(JSON.stringify(metadata), "utf8"),

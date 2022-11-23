@@ -1,6 +1,6 @@
 import os from "os";
 import process from "process";
-import { World as CucumberWorld, Formatter } from "@cucumber/cucumber";
+import { Formatter } from "@cucumber/cucumber";
 import { IFormatterOptions } from "@cucumber/cucumber/lib/formatter";
 import TestCaseHookDefinition from "@cucumber/cucumber/lib/models/test_case_hook_definition";
 import * as messages from "@cucumber/messages";
@@ -11,19 +11,23 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
-  ContentType,
+  Attachment,
+  ExecutableItem,
   ExecutableItemWrapper,
   Label,
   LabelName,
   Link,
+  Stage,
   Status,
 } from "allure-js-commons";
-import { CucumberAllureInterface } from "./CucumberAllureInterface";
-export { Allure } from "allure-js-commons";
+import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
+import {
+  CucumberAllureWorld,
+  CucumberAttachmentMetadata,
+  CucumberAttachmentStepMetadata,
+} from "./CucumberAllureWorld";
 
-export interface World extends CucumberWorld {
-  allure: Allure;
-}
+export { Allure };
 
 export type LabelMatcher = {
   pattern: RegExp[];
@@ -37,33 +41,76 @@ export type LinkMatcher = {
 };
 
 export class CucumberJSAllureFormatterConfig {
+  /**
+   * Formatter function to customize errors messages
+   *
+   * @example
+   * ```js
+   * {
+   *   exceptionFormatter: (message) => `Formatted message: ${message}`
+   * }
+   * ```
+   */
   exceptionFormatter?: (message: string) => string;
+  /**
+   * Labels matchers objects used to extract labels from features
+   *
+   * @example
+   * ```gherkin
+   * @feature=FEATURE-1
+   * Scenario: Example for scenario issue link check
+   * ```
+   * ```js
+   * {
+   *   labels: [
+   *     {
+   *       pattern: [/@feature:(.*)/],
+   *       name: "epic"
+   *     }
+   *   ]
+   * }
+   * ```
+   */
   labels?: LabelMatcher[];
+  /**
+   * Links matchers objects used to extract links from features.
+   * `%s` will be replaced by issue id.
+   *
+   * @example
+   * ```gherkin
+   * Scenario: Example for scenario issue link check
+   * Then the issue link should be "http://example.org/issue/TEST-1"
+   * ```
+   * ```js
+   * {
+   *   links: [
+   *     {
+   *       pattern: [/@issue=(.*)/],
+   *       type: "issue",
+   *       urlTemplate: "http://example.org/issue/%s"
+   *     }
+   *   ]
+   * }
+   * ```
+   */
   links?: LinkMatcher[];
 }
 
 const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env;
 
 export class CucumberJSAllureFormatter extends Formatter {
-  public readonly allureInterface: Allure;
-  currentAfter: ExecutableItemWrapper | null = null;
-  currentBefore: ExecutableItemWrapper | null = null;
-  currentGroup: AllureGroup | null = null;
-  currentTest: AllureTest | null = null;
+  private readonly currentTestsMap: Map<string, AllureTest> = new Map();
+  private readonly hostname: string = ALLURE_HOST_NAME || os.hostname();
   private readonly afterHooks: TestCaseHookDefinition[];
   private readonly beforeHooks: TestCaseHookDefinition[];
   private readonly exceptionFormatter: (message: string) => string;
   private readonly labelsMathers: LabelMatcher[];
   private readonly linksMatchers: LinkMatcher[];
-  private stepStack: AllureStep[] = [];
-  private hostname: string = ALLURE_HOST_NAME || os.hostname();
   private readonly documentMap: Map<string, messages.GherkinDocument> = new Map();
-  private readonly featureMap: Map<string, messages.Feature> = new Map();
   private readonly scenarioMap: Map<string, messages.Scenario> = new Map();
   private readonly stepMap: Map<string, messages.Step> = new Map();
   private readonly testStepMap: Map<string, messages.TestStep> = new Map();
   private readonly pickleStepMap: Map<string, messages.PickleStep> = new Map();
-  private readonly stepDefinitionMap: Map<string, messages.StepDefinition> = new Map();
   private readonly testCaseTestStepsResults: Map<string, messages.TestStepResult[]> = new Map();
   private readonly pickleMap: Map<string, messages.Pickle> = new Map();
   private readonly hookMap: Map<string, messages.Hook> = new Map();
@@ -71,8 +118,12 @@ export class CucumberJSAllureFormatter extends Formatter {
   private readonly testCaseMap: Map<string, messages.TestCase> = new Map();
   private readonly testCaseStartedMap: Map<string, messages.TestCaseStarted> = new Map();
   private readonly allureSteps: Map<string, AllureStep> = new Map();
-  private runningTestsMap: Map<string, AllureTest> = new Map();
 
+  /**
+   * @param options Reporter options provided by Cucumber runtime
+   * @param allureRuntime `AllureRuntime` instance imported from `allure-js-commons` package
+   * @param config The formatter configuration
+   */
   constructor(
     options: IFormatterOptions,
     private readonly allureRuntime: AllureRuntime,
@@ -83,7 +134,6 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     this.labelsMathers = config.labels || [];
     this.linksMatchers = config.links || [];
-
     this.exceptionFormatter = (message): string => {
       if (config.exceptionFormatter !== undefined) {
         try {
@@ -95,9 +145,9 @@ export class CucumberJSAllureFormatter extends Formatter {
       }
       return message;
     };
-
-    this.allureInterface = new CucumberAllureInterface(this, this.allureRuntime);
-    options.supportCodeLibrary.World.prototype.allure = this.allureInterface;
+    // eslint-disable-next-line
+    // @ts-ignore
+    options.supportCodeLibrary.World = CucumberAllureWorld;
     this.beforeHooks = options.supportCodeLibrary.beforeTestCaseHookDefinitions;
     this.afterHooks = options.supportCodeLibrary.afterTestCaseHookDefinitions;
   }
@@ -189,6 +239,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     if (data.uri) {
       this.documentMap.set(data.uri, data);
     }
+
     data.feature?.children?.forEach((fc) => {
       if (fc.scenario) {
         this.onScenario(fc.scenario);
@@ -213,6 +264,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 
   private onTestCaseStarted(data: messages.TestCaseStarted): void {
     const testCase = this.testCaseMap.get(data.testCaseId);
+
     if (!testCase) {
       // eslint-disable-next-line no-console
       console.error("onTestCaseStarted", "test case not found", data);
@@ -220,6 +272,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     const pickle = this.pickleMap.get(testCase.pickleId);
+
     if (!pickle) {
       // eslint-disable-next-line no-console
       console.error("onTestCaseStarted", "pickle not found", data);
@@ -232,28 +285,26 @@ export class CucumberJSAllureFormatter extends Formatter {
     const labels = this.parseTagsLabels(scenario?.tags || []);
     const links = this.parseTagsLinks(scenario?.tags || []);
     const currentTest = new AllureTest(this.allureRuntime, Date.now());
-    const thread = ALLURE_THREAD_NAME || process.pid.toString();
+    const thread = data.workerId || ALLURE_THREAD_NAME || process.pid.toString();
 
-    this.runningTestsMap.set(data.id, currentTest);
     this.testCaseStartedMap.set(data.id, data);
     this.testCaseTestStepsResults.set(data.id, []);
+    this.currentTestsMap.set(data.id, currentTest);
 
     currentTest.name = pickle.name;
-    currentTest?.addLabel(LabelName.HOST, this.hostname);
-    currentTest?.addLabel(LabelName.LANGUAGE, "javascript");
-    currentTest?.addLabel(LabelName.FRAMEWORK, "cucumberjs");
-    currentTest?.addLabel(LabelName.THREAD, thread);
+    currentTest.addLabel(LabelName.HOST, this.hostname);
+    currentTest.addLabel(LabelName.LANGUAGE, "javascript");
+    currentTest.addLabel(LabelName.FRAMEWORK, "cucumberjs");
+    currentTest.addLabel(LabelName.THREAD, thread);
+    labels.forEach((label) => currentTest.addLabel(label.name, label.value));
+    links.forEach((link) => currentTest.addLink(link.url, link.name, link.type));
 
     if (doc?.feature) {
       currentTest.addLabel(LabelName.FEATURE, doc.feature.name);
     }
 
     if (scenario) {
-      currentTest?.addLabel(LabelName.SUITE, scenario.name);
-    }
-
-    if (labels.length > 0) {
-      labels.forEach((label) => currentTest?.addLabel(label.name, label.value));
+      currentTest.addLabel(LabelName.SUITE, scenario.name);
     }
 
     if (pickle.tags?.length) {
@@ -261,18 +312,13 @@ export class CucumberJSAllureFormatter extends Formatter {
         (tag) => !this.tagsIgnorePatterns.some((pattern) => pattern.test(tag.name)),
       );
 
-      filteredTags.forEach((tag) => {
-        currentTest?.addLabel(LabelName.TAG, tag.name);
-      });
+      filteredTags.forEach((tag) => currentTest.addLabel(LabelName.TAG, tag.name));
     }
 
-    links.forEach((link) => currentTest?.addLink(link.url, link.name, link.type));
-
-    // writting data tables as csv attachments
     pickle.steps.forEach((ps) => {
       const { argument } = ps;
 
-      if (!currentTest || !argument?.dataTable) {
+      if (!argument?.dataTable) {
         return;
       }
 
@@ -291,20 +337,11 @@ export class CucumberJSAllureFormatter extends Formatter {
       );
     });
 
-    if (!scenario) {
+    if (!scenario?.examples?.length) {
       return;
     }
 
-    if (scenario.examples.length === 0) {
-      return;
-    }
-
-    // writting scenario examples as csv attachments
     scenario.examples.forEach((example) => {
-      if (!currentTest) {
-        return;
-      }
-
       const csvDataTableHeader =
         example?.tableHeader?.cells.map((cell) => cell.value).join(",") || "";
       const csvDataTableBody =
@@ -329,11 +366,13 @@ export class CucumberJSAllureFormatter extends Formatter {
   }
 
   private onAttachment(data: messages.Attachment): void {
-    const currentTest = this.runningTestsMap.get(data?.testCaseStartedId || "");
+    const currentTest = this.currentTestsMap.get(data?.testCaseStartedId || "");
 
     if (!currentTest) {
       return;
     }
+
+    const currentStep = this.allureSteps.get(data?.testStepId || "");
 
     if (!data) {
       // eslint-disable-next-line no-console
@@ -342,6 +381,16 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     const { fileName = "attachment", body, mediaType, contentEncoding } = data;
+
+    if (mediaType === ALLURE_METADATA_CONTENT_TYPE) {
+      this.handleAllureAttachment({
+        test: currentTest,
+        step: currentStep,
+        metadata: JSON.parse(body) as CucumberAttachmentMetadata,
+      });
+      return;
+    }
+
     const encoding = Buffer.isEncoding(contentEncoding) ? contentEncoding : undefined; // only pass through valid encodings
     const attachmentFilename = this.allureRuntime.writeAttachment(body, mediaType, encoding);
 
@@ -354,21 +403,112 @@ export class CucumberJSAllureFormatter extends Formatter {
     );
   }
 
+  private handleAllureAttachment(payload: {
+    test: AllureTest;
+    step?: AllureStep;
+    metadata: CucumberAttachmentMetadata;
+  }) {
+    const {
+      labels = [],
+      links = [],
+      parameter = [],
+      categories = [],
+      step,
+      description,
+      descriptionHtml,
+      environmentInfo,
+    } = payload.metadata;
+
+    if (links.length > 0) {
+      links.forEach((link) => payload.test.addLink(link.url, link.type, link.name));
+    }
+
+    if (labels.length > 0) {
+      labels.forEach((label) => payload.test.addLabel(label.name, label.value));
+    }
+
+    if (parameter.length > 0) {
+      parameter.forEach(({ name, value, hidden, excluded }) =>
+        payload.test.addParameter(name, value, {
+          excluded,
+          hidden,
+        }),
+      );
+    }
+
+    if (categories.length > 0) {
+      this.allureRuntime.writeCategoriesDefinitions(categories);
+    }
+
+    if (description) {
+      payload.test.description = description;
+    }
+
+    if (descriptionHtml) {
+      payload.test.descriptionHtml = descriptionHtml;
+    }
+
+    if (environmentInfo) {
+      this.allureRuntime.writeEnvironmentInfo(environmentInfo);
+    }
+
+    if (step) {
+      this.handleAllureStep({
+        test: payload.test,
+        step: payload.step,
+        metadata: step,
+      });
+    }
+  }
+
+  private handleAllureStep(payload: {
+    test: AllureTest;
+    step?: AllureStep;
+    metadata: CucumberAttachmentStepMetadata;
+  }) {
+    const { attachments: metadataAttachments, ...metadata } = payload.metadata;
+    const attachments: Attachment[] = metadataAttachments.map(({ name, type, content }) => {
+      const attachmentFilename = this.allureRuntime.writeAttachment(content, type, "base64");
+
+      return {
+        source: attachmentFilename,
+        name,
+        type,
+      };
+    });
+    const testStep: ExecutableItem = {
+      ...metadata,
+      attachments,
+      steps: [],
+    };
+
+    if (payload.step) {
+      payload.step.addStep(testStep);
+      return;
+    }
+
+    payload.test.addStep(testStep);
+  }
+
   private onTestCaseFinished(data: messages.TestCaseFinished): void {
-    const currentTest = this.runningTestsMap.get(data.testCaseStartedId);
+    const currentTest = this.currentTestsMap.get(data.testCaseStartedId);
 
     if (!currentTest) {
       // eslint-disable-next-line no-console
       console.error("onTestCaseFinished", "current test not found", data);
       return;
     }
+
     const testCaseStarted = this.testCaseStartedMap.get(data.testCaseStartedId);
+
     if (!testCaseStarted) {
       // eslint-disable-next-line no-console
       console.error("onTestCaseFinished", "testCaseStarted event not found", data);
       return;
     }
+
     const testCase = this.testCaseMap.get(testCaseStarted.testCaseId);
+
     if (!testCase) {
       // eslint-disable-next-line no-console
       console.error("onTestCaseFinished", "testCase not found", data);
@@ -376,14 +516,18 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     const pickle = this.pickleMap.get(testCase.pickleId);
+
     if (!pickle) {
       // eslint-disable-next-line no-console
       console.error("onTestCaseFinished", "pickle not found", data);
       return;
     }
+
     const testStepResults = this.testCaseTestStepsResults.get(testCaseStarted.id);
+
     if (testStepResults?.length) {
       const worstTestStepResult = messages.getWorstTestStepResult(testStepResults);
+
       currentTest.status = this.convertStatus(worstTestStepResult.status);
       currentTest.statusDetails = {
         message: worstTestStepResult.message,
@@ -393,7 +537,8 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     currentTest.endTest(Date.now());
-    this.runningTestsMap.delete(data.testCaseStartedId);
+
+    this.currentTestsMap.delete(data.testCaseStartedId);
   }
 
   private onHook(data: messages.Hook) {
@@ -407,13 +552,14 @@ export class CucumberJSAllureFormatter extends Formatter {
   }
 
   private onTestStepStarted(data: messages.TestStepStarted) {
-    const currentTest = this.runningTestsMap.get(data.testCaseStartedId);
+    const currentTest = this.currentTestsMap.get(data.testCaseStartedId);
 
     if (!currentTest) {
       return;
     }
 
     const testStep = this.testStepMap.get(data.testStepId);
+
     if (!testStep) {
       // eslint-disable-next-line no-console
       console.error("onTestStepStarted", "can't find step", data);
@@ -436,14 +582,16 @@ export class CucumberJSAllureFormatter extends Formatter {
   }
 
   private onTestStepFinished(data: messages.TestStepFinished) {
-    const currentTest = this.runningTestsMap.get(data.testCaseStartedId);
+    const currentTest = this.currentTestsMap.get(data.testCaseStartedId);
 
     this.testCaseTestStepsResults.get(data.testCaseStartedId)?.push(data.testStepResult);
+
     if (!currentTest) {
       return;
     }
 
     const allureStep = this.allureSteps.get(data.testStepId);
+
     if (!allureStep) {
       return;
     }

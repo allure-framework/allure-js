@@ -9,8 +9,10 @@ export { isPromise } from "./src/isPromise";
 export { Allure, StepInterface } from "./src/Allure";
 export {
   AttachmentOptions,
+  AttachmentMetadata,
   Attachment,
   Category,
+  ExecutableItem,
   StepResult,
   Parameter,
   StatusDetails,
