@@ -1,32 +1,48 @@
-# allure-jest
+# Allure integration for jest framework
 
-Allure integration for jest framework
+> **Warning**
+> This integration don't work with default runner since jest 27+.
+> To use this integration after jest 27 you need to change default runner to `Jasmine`.
 
-# How to use
+## Examples
 
-## Default test runner (Jasmine)
+You can find example setup and usage in this [repo](https://github.com/vovsemenv/allure-jest-example)
 
-By default jest uses jasmine as test runner, so you can configure allure-jasmine reporter for it:
+## Circus test runner (default for jest@^27)
 
-Make allure-report.ts module:
+Currently we didn't have official solution for circus test runner. Consider using this [community plugin](https://github.com/ryparker/jest-circus-allure-environment) instead
 
-```typescript
-import {JasmineAllureReporter} from "allure-jasmine";
-import {AllureRuntime, Status, TestResult} from "allure-js-commons";
+## Jasmine test runner (default for jest@<27)
 
-const reporter = new JasmineAllureReporter(new AllureRuntime({
-  resultsDir: "path/to/allure-results"
-}));
-jasmine.getEnv().addReporter(reporter);
+### Install dependencies
+
+```bash
+npm i -D jest-jasmine2 allure-jasmine allure-js-commons @types/jasmine
 ```
 
-And provide path in jest.config.js:
+Create `allure-setup.ts` file:
 
-```js
-module.exports = {
-  // ...
-  setupFilesAfterEnv: ["<rootDir>/path/to/allure-report.js"]
+```typescript
+import { JasmineAllureReporter } from "allure-jasmine";
+import { JasmineAllureReporter } from "allure-jasmine";
+import { JasmineAllureInterface } from "allure-jasmine/dist/src/JasmineAllureReporter";
+
+const reporter = new JasmineAllureReporter({ resultsDir: "allure-results" });
+jasmine.getEnv().addReporter(reporter);
+// @ts-expect-error
+global.allure = reporter.getInterface();
+
+declare global {
+  const allure: JasmineAllureInterface;
 }
 ```
 
+### Change jest.config.js
 
+```js
+module.exports = {
+  testRunner: "jest-jasmine2",
+  preset: "ts-jest",
+  setupFilesAfterEnv: ["./spec/helpers/allure.ts"],
+};
+```
