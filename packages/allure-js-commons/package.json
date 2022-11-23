@@ -19,7 +19,7 @@
     "@types/glob": "^7.1.4",
     "@types/mkdirp": "^1.0.0",
     "@types/mocha": "^9.0.0",
-    "@types/node": "^16.7.10",
+    "@types/node": "^18.0.0",
     "@types/uuid": "^8.3.0",
     "allure-mocha": "workspace:packages/allure-mocha",
     "chai": "^4.3.4",

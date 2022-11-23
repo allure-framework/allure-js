@@ -1247,24 +1247,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^14.6.0":
-  version: 14.17.12
-  resolution: "@types/node@npm:14.17.12"
-  checksum: 7efbce3781a0ea5d7a39bca3c5ed9c4e4d99fed3483fb2a89670aeb049cd9d25f1ddecd8fb58420fd92de371278721ddd6e3ad95c4f55992592f1ac5d1dedf98
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^16.7.10":
-  version: 16.7.10
-  resolution: "@types/node@npm:16.7.10"
-  checksum: 0518803caa1a14f4070e770a280eda1c4b4581a425cbda481cdd54b1f34a7ea497ff067fd23b90e3d4f4fdcfba15c1316182875e9cf9f5b2e880de1e595de053
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^16.7.8":
-  version: 16.7.8
-  resolution: "@types/node@npm:16.7.8"
-  checksum: 060ea222ce8f3eb05bd86a7785ca5807503a50602dd805c5be997a5ae684fa6224c9ad8890bcc5551c05d14a8bcd735f94567691342d197f5f7f7f893ed0d46b
+"@types/node@npm:^18.0.0":
+  version: 18.11.9
+  resolution: "@types/node@npm:18.11.9"
+  checksum: cc0aae109e9b7adefc32eecb838d6fad931663bb06484b5e9cbbbf74865c721b03d16fd8d74ad90e31dbe093d956a7c2c306ba5429ba0c00f3f7505103d7a496
   languageName: node
   linkType: hard
 
@@ -1596,7 +1582,7 @@ __metadata:
     "@types/fs-extra": ^9.0.1
     "@types/glob": ^7.1.4
     "@types/mocha": ^9.0.0
-    "@types/node": ^16.7.8
+    "@types/node": ^18.0.0
     "@types/sinon": ^10.0.11
     "@types/verror": ^1.10.3
     allure-js-commons: "workspace:*"
@@ -1627,7 +1613,7 @@ __metadata:
     "@types/chai-arrays": 2.0.0
     "@types/glob": ^7.1.4
     "@types/mocha": ^9.0.0
-    "@types/node": ^16.7.8
+    "@types/node": ^18.0.0
     allure-js-commons: "workspace:*"
     allure-mocha: "workspace:*"
     chai: ^4.2.0
@@ -1686,7 +1672,7 @@ __metadata:
     "@types/glob": ^7.1.4
     "@types/mkdirp": ^1.0.0
     "@types/mocha": ^9.0.0
-    "@types/node": ^16.7.10
+    "@types/node": ^18.0.0
     "@types/uuid": ^8.3.0
     allure-mocha: "workspace:packages/allure-mocha"
     chai: ^4.3.4
@@ -1709,7 +1695,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-js@workspace:."
   dependencies:
-    "@types/node": ^14.6.0
+    "@types/node": ^18.0.0
     "@typescript-eslint/eslint-plugin": ^4.29.3
     "@typescript-eslint/parser": ^4.29.3
     allure-commandline: ^2.13.8
@@ -1739,7 +1725,7 @@ __metadata:
     "@types/chai": ^4.2.11
     "@types/glob": ^7.1.4
     "@types/mocha": ^9.0.0
-    "@types/node": ^16.7.8
+    "@types/node": ^18.0.0
     allure-js-commons: "workspace:*"
     chai: ^4.2.0
     codecov: ^3.6.5
