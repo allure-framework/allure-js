@@ -289,10 +289,10 @@ export class CucumberJSAllureFormatter extends Formatter {
     this.testCaseStartedMap.set(data.id, data);
     this.testCaseTestStepsResults.set(data.id, []);
     this.currentTestsMap.set(data.id, currentTest);
-
+    const fullName = `${pickle.uri}#${pickle.name}`;
     currentTest.name = pickle.name;
-    currentTest.fullName = `${pickle.uri}#${pickle.name}`;
-    currentTest.testCaseId = `${pickle.uri}#${pickle.name}`;
+    currentTest.fullName = fullName;
+    currentTest.testCaseId = fullName;
 
     currentTest.addLabel(LabelName.HOST, this.hostname);
     currentTest.addLabel(LabelName.LANGUAGE, "javascript");
