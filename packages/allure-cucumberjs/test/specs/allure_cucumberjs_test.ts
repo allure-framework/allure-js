@@ -519,6 +519,17 @@ describe("CucumberJSAllureReporter", () => {
       expect(severity?.value).eq("bar");
       expect(tags).length(1);
     });
+
+    it("should set fullName", async () => {
+      const results = await runFeatures(dataSet.simple);
+
+      expect(results.tests).length(1);
+      const [testResult] = results.tests;
+      const source = dataSet.simple.sources?.[0];
+
+      const name = source!.data.match(/\nScenario: (.+)\n/)?.[1];
+      expect(testResult.fullName).eq(`${source!.uri}#${name!}`);
+    });
   });
 
   describe("world", () => {

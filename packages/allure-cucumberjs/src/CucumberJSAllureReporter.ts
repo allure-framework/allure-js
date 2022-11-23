@@ -286,12 +286,13 @@ export class CucumberJSAllureFormatter extends Formatter {
     const links = this.parseTagsLinks(scenario?.tags || []);
     const currentTest = new AllureTest(this.allureRuntime, Date.now());
     const thread = data.workerId || ALLURE_THREAD_NAME || process.pid.toString();
-
     this.testCaseStartedMap.set(data.id, data);
     this.testCaseTestStepsResults.set(data.id, []);
     this.currentTestsMap.set(data.id, currentTest);
 
     currentTest.name = pickle.name;
+    currentTest.fullName = `${pickle.uri}#${pickle.name}`;
+
     currentTest.addLabel(LabelName.HOST, this.hostname);
     currentTest.addLabel(LabelName.LANGUAGE, "javascript");
     currentTest.addLabel(LabelName.FRAMEWORK, "cucumberjs");
