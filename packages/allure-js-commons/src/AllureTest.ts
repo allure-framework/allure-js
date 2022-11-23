@@ -30,6 +30,10 @@ export class AllureTest extends ExecutableItemWrapper {
     this.testResult.fullName = fullName;
   }
 
+  set testCaseId(testCaseId: string) {
+    this.testResult.testCaseId = testCaseId;
+  }
+
   addLabel(name: string, value: string): void {
     this.testResult.labels.push({ name, value });
   }

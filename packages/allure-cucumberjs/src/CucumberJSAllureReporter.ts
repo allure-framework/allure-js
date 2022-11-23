@@ -292,6 +292,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     currentTest.name = pickle.name;
     currentTest.fullName = `${pickle.uri}#${pickle.name}`;
+    currentTest.testCaseId = `${pickle.uri}#${pickle.name}`;
 
     currentTest.addLabel(LabelName.HOST, this.hostname);
     currentTest.addLabel(LabelName.LANGUAGE, "javascript");
