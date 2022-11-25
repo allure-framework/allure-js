@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 import os from "os";
 import process from "process";
-import { LabelName, Status } from "allure-js-commons";
+import { LabelName, md5, Status } from "allure-js-commons";
 import { it, describe } from "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
@@ -531,7 +531,7 @@ describe("CucumberJSAllureReporter", () => {
       const name = source!.data.match(/\nScenario: (.+)\n/)?.[1];
       const fullName = `${source!.uri}#${name!}`;
       expect(testResult.fullName).eq(fullName);
-      expect(testResult.testCaseId).eq(createHash("md5").update(fullName).digest("hex"));
+      expect(testResult.testCaseId).eq(md5(fullName));
     });
   });
 

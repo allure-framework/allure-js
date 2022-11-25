@@ -34,8 +34,6 @@ import {
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
-const md5 = (val: string) => createHash("md5").update(val).digest("hex");
-
 type AllureReporterOptions = {
   detail?: boolean;
   outputFolder?: string;
