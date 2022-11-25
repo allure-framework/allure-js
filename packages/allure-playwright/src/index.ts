@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createHash } from "crypto";
 import fs from "fs";
 import os from "os";
 import path from "path";
@@ -32,6 +33,8 @@ import {
   Status,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
+
+const md5 = (val: string) => createHash("md5").update(val).digest("hex");
 
 type AllureReporterOptions = {
   detail?: boolean;
@@ -84,8 +87,20 @@ class AllureReporter implements Reporter {
     if (suiteTitles.length > 0) {
       allureTest.addLabel(LabelName.SUB_SUITE, suiteTitles.join(" > "));
     }
-    allureTest.historyId = test.titlePath().slice(1).join(" ");
-    allureTest.fullName = test.title;
+    const project = suite.project()!;
+    if (project?.name) {
+      allureTest.addParameter("project", project.name, { hidden: true });
+    }
+
+    const relativeFile = path
+      .relative(project?.testDir, test.location.file)
+      .split(path.sep)
+      .join("/");
+
+    const fullName = `${relativeFile}#${test.title}`;
+    allureTest.fullName = fullName;
+    allureTest.testCaseId = md5(fullName);
+
     this.allureTestCache.set(test, allureTest);
   }
 
@@ -203,6 +218,14 @@ class AllureReporter implements Reporter {
         runtime.writeAttachment(stderr, "text/plain"),
       );
     }
+
+    allureTest.historyId = md5(
+      allureTest.fullName +
+        allureTest.wrappedItem.parameters
+          .map((parameter) => `${parameter.name}=${parameter.value}`)
+          .join(","),
+    );
+
     allureTest.endTest();
   }
 
