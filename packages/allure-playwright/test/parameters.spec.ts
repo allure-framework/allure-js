@@ -17,5 +17,12 @@ test("should have parameter", async ({ runInlineTest }) => {
       return writer.tests.map((t) => t.parameters);
     },
   );
-  expect(result[0]).toEqual([param]);
+  expect(result[0]).toEqual([
+    {
+      hidden: true,
+      name: "project",
+      value: "project",
+    },
+    param,
+  ]);
 });
