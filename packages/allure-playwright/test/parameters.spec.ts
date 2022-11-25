@@ -19,8 +19,7 @@ test("should have parameter", async ({ runInlineTest }) => {
   );
   expect(result[0]).toEqual([
     {
-      hidden: true,
-      name: "project",
+      name: "Project",
       value: "project",
     },
     param,
