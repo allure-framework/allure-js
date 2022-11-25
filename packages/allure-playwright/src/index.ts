@@ -89,7 +89,7 @@ class AllureReporter implements Reporter {
     }
     const project = suite.project()!;
     if (project?.name) {
-      allureTest.addParameter("project", project.name, { hidden: true });
+      allureTest.addParameter("Project", project.name);
     }
 
     const relativeFile = path
@@ -218,14 +218,6 @@ class AllureReporter implements Reporter {
         runtime.writeAttachment(stderr, "text/plain"),
       );
     }
-
-    allureTest.historyId = md5(
-      allureTest.fullName +
-        allureTest.wrappedItem.parameters
-          .map((parameter) => `${parameter.name}=${parameter.value}`)
-          .join(","),
-    );
-
     allureTest.endTest();
   }
 
