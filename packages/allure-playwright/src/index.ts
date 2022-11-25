@@ -30,6 +30,7 @@ import {
   ExecutableItemWrapper,
   InMemoryAllureWriter,
   LabelName,
+  md5,
   Status,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
