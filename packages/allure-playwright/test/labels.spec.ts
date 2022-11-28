@@ -92,6 +92,6 @@ test("should report structure", async ({ runInlineTest }) => {
       value: "parent suite 2 > suite 2 > sub suite 2",
     },
   ].forEach((val) => {
-    await expect(result[1].labels).toContainEqual(val);
+    expect(result[1].labels).toContainEqual(val);
   });
 });
