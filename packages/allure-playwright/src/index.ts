@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createHash } from "crypto";
 import fs from "fs";
 import os from "os";
 import path from "path";
@@ -29,6 +30,7 @@ import {
   ExecutableItemWrapper,
   InMemoryAllureWriter,
   LabelName,
+  md5,
   Status,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
@@ -84,8 +86,20 @@ class AllureReporter implements Reporter {
     if (suiteTitles.length > 0) {
       allureTest.addLabel(LabelName.SUB_SUITE, suiteTitles.join(" > "));
     }
-    allureTest.historyId = test.titlePath().slice(1).join(" ");
-    allureTest.fullName = test.title;
+    const project = suite.project()!;
+    if (project?.name) {
+      allureTest.addParameter("Project", project.name);
+    }
+
+    const relativeFile = path
+      .relative(project?.testDir, test.location.file)
+      .split(path.sep)
+      .join("/");
+
+    const fullName = `${relativeFile}#${test.title}`;
+    allureTest.fullName = fullName;
+    allureTest.testCaseId = md5(fullName);
+
     this.allureTestCache.set(test, allureTest);
   }
 

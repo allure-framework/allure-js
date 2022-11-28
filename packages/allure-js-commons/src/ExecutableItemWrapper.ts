@@ -16,7 +16,7 @@ import {
 export class ExecutableItemWrapper {
   constructor(private readonly info: FixtureResult | TestResult) {}
 
-  protected get wrappedItem(): FixtureResult | TestResult {
+  get wrappedItem(): FixtureResult | TestResult {
     return this.info;
   }
 

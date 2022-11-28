@@ -9,6 +9,7 @@ import {
   ContentType,
   ExecutableItemWrapper,
   LabelName,
+  md5,
   Stage,
   Status,
   StatusDetails,
@@ -98,7 +99,7 @@ export class AllureReporter {
 
     this.currentTest = this.currentSuite.startTest(test.title);
     this.currentTest.fullName = test.title;
-    this.currentTest.historyId = createHash("md5").update(test.fullTitle()).digest("hex");
+    this.currentTest.historyId = md5(test.fullTitle());
     this.currentTest.stage = Stage.RUNNING;
 
     if (testPath) {

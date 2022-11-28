@@ -30,3 +30,5 @@ export {
   LinkType,
   ParameterOptions
 } from "./src/model";
+
+export { md5 } from "./src/utils";

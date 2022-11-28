@@ -1,4 +1,3 @@
-import { createHash } from "crypto";
 import os from "os";
 import process from "process";
 import { Formatter } from "@cucumber/cucumber";
@@ -18,6 +17,7 @@ import {
   Label,
   LabelName,
   Link,
+  md5,
   Stage,
   Status,
 } from "allure-js-commons";
@@ -293,7 +293,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     const fullName = `${pickle.uri}#${pickle.name}`;
     currentTest.name = pickle.name;
     currentTest.fullName = fullName;
-    currentTest.testCaseId = createHash("md5").update(fullName).digest("hex");
+    currentTest.testCaseId = md5(fullName);
 
     currentTest.addLabel(LabelName.HOST, this.hostname);
     currentTest.addLabel(LabelName.LANGUAGE, "javascript");
