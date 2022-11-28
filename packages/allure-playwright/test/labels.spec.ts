@@ -21,6 +21,7 @@ test("should report structure", async ({ runInlineTest }) => {
     {
       "a.test.ts": `
       import test from '@playwright/test';
+      test.describe.configure({ mode: 'serial' });
       test.describe('suite', () => {
         test('should work', async ({}) => {});
       });`,
@@ -44,29 +45,8 @@ test("should report structure", async ({ runInlineTest }) => {
       }));
     },
   );
-  [
-    {
-      name: "language",
-      value: "JavaScript",
-    },
-    {
-      name: "framework",
-      value: "Playwright",
-    },
-    {
-      name: "parentSuite",
-      value: "project",
-    },
-    {
-      name: "suite",
-      value: "a.test.ts",
-    },
-    {
-      name: "subSuite",
-      value: "suite",
-    },
-  ].forEach((val) => {
-    expect(result[0].labels).toContainEqual(val);
+  [].forEach((val) => {
+    await expect(result[0].labels).toContainEqual(val);
   });
 
   [
@@ -91,6 +71,6 @@ test("should report structure", async ({ runInlineTest }) => {
       value: "parent suite 2 > suite 2 > sub suite 2",
     },
   ].forEach((val) => {
-    expect(result[1].labels).toContainEqual(val);
+    await expect(result[1].labels).toContainEqual(val);
   });
 });
