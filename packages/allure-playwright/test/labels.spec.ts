@@ -16,25 +16,14 @@
 
 import { expect, test } from "./fixtures";
 
-test("should report structure", async ({ runInlineTest }) => {
+test("should report structure a.test.ts", async ({ runInlineTest }) => {
   const result = await runInlineTest(
     {
       "a.test.ts": `
       import test from '@playwright/test';
-      test.describe.configure({ mode: 'serial' });
       test.describe('suite', () => {
         test('should work', async ({}) => {});
       });`,
-      "b.test.ts": `
-      import test from '@playwright/test';
-      test.describe('parent suite 2', () => {
-        test.describe('suite 2', () => {
-          test.describe('sub suite 2', () => {
-            test('should work 2', async ({}) => {});
-          });
-        });
-      });
-    `,
     },
     (writer) => {
       return writer.tests.map((t) => ({
@@ -69,6 +58,31 @@ test("should report structure", async ({ runInlineTest }) => {
   ].forEach((val) => {
     expect(result[0].labels).toContainEqual(val);
   });
+});
+
+test("should report structure b.test.ts", async ({ runInlineTest }) => {
+  const result = await runInlineTest(
+    {
+      "b.test.ts": `
+      import test from '@playwright/test';
+      test.describe('parent suite 2', () => {
+        test.describe('suite 2', () => {
+          test.describe('sub suite 2', () => {
+            test('should work 2', async ({}) => {});
+          });
+        });
+      });
+    `,
+    },
+    (writer) => {
+      return writer.tests.map((t) => ({
+        name: t.name,
+        fullName: t.fullName,
+        historyId: t.historyId,
+        labels: t.labels,
+      }));
+    },
+  );
 
   [
     {
@@ -92,6 +106,6 @@ test("should report structure", async ({ runInlineTest }) => {
       value: "parent suite 2 > suite 2 > sub suite 2",
     },
   ].forEach((val) => {
-    expect(result[1].labels).toContainEqual(val);
+    expect(result[0].labels).toContainEqual(val);
   });
 });
