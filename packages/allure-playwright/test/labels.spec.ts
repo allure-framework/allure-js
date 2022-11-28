@@ -45,8 +45,29 @@ test("should report structure", async ({ runInlineTest }) => {
       }));
     },
   );
-  [].forEach((val) => {
-    await expect(result[0].labels).toContainEqual(val);
+  [
+    {
+      name: "language",
+      value: "JavaScript",
+    },
+    {
+      name: "framework",
+      value: "Playwright",
+    },
+    {
+      name: "parentSuite",
+      value: "project",
+    },
+    {
+      name: "suite",
+      value: "a.test.ts",
+    },
+    {
+      name: "subSuite",
+      value: "suite",
+    },
+  ].forEach((val) => {
+    expect(result[0].labels).toContainEqual(val);
   });
 
   [
