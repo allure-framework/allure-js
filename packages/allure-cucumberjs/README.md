@@ -161,3 +161,26 @@ Given(/my step/, async function () {
   })
 })
 ```
+
+## TypeScript
+
+To properly type your cucumber tests you need to declare `CustomWorld` type and use it.
+
+```ts
+import { Given } from "@cucumber/cucumber";
+import { CucumberAllureWorld } from "allure-cucumberjs";
+
+if (process.env.PARALLEL) {
+  setWorldConstructor(CucumberAllureWorld);
+}
+
+type CustomWorld = {
+  someCustomOptions: string;
+} & CucumberAllureWorld;
+
+Given("A cat fact is recieved", async function (this: CustomWorld) {
+  await this.step("example name", async () => {
+    await this.label("test label", "value");
+  });
+});
+```
