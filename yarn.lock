@@ -1602,7 +1602,6 @@ __metadata:
     mocha: ^9.1.1
     nyc: ^15.1.0
     path: ^0.12.7
-    rimraf: ^3.0.2
     sinon: ^14.0.0
     ts-node: ^10.2.1
     typescript: ^4.4.2
@@ -1631,7 +1630,6 @@ __metadata:
     mocha: ^9.1.3
     mocha-multi-reporters: ^1.5.1
     nyc: ^15.0.1
-    rimraf: ^3.0.2
     source-map-support: ^0.5.19
     ts-node: ^10.2.1
     typescript: ^4.4.2
@@ -1645,7 +1643,6 @@ __metadata:
     "@types/jasmine": ^3.3.12
     allure-js-commons: "workspace:*"
     jasmine: ^3.4.0
-    rimraf: ^3.0.2
     typescript: ^4.4.2
   languageName: unknown
   linkType: soft
@@ -1659,7 +1656,6 @@ __metadata:
     allure-jasmine: "workspace:*"
     allure-js-commons: "workspace:*"
     jest: ^26.4.2
-    rimraf: ^3.0.2
     typescript: ^4.4.2
   languageName: unknown
   linkType: soft
@@ -1682,7 +1678,6 @@ __metadata:
     mocha-multi-reporters: ^1.5.1
     nyc: ^15.1.0
     properties: ^1.2.1
-    rimraf: ^3.0.2
     ts-node: ^10.2.1
     typescript: ^4.4.2
     uuid: ^8.3.0
@@ -1733,7 +1728,6 @@ __metadata:
     mocha: ^9.1.3
     mocha-multi-reporters: ^1.5.1
     nyc: ^15.0.1
-    rimraf: ^3.0.2
     source-map-support: ^0.5.19
     ts-node: ^10.2.1
     typescript: ^4.4.2
@@ -1748,7 +1742,6 @@ __metadata:
   dependencies:
     "@playwright/test": ^1.22.2
     allure-js-commons: "workspace:*"
-    rimraf: ^3.0.2
     typescript: ^4.4.2
   languageName: unknown
   linkType: soft
