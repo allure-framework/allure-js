@@ -42,8 +42,6 @@ const defaultReportFolder = (): string => {
   return path.resolve(process.cwd(), "allure-results");
 };
 
-AllureReporter.$inject = ["config"];
-
 export = {
   "reporter:allure": ["type", AllureReporter],
 };
