@@ -1,11 +1,9 @@
 const AllureRuntime = require("allure-js-commons").AllureRuntime;
-const isPromise = require("allure-js-commons").isPromise;
 const Status = require("allure-js-commons").Status;
 const LabelName = require("allure-js-commons").LabelName;
 const Stage = require("allure-js-commons").Allure;
 const createHash = require("crypto").createHash;
 const _ = require("lodash");
-// const WrappedStep = require("./src/WrappedStep");
 
 class AllureReporter {
   constructor(emitter, reporterOptions, options) {
@@ -131,7 +129,6 @@ class AllureReporter {
     const allureStep = this.currentExecutable.startStep(name);
     this.pushStep(allureStep);
     return this;
-    // return new WrappedStep(this, allureStep);
   }
 
   endStep(status) {
