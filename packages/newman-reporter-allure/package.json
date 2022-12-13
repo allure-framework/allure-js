@@ -1,7 +1,7 @@
 {
   "name": "newman-reporter-allure",
   "version": "1.0.7",
-  "description": "newman reporter for Allure",
+  "description": "Allure Newman integration",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,14 +15,11 @@
     "postman",
     "tests"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ervirendersingh/newman-reporter-allure.git"
-  },
+  "repository": "https://github.com/allure-framework/allure-js",
   "author": "Virender",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "dependencies": {
-    "allure-js-commons": "^2.0.0-beta.6",
+    "allure-js-commons": "workspace:*",
     "lodash": "^4.17.15"
   }
 }
