@@ -1664,7 +1664,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"allure-js-commons@workspace:*, allure-js-commons@workspace:packages/allure-js-commons":
+"allure-js-commons@^2.0.0-beta.6, allure-js-commons@workspace:*, allure-js-commons@workspace:packages/allure-js-commons":
   version: 0.0.0-use.local
   resolution: "allure-js-commons@workspace:packages/allure-js-commons"
   dependencies:
@@ -6266,6 +6266,15 @@ __metadata:
   checksum: 23ad088b08f898fc9b53011d7bb78ec48e79de7627e01ab5518e806033861bef68d5b0cd0e2205c2f36690ac9571ff6bcb05eb777ced2eeda8d4ac5b44592c3d
   languageName: node
   linkType: hard
+
+"newman-reporter-allure@workspace:packages/newman-reporter-allure":
+  version: 0.0.0-use.local
+  resolution: "newman-reporter-allure@workspace:packages/newman-reporter-allure"
+  dependencies:
+    allure-js-commons: ^2.0.0-beta.6
+    lodash: ^4.17.15
+  languageName: unknown
+  linkType: soft
 
 "next-tick@npm:~1.0.0":
   version: 1.0.0
