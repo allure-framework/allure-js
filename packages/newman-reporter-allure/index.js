@@ -1,8 +1,5 @@
-const AllureRuntime = require("allure-js-commons").AllureRuntime;
-const Status = require("allure-js-commons").Status;
-const LabelName = require("allure-js-commons").LabelName;
-const Stage = require("allure-js-commons").Allure;
-const createHash = require("crypto").createHash;
+const { AllureRuntime, Status, LabelName, Stage } = require("allure-js-commons");
+const { createHash } = require("crypto");
 const _ = require("lodash");
 
 class AllureReporter {
