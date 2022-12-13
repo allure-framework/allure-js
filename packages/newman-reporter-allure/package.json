@@ -2,9 +2,13 @@
   "name": "newman-reporter-allure",
   "version": "1.0.7",
   "description": "Allure Newman integration",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rimraf ./dist ./out",
+    "compile": "tsc",
+    "lint": "eslint ./src --ext .ts",
+    "lint:fix": "eslint ./src --ext .ts --fix"
   },
   "keywords": [
     "allure",
@@ -19,7 +23,10 @@
   "author": "Virender",
   "license": "Apache-2.0",
   "dependencies": {
-    "allure-js-commons": "workspace:*",
-    "lodash": "^4.17.15"
+    "allure-js-commons": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/newman": "^5.3.1",
+    "typescript": "^4.4.2"
   }
 }

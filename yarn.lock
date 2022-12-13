@@ -1234,6 +1234,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/newman@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "@types/newman@npm:5.3.1"
+  dependencies:
+    "@types/postman-collection": "*"
+    "@types/tough-cookie": "*"
+  checksum: a88bb6ea0e348f87a5acfed5abe559379910f63025f9879e9fcf5b83b252119439d717cab8421d2b7d285973944a2308d16caad8c058bfa0b1277da0eface005
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:*":
   version: 16.7.4
   resolution: "@types/node@npm:16.7.4"
@@ -1276,6 +1286,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/postman-collection@npm:*":
+  version: 3.5.7
+  resolution: "@types/postman-collection@npm:3.5.7"
+  dependencies:
+    "@types/node": "*"
+  checksum: 99d7c0195931f9737ad8de65a9a9d853fda1033d1700682779b84224e5adb89189be16011372480a242bdfcdb82d097c8ea058fa33acb86b6da1c6b0f89793d9
+  languageName: node
+  linkType: hard
+
 "@types/prettier@npm:^2.0.0":
   version: 2.3.2
   resolution: "@types/prettier@npm:2.3.2"
@@ -1303,6 +1322,13 @@ __metadata:
   version: 2.0.1
   resolution: "@types/stack-utils@npm:2.0.1"
   checksum: 205fdbe3326b7046d7eaf5e494d8084f2659086a266f3f9cf00bccc549c8e36e407f88168ad4383c8b07099957ad669f75f2532ed4bc70be2b037330f7bae019
+  languageName: node
+  linkType: hard
+
+"@types/tough-cookie@npm:*":
+  version: 4.0.2
+  resolution: "@types/tough-cookie@npm:4.0.2"
+  checksum: e055556ffdaa39ad85ede0af192c93f93f986f4bd9e9426efdc2948e3e2632db3a4a584d4937dbf6d7620527419bc99e6182d3daf2b08685e710f2eda5291905
   languageName: node
   linkType: hard
 
@@ -6271,8 +6297,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "newman-reporter-allure@workspace:packages/newman-reporter-allure"
   dependencies:
+    "@types/newman": ^5.3.1
     allure-js-commons: "workspace:*"
-    lodash: ^4.17.15
+    typescript: ^4.4.2
   languageName: unknown
   linkType: soft
 
