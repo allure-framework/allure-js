@@ -1,6 +1,6 @@
 import os from "os";
 import process from "process";
-import { Formatter } from "@cucumber/cucumber";
+import { Formatter, World } from "@cucumber/cucumber";
 import { IFormatterOptions } from "@cucumber/cucumber/lib/formatter";
 import TestCaseHookDefinition from "@cucumber/cucumber/lib/models/test_case_hook_definition";
 import * as messages from "@cucumber/messages";
@@ -146,9 +146,11 @@ export class CucumberJSAllureFormatter extends Formatter {
       }
       return message;
     };
-    // eslint-disable-next-line
-    // @ts-ignore
-    options.supportCodeLibrary.World = CucumberAllureWorld;
+    if (options.supportCodeLibrary.World === World) {
+      // eslint-disable-next-line
+      // @ts-ignore
+      options.supportCodeLibrary.World = CucumberAllureWorld;
+    }
     this.beforeHooks = options.supportCodeLibrary.beforeTestCaseHookDefinitions;
     this.afterHooks = options.supportCodeLibrary.afterTestCaseHookDefinitions;
   }
@@ -293,7 +295,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     const fullName = `${pickle.uri}#${pickle.name}`;
     currentTest.name = pickle.name;
     currentTest.fullName = fullName;
-    currentTest.testCaseId = md5(fullName);
+    currentTest.historyId = md5(fullName);
 
     currentTest.addLabel(LabelName.HOST, this.hostname);
     currentTest.addLabel(LabelName.LANGUAGE, "javascript");
@@ -317,28 +319,6 @@ export class CucumberJSAllureFormatter extends Formatter {
 
       filteredTags.forEach((tag) => currentTest.addLabel(LabelName.TAG, tag.name));
     }
-
-    pickle.steps.forEach((ps) => {
-      const { argument } = ps;
-
-      if (!argument?.dataTable) {
-        return;
-      }
-
-      const csvDataTable = argument.dataTable.rows.reduce(
-        (acc, row) => `${acc + row.cells.map((cell) => cell.value).join(",")}\n`,
-        "",
-      );
-      const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, "text/csv");
-
-      currentTest.addAttachment(
-        "Data table",
-        {
-          contentType: "text/csv",
-        },
-        attachmentFilename,
-      );
-    });
 
     if (!scenario?.examples?.length) {
       return;
@@ -581,6 +561,26 @@ export class CucumberJSAllureFormatter extends Formatter {
           .find((kw) => kw !== undefined) || "";
       const allureStep = currentTest.startStep(keyword + ps.text, Date.now());
       this.allureSteps.set(data.testStepId, allureStep);
+
+      const {argument} = ps;
+
+      if (!argument?.dataTable) {
+        return;
+      }
+
+      const csvDataTable = argument.dataTable.rows.reduce(
+        (acc, row) => `${acc + row.cells.map((cell) => cell.value).join(",")}\n`,
+        "",
+      );
+      const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, "text/csv");
+
+      allureStep.addAttachment(
+        "Data table",
+        {
+          contentType: "text/csv",
+        },
+        attachmentFilename,
+      );
     }
   }
 
