@@ -29,31 +29,37 @@ interface AllureOptions {
   export: string;
 }
 
+interface PmItem {
+  name: string;
+  passed: boolean;
+  failedAssertions: string[];
+  console_logs: string[];
+  request_data?: PmRequestData;
+  response_data?: PmResponseData;
+}
+
+interface PmRequestData {
+  url: string;
+  method: string;
+  body?: RequestBody;
+}
+
+interface PmResponseData {
+  status: string;
+  code: number;
+  body: string;
+}
+
+interface RunningItem {
+  name: string;
+  allure_test: AllureTest;
+  pm_item: PmItem;
+  steps: AllureStep[];
+}
+
 class AllureReporter {
   suites: AllureGroup[] = [];
-  runningItems: {
-    name: string;
-    allure_test: AllureTest;
-    pm_item: {
-      name: string;
-      passed: boolean;
-      failedAssertions: string[];
-      console_logs: string[];
-      prerequest?: string;
-      testScript?: string;
-      request_data?: {
-        url: string;
-        method: string;
-        body?: RequestBody;
-      };
-      response_data?: {
-        status: string;
-        code: number;
-        body: string;
-      };
-    };
-    steps: AllureStep[];
-  }[] = [];
+  runningItems: RunningItem[] = [];
 
   currentNMGroup: Collection;
   allure_runtime: AllureRuntime;
@@ -261,7 +267,7 @@ class AllureReporter {
   }
 
   onBeforeItem(_err: any, args: { item: Item; cursor: Cursor }) {
-    const pm_item = {
+    const pm_item: PmItem = {
       name: this.itemName(args.item, args.cursor),
       passed: true,
       failedAssertions: [],
