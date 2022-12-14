@@ -6,6 +6,7 @@ import {
   AllureStep,
   AllureTest,
   ContentType,
+  InMemoryAllureWriter,
   LabelName,
   md5,
   Stage,
@@ -27,6 +28,7 @@ import { extractMeta } from "./helpers";
 interface AllureOptions {
   collectionAsParentSuite: boolean;
   export: string;
+  postProcessorForTest?: string;
 }
 
 interface PmItem {
@@ -70,6 +72,8 @@ class AllureReporter {
     collection: CollectionDefinition;
   };
 
+  allureWriter?: InMemoryAllureWriter;
+
   constructor(
     emitter: EventEmitter,
     reporterOptions: AllureOptions,
@@ -78,9 +82,15 @@ class AllureReporter {
     },
   ) {
     this.currentNMGroup = options.collection as Collection;
+    this.allureWriter = reporterOptions.postProcessorForTest
+      ? new InMemoryAllureWriter()
+      : undefined;
+
     this.allureRuntime = new AllureRuntime({
       resultsDir: reporterOptions.export || "allure-results",
+      writer: this.allureWriter,
     });
+
     this.reporterOptions = reporterOptions;
     this.options = options;
 
@@ -266,6 +276,10 @@ class AllureReporter {
     }
     // eslint-disable-next-line no-console
     console.log("#### Finished Execution ####");
+
+    if (this.reporterOptions.postProcessorForTest) {
+      eval(this.reporterOptions.postProcessorForTest); // eslint-disable-line no-eval
+    }
   }
 
   onBeforeItem(_err: any, args: { item: Item; cursor: Cursor }) {
