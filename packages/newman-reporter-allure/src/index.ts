@@ -28,7 +28,7 @@ import { extractMeta } from "./helpers";
 interface AllureOptions {
   collectionAsParentSuite: boolean;
   export: string;
-  postProcessorForTest?: string;
+  postProcessorForTest?: any;
 }
 
 interface PmItem {
@@ -278,7 +278,7 @@ class AllureReporter {
     console.log("#### Finished Execution ####");
 
     if (this.reporterOptions.postProcessorForTest) {
-      eval(this.reporterOptions.postProcessorForTest); // eslint-disable-line no-eval
+      this.reporterOptions.postProcessorForTest(this.allureWriter);
     }
   }
 
@@ -382,8 +382,9 @@ class AllureReporter {
       allureTest.addLabel(LabelName.STORY, path);
     }
 
-    allureTest.fullName = fullName;
-    allureTest.testCaseId = md5(fullName);
+    const allureFullName = `${fullName}#${testName}`;
+    allureTest.fullName = allureFullName;
+    allureTest.testCaseId = md5(allureFullName);
 
     const { labels } = extractMeta(args.item.events);
 
