@@ -1334,6 +1334,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:16":
+  version: 16.18.9
+  resolution: "@types/node@npm:16.18.9"
+  checksum: 7dc9cb417869592b2ad64233d06cd3eda63b8ae31d72a0811e4f5ac5a2ef01feb4d4c91159481e506c7a56951981359e75069c7fae6f0de90fc0c3c8b69a36cd
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^14.6.0":
   version: 14.17.12
   resolution: "@types/node@npm:14.17.12"
@@ -7103,6 +7110,7 @@ __metadata:
   resolution: "newman-reporter-allure@workspace:packages/newman-reporter-allure"
   dependencies:
     "@types/newman": ^5.3.1
+    "@types/node": 16
     "@types/postman-collection": ^3.5.7
     allure-js-commons: "workspace:*"
     jest: ^26.4.2

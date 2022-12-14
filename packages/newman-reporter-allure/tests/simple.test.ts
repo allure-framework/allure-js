@@ -17,11 +17,32 @@ test("test-without-asserions", async () => {
         item: [
           {
             name: "testReq",
+            event: [
+              {
+                listen: "test",
+                script: {
+                  exec: [
+                    "//@allure:id=228",
+                    'pm.test("Status code is 200", function () {',
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                  ],
+                  type: "text/javascript",
+                },
+              },
+            ],
             request: {
               method: "GET",
               header: [],
               url: {
                 host: ["example", "com"],
+                path: ["test"],
+                query: [
+                  {
+                    key: "dfgdfg",
+                    value: null,
+                  },
+                ],
               },
             },
             response: [],

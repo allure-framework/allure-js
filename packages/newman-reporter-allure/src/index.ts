@@ -17,7 +17,7 @@ import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion, NewmanRunOption
 import type {
   Collection,
   CollectionDefinition,
-  EventList,
+  Event,
   Item,
   Request,
   RequestBody,
@@ -64,14 +64,12 @@ interface RunningItem {
 class AllureReporter {
   suites: AllureGroup[] = [];
   runningItems: RunningItem[] = [];
-
   currentNMGroup: Collection;
   allureRuntime: AllureRuntime;
   reporterOptions: AllureOptions;
   options: {
     collection: CollectionDefinition;
   };
-
   allureWriter?: InMemoryAllureWriter;
 
   constructor(
@@ -97,6 +95,138 @@ class AllureReporter {
     this.registerEvents(emitter);
   }
 
+  get currentSuite() {
+    return this.suites.at(-1) || null;
+  }
+
+  get currentStep() {
+    return this.currentRunningItem?.steps.at(-1) || null;
+  }
+
+  get currentRunningItem() {
+    return this.runningItems.at(-1) || null;
+  }
+
+  get currentExecutable() {
+    const executable = this.currentTest;
+    if (!executable) {
+      throw new Error("No executable!");
+    }
+    return executable;
+  }
+
+  get currentTest() {
+    const currentItem = this.currentRunningItem;
+    if (!currentItem) {
+      throw new Error("No active test");
+    }
+
+    return currentItem.allureTest;
+  }
+
+  set currentTest(allureTest) {
+    if (!this.currentRunningItem) {
+      throw new Error("Cannot find current test");
+    }
+
+    this.currentRunningItem.allureTest = allureTest;
+  }
+
+  getFullName(item: Item | Collection): string {
+    if (
+      !item ||
+      !(typeof item.parent === "function") ||
+      !(typeof item.forEachParent === "function")
+    ) {
+      return "";
+    }
+
+    const chain = [];
+    item.forEachParent((parent) => {
+      chain.unshift(parent.name || parent.id);
+    });
+
+    if (item.parent()) {
+      chain.push(item.name); // Add the current item only if it is not the collection
+    }
+    return chain.join("/");
+  }
+
+  attachConsoleLogs(logsArr: string[]) {
+    if (logsArr.length) {
+      const buf = Buffer.from(logsArr.join("\n"), "utf8");
+      const file = this.allureRuntime.writeAttachment(buf, ContentType.TEXT);
+      this.currentTest.addAttachment("consoleLogs", ContentType.TEXT, file);
+    }
+  }
+
+  attachPrerequest(preReq: string) {
+    if (preReq) {
+      const buf = Buffer.from(preReq, "utf8");
+      const file = this.allureRuntime.writeAttachment(buf, ContentType.TEXT);
+      this.currentTest.addAttachment("preRequest", ContentType.TEXT, file);
+    }
+  }
+
+  attachTestScript(testScript: string) {
+    if (testScript) {
+      const buf = Buffer.from(testScript, "utf8");
+      const file = this.allureRuntime.writeAttachment(buf, ContentType.TEXT);
+      this.currentTest.addAttachment("testScript", ContentType.TEXT, file);
+    }
+  }
+
+  setDescriptionHtml(html: string) {
+    if (html) {
+      this.currentExecutable.descriptionHtml = html;
+    }
+  }
+
+  endTest(allureTest: AllureTest, status: Status, details?: StatusDetails) {
+    if (details) {
+      allureTest.statusDetails = details;
+    }
+    allureTest.status = status;
+    allureTest.stage = Stage.FINISHED;
+    allureTest.endTest();
+  }
+
+  startStep(name: string) {
+    const allureStep = this.currentExecutable.startStep(name);
+    this.currentRunningItem?.steps.push(allureStep);
+    return allureStep;
+  }
+
+  endStep(status: Status) {
+    const step = this.currentRunningItem?.steps.pop();
+    if (!step) {
+      throw new Error("Step not found");
+    }
+
+    step.status = status;
+    step.endStep();
+  }
+
+  itemName(item: Item, cursor: Cursor) {
+    const parent = item.parent();
+    const parentName = (parent as any)?.name || "";
+    const folderOrEmpty =
+      !parentName || parentName === this.options.collection.name ? "" : `${parentName}/`;
+    const iteration = cursor && cursor.cycles > 1 ? `/${cursor.iteration}` : "";
+    return this.escape(folderOrEmpty + item.name + iteration);
+  }
+
+  escape(val: string) {
+    return (
+      val
+        .replace("\n", "")
+        .replace("\r", "")
+        // eslint-disable-next-line @typescript-eslint/quotes
+        .replace('"', '"')
+        .replace(/[\u0100-\uffff]/g, (c) => `|0x${c.charCodeAt(0).toString(16).padStart(4, "0")}`)
+    );
+  }
+
   registerEvents(emitter: EventEmitter) {
     emitter.on("start", this.onStart.bind(this));
     emitter.on("beforeItem", this.onBeforeItem.bind(this));
@@ -109,176 +239,24 @@ class AllureReporter {
     emitter.on("done", this.onDone.bind(this));
   }
 
-  get currentSuite() {
-    if (this.suites.length === 0) {
-      return null;
-    }
-    return this.suites[this.suites.length - 1];
-  }
-
-  get currentStep() {
-    if (this.runningItems.length === 0) {
-      return null;
-    }
-    if (!Array.isArray(this.runningItems[this.runningItems.length - 1].steps)) {
-      return null;
-    }
-    if (this.runningItems[this.runningItems.length - 1].steps.length === 0) {
-      return null;
-    }
-    const steps = this.runningItems[this.runningItems.length - 1].steps;
-    return steps[steps.length - 1];
-  }
-
-  get currentTest() {
-    if (this.runningItems.length === 0) {
-      throw new Error("No active test");
-    }
-    const testsSize = this.runningItems.length;
-    return this.runningItems[testsSize - 1].allureTest;
-  }
-
-  set currentTest(allureTest) {
-    this.runningItems[this.runningItems.length - 1].allureTest = allureTest;
-  }
-
-  pushSuite(suite: AllureGroup) {
-    this.suites.push(suite);
-  }
-
-  popSuite() {
-    this.suites.pop();
-  }
-
   onStart(_err: any, _args: any) {
     const suiteName = (this.options.collection as Collection).name;
-    // eslint-disable-next-line no-console
-    console.log(`### Starting Execution For - ${suiteName} ###`);
     const scope = this.currentSuite || this.allureRuntime;
     const suite = scope.startGroup(suiteName || "Global");
-    this.pushSuite(suite);
+    this.suites.push(suite);
     this.runningItems = [];
   }
 
   onPrerequest(
     _err: any,
     args: {
-      executions: EventList;
+      executions: Event[];
     },
   ) {
-    if (
-      args.executions !== undefined &&
-      Array.isArray(args.executions) &&
-      args.executions.length > 0
-    ) {
-      this.runningItems[this.runningItems.length - 1].pmItem.prerequest =
-        args.executions[0].script.exec.join("\n");
-    }
-  }
+    const execScript = args.executions[0]?.script.exec?.join("\n");
 
-  onTest(
-    _err: any,
-    args: {
-      executions: EventList;
-    },
-  ) {
-    if (
-      args.executions !== undefined &&
-      Array.isArray(args.executions) &&
-      args.executions.length > 0
-    ) {
-      this.runningItems[this.runningItems.length - 1].pmItem.testScript =
-        args.executions[0].script.exec.join("\n");
-    }
-  }
-
-  onConsole(err: any, args: ConsoleEvent) {
-    if (err) {
-      return;
-    }
-    if (args.level) {
-      if (!Array.isArray(this.runningItems[this.runningItems.length - 1].pmItem.consoleLogs)) {
-        this.runningItems[this.runningItems.length - 1].pmItem.consoleLogs = [];
-        this.runningItems[this.runningItems.length - 1].pmItem.consoleLogs.push(
-          `level: ${args.level}, messages: ${args.messages.toString()}`,
-        );
-      } else {
-        this.runningItems[this.runningItems.length - 1].pmItem.consoleLogs.push(
-          `level: ${args.level}, messages: ${args.messages.toString()}`,
-        );
-      }
-    }
-  }
-
-  onRequest(
-    err: any,
-    args: {
-      request: Request;
-      response: Response;
-    },
-  ) {
-    if (err) {
-      return;
-    }
-    const req = args.request;
-    let url = `${req.url.protocol || ""}://${(req.url.host || []).join(".")}`;
-    if (req.url.path !== undefined) {
-      if (req.url.path.length > 0) {
-        url = `${url}/${req.url.path.join("/")}`;
-      }
-    }
-    const respStream = args.response.stream;
-    const respBody = (respStream && Buffer.from(respStream).toString()) || "";
-    this.runningItems[this.runningItems.length - 1].pmItem.requestData = {
-      url: url,
-      method: req.method,
-      body: req.body,
-    };
-    this.runningItems[this.runningItems.length - 1].pmItem.responseData = {
-      status: args.response.status,
-      code: args.response.code,
-      body: respBody,
-    };
-  }
-
-  startStep(name: string) {
-    const allureStep = this.currentExecutable.startStep(name);
-    this.pushStep(allureStep);
-    return this;
-  }
-
-  endStep(status: Status) {
-    const step = this.popStep();
-    if (!step) {
-      throw new Error("Step not found");
-    }
-
-    step.status = status;
-    step.endStep();
-  }
-
-  onAssertion(err: any, args: NewmanRunExecutionAssertion) {
-    const stepName = args.assertion;
-    const curStep = this.startStep(stepName);
-    if (err) {
-      this.runningItems[this.runningItems.length - 1].pmItem.passed = false;
-      this.runningItems[this.runningItems.length - 1].pmItem.failedAssertions.push(args.assertion);
-      curStep.endStep(Status.FAILED);
-    } else {
-      curStep.endStep(Status.PASSED);
-    }
-  }
-
-  onDone(_err: any, _args: unknown) {
-    if (this.currentSuite !== null) {
-      this.currentSuite.endGroup();
-      this.popSuite();
-    }
-    // eslint-disable-next-line no-console
-    console.log("#### Finished Execution ####");
-
-    if (this.reporterOptions.postProcessorForTest) {
-      this.reporterOptions.postProcessorForTest(this.allureWriter);
+    if (this.currentRunningItem && execScript) {
+      this.currentRunningItem.pmItem.prerequest = execScript;
     }
   }
 
@@ -289,10 +267,13 @@ class AllureReporter {
       failedAssertions: [],
       consoleLogs: [],
     };
+
     if (this.currentSuite === null) {
       throw new Error("No active suite");
     }
+
     let testName = pmItem.name;
+
     if (testName.indexOf("/") > 0) {
       const len = testName.split("/").length;
       testName = testName.split("/")[len - 1];
@@ -303,14 +284,16 @@ class AllureReporter {
     allureTest.stage = Stage.RUNNING;
 
     const itemGroup = args.item.parent();
-    const root = !itemGroup || itemGroup === this.options.collection;
+    const isRoot = !itemGroup || itemGroup === this.options.collection;
+
     let fullName = "";
     if (itemGroup && this.currentNMGroup !== itemGroup) {
-      if (!root) {
+      if (!isRoot) {
         fullName = this.getFullName(itemGroup as any);
       }
       this.currentNMGroup = itemGroup as any;
     }
+
     fullName = this.getFullName(this.currentNMGroup);
     let parentSuite: string | undefined;
     let suite: string | undefined;
@@ -319,6 +302,7 @@ class AllureReporter {
     if (this.reporterOptions.collectionAsParentSuite === true) {
       parentSuite = this.options.collection.name;
     }
+
     if (fullName !== "") {
       if (this.reporterOptions.collectionAsParentSuite === true) {
         if (fullName.indexOf("/") > 0) {
@@ -349,6 +333,7 @@ class AllureReporter {
         }
       }
     }
+
     if (parentSuite !== undefined) {
       parentSuite = parentSuite.charAt(0).toUpperCase() + parentSuite.slice(1);
       allureTest.addLabel(LabelName.PARENT_SUITE, parentSuite);
@@ -400,90 +385,13 @@ class AllureReporter {
     });
   }
 
-  getFullName(item: Item | Collection, separator?: string): string {
-    if (
-      !item ||
-      !(typeof item.parent === "function") ||
-      !(typeof item.forEachParent === "function")
-    ) {
-      return "";
-    }
-
-    const chain = [];
-    item.forEachParent((parent) => {
-      chain.unshift(parent.name || parent.id);
-    });
-    if (item.parent()) {
-      chain.push(item.name || item.id); // Add the current item only if it is not the collection
-    }
-    return chain.join(typeof separator === "string" ? separator : "/");
-  }
-
-  attachConsoleLogs(logsArr: string[]) {
-    if (logsArr.length > 0) {
-      const buf = Buffer.from(logsArr.join("\n"), "utf8");
-      const file = this.allureRuntime.writeAttachment(buf, "text/plain");
-      this.currentTest.addAttachment("consoleLogs", "text/plain", file);
-    }
-  }
-
-  attachPrerequest(preReq: string) {
-    if (preReq !== undefined) {
-      const buf = Buffer.from(preReq, "utf8");
-      const file = this.allureRuntime.writeAttachment(buf, "text/plain");
-      this.currentTest.addAttachment("preRequest", "text/plain", file);
-    }
-  }
-
-  attachTestScript(testScript: string) {
-    if (testScript !== undefined) {
-      const buf = Buffer.from(testScript, "utf8");
-      const file = this.allureRuntime.writeAttachment(buf, "text/plain");
-      this.currentTest.addAttachment("testScript", "text/plain", file);
-    }
-  }
-
-  get currentExecutable() {
-    const executable = this.currentStep || this.currentTest;
-    if (executable === null) {
-      throw new Error("No executable!");
-    }
-    return executable;
-  }
-
-  setDescriptionHtml(html: string) {
-    if (html !== undefined) {
-      this.currentExecutable.descriptionHtml = html;
-    }
-  }
-
-  passTestCase(allureTest: AllureTest) {
-    this.endTest(allureTest, Status.PASSED);
-  }
-
-  failTestCase(
-    allureTest: AllureTest,
-    error: {
-      name: string;
-      message: string;
-      trace: string;
-    },
-  ) {
-    const latestStatus = allureTest.status;
-    // if test already has a failed state, we should not overwrite it
-    if (latestStatus === Status.FAILED || latestStatus === Status.BROKEN) {
-      return;
-    }
-    const status = error.name === "AssertionError" ? Status.FAILED : Status.BROKEN;
-    this.endTest(allureTest, status, { message: error.message });
-  }
-
   onItem(
     _err: any,
     args: {
       item: Item;
     },
   ) {
+    // !TODO  please refactor me
     const rItem = this.runningItems[this.runningItems.length - 1];
     if (rItem.pmItem.prerequest) {
       this.attachPrerequest(rItem.pmItem.prerequest);
@@ -507,16 +415,24 @@ class AllureReporter {
 
     if (rItem.pmItem.requestData?.body && bodyModeProp === "raw") {
       bodyModePropObj = rItem.pmItem.requestData.body[bodyModeProp] || "";
-
-      // eslint-disable-next-line no-console
-      console.log(bodyModePropObj);
     } else {
       bodyModePropObj = "";
     }
 
     const reqTableStr =
       bodyModeProp &&
-      ` <table> <tr> <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;color:Orange;"> ${bodyModeProp} </th> <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;"> <pre style="color:Orange"> <b> ${bodyModePropObj} </b> </pre> </td> </tr>  </table>`;
+      `<table>
+        <tr>
+          <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;color:Orange;">
+            ${bodyModeProp}
+          </th>
+          <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">
+            <pre style="color:Orange">
+              <b> ${bodyModePropObj} </b>
+            </pre>
+          </td>
+        </tr>
+      </table>`;
 
     let testDescription;
     if (args.item.request.description !== undefined) {
@@ -534,7 +450,30 @@ class AllureReporter {
 
     if (requestDataURL && rItem.pmItem.responseData) {
       this.setDescriptionHtml(
-        `<p style="color:MediumPurple;"> <b> ${testDescription} </b> </p> <h4 style="color:DodgerBlue;"><b><i>Request:</i></b></h4> <p style="color:DodgerBlue"> <b> ${requestDataURL} </b> </p> ${reqTableStr} </p> <h4 style="color:DodgerBlue;"> <b> <i> Response: </i> </b> </h4> <p style="color:DodgerBlue"> <b> ${rItem.pmItem.responseData.code} </b> </p>`,
+        `
+        <p style="color:MediumPurple;">
+          <b>
+            ${testDescription}
+          </b>
+        </p>
+        <h4 style="color:DodgerBlue;">
+        <b>
+          <i>Request:</i>
+        </b>
+        </h4>
+        <p style="color:DodgerBlue">
+          <b> ${requestDataURL}
+          </b>
+        </p> ${reqTableStr}
+        </p>
+        <h4 style="color:DodgerBlue;">
+          <b>
+            <i> Response: </i>
+          </b>
+        </h4>
+        <p style="color:DodgerBlue">
+          <b>${rItem.pmItem.responseData.code}</b>
+        </p>`,
       );
     }
 
@@ -542,6 +481,7 @@ class AllureReporter {
       const attachment = this.allureRuntime.writeAttachment(rItem.pmItem.responseData?.body, {
         contentType: ContentType.TEXT,
       });
+
       this.currentExecutable.addAttachment(
         "response",
         { contentType: ContentType.TEXT },
@@ -555,55 +495,106 @@ class AllureReporter {
         `Response code: ${rItem.pmItem.responseData.code}, status: ${rItem.pmItem.responseData.status}`,
       );
 
-      this.failTestCase(rItem.allureTest, {
+      const error = {
         name: "AssertionError",
         message: msg,
         trace: details,
-      });
+      };
+      const latestStatus = rItem.allureTest.status;
+      // if test already has a failed state, we should not overwrite it
+      if (latestStatus === Status.FAILED || latestStatus === Status.BROKEN) {
+        return;
+      }
+      const status = error.name === "AssertionError" ? Status.FAILED : Status.BROKEN;
+      this.endTest(rItem.allureTest, status, { message: error.message });
     } else {
-      this.passTestCase(rItem.allureTest);
+      this.endTest(rItem.allureTest, Status.PASSED);
     }
     this.runningItems.pop();
   }
 
-  pushStep(step: AllureStep) {
-    if (!Array.isArray(this.runningItems[this.runningItems.length - 1].steps)) {
-      this.runningItems[this.runningItems.length - 1].steps = [];
+  onTest(
+    _err: any,
+    args: {
+      executions: Event[];
+    },
+  ) {
+    const execScript = args.executions[0]?.script.exec?.join("\n");
+
+    if (this.currentRunningItem && execScript) {
+      this.currentRunningItem.pmItem.testScript = execScript;
     }
-    this.runningItems[this.runningItems.length - 1].steps.push(step);
   }
 
-  popStep() {
-    return this.runningItems[this.runningItems.length - 1].steps.pop();
-  }
-
-  endTest(allureTest: AllureTest, status: Status, details?: StatusDetails) {
-    if (details) {
-      allureTest.statusDetails = details;
+  onConsole(err: any, args: ConsoleEvent) {
+    if (err) {
+      return;
     }
-    allureTest.status = status;
-    allureTest.stage = Stage.FINISHED;
-    allureTest.endTest();
+
+    if (args.level) {
+      this.currentRunningItem?.pmItem.consoleLogs.push(
+        `level: ${args.level}, messages: ${args.messages.toString()}`,
+      );
+    }
   }
 
-  itemName(item: Item, cursor: Cursor) {
-    const parent = item.parent();
-    const parentName = (parent as any)?.name || "";
-    const folderOrEmpty =
-      !parentName || parentName === this.options.collection.name ? "" : `${parentName}/`;
-    const iteration = cursor && cursor.cycles > 1 ? `/${cursor.iteration}` : "";
-    return this.escape(folderOrEmpty + item.name + iteration);
+  onRequest(
+    err: any,
+    args: {
+      request: Request;
+      response: Response;
+    },
+  ) {
+    if (err) {
+      return;
+    }
+
+    const req = args.request;
+
+    const url = `${
+      req.url.protocol || ""
+    }://${args.request.url.getHost()}${req.url.getPathWithQuery()}`;
+
+    const respStream = args.response.stream;
+    const respBody = (respStream && Buffer.from(respStream).toString()) || "";
+
+    this.runningItems[this.runningItems.length - 1].pmItem.requestData = {
+      url: url,
+      method: req.method,
+      body: req.body,
+    };
+
+    this.runningItems[this.runningItems.length - 1].pmItem.responseData = {
+      status: args.response.status,
+      code: args.response.code,
+      body: respBody,
+    };
   }
 
-  escape(val: string) {
-    return (
-      val
-        .replace("\n", "")
-        .replace("\r", "")
-        // eslint-disable-next-line @typescript-eslint/quotes
-        .replace('"', '"')
-        .replace(/[\u0100-\uffff]/g, (c) => `|0x${c.charCodeAt(0).toString(16).padStart(4, "0")}`)
-    );
+  onAssertion(err: any, args: NewmanRunExecutionAssertion) {
+    const stepName = args.assertion;
+    const currStep = this.startStep(stepName);
+
+    if (err && this.currentRunningItem) {
+      this.currentRunningItem.pmItem.passed = false;
+      this.currentRunningItem.pmItem.failedAssertions.push(args.assertion);
+
+      currStep.status = Status.FAILED;
+      currStep.endStep();
+    } else {
+      currStep.status = Status.PASSED;
+    }
+  }
+
+  onDone(_err: any, _args: unknown) {
+    if (this.currentSuite) {
+      this.currentSuite.endGroup();
+      this.suites.pop();
+    }
+
+    if (this.reporterOptions.postProcessorForTest) {
+      this.reporterOptions.postProcessorForTest(this.allureWriter);
+    }
   }
 }
 

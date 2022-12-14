@@ -4,8 +4,8 @@ import { EventList } from "postman-collection";
 export const extractMeta = (eventList: EventList) => {
   const labels: Label[] = [];
 
-  const allureIdRegexp = /\/\/\s+@allure:id=(.+)/;
-  const allureLabelRegexp = /\/\/\s+@allure-label:(.+)=(.+)/;
+  const allureIdRegexp = /\/\/\s*@allure:id=(.+)/;
+  const allureLabelRegexp = /\/\/\s*@allure-label:(.+)=(.+)/;
 
   eventList.each((event) => {
     if (event.listen === "test" && event.script.exec) {
