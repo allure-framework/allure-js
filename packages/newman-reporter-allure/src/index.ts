@@ -202,7 +202,7 @@ class AllureReporter {
       return;
     }
     const req = args.request;
-    let url = req.url.toString();
+    let url = `${req.url.protocol || ""}://${(req.url.host || []).join(".")}`;
     if (req.url.path !== undefined) {
       if (req.url.path.length > 0) {
         url = `${url}/${req.url.path.join("/")}`;
@@ -493,12 +493,9 @@ class AllureReporter {
       bodyModePropObj = "";
     }
 
-    const reqTableStr = ` <table> <tr> <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;color:Orange;"> ${bodyModeProp} </th> <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;"> <pre style="color:Orange"> <b> ${bodyModePropObj} </b> </pre> </td> </tr>  </table>`;
-
-    const responseCodeStatus =
-      (rItem.pm_item.response_data &&
-        `${rItem.pm_item.response_data.code} - ${rItem.pm_item.response_data.status}`) ||
-      "";
+    const reqTableStr =
+      bodyModeProp &&
+      ` <table> <tr> <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;color:Orange;"> ${bodyModeProp} </th> <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;"> <pre style="color:Orange"> <b> ${bodyModePropObj} </b> </pre> </td> </tr>  </table>`;
 
     let testDescription;
     if (args.item.request.description !== undefined) {
@@ -516,8 +513,15 @@ class AllureReporter {
 
     if (requestDataURL && rItem.pm_item.response_data) {
       this.setDescriptionHtml(
-        `<p style="color:MediumPurple;"> <b> ${testDescription} </b> </p> <h4 style="color:DodgerBlue;"><b><i>Request:</i></b></h4> <p style="color:DodgerBlue"> <b> ${requestDataURL} </b> </p> ${reqTableStr} </p> <h4 style="color:DodgerBlue;"> <b> <i> Response: </i> </b> </h4> <p style="color:DodgerBlue"> <b> ${responseCodeStatus} </b> </p> <p > <pre style="color:Orange;"> <b> ${rItem.pm_item.response_data.body} </b> </pre> </p>`,
+        `<p style="color:MediumPurple;"> <b> ${testDescription} </b> </p> <h4 style="color:DodgerBlue;"><b><i>Request:</i></b></h4> <p style="color:DodgerBlue"> <b> ${requestDataURL} </b> </p> ${reqTableStr} </p> <h4 style="color:DodgerBlue;"> <b> <i> Response: </i> </b> </h4> <p style="color:DodgerBlue"> <b> ${rItem.pm_item.response_data.code} </b> </p>`,
       );
+    }
+
+    if (rItem.pm_item.response_data?.body) {
+      const attachment = this.allure_runtime.writeAttachment(rItem.pm_item.response_data?.body, {
+        contentType: "text/plain",
+      });
+      this.currentExecutable.addAttachment("response", { contentType: "text/plain" }, attachment);
     }
 
     if (rItem.pm_item.response_data && rItem.pm_item.failedAssertions.length > 0) {
