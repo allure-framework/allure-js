@@ -21,6 +21,7 @@ import type {
   RequestBody,
   Response,
 } from "postman-collection";
+import { extractMeta } from "./helpers";
 
 interface AllureOptions {
   collectionAsParentSuite: boolean;
@@ -363,6 +364,13 @@ class AllureReporter {
 
     allure_test.fullName = fullName;
     allure_test.testCaseId = md5(fullName);
+
+    const { labels } = extractMeta(args.item.events);
+
+    labels.forEach((label) => {
+      allure_test.addLabel(label.name, label.value);
+    });
+
     this.runningItems.push({
       name: fullName,
       allure_test: allure_test,
