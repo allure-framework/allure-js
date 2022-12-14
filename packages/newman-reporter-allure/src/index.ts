@@ -5,6 +5,7 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
+  ContentType,
   LabelName,
   md5,
   Stage,
@@ -519,9 +520,13 @@ class AllureReporter {
 
     if (rItem.pm_item.response_data?.body) {
       const attachment = this.allure_runtime.writeAttachment(rItem.pm_item.response_data?.body, {
-        contentType: "text/plain",
+        contentType: ContentType.TEXT,
       });
-      this.currentExecutable.addAttachment("response", { contentType: "text/plain" }, attachment);
+      this.currentExecutable.addAttachment(
+        "response",
+        { contentType: ContentType.TEXT },
+        attachment,
+      );
     }
 
     if (rItem.pm_item.response_data && rItem.pm_item.failedAssertions.length > 0) {
