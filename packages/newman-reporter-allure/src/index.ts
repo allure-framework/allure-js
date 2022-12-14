@@ -36,6 +36,8 @@ interface PmItem {
   console_logs: string[];
   request_data?: PmRequestData;
   response_data?: PmResponseData;
+  prerequest?: string;
+  testScript?: string;
 }
 
 interface PmRequestData {
