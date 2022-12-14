@@ -78,15 +78,15 @@ class AllureReporter {
   }
 
   registerEvents(emitter: EventEmitter) {
-    emitter.on("start", this.onStart);
-    emitter.on("beforeItem", this.onBeforeItem);
-    emitter.on("item", this.onItem);
-    emitter.on("prerequest", this.onPrerequest);
-    emitter.on("request", this.onRequest);
-    emitter.on("test", this.onTest);
-    emitter.on("assertion", this.onAssertion);
-    emitter.on("console", this.onConsole);
-    emitter.on("done", this.onDone);
+    emitter.on("start", this.onStart.bind(this));
+    emitter.on("beforeItem", this.onBeforeItem.bind(this));
+    emitter.on("item", this.onItem.bind(this));
+    emitter.on("prerequest", this.onPrerequest.bind(this));
+    emitter.on("request", this.onRequest.bind(this));
+    emitter.on("test", this.onTest.bind(this));
+    emitter.on("assertion", this.onAssertion.bind(this));
+    emitter.on("console", this.onConsole.bind(this));
+    emitter.on("done", this.onDone.bind(this));
   }
 
   get currentSuite() {
@@ -278,7 +278,6 @@ class AllureReporter {
     testFullName = pm_item.name;
     const rndStr = Math.random().toString(36).substr(2, 5);
     testFullName = `${testFullName}_${rndStr}`;
-    allure_test.historyId = md5(testFullName);
 
     allure_test.stage = Stage.RUNNING;
 
@@ -362,6 +361,8 @@ class AllureReporter {
       allure_test.addLabel(LabelName.STORY, path);
     }
 
+    allure_test.fullName = fullName;
+    allure_test.testCaseId = md5(fullName);
     this.runningItems.push({
       name: fullName,
       allure_test: allure_test,
