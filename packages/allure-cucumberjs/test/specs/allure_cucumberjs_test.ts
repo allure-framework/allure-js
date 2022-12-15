@@ -1,4 +1,3 @@
-import { createHash } from "crypto";
 import os from "os";
 import process from "process";
 import { LabelName, md5, Status } from "allure-js-commons";
@@ -521,7 +520,7 @@ describe("CucumberJSAllureReporter", () => {
       expect(tags).length(1);
     });
 
-    it("should set fullName and testCaseId", async () => {
+    it("should set fullName, testCaseId and historyId", async () => {
       const results = await runFeatures(dataSet.simple);
 
       expect(results.tests).length(1);
@@ -532,6 +531,7 @@ describe("CucumberJSAllureReporter", () => {
       const fullName = `${source!.uri}#${name!}`;
       expect(testResult.fullName).eq(fullName);
       expect(testResult.testCaseId).eq(md5(fullName));
+      expect(testResult.historyId).eq(testResult.testCaseId);
     });
   });
 
