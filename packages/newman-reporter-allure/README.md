@@ -26,7 +26,7 @@ You can add allure labels by passing javascript comments in the test field of po
 ### Id
 
 ```javascript
-// @allure:id=228
+// @allure.id=228
 
 pm.test("Status code is 200", function () {
   pm.response.to.be.ok;
@@ -36,7 +36,7 @@ pm.test("Status code is 200", function () {
 ### Label
 
 ```javascript
-// @allure-label:{{labelName}}={{labelValue}}
+// @allure.label.{{labelName}}={{labelValue}}
 
 pm.test("Status code is 200", function () {
   pm.response.to.be.ok;
@@ -46,7 +46,7 @@ pm.test("Status code is 200", function () {
 ### Story
 
 ```javascript
-// @allure-label:story=storyName
+// @allure.label.story=storyName
 
 pm.test("Status code is 200", function () {
   pm.response.to.be.ok;
@@ -56,7 +56,7 @@ pm.test("Status code is 200", function () {
 ### Suite
 
 ```javascript
-// @allure-label:suite=suiteName
+// @allure.label.suite=suiteName
 
 pm.test("Status code is 200", function () {
   pm.response.to.be.ok;
@@ -66,7 +66,7 @@ pm.test("Status code is 200", function () {
 ### Owner
 
 ```javascript
-// @allure-label:owner=ownerName
+// @allure.label.owner=ownerName
 
 pm.test("Status code is 200", function () {
   pm.response.to.be.ok;
@@ -76,7 +76,7 @@ pm.test("Status code is 200", function () {
 ### Tag
 
 ```javascript
-// @allure-label:tag=tagName
+// @allure.label.tag=tagName
 
 pm.test("Status code is 200", function () {
   pm.response.to.be.ok;
