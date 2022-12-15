@@ -295,6 +295,32 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
       },
     ],
   },
+  withCustomWorldConstructor: {
+    supportCodeLibrary: buildSupportCodeLibrary(({ Given, When, Then, setWorldConstructor }) => {
+      class CustomWorld extends CucumberAllureWorld {
+         customWorldMethod() {}
+      }
+
+      setWorldConstructor(CustomWorld)
+
+      Given("a step", function () {});
+
+      When("world say hello", function (this: CustomWorld) {
+        this.customWorldMethod()
+      });
+    }),
+    sources: [
+      {
+        data:
+          "Feature: a\n" +
+          "\n" +
+          "  Scenario: b\n" +
+          "    Given a step\n" +
+          "    When world say hello\n",
+        uri: "withNestedAnonymous.feature",
+      },
+    ],
+  },
 };
 
 describe("CucumberJSAllureReporter", () => {
@@ -599,6 +625,13 @@ describe("CucumberJSAllureReporter", () => {
       expect(whenStep.steps[0].status).eq(Status.FAILED);
       expect(whenStep.steps[0].statusDetails.message).eq("an error message");
       expect(whenStep.steps[0].statusDetails.trace).not.eq("");
+    });
+
+    it("should applied custom world constructor", async () => {
+      const results = await runFeatures(dataSet.withCustomWorldConstructor);
+      expect(results.tests).length(1);
+      expect(results.tests[0].statusDetails.message).undefined;
+      expect(results.tests[0].status).eq(Status.PASSED);
     });
   });
 });
