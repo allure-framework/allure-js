@@ -12,6 +12,7 @@ import {
   AllureStep,
   AllureTest,
   Attachment,
+  ContentType,
   ExecutableItem,
   ExecutableItemWrapper,
   Label,
@@ -334,12 +335,12 @@ export class CucumberJSAllureFormatter extends Formatter {
       }
 
       const csvDataTable = `${csvDataTableHeader}\n${csvDataTableBody}\n`;
-      const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, "text/csv");
+      const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, ContentType.CSV);
 
       currentTest.addAttachment(
         "Examples",
         {
-          contentType: "text/csv",
+          contentType: ContentType.CSV,
         },
         attachmentFilename,
       );
@@ -560,7 +561,7 @@ export class CucumberJSAllureFormatter extends Formatter {
       const allureStep = currentTest.startStep(keyword + ps.text, Date.now());
       this.allureSteps.set(data.testStepId, allureStep);
 
-      const {argument} = ps;
+      const { argument } = ps;
 
       if (!argument?.dataTable) {
         return;
@@ -570,12 +571,12 @@ export class CucumberJSAllureFormatter extends Formatter {
         (acc, row) => `${acc + row.cells.map((cell) => cell.value).join(",")}\n`,
         "",
       );
-      const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, "text/csv");
+      const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, ContentType.CSV);
 
       allureStep.addAttachment(
         "Data table",
         {
-          contentType: "text/csv",
+          contentType: ContentType.CSV,
         },
         attachmentFilename,
       );
