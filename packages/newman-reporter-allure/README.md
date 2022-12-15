@@ -17,6 +17,8 @@ $ newman run <Collection> -e <Environment> -r allure
 $ newman run <Collection> -e <Environment> -r allure --reporter-allure-export <allure-results-out-dir>
 ```
 
+Use the option `--report-allure-collection-as-parent-suite` to use the collection name as the parent suite title under the _Suites_ view. This helps when you run multiple collections and want to aggregate them in a single report.
+
 ## Metadata
 
 You can add allure labels by passing javascript comments in the test field of postman request declaration

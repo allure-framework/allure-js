@@ -28,6 +28,7 @@ import { extractMeta } from "./helpers";
 interface AllureOptions {
   export: string;
   postProcessorForTest?: any;
+  collectionAsParentSuite?: boolean;
 }
 
 interface PmItem {
@@ -139,8 +140,12 @@ class AllureReporter {
     ) {
       return [];
     }
-
     const chain: string[] = [];
+
+    if (this.options.collection.name && this.reporterOptions.collectionAsParentSuite) {
+      chain.push(this.options.collection.name);
+    }
+
     item.forEachParent((parent) => {
       chain.unshift(parent.name || parent.id);
     });

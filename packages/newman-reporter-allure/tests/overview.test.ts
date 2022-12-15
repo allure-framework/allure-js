@@ -9,6 +9,9 @@ afterAll(() => server.close());
 
 test("complex test overview", async () => {
   const [result] = await runNewman({
+    info: {
+      name: "fff",
+    },
     item: [
       {
         name: "ParentName",
