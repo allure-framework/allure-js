@@ -43,6 +43,7 @@ test("complex test overview", async () => {
                           },
                         ],
                         request: {
+                          description: "testDescription\n\nmultiline\n\n**somethingBold**",
                           method: "GET",
                           header: [],
                           url: {
@@ -68,7 +69,6 @@ test("complex test overview", async () => {
       },
     ],
   });
-
   const name = "testReq";
   const fullName = `ParentName/SuiteName/SubSub1/SubSub1#${name}`;
 
@@ -91,7 +91,7 @@ test("complex test overview", async () => {
       start: expect.any(Number),
     },
   ]);
-
+  expect(result.descriptionHtml).toBe("testDescription<br><br>multiline<br><br>somethingBold");
   expect(result.labels).toEqual([
     { name: "parentSuite", value: "ParentName" },
     { name: "suite", value: "SuiteName" },

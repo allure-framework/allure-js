@@ -363,10 +363,7 @@ class AllureReporter {
     }
 
     if (testDescription) {
-      this.setDescriptionHtml(
-        `<b>${testDescription}</b>
-        `,
-      );
+      this.setDescriptionHtml(testDescription);
     }
 
     if (response?.body) {
