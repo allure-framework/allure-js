@@ -96,15 +96,31 @@ class AllureReporter {
   }
 
   get currentSuite() {
-    return this.suites.at(-1) || null;
+    const lastIndex = this.suites.length - 1;
+    if (lastIndex >= 0) {
+      return this.suites[lastIndex];
+    } else {
+      return null;
+    }
   }
 
   get currentStep() {
-    return this.currentRunningItem?.steps.at(-1) || null;
+    const lastIndex = (this.currentRunningItem?.steps?.length || 0) - 1;
+    if (lastIndex >= 0) {
+      return this.currentRunningItem?.steps[lastIndex];
+    } else {
+      return null;
+    }
   }
 
   get currentRunningItem() {
-    return this.runningItems.at(-1) || null;
+    const lastIndex = this.runningItems.length - 1;
+
+    if (lastIndex >= 0) {
+      return this.runningItems[lastIndex];
+    } else {
+      return null;
+    }
   }
 
   get currentExecutable() {
