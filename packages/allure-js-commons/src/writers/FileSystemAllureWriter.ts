@@ -1,6 +1,5 @@
-import { copyFileSync, existsSync, PathLike, writeFileSync } from "fs";
+import { copyFileSync, existsSync, PathLike, writeFileSync, mkdirSync } from "fs";
 import { join } from "path";
-import { sync as mkdirSync } from "mkdirp";
 import { stringify } from "properties";
 import { AllureConfig } from "../AllureConfig";
 import { Category, TestResult, TestResultContainer } from "../model";
@@ -13,7 +12,9 @@ const writeJson = (path: string, data: unknown): void => {
 export class FileSystemAllureWriter implements AllureWriter {
   constructor(private config: AllureConfig) {
     if (!existsSync(this.config.resultsDir)) {
-      mkdirSync(this.config.resultsDir);
+      mkdirSync(this.config.resultsDir, {
+        recursive: true,
+      });
     }
   }
 
