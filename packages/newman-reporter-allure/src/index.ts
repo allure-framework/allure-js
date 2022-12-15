@@ -208,15 +208,6 @@ class AllureReporter {
     step.endStep();
   }
 
-  itemName(item: Item, cursor: Cursor) {
-    const parent = item.parent();
-    const parentName = (parent as any)?.name || "";
-    const folderOrEmpty =
-      !parentName || parentName === this.options.collection.name ? "" : `${parentName}/`;
-    const iteration = cursor && cursor.cycles > 1 ? `/${cursor.iteration}` : "";
-    return this.escape(folderOrEmpty + item.name + iteration);
-  }
-
   escape(val: string) {
     return (
       val
@@ -263,7 +254,7 @@ class AllureReporter {
 
   onBeforeItem(_err: any, args: { item: Item; cursor: Cursor }) {
     const pmItem: PmItem = {
-      name: this.itemName(args.item, args.cursor),
+      name: args.item.name,
       passed: true,
       failedAssertions: [],
       consoleLogs: [],
@@ -477,8 +468,10 @@ class AllureReporter {
       this.currentRunningItem.pmItem.failedAssertions.push(args.assertion);
 
       currStep.status = Status.FAILED;
+      currStep.stage = Stage.FINISHED;
       currStep.endStep();
     } else {
+      currStep.stage = Stage.FINISHED;
       currStep.status = Status.PASSED;
     }
   }
