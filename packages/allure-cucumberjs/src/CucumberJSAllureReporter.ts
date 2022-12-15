@@ -12,6 +12,7 @@ import {
   AllureStep,
   AllureTest,
   Attachment,
+  ContentType,
   ExecutableItem,
   ExecutableItemWrapper,
   Label,
@@ -318,28 +319,6 @@ export class CucumberJSAllureFormatter extends Formatter {
       filteredTags.forEach((tag) => currentTest.addLabel(LabelName.TAG, tag.name));
     }
 
-    pickle.steps.forEach((ps) => {
-      const { argument } = ps;
-
-      if (!argument?.dataTable) {
-        return;
-      }
-
-      const csvDataTable = argument.dataTable.rows.reduce(
-        (acc, row) => `${acc + row.cells.map((cell) => cell.value).join(",")}\n`,
-        "",
-      );
-      const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, "text/csv");
-
-      currentTest.addAttachment(
-        "Data table",
-        {
-          contentType: "text/csv",
-        },
-        attachmentFilename,
-      );
-    });
-
     if (!scenario?.examples?.length) {
       return;
     }
@@ -356,12 +335,12 @@ export class CucumberJSAllureFormatter extends Formatter {
       }
 
       const csvDataTable = `${csvDataTableHeader}\n${csvDataTableBody}\n`;
-      const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, "text/csv");
+      const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, ContentType.CSV);
 
       currentTest.addAttachment(
         "Examples",
         {
-          contentType: "text/csv",
+          contentType: ContentType.CSV,
         },
         attachmentFilename,
       );
@@ -581,6 +560,26 @@ export class CucumberJSAllureFormatter extends Formatter {
           .find((kw) => kw !== undefined) || "";
       const allureStep = currentTest.startStep(keyword + ps.text, Date.now());
       this.allureSteps.set(data.testStepId, allureStep);
+
+      const { argument } = ps;
+
+      if (!argument?.dataTable) {
+        return;
+      }
+
+      const csvDataTable = argument.dataTable.rows.reduce(
+        (acc, row) => `${acc + row.cells.map((cell) => cell.value).join(",")}\n`,
+        "",
+      );
+      const attachmentFilename = this.allureRuntime.writeAttachment(csvDataTable, ContentType.CSV);
+
+      allureStep.addAttachment(
+        "Data table",
+        {
+          contentType: ContentType.CSV,
+        },
+        attachmentFilename,
+      );
     }
   }
 
