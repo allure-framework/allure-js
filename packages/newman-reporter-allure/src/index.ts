@@ -332,51 +332,48 @@ class AllureReporter {
       item: Item;
     },
   ) {
-    // !TODO  please refactor me
-    const rItem = this.runningItems[this.runningItems.length - 1];
-    if (rItem.pmItem.prerequest) {
-      this.attachPrerequest(rItem.pmItem.prerequest);
-    }
-    if (rItem.pmItem.testScript) {
-      this.attachTestScript(rItem.pmItem.testScript);
-    }
-    if (rItem.pmItem.consoleLogs.length > 0) {
-      this.attachConsoleLogs(rItem.pmItem.consoleLogs);
-    }
-    const requestDataURL =
-      rItem.pmItem.requestData &&
-      `${rItem.pmItem.requestData.method} - ${rItem.pmItem.requestData.url}`;
-
-    if (rItem.pmItem.requestData?.body?.mode === "raw" && rItem.pmItem.requestData.body.raw) {
-      this.currentExecutable.addParameter("Request body", rItem.pmItem.requestData.body.raw);
+    if (this.currentRunningItem?.pmItem.prerequest) {
+      this.attachPrerequest(this.currentRunningItem.pmItem.prerequest);
     }
 
-    let testDescription;
-    if (args.item.request.description !== undefined) {
-      if (typeof args.item.request.description === "string") {
-        testDescription = args.item.request.description;
+    if (this.currentRunningItem?.pmItem.testScript) {
+      this.attachTestScript(this.currentRunningItem.pmItem.testScript);
+    }
+
+    if (this.currentRunningItem?.pmItem.consoleLogs.length) {
+      this.attachConsoleLogs(this.currentRunningItem.pmItem.consoleLogs);
+    }
+
+    const requestData = this.currentRunningItem?.pmItem.requestData;
+    const requestDataURL = requestData && `${requestData.method} - ${requestData.url}`;
+
+    if (requestData?.body?.mode === "raw" && requestData.body.raw) {
+      this.currentExecutable.addParameter("Request body", requestData.body.raw);
+    }
+
+    let testDescription = "";
+
+    const rawDescription = args.item.request.description;
+    if (rawDescription !== undefined) {
+      if (typeof rawDescription === "string") {
+        testDescription = rawDescription;
       } else {
-        testDescription = args.item.request.description?.content;
+        testDescription = rawDescription.content;
       }
 
       testDescription = testDescription.replace(/[*]/g, "");
       testDescription = testDescription.replace(/\n/g, "<br>");
-    } else {
-      testDescription = "";
     }
 
     if (requestDataURL) {
       this.currentExecutable.addParameter("Request", requestDataURL);
     }
 
-    if (rItem.pmItem.responseData?.code) {
-      this.currentExecutable.addParameter(
-        "Response Code",
-        rItem.pmItem.responseData.code.toString(),
-        {
-          excluded: true,
-        },
-      );
+    const response = this.currentRunningItem?.pmItem.responseData;
+    if (response?.code) {
+      this.currentExecutable.addParameter("Response Code", response?.code.toString(), {
+        excluded: true,
+      });
     }
 
     if (testDescription) {
@@ -386,8 +383,8 @@ class AllureReporter {
       );
     }
 
-    if (rItem.pmItem.responseData?.body) {
-      const attachment = this.allureRuntime.writeAttachment(rItem.pmItem.responseData?.body, {
+    if (response?.body) {
+      const attachment = this.allureRuntime.writeAttachment(response.body, {
         contentType: ContentType.TEXT,
       });
 
@@ -398,26 +395,29 @@ class AllureReporter {
       );
     }
 
-    if (rItem.pmItem.responseData && rItem.pmItem.failedAssertions.length > 0) {
-      const msg = this.escape(rItem.pmItem.failedAssertions.join(", "));
-      const details = this.escape(
-        `Response code: ${rItem.pmItem.responseData.code}, status: ${rItem.pmItem.responseData.status}`,
-      );
+    const failedAssertions = this.currentRunningItem?.pmItem.failedAssertions;
+    if (response && failedAssertions?.length) {
+      const msg = this.escape(failedAssertions.join(", "));
+      const details = this.escape(`Response code: ${response.code}, status: ${response.status}`);
 
       const error = {
         name: "AssertionError",
         message: msg,
         trace: details,
       };
-      const latestStatus = rItem.allureTest.status;
+      const latestStatus = this.currentRunningItem?.allureTest.status;
+
       // if test already has a failed state, we should not overwrite it
       if (latestStatus === Status.FAILED || latestStatus === Status.BROKEN) {
         return;
       }
       const status = error.name === "AssertionError" ? Status.FAILED : Status.BROKEN;
-      this.endTest(rItem.allureTest, status, { message: error.message });
-    } else {
-      this.endTest(rItem.allureTest, Status.PASSED);
+
+      if (this.currentRunningItem) {
+        this.endTest(this.currentRunningItem.allureTest, status, { message: error.message });
+      }
+    } else if (this.currentRunningItem) {
+      this.endTest(this.currentRunningItem?.allureTest, Status.PASSED);
     }
     this.runningItems.pop();
   }
