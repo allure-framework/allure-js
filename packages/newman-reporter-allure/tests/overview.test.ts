@@ -32,8 +32,8 @@ test("complex test overview", async () => {
                             listen: "test",
                             script: {
                               exec: [
-                                "//@allure:id=228",
-                                "//@allure-label:custom=test",
+                                "//@allure.id=228",
+                                "//@allure.label.custom=test",
                                 'pm.test("Status code is 200", function () {',
                                 "    pm.response.to.have.status(200);",
                                 "});",
