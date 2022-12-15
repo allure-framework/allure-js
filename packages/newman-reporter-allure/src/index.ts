@@ -335,33 +335,9 @@ class AllureReporter {
       rItem.pmItem.requestData &&
       `${rItem.pmItem.requestData.method} - ${rItem.pmItem.requestData.url}`;
 
-    let bodyModeProp = "";
-    let bodyModePropObj: string;
-
-    if (rItem.pmItem.requestData?.body) {
-      bodyModeProp = rItem.pmItem.requestData.body.mode;
+    if (rItem.pmItem.requestData?.body?.mode === "raw" && rItem.pmItem.requestData.body.raw) {
+      this.currentExecutable.addParameter("Request body", rItem.pmItem.requestData.body.raw);
     }
-
-    if (rItem.pmItem.requestData?.body && bodyModeProp === "raw") {
-      bodyModePropObj = rItem.pmItem.requestData.body[bodyModeProp] || "";
-    } else {
-      bodyModePropObj = "";
-    }
-
-    const reqTableStr =
-      bodyModeProp &&
-      `<table>
-        <tr>
-          <th style="border: 1px solid #dddddd;text-align: left;padding: 8px;color:Orange;">
-            ${bodyModeProp}
-          </th>
-          <td style="border: 1px solid #dddddd;text-align: left;padding: 8px;">
-            <pre style="color:Orange">
-              <b> ${bodyModePropObj} </b>
-            </pre>
-          </td>
-        </tr>
-      </table>`;
 
     let testDescription;
     if (args.item.request.description !== undefined) {
@@ -377,32 +353,24 @@ class AllureReporter {
       testDescription = "";
     }
 
-    if (requestDataURL && rItem.pmItem.responseData) {
+    if (requestDataURL) {
+      this.currentExecutable.addParameter("Request", requestDataURL);
+    }
+
+    if (rItem.pmItem.responseData?.code) {
+      this.currentExecutable.addParameter(
+        "Response Code",
+        rItem.pmItem.responseData.code.toString(),
+        {
+          excluded: true,
+        },
+      );
+    }
+
+    if (testDescription) {
       this.setDescriptionHtml(
-        `
-        <p style="color:MediumPurple;">
-          <b>
-            ${testDescription}
-          </b>
-        </p>
-        <h4 style="color:DodgerBlue;">
-        <b>
-          <i>Request:</i>
-        </b>
-        </h4>
-        <p style="color:DodgerBlue">
-          <b> ${requestDataURL}
-          </b>
-        </p> ${reqTableStr}
-        </p>
-        <h4 style="color:DodgerBlue;">
-          <b>
-            <i> Response: </i>
-          </b>
-        </h4>
-        <p style="color:DodgerBlue">
-          <b>${rItem.pmItem.responseData.code}</b>
-        </p>`,
+        `<b>${testDescription}</b>
+        `,
       );
     }
 
