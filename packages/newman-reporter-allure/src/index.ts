@@ -26,7 +26,6 @@ import type {
 import { extractMeta } from "./helpers";
 
 interface AllureOptions {
-  collectionAsParentSuite: boolean;
   export: string;
   postProcessorForTest?: any;
 }
@@ -132,24 +131,26 @@ class AllureReporter {
     this.currentRunningItem.allureTest = allureTest;
   }
 
-  getFullName(item: Item | Collection): string {
+  pathToItem(item: Item): string[] {
     if (
       !item ||
       !(typeof item.parent === "function") ||
       !(typeof item.forEachParent === "function")
     ) {
-      return "";
+      return [];
     }
 
-    const chain = [];
+    const chain: string[] = [];
     item.forEachParent((parent) => {
       chain.unshift(parent.name || parent.id);
     });
 
-    if (item.parent()) {
-      chain.push(item.name); // Add the current item only if it is not the collection
-    }
-    return chain.join("/");
+    return chain;
+  }
+
+  getFullName(item: Item): string {
+    const chain = this.pathToItem(item);
+    return `${chain.join("/")}#${item.name}`;
   }
 
   attachConsoleLogs(logsArr: string[]) {
@@ -271,106 +272,34 @@ class AllureReporter {
     if (this.currentSuite === null) {
       throw new Error("No active suite");
     }
-
-    let testName = pmItem.name;
-
-    if (testName.indexOf("/") > 0) {
-      const len = testName.split("/").length;
-      testName = testName.split("/")[len - 1];
-    }
+    const testName = pmItem.name;
 
     const allureTest = this.currentSuite.startTest(testName);
 
     allureTest.stage = Stage.RUNNING;
 
     const itemGroup = args.item.parent();
-    const isRoot = !itemGroup || itemGroup === this.options.collection;
 
-    let fullName = "";
+    const item = args.item;
+    const fullName = this.getFullName(item);
     if (itemGroup && this.currentNMGroup !== itemGroup) {
-      if (!isRoot) {
-        fullName = this.getFullName(itemGroup as any);
-      }
       this.currentNMGroup = itemGroup as any;
     }
+    const testPath = this.pathToItem(item);
+    if (testPath[0]) {
+      allureTest.addLabel(LabelName.PARENT_SUITE, testPath[0]);
+    }
+    if (testPath[1]) {
+      allureTest.addLabel(LabelName.SUITE, testPath[1]);
+    }
+    const subSuites = testPath.slice(2);
 
-    fullName = this.getFullName(this.currentNMGroup);
-    let parentSuite: string | undefined;
-    let suite: string | undefined;
-    let subSuites: string[] = [];
-
-    if (this.reporterOptions.collectionAsParentSuite === true) {
-      parentSuite = this.options.collection.name;
+    if (subSuites.length) {
+      allureTest.addLabel(LabelName.SUB_SUITE, subSuites.join(" > "));
     }
 
-    if (fullName !== "") {
-      if (this.reporterOptions.collectionAsParentSuite === true) {
-        if (fullName.indexOf("/") > 0) {
-          const numFolders = fullName.split("/").length;
-          if (numFolders > 0) {
-            suite = fullName.split("/")[0];
-            if (numFolders > 1) {
-              subSuites = fullName.split("/").slice(1);
-            }
-          }
-        } else {
-          suite = fullName;
-        }
-      } else {
-        if (fullName.indexOf("/") > 0) {
-          const numFolders = fullName.split("/").length;
-          if (numFolders > 0) {
-            parentSuite = fullName.split("/")[0];
-            if (numFolders > 1) {
-              suite = fullName.split("/")[1];
-            }
-            if (numFolders > 2) {
-              subSuites = fullName.split("/").slice(2);
-            }
-          }
-        } else {
-          parentSuite = fullName;
-        }
-      }
-    }
-
-    if (parentSuite !== undefined) {
-      parentSuite = parentSuite.charAt(0).toUpperCase() + parentSuite.slice(1);
-      allureTest.addLabel(LabelName.PARENT_SUITE, parentSuite);
-      allureTest.addLabel(LabelName.FEATURE, parentSuite);
-    }
-    if (suite !== undefined) {
-      suite = suite.charAt(0).toUpperCase() + suite.slice(1);
-      allureTest.addLabel(LabelName.SUITE, suite);
-    }
-
-    if (subSuites !== undefined) {
-      if (subSuites.length > 0) {
-        const capitalizedSubSuites = [];
-
-        // eslint-disable-next-line @typescript-eslint/prefer-for-of
-        for (let i = 0; i < subSuites.length; i++) {
-          capitalizedSubSuites.push(subSuites[i].charAt(0).toUpperCase() + subSuites[i].slice(1));
-        }
-        allureTest.addLabel(LabelName.SUB_SUITE, capitalizedSubSuites.join(" > "));
-      }
-    }
-
-    let path;
-    if (args.item.request.url.path !== undefined) {
-      if (args.item.request.url.path.length > 0) {
-        path = args.item.request.url.path.join("/");
-      }
-    }
-
-    if (path !== undefined) {
-      allureTest.addLabel(LabelName.STORY, path);
-    }
-
-    const allureFullName = `${fullName}#${testName}`;
-    allureTest.fullName = allureFullName;
-    allureTest.testCaseId = md5(allureFullName);
-
+    allureTest.fullName = fullName;
+    allureTest.testCaseId = md5(fullName);
     const { labels } = extractMeta(args.item.events);
 
     labels.forEach((label) => {

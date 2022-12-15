@@ -54,6 +54,7 @@ test("test-without-asserions", async () => {
 
   const fullName = "New Folder#testReq";
 
+  console.log(result);
   expect(result.status).toBe(Status.PASSED);
   expect(result.name).toBe("testReq");
   expect(result.fullName).toBe("New Folder#testReq");
