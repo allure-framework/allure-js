@@ -413,7 +413,7 @@ describe("CucumberJSAllureReporter", () => {
       expect(imageAttachment.type).eq("image/png");
     });
 
-    it("should process data table as csv attachment", async () => {
+    it("should process data table as csv step attachment", async () => {
       const results = await runFeatures(dataSet.dataTable);
       expect(results.tests).length(1);
 
@@ -421,7 +421,7 @@ describe("CucumberJSAllureReporter", () => {
       expect(attachmentsKeys).length(1);
       expect(results.attachments[attachmentsKeys[0]]).eq("a,b,result\n1,3,4\n2,4,6\n");
 
-      const [attachment] = results.tests[0].attachments;
+      const [attachment] = results.tests[0].steps[0].attachments;
       expect(attachment.type).eq("text/csv");
       expect(attachment.source).eq(attachmentsKeys[0]);
     });
@@ -432,14 +432,18 @@ describe("CucumberJSAllureReporter", () => {
 
       const attachmentsKeys = Object.keys(results.attachments);
       expect(attachmentsKeys).length(2);
-      expect(results.attachments[attachmentsKeys[0]]).eq("a\n1\n");
-      expect(results.attachments[attachmentsKeys[1]]).eq("b,result\n3,4\n");
+      const dataTableAttachment = results.tests[0].steps[0].attachments[0];
+      const exampleAttachment = results.tests[0].attachments[0];
 
-      const [firstAttachment, secondAttachment] = results.tests[0].attachments;
-      expect(firstAttachment.type).eq("text/csv");
-      expect(firstAttachment.source).eq(attachmentsKeys[0]);
-      expect(secondAttachment.type).eq("text/csv");
-      expect(secondAttachment.source).eq(attachmentsKeys[1]);
+      expect(exampleAttachment.type).eq("text/csv");
+      expect(exampleAttachment.source).eq(attachmentsKeys[0]);
+      expect(dataTableAttachment.type).eq("text/csv");
+      expect(dataTableAttachment.source).eq(attachmentsKeys[1]);
+
+      expect(results.attachments[attachmentsKeys[0]]).eq("b,result\n3,4\n");
+      expect(results.attachments[attachmentsKeys[1]]).eq("a\n1\n");
+
+
     });
 
     it("should create labels", async () => {
