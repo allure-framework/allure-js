@@ -442,8 +442,6 @@ describe("CucumberJSAllureReporter", () => {
 
       expect(results.attachments[attachmentsKeys[0]]).eq("b,result\n3,4\n");
       expect(results.attachments[attachmentsKeys[1]]).eq("a\n1\n");
-
-
     });
 
     it("should create labels", async () => {
