@@ -298,15 +298,15 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
   withCustomWorldConstructor: {
     supportCodeLibrary: buildSupportCodeLibrary(({ Given, When, Then, setWorldConstructor }) => {
       class CustomWorld extends CucumberAllureWorld {
-         customWorldMethod() {}
+        customWorldMethod() {}
       }
 
-      setWorldConstructor(CustomWorld)
+      setWorldConstructor(CustomWorld);
 
       Given("a step", function () {});
 
       When("world say hello", function (this: CustomWorld) {
-        this.customWorldMethod()
+        this.customWorldMethod();
       });
     }),
     sources: [
