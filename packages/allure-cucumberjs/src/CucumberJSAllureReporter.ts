@@ -1,6 +1,6 @@
 import os from "os";
 import process from "process";
-import { Formatter } from "@cucumber/cucumber";
+import { Formatter, World } from "@cucumber/cucumber";
 import { IFormatterOptions } from "@cucumber/cucumber/lib/formatter";
 import TestCaseHookDefinition from "@cucumber/cucumber/lib/models/test_case_hook_definition";
 import * as messages from "@cucumber/messages";
@@ -147,9 +147,11 @@ export class CucumberJSAllureFormatter extends Formatter {
       }
       return message;
     };
-    // eslint-disable-next-line
-    // @ts-ignore
-    options.supportCodeLibrary.World = CucumberAllureWorld;
+    if (options.supportCodeLibrary.World === World) {
+      // eslint-disable-next-line
+      // @ts-ignore
+      options.supportCodeLibrary.World = CucumberAllureWorld;
+    }
     this.beforeHooks = options.supportCodeLibrary.beforeTestCaseHookDefinitions;
     this.afterHooks = options.supportCodeLibrary.afterTestCaseHookDefinitions;
   }
