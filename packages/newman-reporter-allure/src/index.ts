@@ -174,27 +174,13 @@ class AllureReporter {
     return `${chain.join("/")}#${item.name}`;
   }
 
-  attachConsoleLogs(logsArr: string[]) {
-    if (logsArr.length) {
-      const buf = Buffer.from(logsArr.join("\n"), "utf8");
-      const file = this.allureRuntime.writeAttachment(buf, ContentType.TEXT);
-      this.currentTest.addAttachment("consoleLogs", ContentType.TEXT, file);
-    }
-  }
+  attachString(name: string, value: string | string[]) {
+    const stringToAttach = Array.isArray(value) ? value.join("\n") : value;
 
-  attachPrerequest(preReq: string) {
-    if (preReq) {
-      const buf = Buffer.from(preReq, "utf8");
+    if (stringToAttach) {
+      const buf = Buffer.from(stringToAttach, "utf8");
       const file = this.allureRuntime.writeAttachment(buf, ContentType.TEXT);
-      this.currentTest.addAttachment("preRequest", ContentType.TEXT, file);
-    }
-  }
-
-  attachTestScript(testScript: string) {
-    if (testScript) {
-      const buf = Buffer.from(testScript, "utf8");
-      const file = this.allureRuntime.writeAttachment(buf, ContentType.TEXT);
-      this.currentTest.addAttachment("testScript", ContentType.TEXT, file);
+      this.currentTest.addAttachment(name, ContentType.TEXT, file);
     }
   }
 
@@ -333,15 +319,15 @@ class AllureReporter {
     },
   ) {
     if (this.currentRunningItem?.pmItem.prerequest) {
-      this.attachPrerequest(this.currentRunningItem.pmItem.prerequest);
+      this.attachString("PreRequest", this.currentRunningItem.pmItem.prerequest);
     }
 
     if (this.currentRunningItem?.pmItem.testScript) {
-      this.attachTestScript(this.currentRunningItem.pmItem.testScript);
+      this.attachString("TestScript", this.currentRunningItem.pmItem.testScript);
     }
 
     if (this.currentRunningItem?.pmItem.consoleLogs.length) {
-      this.attachConsoleLogs(this.currentRunningItem.pmItem.consoleLogs);
+      this.attachString("ConsoleLogs", this.currentRunningItem.pmItem.consoleLogs);
     }
 
     const requestData = this.currentRunningItem?.pmItem.requestData;
