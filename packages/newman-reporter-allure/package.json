@@ -4,6 +4,9 @@
   "description": "Allure Newman integration",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
@@ -20,7 +23,11 @@
     "postman",
     "tests"
   ],
-  "repository": "https://github.com/allure-framework/allure-js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allure-framework/allure-js.git",
+    "directory": "packages/newman-reporter-allure"
+  },
   "author": "Virender",
   "license": "Apache-2.0",
   "dependencies": {
