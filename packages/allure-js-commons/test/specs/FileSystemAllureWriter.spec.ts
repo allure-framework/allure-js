@@ -1,8 +1,10 @@
-import { AllureConfig, AllureRuntime, ContentType } from "../../dist";
-import path from "path";
+import { randomUUID } from "crypto";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import * as os from "os";
-import { readdirSync, writeFileSync, mkdtempSync, readFileSync } from "fs";
+import path from "path";
 import { expect } from "chai";
+
+import { AllureConfig, AllureRuntime, ContentType } from "../../dist";
 
 describe("FileSystemAllureWriter", () => {
   it("should save attachment from path", () => {
@@ -28,5 +30,14 @@ describe("FileSystemAllureWriter", () => {
 
     const actualContent = readFileSync(path.join(allureResults, actualAttachment));
     expect(actualContent.toString("utf-8")).to.be.eq(data, "data should match");
+  });
+
+  it("Should create allure-report nested path", () => {
+    const tmpReportPath = path.join(os.tmpdir(), `./allure-testing-dir/${randomUUID()}`);
+    const config: AllureConfig = {
+      resultsDir: tmpReportPath,
+    };
+    new AllureRuntime(config);
+    expect(existsSync(tmpReportPath)).to.be.eq(true);
   });
 });
