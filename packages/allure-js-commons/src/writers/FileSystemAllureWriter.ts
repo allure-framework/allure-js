@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, PathLike, writeFileSync, mkdirSync } from "fs";
+import { copyFileSync, existsSync, mkdirSync, PathLike, writeFileSync } from "fs";
 import { join } from "path";
 import { stringify } from "properties";
 import { AllureConfig } from "../AllureConfig";
