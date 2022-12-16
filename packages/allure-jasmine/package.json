@@ -4,7 +4,11 @@
   "description": "Allure Jasmine integration",
   "license": "Apache-2.0",
   "author": "Ilya Korobitsyn <mail@korobochka.org>",
-  "repository": "https://github.com/allure-framework/allure-js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allure-framework/allure-js.git",
+    "directory": "packages/allure-jasmine"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {

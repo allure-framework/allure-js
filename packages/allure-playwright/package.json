@@ -6,7 +6,11 @@
   "author": {
     "name": "Microsoft Corporation"
   },
-  "repository": "https://github.com/allure-framework/allure-js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allure-framework/allure-js.git",
+    "directory": "packages/allure-playwright"
+  },
   "keywords": [
     "playwright",
     "allure"

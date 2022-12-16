@@ -4,7 +4,11 @@
   "description": "Write your tests in a Java-like annotation-driven manner via JS decorators.",
   "license": "Apache-2.0",
   "author": "Sergey Korol <serhii.s.korol@gmail.com>",
-  "repository": "https://github.com/allure-framework/allure-js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allure-framework/allure-js.git",
+    "directory": "packages/allure-decorators"
+  },
   "keywords": [
     "typescript",
     "allure",
