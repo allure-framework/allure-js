@@ -28,6 +28,26 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     ...opts
   })
   const runningTests: Map<string, AllureTest> = new Map()
+  const handleTestError = (testResult: Hermione.TestResult, error: Error) => {
+    const currentTest = runningTests.get(testResult.sessionId) as AllureTest
+    // @ts-ignore
+    const { message, stack, screenshot } = error
+
+    currentTest.detailsMessage = message
+    currentTest.detailsTrace = stack
+
+    if (screenshot) {
+      const attachmentFilename = runtime.writeAttachment(screenshot.base64, "image/png", "base64");
+
+      currentTest.addAttachment(
+        "Screenshot",
+        {
+          contentType: "image/png"
+        },
+        attachmentFilename
+      )
+    }
+  }
 
   hermione.on(hermione.events.TEST_BEGIN, (testResult) => {
     const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env
@@ -97,32 +117,12 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       throw new Error("FAIL bla bla no test here")
     }
 
-    // TODO: maybe better to move this logic to a function
-    if (testResult?.err) {
-      currentTest.detailsMessage = testResult.err.message
-      currentTest.detailsTrace = testResult.err.stack
-
-      // FIXME:
-      // @ts-ignore
-      const screenshot = testResult.err?.screenshot
-
-      // FIXME:
-      if (screenshot) {
-        const attachmentFilename = runtime.writeAttachment(screenshot.base64, "image/png", "base64");
-
-        currentTest.addAttachment(
-          "Screenshot",
-          {
-            contentType: "image/png"
-          },
-          attachmentFilename
-        )
-      }
+    if (testResult.err) {
+      handleTestError(testResult, testResult.err)
     }
 
     currentTest.stage = Stage.FINISHED
     currentTest.endTest(Date.now())
-
     runningTests.delete(testResult.sessionId)
   })
 
