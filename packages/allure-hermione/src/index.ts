@@ -1,6 +1,6 @@
 import * as os from "node:os";
 import * as process from "node:process"
-import { AttachmentMetadata, AllureRuntime, Allure, AllureTest, LabelName, LinkType, Stage, Status, ParameterOptions } from "allure-js-commons"
+import { AttachmentMetadata, AllureRuntime, AllureTest, LabelName, LinkType, Stage, Status, ParameterOptions } from "allure-js-commons"
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 import Hermione from "hermione";
 
@@ -11,7 +11,7 @@ export type HermioneAttachment = {
 }
 
 export type HermioneAttachmentMetadata = AttachmentMetadata & {
-  attachment: HermioneAttachment[];
+  attachment?: HermioneAttachment[];
 }
 
 export type HermioneAttachmentMessage = {
@@ -115,21 +115,21 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     await sendMetadata(testId, {
       labels: [
         { name, value }
-      ]
+      ],
     })
   }
   const addLink = async (testId: string, url: string, name?: string, type?: string) => {
     await sendMetadata(testId, {
       links: [
         { name, url, type }
-      ]
+      ],
     })
   }
   const addParameter = async (testId: string, name: string, value: string, options?: ParameterOptions) => {
     await sendMetadata(testId, {
       parameter: [
         { name, value, ...options }
-      ]
+      ],
     })
   }
   const addAttachment = async (testId: string, source: string, mimetype: string) => {
@@ -208,6 +208,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     const thread = ALLURE_THREAD_NAME || testResult.sessionId;
     const hostname = ALLURE_HOST_NAME || os.hostname()
     const currentTest = new AllureTest(runtime, Date.now())
+    const [parentSuite, suite, ...subSuites] = getSuitePath(testResult);
 
     currentTest.name = testResult.title
     currentTest.fullName = testResult.fullTitle()
@@ -220,20 +221,16 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     currentTest.addLabel(LabelName.FRAMEWORK, "hermione");
     currentTest.addLabel(LabelName.THREAD, thread);
 
-    if (testResult.parent) {
-      const [parentSuite, suite, ...subSuites] = getSuitePath(testResult);
+    if (parentSuite) {
+      currentTest.addLabel(LabelName.PARENT_SUITE, parentSuite);
+    }
 
-      if (parentSuite) {
-        currentTest.addLabel(LabelName.PARENT_SUITE, parentSuite);
-      }
+    if (suite) {
+      currentTest.addLabel(LabelName.SUITE, suite);
+    }
 
-      if (suite) {
-        currentTest.addLabel(LabelName.SUITE, suite);
-      }
-
-      if (subSuites.length > 0) {
-        currentTest.addLabel(LabelName.SUB_SUITE, subSuites.join(" > "));
-      }
+    if (subSuites.length > 0) {
+      currentTest.addLabel(LabelName.SUB_SUITE, subSuites.join(" > "));
     }
 
     runningTests.set(testResult.id(), currentTest)
@@ -250,8 +247,6 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
 
   // TODO:
   // hermione.on(hermione.events.RETRY, (testResult) => {
-  //   console.log("test retry", testResult);
-  //   // promises.push(queue.add(() => failHandler(testResult).then(addFail)).catch(reject));
   // });
 
   hermione.on(hermione.events.TEST_FAIL, (testResult) => {
