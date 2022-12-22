@@ -1,23 +1,23 @@
-# allure-hermione
+# hermione-allure
 
 Allure integration for `hermione@^5.x.x`.
 
 ## Installation
 
 ```shell
-npm i --save-dev allure-hermione allure-js-commons  # or
-yarn add -D allure-hermione allure-js-commons       # or
-pnpm add -D allure-hermione allure-js-commons      
+npm i --save-dev hermione-allure allure-js-commons  # or
+yarn add -D hermione-allure allure-js-commons       # or
+pnpm add -D hermione-allure allure-js-commons      
 ```
 
 ## Setup
 
-Add `allure-hermione` field to `plugins` in your `.hermione.conf.js` file:
+Add `hermione-allure` field to `plugins` in your `.hermione.conf.js` file:
 
 ``` javascript
 module.exports = {
   plugins: {
-    "allure-hermione": {
+    "hermione-allure": {
       resultsDir: "./allure-results"
     }
   }

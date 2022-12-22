@@ -1,5 +1,5 @@
 {
-  "name": "allure-hermione",
+  "name": "hermione-allure",
   "version": "2.0.0-beta.21",
   "packageManager": "yarn@3.2.1",
   "license": "Apache-2.0",
@@ -7,7 +7,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/allure-framework/allure-js.git",
-    "directory": "packages/allure-hermione"
+    "directory": "packages/hermione-allure"
   },
   "keywords": [
     "hermione",
