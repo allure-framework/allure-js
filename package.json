@@ -6,14 +6,14 @@
     "packages/*"
   ],
   "scripts": {
-    "prepare": "husky install",
+    "prepare": "npx husky install",
     "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}'",
     "prettier:check": "prettier --check './packages/*/{src,test,features}/**/*.{js,ts}'",
-    "clean": "yarn workspaces foreach -vpt run clean",
-    "compile": "yarn workspaces foreach -vpt run compile",
-    "lint": "yarn workspaces foreach -vpt run lint",
-    "test": "yarn workspaces foreach -vpt run test",
-    "build": "yarn run clean && yarn run compile"
+    "clean": "npm run clean --workspaces --if-present",
+    "compile": "npm run compile --workspace=packages/allure-js-commons && npm run compile --workspaces",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "build": "npm run clean && npm run compile"
   },
   "lint-staged": {
     "*.ts": [
@@ -21,6 +21,7 @@
     ]
   },
   "devDependencies": {
+    "@types/glob": "^8.0.0",
     "@types/node": "^14.6.0",
     "@typescript-eslint/eslint-plugin": "^4.29.3",
     "@typescript-eslint/parser": "^4.29.3",
@@ -31,6 +32,7 @@
     "eslint-plugin-jsdoc": "^37.0.0",
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
+    "glob": "^8.0.3",
     "husky": "^7.0.2",
     "lint-staged": "^11.1.2",
     "npm-run-all": "^4.1.5",
@@ -40,6 +42,5 @@
     "rimraf": "^3.0.2",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.2"
-  },
-  "packageManager": "yarn@3.2.1"
+  }
 }

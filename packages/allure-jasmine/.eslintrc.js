@@ -8,7 +8,10 @@ module.exports = {
     es6: true,
     jasmine: true,
   },
-  extends: [
-    "../../.eslintrc.js",
-  ],
+  extends: ["../../.eslintrc.js"],
+  parserOptions: {
+    project: ["tsconfig.json"],
+    sourceType: "module",
+    warnOnUnsupportedTypeScriptVersion: false,
+  },
 };

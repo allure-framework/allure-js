@@ -7,9 +7,12 @@ module.exports = {
     node: true,
     es6: true,
     jasmine: true,
-    jest: true
+    jest: true,
   },
-  extends: [
-    "../../.eslintrc.js",
-  ],
+  extends: ["../../.eslintrc.js"],
+  parserOptions: {
+    project: ["tsconfig.json"],
+    sourceType: "module",
+    warnOnUnsupportedTypeScriptVersion: false,
+  },
 };

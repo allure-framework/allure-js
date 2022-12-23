@@ -19,17 +19,15 @@
     "compile": "tsc",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "jasmineTest": "jest --config ./test/default-runner/jest.config.js",
-    "test": "rimraf ./out; yarn run jasmineTest"
+    "test": "rimraf ./out; npm run jasmineTest"
   },
   "devDependencies": {
     "@types/jasmine": "^3.3.12",
     "@types/jest": "^26.0.10",
-    "allure-jasmine": "workspace:*",
-    "jest": "^26.4.2",
-    "rimraf": "^3.0.2",
-    "typescript": "^4.4.2"
+    "allure-jasmine": "2.0.0-beta.21",
+    "jest": "^26.4.2"
   },
   "dependencies": {
-    "allure-js-commons": "workspace:*"
+    "allure-js-commons": "2.0.0-beta.21"
   }
 }

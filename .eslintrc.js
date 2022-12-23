@@ -1,7 +1,9 @@
 module.exports = {
+  root: true,
   globals: {
     __PATH_PREFIX__: true,
   },
+  ignorePatterns: [".eslintrc.js"],
   env: {
     browser: true,
     node: true,
@@ -15,9 +17,9 @@ module.exports = {
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    project: "tsconfig.json",
+    project: ["tsconfig.json"],
     sourceType: "module",
-    warnOnUnsupportedTypeScriptVersion: false
+    warnOnUnsupportedTypeScriptVersion: false,
   },
   plugins: [
     "eslint-plugin-no-null",
@@ -25,6 +27,7 @@ module.exports = {
     "eslint-plugin-import",
     "eslint-plugin-jsdoc",
     "@typescript-eslint",
+    "eslint-plugin-prettier",
   ],
   rules: {
     "@typescript-eslint/adjacent-overload-signatures": "error",
