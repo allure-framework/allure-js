@@ -57,6 +57,6 @@ describe("FileSystemAllureWriter", () => {
     const test = group.startTest("test_result");
     test.endTest();
     group.endGroup();
-    expect(writer.tests[0].labels[0]).to.eql({ name: "TAG", value: "testTag" });
+    expect(writer.tests[0].labels[0]).to.eql({ name: "tag", value: "testTag" });
   });
 });
