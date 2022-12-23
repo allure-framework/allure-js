@@ -36,7 +36,9 @@ jobs:
       - name: "Set release version"
         run: |
           npm version "${{ github.event.inputs.releaseVersion }}" --workspaces
-
+      - name: "Update local workspace versions"
+        run: |
+          node update-local-deps.mjs
       - name: "Commit release version and create tag"
         run: |
           git add -A
