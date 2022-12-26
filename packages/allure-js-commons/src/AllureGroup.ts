@@ -3,6 +3,7 @@ import { AllureTest } from "./AllureTest";
 import { fixtureResult, testResultContainer } from "./constructors";
 import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
 import { TestResultContainer } from "./model";
+import { getLabelsFromEnv } from "./utils";
 
 export class AllureGroup {
   private testResultContainer: TestResultContainer = testResultContainer();
@@ -20,6 +21,8 @@ export class AllureGroup {
     const test = new AllureTest(this.runtime, start);
     this.testResultContainer.children.push(test.uuid);
     test.name = name || "Unnamed";
+    const globalLabels = getLabelsFromEnv();
+    globalLabels.forEach((label) => test.addLabel(label.name, label.value));
     return test;
   }
 
