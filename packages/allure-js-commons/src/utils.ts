@@ -1,11 +1,11 @@
 import { createHash } from "crypto";
 import { env } from "process";
-import { AllureTest } from "./AllureTest";
-
+import { Label } from "./model";
 export const md5 = (data: string) => createHash("md5").update(data).digest("hex");
 
-export const attachLabelsFromEnv = (test: AllureTest) => {
+export const getLabelsFromEnv = (): Label[] => {
   const envKeys = Object.keys(env);
+  const labels: Label[] = [];
 
   envKeys.forEach((key) => {
     const labelRegexp = /^ALLURE_LABEL_(?<labelName>.+)$/;
@@ -14,8 +14,10 @@ export const attachLabelsFromEnv = (test: AllureTest) => {
       const labelName = match.groups?.labelName;
       const envValue = process.env[key];
       if (labelName && envValue) {
-        test.addLabel(labelName.toLocaleLowerCase(), envValue);
+        labels.push({ name: labelName.toLocaleLowerCase(), value: envValue });
       }
     }
   });
+
+  return labels;
 };
