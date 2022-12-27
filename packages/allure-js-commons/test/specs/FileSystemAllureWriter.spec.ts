@@ -2,9 +2,10 @@ import { randomUUID } from "crypto";
 import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import * as os from "os";
 import path from "path";
+import { env } from "process";
 import { expect } from "chai";
 
-import { AllureConfig, AllureRuntime, ContentType } from "../../dist";
+import { AllureConfig, AllureRuntime, ContentType, InMemoryAllureWriter } from "../../dist";
 
 describe("FileSystemAllureWriter", () => {
   it("should save attachment from path", () => {
@@ -39,5 +40,23 @@ describe("FileSystemAllureWriter", () => {
     };
     new AllureRuntime(config);
     expect(existsSync(tmpReportPath)).to.be.eq(true);
+  });
+
+  it("Should add env labels", () => {
+    const tmpReportPath = path.join(os.tmpdir(), `./allure-testing-dir/${randomUUID()}`);
+    const writer = new InMemoryAllureWriter();
+
+    const config: AllureConfig = {
+      resultsDir: tmpReportPath,
+      writer,
+    };
+
+    env.ALLURE_LABEL_TAG = "testTag";
+    const runtime = new AllureRuntime(config);
+    const group = runtime.startGroup("test_group");
+    const test = group.startTest("test_result");
+    test.endTest();
+    group.endGroup();
+    expect(writer.tests[0].labels[0]).to.eql({ name: "tag", value: "testTag" });
   });
 });
