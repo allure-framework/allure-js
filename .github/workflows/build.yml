@@ -41,6 +41,7 @@ jobs:
 
       - name: npm install
         run: |
+          npm i -g npm@8
           npm ci
 
       - name: install playwright
