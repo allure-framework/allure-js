@@ -26,8 +26,8 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
-          cache: 'yarn'
+          node-version: 16
+          cache: 'npm'
 
       - name: "Npm install"
         run: |
@@ -35,13 +35,12 @@ jobs:
 
       - name: "Set release version"
         run: |
-          npm version "${{ github.event.inputs.releaseVersion }}" --workspaces
+          npm version "${{ github.event.inputs.releaseVersion }}" --workspaces --no-git-tag-version --no-workspaces-update
       - name: "Update local workspace versions"
         run: |
           node update-local-deps.mjs
       - name: "Commit release version and create tag"
         run: |
-          git add -A
           git commit -am "release ${{ github.event.inputs.releaseVersion }}"
           git tag v${{ github.event.inputs.releaseVersion }}
           git push origin v${{ github.event.inputs.releaseVersion }}
