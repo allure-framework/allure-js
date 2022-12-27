@@ -16,7 +16,7 @@ jobs:
           cache: 'npm'
       - name: npm install, build
         run: |
-          npm install --workspaces
+          npm install
           npm run build
       - run: npm publish --workspaces
         env:
