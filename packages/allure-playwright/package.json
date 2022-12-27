@@ -1,6 +1,6 @@
 {
   "name": "allure-playwright",
-  "version": "2.0.0-beta.21",
+  "version": "2.0.0-beta.22",
   "description": "Allure Playwright integration",
   "license": "Apache-2.0",
   "author": {
@@ -30,7 +30,7 @@
     "@playwright/test": "^1.28.0"
   },
   "dependencies": {
-    "allure-js-commons": "2.0.0-beta.21"
+    "allure-js-commons": "2.0.0-beta.22"
   },
   "files": [
     "dist"

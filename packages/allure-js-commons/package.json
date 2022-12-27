@@ -1,6 +1,6 @@
 {
   "name": "allure-js-commons",
-  "version": "2.0.0-beta.21",
+  "version": "2.0.0-beta.22",
   "description": "Allure JS Commons",
   "license": "Apache-2.0",
   "author": "Ilya Korobitsyn <mail@korobochka.org>",
@@ -36,7 +36,7 @@
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.7.10",
     "@types/uuid": "^8.3.0",
-    "allure-mocha": "2.0.0-beta.21",
+    "allure-mocha": "2.0.0-beta.22",
     "chai": "^4.3.4",
     "glob": "^7.1.7",
     "mocha": "^9.1.3",
