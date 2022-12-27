@@ -99,7 +99,7 @@ class AllureReporter implements Reporter {
     const fullName = `${relativeFile}#${test.title}`;
     allureTest.fullName = fullName;
     allureTest.testCaseId = md5(fullName);
-
+    allureTest.historyId = md5(`${fullName}${project.name || ""}`);
     this.allureTestCache.set(test, allureTest);
   }
 
