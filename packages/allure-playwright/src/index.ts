@@ -97,11 +97,9 @@ class AllureReporter implements Reporter {
       .join("/");
 
     const fullName = `${relativeFile}#${test.title}`;
-    const fullNameHash = md5(fullName);
     allureTest.fullName = fullName;
-    allureTest.testCaseId = fullNameHash;
-    allureTest.historyId = fullNameHash;
-
+    allureTest.testCaseId = md5(fullName);
+    allureTest.historyId = md5(`${fullName}${project.name || ""}`);
     this.allureTestCache.set(test, allureTest);
   }
 
