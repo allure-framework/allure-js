@@ -23,6 +23,6 @@ test("historical data should be fine", async ({ runInlineTest }) => {
   expect(result[0].name).toBe("test");
   const fullName = "a.test.ts#test";
   expect(result[0].fullName).toBe("a.test.ts#test");
-  expect(result[0].historyId).toBe(md5(fullName));
+  expect(result[0].historyId).toBe(md5(`${fullName}project`));
   expect(result[0].testCaseId).toBe(md5(fullName));
 });
