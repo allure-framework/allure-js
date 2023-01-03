@@ -42,7 +42,7 @@ This project aggregates Allure Javascript commons and reporters.
 
 ![npm](https://img.shields.io/npm/dm/hermione-allure.svg) ![npm](https://img.shields.io/npm/v/hermione-allure.svg)
 
-[Read more](/packages/hermione/README.md)
+[Read more](/packages/hermione-allure/README.md)
 
 ## Development
 
