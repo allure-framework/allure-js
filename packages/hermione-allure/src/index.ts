@@ -93,7 +93,6 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       )
     })
   }
-
   const sendMetadata = async (testId: string, metadata: HermioneAttachmentMetadata) => new Promise((resolve, reject) => {
     process.send?.(
       {
@@ -191,7 +190,6 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       await addAttachment(testId, source, mimetype)
     })
   })
-
   hermione.on(hermione.events.NEW_WORKER_PROCESS, (worker) => {
     // @ts-ignore
     worker._process.on("message", (message) => {
@@ -202,7 +200,6 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       }
     })
   })
-
   hermione.on(hermione.events.TEST_BEGIN, (testResult) => {
     const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env
     const thread = ALLURE_THREAD_NAME || testResult.sessionId;
@@ -244,11 +241,9 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
 
     currentTest.status = Status.PASSED
   });
-
   // TODO:
   // hermione.on(hermione.events.RETRY, (testResult) => {
   // });
-
   hermione.on(hermione.events.TEST_FAIL, (testResult) => {
     const currentTest = runningTests.get(testResult.id())
 
@@ -258,7 +253,6 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
 
     currentTest.status = Status.FAILED
   });
-
   hermione.on(hermione.events.TEST_END, (testResult) => {
     const currentTest = runningTests.get(testResult.id())
 
@@ -274,6 +268,9 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     currentTest.endTest(Date.now())
     runningTests.delete(testResult.id())
   })
+
+  // @ts-ignore
+  hermione.allure = runtime
 };
 
 module.exports = hermioneAllureReporter;

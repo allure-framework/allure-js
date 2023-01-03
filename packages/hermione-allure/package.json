@@ -47,7 +47,8 @@
     "typescript": "^4.4.2"
   },
   "dependencies": {
-    "allure-js-commons": "workspace:*"
+    "allure-js-commons": "workspace:*",
+    "hermione-allure": "workspace:*"
   },
   "nyc": {
     "check-coverage": false,

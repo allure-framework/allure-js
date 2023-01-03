@@ -2098,31 +2098,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"allure-hermione@workspace:packages/allure-hermione":
-  version: 0.0.0-use.local
-  resolution: "allure-hermione@workspace:packages/allure-hermione"
-  dependencies:
-    "@types/chai": ^4.2.11
-    "@types/glob": ^7.1.4
-    "@types/mocha": ^10.0.0
-    "@types/node": ^16.7.8
-    allure-js-commons: "workspace:*"
-    chai: ^4.2.0
-    codecov: ^3.6.5
-    dotenv: ^10.0.0
-    fs-jetpack: ^4.1.0
-    glob: ^7.1.7
-    hermione: ^5.6.1
-    mocha: ^9.1.3
-    mocha-multi-reporters: ^1.5.1
-    nyc: ^15.0.1
-    rimraf: ^3.0.2
-    source-map-support: ^0.5.19
-    ts-node: ^10.2.1
-    typescript: ^4.4.2
-  languageName: unknown
-  linkType: soft
-
 "allure-jasmine@workspace:*, allure-jasmine@workspace:packages/allure-jasmine":
   version: 0.0.0-use.local
   resolution: "allure-jasmine@workspace:packages/allure-jasmine"
@@ -6358,6 +6333,32 @@ __metadata:
   checksum: 510ca9637ef652404dbd432e680418f8d418ba18094ef2f64c3d8de955ebf6e68d553c7f0aeaa5fc937d130b139c1e2d7c2066cd4cf0f740a4627924eaaee9db
   languageName: node
   linkType: hard
+
+"hermione-allure@workspace:*, hermione-allure@workspace:packages/hermione-allure":
+  version: 0.0.0-use.local
+  resolution: "hermione-allure@workspace:packages/hermione-allure"
+  dependencies:
+    "@types/chai": ^4.2.11
+    "@types/glob": ^7.1.4
+    "@types/mocha": ^10.0.0
+    "@types/node": ^16.7.8
+    allure-js-commons: "workspace:*"
+    chai: ^4.2.0
+    codecov: ^3.6.5
+    dotenv: ^10.0.0
+    fs-jetpack: ^4.1.0
+    glob: ^7.1.7
+    hermione: ^5.6.1
+    hermione-allure: "workspace:*"
+    mocha: ^9.1.3
+    mocha-multi-reporters: ^1.5.1
+    nyc: ^15.0.1
+    rimraf: ^3.0.2
+    source-map-support: ^0.5.19
+    ts-node: ^10.2.1
+    typescript: ^4.4.2
+  languageName: unknown
+  linkType: soft
 
 "hermione@npm:^5.6.1":
   version: 5.6.1
