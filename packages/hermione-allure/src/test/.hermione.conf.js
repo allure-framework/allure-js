@@ -20,8 +20,16 @@ module.exports = {
     "hermione-allure": {
       writer: {
         results: [],
+        attachments: [],
         writeResult: function(result) {
           this.results.push(result)
+        },
+        writeAttachment: function(name, content, type) {
+          this.attachments.push({
+            name,
+            content,
+            type,
+          })
         }
       }
     }
