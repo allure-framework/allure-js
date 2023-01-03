@@ -3,7 +3,7 @@ import { expect } from "chai"
 import Hermione from "hermione"
 import { LabelName } from "allure-js-commons"
 
-describe("label", () => {
+describe("labels", () => {
   let hermione: Hermione
 
   beforeEach(() => {

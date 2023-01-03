@@ -79,7 +79,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       currentTest.addLabel(label.name, label.value)
     })
     links.forEach(link => {
-      currentTest.addLink(link.url, link.url, link.type)
+      currentTest.addLink(link.url, link.name, link.type)
     })
     attachment.forEach(file => {
       const attachmentFilename = runtime.writeAttachment(file.source, file.mimetype, file.encoding);
