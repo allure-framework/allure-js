@@ -1,57 +1,87 @@
+/* eslint no-underscore-dangle: 0 */
 import * as os from "node:os";
-import * as process from "node:process"
-import { AttachmentMetadata, AllureRuntime, AllureTest, LabelName, LinkType, Stage, Status, ParameterOptions } from "allure-js-commons"
+import * as process from "node:process";
+import {
+  AllureResults,
+  AllureRuntime,
+  AllureTest,
+  Attachment,
+  AttachmentMetadata,
+  LabelName,
+  LinkType,
+  ParameterOptions,
+  Stage,
+  Status,
+  TestResult,
+} from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 import Hermione from "hermione";
+
+export interface AllureInMemoryWriter {
+  results: TestResult[];
+  attachments: Attachment[];
+  writeResult: (result: AllureResults) => void;
+  writeAttachment: (name: string, content: string, type: string) => void;
+}
+
+export interface HermioneAllureRuntime extends Omit<AllureRuntime, "writer"> {
+  writer: AllureInMemoryWriter;
+}
+
+export interface HermioneAllure extends Hermione {
+  allure: HermioneAllureRuntime;
+}
 
 export type HermioneAttachment = {
   source: string;
   mimetype: string;
   encoding: BufferEncoding;
-}
+};
 
 export type HermioneAttachmentMetadata = AttachmentMetadata & {
   attachment?: HermioneAttachment[];
-}
+};
 
 export type HermioneAttachmentMessage = {
   testId: string;
   metadata: HermioneAttachmentMetadata;
-}
+};
 
 export type AllureReportOptions = {
   resultsDir?: string;
 };
 
-export function getSuitePath(test: Hermione.Test): string[] {
+export const getSuitePath = (test: Hermione.Test): string[] => {
   const path = [];
-  let currentSuite: Hermione.MochaSuite | undefined = test.parent;
+  let currentSuite = test.parent as Hermione.Suite;
 
   while (currentSuite) {
     if (currentSuite.title) {
       path.unshift(currentSuite.title);
     }
 
-    currentSuite = currentSuite.parent;
+    currentSuite = currentSuite.parent as Hermione.Suite;
   }
 
   return path;
-}
+};
 
-const runningTests: Map<string, AllureTest> = new Map()
+const runningTests: Map<string, AllureTest> = new Map();
 
-const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) => {
+const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOptions) => {
   const runtime = new AllureRuntime({
     resultsDir: "allure-results",
-    ...opts
-  })
-  const handleTestError = (testResult: Hermione.TestResult, error: Error) => {
-    const currentTest = runningTests.get(testResult.id()) as AllureTest
-    // @ts-ignore
-    const { message, stack, screenshot } = error
+    ...opts,
+  });
+  // FIXME: after the PR will be merged
+  // eslint-disable-next-line
+  // @ts-ignore
+  const handleTestError = (test: Hermione.Test, error: Hermione.TestError) => {
+    const currentTest = runningTests.get(test.id()) as AllureTest;
+    const { message, stack, screenshot } = error;
 
-    currentTest.detailsMessage = message
-    currentTest.detailsTrace = stack
+    currentTest.detailsMessage = message;
+    currentTest.detailsTrace = stack;
 
     if (screenshot) {
       const attachmentFilename = runtime.writeAttachment(screenshot.base64, "image/png", "base64");
@@ -59,29 +89,34 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       currentTest.addAttachment(
         "Screenshot",
         {
-          contentType: "image/png"
+          contentType: "image/png",
         },
-        attachmentFilename
-      )
+        attachmentFilename,
+      );
     }
-  }
+  };
   const handleAllureAttachment = (testId: string, metadata: HermioneAttachmentMetadata) => {
-    const currentTest = runningTests.get(testId)
+    const currentTest = runningTests.get(testId);
 
     if (!currentTest) {
-      console.warn(`Can't set test metadata due browser session has been finished`)
-      return
+      throw new Error("Can't set test metadata due browser session has been finished");
     }
 
-    const { labels = [], links = [], attachment = [] } = metadata
+    const { labels = [], links = [], attachment = [], parameter = [] } = metadata;
 
-    labels.forEach(label => {
-      currentTest.addLabel(label.name, label.value)
-    })
-    links.forEach(link => {
-      currentTest.addLink(link.url, link.name, link.type)
-    })
-    attachment.forEach(file => {
+    labels.forEach((label) => {
+      currentTest.addLabel(label.name, label.value);
+    });
+    links.forEach((link) => {
+      currentTest.addLink(link.url, link.name, link.type);
+    });
+    parameter.forEach((param) => {
+      currentTest.addParameter(param.name, param.value, {
+        excluded: param.excluded,
+        hidden: param.hidden,
+      });
+    });
+    attachment.forEach((file) => {
       const attachmentFilename = runtime.writeAttachment(file.source, file.mimetype, file.encoding);
 
       currentTest.addAttachment(
@@ -89,129 +124,133 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
         {
           contentType: file.mimetype,
         },
-        attachmentFilename
-      )
-    })
-  }
-  const sendMetadata = async (testId: string, metadata: HermioneAttachmentMetadata) => new Promise((resolve, reject) => {
-    process.send?.(
-      {
-        type: ALLURE_METADATA_CONTENT_TYPE,
-        testId,
-        metadata,
-      },
-    undefined,
-    undefined,
-    (err) => {
-      if (err) {
-        return reject(err)
-      }
+        attachmentFilename,
+      );
+    });
+  };
+  const sendMetadata = async (testId: string, metadata: HermioneAttachmentMetadata) =>
+    new Promise((resolve, reject) => {
+      process.send?.(
+        {
+          type: ALLURE_METADATA_CONTENT_TYPE,
+          testId,
+          metadata,
+        },
+        undefined,
+        undefined,
+        (err) => {
+          if (err) {
+            return reject(err);
+          }
 
-      return resolve(true)
-    })
-  })
+          return resolve(true);
+        },
+      );
+    });
   const addLabel = async (testId: string, name: string, value: string) => {
     await sendMetadata(testId, {
-      labels: [
-        { name, value }
-      ],
-    })
-  }
+      labels: [{ name, value }],
+    });
+  };
   const addLink = async (testId: string, url: string, name?: string, type?: string) => {
     await sendMetadata(testId, {
-      links: [
-        { name, url, type }
-      ],
-    })
-  }
-  const addParameter = async (testId: string, name: string, value: string, options?: ParameterOptions) => {
+      links: [{ name, url, type }],
+    });
+  };
+  const addParameter = async (
+    testId: string,
+    name: string,
+    value: string,
+    options?: ParameterOptions,
+  ) => {
     await sendMetadata(testId, {
-      parameter: [
-        { name, value, ...options }
-      ],
-    })
-  }
+      parameter: [{ name, value, ...options }],
+    });
+  };
   const addAttachment = async (testId: string, source: string, mimetype: string) => {
-    const encoding = /(text|application)/.test(mimetype)
-      ? "utf8"
-      : "base64"
+    const encoding = /(text|application)/.test(mimetype) ? "utf8" : "base64";
 
     await sendMetadata(testId, {
-      attachment: [
-        { source, mimetype, encoding }
-      ]
-    })
-  }
+      attachment: [{ source, mimetype, encoding }],
+    });
+  };
 
   hermione.on(hermione.events.NEW_BROWSER, (browser) => {
     browser.addCommand("label", async (testId: string, name: string, value: string) => {
-      await addLabel(testId, name, value)
-    })
-    browser.addCommand("link", async (testId: string, url: string, name?: string, type?: string) => {
-      await addLink(testId, url, name, type)
-    })
-    browser.addCommand("parameter", async (testId: string, name: string, value: string, options?: ParameterOptions) => {
-      await addParameter(testId, name, value, options)
-    })
+      await addLabel(testId, name, value);
+    });
+    browser.addCommand(
+      "link",
+      async (testId: string, url: string, name?: string, type?: string) => {
+        await addLink(testId, url, name, type);
+      },
+    );
+    browser.addCommand(
+      "parameter",
+      async (testId: string, name: string, value: string, options?: ParameterOptions) => {
+        await addParameter(testId, name, value, options);
+      },
+    );
     browser.addCommand("epic", async (testId: string, value: string) => {
-      await addLabel(testId, LabelName.EPIC, value)
-    })
+      await addLabel(testId, LabelName.EPIC, value);
+    });
     browser.addCommand("feature", async (testId: string, value: string) => {
-      await addLabel(testId, LabelName.FEATURE, value)
-    })
+      await addLabel(testId, LabelName.FEATURE, value);
+    });
     browser.addCommand("story", async (testId: string, value: string) => {
-      await addLabel(testId, LabelName.STORY, value)
-    })
+      await addLabel(testId, LabelName.STORY, value);
+    });
     browser.addCommand("suite", async (testId: string, value: string) => {
-      await addLabel(testId, LabelName.SUITE, value)
-    })
+      await addLabel(testId, LabelName.SUITE, value);
+    });
     browser.addCommand("parentSuite", async (testId: string, value: string) => {
-      await addLabel(testId, LabelName.PARENT_SUITE, value)
-    })
+      await addLabel(testId, LabelName.PARENT_SUITE, value);
+    });
     browser.addCommand("subSuite", async (testId: string, value: string) => {
-      await addLabel(testId, LabelName.SUB_SUITE, value)
-    })
+      await addLabel(testId, LabelName.SUB_SUITE, value);
+    });
     browser.addCommand("owner", async (testId: string, value: string) => {
-      await addLabel(testId, LabelName.OWNER, value)
-    })
+      await addLabel(testId, LabelName.OWNER, value);
+    });
     browser.addCommand("severity", async (testId: string, value: string) => {
-      await addLabel(testId, LabelName.SEVERITY, value)
-    })
+      await addLabel(testId, LabelName.SEVERITY, value);
+    });
     browser.addCommand("tag", async (testId: string, value: string) => {
-      await addLabel(testId, LabelName.TAG, value)
-    })
+      await addLabel(testId, LabelName.TAG, value);
+    });
     browser.addCommand("issue", async (testId: string, name: string, url: string) => {
-      await addLink(testId, url, name, LinkType.ISSUE)
-    })
+      await addLink(testId, url, name, LinkType.ISSUE);
+    });
     browser.addCommand("tms", async (testId: string, name: string, url: string) => {
-      await addLink(testId, url, name, LinkType.TMS)
-    })
+      await addLink(testId, url, name, LinkType.TMS);
+    });
     browser.addCommand("attach", async (testId: string, source: string, mimetype: string) => {
-      await addAttachment(testId, source, mimetype)
-    })
-  })
+      await addAttachment(testId, source, mimetype);
+    });
+  });
   hermione.on(hermione.events.NEW_WORKER_PROCESS, (worker) => {
+    // eslint-disable-next-line
     // @ts-ignore
     worker._process.on("message", (message) => {
       if (message?.type === ALLURE_METADATA_CONTENT_TYPE) {
-        const { testId, metadata } = message as HermioneAttachmentMessage
+        const { testId, metadata } = message as HermioneAttachmentMessage;
 
-        handleAllureAttachment(testId, metadata)
+        handleAllureAttachment(testId, metadata);
       }
-    })
-  })
-  hermione.on(hermione.events.TEST_BEGIN, (testResult) => {
-    const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env
-    const thread = ALLURE_THREAD_NAME || testResult.sessionId;
-    const hostname = ALLURE_HOST_NAME || os.hostname()
-    const currentTest = new AllureTest(runtime, Date.now())
-    const [parentSuite, suite, ...subSuites] = getSuitePath(testResult);
+    });
+  });
+  hermione.on(hermione.events.TEST_BEGIN, (test) => {
+    const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env;
+    const thread = ALLURE_THREAD_NAME || test.sessionId;
+    const hostname = ALLURE_HOST_NAME || os.hostname();
+    const currentTest = new AllureTest(runtime, Date.now());
+    const [parentSuite, suite, ...subSuites] = getSuitePath(test);
 
-    currentTest.name = testResult.title
-    currentTest.fullName = testResult.fullTitle()
-    // TODO:
+    currentTest.name = test.title;
+    currentTest.fullName = test.fullTitle();
+    // TODO: do we need history ID here?
     // currentTest.historyId = md5(currentTest.fullName);
-    currentTest.stage = Stage.RUNNING
+    currentTest.stage = Stage.RUNNING;
 
     currentTest.addLabel(LabelName.HOST, hostname);
     currentTest.addLabel(LabelName.LANGUAGE, "javascript");
@@ -230,47 +269,48 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       currentTest.addLabel(LabelName.SUB_SUITE, subSuites.join(" > "));
     }
 
-    runningTests.set(testResult.id(), currentTest)
-  })
-  hermione.on(hermione.events.TEST_PASS, (testResult) => {
-    const currentTest = runningTests.get(testResult.id())
+    runningTests.set(test.id(), currentTest);
+  });
+  hermione.on(hermione.events.TEST_PASS, (test) => {
+    const currentTest = runningTests.get(test.id());
 
     if (!currentTest) {
-      throw new Error("SUCCESS bla bla no test here")
+      throw new Error("There isn't running test for the current session!");
     }
 
-    currentTest.status = Status.PASSED
+    currentTest.status = Status.PASSED;
   });
-  // TODO:
-  // hermione.on(hermione.events.RETRY, (testResult) => {
+  // TODO: do we need to handle this?
+  // hermione.on(hermione.events.RETRY, (test) => {
   // });
-  hermione.on(hermione.events.TEST_FAIL, (testResult) => {
-    const currentTest = runningTests.get(testResult.id())
+  hermione.on(hermione.events.TEST_FAIL, (test) => {
+    const currentTest = runningTests.get(test.id());
 
     if (!currentTest) {
-      throw new Error("FAIL bla bla no test here")
+      throw new Error("There isn't running test for the current session!");
     }
 
-    currentTest.status = Status.FAILED
+    currentTest.status = Status.FAILED;
   });
-  hermione.on(hermione.events.TEST_END, (testResult) => {
-    const currentTest = runningTests.get(testResult.id())
+  hermione.on(hermione.events.TEST_END, (test) => {
+    const currentTest = runningTests.get(test.id());
 
     if (!currentTest) {
-      throw new Error("FAIL bla bla no test here")
+      throw new Error("There isn't running test for the current session!");
     }
 
-    if (testResult.err) {
-      handleTestError(testResult, testResult.err)
+    if (test.err) {
+      handleTestError(test, test.err);
     }
 
-    currentTest.stage = Stage.FINISHED
-    currentTest.endTest(Date.now())
-    runningTests.delete(testResult.id())
-  })
+    currentTest.stage = Stage.FINISHED;
+    currentTest.endTest(Date.now());
+    runningTests.delete(test.id());
+  });
 
+  // eslint-disable-next-line
   // @ts-ignore
-  hermione.allure = runtime
+  hermione.allure = runtime;
 };
 
 module.exports = hermioneAllureReporter;

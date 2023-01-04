@@ -1,3 +1,3 @@
 it("adds parent suite", async ({ browser, currentTest }) => {
-  await browser.parentSuite(currentTest.id(), "foo")
-})
+  await browser.parentSuite(currentTest.id(), "foo");
+});

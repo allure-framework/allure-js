@@ -1,32 +1,38 @@
-import { it, describe, beforeEach } from "mocha"
-import { expect } from "chai"
-import Hermione from "hermione"
-import * as AllureCommons from "allure-js-commons"
-import Sinon from "sinon"
+import * as AllureCommons from "allure-js-commons";
+import { expect } from "chai";
+import Hermione from "hermione";
+import { beforeEach, describe, it } from "mocha";
+import Sinon from "sinon";
+import { HermioneAllure } from "../";
 
 describe("attachments", () => {
-  let hermione: Hermione
-  let writeAttachmentStub: Sinon.SinonStub
+  let hermione: HermioneAllure;
+  let writeAttachmentStub: Sinon.SinonStub;
 
   beforeEach(() => {
-    Sinon.restore()
+    Sinon.restore();
 
-    writeAttachmentStub = Sinon.stub(AllureCommons.AllureRuntime.prototype, "writeAttachment")
-    hermione = new Hermione("./src/test/.hermione.conf.js")
-  })
+    writeAttachmentStub = Sinon.stub(AllureCommons.AllureRuntime.prototype, "writeAttachment");
+    hermione = new Hermione("./src/test/.hermione.conf.js") as HermioneAllure;
+  });
 
   describe("attach", () => {
     beforeEach(async () => {
-      await hermione.run(["./src/test/fixtures/attachments.js"], {})
-    })
+      await hermione.run(["./src/test/fixtures/attachments.js"], {});
+    });
 
     it("adds json attachment", () => {
-      // @ts-ignore
-      const { attachments: [attachment] } = hermione.allure.writer.results[0]
+      const {
+        attachments: [attachment],
+      } = hermione.allure.writer.results[0];
 
-      expect(attachment.name).eq("Attachment")
-      expect(attachment.type).eq("application/json")
-      expect(writeAttachmentStub.firstCall.args).eql([JSON.stringify({ foo: "bar" }), "application/json", "utf8"])
-    })
-  })
-})
+      expect(attachment.name).eq("Attachment");
+      expect(attachment.type).eq("application/json");
+      expect(writeAttachmentStub.firstCall.args).eql([
+        JSON.stringify({ foo: "bar" }),
+        "application/json",
+        "utf8",
+      ]);
+    });
+  });
+});

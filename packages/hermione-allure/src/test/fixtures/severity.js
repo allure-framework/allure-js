@@ -1,3 +1,3 @@
 it("adds severity", async ({ browser, currentTest }) => {
-  await browser.severity(currentTest.id(), "foo")
-})
+  await browser.severity(currentTest.id(), "foo");
+});

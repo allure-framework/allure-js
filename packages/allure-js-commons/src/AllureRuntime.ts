@@ -14,7 +14,7 @@ const buildAttachmentFileName = (options: ContentType | string | AttachmentOptio
 };
 
 export class AllureRuntime {
-  private writer: AllureWriter;
+  writer: AllureWriter;
 
   constructor(private config: AllureConfig) {
     this.writer = config.writer || new FileSystemAllureWriter(config);

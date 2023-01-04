@@ -2,18 +2,18 @@ module.exports = {
   sets: {
     desktop: {
       browsers: ["chrome"],
-      files: ["src/test/fixtures"]
-    }
+      files: ["src/test/fixtures"],
+    },
   },
   browsers: {
     chrome: {
-      automationProtocol: 'devtools',
+      automationProtocol: "devtools",
       desiredCapabilities: {
-        browserName: 'chrome',
-        'goog:chromeOptions': {
-          args: ['--headless']
-        }
-      }
+        browserName: "chrome",
+        "goog:chromeOptions": {
+          args: ["--headless"],
+        },
+      },
     },
   },
   plugins: {
@@ -21,17 +21,17 @@ module.exports = {
       writer: {
         results: [],
         attachments: [],
-        writeResult: function(result) {
-          this.results.push(result)
+        writeResult: function (result) {
+          this.results.push(result);
         },
-        writeAttachment: function(name, content, type) {
+        writeAttachment: function (name, content, type) {
           this.attachments.push({
             name,
             content,
             type,
-          })
-        }
-      }
-    }
-  }
+          });
+        },
+      },
+    },
+  },
 };
