@@ -308,6 +308,7 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
     runningTests.delete(test.id());
   });
 
+  // it needs for tests because we need to read runtime writer data redefined in hermione config
   // eslint-disable-next-line
   // @ts-ignore
   hermione.allure = runtime;
