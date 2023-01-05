@@ -1,4 +1,4 @@
-# hermione-allure
+# allure-hermione
 
 Allure integration for `hermione@^5.x.x`.
 
@@ -7,17 +7,17 @@ Allure integration for `hermione@^5.x.x`.
 Use your favorite node package manager to install required packages:
 
 ```shell
-npm add -D hermione-allure allure-js-commons      
+npm add -D allure-hermione allure-js-commons      
 ```
 
 ## Setup
 
-Add `hermione-allure` field to `plugins` in your `.hermione.conf.js` file:
+Add `allure-hermione` field to `plugins` in your `.hermione.conf.js` file:
 
 ```diff
 module.exports = {
   plugins: {
-+    "hermione-allure": {
++    "allure-hermione": {
 +      resultsDir: "./allure-results"
 +    }
   }

@@ -17,7 +17,7 @@ module.exports = {
     },
   },
   plugins: {
-    "hermione-allure": {
+    "allure-hermione": {
       writer: {
         results: [],
         attachments: [],

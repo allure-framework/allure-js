@@ -1,5 +1,5 @@
 {
-  "name": "hermione-allure",
+  "name": "allure-hermione",
   "version": "2.0.0-beta.21",
   "packageManager": "yarn@3.2.1",
   "license": "Apache-2.0",
@@ -7,7 +7,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/allure-framework/allure-js.git",
-    "directory": "packages/hermione-allure"
+    "directory": "packages/allure-hermione"
   },
   "keywords": [
     "hermione",
@@ -47,8 +47,7 @@
     "typescript": "^4.4.2"
   },
   "dependencies": {
-    "allure-js-commons": "workspace:*",
-    "hermione-allure": "workspace:*"
+    "allure-js-commons": "workspace:*"
   },
   "nyc": {
     "check-coverage": false,
