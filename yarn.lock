@@ -1189,12 +1189,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/fs-extra@npm:^9.0.1":
-  version: 9.0.12
-  resolution: "@types/fs-extra@npm:9.0.12"
+"@types/fs-extra@npm:^11.0.0":
+  version: 11.0.0
+  resolution: "@types/fs-extra@npm:11.0.0"
   dependencies:
+    "@types/jsonfile": "*"
     "@types/node": "*"
-  checksum: c63834f0be8d0993c55abcc0b2c90f3c095cf3aa9e827973472167bd93687df9da546bd5e0823ddc9e83e1651c9cfb09bbac99fa57a15ab28fd21280426e472c
+  checksum: 00e706ad9fdcfd96aa15172e37e136075754256c7d52f5c33d04423f0ec786e5651526c7c90bab26a72cc882475e9c1687e33900a1176b6803b7b3fd6cdd35d8
   languageName: node
   linkType: hard
 
@@ -1277,6 +1278,15 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: e60b153664572116dfea673c5bda7778dbff150498f44f998e34b5886d8afc47f16799280e4b6e241c0472aef1bc36add771c569c68fc5125fc2ae519a3eb9ac
+  languageName: node
+  linkType: hard
+
+"@types/jsonfile@npm:*":
+  version: 6.1.1
+  resolution: "@types/jsonfile@npm:6.1.1"
+  dependencies:
+    "@types/node": "*"
+  checksum: 0f8fe0a9221a00e8413cffba723dfe16553868724b830237256fb0052ecd5cac96498189d1235a001cfa815f352008261c9ceb373f0aa58227f891e0c7a12c4d
   languageName: node
   linkType: hard
 
@@ -1717,7 +1727,7 @@ __metadata:
     "@cucumber/gherkin-utils": ^8.0.0
     "@cucumber/messages": ^20.0.0
     "@types/chai": ^4.2.21
-    "@types/fs-extra": ^9.0.1
+    "@types/fs-extra": ^11.0.0
     "@types/glob": ^7.1.4
     "@types/mocha": ^9.0.0
     "@types/node": ^16.7.8
@@ -1727,7 +1737,7 @@ __metadata:
     allure-mocha: "workspace:packages/allure-mocha"
     chai: ^4.3.4
     chai-like: ^1.1.1
-    fs-extra: ^10.0.0
+    fs-extra: ^11.0.0
     glob: ^7.1.7
     mocha: ^9.1.1
     nyc: ^15.1.0
@@ -4337,14 +4347,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "fs-extra@npm:10.0.0"
+"fs-extra@npm:^11.0.0":
+  version: 11.1.0
+  resolution: "fs-extra@npm:11.1.0"
   dependencies:
     graceful-fs: ^4.2.0
     jsonfile: ^6.0.1
     universalify: ^2.0.0
-  checksum: 5285a3d8f34b917cf2b66af8c231a40c1623626e9d701a20051d3337be16c6d7cac94441c8b3732d47a92a2a027886ca93c69b6a4ae6aee3c89650d2a8880c0a
+  checksum: 5ca476103fa1f5ff4a9b3c4f331548f8a3c1881edaae323a4415d3153b5dc11dc6a981c8d1dd93eec8367ceee27b53f8bd27eecbbf66ffcdd04927510c171e7f
   languageName: node
   linkType: hard
 
