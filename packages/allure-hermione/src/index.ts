@@ -1,6 +1,8 @@
 /* eslint no-underscore-dangle: 0 */
+/* eslint import/order: 0 */
 import * as os from "node:os";
 import * as process from "node:process";
+import Hermione from "hermione";
 import {
   AllureResults,
   AllureRuntime,
@@ -15,7 +17,6 @@ import {
   TestResult,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
-import Hermione from "hermione";
 
 export interface AllureInMemoryWriter {
   results: TestResult[];
