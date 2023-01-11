@@ -16,6 +16,7 @@ import {
   Stage,
   Status,
   TestResult,
+  md5,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
@@ -252,8 +253,7 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
 
     currentTest.name = test.title;
     currentTest.fullName = test.fullTitle();
-    // TODO: do we need history ID here?
-    // currentTest.historyId = md5(currentTest.fullName);
+    currentTest.historyId = md5(currentTest.fullName);
     currentTest.stage = Stage.RUNNING;
 
     currentTest.addLabel(LabelName.HOST, hostnameLabel);
