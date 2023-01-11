@@ -12,11 +12,11 @@ import {
   ContentType,
   LabelName,
   LinkType,
+  md5,
   ParameterOptions,
   Stage,
   Status,
   TestResult,
-  md5,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
@@ -89,7 +89,11 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
     currentTest.detailsTrace = stack;
 
     if (screenshot) {
-      const attachmentFilename = runtime.writeAttachment(screenshot.base64, ContentType.PNG, "base64");
+      const attachmentFilename = runtime.writeAttachment(
+        screenshot.base64,
+        ContentType.PNG,
+        "base64",
+      );
 
       currentTest.addAttachment(
         "Screenshot",
@@ -276,32 +280,17 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
     runningTests.set(test.id(), currentTest);
   });
   hermione.on(hermione.events.TEST_PASS, (test) => {
-    const currentTest = runningTests.get(test.id());
-
-    if (!currentTest) {
-      throw new Error("There isn't running test for the current session!");
-    }
+    const currentTest = runningTests.get(test.id())!;
 
     currentTest.status = Status.PASSED;
   });
-  // TODO: do we need to handle this?
-  // hermione.on(hermione.events.RETRY, (test) => {
-  // });
   hermione.on(hermione.events.TEST_FAIL, (test) => {
-    const currentTest = runningTests.get(test.id());
-
-    if (!currentTest) {
-      throw new Error("There isn't running test for the current session!");
-    }
+    const currentTest = runningTests.get(test.id())!;
 
     currentTest.status = Status.FAILED;
   });
   hermione.on(hermione.events.TEST_END, (test) => {
-    const currentTest = runningTests.get(test.id());
-
-    if (!currentTest) {
-      throw new Error("There isn't running test for the current session!");
-    }
+    const currentTest = runningTests.get(test.id())!;
 
     if (test.err) {
       handleTestError(test, test.err);
