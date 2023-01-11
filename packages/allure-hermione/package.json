@@ -22,7 +22,7 @@
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "allure-report": "allure serve ./out/allure-results",
     "test:compile": "nyc ts-node --project test/tsconfig.json",
-    "test": "nyc ts-node --project test/tsconfig.json test/runner.ts",
+    "test": "nyc ts-node --project ./tsconfig.json test/runner.ts",
     "coverage": "codecov",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix"
@@ -37,7 +37,7 @@
     "dotenv": "^10.0.0",
     "fs-jetpack": "^4.1.0",
     "glob": "^7.1.7",
-    "hermione": "^6.0.0",
+    "hermione": "^6.0.1",
     "mocha": "^9.1.3",
     "mocha-multi-reporters": "^1.5.1",
     "nyc": "^15.0.1",

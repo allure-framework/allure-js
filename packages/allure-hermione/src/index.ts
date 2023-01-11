@@ -9,6 +9,7 @@ import {
   AllureTest,
   Attachment,
   AttachmentMetadata,
+  ContentType,
   LabelName,
   LinkType,
   ParameterOptions,
@@ -52,6 +53,8 @@ export type AllureReportOptions = {
   resultsDir?: string;
 };
 
+const hostname = os.hostname();
+
 export const getSuitePath = (test: Hermione.Test): string[] => {
   const path = [];
   let currentSuite = test.parent as Hermione.Suite;
@@ -78,19 +81,19 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
   // eslint-disable-next-line
   // @ts-ignore
   const handleTestError = (test: Hermione.Test, error: Hermione.TestError) => {
-    const currentTest = runningTests.get(test.id()) as AllureTest;
+    const currentTest = runningTests.get(test.id())!;
     const { message, stack, screenshot } = error;
 
     currentTest.detailsMessage = message;
     currentTest.detailsTrace = stack;
 
     if (screenshot) {
-      const attachmentFilename = runtime.writeAttachment(screenshot.base64, "image/png", "base64");
+      const attachmentFilename = runtime.writeAttachment(screenshot.base64, ContentType.PNG, "base64");
 
       currentTest.addAttachment(
         "Screenshot",
         {
-          contentType: "image/png",
+          contentType: ContentType.PNG,
         },
         attachmentFilename,
       );
@@ -243,7 +246,7 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
   hermione.on(hermione.events.TEST_BEGIN, (test) => {
     const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env;
     const thread = ALLURE_THREAD_NAME || test.sessionId;
-    const hostname = ALLURE_HOST_NAME || os.hostname();
+    const hostnameLabel = ALLURE_HOST_NAME || hostname;
     const currentTest = new AllureTest(runtime, Date.now());
     const [parentSuite, suite, ...subSuites] = getSuitePath(test);
 
@@ -253,7 +256,7 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
     // currentTest.historyId = md5(currentTest.fullName);
     currentTest.stage = Stage.RUNNING;
 
-    currentTest.addLabel(LabelName.HOST, hostname);
+    currentTest.addLabel(LabelName.HOST, hostnameLabel);
     currentTest.addLabel(LabelName.LANGUAGE, "javascript");
     currentTest.addLabel(LabelName.FRAMEWORK, "hermione");
     currentTest.addLabel(LabelName.THREAD, thread);

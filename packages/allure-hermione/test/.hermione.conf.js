@@ -2,7 +2,7 @@ module.exports = {
   sets: {
     desktop: {
       browsers: ["chrome"],
-      files: ["src/test/fixtures"],
+      files: ["test/fixtures"],
     },
   },
   browsers: {

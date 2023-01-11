@@ -2,18 +2,18 @@ import { Label, LabelName } from "allure-js-commons";
 import { expect } from "chai";
 import Hermione from "hermione";
 import { beforeEach, describe, it } from "mocha";
-import { HermioneAllure } from "../";
+import { HermioneAllure } from "../../src";
 
 describe("labels", () => {
   let hermione: HermioneAllure;
 
   beforeEach(() => {
-    hermione = new Hermione("./src/test/.hermione.conf.js") as HermioneAllure;
+    hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
   });
 
   describe("label", () => {
     beforeEach(async () => {
-      await hermione.run(["./src/test/fixtures/label.js"], {});
+      await hermione.run(["./test/fixtures/label.js"], {});
     });
 
     it("adds `foo` label", () => {
@@ -27,7 +27,7 @@ describe("labels", () => {
 
   describe("epic", () => {
     beforeEach(async () => {
-      await hermione.run(["./src/test/fixtures/epic.js"], {});
+      await hermione.run(["./test/fixtures/epic.js"], {});
     });
 
     it("adds `foo` epic", () => {
@@ -40,7 +40,7 @@ describe("labels", () => {
 
   describe("feature", () => {
     beforeEach(async () => {
-      await hermione.run(["./src/test/fixtures/feature.js"], {});
+      await hermione.run(["./test/fixtures/feature.js"], {});
     });
 
     it("adds `foo` feature", () => {
@@ -53,7 +53,7 @@ describe("labels", () => {
 
   describe("story", () => {
     beforeEach(async () => {
-      await hermione.run(["./src/test/fixtures/story.js"], {});
+      await hermione.run(["./test/fixtures/story.js"], {});
     });
 
     it("adds `foo` story", () => {
@@ -66,7 +66,7 @@ describe("labels", () => {
 
   describe("suite", () => {
     beforeEach(async () => {
-      await hermione.run(["./src/test/fixtures/suite.js"], {});
+      await hermione.run(["./test/fixtures/suite.js"], {});
     });
 
     it("adds `foo` suite", () => {
@@ -79,7 +79,7 @@ describe("labels", () => {
 
   describe("parentSuite", () => {
     beforeEach(async () => {
-      await hermione.run(["./src/test/fixtures/parentSuite.js"], {});
+      await hermione.run(["./test/fixtures/parentSuite.js"], {});
     });
 
     it("adds `foo` parentSuite", () => {
@@ -92,7 +92,7 @@ describe("labels", () => {
 
   describe("subSuite", () => {
     beforeEach(async () => {
-      await hermione.run(["./src/test/fixtures/subSuite.js"], {});
+      await hermione.run(["./test/fixtures/subSuite.js"], {});
     });
 
     it("adds `foo` subSuite", () => {
@@ -105,7 +105,7 @@ describe("labels", () => {
 
   describe("owner", () => {
     beforeEach(async () => {
-      await hermione.run(["./src/test/fixtures/owner.js"], {});
+      await hermione.run(["./test/fixtures/owner.js"], {});
     });
 
     it("adds `foo` owner", () => {
@@ -118,7 +118,7 @@ describe("labels", () => {
 
   describe("severity", () => {
     beforeEach(async () => {
-      await hermione.run(["./src/test/fixtures/severity.js"], {});
+      await hermione.run(["./test/fixtures/severity.js"], {});
     });
 
     it("adds `foo` severity", () => {
@@ -131,7 +131,7 @@ describe("labels", () => {
 
   describe("tag", () => {
     beforeEach(async () => {
-      await hermione.run(["./src/test/fixtures/tag.js"], {});
+      await hermione.run(["./test/fixtures/tag.js"], {});
     });
 
     it("adds `foo` tag", () => {

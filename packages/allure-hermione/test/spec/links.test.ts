@@ -2,18 +2,18 @@ import { Link, LinkType } from "allure-js-commons";
 import { expect } from "chai";
 import Hermione from "hermione";
 import { beforeEach, describe, it } from "mocha";
-import { HermioneAllure } from "../";
+import { HermioneAllure } from "../../src";
 
 describe("links", () => {
   let hermione: HermioneAllure;
 
   beforeEach(() => {
-    hermione = new Hermione("./src/test/.hermione.conf.js") as HermioneAllure;
+    hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
   });
 
   describe("link", () => {
     beforeEach(async () => {
-      await hermione.run(["./src/test/fixtures/link.js"], {});
+      await hermione.run(["./test/fixtures/link.js"], {});
     });
 
     it("adds `foo` label", () => {
@@ -27,7 +27,7 @@ describe("links", () => {
 
   describe("tms", () => {
     beforeEach(async () => {
-      await hermione.run(["./src/test/fixtures/tms.js"], {});
+      await hermione.run(["./test/fixtures/tms.js"], {});
     });
 
     it("adds `foo` tms link", () => {
@@ -41,7 +41,7 @@ describe("links", () => {
 
   describe("issue", () => {
     beforeEach(async () => {
-      await hermione.run(["./src/test/fixtures/issue.js"], {});
+      await hermione.run(["./test/fixtures/issue.js"], {});
     });
 
     it("adds `foo` issue link", () => {
