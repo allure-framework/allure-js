@@ -19,10 +19,7 @@
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
-    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "allure-report": "allure serve ./out/allure-results",
-    "test:compile": "nyc ts-node --project test/tsconfig.json",
-    "test": "nyc ts-node --project ./tsconfig.json test/runner.ts",
+    "test": "nyc ts-node --project ./tsconfig.json ./test/runner.ts",
     "coverage": "codecov",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix"
@@ -60,8 +57,7 @@
     ],
     "exclude": [
       "test/**/*.*",
-      "**/*.d.ts",
-      "runtime.js"
+      "**/*.d.ts"
     ],
     "reporter": [
       "lcov",

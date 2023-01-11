@@ -80,7 +80,6 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
   });
   // FIXME: after the PR will be merged
   // eslint-disable-next-line
-  // @ts-ignore
   const handleTestError = (test: Hermione.Test, error: Hermione.TestError) => {
     const currentTest = runningTests.get(test.id())!;
     const { message, stack, screenshot } = error;
