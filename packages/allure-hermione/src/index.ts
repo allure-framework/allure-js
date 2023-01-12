@@ -256,7 +256,7 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
 
     currentTest.name = test.title;
     currentTest.fullName = test.fullTitle();
-    currentTest.historyId = md5(currentTest.fullName);
+    currentTest.historyId = md5(test.fullTitle());
     currentTest.stage = Stage.RUNNING;
 
     currentTest.addLabel(LabelName.HOST, hostnameLabel);
@@ -284,7 +284,12 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
     currentTest.status = Status.PASSED;
   });
   hermione.on(hermione.events.TEST_FAIL, (test) => {
-    const currentTest = runningTests.get(test.id())!;
+    const currentTest = runningTests.get(test.id());
+
+    // hermione handle all errors in this hook, even test hasn't been started
+    if (!currentTest) {
+      throw test.err;
+    }
 
     currentTest.status = Status.FAILED;
   });
