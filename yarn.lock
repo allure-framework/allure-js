@@ -2112,7 +2112,7 @@ __metadata:
     dotenv: ^10.0.0
     fs-jetpack: ^4.1.0
     glob: ^7.1.7
-    hermione: ^6.0.1
+    hermione: ^6.0.2
     mocha: ^9.1.3
     mocha-multi-reporters: ^1.5.1
     nyc: ^15.0.1
@@ -6359,9 +6359,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hermione@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "hermione@npm:6.0.1"
+"hermione@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "hermione@npm:6.0.2"
   dependencies:
     "@gemini-testing/commander": 2.15.3
     "@gemini-testing/mocha": ^9.3.0
@@ -6384,6 +6384,7 @@ __metadata:
     looks-same: ^8.1.0
     micromatch: ^4.0.5
     plugins-loader: ^1.1.0
+    png-validator: 1.1.0
     sharp: ~0.30.7
     sizzle: ^2.3.6
     temp: ^0.8.3
@@ -6396,7 +6397,7 @@ __metadata:
     yallist: ^3.1.1
   bin:
     hermione: bin/hermione
-  checksum: 1dcff633cf961fc3f4b8a3eaca33eafc5ef69e1d7a2b5e861c732daab81f771f42bb27344cd803683bda4027d42b239ebe06f3ab005bd5e618efca5796758aa4
+  checksum: 25321e19262beac2b7949506f294a6bfad593d0a67e2212b9b83de2f110cac8bcd8e662cb2e193730a6f7710b2ee4e7eb49e3108b1dc1b7e75123198358102a4
   languageName: node
   linkType: hard
 
@@ -10240,6 +10241,13 @@ __metadata:
   dependencies:
     lodash: ^4.16.4
   checksum: 64e4ac01849de0f548785242a14de4ea92bbf2620874735a77902812965d49e3ac9fa3339adbd2b875c0e8518825fef5d393d0ad47f183a7d60225a388336cbc
+  languageName: node
+  linkType: hard
+
+"png-validator@npm:1.1.0":
+  version: 1.1.0
+  resolution: "png-validator@npm:1.1.0"
+  checksum: 68429a2c28bdae554f98244c07cfd6d2f6555549e926bdd040e4958154a21a386315f73fac3e03cf808efbf0df15501506e0d36a00213efc04b4e1a83fb6d1c4
   languageName: node
   linkType: hard
 
