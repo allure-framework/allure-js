@@ -2109,7 +2109,7 @@ __metadata:
     allure-js-commons: "workspace:*"
     chai: ^4.2.0
     codecov: ^3.6.5
-    dotenv: ^10.0.0
+    dotenv: ^16.0.0
     fs-jetpack: ^4.1.0
     glob: ^7.1.7
     hermione: ^6.0.2
@@ -4606,10 +4606,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "dotenv@npm:10.0.0"
-  checksum: f412c5fe8c24fbe313d302d2500e247ba8a1946492db405a4de4d30dd0eb186a88a43f13c958c5a7de303938949c4231c56994f97d05c4bc1f22478d631b4005
+"dotenv@npm:^16.0.0":
+  version: 16.0.3
+  resolution: "dotenv@npm:16.0.3"
+  checksum: afcf03f373d7a6d62c7e9afea6328e62851d627a4e73f2e12d0a8deae1cd375892004f3021883f8aec85932cd2834b091f568ced92b4774625b321db83b827f8
   languageName: node
   linkType: hard
 
