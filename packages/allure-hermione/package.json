@@ -1,6 +1,6 @@
 {
   "name": "allure-hermione",
-  "version": "2.0.0-beta.21",
+  "version": "2.0.0-beta.24",
   "packageManager": "yarn@3.2.1",
   "license": "Apache-2.0",
   "author": "qameta software",

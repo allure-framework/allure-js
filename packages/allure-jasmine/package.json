@@ -1,6 +1,6 @@
 {
   "name": "allure-jasmine",
-  "version": "2.0.0-beta.23",
+  "version": "2.0.0-beta.24",
   "description": "Allure Jasmine integration",
   "license": "Apache-2.0",
   "author": "Ilya Korobitsyn <mail@korobochka.org>",
