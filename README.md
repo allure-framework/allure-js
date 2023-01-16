@@ -38,6 +38,12 @@ This project aggregates Allure Javascript commons and reporters.
 
 [Read more](/packages/newman-reporter-allure/README.md)
 
+### Hermione
+
+![npm](https://img.shields.io/npm/dm/allure-hermione.svg) ![npm](https://img.shields.io/npm/v/allure-hermione.svg)
+
+[Read more](/packages/allure-hermione/README.md)
+
 ## Development
 
 ### allure-js-commons
