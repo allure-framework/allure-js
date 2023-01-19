@@ -79,7 +79,7 @@ export class allure {
 
   static layer(layerName: string) {
     this.label({
-      name: LabelName.PARENT_SUITE,
+      name: LabelName.LAYER,
       value: layerName,
     });
   }

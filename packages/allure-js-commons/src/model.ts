@@ -135,6 +135,7 @@ export enum LabelName {
   PACKAGE = "package",
   FRAMEWORK = "framework",
   LANGUAGE = "language",
+  LAYER = "layer",
 }
 
 /* eslint-disable no-shadow */
