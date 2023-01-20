@@ -5,7 +5,6 @@ import {
   LabelName,
   Link,
   LinkType,
-  Parameter,
   ParameterOptions,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
@@ -75,6 +74,13 @@ export class allure {
     this.label({
       name: LabelName.PARENT_SUITE,
       value: name,
+    });
+  }
+
+  static layer(layerName: string) {
+    this.label({
+      name: LabelName.LAYER,
+      value: layerName,
     });
   }
 
