@@ -203,20 +203,23 @@ class AllureReporter implements Reporter {
         allureTest.addLabel("testType", "screenshotDiff");
       }
     }
-    for (const stdout of result.stdout) {
+
+    if (result.stdout.length > 0) {
       allureTest.addAttachment(
         "stdout",
         "text/plain",
-        runtime.writeAttachment(stdout, "text/plain"),
+        runtime.writeAttachment(result.stdout.join(""), "text/plain"),
       );
     }
-    for (const stderr of result.stderr) {
+
+    if (result.stderr.length > 0) {
       allureTest.addAttachment(
         "stderr",
         "text/plain",
-        runtime.writeAttachment(stderr, "text/plain"),
+        runtime.writeAttachment(result.stderr.join(""), "text/plain"),
       );
     }
+
     allureTest.endTest();
   }
 
