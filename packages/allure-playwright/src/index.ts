@@ -208,7 +208,7 @@ class AllureReporter implements Reporter {
       allureTest.addAttachment(
         "stdout",
         "text/plain",
-        runtime.writeAttachment(result.stdout.join(""), "text/plain"),
+        runtime.writeAttachment(stripAscii(result.stdout.join("")), "text/plain"),
       );
     }
 
@@ -216,7 +216,7 @@ class AllureReporter implements Reporter {
       allureTest.addAttachment(
         "stderr",
         "text/plain",
-        runtime.writeAttachment(result.stderr.join(""), "text/plain"),
+        runtime.writeAttachment(stripAscii(result.stderr.join("")), "text/plain"),
       );
     }
 
