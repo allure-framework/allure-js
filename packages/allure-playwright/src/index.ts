@@ -136,7 +136,7 @@ class AllureReporter implements Reporter {
 
     const thread =
       process.env.ALLURE_THREAD_NAME ||
-      `${this.hostname}-${process.pid}-playwright-worker-${result.workerIndex}`;
+      `${this.hostname}-${process.pid}-playwright-worker-${result.parallelIndex}`;
 
     allureTest.addLabel(LabelName.HOST, this.hostname);
     allureTest.addLabel(LabelName.THREAD, thread);

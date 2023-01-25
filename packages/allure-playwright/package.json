@@ -27,7 +27,7 @@
     "lint:fix": "eslint ./src --ext .ts --fix"
   },
   "devDependencies": {
-    "@playwright/test": "^1.28.0",
+    "@playwright/test": "^1.30.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.4.2"
   },
