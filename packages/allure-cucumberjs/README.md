@@ -19,39 +19,35 @@ Create the reporter file:
 
 ```js
 // reporter.js
-import { AllureRuntime } from "allure-js-commons"
+import { AllureRuntime } from "allure-js-commons";
 import { CucumberJSAllureFormatter } from "allure-cucumberjs";
 
 export default class extends CucumberJSAllureFormatter {
   constructor(options) {
-    super(
-      options,
-      new AllureRuntime({ resultsDir: "./allure-results" }),
-      {
-        labels: [
-          {
-            pattern: [/@feature:(.*)/],
-            name: "epic"
-          },
-          {
-            pattern: [/@severity:(.*)/],
-            name: "severity"
-          }
-        ],
-        links: [
-          {
-            pattern: [/@issue=(.*)/],
-            type: "issue",
-            urlTemplate: "http://localhost:8080/issue/%s"
-          },
-          {
-            pattern: [/@tms=(.*)/],
-            type: "tms",
-            urlTemplate: "http://localhost:8080/tms/%s"
-          }
-        ]
-      }
-    );
+    super(options, new AllureRuntime({ resultsDir: "./allure-results" }), {
+      labels: [
+        {
+          pattern: [/@feature:(.*)/],
+          name: "epic",
+        },
+        {
+          pattern: [/@severity:(.*)/],
+          name: "severity",
+        },
+      ],
+      links: [
+        {
+          pattern: [/@issue=(.*)/],
+          type: "issue",
+          urlTemplate: "http://localhost:8080/issue/%s",
+        },
+        {
+          pattern: [/@tms=(.*)/],
+          type: "tms",
+          urlTemplate: "http://localhost:8080/tms/%s",
+        },
+      ],
+    });
   }
 }
 ```
@@ -68,9 +64,9 @@ Or via configuration file:
 // config.js
 module.exports = {
   default: {
-    format: "./path/to/reporter.js"
-  }
-}
+    format: "./path/to/reporter.js",
+  },
+};
 ```
 
 And then run CLI with `config` parameter:
@@ -93,19 +89,19 @@ By default, the feature is available out of the box for single thread mode.
 Example:
 
 ```js
-import { Given } from "@cucumber/cucumber"
+import { Given } from "@cucumber/cucumber";
 
 Given(/my step/, async function () {
   await this.step("step can have anonymous body function", async function () {
-    await this.label("label_name", "label_value") 
-    await this.attach(JSON.stringify({ foo: "bar "}), "application/json")
-  })
-  
+    await this.label("label_name", "label_value");
+    await this.attach(JSON.stringify({ foo: "bar " }), "application/json");
+  });
+
   await this.step("by the way, body function can be arrow one", async (step) => {
-    await step.label("label_name", "label_value")
-    await step.attach(JSON.stringify({ foo: "bar "}), "application/json")
-  })
-})
+    await step.label("label_name", "label_value");
+    await step.attach(JSON.stringify({ foo: "bar " }), "application/json");
+  });
+});
 ```
 
 If you want to keep the functoinality in `parallel` mode, set `CucumberAllureWorld` as
@@ -149,7 +145,7 @@ Follow the same approach when you need to use your own `World` implementation. J
 
 Given(/my step/, async function () {
 +  this.hello()
-  
+
   await this.step("step can have anonymous body function", async function () {
     await this.label("label_name", "label_value")
     await this.attach(JSON.stringify({ foo: "bar "}), "application/json")
@@ -181,6 +177,32 @@ type CustomWorld = {
 Given("A cat fact is recieved", async function (this: CustomWorld) {
   await this.step("example name", async () => {
     await this.label("test label", "value");
+  });
+});
+```
+
+### Parameters usage
+
+```ts
+import { Given } from "@cucumber/cucumber";
+
+Given(/my step/, async function () {
+  await this.step("step can have anonymous body function", async function () {
+    await this.parameter("parameterName", "parameterValue");
+  });
+});
+```
+
+Also addParameter takes an third optional parameter with the hidden and excluded options:
+`hidden: true` - hides parameter from the report
+`excluded: true` - excludes parameter from the history
+
+```ts
+import { Given } from "@cucumber/cucumber";
+
+Given(/my step/, async function () {
+  await this.step("step can have anonymous body function", async function () {
+    await this.parameter("parameterName", "parameterValue", { hidden: true, excluded: true });
   });
 });
 ```

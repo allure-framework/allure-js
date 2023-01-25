@@ -28,7 +28,7 @@ Or pass the same value via config file:
 
 ```js
 {
-  reporter: [['line'], ['allure-playwright']]
+  reporter: [["line"], ["allure-playwright"]];
 }
 ```
 
@@ -54,11 +54,13 @@ npx playwright test --reporter=line,allure-playwright
 ```
 
 Generate Allure Report:
+
 ```bash
 allure generate my-allure-results -o allure-report --clean
 ```
 
 Open Allure Report:
+
 ```bash
 allure open allure-report
 ```
@@ -68,7 +70,7 @@ allure open allure-report
 Some reporter settings can set by following options:
 
 | Option       | Description                                                                  | Default            |
-|--------------|------------------------------------------------------------------------------|--------------------|
+| ------------ | ---------------------------------------------------------------------------- | ------------------ |
 | outputFolder | Path to results folder.                                                      | `./allure-results` |
 | detail       | Hide `pw:api` and `hooks` steps in report. [See below](#hooks-and-api-calls) | `true`             |
 | suiteTitle   | Use test title instead of `allure.suite()`. [See below](#suit-title)         | `true`             |
@@ -77,18 +79,23 @@ Some reporter settings can set by following options:
 
 ```js
 const config = {
-  reporter: [['allure-playwright', {
-    detail: true,
-    outputFolder: 'my-allure-results',
-    suiteTitle: false
-  }]],
+  reporter: [
+    [
+      "allure-playwright",
+      {
+        detail: true,
+        outputFolder: "my-allure-results",
+        suiteTitle: false,
+      },
+    ],
+  ],
 };
 ```
 
 ### Options for Allure TestOps compatibility
 
-After exporting test results into Allure TestOps, the results may contain extra steps with Playwright’s API calls, as 
-well as collisions in the name of the suits. 
+After exporting test results into Allure TestOps, the results may contain extra steps with Playwright’s API calls, as
+well as collisions in the name of the suits.
 
 #### Hooks and API calls
 
@@ -102,10 +109,10 @@ The report looks like:
 
 > Open example.com
   > page.goto( https://example.com/)
-  
+
 > Expect page text
   > expect.toBeVisible
-  
+
 > After Hooks
   > browserContext.close
 ```
@@ -144,9 +151,10 @@ import { test, expect } from "@playwright/test";
 import { allure, LabelName } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-    allure.label({ name: LabelName.LANGUAGE, value: "typescript" });
+  allure.label({ name: LabelName.LANGUAGE, value: "typescript" });
 });
 ```
+
 ### Links Usage
 
 ```js
@@ -169,7 +177,7 @@ import { test, expect } from "@playwright/test";
 import { allure, LabelName } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-    allure.id("Some id");
+  allure.id("Some id");
 });
 ```
 
@@ -196,6 +204,7 @@ test("basic test", async ({ page }, testInfo) => {
 ```
 
 ### Screenshot usage
+
 ```ts
 test("basic test", async ({ page }, testInfo) => {
   await testInfo.attach("basic-page-screen", {
@@ -203,28 +212,21 @@ test("basic test", async ({ page }, testInfo) => {
     contentType: "image/png",
   });
 });
-
 ```
-
 
 ### Attachments Usage
 
 ```js
 import { test, expect } from "@playwright/test";
 
-export const TODO_ITEMS = [
-  "buy some cheese",
-  "feed the cat",
-  "book a doctors appointment",
-];
+export const TODO_ITEMS = ["buy some cheese", "feed the cat", "book a doctors appointment"];
 
 test("basic test", async ({ page }, testInfo) => {
-   await testInfo.attach("TODO_ITEMS", {
-      body: JSON.stringify(TODO_ITEMS),
-      contentType: "application/json",
-    });
+  await testInfo.attach("TODO_ITEMS", {
+    body: JSON.stringify(TODO_ITEMS),
+    contentType: "application/json",
+  });
 });
-
 ```
 
 ### Steps usage
@@ -232,11 +234,7 @@ test("basic test", async ({ page }, testInfo) => {
 ```ts
 import { test, expect } from "@playwright/test";
 
-export const TODO_ITEMS = [
-  "buy some cheese", 
-  "feed the cat", 
-  "book a doctors appointment"
-];
+export const TODO_ITEMS = ["buy some cheese", "feed the cat", "book a doctors appointment"];
 
 test("basic test", async ({ page }, testInfo) => {
   await test.step("Visit todolist page", async () => {
@@ -252,5 +250,29 @@ test("basic test", async ({ page }, testInfo) => {
     page.locator(".view label"),
     "Make sure the list only has one todo item.",
   ).toHaveText([TODO_ITEMS[0]]);
+});
+```
+
+### Parameters usage
+
+```ts
+import { test, expect } from "@playwright/test";
+import { allure } from "allure-playwright";
+
+test("basic test", async ({ page }, testInfo) => {
+  allure.addParameter("parameterName", "parameterValue");
+});
+```
+
+Also addParameter takes an third optional parameter with the hidden and excluded options:
+`hidden: true` - hides parameter from the report
+`excluded: true` - excludes parameter from the history
+
+```ts
+import { test, expect } from "@playwright/test";
+import { allure } from "allure-playwright";
+
+test("basic test", async ({ page }, testInfo) => {
+  allure.addParameter("parameterName", "parameterValue", { hidden: true, excluded: true });
 });
 ```
