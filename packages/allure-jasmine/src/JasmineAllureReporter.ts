@@ -237,25 +237,25 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
   }
 
   private installHooks(): void {
-    const jasmineBeforeAll: JasmineBeforeAfterFn = global.beforeAll;
-    const jasmineAfterAll: JasmineBeforeAfterFn = global.afterAll;
-    const jasmineBeforeEach: JasmineBeforeAfterFn = global.beforeEach;
-    const jasmineAfterEach: JasmineBeforeAfterFn = global.afterEach;
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const reporter = this;
+    // eslint-disable-next-line no-eval
+    const jasmineBeforeAll: JasmineBeforeAfterFn = eval("global.beforeAll");
+    // eslint-disable-next-line no-eval
+    const jasmineAfterAll: JasmineBeforeAfterFn = eval("global.afterAll");
+    // eslint-disable-next-line no-eval
+    const jasmineBeforeEach: JasmineBeforeAfterFn = eval("global.beforeEach");
+    // eslint-disable-next-line no-eval
+    const jasmineAfterEach: JasmineBeforeAfterFn = eval("global.afterEach");
 
     const makeWrapperAll = (wrapped: JasmineBeforeAfterFn, fun: () => ExecutableItemWrapper) => {
       return (action: (done: DoneFn) => void, timeout?: number): void => {
         wrapped((done) => {
-          try {
-            this.runningExecutable = fun();
-          } catch {
-            done();
-            return;
-          }
-
+          reporter.runningExecutable = fun();
           let ret;
           if (action.length > 0) {
             // function takes done callback
-            ret = this.runningExecutable.wrap(
+            ret = reporter.runningExecutable.wrap(
               () =>
                 // eslint-disable-next-line no-undef
                 new Promise((resolve, reject) => {
@@ -265,43 +265,45 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
                 }),
             )();
           } else {
-            ret = this.runningExecutable.wrap(action)();
+            ret = reporter.runningExecutable.wrap(action)();
           }
           if (isPromise(ret)) {
             (ret as Promise<any>)
               .then(() => {
-                this.runningExecutable = null;
+                reporter.runningExecutable = null;
                 done();
               })
               .catch((e) => {
-                this.runningExecutable = null;
+                reporter.runningExecutable = null;
                 done.fail(e);
               });
           } else {
-            this.runningExecutable = null;
+            reporter.runningExecutable = null;
             done();
           }
         }, timeout);
       };
     };
 
-    const wrapperBeforeAll = makeWrapperAll(jasmineBeforeAll, () => {
-      return this.currentGroup.addBefore();
-    });
-    const wrapperAfterAll = makeWrapperAll(jasmineAfterAll, () => {
-      return this.currentGroup.addAfter();
-    });
-    const wrapperBeforeEach = makeWrapperAll(jasmineBeforeEach, () => {
-      return this.currentGroup.addBefore();
-    });
-    const wrapperAfterEach = makeWrapperAll(jasmineAfterEach, () => {
-      return this.currentGroup.addAfter();
-    });
+    const wrapperBeforeAll = makeWrapperAll(jasmineBeforeAll, () =>
+      reporter.currentGroup.addBefore(),
+    );
+    const wrapperAfterAll = makeWrapperAll(jasmineAfterAll, () => reporter.currentGroup.addAfter());
+    const wrapperBeforeEach = makeWrapperAll(jasmineBeforeEach, () =>
+      reporter.currentGroup.addBefore(),
+    );
+    const wrapperAfterEach = makeWrapperAll(jasmineAfterEach, () =>
+      reporter.currentGroup.addAfter(),
+    );
 
-    global.beforeAll = wrapperBeforeAll;
-    global.afterAll = wrapperAfterAll;
-    global.beforeEach = wrapperBeforeEach;
-    global.afterEach = wrapperAfterEach;
+    // eslint-disable-next-line no-eval
+    eval("global.beforeAll = wrapperBeforeAll;");
+    // eslint-disable-next-line no-eval
+    eval("global.afterAll = wrapperAfterAll;");
+    // eslint-disable-next-line no-eval
+    eval("global.beforeEach = wrapperBeforeEach;");
+    // eslint-disable-next-line no-eval
+    eval("global.afterEach = wrapperAfterEach;");
   }
 }
 
