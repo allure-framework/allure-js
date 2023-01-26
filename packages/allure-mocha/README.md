@@ -48,6 +48,28 @@ it("is a test", () => {
 });
 ```
 
+### Parameters usage
+
+```ts
+import { allure } from "allure-mocha/runtime";
+
+it("is a test", () => {
+  allure.parameter("parameterName", "parameterValue");
+});
+```
+
+Also addParameter takes an third optional parameter with the hidden and excluded options:
+`hidden: true` - hides parameter from the report
+`excluded: true` - excludes parameter from the history
+
+```ts
+import { allure } from "allure-mocha/runtime";
+
+it("is a test", () => {
+  allure.parameter("parameterName", "parameterValue", { hidden: true, excluded: true });
+});
+```
+
 ## Decorators Support
 
 To make tests more readable and avoid explicit API calls, you can use a special extension - [ts-test-decorators](https://github.com/sskorol/ts-test-decorators).
