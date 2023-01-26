@@ -1,13 +1,25 @@
-beforeAll(() => {});
-beforeEach(() => {});
-afterAll(() => {});
-afterEach(() => {});
+let beforeAllVal: undefined | true;
+let beforeEachVal: undefined | true;
+
+beforeAll(() => {
+  beforeAllVal = true;
+});
+
+beforeEach(() => {
+  beforeEachVal = true;
+});
+
+afterAll(() => {
+  expect(beforeAllVal).toBeTruthy();
+});
+
+afterEach(() => {
+  expect(beforeEachVal).toBeTruthy();
+});
 
 describe("example describe for fixtures", () => {
   it("should pass no errors", () => {
-    expect(true).toBeTruthy();
-  });
-  it("should pass no errors", () => {
-    expect(false).toBeFalse();
+    expect(beforeAllVal).toBeTruthy();
+    expect(beforeEachVal).toBeTruthy();
   });
 });

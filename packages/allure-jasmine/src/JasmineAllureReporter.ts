@@ -244,18 +244,18 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
 
     const makeWrapperAll = (wrapped: JasmineBeforeAfterFn, fun: () => ExecutableItemWrapper) => {
       return (action: (done: DoneFn) => void, timeout?: number): void => {
-        wrapped((done) => {
-          try {
-            this.runningExecutable = fun();
-          } catch {
-            done();
-            return;
-          }
+        try {
+          this.runningExecutable = fun();
+        } catch {
+          wrapped(action, timeout);
+          return;
+        }
 
+        wrapped((done) => {
           let ret;
           if (action.length > 0) {
             // function takes done callback
-            ret = this.runningExecutable.wrap(
+            ret = this.runningExecutable!.wrap(
               () =>
                 // eslint-disable-next-line no-undef
                 new Promise((resolve, reject) => {
@@ -265,7 +265,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
                 }),
             )();
           } else {
-            ret = this.runningExecutable.wrap(action)();
+            ret = this.runningExecutable!.wrap(action)();
           }
           if (isPromise(ret)) {
             (ret as Promise<any>)
