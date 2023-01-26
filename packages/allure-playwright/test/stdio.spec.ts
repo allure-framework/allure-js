@@ -26,6 +26,10 @@ test("should report stdout and stderr", async ({ runInlineTest }) => {
           console.error('System err 1');
           console.log("Test log 2");
           console.error('System err 2');
+          console.log({ "foo": 'bar' });
+          console.log([1, 2, 3, "test"]);
+          console.error({ foo: 'bar' });
+          console.error([1, 2, 3, "test"]);
           await test.step("nested", async () => {
             console.log("Test nested log");
             console.error('System err 3');
@@ -41,7 +45,15 @@ test("should report stdout and stderr", async ({ runInlineTest }) => {
     },
   );
   expect(result).toEqual([
-    { name: "stdout", type: "text/plain", buffer: "Test log\nTest log 2\nTest nested log\n" },
-    { name: "stderr", type: "text/plain", buffer: "System err 1\nSystem err 2\nSystem err 3\n" },
+    {
+      name: "stdout",
+      type: "text/plain",
+      buffer: "Test log\nTest log 2\n{ foo: 'bar' }\n[ 1, 2, 3, 'test' ]\nTest nested log\n",
+    },
+    {
+      name: "stderr",
+      type: "text/plain",
+      buffer: "System err 1\nSystem err 2\n{ foo: 'bar' }\n[ 1, 2, 3, 'test' ]\nSystem err 3\n",
+    },
   ]);
 });
