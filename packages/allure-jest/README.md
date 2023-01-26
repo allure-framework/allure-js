@@ -24,7 +24,6 @@ Create `allure-setup.ts` file:
 
 ```typescript
 import { JasmineAllureReporter } from "allure-jasmine";
-import { JasmineAllureReporter } from "allure-jasmine";
 import { JasmineAllureInterface } from "allure-jasmine/dist/src/JasmineAllureReporter";
 
 const reporter = new JasmineAllureReporter({ resultsDir: "allure-results" });
@@ -43,6 +42,6 @@ declare global {
 module.exports = {
   testRunner: "jest-jasmine2",
   preset: "ts-jest",
-  setupFilesAfterEnv: ["./spec/helpers/allure.ts"],
+  setupFilesAfterEnv: ["./allure-setup.ts"],
 };
 ```
