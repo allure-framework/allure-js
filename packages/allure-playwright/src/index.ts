@@ -134,9 +134,12 @@ class AllureReporter implements Reporter {
       return;
     }
 
+    // We need to check parallelIndex first because pw introduced this field only in v1.30.0
+    const threadId = result.parallelIndex !== undefined ? result.parallelIndex : result.workerIndex;
+
     const thread =
       process.env.ALLURE_THREAD_NAME ||
-      `${this.hostname}-${process.pid}-playwright-worker-${result.workerIndex}`;
+      `${this.hostname}-${process.pid}-playwright-worker-${threadId}`;
 
     allureTest.addLabel(LabelName.HOST, this.hostname);
     allureTest.addLabel(LabelName.THREAD, thread);
