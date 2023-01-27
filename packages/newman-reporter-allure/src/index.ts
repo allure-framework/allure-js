@@ -222,7 +222,6 @@ class AllureReporter {
         .replace("\r", "")
         // eslint-disable-next-line @typescript-eslint/quotes
         .replace('"', '"')
-        .replace(/[\u0100-\uffff]/g, (c) => `|0x${c.charCodeAt(0).toString(16).padStart(4, "0")}`)
     );
   }
 
