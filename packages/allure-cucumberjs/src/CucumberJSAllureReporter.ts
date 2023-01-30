@@ -24,10 +24,7 @@ import {
   Status,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
-import {
-  CucumberAllureWorld,
-  CucumberAttachmentMetadata,
-} from "./CucumberAllureWorld";
+import { CucumberAllureWorld, CucumberAttachmentMetadata } from "./CucumberAllureWorld";
 
 export { Allure };
 
@@ -427,7 +424,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     if (steps.length > 0) {
-      steps.forEach(step => {
+      steps.forEach((step) => {
         this.handleAllureStep({
           test: payload.test,
           step: payload.step,
