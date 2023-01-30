@@ -10,7 +10,9 @@ export interface AttachmentMetadata {
   labels?: Label[];
   links?: Link[];
   description?: string;
+  descriptionHtml?: string;
   parameter?: Parameter[];
+  steps?: ExecutableItem[];
 }
 
 export interface AttachmentOptions {
