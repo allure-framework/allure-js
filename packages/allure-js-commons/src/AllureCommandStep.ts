@@ -10,6 +10,8 @@ import {
   Status,
 } from "./model";
 
+export type StepBodyFunction = (step: AllureCommandStepExecutable) => any | Promise<any>;
+
 export interface AllureCommandStep<T = AttachmentMetadata> {
   name: string;
 
@@ -154,9 +156,33 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     });
   }
 
-  async start(
-    body: (step: AllureCommandStepExecutable) => any | Promise<any>,
-  ): Promise<AttachmentMetadata> {
+  async step(name: string, body: StepBodyFunction): Promise<void> {
+    if (!this.metadata.steps) {
+      this.metadata.steps = [];
+    }
+
+    const nestedStep = new AllureCommandStepExecutable(name);
+    const {
+      labels = [],
+      links = [],
+      parameter = [],
+      categories = [],
+      environmentInfo = {},
+      steps = [],
+    } = await nestedStep.start(body);
+
+    this.metadata.labels = (this.metadata.labels || []).concat(labels);
+    this.metadata.links = (this.metadata.links || []).concat(links);
+    this.metadata.parameter = (this.metadata.parameter || []).concat(parameter);
+    this.metadata.categories = (this.metadata.categories || []).concat(categories);
+    this.metadata.environmentInfo = Object.assign(
+      this.metadata.environmentInfo || {},
+      environmentInfo,
+    );
+    this.metadata.steps = (this.metadata.steps || []).concat(steps);
+  }
+
+  async start(body: StepBodyFunction): Promise<AttachmentMetadata> {
     const startDate = new Date().getTime();
 
     try {
@@ -175,7 +201,9 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
             statusDetails: {},
             attachments: this.attachments,
             parameters: [],
-            steps: [],
+            description: this.metadata.description || "",
+            descriptionHtml: this.metadata.descriptionHtml || "",
+            steps: this.metadata.steps || [],
           },
         ],
       };
@@ -197,8 +225,10 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
                   }
                 : {},
             attachments: this.attachments,
+            description: this.metadata.description || "",
+            descriptionHtml: this.metadata.descriptionHtml || "",
             parameters: [],
-            steps: [],
+            steps: this.metadata.steps || [],
           },
         ],
       };

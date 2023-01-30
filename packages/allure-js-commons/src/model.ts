@@ -9,12 +9,12 @@ export interface Attachment {
 export interface AttachmentMetadata {
   labels?: Label[];
   links?: Link[];
-  description?: string;
-  descriptionHtml?: string;
   parameter?: Parameter[];
-  steps?: ExecutableItem[];
   categories?: Category[];
   environmentInfo?: Record<string, string>;
+  description?: string;
+  descriptionHtml?: string;
+  steps?: ExecutableItem[];
 }
 
 export interface AttachmentOptions {
