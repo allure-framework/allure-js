@@ -12,6 +12,7 @@ import {
   AllureStep,
   AllureTest,
   Attachment,
+  AttachmentMetadata,
   ContentType,
   ExecutableItem,
   ExecutableItemWrapper,
@@ -26,7 +27,6 @@ import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 import {
   CucumberAllureWorld,
   CucumberAttachmentMetadata,
-  CucumberAttachmentStepMetadata,
 } from "./CucumberAllureWorld";
 
 export { Allure };
@@ -392,14 +392,14 @@ export class CucumberJSAllureFormatter extends Formatter {
   private handleAllureAttachment(payload: {
     test: AllureTest;
     step?: AllureStep;
-    metadata: CucumberAttachmentMetadata;
+    metadata: AttachmentMetadata;
   }) {
     const {
       labels = [],
       links = [],
       parameter = [],
       categories = [],
-      step,
+      steps = [],
       description,
       descriptionHtml,
       environmentInfo,
@@ -426,6 +426,16 @@ export class CucumberJSAllureFormatter extends Formatter {
       this.allureRuntime.writeCategoriesDefinitions(categories);
     }
 
+    if (steps.length > 0) {
+      steps.forEach(step => {
+        this.handleAllureStep({
+          test: payload.test,
+          step: payload.step,
+          stepMetadata: step,
+        });
+      });
+    }
+
     if (description) {
       payload.test.description = description;
     }
@@ -437,24 +447,16 @@ export class CucumberJSAllureFormatter extends Formatter {
     if (environmentInfo) {
       this.allureRuntime.writeEnvironmentInfo(environmentInfo);
     }
-
-    if (step) {
-      this.handleAllureStep({
-        test: payload.test,
-        step: payload.step,
-        metadata: step,
-      });
-    }
   }
 
   private handleAllureStep(payload: {
     test: AllureTest;
     step?: AllureStep;
-    metadata: CucumberAttachmentStepMetadata;
+    stepMetadata: ExecutableItem;
   }) {
-    const { attachments: metadataAttachments, ...metadata } = payload.metadata;
-    const attachments: Attachment[] = metadataAttachments.map(({ name, type, content }) => {
-      const attachmentFilename = this.allureRuntime.writeAttachment(content, type, "base64");
+    const { attachments: metadataAttachments, ...metadata } = payload.stepMetadata;
+    const attachments: Attachment[] = metadataAttachments.map(({ name, type, source }) => {
+      const attachmentFilename = this.allureRuntime.writeAttachment(source, type, "base64");
 
       return {
         source: attachmentFilename,

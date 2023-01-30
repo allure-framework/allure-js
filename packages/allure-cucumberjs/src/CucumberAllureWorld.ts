@@ -14,24 +14,18 @@ import {
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
-export type CucumberAttachment = {
-  name: string;
-  type: string;
-  content: string;
-};
-
-export type CucumberAttachmentStepMetadata = Omit<ExecutableItem, "steps" | "attachments"> & {
-  attachments: CucumberAttachment[];
-};
-
 export interface CucumberAttachmentMetadata extends AttachmentMetadata {
-  step?: CucumberAttachmentStepMetadata;
-  descriptionHtml?: string;
   environmentInfo?: Record<string, string>;
   categories?: Category[];
 }
 
-export interface CucumberExecutable {
+export interface AllureCommandStep<T = AttachmentMetadata> {
+  name: string;
+
+  attachments: Attachment[];
+
+  metadata: T;
+
   label(label: string, value: string): void | Promise<void>;
 
   link(url: string, name?: string, type?: string): void | Promise<void>;
@@ -67,29 +61,35 @@ export interface CucumberExecutable {
   ): void | Promise<void>;
 }
 
-export class CucumberWorldStep implements CucumberExecutable {
+// TODO: think about the class name
+export class AllureCommandStepExecutable implements AllureCommandStep {
   name: string = "";
 
-  attachments: CucumberAttachment[] = [];
+  attachments: Attachment[] = [];
 
-  metadata: CucumberAttachmentMetadata = {
-    labels: [],
-    parameter: [],
-  };
+  metadata: CucumberAttachmentMetadata = {};
 
   constructor(name: string) {
     this.name = name;
   }
 
   label(label: string, value: string): void {
-    this.metadata.labels?.push({
+    if (!this.metadata.labels) {
+      this.metadata.labels = [];
+    }
+
+    this.metadata.labels.push({
       name: label,
       value,
     });
   }
 
   link(url: string, name?: string, type?: string): void {
-    this.metadata.links?.push({
+    if (!this.metadata.links) {
+      this.metadata.links = [];
+    }
+
+    this.metadata.links.push({
       name,
       url,
       type,
@@ -97,7 +97,11 @@ export class CucumberWorldStep implements CucumberExecutable {
   }
 
   parameter(name: string, value: string, options?: ParameterOptions): void {
-    this.metadata.parameter?.push({
+    if (!this.metadata.parameter) {
+      this.metadata.parameter = [];
+    }
+
+    this.metadata.parameter.push({
       name,
       value,
       hidden: options?.hidden || false,
@@ -150,9 +154,11 @@ export class CucumberWorldStep implements CucumberExecutable {
   }
 
   attach(source: string | Buffer, type: string): void {
+    console.log("attach", source);
+
     this.attachments.push({
       name: "attachment",
-      content: Buffer.isBuffer(source)
+      source: Buffer.isBuffer(source)
         ? source.toString("base64")
         : Buffer.from(source, "utf8").toString("base64"),
       type,
@@ -160,54 +166,66 @@ export class CucumberWorldStep implements CucumberExecutable {
   }
 
   async start(
-    body: (step: CucumberWorldStep) => any | Promise<any>,
-  ): Promise<CucumberAttachmentMetadata> {
+    body: (step: AllureCommandStepExecutable) => any | Promise<any>,
+  ): Promise<AttachmentMetadata> {
     const startDate = new Date().getTime();
 
     try {
       const res = body.call(this, this);
       const stepResult = await res;
 
+      console.log("step metadata", this.metadata);
+
       return {
         ...this.metadata,
-        step: {
-          name: this.name,
-          start: startDate,
-          stop: new Date().getTime(),
-          stage: Stage.FINISHED,
-          status: Status.PASSED,
-          statusDetails: {},
-          attachments: this.attachments,
-          parameters: [],
-        },
+        steps: [
+          {
+            name: this.name,
+            start: startDate,
+            stop: new Date().getTime(),
+            stage: Stage.FINISHED,
+            status: Status.PASSED,
+            statusDetails: {},
+            attachments: this.attachments,
+            parameters: [],
+            steps: [],
+          },
+        ],
       };
     } catch (err) {
       return {
         ...this.metadata,
-        step: {
-          name: this.name,
-          start: startDate,
-          stop: new Date().getTime(),
-          stage: Stage.FINISHED,
-          status: Status.FAILED,
-          statusDetails:
-            err instanceof Error
-              ? {
-                  message: err.message,
-                  trace: err.stack,
-                }
-              : {},
-          attachments: this.attachments,
-          parameters: [],
-        },
+        steps: [
+          {
+            name: this.name,
+            start: startDate,
+            stop: new Date().getTime(),
+            stage: Stage.FINISHED,
+            status: Status.FAILED,
+            statusDetails:
+              err instanceof Error
+                ? {
+                    message: err.message,
+                    trace: err.stack,
+                  }
+                : {},
+            attachments: this.attachments,
+            parameters: [],
+            steps: [],
+          },
+        ],
       };
     }
   }
 }
 
-export class CucumberAllureWorld extends World implements Omit<CucumberExecutable, "attach"> {
+// TODO: check implemetation details
+export class CucumberAllureWorld
+  extends World
+  implements Omit<AllureCommandStep, "attach" | "name" | "attachments" | "metadata">
+{
   public async label(label: string, value: string) {
-    const msgBody: CucumberAttachmentMetadata = {
+    const msgBody: AttachmentMetadata = {
       labels: [
         {
           name: label,
@@ -220,7 +238,7 @@ export class CucumberAllureWorld extends World implements Omit<CucumberExecutabl
   }
 
   public async link(url: string, name?: string, type?: string): Promise<void> {
-    const msgBody: CucumberAttachmentMetadata = {
+    const msgBody: AttachmentMetadata = {
       links: [
         {
           name,
@@ -234,7 +252,7 @@ export class CucumberAllureWorld extends World implements Omit<CucumberExecutabl
   }
 
   public async parameter(name: string, value: string, options?: ParameterOptions): Promise<void> {
-    const msgBody: CucumberAttachmentMetadata = {
+    const msgBody: AttachmentMetadata = {
       parameter: [
         {
           name,
@@ -249,7 +267,7 @@ export class CucumberAllureWorld extends World implements Omit<CucumberExecutabl
   }
 
   public async description(markdown: string): Promise<void> {
-    const msgBody: CucumberAttachmentMetadata = {
+    const msgBody: AttachmentMetadata = {
       description: markdown,
     };
 
@@ -257,7 +275,7 @@ export class CucumberAllureWorld extends World implements Omit<CucumberExecutabl
   }
 
   public async descriptionHtml(html: string): Promise<void> {
-    const msgBody: CucumberAttachmentMetadata = {
+    const msgBody: AttachmentMetadata = {
       descriptionHtml: html,
     };
 
@@ -265,7 +283,7 @@ export class CucumberAllureWorld extends World implements Omit<CucumberExecutabl
   }
 
   public async writeEnvironmentInfo(info: Record<string, string>): Promise<void> {
-    const msgBody: CucumberAttachmentMetadata = {
+    const msgBody: AttachmentMetadata = {
       environmentInfo: info,
     };
 
@@ -273,7 +291,7 @@ export class CucumberAllureWorld extends World implements Omit<CucumberExecutabl
   }
 
   public async writeCategoriesDefinitions(categories: Category[]): Promise<void> {
-    const msgBody: CucumberAttachmentMetadata = {
+    const msgBody: AttachmentMetadata = {
       categories,
     };
 
@@ -282,9 +300,9 @@ export class CucumberAllureWorld extends World implements Omit<CucumberExecutabl
 
   async step(
     name: string,
-    body: (this: CucumberWorldStep, step: CucumberWorldStep) => Promise<any>,
+    body: (this: AllureCommandStepExecutable, step: AllureCommandStepExecutable) => Promise<any>,
   ) {
-    const testStep = new CucumberWorldStep(name);
+    const testStep = new AllureCommandStepExecutable(name);
     const msgBody = await testStep.start(body);
 
     await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);

@@ -213,7 +213,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
     ],
   },
   withStepsAnonymous: {
-    supportCodeLibrary: buildSupportCodeLibrary(({ Given, When, Then, setWorldConstructor }) => {
+    supportCodeLibrary: buildSupportCodeLibrary(({ Given, When, Then }) => {
       Given("a step", function () {});
 
       When("do something", async function (this: CucumberAllureWorld) {
