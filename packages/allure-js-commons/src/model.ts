@@ -13,6 +13,8 @@ export interface AttachmentMetadata {
   descriptionHtml?: string;
   parameter?: Parameter[];
   steps?: ExecutableItem[];
+  categories?: Category[];
+  environmentInfo?: Record<string, string>;
 }
 
 export interface AttachmentOptions {

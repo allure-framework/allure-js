@@ -7,6 +7,7 @@ export { AllureTest } from "./src/AllureTest";
 export { AllureStep } from "./src/ExecutableItemWrapper";
 export { isPromise } from "./src/isPromise";
 export { Allure, StepInterface } from "./src/Allure";
+export { AllureCommandStep, AllureCommandStepExecutable } from "./src/AllureCommandStep";
 export {
   AttachmentOptions,
   AttachmentMetadata,
