@@ -10,7 +10,7 @@ import {
   Status,
 } from "./model";
 
-export type StepBodyFunction = (step: AllureCommandStepExecutable) => any | Promise<any>;
+export type StepBodyFunction = (this: AllureCommandStepExecutable, step: AllureCommandStepExecutable) => any | Promise<any>;
 
 export interface AllureCommandStep<T = AttachmentMetadata> {
   name: string;
@@ -187,7 +187,8 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
 
     try {
       const res = body.call(this, this);
-      const stepResult = await res;
+
+      await res;
 
       return {
         ...this.metadata,

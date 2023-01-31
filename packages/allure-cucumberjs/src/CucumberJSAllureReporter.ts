@@ -16,6 +16,7 @@ import {
   ContentType,
   ExecutableItem,
   ExecutableItemWrapper,
+  isAnyStepFailed,
   Label,
   LabelName,
   Link,
@@ -402,36 +403,22 @@ export class CucumberJSAllureFormatter extends Formatter {
       environmentInfo,
     } = payload.metadata;
 
-    if (links.length > 0) {
-      links.forEach((link) => payload.test.addLink(link.url, link.type, link.name));
-    }
-
-    if (labels.length > 0) {
-      labels.forEach((label) => payload.test.addLabel(label.name, label.value));
-    }
-
-    if (parameter.length > 0) {
-      parameter.forEach(({ name, value, hidden, excluded }) =>
-        payload.test.addParameter(name, value, {
-          excluded,
-          hidden,
-        }),
-      );
-    }
-
-    if (categories.length > 0) {
-      this.allureRuntime.writeCategoriesDefinitions(categories);
-    }
-
-    if (steps.length > 0) {
-      steps.forEach((step) => {
-        this.handleAllureStep({
-          test: payload.test,
-          step: payload.step,
-          stepMetadata: step,
-        });
+    links.forEach((link) => payload.test.addLink(link.url, link.type, link.name));
+    labels.forEach((label) => payload.test.addLabel(label.name, label.value));
+    parameter.forEach(({ name, value, hidden, excluded }) =>
+      payload.test.addParameter(name, value, {
+        excluded,
+        hidden,
+      }),
+    );
+    this.allureRuntime.writeCategoriesDefinitions(categories);
+    steps.forEach((step) => {
+      this.handleAllureStep({
+        test: payload.test,
+        step: payload.step,
+        stepMetadata: step,
       });
-    }
+    });
 
     if (description) {
       payload.test.description = description;
@@ -464,7 +451,6 @@ export class CucumberJSAllureFormatter extends Formatter {
     const testStep: ExecutableItem = {
       ...metadata,
       attachments,
-      steps: [],
     };
 
     if (payload.step) {
@@ -513,7 +499,9 @@ export class CucumberJSAllureFormatter extends Formatter {
     if (testStepResults?.length) {
       const worstTestStepResult = messages.getWorstTestStepResult(testStepResults);
 
-      currentTest.status = this.convertStatus(worstTestStepResult.status);
+      currentTest.status = currentTest.isAnyStepFailed
+        ? Status.FAILED
+        : this.convertStatus(worstTestStepResult.status);
       currentTest.statusDetails = {
         message: worstTestStepResult.message,
       };
@@ -561,10 +549,10 @@ export class CucumberJSAllureFormatter extends Formatter {
           .map((astNodeId) => this.stepMap.get(astNodeId))
           .map((step) => step?.keyword)
           .find((kw) => kw !== undefined) || "";
-      const allureStep = currentTest.startStep(keyword + ps.text, Date.now());
-      this.allureSteps.set(data.testStepId, allureStep);
-
       const { argument } = ps;
+      const allureStep = currentTest.startStep(keyword + ps.text, Date.now());
+
+      this.allureSteps.set(data.testStepId, allureStep);
 
       if (!argument?.dataTable) {
         return;

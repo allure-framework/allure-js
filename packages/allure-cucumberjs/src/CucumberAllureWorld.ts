@@ -7,6 +7,7 @@ import {
   LabelName,
   LinkType,
   ParameterOptions,
+  StepBodyFunction,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
@@ -93,10 +94,7 @@ export class CucumberAllureWorld
     await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
   }
 
-  async step(
-    name: string,
-    body: (this: AllureCommandStepExecutable, step: AllureCommandStepExecutable) => Promise<any>,
-  ) {
+  async step(name: string, body: StepBodyFunction) {
     const testStep = new AllureCommandStepExecutable(name);
     const msgBody = await testStep.start(body);
 
