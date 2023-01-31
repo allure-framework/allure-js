@@ -472,11 +472,11 @@ class AllureReporter {
 
       currStep.status = Status.FAILED;
       currStep.stage = Stage.FINISHED;
-      currStep.endStep();
     } else {
       currStep.stage = Stage.FINISHED;
       currStep.status = Status.PASSED;
     }
+    currStep.endStep();
   }
 
   onDone(_err: any, _args: unknown) {
