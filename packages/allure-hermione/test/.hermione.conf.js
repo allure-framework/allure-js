@@ -21,6 +21,7 @@ module.exports = {
       writer: {
         results: [],
         attachments: [],
+        categories: [],
         writeResult: function (result) {
           this.results.push(result);
         },
@@ -30,6 +31,9 @@ module.exports = {
             content,
             type,
           });
+        },
+        writeCategoriesDefinitions: function (categories) {
+          this.categories.push(...categories);
         },
       },
     },

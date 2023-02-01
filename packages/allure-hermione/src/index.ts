@@ -10,6 +10,7 @@ import {
   AllureTest,
   Attachment,
   AttachmentMetadata,
+  Category,
   ContentType,
   ExecutableItem,
   LabelName,
@@ -23,11 +24,16 @@ import {
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
+// TODO: rename to test writer
 export interface AllureInMemoryWriter {
   results: TestResult[];
   attachments: Attachment[];
+  categories?: Category[];
+  environmentInfo?: Record<string, any>;
   writeResult: (result: AllureResults) => void;
   writeAttachment: (name: string, content: string, type: string) => void;
+  writeCategoriesDefinitions: (categories: Category[]) => void;
+  writeEnvironmentInfo: (info: Record<string, any>) => void;
 }
 
 export interface HermioneAllureRuntime extends Omit<AllureRuntime, "writer"> {
@@ -290,6 +296,11 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
     });
     browser.addCommand("attach", async (testId: string, source: string, mimetype: string) => {
       await addAttachment(testId, source, mimetype);
+    });
+    browser.addCommand("category", async (testId: string, category: Category) => {
+      await sendMetadata(testId, {
+        categories: [category],
+      });
     });
     browser.addCommand("step", async (testId: string, name: string, body: StepBodyFunction) => {
       const step = new AllureCommandStepExecutable(name);
