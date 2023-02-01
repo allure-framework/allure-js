@@ -71,6 +71,14 @@ export abstract class Allure {
     this.label(LabelName.SEVERITY, severity);
   }
 
+  public layer(layer: string): void {
+    this.label(LabelName.LAYER, layer);
+  }
+
+  public id(allureId: string): void {
+    this.label(LabelName.AS_ID, allureId);
+  }
+
   public tag(tag: string): void {
     this.label(LabelName.TAG, tag);
   }
