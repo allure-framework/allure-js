@@ -294,6 +294,14 @@ export class CucumberAllureWorld extends World implements Omit<CucumberExecutabl
     await this.label(LabelName.EPIC, epic);
   }
 
+  public async layer(layer: string) {
+    await this.label(LabelName.LAYER, layer);
+  }
+
+  public async id(allureId: string) {
+    await this.label(LabelName.AS_ID, allureId);
+  }
+
   public async feature(feature: string) {
     await this.label(LabelName.FEATURE, feature);
   }
