@@ -101,6 +101,10 @@ export class CucumberAllureWorld
     await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
   }
 
+  public async id(id: string) {
+    await this.label(LabelName.AS_ID, id);
+  }
+
   public async epic(epic: string) {
     await this.label(LabelName.EPIC, epic);
   }
