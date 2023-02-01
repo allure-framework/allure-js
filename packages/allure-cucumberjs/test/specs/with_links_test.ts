@@ -27,32 +27,32 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
 };
 
 describe("CucumberJSAllureReporter > examples", () => {
-    it("should add links", async () => {
-      const results = await runFeatures(dataSet.withLinks, {
-        links: [
-          {
-            pattern: [/@issue=(.*)/],
-            urlTemplate: "https://example.org/issues/%s",
-            type: "issue",
-          },
-          {
-            pattern: [/@tms=(.*)/],
-            urlTemplate: "https://example.org/tasks/%s",
-            type: "tms",
-          },
-        ],
-      });
-      expect(results.tests).length(1);
-
-      const { links } = results.tests[0];
-
-      expect(links).length(2);
-      expect(links[0].type).eq("issue");
-      expect(links[0].url).eq("https://example.org/issues/1");
-      expect(links[1].type).eq("tms");
-      expect(links[1].url).eq("https://example.org/tasks/2");
-
-      const tags = results.tests[0].labels.filter((label) => label.name === LabelName.TAG);
-      expect(tags).length(1);
+  it("should add links", async () => {
+    const results = await runFeatures(dataSet.withLinks, {
+      links: [
+        {
+          pattern: [/@issue=(.*)/],
+          urlTemplate: "https://example.org/issues/%s",
+          type: "issue",
+        },
+        {
+          pattern: [/@tms=(.*)/],
+          urlTemplate: "https://example.org/tasks/%s",
+          type: "tms",
+        },
+      ],
     });
+    expect(results.tests).length(1);
+
+    const { links } = results.tests[0];
+
+    expect(links).length(2);
+    expect(links[0].type).eq("issue");
+    expect(links[0].url).eq("https://example.org/issues/1");
+    expect(links[1].type).eq("tms");
+    expect(links[1].url).eq("https://example.org/tasks/2");
+
+    const tags = results.tests[0].labels.filter((label) => label.name === LabelName.TAG);
+    expect(tags).length(1);
+  });
 });

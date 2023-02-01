@@ -12,7 +12,7 @@ import {
   StepResult,
   TestResult,
 } from "./model";
-import { isAnyStepFailed } from "./utils"
+import { isAnyStepFailed } from "./utils";
 
 export class ExecutableItemWrapper {
   constructor(private readonly info: FixtureResult | TestResult) {}

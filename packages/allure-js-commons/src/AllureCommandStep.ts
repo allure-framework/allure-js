@@ -10,7 +10,10 @@ import {
   Status,
 } from "./model";
 
-export type StepBodyFunction = (this: AllureCommandStepExecutable, step: AllureCommandStepExecutable) => any | Promise<any>;
+export type StepBodyFunction = (
+  this: AllureCommandStepExecutable,
+  step: AllureCommandStepExecutable,
+) => any | Promise<any>;
 
 export interface AllureCommandStep<T = AttachmentMetadata> {
   name: string;
