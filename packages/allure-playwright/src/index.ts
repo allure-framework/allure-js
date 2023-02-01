@@ -27,6 +27,7 @@ import {
   AllureStep,
   AllureTest,
   AttachmentMetadata,
+  Category,
   ExecutableItemWrapper,
   InMemoryAllureWriter,
   LabelName,
@@ -39,6 +40,8 @@ type AllureReporterOptions = {
   detail?: boolean;
   outputFolder?: string;
   suiteTitle?: boolean;
+  categories?: Category[];
+  environmentInfo?: Record<string, string>;
 };
 
 class AllureReporter implements Reporter {
@@ -68,6 +71,9 @@ class AllureReporter implements Reporter {
       resultsDir: this.resultsDir,
       writer: this.allureWriter,
     });
+
+    this.allureRuntime.writeEnvironmentInfo(this.options?.environmentInfo || {});
+    this.allureRuntime.writeCategoriesDefinitions(this.options?.categories || []);
   }
 
   onTestBegin(test: TestCase): void {
