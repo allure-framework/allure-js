@@ -89,6 +89,7 @@ test("complex test overview", async () => {
       parameters: [],
       name: "Status code is 200",
       start: expect.any(Number),
+      stop: expect.any(Number),
     },
   ]);
   expect(result.descriptionHtml).toBe("testDescription<br><br>multiline<br><br>somethingBold");
