@@ -101,8 +101,8 @@ export class CucumberAllureWorld
     await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
   }
 
-  public async id(id: string) {
-    await this.label(LabelName.AS_ID, id);
+  public async id(allureId: string) {
+    await this.label(LabelName.AS_ID, allureId);
   }
 
   public async epic(epic: string) {
@@ -111,10 +111,6 @@ export class CucumberAllureWorld
 
   public async layer(layer: string) {
     await this.label(LabelName.LAYER, layer);
-  }
-
-  public async id(allureId: string) {
-    await this.label(LabelName.AS_ID, allureId);
   }
 
   public async feature(feature: string) {
