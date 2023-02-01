@@ -252,6 +252,9 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
         await addParameter(testId, name, value, options);
       },
     );
+    browser.addCommand("id", async (testId: string, value: string) => {
+      await addLabel(testId, LabelName.AS_ID, value);
+    });
     browser.addCommand("epic", async (testId: string, value: string) => {
       await addLabel(testId, LabelName.EPIC, value);
     });
