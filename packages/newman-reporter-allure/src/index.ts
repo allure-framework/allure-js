@@ -341,9 +341,9 @@ class AllureReporter {
     const rawDescription = args.item.request.description;
     if (rawDescription !== undefined) {
       if (typeof rawDescription === "string") {
-        testDescription = rawDescription;
+        testDescription = rawDescription || "";
       } else {
-        testDescription = rawDescription.content;
+        testDescription = rawDescription.content || "";
       }
 
       testDescription = testDescription.replace(/[*]/g, "");
