@@ -22,6 +22,7 @@ module.exports = {
         results: [],
         attachments: [],
         categories: [],
+        environmentInfo: {},
         writeResult: function (result) {
           this.results.push(result);
         },
@@ -34,6 +35,9 @@ module.exports = {
         },
         writeCategoriesDefinitions: function (categories) {
           this.categories.push(...categories);
+        },
+        writeEnvironmentInfo: function (info) {
+          Object.assign(this.environmentInfo, info);
         },
       },
     },

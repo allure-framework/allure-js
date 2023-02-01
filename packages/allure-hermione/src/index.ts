@@ -302,6 +302,14 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
         categories: [category],
       });
     });
+    browser.addCommand(
+      "environmentInfo",
+      async (testId: string, environmentInfo: Record<string, any>) => {
+        await sendMetadata(testId, {
+          environmentInfo,
+        });
+      },
+    );
     browser.addCommand("step", async (testId: string, name: string, body: StepBodyFunction) => {
       const step = new AllureCommandStepExecutable(name);
       const res = await step.start(body);

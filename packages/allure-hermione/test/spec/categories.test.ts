@@ -6,29 +6,24 @@ import { HermioneAllure } from "../../src";
 describe("categories", () => {
   let hermione: HermioneAllure;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
+    await hermione.run(["./test/fixtures/categories.js"], {});
   });
 
-  describe("category", () => {
-    beforeEach(async () => {
-      await hermione.run(["./test/fixtures/categories.js"], {});
+  it("adds categories", () => {
+    const { categories } = hermione.allure.writer;
+
+    expect(categories!.length).eq(2);
+    expect(categories!.find(({ name }) => name === "foo")).eql({
+      name: "foo",
+      matchedStatuses: ["failed"],
+      messageRegex: "^message_reg$",
     });
-
-    it("adds categories", () => {
-      const { categories } = hermione.allure.writer;
-
-      expect(categories!.length).eq(2);
-      expect(categories!.find(({ name }) => name === "foo")).eql({
-        name: "foo",
-        matchedStatuses: ["failed"],
-        messageRegex: "^message_reg$",
-      });
-      expect(categories!.find(({ name }) => name === "bar")).eql({
-        name: "bar",
-        matchedStatuses: ["passed"],
-        traceRegex: "^trace_reg$",
-      });
+    expect(categories!.find(({ name }) => name === "bar")).eql({
+      name: "bar",
+      matchedStatuses: ["passed"],
+      traceRegex: "^trace_reg$",
     });
   });
 });
