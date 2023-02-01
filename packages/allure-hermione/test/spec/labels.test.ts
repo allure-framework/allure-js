@@ -25,6 +25,19 @@ describe("labels", () => {
     });
   });
 
+  describe("allure id", () => {
+    beforeEach(async () => {
+      await hermione.run(["./test/fixtures/allureId.js"], {});
+    });
+
+    it("adds `42` allure id", () => {
+      const { labels } = hermione.allure.writer.results[0];
+      const label = labels.find(({ name }) => name === LabelName.AS_ID) as Label;
+
+      expect(label.value).eq("42");
+    });
+  });
+
   describe("epic", () => {
     beforeEach(async () => {
       await hermione.run(["./test/fixtures/epic.js"], {});
