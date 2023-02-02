@@ -44,9 +44,19 @@ export interface HermioneAllure extends Hermione {
   allure: HermioneAllureRuntime;
 }
 
+export type HermioneAttachment = {
+  source: string;
+  mimetype: string;
+  encoding: BufferEncoding;
+};
+
+export type HermioneAttachmentMetadata = AttachmentMetadata & {
+  attachment?: HermioneAttachment[];
+};
+
 export type HermioneAttachmentMessage = {
   testId: string;
-  metadata: AttachmentMetadata;
+  metadata: HermioneAttachmentMetadata;
 };
 
 export type AllureReportOptions = {
@@ -102,7 +112,7 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
       );
     }
   };
-  const handleAllureAttachment = (testId: string, metadata: AttachmentMetadata) => {
+  const handleAllureAttachment = (testId: string, metadata: HermioneAttachmentMetadata) => {
     const currentTest = runningTests.get(testId);
 
     if (!currentTest) {
@@ -112,7 +122,7 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
     const {
       labels = [],
       links = [],
-      attachments = [],
+      attachment = [],
       parameter = [],
       steps = [],
       categories = [],
@@ -134,13 +144,15 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
         hidden: param.hidden,
       });
     });
-    attachments.forEach((file) => {
+    attachment.forEach((file) => {
+      const attachmentFilename = runtime.writeAttachment(file.source, file.mimetype, file.encoding);
+
       currentTest.addAttachment(
-        file.name,
+        "Attachment",
         {
-          contentType: file.type,
+          contentType: file.mimetype,
         },
-        file.source,
+        attachmentFilename,
       );
     });
     steps.forEach((step) => {
@@ -166,9 +178,24 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
       throw new Error("Can't set test metadata due browser session has been finished");
     }
 
-    currentTest.addStep(step);
+    const { attachments: metadataAttachments, ...metadata } = step;
+    const attachments: Attachment[] = metadataAttachments.map(({ name, type, source }) => {
+      const attachmentFilename = runtime.writeAttachment(source, type, "base64");
+
+      return {
+        source: attachmentFilename,
+        name,
+        type,
+      };
+    });
+    const testStep: ExecutableItem = {
+      ...metadata,
+      attachments,
+    };
+
+    currentTest.addStep(testStep);
   };
-  const sendMetadata = async (testId: string, metadata: AttachmentMetadata) =>
+  const sendMetadata = async (testId: string, metadata: HermioneAttachmentMetadata) =>
     new Promise((resolve, reject) => {
       process.send?.(
         {
@@ -209,10 +236,9 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
   };
   const addAttachment = async (testId: string, source: string, mimetype: string) => {
     const encoding = /(text|application)/.test(mimetype) ? "utf8" : "base64";
-    const attachmentFilename = runtime.writeAttachment(source, mimetype, encoding);
 
     await sendMetadata(testId, {
-      attachments: [{ source: attachmentFilename, type: mimetype, name: "Attachment" }],
+      attachment: [{ source, mimetype, encoding }],
     });
   };
 
@@ -285,7 +311,7 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
       },
     );
     browser.addCommand("step", async (testId: string, name: string, body: StepBodyFunction) => {
-      const step = new AllureCommandStepExecutable(runtime, name);
+      const step = new AllureCommandStepExecutable(name);
       const res = await step.start(body);
 
       await sendMetadata(testId, res);

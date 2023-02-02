@@ -7,7 +7,6 @@ export interface Attachment {
 }
 
 export interface AttachmentMetadata {
-  attachments?: Attachment[];
   labels?: Label[];
   links?: Link[];
   parameter?: Parameter[];

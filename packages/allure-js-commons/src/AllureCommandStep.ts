@@ -1,4 +1,3 @@
-import { AllureRuntime } from "./AllureRuntime";
 import {
   Attachment,
   AttachmentMetadata,
@@ -17,8 +16,6 @@ export type StepBodyFunction = (
 ) => any | Promise<any>;
 
 export interface AllureCommandStep<T = AttachmentMetadata> {
-  runtime: AllureRuntime;
-
   name: string;
 
   attachments: Attachment[];
@@ -54,22 +51,21 @@ export interface AllureCommandStep<T = AttachmentMetadata> {
   tms(issue: string, url: string): void | Promise<void>;
 
   attach(
-    source: Buffer | string,
-    type: string,
+    name: string,
+    content: Buffer | string,
+    options: ContentType | string | AttachmentOptions,
   ): void | Promise<void>;
 }
 
+// TODO: think about the class name
 export class AllureCommandStepExecutable implements AllureCommandStep {
-  runtime: AllureRuntime;
-
   name: string = "";
 
   attachments: Attachment[] = [];
 
   metadata: AttachmentMetadata = {};
 
-  constructor(runtime: AllureRuntime, name: string) {
-    this.runtime = runtime;
+  constructor(name: string) {
     this.name = name;
   }
 
@@ -154,12 +150,11 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
   }
 
   attach(source: string | Buffer, type: string): void {
-    const encoding = /(text|application)/.test(type) ? "utf8" : "base64";
-    const attachmentFilename = this.runtime.writeAttachment(source, type, encoding);
-
     this.attachments.push({
-      name: "Attachment",
-      source: attachmentFilename,
+      name: "attachment",
+      source: Buffer.isBuffer(source)
+        ? source.toString("base64")
+        : Buffer.from(source, "utf8").toString("base64"),
       type,
     });
   }
@@ -169,7 +164,7 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
       this.metadata.steps = [];
     }
 
-    const nestedStep = new AllureCommandStepExecutable(this.runtime, name);
+    const nestedStep = new AllureCommandStepExecutable(name);
     const {
       labels = [],
       links = [],

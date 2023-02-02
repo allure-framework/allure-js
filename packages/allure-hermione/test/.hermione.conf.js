@@ -26,11 +26,11 @@ module.exports = {
         writeResult: function (result) {
           this.results.push(result);
         },
-        writeAttachment: function (source, mimetype, encoding) {
+        writeAttachment: function (name, content, type) {
           this.attachments.push({
-            source,
-            mimetype,
-            encoding,
+            name,
+            content,
+            type,
           });
         },
         writeCategoriesDefinitions: function (categories) {
