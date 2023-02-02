@@ -44,19 +44,9 @@ export interface HermioneAllure extends Hermione {
   allure: HermioneAllureRuntime;
 }
 
-export type HermioneAttachment = {
-  source: string;
-  mimetype: string;
-  encoding: BufferEncoding;
-};
-
-export type HermioneAttachmentMetadata = AttachmentMetadata & {
-  attachment?: HermioneAttachment[];
-};
-
 export type HermioneAttachmentMessage = {
   testId: string;
-  metadata: HermioneAttachmentMetadata;
+  metadata: AttachmentMetadata;
 };
 
 export type AllureReportOptions = {
@@ -104,6 +94,7 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
       );
 
       currentTest.addAttachment(
+        // TODO: do we need to give the file much more exact name?
         "Screenshot",
         {
           contentType: ContentType.PNG,
@@ -112,7 +103,7 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
       );
     }
   };
-  const handleAllureAttachment = (testId: string, metadata: HermioneAttachmentMetadata) => {
+  const handleAllureAttachment = (testId: string, metadata: AttachmentMetadata) => {
     const currentTest = runningTests.get(testId);
 
     if (!currentTest) {
@@ -120,9 +111,9 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
     }
 
     const {
+      attachments = [],
       labels = [],
       links = [],
-      attachment = [],
       parameter = [],
       steps = [],
       categories = [],
@@ -144,13 +135,14 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
         hidden: param.hidden,
       });
     });
-    attachment.forEach((file) => {
-      const attachmentFilename = runtime.writeAttachment(file.source, file.mimetype, file.encoding);
+    attachments.forEach((attachment) => {
+      const encoding = /(text|application)/.test(attachment.type) ? "utf8" : "base64";
+      const attachmentFilename = runtime.writeAttachment(attachment.source, attachment.type, encoding);
 
       currentTest.addAttachment(
         "Attachment",
         {
-          contentType: file.mimetype,
+          contentType: attachment.type,
         },
         attachmentFilename,
       );
@@ -178,24 +170,25 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
       throw new Error("Can't set test metadata due browser session has been finished");
     }
 
-    const { attachments: metadataAttachments, ...metadata } = step;
-    const attachments: Attachment[] = metadataAttachments.map(({ name, type, source }) => {
-      const attachmentFilename = runtime.writeAttachment(source, type, "base64");
+    AllureCommandStepExecutable.writeStepAttachments(runtime, step);
+    // const { attachments: metadataAttachments, ...metadata } = step;
+    // const attachments: Attachment[] = metadataAttachments.map(({ name, type, source }) => {
+    //   const attachmentFilename = runtime.writeAttachment(source, type, "base64");
 
-      return {
-        source: attachmentFilename,
-        name,
-        type,
-      };
-    });
-    const testStep: ExecutableItem = {
-      ...metadata,
-      attachments,
-    };
+    //   return {
+    //     source: attachmentFilename,
+    //     name,
+    //     type,
+    //   };
+    // });
+    // const testStep: ExecutableItem = {
+    //   ...metadata,
+    //   attachments,
+    // };
 
-    currentTest.addStep(testStep);
+    currentTest.addStep(step);
   };
-  const sendMetadata = async (testId: string, metadata: HermioneAttachmentMetadata) =>
+  const sendMetadata = async (testId: string, metadata: AttachmentMetadata) =>
     new Promise((resolve, reject) => {
       process.send?.(
         {
@@ -234,11 +227,9 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
       parameter: [{ name, value, ...options }],
     });
   };
-  const addAttachment = async (testId: string, source: string, mimetype: string) => {
-    const encoding = /(text|application)/.test(mimetype) ? "utf8" : "base64";
-
+  const addAttachment = async (testId: string, source: string, type: string) => {
     await sendMetadata(testId, {
-      attachment: [{ source, mimetype, encoding }],
+      attachments: [{ name: "Attachment", source, type }],
     });
   };
 

@@ -1,8 +1,10 @@
+import { AllureRuntime } from "./AllureRuntime";
 import {
   Attachment,
   AttachmentMetadata,
   AttachmentOptions,
   ContentType,
+  ExecutableItem,
   LabelName,
   LinkType,
   ParameterOptions,
@@ -67,6 +69,32 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
 
   constructor(name: string) {
     this.name = name;
+  }
+
+  /**
+   * Recursively writes attachments from the given step and all it's children
+   * Mutates given step object!
+   */
+  static writeStepAttachments(runtime: AllureRuntime, step: ExecutableItem) {
+    if (step.attachments.length > 0) {
+      step.attachments.forEach((attachment) => {
+        const encoding = /(text|application)/.test(attachment.type) ? "utf8" : "base64";
+        const attachmentContent = Buffer.from(attachment.source, encoding);
+        const attachmentFilename = runtime.writeAttachment(
+          attachmentContent,
+          attachment.type,
+          encoding,
+        );
+
+        attachment.source = attachmentFilename;
+      });
+    }
+
+    if (step.steps.length > 0) {
+      step.steps.forEach((nestedStep) => {
+        AllureCommandStepExecutable.writeStepAttachments(runtime, nestedStep);
+      });
+    }
   }
 
   label(label: string, value: string): void {
@@ -152,9 +180,7 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
   attach(source: string | Buffer, type: string): void {
     this.attachments.push({
       name: "attachment",
-      source: Buffer.isBuffer(source)
-        ? source.toString("base64")
-        : Buffer.from(source, "utf8").toString("base64"),
+      source: Buffer.isBuffer(source) ? source.toString("base64") : source,
       type,
     });
   }
