@@ -80,7 +80,7 @@ export class allure {
     this.link(url, name, LinkType.TMS);
   }
 
-  static addParameter(name: string, value: string, options?: ParameterOptions) {
+  static parameter(name: string, value: string, options?: ParameterOptions) {
     this.addMetadataAttachment({
       parameter: [
         {
@@ -90,6 +90,13 @@ export class allure {
         },
       ],
     });
+  }
+
+  /**
+   * @deprecated use parameter instead
+   */
+  static addParameter(name: string, value: string, options?: ParameterOptions) {
+    this.parameter(name, value, options);
   }
 }
 
