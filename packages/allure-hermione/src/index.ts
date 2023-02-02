@@ -137,7 +137,11 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
     });
     attachments.forEach((attachment) => {
       const encoding = /(text|application)/.test(attachment.type) ? "utf8" : "base64";
-      const attachmentFilename = runtime.writeAttachment(attachment.source, attachment.type, encoding);
+      const attachmentFilename = runtime.writeAttachment(
+        attachment.source,
+        attachment.type,
+        encoding,
+      );
 
       currentTest.addAttachment(
         "Attachment",
