@@ -22,6 +22,7 @@ const fixtures = {
     },
   },
   attachment: JSON.stringify({ foo: "bar" }),
+  binaryAttachment: Buffer.from([0]),
 };
 
 describe("AllureCommandStep", () => {
@@ -181,15 +182,26 @@ describe("AllureCommandStep", () => {
   });
 
   describe("attachments", () => {
-    it("adds attachment", async () => {
-      const { steps } = await currentStep.start((step) => {
-        step.attach(fixtures.attachment, ContentType.JSON);
-      });
+    describe("text attachment", () => {
+      it("adds attachment as is", async () => {
+        const { steps } = await currentStep.start((step) => {
+          step.attach(fixtures.attachment, ContentType.JSON);
+        });
 
-      expect(steps![0].attachments.length).eq(1);
-      expect(steps![0].attachments[0].source).eq(
-        Buffer.from(fixtures.attachment).toString("base64"),
-      );
+        expect(steps![0].attachments.length).eq(1);
+        expect(steps![0].attachments[0].source).eq(fixtures.attachment);
+      });
+    });
+
+    describe("binary attachment", () => {
+      it("adds attachment as base64 string", async () => {
+        const { steps } = await currentStep.start((step) => {
+          step.attach(fixtures.binaryAttachment, ContentType.PNG);
+        });
+
+        expect(steps![0].attachments.length).eq(1);
+        expect(steps![0].attachments[0].source).eq(fixtures.binaryAttachment.toString("base64"));
+      });
     });
   });
 
@@ -242,9 +254,7 @@ describe("AllureCommandStep", () => {
       });
 
       expect(steps![0].steps[0].steps[0].attachments.length).eq(1);
-      expect(steps![0].steps[0].steps[0].attachments[0].source).eq(
-        Buffer.from(fixtures.attachment).toString("base64"),
-      );
+      expect(steps![0].steps[0].steps[0].attachments[0].source).eq(fixtures.attachment);
     });
   });
 });
