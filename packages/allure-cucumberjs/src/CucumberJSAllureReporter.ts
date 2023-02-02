@@ -8,25 +8,20 @@ import { Tag, TestStepResultStatus } from "@cucumber/messages";
 import {
   Allure,
   AllureCommandStepExecutable,
-  AllureGroup,
   AllureRuntime,
   AllureStep,
   AllureTest,
-  Attachment,
   AttachmentMetadata,
   ContentType,
   ExecutableItem,
-  ExecutableItemWrapper,
-  isAnyStepFailed,
   Label,
   LabelName,
   Link,
   md5,
-  Stage,
   Status,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
-import { CucumberAllureWorld, CucumberAttachmentMetadata } from "./CucumberAllureWorld";
+import { CucumberAllureWorld } from "./CucumberAllureWorld";
 
 export { Allure };
 
@@ -371,7 +366,7 @@ export class CucumberJSAllureFormatter extends Formatter {
       this.handleAllureAttachment({
         test: currentTest,
         step: currentStep,
-        metadata: JSON.parse(body) as CucumberAttachmentMetadata,
+        metadata: JSON.parse(body) as AttachmentMetadata,
       });
       return;
     }

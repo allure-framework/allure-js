@@ -11,11 +11,6 @@ import {
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
-export interface CucumberAttachmentMetadata extends AttachmentMetadata {
-  environmentInfo?: Record<string, string>;
-  categories?: Category[];
-}
-
 type AllureWorld = Omit<AllureCommandStep, "attach" | "name" | "attachments" | "metadata">;
 
 export class CucumberAllureWorld extends World implements AllureWorld {
