@@ -171,20 +171,6 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
     }
 
     AllureCommandStepExecutable.writeStepAttachments(runtime, step);
-    // const { attachments: metadataAttachments, ...metadata } = step;
-    // const attachments: Attachment[] = metadataAttachments.map(({ name, type, source }) => {
-    //   const attachmentFilename = runtime.writeAttachment(source, type, "base64");
-
-    //   return {
-    //     source: attachmentFilename,
-    //     name,
-    //     type,
-    //   };
-    // });
-    // const testStep: ExecutableItem = {
-    //   ...metadata,
-    //   attachments,
-    // };
 
     currentTest.addStep(step);
   };

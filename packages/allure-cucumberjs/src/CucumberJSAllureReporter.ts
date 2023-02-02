@@ -7,6 +7,7 @@ import * as messages from "@cucumber/messages";
 import { Tag, TestStepResultStatus } from "@cucumber/messages";
 import {
   Allure,
+  AllureCommandStepExecutable,
   AllureGroup,
   AllureRuntime,
   AllureStep,
@@ -438,27 +439,14 @@ export class CucumberJSAllureFormatter extends Formatter {
     step?: AllureStep;
     stepMetadata: ExecutableItem;
   }) {
-    const { attachments: metadataAttachments, ...metadata } = payload.stepMetadata;
-    const attachments: Attachment[] = metadataAttachments.map(({ name, type, source }) => {
-      const attachmentFilename = this.allureRuntime.writeAttachment(source, type, "base64");
-
-      return {
-        source: attachmentFilename,
-        name,
-        type,
-      };
-    });
-    const testStep: ExecutableItem = {
-      ...metadata,
-      attachments,
-    };
+    AllureCommandStepExecutable.writeStepAttachments(this.allureRuntime, payload.stepMetadata);
 
     if (payload.step) {
-      payload.step.addStep(testStep);
+      payload.step.addStep(payload.stepMetadata);
       return;
     }
 
-    payload.test.addStep(testStep);
+    payload.test.addStep(payload.stepMetadata);
   }
 
   private onTestCaseFinished(data: messages.TestCaseFinished): void {
