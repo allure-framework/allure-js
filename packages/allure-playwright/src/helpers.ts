@@ -1,10 +1,10 @@
 import test from "@playwright/test";
 import {
-  MetadataMessage,
   Label,
   LabelName,
   Link,
   LinkType,
+  MetadataMessage,
   ParameterOptions,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";

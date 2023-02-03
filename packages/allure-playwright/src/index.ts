@@ -26,12 +26,12 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
-  MetadataMessage,
   Category,
   ExecutableItemWrapper,
   InMemoryAllureWriter,
   LabelName,
   md5,
+  MetadataMessage,
   Status,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";

@@ -10,7 +10,7 @@ export { Allure, StepInterface } from "./src/Allure";
 export {
   StepBodyFunction,
   AllureCommandStep,
-  AllureCommandStepExecutable,
+  AllureCommandStepExecutable
 } from "./src/AllureCommandStep";
 export {
   AttachmentOptions,
@@ -35,7 +35,7 @@ export {
   LinkType,
   ParameterOptions,
   StepMetadata,
-  AttachmentMetadata,
+  AttachmentMetadata
 } from "./src/model";
 
 export { md5, isAnyStepFailed } from "./src/utils";

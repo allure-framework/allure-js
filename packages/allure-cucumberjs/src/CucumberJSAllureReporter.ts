@@ -427,7 +427,10 @@ export class CucumberJSAllureFormatter extends Formatter {
     step?: AllureStep;
     stepMetadata: StepMetadata;
   }) {
-    const step = AllureCommandStepExecutable.toExecutableItem(this.allureRuntime, payload.stepMetadata);
+    const step = AllureCommandStepExecutable.toExecutableItem(
+      this.allureRuntime,
+      payload.stepMetadata,
+    );
 
     if (payload.step) {
       payload.step.addStep(step);
