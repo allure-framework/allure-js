@@ -48,13 +48,11 @@ export const getSuitePath = (test: Hermione.Test): string[] => {
 
 const runningTests: Map<string, AllureTest> = new Map();
 
-const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOptions) => {
+const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) => {
   const runtime = new AllureRuntime({
     resultsDir: "allure-results",
     ...opts,
   });
-  // FIXME: after the PR will be merged
-  // eslint-disable-next-line
   const handleTestError = (test: Hermione.Test, error: Hermione.TestError) => {
     const currentTest = runningTests.get(test.id())!;
     const { message, stack, screenshot } = error;
