@@ -123,32 +123,6 @@ it("adds screenshots", async ({ browser, currentTest }) => {
 });
 ```
 
-### Categories
-
-Add test categories of defects using `category` method:
-
-```js
-it("my test", async ({ browser, currentTest }) => {
-  await browser.category(currentTest.id(), {
-    name: "foo",
-    matchedStatuses: ["failed"],
-    messageRegex: "^message_reg$",
-  });
-});
-```
-
-### Environment info
-
-Provide any additional environment information by `environmentInfo` method:
-
-```js
-it("my test", async ({ browser, currentTest }) => {
-  await browser.environmentInfo(currentTest.id(), {
-    foo: "bar",
-  });
-});
-```
-
 ### Steps
 
 The reporter provides `step` method to add steps inside your tests for better structure:

@@ -28,12 +28,8 @@ import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 export interface AllureInMemoryWriter {
   results: TestResult[];
   attachments: Attachment[];
-  categories?: Category[];
-  environmentInfo?: Record<string, any>;
   writeResult: (result: AllureResults) => void;
   writeAttachment: (name: string, content: string, type: string) => void;
-  writeCategoriesDefinitions: (categories: Category[]) => void;
-  writeEnvironmentInfo: (info: Record<string, any>) => void;
 }
 
 export interface HermioneAllureRuntime extends Omit<AllureRuntime, "writer"> {
@@ -116,13 +112,10 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
       links = [],
       parameter = [],
       steps = [],
-      categories = [],
       description,
       descriptionHtml,
-      environmentInfo,
     } = metadata;
 
-    runtime.writeCategoriesDefinitions(categories);
     labels.forEach((label) => {
       currentTest.addLabel(label.name, label.value);
     });
@@ -161,10 +154,6 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
 
     if (descriptionHtml) {
       currentTest.descriptionHtml = descriptionHtml;
-    }
-
-    if (environmentInfo) {
-      runtime.writeEnvironmentInfo(environmentInfo);
     }
   };
   const handleAllureStep = (testId: string, step: ExecutableItem) => {
@@ -278,19 +267,6 @@ const hermioneAllureReporter = (hermione: HermioneAllure, opts: AllureReportOpti
     browser.addCommand("attach", async (testId: string, source: string, mimetype: string) => {
       await addAttachment(testId, source, mimetype);
     });
-    browser.addCommand("category", async (testId: string, category: Category) => {
-      await sendMetadata(testId, {
-        categories: [category],
-      });
-    });
-    browser.addCommand(
-      "environmentInfo",
-      async (testId: string, environmentInfo: Record<string, any>) => {
-        await sendMetadata(testId, {
-          environmentInfo,
-        });
-      },
-    );
     browser.addCommand("step", async (testId: string, name: string, body: StepBodyFunction) => {
       const step = new AllureCommandStepExecutable(name);
       const res = await step.start(body);

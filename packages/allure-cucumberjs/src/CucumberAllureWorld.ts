@@ -72,22 +72,6 @@ export class CucumberAllureWorld extends World implements AllureWorld {
     await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
   }
 
-  public async writeEnvironmentInfo(info: Record<string, string>): Promise<void> {
-    const msgBody: AttachmentMetadata = {
-      environmentInfo: info,
-    };
-
-    await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
-  }
-
-  public async writeCategoriesDefinitions(categories: Category[]): Promise<void> {
-    const msgBody: AttachmentMetadata = {
-      categories,
-    };
-
-    await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
-  }
-
   async step(name: string, body: StepBodyFunction) {
     const testStep = new AllureCommandStepExecutable(name);
     const msgBody = await testStep.start(body);

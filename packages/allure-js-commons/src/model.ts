@@ -11,8 +11,6 @@ export interface AttachmentMetadata {
   labels?: Label[];
   links?: Link[];
   parameter?: Parameter[];
-  categories?: Category[];
-  environmentInfo?: Record<string, string>;
   description?: string;
   descriptionHtml?: string;
   steps?: ExecutableItem[];

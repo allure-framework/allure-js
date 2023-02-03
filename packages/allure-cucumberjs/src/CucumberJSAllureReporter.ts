@@ -392,11 +392,9 @@ export class CucumberJSAllureFormatter extends Formatter {
       labels = [],
       links = [],
       parameter = [],
-      categories = [],
       steps = [],
       description,
       descriptionHtml,
-      environmentInfo,
     } = payload.metadata;
 
     links.forEach((link) => payload.test.addLink(link.url, link.type, link.name));
@@ -407,7 +405,6 @@ export class CucumberJSAllureFormatter extends Formatter {
         hidden,
       }),
     );
-    this.allureRuntime.writeCategoriesDefinitions(categories);
     steps.forEach((step) => {
       this.handleAllureStep({
         test: payload.test,
@@ -422,10 +419,6 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     if (descriptionHtml) {
       payload.test.descriptionHtml = descriptionHtml;
-    }
-
-    if (environmentInfo) {
-      this.allureRuntime.writeEnvironmentInfo(environmentInfo);
     }
   }
 

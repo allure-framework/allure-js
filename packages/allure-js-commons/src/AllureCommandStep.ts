@@ -195,19 +195,12 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
       labels = [],
       links = [],
       parameter = [],
-      categories = [],
-      environmentInfo = {},
       steps = [],
     } = await nestedStep.start(body);
 
     this.metadata.labels = (this.metadata.labels || []).concat(labels);
     this.metadata.links = (this.metadata.links || []).concat(links);
     this.metadata.parameter = (this.metadata.parameter || []).concat(parameter);
-    this.metadata.categories = (this.metadata.categories || []).concat(categories);
-    this.metadata.environmentInfo = Object.assign(
-      this.metadata.environmentInfo || {},
-      environmentInfo,
-    );
     this.metadata.steps = (this.metadata.steps || []).concat(steps);
   }
 
