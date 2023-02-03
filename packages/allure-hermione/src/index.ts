@@ -5,12 +5,9 @@ import * as process from "node:process";
 import Hermione from "hermione";
 import {
   AllureCommandStepExecutable,
-  AllureResults,
   AllureRuntime,
   AllureTest,
-  Attachment,
   AttachmentMetadata,
-  Category,
   ContentType,
   ExecutableItem,
   LabelName,
@@ -20,25 +17,8 @@ import {
   Stage,
   Status,
   StepBodyFunction,
-  TestResult,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
-
-// TODO: rename to test writer
-export interface AllureInMemoryWriter {
-  results: TestResult[];
-  attachments: Attachment[];
-  writeResult: (result: AllureResults) => void;
-  writeAttachment: (name: string, content: string, type: string) => void;
-}
-
-export interface HermioneAllureRuntime extends Omit<AllureRuntime, "writer"> {
-  writer: AllureInMemoryWriter;
-}
-
-export interface HermioneAllure extends Hermione {
-  allure: HermioneAllureRuntime;
-}
 
 export type HermioneAttachmentMessage = {
   testId: string;

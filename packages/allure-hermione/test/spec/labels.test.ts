@@ -2,7 +2,7 @@ import { Label, LabelName } from "allure-js-commons";
 import { expect } from "chai";
 import Hermione from "hermione";
 import { beforeEach, describe, it } from "mocha";
-import { HermioneAllure } from "../../src";
+import { HermioneAllure } from "../types";
 
 describe("labels", () => {
   let hermione: HermioneAllure;

@@ -3,7 +3,7 @@ import { expect } from "chai";
 import Hermione from "hermione";
 import { beforeEach, describe, it } from "mocha";
 import Sinon from "sinon";
-import { HermioneAllure } from "../../src";
+import { HermioneAllure } from "../types";
 
 describe("attachments", () => {
   let hermione: HermioneAllure;
