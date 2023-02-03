@@ -7,22 +7,22 @@ import {
   AllureCommandStepExecutable,
   AllureRuntime,
   AllureTest,
-  AttachmentMetadata,
   ContentType,
-  ExecutableItem,
   LabelName,
   LinkType,
   md5,
+  MetadataMessage,
   ParameterOptions,
   Stage,
   Status,
   StepBodyFunction,
+  StepMetadata,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
 export type HermioneAttachmentMessage = {
   testId: string;
-  metadata: AttachmentMetadata;
+  metadata: MetadataMessage;
 };
 
 export type AllureReportOptions = {
@@ -77,7 +77,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       );
     }
   };
-  const handleAllureAttachment = (testId: string, metadata: AttachmentMetadata) => {
+  const handleAllureAttachment = (testId: string, metadata: MetadataMessage) => {
     const currentTest = runningTests.get(testId);
 
     if (!currentTest) {
@@ -107,11 +107,10 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       });
     });
     attachments.forEach((attachment) => {
-      const encoding = /(text|application)/.test(attachment.type) ? "utf8" : "base64";
       const attachmentFilename = runtime.writeAttachment(
-        attachment.source,
+        attachment.content,
         attachment.type,
-        encoding,
+        attachment.encoding,
       );
 
       currentTest.addAttachment(
@@ -134,18 +133,18 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       currentTest.descriptionHtml = descriptionHtml;
     }
   };
-  const handleAllureStep = (testId: string, step: ExecutableItem) => {
+  const handleAllureStep = (testId: string, stepMetadata: StepMetadata) => {
     const currentTest = runningTests.get(testId);
 
     if (!currentTest) {
       throw new Error("Can't set test metadata due browser session has been finished");
     }
 
-    AllureCommandStepExecutable.writeStepAttachments(runtime, step);
+    const step = AllureCommandStepExecutable.toExecutableItem(runtime, stepMetadata);
 
     currentTest.addStep(step);
   };
-  const sendMetadata = async (testId: string, metadata: AttachmentMetadata) =>
+  const sendMetadata = async (testId: string, metadata: MetadataMessage) =>
     new Promise((resolve, reject) => {
       process.send?.(
         {
@@ -184,9 +183,18 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       parameter: [{ name, value, ...options }],
     });
   };
-  const addAttachment = async (testId: string, source: string, type: string) => {
+  const addAttachment = async (testId: string, content: string | Buffer, type: string) => {
+    const isBuffer = Buffer.isBuffer(content);
+
     await sendMetadata(testId, {
-      attachments: [{ name: "Attachment", source, type }],
+      attachments: [
+        {
+          name: "Attachment",
+          content: isBuffer ? content.toString("base64") : content,
+          encoding: isBuffer ? "base64" : "utf8",
+          type,
+        },
+      ],
     });
   };
 

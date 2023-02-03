@@ -11,14 +11,14 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
-  AttachmentMetadata,
   ContentType,
-  ExecutableItem,
   Label,
   LabelName,
   Link,
   md5,
+  MetadataMessage,
   Status,
+  StepMetadata,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 import { CucumberAllureWorld } from "./CucumberAllureWorld";
@@ -366,7 +366,7 @@ export class CucumberJSAllureFormatter extends Formatter {
       this.handleAllureAttachment({
         test: currentTest,
         step: currentStep,
-        metadata: JSON.parse(body) as AttachmentMetadata,
+        metadata: JSON.parse(body) as MetadataMessage,
       });
       return;
     }
@@ -386,7 +386,7 @@ export class CucumberJSAllureFormatter extends Formatter {
   private handleAllureAttachment(payload: {
     test: AllureTest;
     step?: AllureStep;
-    metadata: AttachmentMetadata;
+    metadata: MetadataMessage;
   }) {
     const {
       labels = [],
@@ -425,16 +425,16 @@ export class CucumberJSAllureFormatter extends Formatter {
   private handleAllureStep(payload: {
     test: AllureTest;
     step?: AllureStep;
-    stepMetadata: ExecutableItem;
+    stepMetadata: StepMetadata;
   }) {
-    AllureCommandStepExecutable.writeStepAttachments(this.allureRuntime, payload.stepMetadata);
+    const step = AllureCommandStepExecutable.toExecutableItem(this.allureRuntime, payload.stepMetadata);
 
     if (payload.step) {
-      payload.step.addStep(payload.stepMetadata);
+      payload.step.addStep(step);
       return;
     }
 
-    payload.test.addStep(payload.stepMetadata);
+    payload.test.addStep(step);
   }
 
   private onTestCaseFinished(data: messages.TestCaseFinished): void {

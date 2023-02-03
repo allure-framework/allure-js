@@ -189,7 +189,8 @@ describe("AllureCommandStep", () => {
         });
 
         expect(steps![0].attachments.length).eq(1);
-        expect(steps![0].attachments[0].source).eq(fixtures.attachment);
+        expect(steps![0].attachments[0].content).eq(fixtures.attachment);
+        expect(steps![0].attachments[0].encoding).eq("utf8");
       });
     });
 
@@ -200,7 +201,8 @@ describe("AllureCommandStep", () => {
         });
 
         expect(steps![0].attachments.length).eq(1);
-        expect(steps![0].attachments[0].source).eq(fixtures.binaryAttachment.toString("base64"));
+        expect(steps![0].attachments[0].content).eq(fixtures.binaryAttachment.toString("base64"));
+        expect(steps![0].attachments[0].encoding).eq("base64");
       });
     });
   });
@@ -254,7 +256,7 @@ describe("AllureCommandStep", () => {
       });
 
       expect(steps![0].steps[0].steps[0].attachments.length).eq(1);
-      expect(steps![0].steps[0].steps[0].attachments[0].source).eq(fixtures.attachment);
+      expect(steps![0].steps[0].steps[0].attachments[0].content).eq(fixtures.attachment);
     });
   });
 });

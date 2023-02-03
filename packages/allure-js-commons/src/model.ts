@@ -1,19 +1,31 @@
 export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
 
-export interface Attachment {
+export interface AttachmentMetadata {
   name: string;
   type: string;
-  source: string;
+  content: string;
+  encoding: BufferEncoding;
 }
 
-export interface AttachmentMetadata {
-  attachments?: Attachment[];
+export interface StepMetadata extends Omit<ExecutableItem, "attachments" | "steps"> {
+  steps: StepMetadata[];
+  attachments: AttachmentMetadata[];
+}
+
+export interface MetadataMessage {
+  attachments?: AttachmentMetadata[];
   labels?: Label[];
   links?: Link[];
   parameter?: Parameter[];
   description?: string;
   descriptionHtml?: string;
-  steps?: ExecutableItem[];
+  steps?: StepMetadata[];
+}
+
+export interface Attachment {
+  name: string;
+  type: string;
+  source: string;
 }
 
 export interface AttachmentOptions {

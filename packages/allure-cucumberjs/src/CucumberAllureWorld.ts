@@ -2,10 +2,9 @@ import { World } from "@cucumber/cucumber";
 import {
   AllureCommandStep,
   AllureCommandStepExecutable,
-  AttachmentMetadata,
-  Category,
   LabelName,
   LinkType,
+  MetadataMessage,
   ParameterOptions,
   StepBodyFunction,
 } from "allure-js-commons";
@@ -15,7 +14,7 @@ type AllureWorld = Omit<AllureCommandStep, "attach" | "name" | "attachments" | "
 
 export class CucumberAllureWorld extends World implements AllureWorld {
   public async label(label: string, value: string) {
-    const msgBody: AttachmentMetadata = {
+    const msgBody: MetadataMessage = {
       labels: [
         {
           name: label,
@@ -28,7 +27,7 @@ export class CucumberAllureWorld extends World implements AllureWorld {
   }
 
   public async link(url: string, name?: string, type?: string): Promise<void> {
-    const msgBody: AttachmentMetadata = {
+    const msgBody: MetadataMessage = {
       links: [
         {
           name,
@@ -42,7 +41,7 @@ export class CucumberAllureWorld extends World implements AllureWorld {
   }
 
   public async parameter(name: string, value: string, options?: ParameterOptions): Promise<void> {
-    const msgBody: AttachmentMetadata = {
+    const msgBody: MetadataMessage = {
       parameter: [
         {
           name,
@@ -57,7 +56,7 @@ export class CucumberAllureWorld extends World implements AllureWorld {
   }
 
   public async description(markdown: string): Promise<void> {
-    const msgBody: AttachmentMetadata = {
+    const msgBody: MetadataMessage = {
       description: markdown,
     };
 
@@ -65,7 +64,7 @@ export class CucumberAllureWorld extends World implements AllureWorld {
   }
 
   public async descriptionHtml(html: string): Promise<void> {
-    const msgBody: AttachmentMetadata = {
+    const msgBody: MetadataMessage = {
       descriptionHtml: html,
     };
 

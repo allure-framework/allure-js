@@ -1,15 +1,15 @@
 import { AllureRuntime } from "./AllureRuntime";
 import {
-  Attachment,
   AttachmentMetadata,
-  AttachmentOptions,
   ContentType,
   ExecutableItem,
   LabelName,
   LinkType,
+  MetadataMessage,
   ParameterOptions,
   Stage,
   Status,
+  StepMetadata,
 } from "./model";
 
 export type StepBodyFunction = (
@@ -17,10 +17,10 @@ export type StepBodyFunction = (
   step: AllureCommandStepExecutable,
 ) => any | Promise<any>;
 
-export interface AllureCommandStep<T = AttachmentMetadata> {
+export interface AllureCommandStep<T = MetadataMessage> {
   name: string;
 
-  attachments: Attachment[];
+  attachments: AttachmentMetadata[];
 
   metadata: T;
 
@@ -55,17 +55,16 @@ export interface AllureCommandStep<T = AttachmentMetadata> {
   attach(
     name: string,
     content: Buffer | string,
-    options: ContentType | string | AttachmentOptions,
+    options: ContentType | string,
   ): void | Promise<void>;
 }
 
-// TODO: think about the class name
 export class AllureCommandStepExecutable implements AllureCommandStep {
   name: string = "";
 
-  attachments: Attachment[] = [];
+  attachments: AttachmentMetadata[] = [];
 
-  metadata: AttachmentMetadata = {};
+  metadata: MetadataMessage = {};
 
   constructor(name: string) {
     this.name = name;
@@ -75,26 +74,37 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
    * Recursively writes attachments from the given step and all it's children
    * Mutates given step object!
    */
-  static writeStepAttachments(runtime: AllureRuntime, step: ExecutableItem) {
-    if (step.attachments.length > 0) {
-      step.attachments.forEach((attachment) => {
-        const encoding = /(text|application)/.test(attachment.type) ? "utf8" : "base64";
-        const attachmentContent = Buffer.from(attachment.source, encoding);
+  static toExecutableItem(runtime: AllureRuntime, stepMetadata: StepMetadata): ExecutableItem {
+    const executable: ExecutableItem = {
+      ...stepMetadata,
+      attachments: [],
+      steps: [],
+    };
+
+    if (stepMetadata.attachments.length > 0) {
+      stepMetadata.attachments.forEach((attachment) => {
+        const attachmentContent = Buffer.from(attachment.content, attachment.encoding);
         const attachmentFilename = runtime.writeAttachment(
           attachmentContent,
           attachment.type,
-          encoding,
+          attachment.encoding,
         );
 
-        attachment.source = attachmentFilename;
+        executable.attachments.push({
+          name: attachment.name,
+          type: attachment.type,
+          source: attachmentFilename,
+        });
       });
     }
 
-    if (step.steps.length > 0) {
-      step.steps.forEach((nestedStep) => {
-        AllureCommandStepExecutable.writeStepAttachments(runtime, nestedStep);
-      });
+    if (stepMetadata.steps.length > 0) {
+      executable.steps = stepMetadata.steps.map((nestedStep) =>
+        AllureCommandStepExecutable.toExecutableItem(runtime, nestedStep),
+      );
     }
+
+    return executable;
   }
 
   label(label: string, value: string): void {
@@ -177,10 +187,13 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     this.link(url, name, LinkType.TMS);
   }
 
-  attach(source: string | Buffer, type: string): void {
+  attach(content: string | Buffer, type: string): void {
+    const isBuffer = Buffer.isBuffer(content);
+
     this.attachments.push({
       name: "attachment",
-      source: Buffer.isBuffer(source) ? source.toString("base64") : source,
+      content: isBuffer ? content.toString("base64") : content,
+      encoding: isBuffer ? "base64" : "utf8",
       type,
     });
   }
@@ -191,12 +204,7 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     }
 
     const nestedStep = new AllureCommandStepExecutable(name);
-    const {
-      labels = [],
-      links = [],
-      parameter = [],
-      steps = [],
-    } = await nestedStep.start(body);
+    const { labels = [], links = [], parameter = [], steps = [] } = await nestedStep.start(body);
 
     this.metadata.labels = (this.metadata.labels || []).concat(labels);
     this.metadata.links = (this.metadata.links || []).concat(links);
@@ -204,7 +212,7 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     this.metadata.steps = (this.metadata.steps || []).concat(steps);
   }
 
-  async start(body: StepBodyFunction): Promise<AttachmentMetadata> {
+  async start(body: StepBodyFunction): Promise<MetadataMessage> {
     const startDate = new Date().getTime();
 
     try {

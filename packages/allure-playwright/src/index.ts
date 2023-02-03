@@ -26,7 +26,7 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
-  AttachmentMetadata,
+  MetadataMessage,
   Category,
   ExecutableItemWrapper,
   InMemoryAllureWriter,
@@ -172,7 +172,7 @@ class AllureReporter implements Reporter {
           continue;
         }
 
-        const metadata: AttachmentMetadata = JSON.parse(attachment.body.toString());
+        const metadata: MetadataMessage = JSON.parse(attachment.body.toString());
         metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
         metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
         metadata.parameter?.forEach((val) =>
