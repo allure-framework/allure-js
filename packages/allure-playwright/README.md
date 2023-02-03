@@ -276,3 +276,25 @@ test("basic test", async ({ page }, testInfo) => {
   allure.addParameter("parameterName", "parameterValue", { hidden: true, excluded: true });
 });
 ```
+
+### TestPlan usage
+
+This PR add categories and enviormentInfo support.
+This fields setted via `playwright.config.ts` file
+
+```diff
++ import { testPlanFilter } from "allure-playwright/dist/testplan";
+export default {
+  reporter: [
+    [
+      "allure-playwright",
+    ],
+  ],
+  projects: [
+    {
+      name: "chromium",
+    },
+  ],
++  grep: testPlanFilter()
+};
+```
