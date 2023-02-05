@@ -299,3 +299,5 @@ export default {
 +  grep: testPlanFilter()
 };
 ```
+
+Allure will read `ALLURE_TESTPLAN_PATH` environment variable and read testplan from the specified file.
