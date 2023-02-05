@@ -10,7 +10,13 @@ interface TestPlan {
 
 export const testPlanFilter = () => {
   try {
-    const file = readFileSync("testplan.json", "utf8");
+    const testPlanPath = process.env.ALLURE_TESTPLAN_PATH;
+
+    if (!testPlanPath) {
+      return undefined;
+    }
+
+    const file = readFileSync(testPlanPath, "utf8");
     const testPlan = JSON.parse(file) as TestPlan;
 
     if ((testPlan.tests || []).length === 0) {
@@ -21,11 +27,6 @@ export const testPlanFilter = () => {
       const pattern = testInfo.selector.replace("#", " ");
       return new RegExp(pattern);
     });
-
-    // eslint-disable-next-line no-console
-    console.log(
-      `Allure: selective launch from testplan.json file is enabled with ${selectedTests.length} tests`,
-    );
 
     return selectedTests;
   } catch (e) {
