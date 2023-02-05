@@ -279,9 +279,6 @@ test("basic test", async ({ page }, testInfo) => {
 
 ### TestPlan usage
 
-This PR add categories and enviormentInfo support.
-This fields setted via `playwright.config.ts` file
-
 ```diff
 + import { testPlanFilter } from "allure-playwright/dist/testplan";
 export default {
