@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 
-interface TestPlan {
+export interface TestPlanFile {
   version: string;
   tests: {
     id: number;
@@ -17,7 +17,7 @@ export const testPlanFilter = () => {
     }
 
     const file = readFileSync(testPlanPath, "utf8");
-    const testPlan = JSON.parse(file) as TestPlan;
+    const testPlan = JSON.parse(file) as TestPlanFile;
 
     if ((testPlan.tests || []).length === 0) {
       return undefined;
