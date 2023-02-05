@@ -277,7 +277,11 @@ test("basic test", async ({ page }, testInfo) => {
 });
 ```
 
-### TestPlan usage
+### Selective test execution
+
+Allure allow you to execute only a subset of tests. This is useful when you want to run only a specific test or a group of tests.
+
+To enable this feature, you need to add the following code to your `playwright.config.js`:
 
 ```diff
 + import { testPlanFilter } from "allure-playwright/dist/testplan";
