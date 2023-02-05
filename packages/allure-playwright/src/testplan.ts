@@ -25,11 +25,18 @@ export const testPlanFilter = () => {
 
     const selectedTests = testPlan.tests.map((testInfo) => {
       const pattern = testInfo.selector.replace("#", " ");
-      return new RegExp(pattern);
+      return new RegExp(escapeRegExp(pattern));
     });
 
     return selectedTests;
   } catch (e) {
     return undefined;
   }
+};
+
+const reRegExpChar = /[\\^$.*+?()[\]{}|]/g,
+  reHasRegExpChar = RegExp(reRegExpChar.source);
+
+export const escapeRegExp = (value: string): string => {
+  return reHasRegExpChar.test(value) ? value.replace(reRegExpChar, "\\$&") : value;
 };
