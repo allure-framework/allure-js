@@ -17,10 +17,17 @@ export const testPlanFilter = () => {
       return undefined;
     }
 
-    return testPlan.tests.map((testInfo) => {
+    const selectedTests = testPlan.tests.map((testInfo) => {
       const pattern = testInfo.selector.replace("#", " ");
       return new RegExp(pattern);
     });
+
+    // eslint-disable-next-line no-console
+    console.log(
+      `Allure: selective launch from testplan.json file is enabled with ${selectedTests.length} tests`,
+    );
+
+    return selectedTests;
   } catch (e) {
     return undefined;
   }
