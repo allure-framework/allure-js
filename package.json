@@ -12,6 +12,7 @@
     "clean": "yarn workspaces foreach -vpt run clean",
     "compile": "yarn workspaces foreach -vpt run compile",
     "lint": "yarn workspaces foreach -vpt run lint",
+    "lint:fix": "yarn workspaces foreach -vpt run lint:fix",
     "test": "yarn workspaces foreach -vpt run test",
     "build": "yarn run clean && yarn run compile"
   },
