@@ -52,7 +52,7 @@ test("should respect testplan", async ({ runInlineTest }) => {
      `,
     },
     (writer) => {
-      return writer.tests;
+      return writer.tests.map((val) => val.fullName);
     },
     {},
     {
@@ -61,4 +61,12 @@ test("should respect testplan", async ({ runInlineTest }) => {
   );
 
   expect(results.length).toBe(3);
+
+  expect(results).toEqual(
+    expect.arrayContaining([
+      "b.test.ts#should execute",
+      ".+.test.ts#+.",
+      "nested/super strange nested/super strange name.test.ts#also nested should execute",
+    ]),
+  );
 });
