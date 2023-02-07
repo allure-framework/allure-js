@@ -99,30 +99,6 @@ export abstract class Allure {
 
   public abstract logStep(name: string, status?: Status): void;
   public abstract step<T>(name: string, body: (step: StepInterface) => T): T;
-
-  // below are compatibility functions
-
-  /**
-   * @deprecated Use step function
-   */
-  // eslint-disable-next-line @typescript-eslint/member-ordering,@typescript-eslint/ban-types
-  public createStep(name: string, stepFunction: Function) {
-    return (...args: any[]): any => this.step(name, () => stepFunction.apply(this, args));
-  }
-
-  /**
-   * @deprecated Use attachment function
-   */
-  // eslint-disable-next-line @typescript-eslint/member-ordering,@typescript-eslint/ban-types,@typescript-eslint/explicit-function-return-type
-  public createAttachment(name: string, content: Buffer | string | Function, type: ContentType) {
-    if (typeof content === "function") {
-      return (...args: any[]): void => {
-        this.attachment(name, content.apply(this, args), type);
-      };
-    } else {
-      this.attachment(name, content, type);
-    }
-  }
 }
 
 export interface StepInterface {
