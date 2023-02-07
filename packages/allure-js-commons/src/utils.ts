@@ -21,3 +21,10 @@ export const getLabelsFromEnv = (): Label[] => {
 
   return labels;
 };
+
+const reRegExpChar = /[\\^$.*+?()[\]{}|]/g,
+  reHasRegExpChar = RegExp(reRegExpChar.source);
+
+export const escapeRegExp = (value: string): string => {
+  return reHasRegExpChar.test(value) ? value.replace(reRegExpChar, "\\$&") : value;
+};

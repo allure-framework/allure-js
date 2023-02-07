@@ -31,4 +31,5 @@ export {
   ParameterOptions
 } from "./src/model";
 
-export { md5 } from "./src/utils";
+export { md5, escapeRegExp } from "./src/utils";
+export { parseTestPlan } from "./src/testplan";
