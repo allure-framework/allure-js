@@ -1,6 +1,6 @@
 import { createHash } from "crypto";
 import { env } from "process";
-import { Label } from "./model";
+import { ExecutableItem, Label, Status } from "./model";
 export const md5 = (data: string) => createHash("md5").update(data).digest("hex");
 
 export const getLabelsFromEnv = (): Label[] => {
@@ -20,4 +20,14 @@ export const getLabelsFromEnv = (): Label[] => {
   });
 
   return labels;
+};
+
+export const isAnyStepFailed = (item: ExecutableItem): boolean => {
+  const isFailed = item.status === Status.FAILED;
+
+  if (isFailed || item.steps.length === 0) {
+    return isFailed;
+  }
+
+  return !!item.steps.find((step) => isAnyStepFailed(step));
 };

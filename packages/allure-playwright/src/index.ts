@@ -26,11 +26,12 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
-  AttachmentMetadata,
+  Category,
   ExecutableItemWrapper,
   InMemoryAllureWriter,
   LabelName,
   md5,
+  MetadataMessage,
   Status,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
@@ -39,6 +40,8 @@ type AllureReporterOptions = {
   detail?: boolean;
   outputFolder?: string;
   suiteTitle?: boolean;
+  categories?: Category[];
+  environmentInfo?: Record<string, string>;
 };
 
 class AllureReporter implements Reporter {
@@ -68,6 +71,9 @@ class AllureReporter implements Reporter {
       resultsDir: this.resultsDir,
       writer: this.allureWriter,
     });
+
+    this.allureRuntime.writeEnvironmentInfo(this.options?.environmentInfo || {});
+    this.allureRuntime.writeCategoriesDefinitions(this.options?.categories || []);
   }
 
   onTestBegin(test: TestCase): void {
@@ -166,7 +172,7 @@ class AllureReporter implements Reporter {
           continue;
         }
 
-        const metadata: AttachmentMetadata = JSON.parse(attachment.body.toString());
+        const metadata: MetadataMessage = JSON.parse(attachment.body.toString());
         metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
         metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
         metadata.parameter?.forEach((val) =>

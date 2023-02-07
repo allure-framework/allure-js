@@ -1,9 +1,9 @@
 import test from "@playwright/test";
-import { AttachmentMetadata, LabelName, LinkType, ParameterOptions } from "allure-js-commons";
+import { LabelName, LinkType, MetadataMessage, ParameterOptions } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
 export class allure {
-  static addMetadataAttachment(metadata: AttachmentMetadata) {
+  static addMetadataAttachment(metadata: MetadataMessage) {
     test.info().attach("allure-metadata.json", {
       contentType: ALLURE_METADATA_CONTENT_TYPE,
       body: Buffer.from(JSON.stringify(metadata), "utf8"),
