@@ -7,7 +7,7 @@
     "./test/**/*",
   ],
   "compilerOptions": {
-    "types": ["@types/node"],
+    "types": [],
     "lib": ["esnext", "dom", "DOM.Iterable"],
     "rootDir": "./src",
     "outDir": "./dist"
