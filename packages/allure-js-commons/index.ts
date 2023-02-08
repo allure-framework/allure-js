@@ -8,8 +8,13 @@ export { AllureStep } from "./src/ExecutableItemWrapper";
 export { isPromise } from "./src/isPromise";
 export { Allure, StepInterface } from "./src/Allure";
 export {
+  StepBodyFunction,
+  AllureCommandStep,
+  AllureCommandStepExecutable
+} from "./src/AllureCommandStep";
+export {
   AttachmentOptions,
-  AttachmentMetadata,
+  MetadataMessage,
   Attachment,
   Category,
   ExecutableItem,
@@ -28,8 +33,10 @@ export {
   Stage,
   Status,
   LinkType,
-  ParameterOptions
+  ParameterOptions,
+  StepMetadata,
+  AttachmentMetadata
 } from "./src/model";
 
-export { md5, escapeRegExp } from "./src/utils";
+export { md5, escapeRegExp, isAnyStepFailed } from "./src/utils";
 export { parseTestPlan } from "./src/testplan";
