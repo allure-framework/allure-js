@@ -1,5 +1,12 @@
 import test from "@playwright/test";
-import { LabelName, LinkType, MetadataMessage, ParameterOptions } from "allure-js-commons";
+import {
+  Label,
+  LabelName,
+  Link,
+  LinkType,
+  MetadataMessage,
+  ParameterOptions,
+} from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
 export class allure {
@@ -16,8 +23,8 @@ export class allure {
     });
   }
 
-  static labels(values: { label: string; value: string }[]) {
-    values.forEach(({ label, value }) => this.label(label, value));
+  static labels(values: Label[]) {
+    values.forEach(({ name, value }) => this.label(name, value));
   }
 
   static description(value: string) {
@@ -32,7 +39,7 @@ export class allure {
     });
   }
 
-  static links(values: { url: string; name?: string; type?: string }[]) {
+  static links(values: Link[]) {
     values.forEach(({ url, name, type }) => this.link(url, name, type));
   }
 
