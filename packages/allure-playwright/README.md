@@ -276,3 +276,28 @@ test("basic test", async ({ page }, testInfo) => {
   allure.addParameter("parameterName", "parameterValue", { hidden: true, excluded: true });
 });
 ```
+
+### Selective test execution
+
+Allure allow you to execute only a subset of tests. This is useful when you want to run only a specific test or a group of tests.
+
+To enable this feature, you need to add the following code to your `playwright.config.js`:
+
+```diff
++ import { testPlanFilter } from "allure-playwright/dist/testplan";
+export default {
+  reporter: [
+    [
+      "allure-playwright",
+    ],
+  ],
+  projects: [
+    {
+      name: "chromium",
+    },
+  ],
++  grep: testPlanFilter()
+};
+```
+
+Allure will read `ALLURE_TESTPLAN_PATH` environment variable and read testplan from the specified file.

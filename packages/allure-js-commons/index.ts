@@ -38,4 +38,5 @@ export {
   AttachmentMetadata
 } from "./src/model";
 
-export { md5, isAnyStepFailed } from "./src/utils";
+export { md5, escapeRegExp, isAnyStepFailed } from "./src/utils";
+export { parseTestPlan } from "./src/testplan";
