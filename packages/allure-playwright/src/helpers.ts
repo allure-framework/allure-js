@@ -16,6 +16,10 @@ export class allure {
     });
   }
 
+  static labels(values: { label: string; value: string }[]) {
+    values.forEach(({ label, value }) => this.label(label, value));
+  }
+
   static description(value: string) {
     this.addMetadataAttachment({
       description: value,
@@ -26,6 +30,10 @@ export class allure {
     this.addMetadataAttachment({
       links: [{ url, name, type }],
     });
+  }
+
+  static links(values: { url: string; name?: string; type?: string }[]) {
+    values.forEach(({ url, name, type }) => this.link(url, name, type));
   }
 
   static id(id: string) {
@@ -70,6 +78,10 @@ export class allure {
 
   static tag(tag: string) {
     this.label(LabelName.TAG, tag);
+  }
+
+  static tags(values: string[]) {
+    values.forEach((value) => this.tag(value));
   }
 
   static issue(name: string, url: string) {

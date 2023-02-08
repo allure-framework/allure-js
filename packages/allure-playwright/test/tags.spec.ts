@@ -26,6 +26,8 @@ test("should have multiply tags", async ({ runInlineTest }) => {
           allure.tag('Allure');
           allure.tag('Playwright');
           allure.tag('TestInfo');
+
+          allure.tags(['some', 'other', 'tags']);
       });
       `,
     },
@@ -36,4 +38,8 @@ test("should have multiply tags", async ({ runInlineTest }) => {
   expect(result[0]).toContainEqual({ name: "tag", value: "Allure" });
   expect(result[0]).toContainEqual({ name: "tag", value: "Playwright" });
   expect(result[0]).toContainEqual({ name: "tag", value: "TestInfo" });
+
+  expect(result[0]).toContainEqual({ name: "tag", value: "some" });
+  expect(result[0]).toContainEqual({ name: "tag", value: "other" });
+  expect(result[0]).toContainEqual({ name: "tag", value: "tags" });
 });
