@@ -6,7 +6,9 @@ test("historical data should be fine", async ({ runInlineTest }) => {
       "a.test.ts": `
       import { test } from '@playwright/test';
       import { allure } from '../../dist/index'
-      test('test', async ({}, testInfo) => {
+      test.describe('nested', () => {
+        test('test', async ({}, testInfo) => {
+        });
       });
       `,
     },
@@ -21,8 +23,9 @@ test("historical data should be fine", async ({ runInlineTest }) => {
   );
 
   expect(result[0].name).toBe("test");
-  const fullName = "a.test.ts#test";
-  expect(result[0].fullName).toBe("a.test.ts#test");
+  const fullName = "a.test.ts#nested test";
+  const testCaseIdSource = "a.test.ts#test";
+  expect(result[0].fullName).toBe(fullName);
   expect(result[0].historyId).toBe(md5(`${fullName}project`));
-  expect(result[0].testCaseId).toBe(md5(fullName));
+  expect(result[0].testCaseId).toBe(md5(testCaseIdSource));
 });

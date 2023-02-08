@@ -38,6 +38,7 @@ const writeFiles = async (testInfo: TestInfo, files: Files) => {
       "playwright.config.ts": `
         module.exports = {
           projects: [{ name: 'project' }],
+          grep: require("../../dist/testplan.js").testPlanFilter(),
           reporter: [[require.resolve("../../dist/index.js"),
           ${JSON.stringify(reporterOptions || false)} || undefined]],
        };
