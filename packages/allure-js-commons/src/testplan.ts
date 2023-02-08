@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import fs from "fs";
 
 interface TestPlanV1 {
   version: "1.0";
@@ -16,7 +16,7 @@ export const parseTestPlan = (): TestPlanV1 | undefined => {
   }
 
   try {
-    const file = readFileSync(testPlanPath, "utf8");
+    const file = fs.readFileSync(testPlanPath, "utf8");
     const testPlan = JSON.parse(file) as TestPlanV1;
 
     // Execute all tests if test plan is empty
