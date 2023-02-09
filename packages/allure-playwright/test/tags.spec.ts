@@ -27,7 +27,7 @@ test("should have multiply tags", async ({ runInlineTest }) => {
           allure.tag('Playwright');
           allure.tag('TestInfo');
 
-          allure.tags(['some', 'other', 'tags']);
+          allure.tags(...['some', 'other', 'tags']);
       });
       `,
     },

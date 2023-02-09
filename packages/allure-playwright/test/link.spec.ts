@@ -25,7 +25,7 @@ test("should have link", async ({ runInlineTest }) => {
       test('should add epic link', async ({}, testInfo) => {
           allure.link("https://playwright.dev/docs/api/class-page#page-workers");
 
-          allure.links([{url:"https://www.google.com/1"}, {url:"https://www.google.com/2"}]);
+          allure.links(...[{url:"https://www.google.com/1"}, {url:"https://www.google.com/2"}]);
       });
       `,
     },

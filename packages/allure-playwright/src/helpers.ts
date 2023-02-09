@@ -23,7 +23,7 @@ export class allure {
     });
   }
 
-  static labels(values: Label[]) {
+  static labels(...values: Label[]) {
     values.forEach(({ name, value }) => this.label(name, value));
   }
 
@@ -39,7 +39,7 @@ export class allure {
     });
   }
 
-  static links(values: Link[]) {
+  static links(...values: Link[]) {
     values.forEach(({ url, name, type }) => this.link(url, name, type));
   }
 
@@ -87,7 +87,7 @@ export class allure {
     this.label(LabelName.TAG, tag);
   }
 
-  static tags(values: string[]) {
+  static tags(...values: string[]) {
     values.forEach((value) => this.tag(value));
   }
 

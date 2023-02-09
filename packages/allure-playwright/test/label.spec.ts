@@ -10,7 +10,7 @@ test("should have label", async ({ runInlineTest }) => {
        test('should add epic label', async ({}, testInfo) => {
            allure.label(LabelName.EPIC,'Test epic label');
 
-           allure.labels([{name: "test", value: 'testValue'}, {name: "test2", value: 'testValue2'}]);
+           allure.labels(...[{name: "test", value: 'testValue'}, {name: "test2", value: 'testValue2'}]);
        });
      `,
     },
