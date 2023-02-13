@@ -301,3 +301,25 @@ export default {
 ```
 
 Allure will read `ALLURE_TESTPLAN_PATH` environment variable and read testplan from the specified file.
+
+### EnvironmentInfo usage
+
+Allure allows you to add environment information to the report. This is useful when you want to add some additional information to the report.
+
+to enable this feature, you need to add the following field to your `playwright.config.js`:
+
+```diff
+export default {
+  reporter: [
+    [
+      "allure-playwright",
+      {
++        environmentInfo: {
++          E2E_NODE_VERSION: process.version,
++          E2E_OS: process.platform,
++        },
+      },
+    ],
+  ],
+};
+```
