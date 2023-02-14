@@ -66,9 +66,7 @@ test("should add snapshots correctly and provide a screenshot diff", async ({
       ),
     },
     (writer) => {
-      return writer.tests[0].attachments.map((a) => {
-        return a;
-      });
+      return writer.tests[0].attachments;
     },
   );
   expect(result.length).toBe(1);

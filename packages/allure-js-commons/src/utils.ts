@@ -1,5 +1,7 @@
 import { createHash } from "crypto";
+import { readFile } from "fs/promises";
 import { env } from "process";
+
 import { ExecutableItem, Label, Status } from "./model";
 export const md5 = (data: string) => createHash("md5").update(data).digest("hex");
 
@@ -37,4 +39,13 @@ export const isAnyStepFailed = (item: ExecutableItem): boolean => {
   }
 
   return !!item.steps.find((step) => isAnyStepFailed(step));
+};
+
+export const readImageAsBase64 = async (path: string): Promise<string | undefined> => {
+  try {
+    const file = await readFile(path, { encoding: "base64" });
+    return file ? `data:image/png;base64,${file}` : undefined;
+  } catch (e) {
+    return undefined;
+  }
 };

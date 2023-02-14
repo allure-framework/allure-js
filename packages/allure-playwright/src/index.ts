@@ -33,6 +33,7 @@ import {
   LabelName,
   md5,
   MetadataMessage,
+  readImageAsBase64,
   Status,
 } from "allure-js-commons";
 import {
@@ -141,7 +142,7 @@ class AllureReporter implements Reporter {
     allureStep.status = step.error ? Status.FAILED : Status.PASSED;
   }
 
-  onTestEnd(test: TestCase, result: TestResult): void {
+  async onTestEnd(test: TestCase, result: TestResult): Promise<void> {
     const runtime = this.getAllureRuntime();
     const allureTest = this.allureTestCache.get(test);
 
@@ -207,40 +208,26 @@ class AllureReporter implements Reporter {
         fileName = runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
       }
 
-      if (
-        attachment.name.endsWith("-expected.png") ||
-        attachment.name.endsWith("-actual.png") ||
-        attachment.name.endsWith("-diff.png")
-      ) {
-        const diffEndRegexp = /-((expected)|(diff)|(actual))\.png/;
+      const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
 
+      if (attachment.name.match(diffEndRegexp)) {
         const pathWithoutEnd = attachment.path!.replace(diffEndRegexp, "");
+
         if (this.processedDiffs.includes(pathWithoutEnd)) {
           continue;
         }
 
-        let actualBase64: string | undefined,
-          expectedBase64: string | undefined,
-          diffBase64: string | undefined;
-
-        try {
-          actualBase64 = fs.readFileSync(`${pathWithoutEnd}-actual.png`).toString("base64");
-        } catch (e) {}
-
-        try {
-          expectedBase64 = fs.readFileSync(`${pathWithoutEnd}-expeceeeted.png`).toString("base64");
-        } catch (e) {}
-
-        try {
-          diffBase64 = fs.readFileSync(`${pathWithoutEnd}-diff.png`).toString("base64");
-        } catch (e) {}
+        const actualBase64 = await readImageAsBase64(`${pathWithoutEnd}-actual.png`),
+          expectedBase64 = await readImageAsBase64(`${pathWithoutEnd}-expected.png`),
+          diffBase64 = await readImageAsBase64(`${pathWithoutEnd}-diff.png`);
 
         const diffName = attachment.name.replace(diffEndRegexp, "");
+
         const res = this.allureRuntime?.writeAttachment(
           JSON.stringify({
-            expected: expectedBase64 && `data:image;base64,${expectedBase64}`,
-            actual: actualBase64 && `data:image;base64,${actualBase64}`,
-            diff: diffBase64 && `data:image;base64,${diffBase64}`,
+            expected: expectedBase64,
+            actual: actualBase64,
+            diff: diffBase64,
             name: diffName,
           } as ImageDiffAttachment),
           { contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE, fileExtension: "imagediff" },
