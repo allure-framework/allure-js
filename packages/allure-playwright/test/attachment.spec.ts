@@ -67,16 +67,18 @@ test("should add snapshots correctly and provide a screenshot diff", async ({
     },
     (writer) => {
       return writer.tests[0].attachments.map((a) => {
-        return { name: a.name, type: a.type };
+        return a;
       });
     },
   );
-  expect(result.length).toBe(3);
+  expect(result.length).toBe(1);
   expect(result).toEqual(
     expect.arrayContaining([
-      { name: "expected", type: "image/png" },
-      { name: "actual", type: "image/png" },
-      { name: "diff", type: "image/png" },
+      {
+        name: "foo",
+        type: "application/vnd.allure.image.diff",
+        source: expect.stringMatching(/.*\.imagediff/),
+      },
     ]),
   );
 });
