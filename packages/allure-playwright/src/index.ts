@@ -16,6 +16,7 @@
 
 import { createHash } from "crypto";
 import fs from "fs";
+import fsp from "fs/promises";
 import os from "os";
 import path from "path";
 import process from "process";
@@ -58,6 +59,8 @@ class AllureReporter implements Reporter {
   private allureTestCache = new Map<TestCase, AllureTest>();
   private allureStepCache = new Map<TestStep, AllureStep>();
   private hostname = process.env.ALLURE_HOST_NAME || os.hostname();
+
+  private processedDiffs: string[] = [];
 
   constructor(options: AllureReporterOptions = { suiteTitle: true, detail: true }) {
     this.options = options;
@@ -201,12 +204,36 @@ class AllureReporter implements Reporter {
         fileName = runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
       }
 
-      if (attachment.name.endsWith("-expected.png")) {
-        allureTest.addAttachment("expected", attachment.contentType, fileName);
-      } else if (attachment.name.endsWith("-actual.png")) {
-        allureTest.addAttachment("actual", attachment.contentType, fileName);
-      } else if (attachment.name.endsWith("-diff.png")) {
-        allureTest.addAttachment("diff", attachment.contentType, fileName);
+      if (
+        attachment.name.endsWith("-expected.png") ||
+        attachment.name.endsWith("-actual.png") ||
+        attachment.name.endsWith("-diff.png")
+      ) {
+        const diffEndRegexp = /-((expected)|(diff)|(actual))\.png/;
+
+        const pathWithoutEnd = attachment.path!.replace(diffEndRegexp, "");
+        if (this.processedDiffs.includes(pathWithoutEnd)) {
+          continue;
+        }
+
+        const actualBuffer = fs.readFileSync(pathWithoutEnd + "-actual.png").toString("base64");
+        const expectedBuffer = fs.readFileSync(pathWithoutEnd + "-expected.png").toString("base64");
+        const diffBuffer = fs.readFileSync(pathWithoutEnd + "-diff.png").toString("base64");
+
+        const diffName = attachment.name.replace(diffEndRegexp, "");
+        const res = this.allureRuntime?.writeAttachment(
+          JSON.stringify({
+            expected: `data:image;base64,${expectedBuffer}`,
+            actual: `data:image;base64,${actualBuffer}`,
+            diff: `data:image;base64,${diffBuffer}`,
+            name: diffName,
+          }),
+          { contentType: "application/json" },
+        );
+
+        allureTest.addAttachment("image", "image/png", res!);
+
+        this.processedDiffs.push(pathWithoutEnd);
       } else {
         allureTest.addAttachment(attachment.name, attachment.contentType, fileName);
       }
