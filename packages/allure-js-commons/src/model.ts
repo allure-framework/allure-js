@@ -184,3 +184,10 @@ export enum LinkType {
   ISSUE = "issue",
   TMS = "tms",
 }
+
+export interface ImageDiffAttachment {
+  expected: string; // data:image;base64,
+  actual: string; // data:image;base64,
+  diff: string; // data:image;base64,
+  name: string;
+}
