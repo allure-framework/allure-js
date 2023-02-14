@@ -218,16 +218,29 @@ class AllureReporter implements Reporter {
         if (this.processedDiffs.includes(pathWithoutEnd)) {
           continue;
         }
-        const actualBuffer = fs.readFileSync(`${pathWithoutEnd}-actual.png`).toString("base64");
-        const expectedBuffer = fs.readFileSync(`${pathWithoutEnd}-expected.png`).toString("base64");
-        const diffBuffer = fs.readFileSync(`${pathWithoutEnd}-diff.png`).toString("base64");
+
+        let actualBase64: string | undefined,
+          expectedBase64: string | undefined,
+          diffBase64: string | undefined;
+
+        try {
+          actualBase64 = fs.readFileSync(`${pathWithoutEnd}-actual.png`).toString("base64");
+        } catch (e) {}
+
+        try {
+          expectedBase64 = fs.readFileSync(`${pathWithoutEnd}-expeceeeted.png`).toString("base64");
+        } catch (e) {}
+
+        try {
+          diffBase64 = fs.readFileSync(`${pathWithoutEnd}-diff.png`).toString("base64");
+        } catch (e) {}
 
         const diffName = attachment.name.replace(diffEndRegexp, "");
         const res = this.allureRuntime?.writeAttachment(
           JSON.stringify({
-            expected: `data:image;base64,${expectedBuffer}`,
-            actual: `data:image;base64,${actualBuffer}`,
-            diff: `data:image;base64,${diffBuffer}`,
+            expected: expectedBase64 && `data:image;base64,${expectedBase64}`,
+            actual: actualBase64 && `data:image;base64,${actualBase64}`,
+            diff: diffBase64 && `data:image;base64,${diffBase64}`,
             name: diffName,
           } as ImageDiffAttachment),
           { contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE, fileExtension: "imagediff" },

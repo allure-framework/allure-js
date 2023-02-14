@@ -187,8 +187,8 @@ export enum LinkType {
 }
 
 export interface ImageDiffAttachment {
-  expected: string; // data:image;base64,
-  actual: string; // data:image;base64,
-  diff: string; // data:image;base64,
+  expected: string | undefined; // data:image;base64,
+  actual: string | undefined; // data:image;base64,
+  diff: string | undefined; // data:image;base64,
   name: string;
 }
