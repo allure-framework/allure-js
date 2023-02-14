@@ -35,7 +35,8 @@ export {
   LinkType,
   ParameterOptions,
   StepMetadata,
-  AttachmentMetadata
+  AttachmentMetadata,
+  ImageDiffAttachment
 } from "./src/model";
 
 export { md5, escapeRegExp, isAnyStepFailed } from "./src/utils";

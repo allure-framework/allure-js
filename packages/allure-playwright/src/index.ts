@@ -16,7 +16,6 @@
 
 import { createHash } from "crypto";
 import fs from "fs";
-import fsp from "fs/promises";
 import os from "os";
 import path from "path";
 import process from "process";
@@ -29,13 +28,17 @@ import {
   AllureTest,
   Category,
   ExecutableItemWrapper,
+  ImageDiffAttachment,
   InMemoryAllureWriter,
   LabelName,
   md5,
   MetadataMessage,
   Status,
 } from "allure-js-commons";
-import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
+import {
+  ALLURE_IMAGEDIFF_CONTENT_TYPE,
+  ALLURE_METADATA_CONTENT_TYPE,
+} from "allure-js-commons/internal";
 
 type AllureReporterOptions = {
   detail?: boolean;
@@ -215,10 +218,9 @@ class AllureReporter implements Reporter {
         if (this.processedDiffs.includes(pathWithoutEnd)) {
           continue;
         }
-
-        const actualBuffer = fs.readFileSync(pathWithoutEnd + "-actual.png").toString("base64");
-        const expectedBuffer = fs.readFileSync(pathWithoutEnd + "-expected.png").toString("base64");
-        const diffBuffer = fs.readFileSync(pathWithoutEnd + "-diff.png").toString("base64");
+        const actualBuffer = fs.readFileSync(`${pathWithoutEnd}-actual.png`).toString("base64");
+        const expectedBuffer = fs.readFileSync(`${pathWithoutEnd}-expected.png`).toString("base64");
+        const diffBuffer = fs.readFileSync(`${pathWithoutEnd}-diff.png`).toString("base64");
 
         const diffName = attachment.name.replace(diffEndRegexp, "");
         const res = this.allureRuntime?.writeAttachment(
@@ -227,11 +229,11 @@ class AllureReporter implements Reporter {
             actual: `data:image;base64,${actualBuffer}`,
             diff: `data:image;base64,${diffBuffer}`,
             name: diffName,
-          }),
-          { contentType: "application/json" },
+          } as ImageDiffAttachment),
+          { contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE, fileExtension: "imagediff" },
         );
 
-        allureTest.addAttachment("image", "image/png", res!);
+        allureTest.addAttachment(diffName, { contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE }, res!);
 
         this.processedDiffs.push(pathWithoutEnd);
       } else {
