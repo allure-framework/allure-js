@@ -336,6 +336,6 @@ test("screendiff", async ({ page }) => {
 });
 ```
 
-if the screens doesn't match, the report will show the difference between the two screenshots.
+If screenshots don't match, the report shows difference between them.
 
 ![screendiff-preview](./docs/screendiff.jpg)
