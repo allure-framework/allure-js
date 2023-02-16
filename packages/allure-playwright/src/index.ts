@@ -269,7 +269,7 @@ class AllureReporter implements Reporter {
   addSkippedResults() {
     const unprocessedCases = this.suite
       .allTests()
-      .filter((testCase) => this.allureTestCache.has(testCase));
+      .filter((testCase) => !this.allureTestCache.has(testCase));
 
     unprocessedCases.forEach((testCase) => {
       this.onTestBegin(testCase);
