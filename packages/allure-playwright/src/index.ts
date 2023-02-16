@@ -28,13 +28,18 @@ import {
   AllureTest,
   Category,
   ExecutableItemWrapper,
+  ImageDiffAttachment,
   InMemoryAllureWriter,
   LabelName,
   md5,
   MetadataMessage,
+  readImageAsBase64,
   Status,
 } from "allure-js-commons";
-import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
+import {
+  ALLURE_IMAGEDIFF_CONTENT_TYPE,
+  ALLURE_METADATA_CONTENT_TYPE,
+} from "allure-js-commons/internal";
 
 type AllureReporterOptions = {
   detail?: boolean;
@@ -58,6 +63,8 @@ class AllureReporter implements Reporter {
   private allureTestCache = new Map<TestCase, AllureTest>();
   private allureStepCache = new Map<TestStep, AllureStep>();
   private hostname = process.env.ALLURE_HOST_NAME || os.hostname();
+
+  private processedDiffs: string[] = [];
 
   constructor(options: AllureReporterOptions = { suiteTitle: true, detail: true }) {
     this.options = options;
@@ -135,7 +142,7 @@ class AllureReporter implements Reporter {
     allureStep.status = step.error ? Status.FAILED : Status.PASSED;
   }
 
-  onTestEnd(test: TestCase, result: TestResult): void {
+  async onTestEnd(test: TestCase, result: TestResult): Promise<void> {
     const runtime = this.getAllureRuntime();
     const allureTest = this.allureTestCache.get(test);
 
@@ -201,12 +208,34 @@ class AllureReporter implements Reporter {
         fileName = runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
       }
 
-      if (attachment.name.endsWith("-expected.png")) {
-        allureTest.addAttachment("expected", attachment.contentType, fileName);
-      } else if (attachment.name.endsWith("-actual.png")) {
-        allureTest.addAttachment("actual", attachment.contentType, fileName);
-      } else if (attachment.name.endsWith("-diff.png")) {
-        allureTest.addAttachment("diff", attachment.contentType, fileName);
+      const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
+
+      if (attachment.name.match(diffEndRegexp)) {
+        const pathWithoutEnd = attachment.path!.replace(diffEndRegexp, "");
+
+        if (this.processedDiffs.includes(pathWithoutEnd)) {
+          continue;
+        }
+
+        const actualBase64 = await readImageAsBase64(`${pathWithoutEnd}-actual.png`),
+          expectedBase64 = await readImageAsBase64(`${pathWithoutEnd}-expected.png`),
+          diffBase64 = await readImageAsBase64(`${pathWithoutEnd}-diff.png`);
+
+        const diffName = attachment.name.replace(diffEndRegexp, "");
+
+        const res = this.allureRuntime?.writeAttachment(
+          JSON.stringify({
+            expected: expectedBase64,
+            actual: actualBase64,
+            diff: diffBase64,
+            name: diffName,
+          } as ImageDiffAttachment),
+          { contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE, fileExtension: "imagediff" },
+        );
+
+        allureTest.addAttachment(diffName, { contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE }, res!);
+
+        this.processedDiffs.push(pathWithoutEnd);
       } else {
         allureTest.addAttachment(attachment.name, attachment.contentType, fileName);
       }

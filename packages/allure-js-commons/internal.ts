@@ -1,1 +1,1 @@
-export { ALLURE_METADATA_CONTENT_TYPE } from "./src/model";
+export { ALLURE_METADATA_CONTENT_TYPE, ALLURE_IMAGEDIFF_CONTENT_TYPE } from "./src/model";

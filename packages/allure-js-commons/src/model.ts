@@ -1,4 +1,5 @@
 export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
+export const ALLURE_IMAGEDIFF_CONTENT_TYPE = "application/vnd.allure.image.diff";
 
 export interface AttachmentMetadata {
   name: string;
@@ -183,4 +184,11 @@ export enum ContentType {
 export enum LinkType {
   ISSUE = "issue",
   TMS = "tms",
+}
+
+export interface ImageDiffAttachment {
+  expected: string | undefined; // data:image;base64,
+  actual: string | undefined; // data:image;base64,
+  diff: string | undefined; // data:image;base64,
+  name: string;
 }

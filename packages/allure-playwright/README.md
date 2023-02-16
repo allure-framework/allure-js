@@ -323,3 +323,19 @@ export default {
   ],
 };
 ```
+
+### Visual comparisons usage
+
+Allure allows you to add visual comparisons to the report. This is useful when you want to add some additional information to the report.
+
+```ts
+import { test, expect } from "@playwright/test";
+test("screendiff", async ({ page }) => {
+  await page.goto("https://playwright.dev/");
+  await expect(page).toHaveScreenshot();
+});
+```
+
+If screenshots don't match, the report shows difference between them.
+
+![screendiff-preview](./docs/screendiff.jpg)
