@@ -1,6 +1,6 @@
 import { expect, test } from "./fixtures";
 
-test("should not throw on missing attachment", async ({ runInlineTest }) => {
+test("should report tests even if global setup fails", async ({ runInlineTest }) => {
   const result = await runInlineTest(
     {
       "a.test.ts": `
