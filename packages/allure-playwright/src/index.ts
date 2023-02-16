@@ -267,24 +267,25 @@ class AllureReporter implements Reporter {
   }
 
   addSkippedResults() {
-    this.suite.allTests().forEach((testCase) => {
-      if (!this.allureTestCache.has(testCase)) {
-        this.onTestBegin(testCase);
+    const unprocessedCases = this.suite
+      .allTests()
+      .filter((testCase) => this.allureTestCache.has(testCase));
 
-        this.onTestEnd(testCase, {
-          status: Status.SKIPPED,
-          attachments: [],
-          duration: 0,
-          errors: [],
-          parallelIndex: 0,
-          workerIndex: 0,
-          retry: 0,
-          steps: [],
-          stderr: [],
-          stdout: [],
-          startTime: this.globalStartTime,
-        });
-      }
+    unprocessedCases.forEach((testCase) => {
+      this.onTestBegin(testCase);
+      this.onTestEnd(testCase, {
+        status: Status.SKIPPED,
+        attachments: [],
+        duration: 0,
+        errors: [],
+        parallelIndex: 0,
+        workerIndex: 0,
+        retry: 0,
+        steps: [],
+        stderr: [],
+        stdout: [],
+        startTime: this.globalStartTime,
+      });
     });
   }
 
