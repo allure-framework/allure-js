@@ -23,7 +23,9 @@ test("should have link", async ({ runInlineTest }) => {
       import { test } from '@playwright/test';
       import { allure } from '../../dist/index'
       test('should add epic link', async ({}, testInfo) => {
-          allure.link({url:"https://playwright.dev/docs/api/class-page#page-workers"});
+          allure.link("https://playwright.dev/docs/api/class-page#page-workers");
+
+          allure.links(...[{url:"https://www.google.com/1"}, {url:"https://www.google.com/2"}]);
       });
       `,
     },
@@ -34,5 +36,13 @@ test("should have link", async ({ runInlineTest }) => {
 
   expect(result[0]).toContainEqual({
     url: "https://playwright.dev/docs/api/class-page#page-workers",
+  });
+
+  expect(result[0]).toContainEqual({
+    url: "https://www.google.com/1",
+  });
+
+  expect(result[0]).toContainEqual({
+    url: "https://www.google.com/2",
   });
 });
