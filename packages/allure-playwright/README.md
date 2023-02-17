@@ -264,8 +264,8 @@ test("basic test", async ({ page }, testInfo) => {
 });
 ```
 
-Also addParameter takes an third optional parameter with the hidden and excluded options:
-`hidden: true` - hides parameter from the report
+Also addParameter takes an third optional parameter with the mode and excluded options:
+`mode: "hidden" | "masked"` - `masked` hide parameter value to secure sensitive data, and `hidden` entirely hide parameter from report
 `excluded: true` - excludes parameter from the history
 
 ```ts
@@ -273,7 +273,7 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.addParameter("parameterName", "parameterValue", { hidden: true, excluded: true });
+  allure.addParameter("parameterName", "parameterValue", { mode: "masked", excluded: true });
 });
 ```
 

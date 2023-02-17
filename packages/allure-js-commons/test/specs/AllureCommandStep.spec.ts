@@ -17,9 +17,9 @@ const fixtures = {
     name: "foo",
     value: "bar",
     options: {
-      hidden: true,
       excluded: true,
-    },
+      mode: "hidden",
+    } as const,
   },
   attachment: JSON.stringify({ foo: "bar" }),
   binaryAttachment: Buffer.from([0]),
@@ -175,8 +175,8 @@ describe("AllureCommandStep", () => {
       expect(parameter![0]).eql({
         name: fixtures.parameter.name,
         value: fixtures.parameter.value,
-        hidden: fixtures.parameter.options.hidden,
         excluded: fixtures.parameter.options.excluded,
+        mode: fixtures.parameter.options.mode,
       });
     });
   });
