@@ -7,7 +7,7 @@ Allure integration for `hermione@^5.x.x`.
 Use your favorite node package manager to install required packages:
 
 ```shell
-npm add -D allure-hermione allure-js-commons      
+npm add -D allure-hermione allure-js-commons
 ```
 
 ## Setup
@@ -30,22 +30,22 @@ The plugin provides custom browser commands which allow to add additional info
 inside your tests:
 
 ```javascript
-import { expect } from "chai"
+import { expect } from "chai";
 
 it("my test", async ({ browser, currentTest }) => {
   await browser.url("https://www.example.org/");
-  await browser.$("#btn").click()
-  
-  const screenshot = await browser.takeScreenshot()
-  
-  await browser.attach(currentTest.id(), screenshot, "image/png")
-  await browser.epic(currentTest.id(), "my_epic")
+  await browser.$("#btn").click();
+
+  const screenshot = await browser.takeScreenshot();
+
+  await browser.attach(currentTest.id(), screenshot, "image/png");
+  await browser.epic(currentTest.id(), "my_epic");
   await browser.parameter(currentTest.id(), "parameter_name", "parameter_value", {
-    hidden: false,
+    mode: "hidden",
     excluded: false,
-  })
-  
-  expect(browser.url).not.eq("https://www.startpage.com/")
+  });
+
+  expect(browser.url).not.eq("https://www.startpage.com/");
 });
 ```
 
@@ -60,7 +60,7 @@ Markup you tests with labels using low-level `label` method:
 ```js
 it("my test", async ({ browser, currentTest }) => {
   await browser.label(currentTest.id(), "label_name", "label_value");
-})
+});
 ```
 
 Or using aliases: `id`, `epic`, `feature`, `story`, `suite`, `parentSuite`, `subSuite`,
@@ -69,7 +69,7 @@ Or using aliases: `id`, `epic`, `feature`, `story`, `suite`, `parentSuite`, `sub
 ```js
 it("my test", async ({ browser, currentTest }) => {
   await browser.epic(currentTest.id(), "my_epic");
-})
+});
 ```
 
 ### Links
@@ -79,7 +79,7 @@ Add any link by low-level `link` method:
 ```js
 it("my test", async ({ browser, currentTest }) => {
   await browser.link(currentTest.id(), "http://example.org", "my_link_name", "my_link_type");
-})
+});
 ```
 
 Or using aliases: `issue`, `tms`:
@@ -87,7 +87,7 @@ Or using aliases: `issue`, `tms`:
 ```js
 it("my test", async ({ browser, currentTest }) => {
   await browser.issue(currentTest.id(), "my_link_name", "http://example.org");
-})
+});
 ```
 
 ### Parameters
@@ -97,7 +97,6 @@ Test parameters can be added by `parameter` method:
 ```js
 it("my test", async ({ browser, currentTest }) => {
   await browser.parameter(currentTest.id(), "param_name", "param_value", {
-    hidden: true,
     excluded: false,
   });
 });
@@ -117,9 +116,9 @@ If you want to attach a screenshot generated in tests, you can use the same meth
 
 ```js
 it("adds screenshots", async ({ browser, currentTest }) => {
-  const screenshot = await browser.takeScreenshot()
+  const screenshot = await browser.takeScreenshot();
 
-  await browser.attach(currentTest.id(), screenshot, "image/png")
+  await browser.attach(currentTest.id(), screenshot, "image/png");
 });
 ```
 
@@ -139,4 +138,3 @@ it("my test", async ({ browser, currentTest }) => {
   });
 });
 ```
-
