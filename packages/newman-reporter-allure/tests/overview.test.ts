@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/quotes */
-import { md5, Status } from "allure-js-commons";
+import { LabelName, md5, Status } from "allure-js-commons";
 import { runNewman } from "./helpers/runNewman";
 import { server } from "./mocks/server";
 
@@ -97,7 +97,7 @@ test("complex test overview", async () => {
     { name: "parentSuite", value: "ParentName" },
     { name: "suite", value: "SuiteName" },
     { name: "subSuite", value: "SubSub1 > SubSub1" },
-    { name: "AS_ID", value: "228" },
+    { name: LabelName.ALLURE_ID, value: "228" },
     { name: "custom", value: "test" },
   ]);
 

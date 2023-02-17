@@ -133,7 +133,11 @@ export enum Stage {
 
 /* eslint-disable no-shadow */
 export enum LabelName {
-  AS_ID = "AS_ID",
+  ALLURE_ID = "ALLURE_ID",
+  /**
+   * @deprecated please use ALLURE_ID instead
+   */
+  AS_ID = "ALLURE_ID",
   SUITE = "suite",
   PARENT_SUITE = "parentSuite",
   SUB_SUITE = "subSuite",
