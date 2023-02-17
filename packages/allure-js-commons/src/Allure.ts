@@ -76,7 +76,7 @@ export abstract class Allure {
   }
 
   public id(allureId: string): void {
-    this.label(LabelName.AS_ID, allureId);
+    this.label(LabelName.ALLURE_ID, allureId);
   }
 
   public tag(tag: string): void {

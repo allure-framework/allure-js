@@ -32,7 +32,7 @@ describe("labels", () => {
 
     it("adds `42` allure id", () => {
       const { labels } = hermione.allure.writer.results[0];
-      const label = labels.find(({ name }) => name === LabelName.AS_ID) as Label;
+      const label = labels.find(({ name }) => name === LabelName.ALLURE_ID) as Label;
 
       expect(label.value).eq("42");
     });

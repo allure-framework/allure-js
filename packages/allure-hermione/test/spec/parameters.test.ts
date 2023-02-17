@@ -20,6 +20,6 @@ describe("parameters", () => {
     expect(parameter.name).eq("foo");
     expect(parameter.value).eq("bar");
     expect(parameter.excluded).eq(false);
-    expect(parameter.hidden).eq(true);
+    expect(parameter.mode).eq("hidden");
   });
 });

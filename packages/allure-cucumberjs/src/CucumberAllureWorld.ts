@@ -46,8 +46,8 @@ export class CucumberAllureWorld extends World implements AllureWorld {
         {
           name,
           value,
-          hidden: options?.hidden || false,
           excluded: options?.excluded || false,
+          mode: options?.mode,
         },
       ],
     };
@@ -79,7 +79,7 @@ export class CucumberAllureWorld extends World implements AllureWorld {
   }
 
   public async id(allureId: string) {
-    await this.label(LabelName.AS_ID, allureId);
+    await this.label(LabelName.ALLURE_ID, allureId);
   }
 
   public async epic(epic: string) {

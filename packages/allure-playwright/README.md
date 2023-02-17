@@ -148,10 +148,10 @@ Tests extra information can be provided by labels:
 
 ```js
 import { test, expect } from "@playwright/test";
-import { allure, LabelName } from "allure-playwright";
+import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.label({ name: LabelName.LANGUAGE, value: "typescript" });
+  allure.label("labelName", "labelValue");
 });
 ```
 
@@ -162,11 +162,8 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.link({ url: "https://playwright.dev", name: "playwright-site" });
-  allure.issue({
-    url: "https://github.com/allure-framework/allure-js/issues/352",
-    name: "Target issue",
-  });
+  allure.link("https://playwright.dev", "playwright-site"); // link with name
+  allure.issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
 });
 ```
 
@@ -177,7 +174,7 @@ import { test, expect } from "@playwright/test";
 import { allure, LabelName } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.id("Some id");
+  allure.id("420");
 });
 ```
 
@@ -260,12 +257,13 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.addParameter("parameterName", "parameterValue");
+  allure.parameter("parameterName", "parameterValue");
 });
 ```
 
-Also addParameter takes an third optional parameter with the hidden and excluded options:
-`hidden: true` - hides parameter from the report
+Also parameter takes an third optional parameter with the hidden and excluded options:
+`mode: "hidden" | "masked"` - `masked` hide parameter value to secure sensitive data, and `hidden` entirely hide parameter from report
+
 `excluded: true` - excludes parameter from the history
 
 ```ts
@@ -273,7 +271,7 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.addParameter("parameterName", "parameterValue", { hidden: true, excluded: true });
+  allure.addParameter("parameterName", "parameterValue", { mode: "masked", excluded: true });
 });
 ```
 

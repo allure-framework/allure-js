@@ -59,14 +59,15 @@ it("is a test", () => {
 ```
 
 Also addParameter takes an third optional parameter with the hidden and excluded options:
-`hidden: true` - hides parameter from the report
+`mode: "hidden" | "masked"` - `masked` hide parameter value to secure sensitive data, and `hidden` entirely hide parameter from report
+
 `excluded: true` - excludes parameter from the history
 
 ```ts
 import { allure } from "allure-mocha/runtime";
 
 it("is a test", () => {
-  allure.parameter("parameterName", "parameterValue", { hidden: true, excluded: true });
+  allure.parameter("parameterName", "parameterValue", { mode: "hidden", excluded: true });
 });
 ```
 

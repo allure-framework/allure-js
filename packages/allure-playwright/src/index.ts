@@ -189,8 +189,8 @@ class AllureReporter implements Reporter {
         metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
         metadata.parameter?.forEach((val) =>
           allureTest.addParameter(val.name, val.value, {
-            hidden: val.hidden,
             excluded: val.excluded,
+            mode: val.mode,
           }),
         );
 
