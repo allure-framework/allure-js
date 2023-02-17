@@ -4,7 +4,7 @@
   "description": "Allure Newman integration",
   "author": {
     "name": "Qameta Software",
-    "email": "hello@qameta.io",
+    "email": "allure@qameta.io",
     "url": "https://qameta.io/"
   },
   "main": "./dist/index.js",
