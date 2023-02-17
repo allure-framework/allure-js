@@ -4,7 +4,9 @@
   "description": "Allure Playwright integration",
   "license": "Apache-2.0",
   "author": {
-    "name": "Microsoft Corporation"
+    "name": "Qameta Software",
+    "email": "allure@qameta.io",
+    "url": "https://qameta.io/"
   },
   "repository": {
     "type": "git",
