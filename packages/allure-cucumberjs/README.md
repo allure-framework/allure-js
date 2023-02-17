@@ -194,7 +194,9 @@ Given(/my step/, async function () {
 ```
 
 Also addParameter takes an third optional parameter with the hidden and excluded options:
-`hidden: true` - hides parameter from the report
+
+`mode: "hidden" | "masked"` - `masked` hide parameter value to secure sensitive data, and `hidden` entirely hide parameter from report
+
 `excluded: true` - excludes parameter from the history
 
 ```ts
@@ -202,7 +204,7 @@ import { Given } from "@cucumber/cucumber";
 
 Given(/my step/, async function () {
   await this.step("step can have anonymous body function", async function () {
-    await this.parameter("parameterName", "parameterValue", { hidden: true, excluded: true });
+    await this.parameter("parameterName", "parameterValue", { mode: "hidden", excluded: true });
   });
 });
 ```

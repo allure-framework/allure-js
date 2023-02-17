@@ -46,8 +46,8 @@ export class CucumberAllureWorld extends World implements AllureWorld {
         {
           name,
           value,
-          hidden: options?.hidden || false,
           excluded: options?.excluded || false,
+          mode: options?.mode,
         },
       ],
     };

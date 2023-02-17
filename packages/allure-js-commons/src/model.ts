@@ -48,11 +48,11 @@ export interface Link {
 export interface Parameter {
   name: string;
   value: string;
-  hidden?: boolean;
   excluded?: boolean;
+  mode?: "hidden" | "masked" | "default";
 }
 
-export type ParameterOptions = Pick<Parameter, "hidden" | "excluded">;
+export type ParameterOptions = Pick<Parameter, "mode" | "excluded">;
 
 export interface StatusDetails {
   message?: string;
