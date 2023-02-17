@@ -278,7 +278,6 @@ class AllureReporter implements Reporter {
         console.log(JSON.stringify({ error: (e as Error).stack || String(e) })); // eslint-disable-line no-console
       }
     }
-    LabelName.AS_ID;
   }
 
   private getAllureRuntime(): AllureRuntime {
