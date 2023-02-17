@@ -148,10 +148,10 @@ Tests extra information can be provided by labels:
 
 ```js
 import { test, expect } from "@playwright/test";
-import { allure, LabelName } from "allure-playwright";
+import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.label({ name: LabelName.LANGUAGE, value: "typescript" });
+  allure.label("labelName", "labelValue");
 });
 ```
 
@@ -162,11 +162,8 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.link({ url: "https://playwright.dev", name: "playwright-site" });
-  allure.issue({
-    url: "https://github.com/allure-framework/allure-js/issues/352",
-    name: "Target issue",
-  });
+  allure.link("https://playwright.dev", "playwright-site"); // link with name
+  allure.issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
 });
 ```
 
@@ -177,7 +174,7 @@ import { test, expect } from "@playwright/test";
 import { allure, LabelName } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.id("Some id");
+  allure.id("420");
 });
 ```
 
@@ -260,12 +257,13 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.addParameter("parameterName", "parameterValue");
+  allure.parameter("parameterName", "parameterValue");
 });
 ```
 
-Also addParameter takes an third optional parameter with the hidden and excluded options:
-`hidden: true` - hides parameter from the report
+Also parameter takes an third optional parameter with the hidden and excluded options:
+`mode: "hidden" | "masked"` - `masked` hide parameter value to secure sensitive data, and `hidden` entirely hide parameter from report
+
 `excluded: true` - excludes parameter from the history
 
 ```ts
@@ -273,6 +271,69 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.addParameter("parameterName", "parameterValue", { hidden: true, excluded: true });
+  allure.addParameter("parameterName", "parameterValue", { mode: "masked", excluded: true });
 });
 ```
+
+### Selective test execution
+
+Allure allow you to execute only a subset of tests. This is useful when you want to run only a specific test or a group of tests.
+
+To enable this feature, you need to add the following code to your `playwright.config.js`:
+
+```diff
++ import { testPlanFilter } from "allure-playwright/dist/testplan";
+export default {
+  reporter: [
+    [
+      "allure-playwright",
+    ],
+  ],
+  projects: [
+    {
+      name: "chromium",
+    },
+  ],
++  grep: testPlanFilter()
+};
+```
+
+Allure will read `ALLURE_TESTPLAN_PATH` environment variable and read testplan from the specified file.
+
+### EnvironmentInfo usage
+
+Allure allows you to add environment information to the report. This is useful when you want to add some additional information to the report.
+
+to enable this feature, you need to add the following field to your `playwright.config.js`:
+
+```diff
+export default {
+  reporter: [
+    [
+      "allure-playwright",
+      {
++        environmentInfo: {
++          E2E_NODE_VERSION: process.version,
++          E2E_OS: process.platform,
++        },
+      },
+    ],
+  ],
+};
+```
+
+### Visual comparisons usage
+
+Allure allows you to add visual comparisons to the report. This is useful when you want to add some additional information to the report.
+
+```ts
+import { test, expect } from "@playwright/test";
+test("screendiff", async ({ page }) => {
+  await page.goto("https://playwright.dev/");
+  await expect(page).toHaveScreenshot();
+});
+```
+
+If screenshots don't match, the report shows difference between them.
+
+![screendiff-preview](./docs/screendiff.jpg)

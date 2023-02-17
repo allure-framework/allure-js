@@ -31,11 +31,17 @@ const writeFiles = async (testInfo: TestInfo, files: Files) => {
   const baseDir = testInfo.outputPath();
 
   const hasConfig = Object.keys(files).some((name) => name.includes(".config."));
+  const reporterOptions = files.reporterOptions && JSON.parse(files.reporterOptions.toString());
   if (!hasConfig) {
     files = {
       ...files,
       "playwright.config.ts": `
-        module.exports = { projects: [ { name: 'project' } ] };
+        module.exports = {
+          projects: [{ name: 'project' }],
+          grep: require("../../dist/testplan.js").testPlanFilter(),
+          reporter: [[require.resolve("../../dist/index.js"),
+          ${JSON.stringify(reporterOptions || false)} || undefined]],
+       };
       `,
     };
   }
@@ -71,12 +77,8 @@ const runPlaywrightTest = async (
   }
   const outputDir = path.join(baseDir, "test-results");
   const args = [require.resolve("@playwright/test/cli"), "test"];
-  args.push(
-    `--output=${outputDir}`,
-    `--reporter=${require.resolve("../dist/index.js")}`,
-    "--workers=2",
-    ...paramList,
-  );
+  args.push(`--output=${outputDir}`, "--workers=2", ...paramList);
+
   if (additionalArgs) {
     args.push(...additionalArgs);
   }

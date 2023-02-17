@@ -222,7 +222,6 @@ class AllureReporter {
         .replace("\r", "")
         // eslint-disable-next-line @typescript-eslint/quotes
         .replace('"', '"')
-        .replace(/[\u0100-\uffff]/g, (c) => `|0x${c.charCodeAt(0).toString(16).padStart(4, "0")}`)
     );
   }
 
@@ -342,9 +341,9 @@ class AllureReporter {
     const rawDescription = args.item.request.description;
     if (rawDescription !== undefined) {
       if (typeof rawDescription === "string") {
-        testDescription = rawDescription;
+        testDescription = rawDescription || "";
       } else {
-        testDescription = rawDescription.content;
+        testDescription = rawDescription.content || "";
       }
 
       testDescription = testDescription.replace(/[*]/g, "");
@@ -473,11 +472,11 @@ class AllureReporter {
 
       currStep.status = Status.FAILED;
       currStep.stage = Stage.FINISHED;
-      currStep.endStep();
     } else {
       currStep.stage = Stage.FINISHED;
       currStep.status = Status.PASSED;
     }
+    currStep.endStep();
   }
 
   onDone(_err: any, _args: unknown) {

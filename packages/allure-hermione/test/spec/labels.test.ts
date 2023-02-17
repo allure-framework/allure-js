@@ -2,7 +2,7 @@ import { Label, LabelName } from "allure-js-commons";
 import { expect } from "chai";
 import Hermione from "hermione";
 import { beforeEach, describe, it } from "mocha";
-import { HermioneAllure } from "../../src";
+import { HermioneAllure } from "../types";
 
 describe("labels", () => {
   let hermione: HermioneAllure;
@@ -22,6 +22,19 @@ describe("labels", () => {
 
       expect(label.name).eq("foo");
       expect(label.value).eq("bar");
+    });
+  });
+
+  describe("allure id", () => {
+    beforeEach(async () => {
+      await hermione.run(["./test/fixtures/allureId.js"], {});
+    });
+
+    it("adds `42` allure id", () => {
+      const { labels } = hermione.allure.writer.results[0];
+      const label = labels.find(({ name }) => name === LabelName.ALLURE_ID) as Label;
+
+      expect(label.value).eq("42");
     });
   });
 

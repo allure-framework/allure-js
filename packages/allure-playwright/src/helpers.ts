@@ -1,26 +1,30 @@
 import test from "@playwright/test";
 import {
-  AttachmentMetadata,
   Label,
   LabelName,
   Link,
   LinkType,
+  MetadataMessage,
   ParameterOptions,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
 export class allure {
-  static addMetadataAttachment(metadata: AttachmentMetadata) {
+  static addMetadataAttachment(metadata: MetadataMessage) {
     test.info().attach("allure-metadata.json", {
       contentType: ALLURE_METADATA_CONTENT_TYPE,
       body: Buffer.from(JSON.stringify(metadata), "utf8"),
     });
   }
 
-  static label(label: Label | Label[]) {
+  static label(label: string, value: string) {
     this.addMetadataAttachment({
-      labels: Array.isArray(label) ? label : [label],
+      labels: [{ name: label, value }],
     });
+  }
+
+  static labels(...values: Label[]) {
+    values.forEach(({ name, value }) => this.label(name, value));
   }
 
   static description(value: string) {
@@ -29,62 +33,73 @@ export class allure {
     });
   }
 
-  static link(link: Link) {
+  static link(url: string, name?: string, type?: string) {
     this.addMetadataAttachment({
-      links: Array.isArray(link) ? link : [link],
+      links: [{ url, name, type }],
     });
+  }
+
+  static links(...values: Link[]) {
+    values.forEach(({ url, name, type }) => this.link(url, name, type));
   }
 
   static id(id: string) {
-    this.label({
-      value: id,
-      name: LabelName.AS_ID,
-    });
+    this.label(LabelName.ALLURE_ID, id);
   }
 
   static epic(epic: string) {
-    this.label({
-      name: LabelName.EPIC,
-      value: epic,
-    });
+    this.label(LabelName.EPIC, epic);
   }
 
   static feature(epic: string) {
-    this.label({
-      name: LabelName.FEATURE,
-      value: epic,
-    });
+    this.label(LabelName.FEATURE, epic);
   }
 
   static story(story: string): void {
-    this.label({
-      name: LabelName.STORY,
-      value: story,
-    });
+    this.label(LabelName.STORY, story);
   }
 
   static suite(name: string): void {
-    this.label({
-      name: LabelName.SUITE,
-      value: name,
-    });
+    this.label(LabelName.SUITE, name);
   }
 
   static parentSuite(name: string) {
-    this.label({
-      name: LabelName.PARENT_SUITE,
-      value: name,
-    });
+    this.label(LabelName.PARENT_SUITE, name);
   }
 
   static layer(layerName: string) {
-    this.label({
-      name: LabelName.LAYER,
-      value: layerName,
-    });
+    this.label(LabelName.LAYER, layerName);
   }
 
-  static addParameter(name: string, value: string, options?: ParameterOptions) {
+  static subSuite(name: string) {
+    this.label(LabelName.SUB_SUITE, name);
+  }
+
+  static owner(owner: string) {
+    this.label(LabelName.OWNER, owner);
+  }
+
+  static severity(severity: string) {
+    this.label(LabelName.SEVERITY, severity);
+  }
+
+  static tag(tag: string) {
+    this.label(LabelName.TAG, tag);
+  }
+
+  static tags(...values: string[]) {
+    values.forEach((value) => this.tag(value));
+  }
+
+  static issue(name: string, url: string) {
+    this.link(url, name, LinkType.ISSUE);
+  }
+
+  static tms(name: string, url: string) {
+    this.link(url, name, LinkType.TMS);
+  }
+
+  static parameter(name: string, value: string, options?: ParameterOptions) {
     this.addMetadataAttachment({
       parameter: [
         {
@@ -96,50 +111,11 @@ export class allure {
     });
   }
 
-  static subSuite(name: string) {
-    this.label({
-      name: LabelName.SUB_SUITE,
-      value: name,
-    });
-  }
-
-  static owner(owner: string) {
-    this.label({
-      name: LabelName.OWNER,
-      value: owner,
-    });
-  }
-
-  static severity(severity: string) {
-    this.label({
-      name: LabelName.SEVERITY,
-      value: severity,
-    });
-  }
-
-  static tag(...tags: string[]) {
-    for (const tag of tags) {
-      this.label({
-        name: LabelName.TAG,
-        value: tag,
-      });
-    }
-  }
-
-  static issue(issueData: Omit<Link, "type">) {
-    this.link({
-      url: issueData.url,
-      name: issueData.name,
-      type: LinkType.ISSUE,
-    });
-  }
-
-  static tms(issueData: Omit<Link, "type">) {
-    this.link({
-      url: issueData.url,
-      name: issueData.name,
-      type: LinkType.TMS,
-    });
+  /**
+   * @deprecated use parameter instead
+   */
+  static addParameter(name: string, value: string, options?: ParameterOptions) {
+    this.parameter(name, value, options);
   }
 }
 

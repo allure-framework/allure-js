@@ -26,19 +26,27 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
-  AttachmentMetadata,
+  Category,
   ExecutableItemWrapper,
+  ImageDiffAttachment,
   InMemoryAllureWriter,
   LabelName,
   md5,
+  MetadataMessage,
+  readImageAsBase64,
   Status,
 } from "allure-js-commons";
-import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
+import {
+  ALLURE_IMAGEDIFF_CONTENT_TYPE,
+  ALLURE_METADATA_CONTENT_TYPE,
+} from "allure-js-commons/internal";
 
 type AllureReporterOptions = {
   detail?: boolean;
   outputFolder?: string;
   suiteTitle?: boolean;
+  categories?: Category[];
+  environmentInfo?: Record<string, string>;
 };
 
 class AllureReporter implements Reporter {
@@ -50,11 +58,15 @@ class AllureReporter implements Reporter {
   private allureWriter = process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST
     ? new InMemoryAllureWriter()
     : undefined;
+
   private allureRuntime: AllureRuntime | undefined;
   private allureGroupCache = new Map<Suite, AllureGroup>();
   private allureTestCache = new Map<TestCase, AllureTest>();
   private allureStepCache = new Map<TestStep, AllureStep>();
   private hostname = process.env.ALLURE_HOST_NAME || os.hostname();
+  private globalStartTime = new Date();
+
+  private processedDiffs: string[] = [];
 
   constructor(options: AllureReporterOptions = { suiteTitle: true, detail: true }) {
     this.options = options;
@@ -68,6 +80,9 @@ class AllureReporter implements Reporter {
       resultsDir: this.resultsDir,
       writer: this.allureWriter,
     });
+
+    this.allureRuntime.writeEnvironmentInfo(this.options?.environmentInfo || {});
+    this.allureRuntime.writeCategoriesDefinitions(this.options?.categories || []);
   }
 
   onTestBegin(test: TestCase): void {
@@ -96,9 +111,12 @@ class AllureReporter implements Reporter {
       .split(path.sep)
       .join("/");
 
-    const fullName = `${relativeFile}#${test.title}`;
+    const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
+    const fullName = `${relativeFile}#${nameSuites}${test.title}`;
+    const testCaseIdSource = `${relativeFile}#${test.title}`;
+
     allureTest.fullName = fullName;
-    allureTest.testCaseId = md5(fullName);
+    allureTest.testCaseId = md5(testCaseIdSource);
     allureTest.historyId = md5(`${fullName}${project.name || ""}`);
     this.allureTestCache.set(test, allureTest);
   }
@@ -126,7 +144,7 @@ class AllureReporter implements Reporter {
     allureStep.status = step.error ? Status.FAILED : Status.PASSED;
   }
 
-  onTestEnd(test: TestCase, result: TestResult): void {
+  async onTestEnd(test: TestCase, result: TestResult): Promise<void> {
     const runtime = this.getAllureRuntime();
     const allureTest = this.allureTestCache.get(test);
 
@@ -134,9 +152,12 @@ class AllureReporter implements Reporter {
       return;
     }
 
+    // We need to check parallelIndex first because pw introduced this field only in v1.30.0
+    const threadId = result.parallelIndex !== undefined ? result.parallelIndex : result.workerIndex;
+
     const thread =
       process.env.ALLURE_THREAD_NAME ||
-      `${this.hostname}-${process.pid}-playwright-worker-${result.workerIndex}`;
+      `${this.hostname}-${process.pid}-playwright-worker-${threadId}`;
 
     allureTest.addLabel(LabelName.HOST, this.hostname);
     allureTest.addLabel(LabelName.THREAD, thread);
@@ -163,13 +184,13 @@ class AllureReporter implements Reporter {
           continue;
         }
 
-        const metadata: AttachmentMetadata = JSON.parse(attachment.body.toString());
+        const metadata: MetadataMessage = JSON.parse(attachment.body.toString());
         metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
         metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
         metadata.parameter?.forEach((val) =>
           allureTest.addParameter(val.name, val.value, {
-            hidden: val.hidden,
             excluded: val.excluded,
+            mode: val.mode,
           }),
         );
 
@@ -189,12 +210,34 @@ class AllureReporter implements Reporter {
         fileName = runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
       }
 
-      if (attachment.name.endsWith("-expected.png")) {
-        allureTest.addAttachment("expected", attachment.contentType, fileName);
-      } else if (attachment.name.endsWith("-actual.png")) {
-        allureTest.addAttachment("actual", attachment.contentType, fileName);
-      } else if (attachment.name.endsWith("-diff.png")) {
-        allureTest.addAttachment("diff", attachment.contentType, fileName);
+      const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
+
+      if (attachment.name.match(diffEndRegexp)) {
+        const pathWithoutEnd = attachment.path!.replace(diffEndRegexp, "");
+
+        if (this.processedDiffs.includes(pathWithoutEnd)) {
+          continue;
+        }
+
+        const actualBase64 = await readImageAsBase64(`${pathWithoutEnd}-actual.png`),
+          expectedBase64 = await readImageAsBase64(`${pathWithoutEnd}-expected.png`),
+          diffBase64 = await readImageAsBase64(`${pathWithoutEnd}-diff.png`);
+
+        const diffName = attachment.name.replace(diffEndRegexp, "");
+
+        const res = this.allureRuntime?.writeAttachment(
+          JSON.stringify({
+            expected: expectedBase64,
+            actual: actualBase64,
+            diff: diffBase64,
+            name: diffName,
+          } as ImageDiffAttachment),
+          { contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE, fileExtension: "imagediff" },
+        );
+
+        allureTest.addAttachment(diffName, { contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE }, res!);
+
+        this.processedDiffs.push(pathWithoutEnd);
       } else {
         allureTest.addAttachment(attachment.name, attachment.contentType, fileName);
       }
@@ -223,7 +266,39 @@ class AllureReporter implements Reporter {
     allureTest.endTest();
   }
 
+  addSkippedResults() {
+    const unprocessedCases = this.suite
+      .allTests()
+      .filter((testCase) => !this.allureTestCache.has(testCase));
+
+    unprocessedCases.forEach((testCase) => {
+      this.onTestBegin(testCase);
+      const allureTest = this.allureTestCache.get(testCase);
+      if (allureTest) {
+        allureTest.addLabel(LabelName.ALLURE_ID, "-1");
+        allureTest.detailsMessage =
+          "This test was skipped due to test setup error. Check you setup scripts to fix the issue.";
+      }
+
+      this.onTestEnd(testCase, {
+        status: Status.SKIPPED,
+        attachments: [],
+        duration: 0,
+        errors: [],
+        parallelIndex: 0,
+        workerIndex: 0,
+        retry: 0,
+        steps: [],
+        stderr: [],
+        stdout: [],
+        startTime: this.globalStartTime,
+      });
+    });
+  }
+
   onEnd(): void {
+    this.addSkippedResults();
+
     for (const group of this.allureGroupCache.values()) {
       group.endGroup();
     }

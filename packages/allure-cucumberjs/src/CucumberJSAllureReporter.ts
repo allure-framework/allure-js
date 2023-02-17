@@ -7,27 +7,21 @@ import * as messages from "@cucumber/messages";
 import { Tag, TestStepResultStatus } from "@cucumber/messages";
 import {
   Allure,
-  AllureGroup,
+  AllureCommandStepExecutable,
   AllureRuntime,
   AllureStep,
   AllureTest,
-  Attachment,
   ContentType,
-  ExecutableItem,
-  ExecutableItemWrapper,
   Label,
   LabelName,
   Link,
   md5,
-  Stage,
+  MetadataMessage,
   Status,
+  StepMetadata,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
-import {
-  CucumberAllureWorld,
-  CucumberAttachmentMetadata,
-  CucumberAttachmentStepMetadata,
-} from "./CucumberAllureWorld";
+import { CucumberAllureWorld } from "./CucumberAllureWorld";
 
 export { Allure };
 
@@ -372,7 +366,7 @@ export class CucumberJSAllureFormatter extends Formatter {
       this.handleAllureAttachment({
         test: currentTest,
         step: currentStep,
-        metadata: JSON.parse(body) as CucumberAttachmentMetadata,
+        metadata: JSON.parse(body) as MetadataMessage,
       });
       return;
     }
@@ -392,39 +386,32 @@ export class CucumberJSAllureFormatter extends Formatter {
   private handleAllureAttachment(payload: {
     test: AllureTest;
     step?: AllureStep;
-    metadata: CucumberAttachmentMetadata;
+    metadata: MetadataMessage;
   }) {
     const {
       labels = [],
       links = [],
       parameter = [],
-      categories = [],
-      step,
+      steps = [],
       description,
       descriptionHtml,
-      environmentInfo,
     } = payload.metadata;
 
-    if (links.length > 0) {
-      links.forEach((link) => payload.test.addLink(link.url, link.type, link.name));
-    }
-
-    if (labels.length > 0) {
-      labels.forEach((label) => payload.test.addLabel(label.name, label.value));
-    }
-
-    if (parameter.length > 0) {
-      parameter.forEach(({ name, value, hidden, excluded }) =>
-        payload.test.addParameter(name, value, {
-          excluded,
-          hidden,
-        }),
-      );
-    }
-
-    if (categories.length > 0) {
-      this.allureRuntime.writeCategoriesDefinitions(categories);
-    }
+    links.forEach((link) => payload.test.addLink(link.url, link.type, link.name));
+    labels.forEach((label) => payload.test.addLabel(label.name, label.value));
+    parameter.forEach(({ name, value, excluded, mode }) =>
+      payload.test.addParameter(name, value, {
+        excluded,
+        mode,
+      }),
+    );
+    steps.forEach((step) => {
+      this.handleAllureStep({
+        test: payload.test,
+        step: payload.step,
+        stepMetadata: step,
+      });
+    });
 
     if (description) {
       payload.test.description = description;
@@ -433,47 +420,24 @@ export class CucumberJSAllureFormatter extends Formatter {
     if (descriptionHtml) {
       payload.test.descriptionHtml = descriptionHtml;
     }
-
-    if (environmentInfo) {
-      this.allureRuntime.writeEnvironmentInfo(environmentInfo);
-    }
-
-    if (step) {
-      this.handleAllureStep({
-        test: payload.test,
-        step: payload.step,
-        metadata: step,
-      });
-    }
   }
 
   private handleAllureStep(payload: {
     test: AllureTest;
     step?: AllureStep;
-    metadata: CucumberAttachmentStepMetadata;
+    stepMetadata: StepMetadata;
   }) {
-    const { attachments: metadataAttachments, ...metadata } = payload.metadata;
-    const attachments: Attachment[] = metadataAttachments.map(({ name, type, content }) => {
-      const attachmentFilename = this.allureRuntime.writeAttachment(content, type, "base64");
-
-      return {
-        source: attachmentFilename,
-        name,
-        type,
-      };
-    });
-    const testStep: ExecutableItem = {
-      ...metadata,
-      attachments,
-      steps: [],
-    };
+    const step = AllureCommandStepExecutable.toExecutableItem(
+      this.allureRuntime,
+      payload.stepMetadata,
+    );
 
     if (payload.step) {
-      payload.step.addStep(testStep);
+      payload.step.addStep(step);
       return;
     }
 
-    payload.test.addStep(testStep);
+    payload.test.addStep(step);
   }
 
   private onTestCaseFinished(data: messages.TestCaseFinished): void {
@@ -514,7 +478,9 @@ export class CucumberJSAllureFormatter extends Formatter {
     if (testStepResults?.length) {
       const worstTestStepResult = messages.getWorstTestStepResult(testStepResults);
 
-      currentTest.status = this.convertStatus(worstTestStepResult.status);
+      currentTest.status = currentTest.isAnyStepFailed
+        ? Status.FAILED
+        : this.convertStatus(worstTestStepResult.status);
       currentTest.statusDetails = {
         message: worstTestStepResult.message,
       };
@@ -562,10 +528,10 @@ export class CucumberJSAllureFormatter extends Formatter {
           .map((astNodeId) => this.stepMap.get(astNodeId))
           .map((step) => step?.keyword)
           .find((kw) => kw !== undefined) || "";
-      const allureStep = currentTest.startStep(keyword + ps.text, Date.now());
-      this.allureSteps.set(data.testStepId, allureStep);
-
       const { argument } = ps;
+      const allureStep = currentTest.startStep(keyword + ps.text, Date.now());
+
+      this.allureSteps.set(data.testStepId, allureStep);
 
       if (!argument?.dataTable) {
         return;
