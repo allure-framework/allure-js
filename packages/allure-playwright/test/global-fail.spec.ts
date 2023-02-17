@@ -1,3 +1,4 @@
+import { LabelName } from "allure-js-commons";
 import { expect, test } from "./fixtures";
 
 test("should report tests even if global setup fails", async ({ runInlineTest }) => {
@@ -25,7 +26,12 @@ test("should report tests even if global setup fails", async ({ runInlineTest })
       `,
     },
     (writer) => {
-      return writer.tests.map((val) => ({ status: val.status, fullName: val.fullName }));
+      return writer.tests.map((val) => ({
+        status: val.status,
+        fullName: val.fullName,
+        statusDetails: val.statusDetails,
+        label: val.labels,
+      }));
     },
   );
 
@@ -35,10 +41,20 @@ test("should report tests even if global setup fails", async ({ runInlineTest })
       {
         fullName: "a.test.ts#should be skipped 1",
         status: "skipped",
+        label: expect.arrayContaining([{ name: LabelName.AS_ID, value: "-1" }]),
+        statusDetails: {
+          message:
+            "This test was skipped due to test setup error. Check you setup scripts to fix the issue.",
+        },
       },
       {
         fullName: "b.test.ts#should be skipped 2",
         status: "skipped",
+        statusDetails: {
+          message:
+            "This test was skipped due to test setup error. Check you setup scripts to fix the issue.",
+        },
+        label: expect.arrayContaining([{ name: LabelName.AS_ID, value: "-1" }]),
       },
     ]),
   );

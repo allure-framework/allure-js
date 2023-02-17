@@ -273,6 +273,13 @@ class AllureReporter implements Reporter {
 
     unprocessedCases.forEach((testCase) => {
       this.onTestBegin(testCase);
+      const allureTest = this.allureTestCache.get(testCase);
+      if (allureTest) {
+        allureTest.addLabel(LabelName.AS_ID, "-1");
+        allureTest.detailsMessage =
+          "This test was skipped due to test setup error. Check you setup scripts to fix the issue.";
+      }
+
       this.onTestEnd(testCase, {
         status: Status.SKIPPED,
         attachments: [],
