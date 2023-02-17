@@ -17,7 +17,7 @@ Currently we didn't have official solution for circus test runner. Consider usin
 ### Install dependencies
 
 ```bash
-npm i -D jest-jasmine2@^26 allure-jasmine allure-js-commons @types/jasmine
+npm i -D jest-jasmine2 allure-jasmine@jest-jasmine2-version allure-js-commons @types/jasmine
 ```
 
 Create `allure-setup.ts` file:
