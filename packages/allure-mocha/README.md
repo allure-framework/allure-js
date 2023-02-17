@@ -78,5 +78,3 @@ To make tests more readable and avoid explicit API calls, you can use a special 
 ## Examples
 
 [mocha-allure-example](https://github.com/vovsemenv/mocha-allure-example) - minimal setup for using mocha with allure
-
-See [mocha-allure2-example](https://github.com/sskorol/mocha-allure2-example) project, which is already configured to use mocha decorators support.
