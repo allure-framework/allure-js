@@ -19,7 +19,7 @@ export const extractMeta = (eventList: EventList) => {
         const idMatch = trimmedCommentValue.match(allureIdRegexp);
         const idValue = idMatch?.groups?.id;
         if (idValue) {
-          labels.push({ name: LabelName.AS_ID, value: idValue });
+          labels.push({ name: LabelName.ALLURE_ID, value: idValue });
         }
 
         const labelMatch = trimmedCommentValue.match(allureLabelRegexp);

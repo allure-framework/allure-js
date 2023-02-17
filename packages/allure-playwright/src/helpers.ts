@@ -44,7 +44,7 @@ export class allure {
   }
 
   static id(id: string) {
-    this.label(LabelName.AS_ID, id);
+    this.label(LabelName.ALLURE_ID, id);
   }
 
   static epic(epic: string) {
