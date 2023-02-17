@@ -58,11 +58,13 @@ class AllureReporter implements Reporter {
   private allureWriter = process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST
     ? new InMemoryAllureWriter()
     : undefined;
+
   private allureRuntime: AllureRuntime | undefined;
   private allureGroupCache = new Map<Suite, AllureGroup>();
   private allureTestCache = new Map<TestCase, AllureTest>();
   private allureStepCache = new Map<TestStep, AllureStep>();
   private hostname = process.env.ALLURE_HOST_NAME || os.hostname();
+  private globalStartTime = new Date();
 
   private processedDiffs: string[] = [];
 
@@ -264,7 +266,39 @@ class AllureReporter implements Reporter {
     allureTest.endTest();
   }
 
+  addSkippedResults() {
+    const unprocessedCases = this.suite
+      .allTests()
+      .filter((testCase) => !this.allureTestCache.has(testCase));
+
+    unprocessedCases.forEach((testCase) => {
+      this.onTestBegin(testCase);
+      const allureTest = this.allureTestCache.get(testCase);
+      if (allureTest) {
+        allureTest.addLabel(LabelName.ALLURE_ID, "-1");
+        allureTest.detailsMessage =
+          "This test was skipped due to test setup error. Check you setup scripts to fix the issue.";
+      }
+
+      this.onTestEnd(testCase, {
+        status: Status.SKIPPED,
+        attachments: [],
+        duration: 0,
+        errors: [],
+        parallelIndex: 0,
+        workerIndex: 0,
+        retry: 0,
+        steps: [],
+        stderr: [],
+        stdout: [],
+        startTime: this.globalStartTime,
+      });
+    });
+  }
+
   onEnd(): void {
+    this.addSkippedResults();
+
     for (const group of this.allureGroupCache.values()) {
       group.endGroup();
     }
