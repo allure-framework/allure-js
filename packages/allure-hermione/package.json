@@ -3,7 +3,11 @@
   "version": "2.0.0-beta.26",
   "packageManager": "yarn@3.2.1",
   "license": "Apache-2.0",
-  "author": "qameta software",
+  "author": {
+    "name": "Qameta Software",
+    "email": "hello@qameta.io",
+    "url": "https://qameta.io/"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/allure-framework/allure-js.git",
