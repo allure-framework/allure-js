@@ -103,7 +103,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     parameter.forEach((param) => {
       currentTest.addParameter(param.name, param.value, {
         excluded: param.excluded,
-        hidden: param.hidden,
+        mode: param.mode,
       });
     });
     attachments.forEach((attachment) => {

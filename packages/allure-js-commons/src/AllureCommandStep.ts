@@ -138,8 +138,8 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     this.metadata.parameter.push({
       name,
       value,
-      hidden: options?.hidden || false,
       excluded: options?.excluded || false,
+      mode: options?.mode,
     });
   }
 
