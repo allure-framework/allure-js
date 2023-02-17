@@ -1,14 +1,13 @@
-import {LabelName} from "allure-js-commons";
-import {expect} from "chai";
-import {describe, it} from "mocha";
-import {ITestFormatterOptions, runFeatures} from "../helpers/formatter_helpers";
-import {buildSupportCodeLibrary} from "../helpers/runtime_helpers";
+import { LabelName } from "allure-js-commons";
+import { expect } from "chai";
+import { describe, it } from "mocha";
+import { ITestFormatterOptions, runFeatures } from "../helpers/formatter_helpers";
+import { buildSupportCodeLibrary } from "../helpers/runtime_helpers";
 
 const dataSet: { [name: string]: ITestFormatterOptions } = {
   withLabels: {
-    supportCodeLibrary: buildSupportCodeLibrary(({Given}) => {
-      Given("a step", () => {
-      });
+    supportCodeLibrary: buildSupportCodeLibrary(({ Given }) => {
+      Given("a step", () => {});
     }),
     sources: [
       {
@@ -43,10 +42,14 @@ describe("CucumberJSAllureReporter > examples", () => {
     });
     expect(results.tests).length(1);
 
-    const {labels} = results.tests[0];
+    const { labels } = results.tests[0];
     const tags = labels.filter((label) => label.name === LabelName.TAG);
-    const severityLabels = labels.filter((label) => label.name === LabelName.SEVERITY).map(({value}) => value);
-    const featureLabels = labels.filter((label) => label.name === LabelName.FEATURE).map(({value}) => value);
+    const severityLabels = labels
+      .filter((label) => label.name === LabelName.SEVERITY)
+      .map(({ value }) => value);
+    const featureLabels = labels
+      .filter((label) => label.name === LabelName.FEATURE)
+      .map(({ value }) => value);
 
     expect(tags).length(1);
     expect(severityLabels).contains("foo");
