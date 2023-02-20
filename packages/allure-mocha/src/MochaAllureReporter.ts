@@ -28,6 +28,12 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   constructor(readonly runner: ParallelRunner, readonly opts: Mocha.MochaOptions) {
     super(runner, opts);
 
+    if (opts.parallel) {
+      throw new Error(
+        "Allure API doesn't work in parallel mode! If you want to use the functionality, please switch back to single thread mode!",
+      );
+    }
+
     const { resultsDir = "allure-results" } = opts.reporterOptions || {};
     const allureConfig: AllureConfig = {
       ...opts.reporterOptions,

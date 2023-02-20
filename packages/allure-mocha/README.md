@@ -2,6 +2,8 @@
 
 This project implements Allure integration with Mocha framework.
 
+**Allure API doesn't work in parallel mode**! If you want to use the functionality, please switch back to single thread mode!
+
 ## Installation
 
 ```bash
