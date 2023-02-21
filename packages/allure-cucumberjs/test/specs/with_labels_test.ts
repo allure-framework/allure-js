@@ -12,6 +12,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
     sources: [
       {
         data:
+          "@severity:foo @feature:bar\n" +
           "Feature: a\n" +
           "\n" +
           "  @severity:bar @feature:foo @foo\n" +
@@ -31,7 +32,7 @@ describe("CucumberJSAllureReporter > examples", () => {
       labels: [
         {
           pattern: [/@feature:(.*)/],
-          name: "epic",
+          name: "feature",
         },
         {
           pattern: [/@severity:(.*)/],
@@ -42,11 +43,18 @@ describe("CucumberJSAllureReporter > examples", () => {
     expect(results.tests).length(1);
 
     const { labels } = results.tests[0];
-    const epic = labels.find((label) => label.name === LabelName.EPIC);
-    const severity = labels.find((label) => label.name === LabelName.SEVERITY);
     const tags = labels.filter((label) => label.name === LabelName.TAG);
-    expect(epic?.value).eq("foo");
-    expect(severity?.value).eq("bar");
+    const severityLabels = labels
+      .filter((label) => label.name === LabelName.SEVERITY)
+      .map(({ value }) => value);
+    const featureLabels = labels
+      .filter((label) => label.name === LabelName.FEATURE)
+      .map(({ value }) => value);
+
     expect(tags).length(1);
+    expect(severityLabels).contains("foo");
+    expect(severityLabels).contains("bar");
+    expect(featureLabels).contains("foo");
+    expect(featureLabels).contains("bar");
   });
 });
