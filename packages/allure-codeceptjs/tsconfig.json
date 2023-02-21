@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": [
+    "./src/**/*",
+  ],
+  "exclude": [
+    "./test/**/*",
+  ],
+  "compilerOptions": {
+    "types": ["codeceptjs"],
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "skipLibCheck": true
+  }
+}
