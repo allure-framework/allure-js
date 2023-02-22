@@ -41,6 +41,10 @@ export const isAnyStepFailed = (item: ExecutableItem): boolean => {
   return !!item.steps.find((step) => isAnyStepFailed(step));
 };
 
+export const isAllStepsEnded = (item: ExecutableItem): boolean => {
+  return item.steps.every((val) => val.stop && isAllStepsEnded(val));
+};
+
 export const readImageAsBase64 = async (path: string): Promise<string | undefined> => {
   try {
     const file = await readFile(path, { encoding: "base64" });

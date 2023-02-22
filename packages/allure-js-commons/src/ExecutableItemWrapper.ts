@@ -12,7 +12,7 @@ import {
   StepResult,
   TestResult,
 } from "./model";
-import { isAnyStepFailed } from "./utils";
+import { isAllStepsEnded, isAnyStepFailed } from "./utils";
 
 export class ExecutableItemWrapper {
   constructor(private readonly info: FixtureResult | TestResult) {}
@@ -59,6 +59,10 @@ export class ExecutableItemWrapper {
 
   public get isAnyStepFailed() {
     return isAnyStepFailed(this.info);
+  }
+
+  public get isAllStepsEnded() {
+    return isAllStepsEnded(this.info);
   }
 
   public addParameter(name: string, value: string, options?: ParameterOptions): void {

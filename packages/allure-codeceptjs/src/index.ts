@@ -2,13 +2,15 @@ import path from "path";
 import {
   AllureGroup,
   AllureRuntime,
+  AllureStep,
   AllureTest,
   LabelName,
   md5,
   Stage,
   Status,
 } from "allure-js-commons";
-import { allure } from "./helpers";
+import { isAllStepsEnded } from "allure-js-commons/dist/src/utils";
+
 const { event } = global.codeceptjs;
 
 interface CodeceptContext {}
@@ -91,6 +93,7 @@ class AllureReporter {
   allureRuntime?: AllureRuntime;
   allureGroupCache = new Map<CodeceptSuite, AllureGroup>();
   allureTestCache = new Map<CodeceptTest, AllureTest>();
+  allureStepCache = new Map<CodeceptStep, AllureStep>();
   currentTest: CodeceptTest | null = null;
 
   constructor(config: { outputDir: string }) {
@@ -108,7 +111,9 @@ class AllureReporter {
     event.dispatcher.addListener(event.test.failed, this.testFailed.bind(this));
 
     event.dispatcher.addListener(event.step.started, this.stepStarted.bind(this));
-    event.dispatcher.addListener(event.step.finished, this.stepFailed.bind(this));
+    event.dispatcher.addListener(event.step.passed, this.stepPassed.bind(this));
+    event.dispatcher.addListener(event.step.failed, this.stepFailed.bind(this));
+    event.dispatcher.addListener(event.step.finished, this.stepFinished.bind(this));
   }
 
   createTest(test: CodeceptTest) {
@@ -183,10 +188,66 @@ class AllureReporter {
     this.currentTest = null;
   }
 
-  stepStarted(step: CodeceptStep) {}
-  stepCompleted(step: CodeceptStep) {}
-  stepFailed(step: CodeceptStep) {}
-  stepPassed(step: CodeceptStep) {}
+  getStepParents(step: CodeceptStep) {
+    const parents: CodeceptStep[] = [];
+    let innerStep = step;
+    while (innerStep.metaStep) {
+      parents.unshift(innerStep.metaStep);
+      innerStep = innerStep.metaStep;
+    }
+    return parents;
+  }
+
+  stepStarted(step: CodeceptStep) {
+    const parents = [...this.getStepParents(step), step];
+    let lastParent = (parents.length > 0 && this.allureStepCache.get(parents[0])) || null;
+
+    parents.forEach((parentStep) => {
+      if (!lastParent) {
+        const allureTest = this.allureTestCache.get(this.currentTest!);
+        if (allureTest) {
+          const allureStep = allureTest.startStep(parentStep.toString());
+          this.allureStepCache.set(parentStep, allureStep);
+          lastParent = allureStep;
+        }
+      } else {
+        const allureStep =
+          this.allureStepCache.get(parentStep) || lastParent.startStep(parentStep.toString());
+        this.allureStepCache.set(parentStep, allureStep);
+        lastParent = allureStep;
+      }
+    });
+  }
+
+  stepFailed(step: CodeceptStep) {
+    const allureStep = this.allureStepCache.get(step);
+
+    if (allureStep) {
+      allureStep.status = Status.FAILED;
+      allureStep.endStep();
+    }
+  }
+
+  stepPassed(step: CodeceptStep) {
+    const allureStep = this.allureStepCache.get(step);
+    if (allureStep) {
+      allureStep.status = Status.PASSED;
+      allureStep.endStep();
+    }
+  }
+
+  stepFinished(step: CodeceptStep) {
+    const parentStep = this.getStepParents(step)[0];
+    const allureStep = this.allureStepCache.get(parentStep);
+    if (allureStep?.isAllStepsEnded) {
+      if (allureStep.isAnyStepFailed) {
+        allureStep.status = Status.FAILED;
+      } else {
+        allureStep.status = Status.PASSED;
+      }
+      allureStep.endStep();
+    }
+  }
 
   ensureAllureGroupCreated(suite: CodeceptSuite): AllureGroup {
     let group = this.allureGroupCache.get(suite);
@@ -238,8 +299,6 @@ class AllureReporter {
 const allurePlugin = (config: { outputDir: string }) => {
   return new AllureReporter(config);
 };
-
-allurePlugin.allure = allure;
 
 const asciiRegex = new RegExp(
   "[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))", // eslint-disable-line no-control-regex
