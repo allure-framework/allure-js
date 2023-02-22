@@ -1,11 +1,9 @@
 # allure-js-commons
 
-Interface for Allure 2 to be used from Javascript and TypeScript.
-This is not intended to be used by the projects directly, only as a foundation for test framework reporters.
+Interface for Allure to be used from Javascript and TypeScript.
+There you can find primitives to create custom integrations for the javascript testing frameworks.
 
-### Authors
-
-Ilya Korobitsyn <mail@korobochka.org>
+## API Overview
 
 ### Labels environment variables
 
