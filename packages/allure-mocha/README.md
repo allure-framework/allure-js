@@ -50,7 +50,7 @@ it("is a test", () => {
 ### Parameters usage
 
 ```ts
-import { allure } from "allure-mocha/runtime";
+import allureMocha from "allure-mocha/runtime";
 
 it("is a test", () => {
   allureMocha.allure.parameter("parameterName", "parameterValue");
@@ -63,7 +63,7 @@ Also addParameter takes an third optional parameter with the hidden and excluded
 `excluded: true` - excludes parameter from the history
 
 ```ts
-import { allure } from "allure-mocha/runtime";
+import allureMocha from "allure-mocha/runtime";
 
 it("is a test", () => {
   allureMocha.allure.parameter("parameterName", "parameterValue", {

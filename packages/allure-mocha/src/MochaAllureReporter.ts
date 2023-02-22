@@ -2,7 +2,7 @@ import { AllureConfig, AllureRuntime } from "allure-js-commons";
 import * as Mocha from "mocha";
 import { AllureReporter } from "./AllureReporter";
 import { MochaAllure } from "./MochaAllure";
-import Base = Mocha.reporters.Base;
+import { ParallelMochaAllure } from "./ParallelMochaAllure";
 
 const {
   EVENT_SUITE_BEGIN,
@@ -16,7 +16,9 @@ const {
   EVENT_HOOK_END,
 } = Mocha.Runner.constants;
 
-export let allure: MochaAllure;
+// eslint-disable-next-line
+// @ts-ignore
+export let allure: MochaAllure = new ParallelMochaAllure();
 
 type ParallelRunner = Mocha.Runner & {
   linkPartialObjects?: (val: boolean) => ParallelRunner;
@@ -28,12 +30,6 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   constructor(readonly runner: ParallelRunner, readonly opts: Mocha.MochaOptions) {
     super(runner, opts);
 
-    if (opts.parallel) {
-      throw new Error(
-        "Allure API doesn't work in parallel mode! If you want to use the functionality, please switch back to single thread mode!",
-      );
-    }
-
     const { resultsDir = "allure-results" } = opts.reporterOptions || {};
     const allureConfig: AllureConfig = {
       ...opts.reporterOptions,
@@ -41,6 +37,7 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
     };
 
     this.coreReporter = new AllureReporter(new AllureRuntime(allureConfig));
+
     allure = this.coreReporter.getImplementation();
 
     if (runner.linkPartialObjects) {
