@@ -5,6 +5,7 @@ export interface CodeceptError {
   actual: string;
   expected: string;
   cliMessage: () => string;
+  message: string;
   inspect: () => string;
 }
 

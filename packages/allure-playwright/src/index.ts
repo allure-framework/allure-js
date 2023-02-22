@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { createHash } from "crypto";
 import fs from "fs";
 import os from "os";
 import path from "path";
@@ -23,6 +21,7 @@ import { FullConfig, TestStatus } from "@playwright/test";
 import { Reporter, Suite, TestCase, TestResult, TestStep } from "@playwright/test/reporter";
 import {
   AllureGroup,
+  allureReportFolder,
   AllureRuntime,
   AllureStep,
   AllureTest,
@@ -35,6 +34,7 @@ import {
   MetadataMessage,
   readImageAsBase64,
   Status,
+  stripAscii,
 } from "allure-js-commons";
 import {
   ALLURE_IMAGEDIFF_CONTENT_TYPE,
@@ -327,15 +327,6 @@ const statusToAllureStats = (status: TestStatus, expectedStatus: TestStatus): St
 
 export default AllureReporter;
 
-const asciiRegex = new RegExp(
-  "[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))", // eslint-disable-line no-control-regex
-  "g",
-);
-
-const stripAscii = (str: string): string => {
-  return str.replace(asciiRegex, "");
-};
-
 const appendStep = (parent: ExecutableItemWrapper, step: TestStep) => {
   const allureStep = parent.startStep(step.title, step.startTime.getTime());
   allureStep.endStep(step.startTime.getTime() + step.duration);
@@ -343,20 +334,6 @@ const appendStep = (parent: ExecutableItemWrapper, step: TestStep) => {
   for (const child of step.steps || []) {
     appendStep(allureStep, child);
   }
-};
-
-const allureReportFolder = (outputFolder?: string): string => {
-  if (process.env.ALLURE_RESULTS_DIR) {
-    return path.resolve(process.cwd(), process.env.ALLURE_RESULTS_DIR);
-  }
-  if (outputFolder) {
-    return outputFolder;
-  }
-  return defaultReportFolder();
-};
-
-const defaultReportFolder = (): string => {
-  return path.resolve(process.cwd(), "allure-results");
 };
 
 export * from "./helpers";
