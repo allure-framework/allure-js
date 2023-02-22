@@ -9,83 +9,9 @@ import {
   Stage,
   Status,
 } from "allure-js-commons";
-import { isAllStepsEnded } from "allure-js-commons/dist/src/utils";
+import { CodeceptError, CodeceptStep, CodeceptSuite, CodeceptTest } from "./codecept-types";
 
 const { event } = global.codeceptjs;
-
-interface CodeceptContext {}
-
-interface CodeceptHook {}
-interface CodeceptError {
-  params: any;
-  template: string;
-  showDiff: boolean;
-  actual: string;
-  expected: string;
-  cliMessage: () => string;
-  inspect: () => string;
-}
-
-interface CodeceptTest {
-  type: "test";
-  title: string;
-  retryNum?: number;
-  fullTitle: () => string;
-  opts: any;
-  uid: string;
-  parent: CodeceptSuite;
-  ctx: CodeceptContext;
-  fn: () => void;
-  body: string;
-  async: boolean;
-  sync: boolean;
-  _timeout: number;
-  _slow: number;
-  _retries: number;
-  timedOut: boolean;
-  _currentRetry: number;
-  pending: boolean;
-  tags: [];
-  file: string;
-  inject: any;
-  steps: CodeceptStep[];
-}
-
-interface CodeceptStep {
-  actor: string;
-  name: string;
-  helperMethod: string;
-  suffix: string;
-  prefix: string;
-  comment: string;
-  args: string[];
-  status: "queued";
-  metaStep?: CodeceptStep;
-}
-
-interface CodeceptSuite {
-  fullTitle: () => string;
-  tests: CodeceptTest[];
-  ctx: CodeceptContext;
-  suites: CodeceptSuite[];
-  root: boolean;
-  pending: boolean;
-  _retries: number;
-  _beforeEach: CodeceptHook[];
-  _beforeAll: CodeceptHook[];
-  _afterEach: CodeceptHook[];
-  _afterAll: CodeceptHook[];
-  _timeout: number;
-  _slow: number;
-  _bail: boolean;
-  _onlyTests: [];
-  _onlySuites: [];
-  delayed: boolean;
-  parent: CodeceptSuite;
-  opts: any;
-  tags: [];
-  file: string;
-}
 
 class AllureReporter {
   currentMetaStep = [];
@@ -117,13 +43,13 @@ class AllureReporter {
   }
 
   createTest(test: CodeceptTest) {
-    const suite = test.parent;
+    const suite = test.parent!;
     const group = this.ensureAllureGroupCreated(suite);
     const allureTest = group.startTest(test.title);
     allureTest.addLabel(LabelName.LANGUAGE, "javascript");
     allureTest.addLabel(LabelName.FRAMEWORK, "codeceptjs");
 
-    const relativeFile = path.relative(codecept_dir, test.file).split(path.sep).join("/");
+    const relativeFile = path.relative(codecept_dir, test.file!).split(path.sep).join("/");
     const fullName = `${relativeFile}#${test.title}`;
 
     allureTest.stage = Stage.PENDING;
@@ -146,14 +72,6 @@ class AllureReporter {
 
   testStarted(test: CodeceptTest) {
     this.currentTest = test;
-    if (this.currentTest) {
-      this.currentTest.steps = [];
-      if (!("retryNum" in this.currentTest)) {
-        this.currentTest.retryNum = 0;
-      } else {
-        this.currentTest.retryNum! += 1;
-      }
-    }
   }
 
   testFailed(test: CodeceptTest, err: CodeceptError) {
