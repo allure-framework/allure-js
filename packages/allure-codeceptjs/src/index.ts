@@ -215,7 +215,7 @@ class AllureReporter {
       this.allureStepCache.set(this.currentAllureTest!, new Map());
     }
 
-    this.lastStepParent = step;
+    this.lastStepParent = lastParent;
   }
 
   stepFailed(step: CodeceptStep) {
