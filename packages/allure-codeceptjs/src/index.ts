@@ -11,7 +11,13 @@ import {
   Status,
   stripAscii,
 } from "allure-js-commons";
-import { CodeceptError, CodeceptStep, CodeceptSuite, CodeceptTest } from "./codecept-types";
+import {
+  CodeceptError,
+  CodeceptHook,
+  CodeceptStep,
+  CodeceptSuite,
+  CodeceptTest,
+} from "./codecept-types";
 
 const { event } = global.codeceptjs;
 
@@ -20,7 +26,7 @@ class AllureReporter {
   allureGroupCache = new Map<CodeceptSuite, AllureGroup>();
   allureTestCache = new Map<CodeceptTest, AllureTest>();
 
-  allureStepCache = new Map<CodeceptStep, AllureStep>();
+  allureStepCache = new Map<AllureTest, Map<CodeceptStep, AllureStep>>();
 
   ctx!: Mocha.Context;
 
@@ -38,7 +44,8 @@ class AllureReporter {
     event.dispatcher.addListener(event.suite.before, this.suiteStarted.bind(this));
     event.dispatcher.addListener(event.suite.after, this.suiteFinished.bind(this));
 
-    // event.dispatcher.addListener(event.suite.after, this.suiteFinished.bind(this));
+    event.dispatcher.addListener(event.hook.started, this.hookStarted.bind(this));
+    event.dispatcher.addListener(event.hook.passed, this.hookPassed.bind(this));
 
     // Test
     event.dispatcher.addListener(event.test.started, this.testStarted.bind(this));
@@ -53,10 +60,20 @@ class AllureReporter {
     event.dispatcher.addListener(event.step.finished, this.stepFinished.bind(this));
   }
 
+  hookStarted(hook: CodeceptHook) {
+    this.currentTest = hook.ctx?.currentTest || null;
+  }
+
+  hookPassed(hook: CodeceptHook) {
+    this.currentTest = null;
+  }
+
   createTest(test: CodeceptTest) {
     const suite = test.parent!;
     const group = this.ensureAllureGroupCreated(suite);
     const allureTest = group.startTest(test.title);
+
+    this.allureStepCache.set(allureTest, new Map());
 
     allureTest.addLabel(LabelName.LANGUAGE, "javascript");
     allureTest.addLabel(LabelName.FRAMEWORK, "codeceptjs");
@@ -89,8 +106,9 @@ class AllureReporter {
     return allureTest;
   }
 
-  allureStepByCodeceptStep(step: CodeceptStep) {
-    const allureStep = this.allureStepCache.get(step);
+  allureStepByCodeceptStep(step: CodeceptStep, allureTest: AllureTest): AllureStep | undefined {
+    const steps = this.allureStepCache.get(allureTest);
+    const allureStep = steps?.get(step);
 
     if (!allureStep) {
       this.debug();
@@ -166,25 +184,28 @@ class AllureReporter {
 
   stepStarted(step: CodeceptStep) {
     const parents = [...this.getStepParents(step), step];
-
-    let lastParent = (parents.length > 0 && this.allureStepCache.get(parents[0])) || undefined;
     const allureTest = this.currentAllureTest;
     if (!allureTest) {
       return;
     }
 
+    const steps = this.allureStepCache.get(allureTest);
+
+    let lastParent = (parents.length > 0 && steps?.get(parents[0])) || undefined;
+
     parents.forEach((parentStep) => {
       const allureStep = !lastParent
         ? allureTest.startStep(parentStep.toString())
-        : this.allureStepCache.get(parentStep) || lastParent.startStep(parentStep.toString());
+        : steps?.get(parentStep) || lastParent.startStep(parentStep.toString());
 
-      this.allureStepCache.set(parentStep, allureStep);
+      steps?.set(parentStep, allureStep);
       lastParent = allureStep;
     });
   }
 
   stepFailed(step: CodeceptStep) {
-    const allureStep = this.allureStepByCodeceptStep(step);
+    const allureStep = this.allureStepByCodeceptStep(step, this.currentAllureTest!);
+
     if (allureStep) {
       allureStep.status = Status.FAILED;
       allureStep.endStep();
@@ -192,7 +213,7 @@ class AllureReporter {
   }
 
   stepPassed(step: CodeceptStep) {
-    const allureStep = this.allureStepByCodeceptStep(step);
+    const allureStep = this.allureStepByCodeceptStep(step, this.currentAllureTest!);
 
     if (allureStep) {
       allureStep.status = Status.PASSED;
@@ -201,8 +222,8 @@ class AllureReporter {
   }
 
   stepFinished(step: CodeceptStep) {
-    const parentStep = this.getStepParents(step)[0];
-    const allureStep = this.allureStepByCodeceptStep(parentStep);
+    const parentStep = this.getStepParents(step)[0] || step;
+    const allureStep = this.allureStepByCodeceptStep(parentStep, this.currentAllureTest!);
 
     if (allureStep) {
       allureStep.status = allureStep.isAnyStepFailed ? Status.FAILED : Status.PASSED;

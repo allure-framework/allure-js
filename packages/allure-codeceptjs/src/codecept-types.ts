@@ -18,7 +18,8 @@ export interface CodeceptStep {
   comment: string;
   args: string[];
   status: string;
-  metaStep?: CodeceptStep;
+  metaStep: CodeceptStep;
+  toString: () => string;
 }
 
 export type CodeceptSuite = Mocha.SuiteRunnable;
