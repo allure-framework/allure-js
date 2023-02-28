@@ -183,6 +183,8 @@ class AllureReporter {
   }
 
   stepStarted(step: CodeceptStep) {
+    this.validateStep(step);
+
     const parents = [...this.getStepParents(step), step];
     const allureTest = this.currentAllureTest;
     if (!allureTest) {
@@ -203,9 +205,21 @@ class AllureReporter {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  lastStepParent: CodeceptStep | undefined;
+
+  validateStep(step: CodeceptStep) {
+    const lastParent = [...this.getStepParents(step), step][0];
+
+    if (lastParent !== this.lastStepParent) {
+      this.allureStepCache.set(this.currentAllureTest!, new Map());
+    }
+
+    this.lastStepParent = step;
+  }
+
   stepFailed(step: CodeceptStep) {
     const allureStep = this.allureStepByCodeceptStep(step, this.currentAllureTest!);
-
     if (allureStep) {
       allureStep.status = Status.FAILED;
       allureStep.endStep();
@@ -254,7 +268,6 @@ class AllureReporter {
   debug(msg?: string) {
     const error = new Error(msg || "Something went wrong");
     codeceptjs.output.log(`${error.message} ${error.stack || ""}`);
-    // debugger;
   }
 
   get currentAllureTest() {
