@@ -1,7 +1,12 @@
 {
   "name": "newman-reporter-allure",
-  "version": "2.0.0-beta.26",
+  "version": "2.0.0",
   "description": "Allure Newman integration",
+  "author": {
+    "name": "Qameta Software",
+    "email": "allure@qameta.io",
+    "url": "https://qameta.io/"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
@@ -28,7 +33,6 @@
     "url": "https://github.com/allure-framework/allure-js.git",
     "directory": "packages/newman-reporter-allure"
   },
-  "author": "Virender",
   "license": "Apache-2.0",
   "dependencies": {
     "allure-js-commons": "workspace:*"

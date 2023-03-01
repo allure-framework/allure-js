@@ -100,7 +100,7 @@ export class CucumberJSAllureFormatter extends Formatter {
   private readonly afterHooks: TestCaseHookDefinition[];
   private readonly beforeHooks: TestCaseHookDefinition[];
   private readonly exceptionFormatter: (message: string) => string;
-  private readonly labelsMathers: LabelMatcher[];
+  private readonly labelsMatchers: LabelMatcher[];
   private readonly linksMatchers: LinkMatcher[];
   private readonly documentMap: Map<string, messages.GherkinDocument> = new Map();
   private readonly scenarioMap: Map<string, messages.Scenario> = new Map();
@@ -126,9 +126,10 @@ export class CucumberJSAllureFormatter extends Formatter {
     config: CucumberJSAllureFormatterConfig,
   ) {
     super(options);
+
     options.eventBroadcaster.on("envelope", this.parseEnvelope.bind(this));
 
-    this.labelsMathers = config.labels || [];
+    this.labelsMatchers = config.labels || [];
     this.linksMatchers = config.links || [];
     this.exceptionFormatter = (message): string => {
       if (config.exceptionFormatter !== undefined) {
@@ -151,9 +152,9 @@ export class CucumberJSAllureFormatter extends Formatter {
   }
 
   private get tagsIgnorePatterns(): RegExp[] {
-    const { linksMatchers, labelsMathers } = this;
+    const { linksMatchers, labelsMatchers } = this;
 
-    return [...linksMatchers, ...labelsMathers].flatMap(({ pattern }) => pattern);
+    return [...linksMatchers, ...labelsMatchers].flatMap(({ pattern }) => pattern);
   }
 
   private parseEnvelope(envelope: messages.Envelope): void {
@@ -183,11 +184,11 @@ export class CucumberJSAllureFormatter extends Formatter {
   private parseTagsLabels(tags: readonly Tag[]): Label[] {
     const labels: Label[] = [];
 
-    if (this.labelsMathers.length === 0) {
+    if (this.labelsMatchers.length === 0) {
       return labels;
     }
 
-    this.labelsMathers.forEach((matcher) => {
+    this.labelsMatchers.forEach((matcher) => {
       const matchedTags = tags.filter((tag) =>
         matcher.pattern.some((pattern) => pattern.test(tag.name)),
       );
@@ -278,17 +279,21 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     const doc = this.documentMap.get(pickle.uri);
+    const featureLabels = this.parseTagsLabels(doc?.feature?.tags || []);
+    const featureLinks = this.parseTagsLinks(doc?.feature?.tags || []);
     const scenarioId = pickle?.astNodeIds?.[0];
     const scenario = this.scenarioMap.get(scenarioId);
-    const labels = this.parseTagsLabels(scenario?.tags || []);
-    const links = this.parseTagsLinks(scenario?.tags || []);
+    const scenarioLabels = this.parseTagsLabels(scenario?.tags || []);
+    const scenarioLinks = this.parseTagsLinks(scenario?.tags || []);
     const currentTest = new AllureTest(this.allureRuntime, Date.now());
     const thread = data.workerId || ALLURE_THREAD_NAME || process.pid.toString();
+    const fullName = `${pickle.uri}#${pickle.name}`;
+    const testCaseId = md5(fullName);
+
     this.testCaseStartedMap.set(data.id, data);
     this.testCaseTestStepsResults.set(data.id, []);
     this.currentTestsMap.set(data.id, currentTest);
-    const fullName = `${pickle.uri}#${pickle.name}`;
-    const testCaseId = md5(fullName);
+
     currentTest.name = pickle.name;
     currentTest.fullName = fullName;
     currentTest.testCaseId = testCaseId;
@@ -298,8 +303,11 @@ export class CucumberJSAllureFormatter extends Formatter {
     currentTest.addLabel(LabelName.LANGUAGE, "javascript");
     currentTest.addLabel(LabelName.FRAMEWORK, "cucumberjs");
     currentTest.addLabel(LabelName.THREAD, thread);
-    labels.forEach((label) => currentTest.addLabel(label.name, label.value));
-    links.forEach((link) => currentTest.addLink(link.url, link.name, link.type));
+
+    featureLabels.forEach((label) => currentTest.addLabel(label.name, label.value));
+    featureLinks.forEach((link) => currentTest.addLink(link.url, link.name, link.type));
+    scenarioLabels.forEach((label) => currentTest.addLabel(label.name, label.value));
+    scenarioLinks.forEach((link) => currentTest.addLink(link.url, link.name, link.type));
 
     if (doc?.feature) {
       currentTest.addLabel(LabelName.FEATURE, doc.feature.name);

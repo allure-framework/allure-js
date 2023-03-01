@@ -17,13 +17,12 @@ Currently we didn't have official solution for circus test runner. Consider usin
 ### Install dependencies
 
 ```bash
-npm i -D jest-jasmine2 allure-jasmine allure-js-commons @types/jasmine
+npm i -D jest-jasmine2@INSTALLED_JEST_VERSION allure-jasmine allure-js-commons @types/jasmine
 ```
 
 Create `allure-setup.ts` file:
 
 ```typescript
-import { JasmineAllureReporter } from "allure-jasmine";
 import { JasmineAllureReporter } from "allure-jasmine";
 import { JasmineAllureInterface } from "allure-jasmine/dist/src/JasmineAllureReporter";
 
@@ -43,6 +42,6 @@ declare global {
 module.exports = {
   testRunner: "jest-jasmine2",
   preset: "ts-jest",
-  setupFilesAfterEnv: ["./spec/helpers/allure.ts"],
+  setupFilesAfterEnv: ["./allure-setup.ts"],
 };
 ```

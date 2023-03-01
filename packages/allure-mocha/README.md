@@ -2,6 +2,8 @@
 
 This project implements Allure integration with Mocha framework.
 
+**Allure API doesn't work in parallel mode**! If you want to use the functionality, please switch back to single thread mode!
+
 ## Installation
 
 ```bash
@@ -38,23 +40,20 @@ If you want to provide extra information, such as steps and attachments, import 
 into your code:
 
 ```javascript
-// es-modules
-import { allure } from "allure-mocha/runtime";
-// or commonjs
-const { allure } = require("allure-mocha/runtime");
+const allureMocha = require("allure-mocha/runtime");
 
 it("is a test", () => {
-  allure.epic("Some info");
+  allureMocha.allure.epic("Some info");
 });
 ```
 
 ### Parameters usage
 
 ```ts
-import { allure } from "allure-mocha/runtime";
+import allureMocha from "allure-mocha/runtime";
 
 it("is a test", () => {
-  allure.parameter("parameterName", "parameterValue");
+  allureMocha.allure.parameter("parameterName", "parameterValue");
 });
 ```
 
@@ -64,10 +63,13 @@ Also addParameter takes an third optional parameter with the hidden and excluded
 `excluded: true` - excludes parameter from the history
 
 ```ts
-import { allure } from "allure-mocha/runtime";
+import allureMocha from "allure-mocha/runtime";
 
 it("is a test", () => {
-  allure.parameter("parameterName", "parameterValue", { mode: "hidden", excluded: true });
+  allureMocha.allure.parameter("parameterName", "parameterValue", {
+    mode: "hidden",
+    excluded: true,
+  });
 });
 ```
 
@@ -77,8 +79,4 @@ To make tests more readable and avoid explicit API calls, you can use a special 
 
 ## Examples
 
-See [mocha-allure2-example](https://github.com/sskorol/mocha-allure2-example) project, which is already configured to use latest Allure 2 features with decorators support.
-
-## Thanks
-
-[@srg-kostyrko](https://github.com/srg-kostyrko) for help and assistance.
+[mocha-allure-example](https://github.com/vovsemenv/mocha-allure-example) - minimal setup for using mocha with allure
