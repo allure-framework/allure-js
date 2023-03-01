@@ -5,6 +5,7 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
+  InMemoryAllureWriter,
   LabelName,
   md5,
   Stage,
@@ -21,20 +22,26 @@ import {
 
 const { event } = global.codeceptjs;
 
+interface ReporterOptions {
+  outputDir: string;
+  postProcessorForTest?: any;
+}
 class AllureReporter {
   allureRuntime?: AllureRuntime;
   allureGroupCache = new Map<CodeceptSuite, AllureGroup>();
   allureTestCache = new Map<CodeceptTest, AllureTest>();
+  allureWriter?: InMemoryAllureWriter;
 
   allureStepCache = new Map<AllureTest, Map<CodeceptStep, AllureStep>>();
 
   currentTest: CodeceptTest | null = null;
-
-  constructor(config: { outputDir: string }) {
+  reporterOptions!: ReporterOptions;
+  constructor(config: ReporterOptions) {
     this.registerEvents();
-
     const resultsDir = allureReportFolder(config.outputDir);
-    this.allureRuntime = new AllureRuntime({ resultsDir });
+    this.allureWriter = config.postProcessorForTest ? new InMemoryAllureWriter() : undefined;
+    this.allureRuntime = new AllureRuntime({ resultsDir, writer: this.allureWriter });
+    this.reporterOptions = config || {};
   }
 
   registerEvents() {
@@ -57,6 +64,8 @@ class AllureReporter {
     event.dispatcher.addListener(event.step.passed, this.stepPassed.bind(this));
     event.dispatcher.addListener(event.step.failed, this.stepFailed.bind(this));
     event.dispatcher.addListener(event.step.finished, this.stepFinished.bind(this));
+
+    event.dispatcher.addListener(event.all.result, this.afterAll.bind(this));
   }
 
   hookStarted(hook: CodeceptHook) {
@@ -251,6 +260,12 @@ class AllureReporter {
     if (allureStep) {
       allureStep.status = allureStep.isAnyStepFailed ? Status.FAILED : Status.PASSED;
       allureStep.endStep();
+    }
+  }
+
+  afterAll() {
+    if (this.reporterOptions.postProcessorForTest) {
+      this.reporterOptions.postProcessorForTest(this.allureWriter);
     }
   }
 
