@@ -28,8 +28,6 @@ class AllureReporter {
 
   allureStepCache = new Map<AllureTest, Map<CodeceptStep, AllureStep>>();
 
-  ctx!: Mocha.Context;
-
   currentTest: CodeceptTest | null = null;
 
   constructor(config: { outputDir: string }) {
@@ -52,6 +50,7 @@ class AllureReporter {
     event.dispatcher.addListener(event.test.skipped, this.testSkipped.bind(this));
     event.dispatcher.addListener(event.test.passed, this.testPassed.bind(this));
     event.dispatcher.addListener(event.test.failed, this.testFailed.bind(this));
+    event.dispatcher.addListener(event.test.after, this.testAfter.bind(this));
 
     // Step
     event.dispatcher.addListener(event.step.started, this.stepStarted.bind(this));
@@ -89,7 +88,6 @@ class AllureReporter {
     this.allureTestCache.set(test, allureTest);
   }
   suiteStarted(suite: CodeceptSuite) {
-    this.ctx = suite.ctx;
     suite.tests.forEach((test) => {
       this.createTest(test);
     });
@@ -138,7 +136,7 @@ class AllureReporter {
   }
 
   testFailed(test: CodeceptTest, err: CodeceptError) {
-    const allureTest = this.allureTestByCodeceptTest(test);
+    const allureTest = this.allureTestByCodeceptTest(test || (test as any).ctx.currentTest);
 
     if (allureTest) {
       allureTest.statusDetails = { message: stripAscii(err.message) };
@@ -158,17 +156,28 @@ class AllureReporter {
     }
   }
 
-  testSkipped(test: CodeceptTest) {
+  testSkipped(
+    test: CodeceptTest & {
+      opts: {
+        skipInfo: {
+          message: string;
+          isFastSkipped: boolean;
+        };
+      };
+    },
+  ) {
     const allureTest = this.allureTestByCodeceptTest(test);
-
     if (allureTest) {
       allureTest.stage = Stage.FINISHED;
       allureTest.status = Status.SKIPPED;
+      if (test.opts.skipInfo) {
+        allureTest.statusDetails = { message: test.opts.skipInfo.message };
+      }
       allureTest.endTest();
     }
   }
 
-  testAfter() {
+  testAfter(test: CodeceptTest) {
     this.currentTest = null;
   }
 
