@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { mkdir, readFile, writeFile } from "fs/promises";
-import { resolve } from "path";
+import { dirname, resolve } from "path";
 
 import { InMemoryAllureWriter } from "allure-js-commons";
 import codeceptRun from "codeceptjs/lib/command/run";
@@ -18,7 +18,6 @@ export const runTests = async (params: {
   }
 
   let data;
-
   const testPath = resolve(__dirname, `../test-results/${randomUUID()}`);
 
   await mkdir(testPath, {
@@ -27,7 +26,9 @@ export const runTests = async (params: {
 
   await Promise.all(
     Object.keys(params.files).map(async (fileName) => {
-      await writeFile(resolve(testPath, fileName), params.files[fileName]);
+      const filePath = resolve(testPath, fileName);
+      await mkdir(dirname(filePath), { recursive: true });
+      await writeFile(filePath, params.files[fileName], {});
     }),
   );
 
