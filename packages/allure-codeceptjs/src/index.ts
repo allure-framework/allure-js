@@ -6,8 +6,12 @@ import {
   AllureStep,
   AllureTest,
   InMemoryAllureWriter,
+  Label,
   LabelName,
+  Link,
+  LinkType,
   md5,
+  ParameterOptions,
   Stage,
   Status,
   stripAscii,
@@ -64,6 +68,7 @@ class AllureReporter {
     event.dispatcher.addListener(event.step.passed, this.stepPassed.bind(this));
     event.dispatcher.addListener(event.step.failed, this.stepFailed.bind(this));
     event.dispatcher.addListener(event.step.finished, this.stepFinished.bind(this));
+    event.dispatcher.addListener(event.step.comment, this.stepComment.bind(this));
 
     event.dispatcher.addListener(event.all.result, this.afterAll.bind(this));
   }
@@ -89,6 +94,10 @@ class AllureReporter {
     const relativeFile = path.relative(codecept_dir, test.file!).split(path.sep).join("/");
     const fullName = `${relativeFile}#${test.title}`;
 
+    if (suite.title) {
+      allureTest.addLabel(LabelName.SUITE, suite.title);
+    }
+
     allureTest.stage = Stage.PENDING;
     allureTest.fullName = fullName;
     allureTest.testCaseId = md5(fullName);
@@ -103,7 +112,12 @@ class AllureReporter {
   }
 
   allureTestByCodeceptTest(test: CodeceptTest) {
-    const allureTest = this.allureTestCache.get(test);
+    let allureTest = this.allureTestCache.get(test);
+
+    if (!allureTest) {
+      allureTest = this.allureTestCache.get((test as any).ctx?.currentTest);
+    }
+
     if (!allureTest) {
       this.debug();
 
@@ -140,18 +154,24 @@ class AllureReporter {
     group?.endGroup();
   }
 
-  testStarted(test: CodeceptTest) {
+  testStarted(test: CodeceptTest & { tags: string[] }) {
     this.currentTest = test;
+
+    const allureTest = this.allureTestByCodeceptTest(test);
+    if (allureTest) {
+      for (const tag of test.tags) {
+        allureTest.addLabel(LabelName.TAG, tag);
+      }
+    }
   }
 
   testFailed(test: CodeceptTest, err: CodeceptError) {
-    const allureTest = this.allureTestByCodeceptTest(test || (test as any).ctx.currentTest);
+    const allureTest = this.allureTestByCodeceptTest(test);
 
     if (allureTest) {
       allureTest.statusDetails = { message: stripAscii(err.message) };
       allureTest.stage = Stage.FINISHED;
       allureTest.status = Status.FAILED;
-      allureTest.endTest();
     }
   }
 
@@ -161,7 +181,6 @@ class AllureReporter {
     if (allureTest) {
       allureTest.stage = Stage.FINISHED;
       allureTest.status = Status.PASSED;
-      allureTest.endTest();
     }
   }
 
@@ -182,11 +201,14 @@ class AllureReporter {
       if (test.opts.skipInfo) {
         allureTest.statusDetails = { message: test.opts.skipInfo.message };
       }
-      allureTest.endTest();
     }
   }
 
   testAfter(test: CodeceptTest) {
+    const allureTest = this.allureTestByCodeceptTest(test);
+
+    allureTest?.endTest();
+
     this.currentTest = null;
   }
 
@@ -240,6 +262,13 @@ class AllureReporter {
     const allureStep = this.allureStepByCodeceptStep(step, this.currentAllureTest!);
     if (allureStep) {
       allureStep.status = Status.FAILED;
+      allureStep.endStep();
+    }
+  }
+  stepComment(step: CodeceptStep) {
+    const allureStep = this.currentAllureTest?.startStep(step.toString());
+    if (allureStep) {
+      allureStep.status = Status.PASSED;
       allureStep.endStep();
     }
   }
@@ -302,7 +331,12 @@ class AllureReporter {
     const allureTest = this.allureTestByCodeceptTest(this.currentTest);
     return allureTest;
   }
+
   addLabel(name: string, value: string) {
+    this.label(name, value);
+  }
+
+  label(name: string, value: string) {
     this.currentAllureTest?.addLabel(name, value);
   }
 
@@ -311,6 +345,16 @@ class AllureReporter {
     const fileName = runtime.writeAttachment(buffer, { contentType: type });
 
     this.currentAllureTest?.addAttachment(name, type, fileName);
+  }
+
+  addScreenDiff(name: string, expectedImg: string, actualImg: string, diffImg: string) {
+    const screenDiff = {
+      name,
+      expected: `data:image/png;base64,${expectedImg}`,
+      actual: `data:image/png;base64,${actualImg}`,
+      diff: `data:image/png;base64,${diffImg}`,
+    };
+    this.addAttachment(name, JSON.stringify(screenDiff), "application/vnd.allure.image.diff");
   }
 
   severity = (severity: string) => {
@@ -328,6 +372,72 @@ class AllureReporter {
   story = (story: string) => {
     this.addLabel(LabelName.STORY, story);
   };
+
+  description = (description: string) => {
+    if (this.currentAllureTest) {
+      this.currentAllureTest.description = description;
+    }
+  };
+
+  parameter(name: string, value: string, options?: ParameterOptions) {
+    if (this.currentAllureTest) {
+      this.currentAllureTest.addParameter(name, value, options);
+    }
+  }
+
+  tms(name: string, url: string) {
+    this.link(url, name, LinkType.TMS);
+  }
+
+  link(url: string, name?: string, type?: string) {
+    if (this.currentAllureTest) {
+      this.currentAllureTest.addLink(url, name, type);
+    }
+  }
+
+  labels(...values: Label[]) {
+    values.forEach(({ name, value }) => this.label(name, value));
+  }
+
+  links(...values: Link[]) {
+    values.forEach(({ url, name, type }) => this.link(url, name, type));
+  }
+
+  id(id: string) {
+    this.label(LabelName.ALLURE_ID, id);
+  }
+
+  suite(name: string): void {
+    this.label(LabelName.SUITE, name);
+  }
+
+  parentSuite(name: string) {
+    this.label(LabelName.PARENT_SUITE, name);
+  }
+
+  layer(layerName: string) {
+    this.label(LabelName.LAYER, layerName);
+  }
+
+  subSuite(name: string) {
+    this.label(LabelName.SUB_SUITE, name);
+  }
+
+  owner(owner: string) {
+    this.label(LabelName.OWNER, owner);
+  }
+
+  tag(tag: string) {
+    this.label(LabelName.TAG, tag);
+  }
+
+  tags(...values: string[]) {
+    values.forEach((value) => this.tag(value));
+  }
+
+  issue(name: string, url: string) {
+    this.link(url, name, LinkType.ISSUE);
+  }
 }
 
 const allurePlugin = (config: { outputDir: string }) => {
