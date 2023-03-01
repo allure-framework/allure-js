@@ -10,7 +10,7 @@ export { Allure, StepInterface } from "./src/Allure";
 export {
   StepBodyFunction,
   AllureCommandStep,
-  AllureCommandStepExecutable,
+  AllureCommandStepExecutable
 } from "./src/AllureCommandStep";
 export {
   AttachmentOptions,
@@ -45,7 +45,7 @@ export {
   isAnyStepFailed,
   readImageAsBase64,
   allureReportFolder,
-  stripAscii,
+  stripAscii
 } from "./src/utils";
 
 export { parseTestPlan } from "./src/testplan";

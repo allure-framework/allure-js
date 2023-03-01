@@ -32,6 +32,10 @@ test("simple scenarios", async () => {
             name: "framework",
             value: "codeceptjs",
           },
+          {
+            name: "suite",
+            value: "logout-feature",
+          },
         ],
         name: "logout-scenario1",
         fullName: "logout.test.js#logout-scenario1",
@@ -51,6 +55,10 @@ test("simple scenarios", async () => {
             name: "framework",
             value: "codeceptjs",
           },
+          {
+            name: "suite",
+            value: "logout-feature",
+          },
         ],
         name: "logout-scenario2",
         fullName: "logout.test.js#logout-scenario2",
@@ -68,6 +76,10 @@ test("simple scenarios", async () => {
           {
             name: "framework",
             value: "codeceptjs",
+          },
+          {
+            name: "suite",
+            value: "login-feature",
           },
         ],
         name: "login-scenario1",
@@ -88,6 +100,7 @@ test("simple scenarios", async () => {
             name: "framework",
             value: "codeceptjs",
           },
+          { name: "suite", value: "login-feature" },
         ],
         name: "login-scenario2",
         fullName: "nested/login.test.js#login-scenario2",
