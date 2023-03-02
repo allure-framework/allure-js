@@ -8,18 +8,19 @@ test("simple scenarios", async () => {
       "login.test.js": `
         Feature("login-feature");
         Scenario("login-scenario1", async () => {
-          codeceptjs.container.plugins("allure").label("name", "value");
-          codeceptjs.container.plugins("allure").tag("tag1");
-          codeceptjs.container.plugins("allure").tags("tag2", "tag3");
-          codeceptjs.container.plugins("allure").issue("issueName", "google.com");
-          codeceptjs.container.plugins("allure").owner("eroshenkoam");
-          codeceptjs.container.plugins("allure").layer("UI");
-          codeceptjs.container.plugins("allure").id("228");
-          codeceptjs.container.plugins("allure").description("aga");
-          codeceptjs.container.plugins("allure").story("aga");
-          codeceptjs.container.plugins("allure").feature("aga");
-          codeceptjs.container.plugins("allure").epic("aga");
-          codeceptjs.container.plugins("allure").epic("severity");
+          const allure = codeceptjs.container.plugins("allure");
+          allure.label("name", "value");
+          allure.tag("tag1");
+          allure.tags("tag2", "tag3");
+          allure.issue("issueName", "example.org");
+          allure.owner("eroshenkoam");
+          allure.layer("UI");
+          allure.id("228");
+          allure.description("aga");
+          allure.story("aga");
+          allure.feature("aga");
+          allure.epic("aga");
+          allure.epic("severity");
         });
       `,
     },
