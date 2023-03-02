@@ -4,7 +4,7 @@ import { expect, test } from "./fixtures";
 test("should have parameter", async ({ runInlineTest }) => {
   const result: Parameter[][] = await runInlineTest(
     {
-      "par.test.ts": `
+      "par.test.ts": /* ts */ `
        import { test, expect } from '@playwright/test';
        import { allure } from '../../dist/index'
        test('should add epic label', async ({}) => {

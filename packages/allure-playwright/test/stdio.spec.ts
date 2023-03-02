@@ -19,7 +19,7 @@ import { expect, test } from "./fixtures";
 test("should report stdout and stderr", async ({ runInlineTest }) => {
   const result = await runInlineTest(
     {
-      "a.test.ts": `
+      "a.test.ts": /* ts */ `
       import test from '@playwright/test';
         test("Demo test", async () => {
           console.log("Test log");

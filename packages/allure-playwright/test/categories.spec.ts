@@ -5,7 +5,7 @@ import { expect, test } from "./fixtures";
 test("should have categories", async ({ runInlineTest }) => {
   const categories: Record<string, string | undefined> | undefined = await runInlineTest(
     {
-      "a.test.ts": `
+      "a.test.ts": /* ts */ `
        import { test, expect } from '@playwright/test';
        import { allure, LabelName,Status } from '../../dist/index'
        test('should add epic label', async ({}, testInfo) => {

@@ -5,7 +5,7 @@ import { runTests } from "./utils/run-tests";
 test("simple scenarios", async () => {
   const res = await runTests({
     files: {
-      "login.test.js": `
+      "login.test.js": /* js */ `
         Feature("login-feature");
         Scenario("login-scenario1", async () => {
           const allure = codeceptjs.container.plugins("allure");

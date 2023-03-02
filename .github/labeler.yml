@@ -31,3 +31,9 @@
 
 "theme:playwright":
   - "packages/allure-playwright/**"
+
+"theme:codeceptjs":
+  - "packages/allure-codeceptjs/**"
+
+"theme:newman":
+  - "packages/newman-reporter-allure/**"
