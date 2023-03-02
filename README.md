@@ -44,6 +44,12 @@ This project aggregates Allure Javascript commons and reporters.
 
 [Read more](/packages/allure-hermione/README.md)
 
+### CodeceptJS
+
+![npm](https://img.shields.io/npm/dm/allure-codeceptjs.svg) ![npm](https://img.shields.io/npm/v/allure-codeceptjs.svg)
+
+[Read more](/packages/allure-codeceptjs/README.md)
+
 ## Development
 
 ### allure-js-commons
