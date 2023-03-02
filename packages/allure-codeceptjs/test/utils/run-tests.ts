@@ -18,7 +18,7 @@ export const runTests = async (params: {
   }
 
   let data;
-  const testPath = resolve(__dirname, `../test-results/${randomUUID()}`);
+  const testPath = resolve(__dirname, `../../test-results/${randomUUID()}`);
 
   await mkdir(testPath, {
     recursive: true,

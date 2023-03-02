@@ -1,6 +1,6 @@
 import { expect } from "@jest/globals";
 
-import { runTests } from "./fixtures";
+import { runTests } from "./utils/run-tests";
 test("simple scenarios", async () => {
   const res = await runTests({
     files: {
