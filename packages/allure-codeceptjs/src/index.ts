@@ -201,6 +201,7 @@ class AllureReporter {
       if (test.opts.skipInfo) {
         allureTest.statusDetails = { message: test.opts.skipInfo.message };
       }
+      allureTest.endTest();
     }
   }
 
