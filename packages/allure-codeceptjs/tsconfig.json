@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": [
+    "./src/**/*",
+    "types.d.ts"
+  ],
+  "exclude": [
+    "./test/**/*",
+  ],
+  "compilerOptions": {
+    "types": ["jest", "codeceptjs"],
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "skipLibCheck": true
+  }
+}

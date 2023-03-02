@@ -1,0 +1,36 @@
+{
+  "name": "allure-codeceptjs",
+  "version": "2.0.0-beta",
+  "description": "Allure codeceptjs integration",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allure-framework/allure-js.git",
+    "directory": "packages/allure-codeceptjs"
+  },
+  "keywords": [
+    "codeceptjs",
+    "allure"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "clean": "rimraf ./dist ./out ./test-results",
+    "compile": "tsc",
+    "lint": "eslint ./src --ext .ts",
+    "lint:fix": "eslint ./src --ext .ts --fix",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "codeceptjs": "^3.4.1",
+    "jest": "^26.4.2",
+    "ts-jest": "^26.4.2",
+    "typescript": "^4.4.2"
+  },
+  "dependencies": {
+    "allure-js-commons": "workspace:*"
+  },
+  "files": [
+    "dist"
+  ]
+}

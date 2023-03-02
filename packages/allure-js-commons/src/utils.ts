@@ -1,5 +1,6 @@
 import { createHash } from "crypto";
 import { readFile } from "fs/promises";
+import path from "path";
 import { env } from "process";
 
 import { ExecutableItem, Label, Status } from "./model";
@@ -41,11 +42,38 @@ export const isAnyStepFailed = (item: ExecutableItem): boolean => {
   return !!item.steps.find((step) => isAnyStepFailed(step));
 };
 
-export const readImageAsBase64 = async (path: string): Promise<string | undefined> => {
+export const isAllStepsEnded = (item: ExecutableItem): boolean => {
+  return item.steps.every((val) => val.stop && isAllStepsEnded(val));
+};
+
+export const readImageAsBase64 = async (filePath: string): Promise<string | undefined> => {
   try {
-    const file = await readFile(path, { encoding: "base64" });
+    const file = await readFile(filePath, { encoding: "base64" });
     return file ? `data:image/png;base64,${file}` : undefined;
   } catch (e) {
     return undefined;
   }
+};
+
+const asciiRegex = new RegExp(
+  "[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))", // eslint-disable-line no-control-regex
+  "g",
+);
+
+export const stripAscii = (str: string): string => {
+  return str.replace(asciiRegex, "");
+};
+
+export const allureReportFolder = (outputFolder?: string): string => {
+  if (process.env.ALLURE_RESULTS_DIR) {
+    return path.resolve(process.cwd(), process.env.ALLURE_RESULTS_DIR);
+  }
+  if (outputFolder) {
+    return outputFolder;
+  }
+  return defaultReportFolder();
+};
+
+export const defaultReportFolder = (): string => {
+  return path.resolve(process.cwd(), "allure-results");
 };

@@ -39,5 +39,13 @@ export {
   ImageDiffAttachment
 } from "./src/model";
 
-export { md5, escapeRegExp, isAnyStepFailed, readImageAsBase64 } from "./src/utils";
+export {
+  md5,
+  escapeRegExp,
+  isAnyStepFailed,
+  readImageAsBase64,
+  allureReportFolder,
+  stripAscii
+} from "./src/utils";
+
 export { parseTestPlan } from "./src/testplan";
