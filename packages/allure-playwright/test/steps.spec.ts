@@ -25,7 +25,7 @@ type SerializableStep = {
 test("should report test status", async ({ runInlineTest }) => {
   const result = await runInlineTest(
     {
-      "a.test.ts": `
+      "a.test.ts": /* ts */ `
       import { test, expect } from '@playwright/test';
       test('should pass', async ({}) => {
         await test.step('outer step 1', async () => {

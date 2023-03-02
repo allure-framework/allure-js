@@ -4,7 +4,7 @@ import { runTests } from "./utils/run-tests";
 test("simple scenarios", async () => {
   const res = await runTests({
     files: {
-      "login.test.js": `
+      "login.test.js": /* js */ `
       Feature("tags")
       Scenario('taggs', () => {
       }).tag('@slow').tag('important');

@@ -3,11 +3,11 @@ import { expect, test } from "./fixtures";
 test("should report programmatically skipped results", async ({ runInlineTest }) => {
   const result = await runInlineTest(
     {
-      "a.test.ts": `
+      "a.test.ts": /* ts */ `
       import test from '@playwright/test';
       test.skip('should be skipped 1', async () => {});
     `,
-      "b.test.ts": `
+      "b.test.ts": /* ts */ `
       import test from '@playwright/test';
       test('should not be skipped', async () => {});
     `,

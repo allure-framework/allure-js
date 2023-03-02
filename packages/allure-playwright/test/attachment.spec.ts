@@ -20,7 +20,7 @@ import { expect, test } from "./fixtures";
 test("should not throw on missing attachment", async ({ runInlineTest }) => {
   const result = await runInlineTest(
     {
-      "a.test.ts": `
+      "a.test.ts": /* ts */ `
       import test from '@playwright/test';
       test('should add attachment', async ({}, testInfo) => {
         testInfo.attachments.push({
@@ -54,7 +54,7 @@ test("should add snapshots correctly and provide a screenshot diff", async ({
 }) => {
   const result = await runInlineTest(
     {
-      "a.test.ts": `
+      "a.test.ts": /* ts */ `
       import test from '@playwright/test';
       test('should add attachment', async ({ page }, testInfo) => {
         testInfo.snapshotSuffix = '';

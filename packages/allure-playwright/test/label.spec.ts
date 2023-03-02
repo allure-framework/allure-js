@@ -4,7 +4,7 @@ import { expect, test } from "./fixtures";
 test("should have label", async ({ runInlineTest }) => {
   const result: Label[] = await runInlineTest(
     {
-      "a.test.ts": `
+      "a.test.ts": /* ts */ `
        import { test, expect } from '@playwright/test';
        import { allure, LabelName } from '../../dist/index'
        test('should add epic label', async ({}, testInfo) => {

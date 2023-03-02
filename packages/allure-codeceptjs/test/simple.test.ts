@@ -4,12 +4,12 @@ import { runTests } from "./utils/run-tests";
 test("simple scenarios", async () => {
   const res = await runTests({
     files: {
-      "nested/login.test.js": `
+      "nested/login.test.js": /* js */ `
         Feature("login-feature");
         Scenario("login-scenario1", async () => {});
         Scenario("login-scenario2", async () => {});
       `,
-      "logout.test.js": `
+      "logout.test.js": /* js */ `
         Feature("logout-feature");
         Scenario("logout-scenario1", async () => {});
         Scenario("logout-scenario2", async () => {});

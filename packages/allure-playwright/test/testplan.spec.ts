@@ -25,26 +25,26 @@ test("should respect testplan", async ({ runInlineTest }) => {
   const results = await runInlineTest(
     {
       [testPlanFilename]: JSON.stringify(exampleTestPlan),
-      "a.test.ts": `
+      "a.test.ts": /* ts */ `
        import { test, expect } from '@playwright/test';
        test('should not execute', async ({}, testInfo) => {
         expect(1).toBe(1);
        });
      `,
-      "b.test.ts": `
+      "b.test.ts": /* ts */ `
        import { test, expect } from '@playwright/test';
        test('should execute', async ({}, testInfo) => {
         expect(1).toBe(1);
        });
      `,
-      "nested/super strange nested/super strange name.test.ts": `
+      "nested/super strange nested/super strange name.test.ts": /* ts */ `
        import { test, expect } from '@playwright/test';
        test.describe('also nested', () => {
         test('should execute', async ({}, testInfo) => {
        });
       });
      `,
-      ".+.test.ts": `
+      ".+.test.ts": /* ts */ `
        import { test, expect } from '@playwright/test';
        test('+.', async ({}, testInfo) => {
         expect(1).toBe(1);

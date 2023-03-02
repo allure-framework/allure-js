@@ -19,7 +19,7 @@ import { expect, test } from "./fixtures";
 test("should report structure a.test.ts", async ({ runInlineTest }) => {
   const result = await runInlineTest(
     {
-      "a.test.ts": `
+      "a.test.ts": /* ts */ `
       import test from '@playwright/test';
       test.describe('suite', () => {
         test('should work', async ({}) => {});

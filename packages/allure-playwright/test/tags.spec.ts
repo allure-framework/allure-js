@@ -19,7 +19,7 @@ import { expect, test } from "./fixtures";
 test("should have multiply tags", async ({ runInlineTest }) => {
   const result: Label[] = await runInlineTest(
     {
-      "a.test.ts": `
+      "a.test.ts": /* ts */ `
       import { test } from '@playwright/test';
       import { allure } from '../../dist/index'
       test('should add multiply tags', async ({}, testInfo) => {

@@ -19,7 +19,7 @@ import { expect, test } from "./fixtures";
 test("should report test status details", async ({ runInlineTest }) => {
   const result = await runInlineTest(
     {
-      "a.test.ts": `
+      "a.test.ts": /* ts */ `
       import { test, expect } from '@playwright/test';
       test('should fail', async ({}) => {
         expect(true).toBe(false);

@@ -3,7 +3,7 @@ import { expect, test } from "./fixtures";
 test("historical data should be fine", async ({ runInlineTest }) => {
   const result = await runInlineTest(
     {
-      "a.test.ts": `
+      "a.test.ts": /* ts */ `
       import { test } from '@playwright/test';
       import { allure } from '../../dist/index'
       test.describe('nested', () => {
