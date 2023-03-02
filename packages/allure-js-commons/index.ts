@@ -36,7 +36,7 @@ export {
   ParameterOptions,
   StepMetadata,
   AttachmentMetadata,
-  ImageDiffAttachment,
+  ImageDiffAttachment
 } from "./src/model";
 
 export {
