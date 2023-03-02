@@ -1434,16 +1434,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/glob@npm:^7.1.4":
-  version: 7.2.0
-  resolution: "@types/glob@npm:7.2.0"
-  dependencies:
-    "@types/minimatch": "*"
-    "@types/node": "*"
-  checksum: 6ae717fedfdfdad25f3d5a568323926c64f52ef35897bcac8aca8e19bc50c0bd84630bbd063e5d52078b2137d8e7d3c26eabebd1a2f03ff350fff8a91e79fc19
-  languageName: node
-  linkType: hard
-
 "@types/glob@npm:^8.0.0":
   version: 8.0.0
   resolution: "@types/glob@npm:8.0.0"
@@ -2217,7 +2207,7 @@ __metadata:
   resolution: "allure-hermione@workspace:packages/allure-hermione"
   dependencies:
     "@types/chai": ^4.2.11
-    "@types/glob": ^7.1.4
+    "@types/glob": ^8.0.0
     "@types/mocha": ^10.0.0
     "@types/node": ^16.7.8
     allure-js-commons: "workspace:*"
