@@ -16,7 +16,7 @@ export const testPlanFilter = () => {
 
   const selectedTests = testPlan.tests.map((testInfo) => {
     const pattern = testInfo.selector.replace("#", " ");
-    return new RegExp(escapeRegExp(pattern));
+    return new RegExp(`^${escapeRegExp(pattern)}$`);
   });
 
   return selectedTests;
