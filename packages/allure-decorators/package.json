@@ -1,6 +1,6 @@
 {
   "name": "allure-decorators",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Write your tests in a Java-like annotation-driven manner via JS decorators.",
   "license": "Apache-2.0",
   "author": {
