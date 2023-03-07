@@ -24,6 +24,8 @@ import {
   CodeceptTest,
 } from "./codecept-types";
 
+import { extractMeta } from "./helpers";
+
 const { event } = global.codeceptjs;
 
 interface ReporterOptions {
@@ -158,10 +160,11 @@ class AllureReporter {
     this.currentTest = test;
 
     const allureTest = this.allureTestByCodeceptTest(test);
+    const { labels } = extractMeta(test);
     if (allureTest) {
-      for (const tag of test.tags) {
-        allureTest.addLabel(LabelName.TAG, tag);
-      }
+      labels.forEach((label) => {
+        allureTest.addLabel(label.name, label.value);
+      });
     }
   }
 

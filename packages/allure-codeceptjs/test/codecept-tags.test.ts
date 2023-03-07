@@ -7,7 +7,14 @@ test("simple scenarios", async () => {
       "login.test.js": /* js */ `
       Feature("tags")
       Scenario('taggs', () => {
-      }).tag('@slow').tag('important');
+      }).tag('@slow')
+        .tag('important')
+        .tag('@allure.label.owner:eroshenkoam')
+        .tag('@allure.label.layer:UI')
+        .tag('@allure.id:228')
+        .tag('@allure.label.story:aga')
+        .tag('@allure.label.epic:aga')
+        .tag('@allure.label.severity:critical');
       `,
     },
   });
@@ -33,6 +40,30 @@ test("simple scenarios", async () => {
       Object {
         "name": "tag",
         "value": "@important",
+      },
+      Object {
+        "name": "owner",
+        "value": "eroshenkoam",
+      },
+      Object {
+        "name": "layer",
+        "value": "UI",
+      },
+      Object {
+        "name": "ALLURE_ID",
+        "value": "228",
+      },
+      Object {
+        "name": "story",
+        "value": "aga",
+      },
+      Object {
+        "name": "epic",
+        "value": "aga",
+      },
+      Object {
+        "name": "severity",
+        "value": "critical",
       },
     ]
   `);
