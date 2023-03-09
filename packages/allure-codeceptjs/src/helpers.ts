@@ -1,8 +1,5 @@
-import { Label, LabelName } from "allure-js-commons";
+import { allureIdRegexp, allureLabelRegexp, Label, LabelName } from "allure-js-commons";
 import { CodeceptTest } from "./codecept-types";
-
-const allureIdRegexp = /^@?allure.id[:=](?<id>.+)$/;
-const allureLabelRegexp = /@?allure.label.(?<name>.+)[:=](?<value>.+)/;
 
 export const extractMeta = (test: CodeceptTest & { tags: string[] }) => {
   const labels: Label[] = test.tags.map((tag) => {

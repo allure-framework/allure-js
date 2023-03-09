@@ -77,3 +77,6 @@ export const allureReportFolder = (outputFolder?: string): string => {
 export const defaultReportFolder = (): string => {
   return path.resolve(process.cwd(), "allure-results");
 };
+
+export const allureIdRegexp = /^@?allure.id[:=](?<id>.+)$/;
+export const allureLabelRegexp = /@?allure.label.(?<name>.+)[:=](?<value>.+)/;
