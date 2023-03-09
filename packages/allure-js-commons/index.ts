@@ -45,7 +45,9 @@ export {
   isAnyStepFailed,
   readImageAsBase64,
   allureReportFolder,
-  stripAscii
+  stripAscii,
+  allureIdRegexp,
+  allureLabelRegexp
 } from "./src/utils";
 
 export { parseTestPlan } from "./src/testplan";

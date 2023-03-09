@@ -48,3 +48,66 @@ Scenario("login-scenario1", async () => {
   allure.addAttachment("data.txt", "some data", "text/plain");
 });
 ```
+
+You can also use tags to manage labels on scenarios.
+
+### Id
+
+```javascript
+Feature("login-feature");
+Scenario("login-scenario1", async () => {
+  // your test
+}).tag("@allure.id:228");
+```
+
+### Label
+
+```javascript
+Feature("login-feature");
+Scenario("login-scenario1", async () => {
+  // your test
+}).tag("@allure.label.{{labelName}}:{{labelValue}}");
+```
+
+### Story
+
+```javascript
+Feature("login-feature");
+Scenario("login-scenario1", async () => {
+  // your test
+}).tag("@allure.label.story:storyName");
+```
+### Suite
+
+```javascript
+Feature("login-feature");
+Scenario("login-scenario1", async () => {
+  // your test
+}).tag("@allure.label.suite:suiteName");
+```
+
+### Owner
+
+```javascript
+Feature("login-feature");
+Scenario("login-scenario1", async () => {
+  // your test
+}).tag("@allure.label.owner:ownerName");
+```
+
+### Tag
+
+```javascript
+Feature("login-feature");
+Scenario("login-scenario1", async () => {
+  // your test
+}).tag("@allure.label.tag:tagName");
+```
+or keep it simple:
+
+```javascript
+Feature("login-feature");
+Scenario("login-scenario1", async () => {
+  // your test
+}).tag("tagName");
+```
