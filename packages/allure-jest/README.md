@@ -1,7 +1,7 @@
 # Allure integration for jest framework
 
 > **Warning**
-> This integration don't work with default runner since jest 27+.
+> This integration doesn't work with default runner since jest 27+.
 > To use this integration after jest 27 you need to change default runner to `Jasmine`.
 
 ## Examples
