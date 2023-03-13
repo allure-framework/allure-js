@@ -10,7 +10,7 @@ You can find example setup and usage in this [repo](https://github.com/vovsemenv
 
 ## Circus test runner (default for jest@^27)
 
-Currently we didn't have official solution for circus test runner. Consider using this [community plugin](https://github.com/ryparker/jest-circus-allure-environment) instead
+Currently, we don't have official solution for circus test runner. Consider using this [community plugin](https://github.com/ryparker/jest-circus-allure-environment) instead
 
 ## Jasmine test runner (default for jest@<27)
 
