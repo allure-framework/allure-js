@@ -80,3 +80,5 @@ export const defaultReportFolder = (): string => {
 
 export const allureIdRegexp = /^@?allure.id[:=](?<id>.+)$/;
 export const allureLabelRegexp = /@?allure.label.(?<name>.+)[:=](?<value>.+)/;
+export const allureIssueRegexp = /@?allure.issue[:=](?<name>.+)/;
+export const allureTMSRegexp = /@?allure.tms[:=](?<name>.+)/;

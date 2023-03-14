@@ -14,7 +14,10 @@ test("simple scenarios", async () => {
         .tag('@allure.id:228')
         .tag('@allure.label.story:aga')
         .tag('@allure.label.epic:aga')
-        .tag('@allure.label.severity:critical');
+        .tag('@allure.label.severity:critical')
+        .tag('@allure.issue:FOO-123')
+        .tag('@allure.tms:TEST-123')
+        ;
       `,
     },
   });
@@ -66,5 +69,20 @@ test("simple scenarios", async () => {
         "value": "critical",
       },
     ]
+  `);
+
+  expect(res.tests[0]!.links).toMatchInlineSnapshot(`
+  Array [
+    Object {
+      "name": "FOO-123",
+      "type": "issue",
+      "url": "https://example.qameta.io/allure-framework/allure-js/issues/FOO-123",
+    },
+    Object {
+      "name": "TEST-123",
+      "type": "tms",
+      "url": "https://example.qameta.io/allure-framework/allure-js/tests/TEST-123",
+    },
+  ]
   `);
 });

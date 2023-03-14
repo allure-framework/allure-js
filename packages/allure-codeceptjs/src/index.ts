@@ -31,6 +31,8 @@ const { event } = global.codeceptjs;
 interface ReporterOptions {
   outputDir: string;
   postProcessorForTest?: any;
+  issueURlTemplate?: string;
+  tmsURLTemplate?: string;
 }
 class AllureReporter {
   allureRuntime?: AllureRuntime;
@@ -160,10 +162,18 @@ class AllureReporter {
     this.currentTest = test;
 
     const allureTest = this.allureTestByCodeceptTest(test);
-    const { labels } = extractMeta(test);
+    const { labels, links } = extractMeta(test);
     if (allureTest) {
       labels.forEach((label) => {
         allureTest.addLabel(label.name, label.value);
+      });
+      links.forEach((link) => {
+        const template =
+          link.type === LinkType.TMS
+            ? this.reporterOptions.tmsURLTemplate
+            : this.reporterOptions.issueURlTemplate;
+        const url = template?.replace(/%s$/, link.name || "") || link.name || "";
+        allureTest.addLink(url, link.name, link.type);
       });
     }
   }

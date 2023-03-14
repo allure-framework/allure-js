@@ -111,3 +111,63 @@ Scenario("login-scenario1", async () => {
   // your test
 }).tag("tagName");
 ```
+
+### Issue Link
+
+Setup codeceptjs plugin with: 
+
+```diff
+const { setHeadlessWhen, setCommonPlugins } = require("@codeceptjs/configure");
+const path = require("path");
+
+setCommonPlugins();
+
+module.exports.config = {
+  tests: "./**/*.test.js",
+  output: path.resolve(__dirname, "./output"),
+  plugins: {
+    allure: {
+      enabled: true,
+      require: "allure-codeceptjs",
++      issueURlTemplate: "https://example.qameta.io/allure-framework/allure-js/issues/%s",
+    },
+  },
+};
+```
+
+```javascript
+Feature("login-feature");
+Scenario("login-scenario1", async () => {
+  // your test
+}).tag("@allure.issue:MY-ISSUE-82");
+```
+
+### TMS Link
+
+Setup codeceptjs plugin with: 
+
+```diff
+const { setHeadlessWhen, setCommonPlugins } = require("@codeceptjs/configure");
+const path = require("path");
+
+setCommonPlugins();
+
+module.exports.config = {
+  tests: "./**/*.test.js",
+  output: path.resolve(__dirname, "./output"),
+  plugins: {
+    allure: {
+      enabled: true,
+      require: "allure-codeceptjs",
++      tmsURLTemplate: "https://example.qameta.io/allure-framework/allure-js/tests/%s",
+    },
+  },
+};
+```
+
+```javascript
+Feature("login-feature");
+Scenario("login-scenario1", async () => {
+  // your test
+}).tag("@allure.tms:MY-TEST-CASE-64");
+```
