@@ -26,7 +26,7 @@ import {
 
 import { extractMeta } from "./helpers";
 
-const { event } = global.codeceptjs;
+const { event } = require('codeceptjs');
 
 interface ReporterOptions {
   outputDir: string;
