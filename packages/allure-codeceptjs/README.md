@@ -6,21 +6,18 @@
 npm i -D allure-codeceptjs
 ```
 
-```diff
-const { setHeadlessWhen, setCommonPlugins } = require("@codeceptjs/configure");
-const path = require("path");
-
-setCommonPlugins();
-
-module.exports.config = {
-  tests: "./**/*.test.js",
-  output: path.resolve(__dirname, "./output"),
+## Usage
+Add the allure plugin inside you plugins section of your CodeceptJS config file. 
+For instance the config file is `codecept.config.(js|ts)` then:
+```
   plugins: {
-+    allure: {
-+      enabled: true,
-+      require: "allure-codeceptjs",
-+    },
-  },
+  ...
+    allure: {
+      enabled: true,
+      require: "allure-codeceptjs",
+    },
+  ...
+  }
 };
 ```
 
