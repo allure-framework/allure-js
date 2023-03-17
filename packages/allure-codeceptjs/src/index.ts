@@ -27,7 +27,6 @@ import {
 
 import { extractMeta } from "./helpers";
 
-
 interface ReporterOptions {
   outputDir: string;
   postProcessorForTest?: any;
