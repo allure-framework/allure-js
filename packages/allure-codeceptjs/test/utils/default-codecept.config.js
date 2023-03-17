@@ -15,6 +15,8 @@ module.exports.config = {
       require: "allure-codeceptjs",
       enabled: true,
       postProcessorForTest: global.postProcessorForTest,
+      issueURlTemplate: "https://example.qameta.io/allure-framework/allure-js/issues/%s",
+      tmsURLTemplate: "https://example.qameta.io/allure-framework/allure-js/tests/%s",
     },
   },
 };
