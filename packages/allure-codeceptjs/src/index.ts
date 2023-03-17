@@ -16,6 +16,7 @@ import {
   Status,
   stripAscii,
 } from "allure-js-commons";
+import { event } from "codeceptjs";
 import {
   CodeceptError,
   CodeceptHook,
@@ -26,7 +27,6 @@ import {
 
 import { extractMeta } from "./helpers";
 
-const { event } = require('codeceptjs');
 
 interface ReporterOptions {
   outputDir: string;
