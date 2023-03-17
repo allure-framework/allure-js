@@ -6,6 +6,9 @@
 npm i -D allure-codeceptjs
 ```
 
+## Usage
+Add the allure plugin inside you plugins section of your CodeceptJS config file. 
+For instance the config file is `codecept.config.(js|ts)` then:
 ```
   plugins: {
   ...
