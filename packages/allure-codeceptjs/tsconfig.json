@@ -11,6 +11,9 @@
     "types": ["jest", "codeceptjs"],
     "rootDir": "./src",
     "outDir": "./dist",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "lib": [
+      "dom"
+    ]
   }
 }

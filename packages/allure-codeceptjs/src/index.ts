@@ -1,3 +1,5 @@
+import { writeFileSync } from "fs";
+import os from "os";
 import path from "path";
 import {
   AllureGroup,
@@ -17,6 +19,7 @@ import {
   stripAscii,
 } from "allure-js-commons";
 import { event } from "codeceptjs";
+import uaParser from "ua-parser-js";
 import {
   CodeceptError,
   CodeceptHook,
@@ -27,10 +30,30 @@ import {
 
 import { extractMeta } from "./helpers";
 
+let outputDir: string;
+let baseUrl: any;
+let browserInfo: any;
+let osInfo: any;
+let engineInfo: any;
+let currentHelper: any;
+let helperName: any;
+const supportedHelpers = ["Playwright", "Puppeteer"];
+
 interface ReporterOptions {
   outputDir: string;
   postProcessorForTest?: any;
+  executorName?: string;
+  buildName?: string;
 }
+
+type envInfo = {
+  BASE_URL?: any;
+  OS?: any;
+  BROWSER?: any;
+  ENGINE?: any;
+  HELPER?: any;
+};
+
 class AllureReporter {
   allureRuntime?: AllureRuntime;
   allureGroupCache = new Map<CodeceptSuite, AllureGroup>();
@@ -43,10 +66,18 @@ class AllureReporter {
   reporterOptions!: ReporterOptions;
   constructor(config: ReporterOptions) {
     this.registerEvents();
-    const resultsDir = allureReportFolder(config.outputDir);
+    const resultsDir = allureReportFolder(config.outputDir || codeceptjs.config.get().output);
     this.allureWriter = config.postProcessorForTest ? new InMemoryAllureWriter() : undefined;
     this.allureRuntime = new AllureRuntime({ resultsDir, writer: this.allureWriter });
     this.reporterOptions = config || {};
+    outputDir = resultsDir;
+    Object.keys(codeceptjs.config.get().helpers).forEach((helper) => {
+      if (supportedHelpers.includes(helper) === true) {
+        helperName = helper;
+        baseUrl = codeceptjs.config.get().helpers[helperName].url;
+        return;
+      }
+    });
   }
 
   registerEvents() {
@@ -83,6 +114,7 @@ class AllureReporter {
   }
 
   createTest(test: CodeceptTest) {
+    currentHelper = codeceptjs.container.helpers(helperName);
     const suite = test.parent!;
     const group = this.ensureAllureGroupCreated(suite);
     const allureTest = group.startTest(test.title);
@@ -155,7 +187,15 @@ class AllureReporter {
     group?.endGroup();
   }
 
-  testStarted(test: CodeceptTest & { tags: string[] }) {
+  async testStarted(test: CodeceptTest & { tags: string[] }) {
+    if (currentHelper && (helperName === "Playwright" || helperName === "Puppeteer")) {
+      const getUA = await currentHelper.page.evaluate(() => navigator.userAgent);
+      const userAgentInfo: any = uaParser(getUA);
+      browserInfo = `${userAgentInfo.browser.name}-v${userAgentInfo.browser.version}`;
+      osInfo = `${userAgentInfo.os.name}-v${userAgentInfo.os.version}`;
+      engineInfo = `${userAgentInfo.engine.name}-v${userAgentInfo.engine.version}`;
+    }
+
     this.currentTest = test;
 
     const allureTest = this.allureTestByCodeceptTest(test);
@@ -299,6 +339,28 @@ class AllureReporter {
     if (this.reporterOptions.postProcessorForTest) {
       this.reporterOptions.postProcessorForTest(this.allureWriter);
     }
+
+    const environment: envInfo = {
+      BASE_URL: baseUrl || "No info",
+      OS: osInfo || os.platform(),
+      BROWSER: browserInfo || "No info",
+      ENGINE: engineInfo || "No info",
+      HELPER: helperName || "No info",
+    };
+
+    const executorInfo = {
+      name: this.reporterOptions.executorName || `Machine: ${environment.OS}`,
+      buildName: this.reporterOptions.buildName || `Build: ${Date.now()}`,
+    };
+
+    writeFileSync(
+      `${outputDir}/environment.properties`,
+      Object.entries(environment)
+        .map(([key, value]) => `${key}=${value}`)
+        .join("\n"),
+    );
+
+    writeFileSync(`${outputDir}/executor.json`, JSON.stringify(executorInfo));
   }
 
   ensureAllureGroupCreated(suite: CodeceptSuite): AllureGroup {
