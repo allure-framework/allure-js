@@ -52,6 +52,8 @@ type envInfo = {
   BROWSER?: any;
   ENGINE?: any;
   HELPER?: any;
+  enabled?: boolean;
+  require?: string;
 };
 
 class AllureReporter {
@@ -346,7 +348,11 @@ class AllureReporter {
       BROWSER: browserInfo || "No info",
       ENGINE: engineInfo || "No info",
       HELPER: helperName || "No info",
+      ...this.reporterOptions,
     };
+
+    delete environment.enabled;
+    delete environment.require;
 
     const executorInfo = {
       name: this.reporterOptions.executorName || `Machine: ${environment.OS}`,
