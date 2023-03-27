@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { ExecutableItem, Status } from "../../src/model";
-import { isAnyStepFailed } from "../../src/utils";
+import { ExecutableItem, LabelName, Status } from "../../src/model";
+import { isAnyStepFailed, allureLabelRegexp } from "../../src/utils";
 
 const fixtures = {
   withoutFailed: {
@@ -69,6 +69,37 @@ describe("utils > isAnyStepFailed", () => {
       // eslint-disable-next-line
       // @ts-ignore
       expect(isAnyStepFailed(fixtures.withFailedNested as ExecutableItem)).eq(true);
+    });
+  });
+});
+
+describe("utils > allureLabelRegexp", () => {
+  describe("with non scoped tag", () => {
+    it("return FOO", () => {
+      // eslint-disable-next-line
+      // @ts-ignore
+      const labelMatch = "@allure.label.tag=FOO".match(allureLabelRegexp);
+      const { name, value } = labelMatch?.groups || {};
+      expect(name).eq(LabelName.TAG);
+      expect(value).eq("FOO");
+    });
+  });
+  describe("with a scoped tag", () => {
+    it("return FOO:123", () => {
+      // eslint-disable-next-line
+      // @ts-ignore
+      const labelMatch = "@allure.label.tag=FOO:123".match(allureLabelRegexp);
+      const { name, value } = labelMatch?.groups || {};
+      expect(name).eq(LabelName.TAG);
+      expect(value).eq("FOO:123");
+    });
+    it("return FOO:123", () => {
+      // eslint-disable-next-line
+      // @ts-ignore
+      const labelMatch = "@allure.label.tag:FOO:123".match(allureLabelRegexp);
+      const { name, value } = labelMatch?.groups || {};
+      expect(name).eq(LabelName.TAG);
+      expect(value).eq("FOO:123");
     });
   });
 });
