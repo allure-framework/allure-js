@@ -182,6 +182,8 @@ export enum ContentType {
   ZIP = "application/zip",
   WEBM = "video/webm",
   JPEG = "image/jpeg",
+  XLS = "application/vnd.ms-excel",
+  OPENXML_SPREADSHEET = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 }
 
 /* eslint-disable no-shadow */

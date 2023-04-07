@@ -31,6 +31,10 @@ export const typeToExtension = (options: AttachmentOptions): string => {
       return "webm";
     case ContentType.JPEG:
       return "jpg";
+    case ContentType.XLS:
+      return "xls";
+    case ContentType.OPENXML_SPREADSHEET:
+      return "xlsx";
   }
   throw new Error(`Unrecognized extension: ${options.contentType}`);
 };
