@@ -316,8 +316,8 @@ describe("AllureCommandStep", () => {
           await s1.step("my nested step name", async (s2) => {
             await s2.step("my nested nested step name", async (s3) => {
               await s3.step("my nested nested nested step name", () => {
-                throw  new Error("foo");
-              })
+                throw new Error("foo");
+              });
             });
           });
         });
