@@ -107,6 +107,24 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     return executable;
   }
 
+  static hasAnyStepFailed(stepsMetadata?: StepMetadata[]): boolean {
+    if (!stepsMetadata) {
+      return false;
+    }
+
+    return stepsMetadata.reduce<boolean>((acc, step) => {
+      if (acc) {
+        return acc;
+      }
+
+      if (step.status === Status.FAILED) {
+        return true;
+      }
+
+      return AllureCommandStepExecutable.hasAnyStepFailed(step.steps);
+    }, false);
+  }
+
   label(label: string, value: string): void {
     if (!this.metadata.labels) {
       this.metadata.labels = [];
