@@ -121,6 +121,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
         attachmentFilename,
       );
     });
+
     steps.forEach((step) => {
       handleAllureStep(testId, step);
     });
@@ -141,6 +142,10 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     }
 
     const step = AllureCommandStepExecutable.toExecutableItem(runtime, stepMetadata);
+
+    if (step.status === Status.FAILED) {
+      currentTest.status = Status.FAILED;
+    }
 
     currentTest.addStep(step);
   };
@@ -304,6 +309,11 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
   });
   hermione.on(hermione.events.TEST_PASS, (test) => {
     const currentTest = runningTests.get(test.id())!;
+
+    // the test could be failed due nested steps, then we should not override the status
+    if (currentTest.status !== Status.PASSED) {
+      return;
+    }
 
     currentTest.status = Status.PASSED;
   });
