@@ -238,6 +238,10 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
 
       await res;
 
+      const actualStatus = AllureCommandStepExecutable.hasAnyStepFailed(this.metadata.steps)
+        ? Status.FAILED
+        : Status.PASSED;
+
       return {
         ...this.metadata,
         steps: [
@@ -246,7 +250,7 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
             start: startDate,
             stop: new Date().getTime(),
             stage: Stage.FINISHED,
-            status: Status.PASSED,
+            status: actualStatus,
             statusDetails: {},
             attachments: this.attachments,
             parameters: [],

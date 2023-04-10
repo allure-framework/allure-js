@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { AllureCommandStepExecutable } from "../../src/AllureCommandStep";
-import { ContentType, LabelName, LinkType } from "../../src/model";
+import { ContentType, LabelName, LinkType, Status } from "../../src/model";
 import { describe } from "mocha";
 
 const fixtures = {
@@ -309,6 +309,20 @@ describe("AllureCommandStep", () => {
 
         expect(steps![0].steps[0].steps[0].attachments.length).eq(1);
         expect(steps![0].steps[0].steps[0].attachments[0].content).eq(fixtures.attachment);
+      });
+
+      it("fails the step if any child step failed", async () => {
+        const { steps } = await currentStep.start(async (s1) => {
+          await s1.step("my nested step name", async (s2) => {
+            await s2.step("my nested nested step name", async (s3) => {
+              await s3.step("my nested nested nested step name", () => {
+                throw  new Error("foo");
+              })
+            });
+          });
+        });
+
+        expect(steps![0].status).eq(Status.FAILED);
       });
     });
   });
