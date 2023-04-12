@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import { AllureCommandStepExecutable } from "../../src/AllureCommandStep";
 import { ContentType, LabelName, LinkType, Status } from "../../src/model";
-import { describe } from "mocha";
 
 const fixtures = {
   name: "my step name",
