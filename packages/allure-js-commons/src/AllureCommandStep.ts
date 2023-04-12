@@ -107,24 +107,6 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     return executable;
   }
 
-  static hasAnyStepFailed(stepsMetadata?: StepMetadata[]): boolean {
-    if (!stepsMetadata) {
-      return false;
-    }
-
-    return stepsMetadata.reduce<boolean>((acc, step) => {
-      if (acc) {
-        return acc;
-      }
-
-      if (step.status === Status.FAILED) {
-        return true;
-      }
-
-      return AllureCommandStepExecutable.hasAnyStepFailed(step.steps);
-    }, false);
-  }
-
   label(label: string, value: string): void {
     if (!this.metadata.labels) {
       this.metadata.labels = [];
@@ -232,59 +214,27 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
 
   async start(body: StepBodyFunction): Promise<MetadataMessage> {
     const startDate = new Date().getTime();
+    const res = body.call(this, this);
 
-    try {
-      const res = body.call(this, this);
+    await res;
 
-      await res;
-
-      const actualStatus = AllureCommandStepExecutable.hasAnyStepFailed(this.metadata.steps)
-        ? Status.FAILED
-        : Status.PASSED;
-
-      return {
-        ...this.metadata,
-        steps: [
-          {
-            name: this.name,
-            start: startDate,
-            stop: new Date().getTime(),
-            stage: Stage.FINISHED,
-            status: actualStatus,
-            statusDetails: {},
-            attachments: this.attachments,
-            parameters: [],
-            description: this.metadata.description || "",
-            descriptionHtml: this.metadata.descriptionHtml || "",
-            steps: this.metadata.steps || [],
-          },
-        ],
-      };
-    } catch (err) {
-      return {
-        ...this.metadata,
-        steps: [
-          {
-            name: this.name,
-            start: startDate,
-            stop: new Date().getTime(),
-            stage: Stage.FINISHED,
-            status: Status.FAILED,
-            statusDetails:
-              err instanceof Error
-                ? {
-                    message: err.message,
-                    trace: err.stack,
-                  }
-                : {},
-            attachments: this.attachments,
-            description: this.metadata.description || "",
-            descriptionHtml: this.metadata.descriptionHtml || "",
-            parameters: [],
-            steps: this.metadata.steps || [],
-          },
-        ],
-      };
-    }
+    return {
+      ...this.metadata,
+      steps: [
+        {
+          name: this.name,
+          start: startDate,
+          stop: new Date().getTime(),
+          stage: Stage.FINISHED,
+          status: Status.PASSED,
+          statusDetails: {},
+          attachments: this.attachments,
+          parameters: [],
+          description: this.metadata.description || "",
+          descriptionHtml: this.metadata.descriptionHtml || "",
+          steps: this.metadata.steps || [],
+        },
+      ],
+    };
   }
 }

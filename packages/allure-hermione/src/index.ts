@@ -143,10 +143,6 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
 
     const step = AllureCommandStepExecutable.toExecutableItem(runtime, stepMetadata);
 
-    if (step.status === Status.FAILED) {
-      currentTest.status = Status.FAILED;
-    }
-
     currentTest.addStep(step);
   };
   const sendMetadata = async (testId: string, metadata: MetadataMessage) =>
@@ -309,11 +305,6 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
   });
   hermione.on(hermione.events.TEST_PASS, (test) => {
     const currentTest = runningTests.get(test.id())!;
-
-    // the test could be failed due nested steps, then we should not override the status
-    if (currentTest.status !== Status.PASSED) {
-      return;
-    }
 
     currentTest.status = Status.PASSED;
   });

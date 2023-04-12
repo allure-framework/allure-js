@@ -38,13 +38,12 @@ describe("steps", () => {
       await hermione.run(["./test/fixtures/failedSteps.js"], {});
     });
 
-    it("fails test if any child step is failed", () => {
-      const { status, steps, labels } = hermione.allure.writer.results[0];
+    it("fails the test with original step error", () => {
+      const { status, statusDetails, steps } = hermione.allure.writer.results[0];
 
       expect(status).eq(Status.FAILED);
-      expect(steps[0].status).eq(Status.FAILED);
-      expect(steps[0].steps[0].status).eq(Status.FAILED);
-      expect(steps[0].steps[0].steps[0].status).eq(Status.FAILED);
+      expect(statusDetails.message).eq("foo");
+      expect(steps).to.have.length(0);
     });
   });
 });
