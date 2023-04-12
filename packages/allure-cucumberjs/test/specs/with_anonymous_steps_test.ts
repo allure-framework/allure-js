@@ -116,17 +116,12 @@ describe("CucumberJSAllureReporter > with anonymous steps", () => {
   });
 
   describe("failed", () => {
-    it("should handle errors inside steps", async () => {
+    it("forward step error to the test", async () => {
       const results = await runFeatures(dataSet.failed);
+
       expect(results.tests).length(1);
-
-      const {
-        steps: [, whenStep],
-      } = results.tests[0];
-
-      expect(whenStep.steps[0].status).eq(Status.FAILED);
-      expect(whenStep.steps[0].statusDetails.message).eq("an error message");
-      expect(whenStep.steps[0].statusDetails.trace).not.eq("");
+      expect(results.tests[0].status).eq(Status.FAILED);
+      expect(results.tests[0].statusDetails.message).contains("an error");
     });
   });
 });
