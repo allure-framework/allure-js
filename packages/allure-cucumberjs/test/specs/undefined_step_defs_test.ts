@@ -20,9 +20,10 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
 };
 
 describe("CucumberJSAllureReporter > with anonymous steps", () => {
-  it("marks test as broken", async () => {
+  it("provides details message that test doesn't have step definition", async () => {
     const results = await runFeatures(dataSet.withoutDefinedStepDefs);
     expect(results.tests).length(1);
-    expect(results.tests[0].status).eq(Status.BROKEN);
+    expect(results.tests[0].status).eq(undefined);
+    expect(results.tests[0].statusDetails.message).eq("The test doesn't have an implementation.");
   });
 });
