@@ -12,11 +12,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
     }),
     sources: [
       {
-        data:
-          "Feature: a\n" +
-          "\n" +
-          "  Scenario: b\n" +
-          "    Given an another step\n",
+        data: "Feature: a\n" + "\n" + "  Scenario: b\n" + "    Given an another step\n",
         uri: "withUndefinedStep.feature",
       },
     ],
