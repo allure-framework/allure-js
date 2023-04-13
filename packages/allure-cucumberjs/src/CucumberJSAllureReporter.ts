@@ -591,6 +591,8 @@ export class CucumberJSAllureFormatter extends Formatter {
       case TestStepResultStatus.SKIPPED:
       case TestStepResultStatus.PENDING:
         return Status.SKIPPED;
+      case TestStepResultStatus.UNDEFINED:
+        return Status.BROKEN;
       default:
         return undefined;
     }
