@@ -59,8 +59,6 @@ export interface AllureCommandStep<T = MetadataMessage> {
   ): void | Promise<void>;
 
   description(content: string): void | Promise<void>;
-
-  descriptionHtml(content: string): void | Promise<void>;
 }
 
 export class AllureCommandStepExecutable implements AllureCommandStep {
@@ -206,10 +204,6 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     this.metadata.description = content;
   }
 
-  descriptionHtml(content: string): void {
-    this.metadata.descriptionHtml = content;
-  }
-
   async step(name: string, body: StepBodyFunction): Promise<void> {
     if (!this.metadata.steps) {
       this.metadata.steps = [];
@@ -257,7 +251,6 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
             parameters: [],
             steps,
             description,
-            descriptionHtml,
           },
         ],
       });
@@ -281,7 +274,6 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
             parameters: [],
             steps,
             description,
-            descriptionHtml,
           },
         ],
       });

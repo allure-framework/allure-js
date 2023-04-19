@@ -480,40 +480,20 @@ describe("AllureCommandStep.start()", () => {
   });
 
   describe("description", () => {
-    describe("plain", () => {
-      let metadata: MetadataMessage;
+    let metadata: MetadataMessage;
 
-      beforeEach(async () => {
-        metadata = await currentStep.start((step) => {
-          step.description("foo");
-        });
-      });
-
-      it("doesn't provide description to metadata", () => {
-        expect(metadata.description).eq(undefined);
-      });
-
-      it("adds description to the step", () => {
-        expect(metadata.steps![0].description).eq("foo");
+    beforeEach(async () => {
+      metadata = await currentStep.start((step) => {
+        step.description("foo");
       });
     });
 
-    describe("html", () => {
-      let metadata: MetadataMessage;
+    it("doesn't provide description to metadata", () => {
+      expect(metadata.description).eq(undefined);
+    });
 
-      beforeEach(async () => {
-        metadata = await currentStep.start((step) => {
-          step.descriptionHtml("foo");
-        });
-      });
-
-      it("doesn't provide html description to metadata", () => {
-        expect(metadata.descriptionHtml).eq(undefined);
-      });
-
-      it("adds html description to the step", () => {
-        expect(metadata.steps![0].descriptionHtml).eq("foo");
-      });
+    it("adds description to the step", () => {
+      expect(metadata.steps![0].description).eq("foo");
     });
   });
 
