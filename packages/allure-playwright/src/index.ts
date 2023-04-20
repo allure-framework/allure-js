@@ -102,6 +102,7 @@ class AllureReporter implements Reporter {
       allureTest.addLabel(LabelName.SUB_SUITE, suiteTitles.join(" > "));
     }
     const project = suite.project()!;
+    const repeatEach = project === null || project === void 0 ? void 0 : project.repeatEach;
     if (project?.name) {
       allureTest.addParameter("Project", project.name);
     }
@@ -112,7 +113,7 @@ class AllureReporter implements Reporter {
       .join("/");
 
     const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
-    const fullName = `${relativeFile}#${nameSuites}${test.title}`;
+    const fullName = `${relativeFile}#${nameSuites}${test.title}${repeatEach ? ` (repeat #${test.repeatEachIndex + 1})` : ""}`;
     const testCaseIdSource = `${relativeFile}#${test.title}`;
 
     allureTest.fullName = fullName;
