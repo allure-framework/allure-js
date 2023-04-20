@@ -182,6 +182,7 @@ export enum ContentType {
   ZIP = "application/zip",
   WEBM = "video/webm",
   JPEG = "image/jpeg",
+  MP4 = "video/mp4"
 }
 
 /* eslint-disable no-shadow */
