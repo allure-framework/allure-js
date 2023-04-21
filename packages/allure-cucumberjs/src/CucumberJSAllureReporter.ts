@@ -489,9 +489,14 @@ export class CucumberJSAllureFormatter extends Formatter {
       currentTest.status = currentTest.isAnyStepFailed
         ? Status.FAILED
         : this.convertStatus(worstTestStepResult.status);
-      currentTest.statusDetails = {
-        message: worstTestStepResult.message,
-      };
+
+      currentTest.statusDetails = currentTest.status
+        ? {
+            message: worstTestStepResult.message,
+          }
+        : {
+            message: "The test doesn't have an implementation.",
+          };
     } else {
       currentTest.status = Status.PASSED;
     }
@@ -576,8 +581,13 @@ export class CucumberJSAllureFormatter extends Formatter {
       return;
     }
 
-    allureStep.detailsMessage = data.testStepResult.message;
     allureStep.status = this.convertStatus(data.testStepResult.status);
+
+    if (allureStep.status) {
+      allureStep.detailsMessage = data.testStepResult.message;
+    } else {
+      allureStep.detailsMessage = "The step doesn't have an implementation.";
+    }
 
     allureStep.endStep(Date.now());
   }
