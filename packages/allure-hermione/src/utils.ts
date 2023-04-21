@@ -15,7 +15,7 @@ export const getSuitePath = (test: Hermione.Test): string[] => {
 
   return path;
 };
-export const sendMetadata = async (testId: string, metadata: MetadataMessage) =>
+export const sendMetadata = async (testId: string, metadata: MetadataMessage): Promise<void> =>
   new Promise((resolve, reject) => {
     process.send?.(
       {
@@ -30,24 +30,20 @@ export const sendMetadata = async (testId: string, metadata: MetadataMessage) =>
           return reject(err);
         }
 
-        return resolve(true);
+        return resolve();
       },
     );
   });
 
 export const addLabel = async (testId: string, name: string, value: string) => {
   await sendMetadata(testId, {
-    info: {
-      labels: [{ name, value }],
-    },
+    labels: [{ name, value }],
   });
 };
 
 export const addLink = async (testId: string, url: string, name?: string, type?: string) => {
   await sendMetadata(testId, {
-    info: {
-      links: [{ name, url, type }],
-    },
+    links: [{ name, url, type }],
   });
 };
 
@@ -58,9 +54,7 @@ export const addParameter = async (
   options?: ParameterOptions,
 ) => {
   await sendMetadata(testId, {
-    info: {
-      parameter: [{ name, value, ...options }],
-    },
+    parameter: [{ name, value, ...options }],
   });
 };
 
@@ -68,15 +62,13 @@ export const addAttachment = async (testId: string, content: string | Buffer, ty
   const isBuffer = Buffer.isBuffer(content);
 
   await sendMetadata(testId, {
-    info: {
-      attachments: [
-        {
-          name: "Attachment",
-          content: isBuffer ? content.toString("base64") : content,
-          encoding: isBuffer ? "base64" : "utf8",
-          type,
-        },
-      ],
-    },
+    attachments: [
+      {
+        name: "Attachment",
+        content: isBuffer ? content.toString("base64") : content,
+        encoding: isBuffer ? "base64" : "utf8",
+        type,
+      },
+    ],
   });
 };

@@ -43,7 +43,18 @@ describe("steps", () => {
 
       expect(status).eq(Status.FAILED);
       expect(statusDetails.message).eq("foo");
-      expect(steps).to.have.length(0);
+      expect(steps).to.have.length(1);
+      expect(steps[0].name).eq("first step name");
+      expect(steps[0].status).eq(Status.BROKEN);
+      expect(steps[0].statusDetails.message).eq("foo");
+      expect(steps[0].steps.length).eq(1);
+      expect(steps[0].steps[0].name).eq("second step name");
+      expect(steps[0].steps[0].status).eq(Status.BROKEN);
+      expect(steps[0].steps[0].statusDetails.message).eq("foo");
+      expect(steps[0].steps[0].steps.length).eq(1);
+      expect(steps[0].steps[0].steps[0].name).eq("third step name");
+      expect(steps[0].steps[0].steps[0].status).eq(Status.BROKEN);
+      expect(steps[0].steps[0].steps[0].statusDetails.message).eq("foo");
     });
   });
 });

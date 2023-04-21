@@ -195,9 +195,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     });
     browser.addCommand("step", async (testId: string, name: string, body: StepBodyFunction) => {
       const step = new AllureCommandStepExecutable(name);
-      const res = await step.start(body);
-
-      await sendMetadata(testId, res);
+      await step.run(body, async (message: MetadataMessage) => await sendMetadata(testId, message));
     });
   });
   hermione.on(hermione.events.NEW_WORKER_PROCESS, (worker) => {
