@@ -213,37 +213,12 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     });
   }
 
-  async start(body: StepBodyFunction): Promise<MetadataMessage> {
-    const startDate = new Date().getTime();
-    const res = body.call(this, this);
-
-    await res;
-
-    return {
-      ...this.metadata,
-      steps: [
-        {
-          name: this.name,
-          start: startDate,
-          stop: new Date().getTime(),
-          stage: Stage.FINISHED,
-          status: Status.PASSED,
-          statusDetails: {},
-          attachments: this.attachments,
-          parameters: [],
-          description: this.metadata.description || "",
-          descriptionHtml: this.metadata.descriptionHtml || "",
-          steps: this.metadata.steps || [],
-        },
-      ],
-    };
-  }
-
   async run(
     body: StepBodyFunction,
     messageEmitter: (message: MetadataMessage) => Promise<void>,
   ): Promise<void> {
     const startDate = new Date().getTime();
+
     try {
       await body.call(this, this);
       await messageEmitter({
@@ -286,6 +261,7 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
           },
         ],
       });
+
       throw e;
     }
   }
