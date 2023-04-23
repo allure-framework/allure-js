@@ -9,10 +9,10 @@ module.exports = {
     headless: {
       automationProtocol: "devtools",
       desiredCapabilities: {
-        browserName: 'chrome',
+        browserName: "chrome",
         "goog:chromeOptions": {
           args: ["--headless"],
-        }
+        },
       },
     },
   },
