@@ -4,7 +4,7 @@ This project aggregates Allure Javascript commons and reporters.
 
 ## Supported frameworks
 
-### Cucumber.JS
+### CucumberJS
 
 ![npm](https://img.shields.io/npm/dm/allure-cucumberjs.svg) ![npm](https://img.shields.io/npm/v/allure-cucumberjs.svg)
 
@@ -16,7 +16,9 @@ This project aggregates Allure Javascript commons and reporters.
 
 [Read more](/packages/allure-jasmine/README.md)
 
-### Jest
+### Jest (Jasmine)
+
+Currently, we don't have official solution for circus test runner. Consider using [this community plugin](https://github.com/ryparker/jest-circus-allure-environment) instead.
 
 [Read more](/packages/allure-jest/README.md)
 
@@ -38,11 +40,18 @@ This project aggregates Allure Javascript commons and reporters.
 
 [Read more](/packages/newman-reporter-allure/README.md)
 
+### Decorators @testdeck
+
+![npm](https://img.shields.io/npm/dm/allure-decorators.svg) ![npm](https://img.shields.io/npm/v/allure-decorators.svg)
+
+[Read more](/packages/allure-decorators/README.md)
+
 ### Hermione
 
 ![npm](https://img.shields.io/npm/dm/allure-hermione.svg) ![npm](https://img.shields.io/npm/v/allure-hermione.svg)
 
 [Read more](/packages/allure-hermione/README.md)
+
 
 ### CodeceptJS
 
