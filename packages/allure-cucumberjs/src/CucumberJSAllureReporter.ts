@@ -99,7 +99,7 @@ export class CucumberJSAllureFormatter extends Formatter {
   private readonly hostname: string = ALLURE_HOST_NAME || os.hostname();
   private readonly afterHooks: TestCaseHookDefinition[];
   private readonly beforeHooks: TestCaseHookDefinition[];
-  private readonly exceptionFormatter: (message: string) => string;
+  private readonly exceptionFormatter: (message?: string) => string | undefined;
   private readonly labelsMatchers: LabelMatcher[];
   private readonly linksMatchers: LinkMatcher[];
   private readonly documentMap: Map<string, messages.GherkinDocument> = new Map();
@@ -131,16 +131,19 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     this.labelsMatchers = config.labels || [];
     this.linksMatchers = config.links || [];
-    this.exceptionFormatter = (message): string => {
-      if (config.exceptionFormatter !== undefined) {
-        try {
-          return config.exceptionFormatter(message);
-        } catch (e) {
-          // eslint-disable-next-line no-console,@typescript-eslint/restrict-template-expressions
-          console.warn(`Error in exceptionFormatter: ${e}`);
-        }
+    this.exceptionFormatter = (message): string | undefined => {
+      if (!message || !config.exceptionFormatter) {
+        return message;
       }
-      return message;
+
+      try {
+        return config.exceptionFormatter(message);
+      } catch (e) {
+        // eslint-disable-next-line no-console,@typescript-eslint/restrict-template-expressions
+        console.warn(`Error in exceptionFormatter: ${e}`);
+
+        return message;
+      }
     };
     if (options.supportCodeLibrary.World === World) {
       // eslint-disable-next-line
@@ -490,13 +493,15 @@ export class CucumberJSAllureFormatter extends Formatter {
         ? Status.FAILED
         : this.convertStatus(worstTestStepResult.status);
 
-      currentTest.statusDetails = currentTest.status
-        ? {
-            message: worstTestStepResult.message,
-          }
-        : {
-            message: "The test doesn't have an implementation.",
-          };
+      const message = this.exceptionFormatter(
+        currentTest.status
+          ? worstTestStepResult.message
+          : "The test doesn't have an implementation.",
+      );
+
+      currentTest.statusDetails = {
+        message,
+      };
     } else {
       currentTest.status = Status.PASSED;
     }
@@ -582,12 +587,9 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     allureStep.status = this.convertStatus(data.testStepResult.status);
-
-    if (allureStep.status) {
-      allureStep.detailsMessage = data.testStepResult.message;
-    } else {
-      allureStep.detailsMessage = "The step doesn't have an implementation.";
-    }
+    allureStep.detailsMessage = this.exceptionFormatter(
+      allureStep.status ? data.testStepResult.message : "The step doesn't have an implementation.",
+    );
 
     allureStep.endStep(Date.now());
   }
