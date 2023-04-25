@@ -99,7 +99,7 @@ export class CucumberJSAllureFormatter extends Formatter {
   private readonly hostname: string = ALLURE_HOST_NAME || os.hostname();
   private readonly afterHooks: TestCaseHookDefinition[];
   private readonly beforeHooks: TestCaseHookDefinition[];
-  private readonly exceptionFormatter: (message: string) => string;
+  private readonly exceptionFormatter: (message?: string) => string | undefined;
   private readonly labelsMatchers: LabelMatcher[];
   private readonly linksMatchers: LinkMatcher[];
   private readonly documentMap: Map<string, messages.GherkinDocument> = new Map();
@@ -131,7 +131,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     this.labelsMatchers = config.labels || [];
     this.linksMatchers = config.links || [];
-    this.exceptionFormatter = (message): string => {
+    this.exceptionFormatter = (message): string | undefined => {
       if (!message || !config.exceptionFormatter) {
         return message;
       }
@@ -488,15 +488,16 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     if (testStepResults?.length) {
       const worstTestStepResult = messages.getWorstTestStepResult(testStepResults);
-      const message = this.exceptionFormatter(
-        currentTest.status
-          ? worstTestStepResult.message || ""
-          : "The test doesn't have an implementation.",
-      );
 
       currentTest.status = currentTest.isAnyStepFailed
         ? Status.FAILED
         : this.convertStatus(worstTestStepResult.status);
+
+      const message = this.exceptionFormatter(
+        currentTest.status
+          ? worstTestStepResult.message
+          : "The test doesn't have an implementation.",
+      );
 
       currentTest.statusDetails = {
         message,
@@ -587,9 +588,7 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     allureStep.status = this.convertStatus(data.testStepResult.status);
     allureStep.detailsMessage = this.exceptionFormatter(
-      allureStep.status
-        ? data.testStepResult.message || ""
-        : "The step doesn't have an implementation.",
+      allureStep.status ? data.testStepResult.message : "The step doesn't have an implementation.",
     );
 
     allureStep.endStep(Date.now());
