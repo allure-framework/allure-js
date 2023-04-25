@@ -109,18 +109,12 @@ describe("CucumberJSAllureReporter > examples", () => {
   });
 
   describe("failed", () => {
-    it("marks parent test as failed", async () => {
+    it("forward step error to the test", async () => {
       const results = await runFeatures(dataSet.failed);
+
       expect(results.tests).length(1);
-
       expect(results.tests[0].status).eq(Status.FAILED);
-
-      const {
-        steps: [givenStep],
-      } = results.tests[0];
-
-      expect(givenStep.steps).length(1);
-      expect(givenStep.steps[0].name).eq("failed step");
+      expect(results.tests[0].statusDetails.message).contains("an error");
     });
   });
 });

@@ -204,23 +204,24 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     }
 
     const nestedStep = new AllureCommandStepExecutable(name);
-    const { labels = [], links = [], parameter = [], steps = [] } = await nestedStep.start(body);
-
-    this.metadata.labels = (this.metadata.labels || []).concat(labels);
-    this.metadata.links = (this.metadata.links || []).concat(links);
-    this.metadata.parameter = (this.metadata.parameter || []).concat(parameter);
-    this.metadata.steps = (this.metadata.steps || []).concat(steps);
+    // eslint-disable-next-line @typescript-eslint/require-await
+    await nestedStep.run(body, async ({ labels = [], links = [], parameter = [], steps = [] }) => {
+      this.metadata.labels = (this.metadata.labels || []).concat(labels);
+      this.metadata.links = (this.metadata.links || []).concat(links);
+      this.metadata.parameter = (this.metadata.parameter || []).concat(parameter);
+      this.metadata.steps = (this.metadata.steps || []).concat(steps);
+    });
   }
 
-  async start(body: StepBodyFunction): Promise<MetadataMessage> {
+  async run(
+    body: StepBodyFunction,
+    messageEmitter: (message: MetadataMessage) => Promise<void>,
+  ): Promise<void> {
     const startDate = new Date().getTime();
 
     try {
-      const res = body.call(this, this);
-
-      await res;
-
-      return {
+      await body.call(this, this);
+      await messageEmitter({
         ...this.metadata,
         steps: [
           {
@@ -237,9 +238,9 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
             steps: this.metadata.steps || [],
           },
         ],
-      };
-    } catch (err) {
-      return {
+      });
+    } catch (e: any) {
+      await messageEmitter({
         ...this.metadata,
         steps: [
           {
@@ -247,22 +248,21 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
             start: startDate,
             stop: new Date().getTime(),
             stage: Stage.FINISHED,
-            status: Status.FAILED,
-            statusDetails:
-              err instanceof Error
-                ? {
-                    message: err.message,
-                    trace: err.stack,
-                  }
-                : {},
+            status: Status.BROKEN,
+            statusDetails: {
+              message: e.message,
+              trace: e.trace,
+            },
             attachments: this.attachments,
+            parameters: [],
             description: this.metadata.description || "",
             descriptionHtml: this.metadata.descriptionHtml || "",
-            parameters: [],
             steps: this.metadata.steps || [],
           },
         ],
-      };
+      });
+
+      throw e;
     }
   }
 }

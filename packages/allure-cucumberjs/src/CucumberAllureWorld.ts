@@ -73,9 +73,10 @@ export class CucumberAllureWorld extends World implements AllureWorld {
 
   async step(name: string, body: StepBodyFunction) {
     const testStep = new AllureCommandStepExecutable(name);
-    const msgBody = await testStep.start(body);
 
-    await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
+    await testStep.run(body, async (msgBody) => {
+      await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
+    });
   }
 
   public async id(allureId: string) {

@@ -19,6 +19,14 @@ import {
   StepMetadata,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
+import {
+  addAttachment,
+  addLabel,
+  addLink,
+  addParameter,
+  getSuitePath,
+  sendMetadata,
+} from "./utils";
 
 export type HermioneAttachmentMessage = {
   testId: string;
@@ -31,24 +39,8 @@ export type AllureReportOptions = {
 
 const hostname = os.hostname();
 
-export const getSuitePath = (test: Hermione.Test): string[] => {
-  const path = [];
-  let currentSuite = test.parent as Hermione.Suite;
-
-  while (currentSuite) {
-    if (currentSuite.title) {
-      path.unshift(currentSuite.title);
-    }
-
-    currentSuite = currentSuite.parent as Hermione.Suite;
-  }
-
-  return path;
-};
-
-const runningTests: Map<string, AllureTest> = new Map();
-
 const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) => {
+  const runningTests: Map<string, AllureTest> = new Map();
   const runtime = new AllureRuntime({
     resultsDir: "allure-results",
     ...opts,
@@ -121,6 +113,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
         attachmentFilename,
       );
     });
+
     steps.forEach((step) => {
       handleAllureStep(testId, step);
     });
@@ -143,59 +136,6 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     const step = AllureCommandStepExecutable.toExecutableItem(runtime, stepMetadata);
 
     currentTest.addStep(step);
-  };
-  const sendMetadata = async (testId: string, metadata: MetadataMessage) =>
-    new Promise((resolve, reject) => {
-      process.send?.(
-        {
-          type: ALLURE_METADATA_CONTENT_TYPE,
-          testId,
-          metadata,
-        },
-        undefined,
-        undefined,
-        (err) => {
-          if (err) {
-            return reject(err);
-          }
-
-          return resolve(true);
-        },
-      );
-    });
-  const addLabel = async (testId: string, name: string, value: string) => {
-    await sendMetadata(testId, {
-      labels: [{ name, value }],
-    });
-  };
-  const addLink = async (testId: string, url: string, name?: string, type?: string) => {
-    await sendMetadata(testId, {
-      links: [{ name, url, type }],
-    });
-  };
-  const addParameter = async (
-    testId: string,
-    name: string,
-    value: string,
-    options?: ParameterOptions,
-  ) => {
-    await sendMetadata(testId, {
-      parameter: [{ name, value, ...options }],
-    });
-  };
-  const addAttachment = async (testId: string, content: string | Buffer, type: string) => {
-    const isBuffer = Buffer.isBuffer(content);
-
-    await sendMetadata(testId, {
-      attachments: [
-        {
-          name: "Attachment",
-          content: isBuffer ? content.toString("base64") : content,
-          encoding: isBuffer ? "base64" : "utf8",
-          type,
-        },
-      ],
-    });
   };
 
   hermione.on(hermione.events.NEW_BROWSER, (browser) => {
@@ -255,9 +195,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     });
     browser.addCommand("step", async (testId: string, name: string, body: StepBodyFunction) => {
       const step = new AllureCommandStepExecutable(name);
-      const res = await step.start(body);
-
-      await sendMetadata(testId, res);
+      await step.run(body, async (message: MetadataMessage) => await sendMetadata(testId, message));
     });
   });
   hermione.on(hermione.events.NEW_WORKER_PROCESS, (worker) => {

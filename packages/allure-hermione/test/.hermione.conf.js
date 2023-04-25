@@ -1,12 +1,12 @@
 module.exports = {
   sets: {
     desktop: {
-      browsers: ["chrome"],
+      browsers: ["headless"],
       files: ["test/fixtures"],
     },
   },
   browsers: {
-    chrome: {
+    headless: {
       automationProtocol: "devtools",
       desiredCapabilities: {
         browserName: "chrome",
@@ -17,6 +17,10 @@ module.exports = {
     },
   },
   plugins: {
+    "hermione-headless-chrome": {
+      enabled: true,
+      browserId: "headless",
+    },
     "allure-hermione": {
       writer: {
         results: [],
