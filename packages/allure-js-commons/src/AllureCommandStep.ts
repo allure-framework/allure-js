@@ -213,6 +213,13 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     });
   }
 
+  async start(body: StepBodyFunction): Promise<MetadataMessage> {
+    return await new Promise<MetadataMessage>((resolve) =>
+      // eslint-disable-next-line @typescript-eslint/require-await
+      this.run(body, async (result) => resolve(result)),
+    );
+  }
+
   async run(
     body: StepBodyFunction,
     messageEmitter: (message: MetadataMessage) => Promise<void>,
