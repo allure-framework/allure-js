@@ -99,12 +99,12 @@ export class allure {
     this.link(url, name, LinkType.TMS);
   }
 
-  static parameter(name: string, value: string, options?: ParameterOptions) {
+  static parameter(name: string, value: any, options?: ParameterOptions) {
     this.addMetadataAttachment({
       parameter: [
         {
           name,
-          value,
+          value: JSON.stringify(value),
           ...options,
         },
       ],

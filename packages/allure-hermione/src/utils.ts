@@ -68,11 +68,11 @@ export const addLink = async (testId: string, url: string, name?: string, type?:
 export const addParameter = async (
   testId: string,
   name: string,
-  value: string,
+  value: any,
   options?: ParameterOptions,
 ) => {
   await sendMetadata(testId, {
-    parameter: [{ name, value, ...options }],
+    parameter: [{ name, value: JSON.stringify(value), ...options }],
   });
 };
 

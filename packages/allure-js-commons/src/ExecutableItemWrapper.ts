@@ -57,6 +57,10 @@ export class ExecutableItemWrapper {
     this.info.stage = stage;
   }
 
+  public parameter(name: string, value: any, options?: ParameterOptions): void {
+    this.info.parameters.push({ ...options, name, value: JSON.stringify(value) });
+  }
+
   public get isAnyStepFailed() {
     return isAnyStepFailed(this.info);
   }
@@ -65,8 +69,11 @@ export class ExecutableItemWrapper {
     return isAllStepsEnded(this.info);
   }
 
+  /**
+   * @deprecated use parameter() instead.
+   */
   public addParameter(name: string, value: string, options?: ParameterOptions): void {
-    this.info.parameters.push({ name, value, ...options });
+    this.parameter(name, value, options);
   }
 
   public addAttachment(

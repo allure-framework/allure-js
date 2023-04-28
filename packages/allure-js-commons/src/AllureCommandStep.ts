@@ -132,14 +132,14 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     });
   }
 
-  parameter(name: string, value: string, options?: ParameterOptions): void {
+  parameter(name: string, value: any, options?: ParameterOptions): void {
     if (!this.metadata.parameter) {
       this.metadata.parameter = [];
     }
 
     this.metadata.parameter.push({
       name,
-      value,
+      value: JSON.stringify(value),
       excluded: options?.excluded || false,
       mode: options?.mode,
     });

@@ -58,7 +58,7 @@ it("is a test", () => {
 });
 ```
 
-Also addParameter takes an third optional parameter with the hidden and excluded options:
+Also `parameter` method takes an third optional argument with the hidden and excluded options:
 `mode: "hidden" | "masked"` - `masked` hide parameter value to secure sensitive data, and `hidden`
 entirely hide parameter from report
 
