@@ -1,6 +1,8 @@
+import assert, { AssertionError } from "node:assert";
 import { expect } from "chai";
+import { expect as jestExpect } from "expect";
 import { ExecutableItem, LabelName, Status } from "../../src/model";
-import { isAnyStepFailed, allureLabelRegexp } from "../../src/utils";
+import { allureLabelRegexp, getStatusFromError, isAnyStepFailed } from "../../src/utils";
 
 const fixtures = {
   withoutFailed: {
@@ -93,6 +95,7 @@ describe("utils > allureLabelRegexp", () => {
       expect(name).eq(LabelName.TAG);
       expect(value).eq("FOO:123");
     });
+
     it("return FOO:123", () => {
       // eslint-disable-next-line
       // @ts-ignore
@@ -100,6 +103,72 @@ describe("utils > allureLabelRegexp", () => {
       const { name, value } = labelMatch?.groups || {};
       expect(name).eq(LabelName.TAG);
       expect(value).eq("FOO:123");
+    });
+  });
+
+  describe("utils > getStatusFromError", () => {
+    describe("with node assert error", () => {
+      it("returns failed", () => {
+        try {
+          assert(false, "test");
+        } catch (err) {
+          expect(getStatusFromError(err as Error)).eq(Status.FAILED);
+        }
+      });
+    });
+
+    describe("with chai assertion error", () => {
+      it("returns failed", () => {
+        try {
+          expect(false).eq(true);
+        } catch (err) {
+          expect(getStatusFromError(err as Error)).eq(Status.FAILED);
+        }
+      });
+    });
+
+    describe("with jest assertion error", () => {
+      it("returns failed", () => {
+        try {
+          jestExpect(false).toBe(true);
+        } catch (err) {
+          expect(getStatusFromError(err as Error)).eq(Status.FAILED);
+        }
+      });
+    });
+
+    describe("with any error name contains 'assert' word", () => {
+      it("returns failed", () => {
+        try {
+          const err = new Error("error");
+
+          err.name = "CustomAssertError";
+
+          throw err;
+        } catch (err) {
+          expect(getStatusFromError(err as Error)).eq(Status.FAILED);
+        }
+      });
+    });
+
+    describe("with any error message contains 'assert' word", () => {
+      it("returns failed", () => {
+        try {
+          throw new Error("assertion error");
+        } catch (err) {
+          expect(getStatusFromError(err as Error)).eq(Status.FAILED);
+        }
+      });
+    });
+
+    describe("with any not-assertion error", () => {
+      it("returns broken", () => {
+        try {
+          throw new Error("an error");
+        } catch (err) {
+          expect(getStatusFromError(err as Error)).eq(Status.BROKEN);
+        }
+      });
     });
   });
 });

@@ -80,3 +80,16 @@ export const defaultReportFolder = (): string => {
 
 export const allureIdRegexp = /^@?allure.id[:=](?<id>.+)$/;
 export const allureLabelRegexp = /@?allure.label.(?<name>.+?)[:=](?<value>.+)/;
+
+export const getStatusFromError = (error: Error): Status => {
+  switch (true) {
+    // for native `node:assert` and `chai` assertion errors (`vitest` uses `chai` under the hood)
+    case error.name === "AssertionError":
+    case /assert/gi.test(error.name):
+    case /assert/gi.test(error.message):
+    case /assert/gi.test(error.constructor.name):
+      return Status.FAILED;
+    default:
+      return Status.BROKEN;
+  }
+};
