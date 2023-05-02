@@ -83,11 +83,13 @@ export const allureLabelRegexp = /@?allure.label.(?<name>.+?)[:=](?<value>.+)/;
 
 export const getStatusFromError = (error: Error): Status => {
   switch (true) {
-    // for native `node:assert` and `chai` assertion errors (`vitest` uses `chai` under the hood)
-    case error.name === "AssertionError":
+    /**
+     * Native `node:assert` and `chai` (`vitest` uses it under the hood) throw `AssertionError`
+     * `jest` throws `JestAssertionError` instance
+     */
+    case /assert/gi.test(error.constructor.name):
     case /assert/gi.test(error.name):
     case /assert/gi.test(error.message):
-    case /assert/gi.test(error.constructor.name):
       return Status.FAILED;
     default:
       return Status.BROKEN;
