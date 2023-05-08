@@ -45,8 +45,10 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     resultsDir: "allure-results",
     ...opts,
   });
+  const getTestId = (test: Hermione.Test) => `${test.sessionId}:${test.id()}`;
   const handleTestError = (test: Hermione.Test, error: Hermione.TestError) => {
-    const currentTest = runningTests.get(test.id())!;
+    const testId = getTestId(test);
+    const currentTest = runningTests.get(testId)!;
     const { message, stack, screenshot } = error;
 
     currentTest.detailsMessage = message;
@@ -210,6 +212,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     });
   });
   hermione.on(hermione.events.TEST_BEGIN, (test) => {
+    const testId = getTestId(test);
     const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env;
     const thread = ALLURE_THREAD_NAME || test.sessionId;
     const hostnameLabel = ALLURE_HOST_NAME || hostname;
@@ -238,15 +241,17 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       currentTest.addLabel(LabelName.SUB_SUITE, subSuites.join(" > "));
     }
 
-    runningTests.set(test.id(), currentTest);
+    runningTests.set(testId, currentTest);
   });
   hermione.on(hermione.events.TEST_PASS, (test) => {
-    const currentTest = runningTests.get(test.id())!;
+    const testId = getTestId(test);
+    const currentTest = runningTests.get(testId)!;
 
     currentTest.status = Status.PASSED;
   });
   hermione.on(hermione.events.TEST_FAIL, (test) => {
-    const currentTest = runningTests.get(test.id());
+    const testId = getTestId(test);
+    const currentTest = runningTests.get(testId);
 
     // hermione handle all errors in this hook, even test hasn't been started
     if (!currentTest) {
@@ -256,7 +261,8 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     currentTest.status = Status.FAILED;
   });
   hermione.on(hermione.events.TEST_END, (test) => {
-    const currentTest = runningTests.get(test.id())!;
+    const testId = getTestId(test);
+    const currentTest = runningTests.get(testId)!;
 
     if (test.err) {
       handleTestError(test, test.err);
@@ -264,7 +270,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
 
     currentTest.stage = Stage.FINISHED;
     currentTest.endTest(Date.now());
-    runningTests.delete(test.id());
+    runningTests.delete(testId);
   });
 
   // it needs for tests because we need to read runtime writer data redefined in hermione config
