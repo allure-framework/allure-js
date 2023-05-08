@@ -45,7 +45,13 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     resultsDir: "allure-results",
     ...opts,
   });
-  const getTestId = (test: Hermione.Test) => `${test.sessionId}:${test.id()}`;
+  const getTestId = (test: string | Hermione.Test, sessionId?: string) => {
+    if (typeof test === "string" && sessionId) {
+      return `${sessionId}:${test}`;
+    }
+
+    return `${(test as Hermione.Test).sessionId}:${(test as Hermione.Test).id()}`;
+  };
   const handleTestError = (test: Hermione.Test, error: Hermione.TestError) => {
     const testId = getTestId(test);
     const currentTest = runningTests.get(testId)!;
@@ -141,61 +147,91 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
   };
 
   hermione.on(hermione.events.NEW_BROWSER, (browser) => {
-    browser.addCommand("label", async (testId: string, name: string, value: string) => {
+    browser.addCommand("label", async (id: string, name: string, value: string) => {
+      const testId = getTestId(id, browser.sessionId);
+
       await addLabel(testId, name, value);
     });
-    browser.addCommand(
-      "link",
-      async (testId: string, url: string, name?: string, type?: string) => {
-        await addLink(testId, url, name, type);
-      },
-    );
+    browser.addCommand("link", async (id: string, url: string, name?: string, type?: string) => {
+      const testId = getTestId(id, browser.sessionId);
+
+      await addLink(testId, url, name, type);
+    });
     browser.addCommand(
       "parameter",
-      async (testId: string, name: string, value: string, options?: ParameterOptions) => {
+      async (id: string, name: string, value: string, options?: ParameterOptions) => {
+        const testId = getTestId(id, browser.sessionId);
+
         await addParameter(testId, name, value, options);
       },
     );
-    browser.addCommand("id", async (testId: string, value: string) => {
+    browser.addCommand("id", async (id: string, value: string) => {
+      const testId = getTestId(id, browser.sessionId);
+
       await addLabel(testId, LabelName.ALLURE_ID, value);
     });
-    browser.addCommand("epic", async (testId: string, value: string) => {
+    browser.addCommand("epic", async (id: string, value: string) => {
+      const testId = getTestId(id, browser.sessionId);
+
       await addLabel(testId, LabelName.EPIC, value);
     });
-    browser.addCommand("feature", async (testId: string, value: string) => {
+    browser.addCommand("feature", async (id: string, value: string) => {
+      const testId = getTestId(id, browser.sessionId);
+
       await addLabel(testId, LabelName.FEATURE, value);
     });
-    browser.addCommand("story", async (testId: string, value: string) => {
+    browser.addCommand("story", async (id: string, value: string) => {
+      const testId = getTestId(id, browser.sessionId);
+
       await addLabel(testId, LabelName.STORY, value);
     });
-    browser.addCommand("suite", async (testId: string, value: string) => {
+    browser.addCommand("suite", async (id: string, value: string) => {
+      const testId = getTestId(id, browser.sessionId);
+
       await addLabel(testId, LabelName.SUITE, value);
     });
-    browser.addCommand("parentSuite", async (testId: string, value: string) => {
+    browser.addCommand("parentSuite", async (id: string, value: string) => {
+      const testId = getTestId(id, browser.sessionId);
+
       await addLabel(testId, LabelName.PARENT_SUITE, value);
     });
-    browser.addCommand("subSuite", async (testId: string, value: string) => {
+    browser.addCommand("subSuite", async (id: string, value: string) => {
+      const testId = getTestId(id, browser.sessionId);
+
       await addLabel(testId, LabelName.SUB_SUITE, value);
     });
-    browser.addCommand("owner", async (testId: string, value: string) => {
+    browser.addCommand("owner", async (id: string, value: string) => {
+      const testId = getTestId(id, browser.sessionId);
+
       await addLabel(testId, LabelName.OWNER, value);
     });
-    browser.addCommand("severity", async (testId: string, value: string) => {
+    browser.addCommand("severity", async (id: string, value: string) => {
+      const testId = getTestId(id, browser.sessionId);
+
       await addLabel(testId, LabelName.SEVERITY, value);
     });
-    browser.addCommand("tag", async (testId: string, value: string) => {
+    browser.addCommand("tag", async (id: string, value: string) => {
+      const testId = getTestId(id, browser.sessionId);
+
       await addLabel(testId, LabelName.TAG, value);
     });
-    browser.addCommand("issue", async (testId: string, name: string, url: string) => {
+    browser.addCommand("issue", async (id: string, name: string, url: string) => {
+      const testId = getTestId(id, browser.sessionId);
+
       await addLink(testId, url, name, LinkType.ISSUE);
     });
-    browser.addCommand("tms", async (testId: string, name: string, url: string) => {
+    browser.addCommand("tms", async (id: string, name: string, url: string) => {
+      const testId = getTestId(id, browser.sessionId);
+
       await addLink(testId, url, name, LinkType.TMS);
     });
-    browser.addCommand("attach", async (testId: string, source: string, mimetype: string) => {
+    browser.addCommand("attach", async (id: string, source: string, mimetype: string) => {
+      const testId = getTestId(id, browser.sessionId);
+
       await addAttachment(testId, source, mimetype);
     });
-    browser.addCommand("step", async (testId: string, name: string, body: StepBodyFunction) => {
+    browser.addCommand("step", async (id: string, name: string, body: StepBodyFunction) => {
+      const testId = getTestId(id, browser.sessionId);
       const step = new AllureCommandStepExecutable(name);
       await step.run(body, async (message: MetadataMessage) => await sendMetadata(testId, message));
     });
