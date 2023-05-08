@@ -42,18 +42,18 @@ test("should report tests even if global setup fails", async ({ runInlineTest })
         fullName: "a.test.ts#should be skipped 1",
         status: "skipped",
         label: expect.arrayContaining([{ name: LabelName.ALLURE_ID, value: "-1" }]),
-        statusDetails: {
+        statusDetails: expect.objectContaining({
           message:
             "This test was skipped due to test setup error. Check you setup scripts to fix the issue.",
-        },
+        }),
       },
       {
         fullName: "b.test.ts#should be skipped 2",
         status: "skipped",
-        statusDetails: {
+        statusDetails: expect.objectContaining({
           message:
             "This test was skipped due to test setup error. Check you setup scripts to fix the issue.",
-        },
+        }),
         label: expect.arrayContaining([{ name: LabelName.ALLURE_ID, value: "-1" }]),
       },
     ]),

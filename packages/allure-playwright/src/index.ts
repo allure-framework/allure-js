@@ -18,7 +18,14 @@ import os from "os";
 import path from "path";
 import process from "process";
 import { FullConfig, TestStatus } from "@playwright/test";
-import { Reporter, Suite, TestCase, TestResult, TestStep } from "@playwright/test/reporter";
+import {
+  Reporter,
+  Suite,
+  TestCase,
+  TestError,
+  TestResult,
+  TestStep,
+} from "@playwright/test/reporter";
 import {
   AllureGroup,
   allureReportFolder,
@@ -34,6 +41,7 @@ import {
   MetadataMessage,
   readImageAsBase64,
   Status,
+  StatusDetails,
   stripAscii,
 } from "allure-js-commons";
 import {
@@ -149,6 +157,9 @@ class AllureReporter implements Reporter {
     }
     allureStep.endStep();
     allureStep.status = step.error ? Status.FAILED : Status.PASSED;
+    if (step.error) {
+      allureStep.statusDetails = getStatusDetails(step.error);
+    }
   }
 
   async onTestEnd(test: TestCase, result: TestResult): Promise<void> {
@@ -170,16 +181,9 @@ class AllureReporter implements Reporter {
     allureTest.addLabel(LabelName.THREAD, thread);
 
     allureTest.status = statusToAllureStats(result.status, test.expectedStatus);
-    if (result.error) {
-      const message = result.error.message && stripAscii(result.error.message);
-      let trace = result.error.stack && stripAscii(result.error.stack);
-      if (trace && message && trace.startsWith(`Error: ${message}`)) {
-        trace = trace.substr(message.length + "Error: ".length);
-      }
-      allureTest.statusDetails = {
-        message,
-        trace,
-      };
+    const error = result.error;
+    if (error) {
+      allureTest.statusDetails = getStatusDetails(error);
     }
     for (const attachment of result.attachments) {
       if (!attachment.body && !attachment.path) {
@@ -373,6 +377,18 @@ const appendStep = (parent: ExecutableItemWrapper, step: TestStep) => {
   for (const child of step.steps || []) {
     appendStep(allureStep, child);
   }
+};
+
+const getStatusDetails = (error: TestError): StatusDetails => {
+  const message = error.message && stripAscii(error.message);
+  let trace = error.stack && stripAscii(error.stack);
+  if (trace && message && trace.startsWith(`Error: ${message}`)) {
+    trace = trace.substr(message.length + "Error: ".length);
+  }
+  return {
+    message,
+    trace,
+  };
 };
 
 export * from "./helpers";
