@@ -40,6 +40,7 @@ import {
   ALLURE_IMAGEDIFF_CONTENT_TYPE,
   ALLURE_METADATA_CONTENT_TYPE,
 } from "allure-js-commons/internal";
+import { extractMetadataFromString } from "./utils";
 
 type AllureReporterOptions = {
   detail?: boolean;
@@ -91,6 +92,10 @@ class AllureReporter implements Reporter {
     const allureTest = group.startTest(test.title);
     allureTest.addLabel(LabelName.LANGUAGE, "JavaScript");
     allureTest.addLabel(LabelName.FRAMEWORK, "Playwright");
+
+    const titleMetadata = extractMetadataFromString(test.title);
+    titleMetadata.labels.forEach((label) => allureTest.addLabel(label.name, label.value));
+
     const [, projectSuiteTitle, fileSuiteTitle, ...suiteTitles] = suite.titlePath();
     if (projectSuiteTitle) {
       allureTest.addLabel(LabelName.PARENT_SUITE, projectSuiteTitle);
