@@ -248,10 +248,6 @@ class AllureReporter implements Reporter {
       } else {
         allureTest.addAttachment(attachment.name, attachment.contentType, fileName);
       }
-
-      if (attachment.name === "diff" || attachment.name.endsWith("-diff.png")) {
-        allureTest.addLabel("testType", "screenshotDiff");
-      }
     }
 
     if (result.stdout.length > 0) {

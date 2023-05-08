@@ -1,4 +1,4 @@
-import { Label, Parameter } from "allure-js-commons";
+import { Parameter } from "allure-js-commons";
 import { expect, test } from "./fixtures";
 
 test("should have parameter", async ({ runInlineTest }) => {
@@ -18,9 +18,22 @@ test("should have parameter", async ({ runInlineTest }) => {
     (writer) => {
       return writer.tests.map((t) => t.parameters);
     },
+    {
+      "--repeat-each": "2",
+    },
   );
-  expect(result[0]).toEqual([
+  expect(result).toContainEqual([
     { name: "Project", value: "project" },
+    { name: "Repetition", value: "1" },
+    { name: "param1", value: "paramValue1" },
+    { excluded: true, name: "param2", value: "paramValue2" },
+    { excluded: true, mode: "masked", name: "param3", value: "paramValue3" },
+    { mode: "hidden", name: "param4", value: "paramValue4" },
+  ]);
+
+  expect(result).toContainEqual([
+    { name: "Project", value: "project" },
+    { name: "Repetition", value: "2" },
     { name: "param1", value: "paramValue1" },
     { excluded: true, name: "param2", value: "paramValue2" },
     { excluded: true, mode: "masked", name: "param3", value: "paramValue3" },
