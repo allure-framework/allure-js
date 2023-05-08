@@ -26,6 +26,6 @@ test("historical data should be fine", async ({ runInlineTest }) => {
   const fullName = "a.test.ts#nested test";
   const testCaseIdSource = "a.test.ts#test";
   expect(result[0].fullName).toBe(fullName);
-  expect(result[0].historyId).toBe(md5(`${fullName}project`));
   expect(result[0].testCaseId).toBe(md5(testCaseIdSource));
+  expect(result[0].historyId).toBe(md5(testCaseIdSource) + ":" + md5("Project:project"));
 });

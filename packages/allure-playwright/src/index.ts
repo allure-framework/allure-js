@@ -107,8 +107,11 @@ class AllureReporter implements Reporter {
       allureTest.addLabel(LabelName.SUB_SUITE, suiteTitles.join(" > "));
     }
     const project = suite.project()!;
-    if (project?.name) {
+    if (project.name) {
       allureTest.addParameter("Project", project.name);
+    }
+    if (project.repeatEach > 1) {
+      allureTest.addParameter("Repetition", `${test.repeatEachIndex + 1}`);
     }
 
     const relativeFile = path
@@ -122,7 +125,6 @@ class AllureReporter implements Reporter {
 
     allureTest.fullName = fullName;
     allureTest.testCaseId = md5(testCaseIdSource);
-    allureTest.historyId = md5(`${fullName}${project.name || ""}`);
     this.allureTestCache.set(test, allureTest);
   }
 
@@ -267,6 +269,8 @@ class AllureReporter implements Reporter {
         runtime.writeAttachment(stripAscii(result.stderr.join("")), "text/plain"),
       );
     }
+
+    allureTest.calculateHistoryId();
 
     allureTest.endTest();
   }
