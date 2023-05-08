@@ -337,3 +337,16 @@ test("screendiff", async ({ page }) => {
 If screenshots don't match, the report shows difference between them.
 
 ![screendiff-preview](./docs/screendiff.jpg)
+
+### Passing metadata from test title
+
+You also can pass allure metadata from test title.
+This is useful when you need to set allureId for the tests with failing before hooks. Just add `@allure.id={idValue}` for the allureId or `@allure.label.{labelName}={labelValue}` for other types of labels.
+
+```ts
+import { test, expect } from "@playwright/test";
+test("test with allureId @allure.id=256", async ({}) => {});
+test("tst with severity @allure.label.severity=critical", async ({}) => {});
+test("test with epic @allure.label.epic=login", async ({}) => {});
+test("test with strangeLabel @allure.label.strangeLabel=strangeValue", async ({}) => {});
+```
