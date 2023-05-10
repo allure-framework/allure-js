@@ -41,7 +41,7 @@ test("should report test steps", async ({ runInlineTest }) => {
       name: "should pass",
       status: "passed",
       steps: [
-        expect.objectContaining({ name: "Before Hooks"}),
+        expect.objectContaining({ name: "Before Hooks" }),
         expect.objectContaining({
           name: "outer step 1",
           status: "passed",
@@ -58,7 +58,7 @@ test("should report test steps", async ({ runInlineTest }) => {
             expect.objectContaining({ name: "inner step 2.2", status: "passed" }),
           ],
         }),
-        expect.objectContaining({ name: "After Hooks"}),
+        expect.objectContaining({ name: "After Hooks" }),
       ],
     }),
   ]);
@@ -90,7 +90,7 @@ test("should report failed test steps", async ({ runInlineTest }) => {
       name: "should pass",
       status: "failed",
       steps: [
-        expect.objectContaining({ name: "Before Hooks"}),
+        expect.objectContaining({ name: "Before Hooks" }),
         expect.objectContaining({
           name: "outer step 1",
           status: "passed",
@@ -108,12 +108,14 @@ test("should report failed test steps", async ({ runInlineTest }) => {
               status: "failed",
               statusDetails: expect.objectContaining({
                 message: expect.stringContaining("expect(received).toBe(expected)"),
-                trace: expect.stringMatching(/^\s*at\s+.*steps-should-report-failed-test-steps-project\/a\.test\.ts:12:26\)/),
+                trace: expect.stringMatching(
+                  /^\s*at\s+.*steps-should-report-failed-test-steps-project\/a\.test\.ts:12:26\)/,
+                ),
               }),
             }),
           ],
         }),
-        expect.objectContaining({ name: "After Hooks"}),
+        expect.objectContaining({ name: "After Hooks" }),
       ],
     }),
   ]);

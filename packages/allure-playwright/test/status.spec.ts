@@ -17,9 +17,8 @@
 import { expect, test } from "./fixtures";
 
 test("should report test status", async ({ runInlineTest }) => {
-  const result = await runInlineTest(
-    {
-      "a.test.ts": /* ts */ `
+  const result = await runInlineTest({
+    "a.test.ts": /* ts */ `
       import { test, expect } from '@playwright/test';
       test('should pass', async ({}) => {
       });
@@ -41,8 +40,7 @@ test("should report test status", async ({ runInlineTest }) => {
         expect(true).toBe(false);
       });
     `,
-    },
-  );
+  });
   expect(result.tests).toEqual([
     expect.objectContaining({ name: "should pass", status: "passed" }),
     expect.objectContaining({ name: "should fail", status: "failed" }),
