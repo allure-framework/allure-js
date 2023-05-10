@@ -20,6 +20,7 @@ module.exports = {
     "hermione-headless-chrome": {
       enabled: true,
       browserId: "headless",
+      version: "113"
     },
     "allure-hermione": {
       writer: {
