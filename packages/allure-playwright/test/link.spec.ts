@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { Label } from "allure-js-commons";
 import { expect, test } from "./fixtures";
+
 test("should have link", async ({ runInlineTest }) => {
-  const result: Label[] = await runInlineTest(
-    {
-      "a.test.ts": /* ts */ `
+  const results = await runInlineTest({
+    "a.test.ts": /* ts */ `
       import { test } from '@playwright/test';
       import { allure } from '../../dist/index'
       test('should add epic link', async ({}, testInfo) => {
@@ -28,21 +27,21 @@ test("should have link", async ({ runInlineTest }) => {
           allure.links(...[{url:"https://www.google.com/1"}, {url:"https://www.google.com/2"}]);
       });
       `,
-    },
-    (writer) => {
-      return writer.tests.map((val) => val.links);
-    },
-  );
-
-  expect(result[0]).toContainEqual({
-    url: "https://playwright.dev/docs/api/class-page#page-workers",
   });
 
-  expect(result[0]).toContainEqual({
-    url: "https://www.google.com/1",
-  });
-
-  expect(result[0]).toContainEqual({
-    url: "https://www.google.com/2",
-  });
+  expect(results.tests).toEqual([
+    expect.objectContaining({
+      links: [
+        {
+          url: "https://playwright.dev/docs/api/class-page#page-workers",
+        },
+        {
+          url: "https://www.google.com/1",
+        },
+        {
+          url: "https://www.google.com/2",
+        },
+      ],
+    }),
+  ]);
 });

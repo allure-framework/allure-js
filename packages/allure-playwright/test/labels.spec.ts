@@ -15,55 +15,51 @@
  */
 
 import { expect, test } from "./fixtures";
+import { LabelName } from "allure-js-commons";
 
 test("should report structure a.test.ts", async ({ runInlineTest }) => {
-  const result = await runInlineTest(
-    {
-      "a.test.ts": /* ts */ `
+  const results = await runInlineTest({
+    "a.test.ts": /* ts */ `
       import test from '@playwright/test';
       test.describe('suite', () => {
         test('should work', async ({}) => {});
       });`,
-    },
-    (writer) => {
-      return writer.tests.map((t) => ({
-        name: t.name,
-        fullName: t.fullName,
-        historyId: t.historyId,
-        labels: t.labels,
-      }));
-    },
-  );
-  [
-    {
-      name: "language",
-      value: "JavaScript",
-    },
-    {
-      name: "framework",
-      value: "Playwright",
-    },
-    {
-      name: "parentSuite",
-      value: "project",
-    },
-    {
-      name: "suite",
-      value: "a.test.ts",
-    },
-    {
-      name: "subSuite",
-      value: "suite",
-    },
-  ].forEach((val) => {
-    expect(result[0].labels).toContainEqual(val);
+    reporterOptions: JSON.stringify({
+      suiteTitle: true,
+    }),
   });
+
+  expect(results.tests).toEqual([
+    expect.objectContaining({
+      labels: expect.arrayContaining([
+        {
+          name: LabelName.LANGUAGE,
+          value: "JavaScript",
+        },
+        {
+          name: LabelName.FRAMEWORK,
+          value: "Playwright",
+        },
+        {
+          name: LabelName.PARENT_SUITE,
+          value: "project",
+        },
+        {
+          name: LabelName.SUITE,
+          value: "a.test.ts",
+        },
+        {
+          name: LabelName.SUB_SUITE,
+          value: "suite",
+        },
+      ]),
+    }),
+  ]);
 });
 
 test("should report structure b.test.ts", async ({ runInlineTest }) => {
-  const result = await runInlineTest(
-    {
-      "b.test.ts": `
+  const results = await runInlineTest({
+    "b.test.ts": `
       import test from '@playwright/test';
       test.describe('parent suite 2', () => {
         test.describe('suite 2', () => {
@@ -73,39 +69,35 @@ test("should report structure b.test.ts", async ({ runInlineTest }) => {
         });
       });
     `,
-    },
-    (writer) => {
-      return writer.tests.map((t) => ({
-        name: t.name,
-        fullName: t.fullName,
-        historyId: t.historyId,
-        labels: t.labels,
-      }));
-    },
-  );
-
-  [
-    {
-      name: "language",
-      value: "JavaScript",
-    },
-    {
-      name: "framework",
-      value: "Playwright",
-    },
-    {
-      name: "parentSuite",
-      value: "project",
-    },
-    {
-      name: "suite",
-      value: "b.test.ts",
-    },
-    {
-      name: "subSuite",
-      value: "parent suite 2 > suite 2 > sub suite 2",
-    },
-  ].forEach((val) => {
-    expect(result[0].labels).toContainEqual(val);
+    reporterOptions: JSON.stringify({
+      suiteTitle: true,
+    }),
   });
+
+  expect(results.tests).toEqual([
+    expect.objectContaining({
+      labels: expect.arrayContaining([
+        {
+          name: LabelName.LANGUAGE,
+          value: "JavaScript",
+        },
+        {
+          name: LabelName.FRAMEWORK,
+          value: "Playwright",
+        },
+        {
+          name: LabelName.PARENT_SUITE,
+          value: "project",
+        },
+        {
+          name: LabelName.SUITE,
+          value: "b.test.ts",
+        },
+        {
+          name: LabelName.SUB_SUITE,
+          value: "parent suite 2 > suite 2 > sub suite 2",
+        },
+      ]),
+    }),
+  ]);
 });

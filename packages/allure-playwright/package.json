@@ -24,12 +24,14 @@
     "compile": "tsc",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "allure-report": "allure serve ./out/allure-results",
+    "pretest": "run compile",
     "test": "playwright test -c test",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix"
   },
   "devDependencies": {
     "@playwright/test": "^1.30.0",
+    "properties": "^1.2.1",
     "rimraf": "^3.0.2",
     "typescript": "^4.4.2"
   },

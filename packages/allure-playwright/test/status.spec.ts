@@ -42,9 +42,13 @@ test("should report test status", async ({ runInlineTest }) => {
       });
     `,
     },
-    (writer) => {
-      return writer.tests.map((t) => t.status);
-    },
   );
-  expect(result).toEqual(["passed", "failed", "broken", "skipped", "skipped", "passed"]);
+  expect(result.tests).toEqual([
+    expect.objectContaining({ name: "should pass", status: "passed" }),
+    expect.objectContaining({ name: "should fail", status: "failed" }),
+    expect.objectContaining({ name: "should break", status: "broken" }),
+    expect.objectContaining({ name: "should skip", status: "skipped" }),
+    expect.objectContaining({ name: "should fixme", status: "skipped" }),
+    expect.objectContaining({ name: "should expect fail", status: "passed" }),
+  ]);
 });

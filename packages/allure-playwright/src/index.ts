@@ -35,9 +35,9 @@ import {
   Category,
   ExecutableItemWrapper,
   ImageDiffAttachment,
-  InMemoryAllureWriter,
   LabelName,
   md5,
+  MessageAllureWriter,
   MetadataMessage,
   readImageAsBase64,
   Status,
@@ -50,7 +50,7 @@ import {
 } from "allure-js-commons/internal";
 import { extractMetadataFromString } from "./utils";
 
-type AllureReporterOptions = {
+export type AllureReporterOptions = {
   detail?: boolean;
   outputFolder?: string;
   suiteTitle?: boolean;
@@ -65,7 +65,7 @@ class AllureReporter implements Reporter {
   options: AllureReporterOptions;
 
   private allureWriter = process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST
-    ? new InMemoryAllureWriter()
+    ? new MessageAllureWriter()
     : undefined;
 
   private allureRuntime: AllureRuntime | undefined;
@@ -89,9 +89,6 @@ class AllureReporter implements Reporter {
       resultsDir: this.resultsDir,
       writer: this.allureWriter,
     });
-
-    this.allureRuntime.writeEnvironmentInfo(this.options?.environmentInfo || {});
-    this.allureRuntime.writeCategoriesDefinitions(this.options?.categories || []);
   }
 
   onTestBegin(test: TestCase): void {
@@ -105,6 +102,8 @@ class AllureReporter implements Reporter {
     titleMetadata.labels.forEach((label) => allureTest.addLabel(label.name, label.value));
 
     const [, projectSuiteTitle, fileSuiteTitle, ...suiteTitles] = suite.titlePath();
+    allureTest.addLabel("titlePath", suite.titlePath().join(" > "));
+
     if (projectSuiteTitle) {
       allureTest.addLabel(LabelName.PARENT_SUITE, projectSuiteTitle);
     }
@@ -311,15 +310,12 @@ class AllureReporter implements Reporter {
     for (const group of this.allureGroupCache.values()) {
       group.endGroup();
     }
-    if (process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST) {
-      try {
-        const writer = this.allureWriter;
-        void writer; // Used in `eval()`, below.
-        const postProcess = eval(process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST); // eslint-disable-line no-eval
-        console.log(JSON.stringify(postProcess(this.allureWriter))); // eslint-disable-line no-console
-      } catch (e) {
-        console.log(JSON.stringify({ error: (e as Error).stack || String(e) })); // eslint-disable-line no-console
-      }
+
+    if (this.options.environmentInfo) {
+      this.allureRuntime?.writeEnvironmentInfo(this.options?.environmentInfo);
+    }
+    if (this.options.categories) {
+      this.allureRuntime?.writeCategoriesDefinitions(this.options.categories);
     }
   }
 

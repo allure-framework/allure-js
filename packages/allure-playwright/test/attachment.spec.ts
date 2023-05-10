@@ -18,9 +18,8 @@ import fs from "fs";
 import { expect, test } from "./fixtures";
 
 test("should not throw on missing attachment", async ({ runInlineTest }) => {
-  const result = await runInlineTest(
-    {
-      "a.test.ts": /* ts */ `
+  const results = await runInlineTest({
+    "a.test.ts": /* ts */ `
       import test from '@playwright/test';
       test('should add attachment', async ({}, testInfo) => {
         testInfo.attachments.push({
@@ -35,42 +34,33 @@ test("should not throw on missing attachment", async ({ runInlineTest }) => {
         });
       });
     `,
-    },
-    (writer) => {
-      return writer.tests[0].attachments.map((a) => {
-        const buffer = writer.attachments[a.source];
-        return { name: a.name, type: a.type, buffer };
-      });
-    },
-  );
-  expect(result).toEqual([
-    { name: "buffer-attachment", type: "text/plain", buffer: Buffer.from("foo").toJSON() },
+  });
+  expect(results.tests[0].attachments).toEqual([
+    expect.objectContaining({ name: "buffer-attachment", type: "text/plain" }),
   ]);
+
+  expect(results.attachments[results.tests[0].attachments[0].source]).toEqual(
+    Buffer.from("foo").toString("base64"),
+  );
 });
 
 test("should add snapshots correctly and provide a screenshot diff", async ({
   runInlineTest,
   attachment,
 }) => {
-  const result = await runInlineTest(
-    {
-      "a.test.ts": /* ts */ `
+  const result = await runInlineTest({
+    "a.test.ts": /* ts */ `
       import test from '@playwright/test';
       test('should add attachment', async ({ page }, testInfo) => {
         testInfo.snapshotSuffix = '';
         test.expect(await page.screenshot()).toMatchSnapshot("foo.png");
       });
     `,
-      "a.test.ts-snapshots/foo-project.png": fs.readFileSync(
-        attachment("attachment-1-not-expected.png"),
-      ),
-    },
-    (writer) => {
-      return writer.tests[0].attachments;
-    },
-  );
-  expect(result.length).toBe(1);
-  expect(result).toEqual(
+    "a.test.ts-snapshots/foo-project.png": fs.readFileSync(
+      attachment("attachment-1-not-expected.png"),
+    ),
+  });
+  expect(result.tests[0].attachments).toEqual(
     expect.arrayContaining([
       {
         name: "foo",

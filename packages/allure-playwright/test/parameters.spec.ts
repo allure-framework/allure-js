@@ -1,8 +1,7 @@
-import { Parameter } from "allure-js-commons";
 import { expect, test } from "./fixtures";
 
 test("should have parameter", async ({ runInlineTest }) => {
-  const result: Parameter[][] = await runInlineTest(
+  const results = await runInlineTest(
     {
       "par.test.ts": /* ts */ `
        import { test, expect } from '@playwright/test';
@@ -15,28 +14,33 @@ test("should have parameter", async ({ runInlineTest }) => {
        });
      `,
     },
-    (writer) => {
-      return writer.tests.map((t) => t.parameters);
-    },
     {
       "--repeat-each": "2",
     },
   );
-  expect(result).toContainEqual([
-    { name: "Project", value: "project" },
-    { name: "Repetition", value: "1" },
-    { name: "param1", value: "paramValue1" },
-    { excluded: true, name: "param2", value: "paramValue2" },
-    { excluded: true, mode: "masked", name: "param3", value: "paramValue3" },
-    { mode: "hidden", name: "param4", value: "paramValue4" },
-  ]);
 
-  expect(result).toContainEqual([
-    { name: "Project", value: "project" },
-    { name: "Repetition", value: "2" },
-    { name: "param1", value: "paramValue1" },
-    { excluded: true, name: "param2", value: "paramValue2" },
-    { excluded: true, mode: "masked", name: "param3", value: "paramValue3" },
-    { mode: "hidden", name: "param4", value: "paramValue4" },
-  ]);
+  expect(results.tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        parameters: [
+          { name: "Project", value: "project" },
+          { name: "Repetition", value: "1" },
+          { name: "param1", value: "paramValue1" },
+          { excluded: true, name: "param2", value: "paramValue2" },
+          { excluded: true, mode: "masked", name: "param3", value: "paramValue3" },
+          { mode: "hidden", name: "param4", value: "paramValue4" },
+        ],
+      }),
+      expect.objectContaining({
+        parameters: [
+          { name: "Project", value: "project" },
+          { name: "Repetition", value: "2" },
+          { name: "param1", value: "paramValue1" },
+          { excluded: true, name: "param2", value: "paramValue2" },
+          { excluded: true, mode: "masked", name: "param3", value: "paramValue3" },
+          { mode: "hidden", name: "param4", value: "paramValue4" },
+        ],
+      }),
+    ]),
+  );
 });

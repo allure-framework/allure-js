@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { spawn } from "child_process";
+import { spawn, fork } from "child_process";
 import fs from "fs";
 import path from "path";
 import { test as base, TestInfo } from "@playwright/test";
-import type { InMemoryAllureWriter } from "allure-js-commons";
+import type { AllureResults } from "allure-js-commons";
+import { parse } from "properties";
 export { expect } from "@playwright/test";
 
 type RunResult = any;
@@ -49,6 +50,11 @@ const writeFiles = async (testInfo: TestInfo, files: Files) => {
   await Promise.all(
     Object.keys(files).map(async (name) => {
       const fullName = path.join(baseDir, name);
+      testInfo.attachments.push({
+        name: name,
+        body: Buffer.from(files[name]),
+        contentType: "text/plain",
+      });
       await fs.promises.mkdir(path.dirname(fullName), { recursive: true });
       await fs.promises.writeFile(fullName, files[name]);
     }),
@@ -59,10 +65,9 @@ const writeFiles = async (testInfo: TestInfo, files: Files) => {
 
 const runPlaywrightTest = async (
   baseDir: string,
-  postProcess: (writer: InMemoryAllureWriter) => any,
   params: any,
   env: Env,
-): Promise<RunResult> => {
+): Promise<AllureResults> => {
   const paramList = [];
   let additionalArgs = "";
   for (const key of Object.keys(params)) {
@@ -76,43 +81,63 @@ const runPlaywrightTest = async (
     }
   }
   const outputDir = path.join(baseDir, "test-results");
-  const args = [require.resolve("@playwright/test/cli"), "test"];
+  const args = ["test"];
   args.push(`--output=${outputDir}`, "--workers=2", ...paramList);
 
   if (additionalArgs) {
     args.push(...additionalArgs);
   }
-  const testProcess = spawn("node", args, {
+  const testProcess = fork(require.resolve("@playwright/test/cli"), args, {
     env: {
       ...process.env,
       ...env,
-      PW_ALLURE_POST_PROCESSOR_FOR_TEST: String(postProcess),
+      PW_ALLURE_POST_PROCESSOR_FOR_TEST: String("true"),
     },
     cwd: baseDir,
   });
-  let output = "";
-  testProcess.stdout.on("data", (chunk) => {
-    output += String(chunk);
+  const results: AllureResults = { tests: [], groups: [], attachments: {} };
+  testProcess.on("message", (message) => {
+    const event: { path: string; type: string; data: string } = JSON.parse(message.toString());
+    // console.log(event);
+
+    switch (event.type) {
+      case "result": {
+        results.tests.push(JSON.parse(Buffer.from(event.data, "base64").toString()));
+        break;
+      }
+      case "container": {
+        results.groups.push(JSON.parse(Buffer.from(event.data, "base64").toString()));
+        break;
+      }
+      case "attachment": {
+        results.attachments[event.path] = event.data;
+        break;
+      }
+      case "misc": {
+        if (event.path === "environment.properties") {
+          results.envInfo = parse(Buffer.from(event.data, "base64").toString());
+        } else if (event.path === "categories.json") {
+          results.categories = JSON.parse(Buffer.from(event.data, "base64").toString());
+        }
+      }
+    }
+  });
+  testProcess.stdout?.on("data", (chunk) => {
     if (process.env.PW_RUNNER_DEBUG) {
       process.stdout.write(String(chunk));
     }
   });
-  testProcess.stderr.on("data", (chunk) => {
+  testProcess.stderr?.on("data", (chunk) => {
     if (process.env.PW_RUNNER_DEBUG) {
       process.stderr.write(String(chunk));
     }
   });
   await new Promise<number>((x) => testProcess.on("close", x));
-  return JSON.parse(output.toString());
+  return results;
 };
 
 type Fixtures = {
-  runInlineTest: (
-    files: Files,
-    postProcess: (writer: InMemoryAllureWriter) => any,
-    params?: Params,
-    env?: Env,
-  ) => Promise<RunResult>;
+  runInlineTest: (files: Files, params?: Params, env?: Env) => Promise<AllureResults>;
   attachment: (name: string) => string;
 };
 
@@ -120,9 +145,17 @@ export const test = base.extend<Fixtures>({
   // eslint-disable-next-line no-empty-pattern
   runInlineTest: async ({}, use, testInfo: TestInfo) => {
     let runResult: RunResult | undefined;
-    await use(async (files: Files, postProcess, params: Params = {}, env: Env = {}) => {
-      const baseDir = await writeFiles(testInfo, files);
-      runResult = await runPlaywrightTest(baseDir, postProcess, params, env);
+    await use(async (files: Files, params: Params = {}, env: Env = {}) => {
+      const baseDir = await base.step("write files", async () => await writeFiles(testInfo, files));
+      runResult = await base.step("run tests", async () => {
+        const allureResults = await runPlaywrightTest(baseDir, params, env);
+        testInfo.attachments.push({
+          name: "allure-results",
+          body: Buffer.from(JSON.stringify(allureResults, null, 2)),
+          contentType: "application/json",
+        });
+        return allureResults;
+      });
       return runResult;
     });
     if (testInfo.status !== testInfo.expectedStatus && runResult && !process.env.PW_RUNNER_DEBUG) {
