@@ -10,7 +10,7 @@ const buildAttachmentFileName = (options: ContentType | string | AttachmentOptio
     options = { contentType: options };
   }
   const extension = typeToExtension(options);
-  return `${randomUUID()}-attachment.${extension}`;
+  return `${randomUUID()}-attachment${extension}`;
 };
 
 export class AllureRuntime {
