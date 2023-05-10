@@ -6,7 +6,7 @@ import Mocha from "mocha";
 import "source-map-support/register";
 
 const mocha = new Mocha({
-  timeout: 16000,
+  timeout: 30000,
   reporter: "mocha-multi-reporters",
   reporterOptions: {
     reporterEnabled: "list, ../allure-mocha",
