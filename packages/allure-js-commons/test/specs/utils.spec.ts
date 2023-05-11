@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { expect as jestExpect } from "expect";
 import { ExecutableItem, LabelName, Status } from "../../src/model";
 import { allureLabelRegexp, getStatusFromError, isAnyStepFailed } from "../../src/utils";
-import { typeToExtension } from "../../src/writers";
+import { typeToExtension } from "../../dist/src/writers";
 
 const fixtures = {
   withoutFailed: {
@@ -171,49 +171,49 @@ describe("utils > allureLabelRegexp", () => {
         }
       });
     });
+  });
+});
 
-    describe("type to extension util", () => {
-      it("should respect provided file extension", () => {
-        const extension = typeToExtension({
-          contentType: "application/json",
-          fileExtension: ".txt",
-        });
-
-        expect(extension).eq(".txt");
-      });
-
-      it("should respect provided file extension without leading dot", () => {
-        const extension = typeToExtension({
-          contentType: "application/json",
-          fileExtension: "txt",
-        });
-
-        expect(extension).eq(".txt");
-      });
-
-      it("should get extension for well-known content type", () => {
-        const extension = typeToExtension({
-          contentType: "application/json",
-        });
-
-        expect(extension).eq(".json");
-      });
-
-      it("should get extension for allure imagediff", () => {
-        const extension = typeToExtension({
-          contentType: "application/vnd.allure.image.diff",
-        });
-
-        expect(extension).eq(".imagediff");
-      });
-
-      it("should get an empty extension for unknown type", () => {
-        const extension = typeToExtension({
-          contentType: "application/vnd.unknown",
-        });
-
-        expect(extension).eq("");
-      });
+describe("writers > utils > typeToExtension", () => {
+  it("should respect provided file extension", () => {
+    const extension = typeToExtension({
+      contentType: "application/json",
+      fileExtension: ".txt",
     });
+
+    expect(extension).eq(".txt");
+  });
+
+  it("should respect provided file extension without leading dot", () => {
+    const extension = typeToExtension({
+      contentType: "application/json",
+      fileExtension: "txt",
+    });
+
+    expect(extension).eq(".txt");
+  });
+
+  it("should get extension for well-known content type", () => {
+    const extension = typeToExtension({
+      contentType: "application/json",
+    });
+
+    expect(extension).eq(".json");
+  });
+
+  it("should get extension for allure imagediff", () => {
+    const extension = typeToExtension({
+      contentType: "application/vnd.allure.image.diff",
+    });
+
+    expect(extension).eq(".imagediff");
+  });
+
+  it("should get an empty extension for unknown type", () => {
+    const extension = typeToExtension({
+      contentType: "application/vnd.unknown",
+    });
+
+    expect(extension).eq("");
   });
 });
