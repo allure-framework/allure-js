@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { spawn, fork } from "child_process";
+import { fork } from "child_process";
 import fs from "fs";
 import path from "path";
 import { test as base, TestInfo } from "@playwright/test";
