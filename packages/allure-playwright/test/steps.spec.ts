@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-import { StepResult, TestResult } from "allure-js-commons";
 import { expect, test } from "./fixtures";
 
-type SerializableStep = {
-  name?: string;
-  children: SerializableStep[];
-};
-
-test("should report test status", async ({ runInlineTest }) => {
-  const result = await runInlineTest(
-    {
-      "a.test.ts": /* ts */ `
+test("should report test steps", async ({ runInlineTest }) => {
+  const results = await runInlineTest({
+    "a.test.ts": /* ts */ `
       import { test, expect } from '@playwright/test';
       test('should pass', async ({}) => {
         await test.step('outer step 1', async () => {
@@ -42,36 +35,88 @@ test("should report test status", async ({ runInlineTest }) => {
         });
       });
     `,
-    },
-    (writer) => {
-      const convert = (testResult: StepResult | TestResult): SerializableStep => {
-        return {
-          name: testResult.name,
-          children: testResult.steps.map(convert),
-        };
-      };
-      return convert(writer.tests[0]);
-    },
-  );
-  expect(result).toEqual({
-    name: "should pass",
-    children: [
-      { name: "Before Hooks", children: [] },
-      {
-        name: "outer step 1",
-        children: [
-          { name: "inner step 1.1", children: [] },
-          { name: "inner step 1.2", children: [] },
-        ],
-      },
-      {
-        name: "outer step 2",
-        children: [
-          { name: "inner step 2.1", children: [] },
-          { name: "inner step 2.2", children: [] },
-        ],
-      },
-      { name: "After Hooks", children: [] },
-    ],
   });
+  expect(results.tests).toEqual([
+    expect.objectContaining({
+      name: "should pass",
+      status: "passed",
+      steps: [
+        expect.objectContaining({ name: "Before Hooks" }),
+        expect.objectContaining({
+          name: "outer step 1",
+          status: "passed",
+          steps: [
+            expect.objectContaining({ name: "inner step 1.1", status: "passed" }),
+            expect.objectContaining({ name: "inner step 1.2", status: "passed" }),
+          ],
+        }),
+        expect.objectContaining({
+          name: "outer step 2",
+          status: "passed",
+          steps: [
+            expect.objectContaining({ name: "inner step 2.1", status: "passed" }),
+            expect.objectContaining({ name: "inner step 2.2", status: "passed" }),
+          ],
+        }),
+        expect.objectContaining({ name: "After Hooks" }),
+      ],
+    }),
+  ]);
+});
+
+test("should report failed test steps", async ({ runInlineTest }) => {
+  const results = await runInlineTest({
+    "a.test.ts": /* ts */ `
+      import { test, expect } from '@playwright/test';
+      test('should pass', async ({}) => {
+        await test.step('outer step 1', async () => {
+          await test.step('inner step 1.1', async () => {
+          });
+          await test.step('inner step 1.2', async () => {
+          });
+        });
+        await test.step('outer step 2', async () => {
+          await test.step('inner step 2.1', async () => {
+            expect(true).toBe(false);
+          });
+          await test.step('inner step 2.2', async () => {
+          });
+        });
+      });
+    `,
+  });
+  expect(results.tests).toEqual([
+    expect.objectContaining({
+      name: "should pass",
+      status: "failed",
+      steps: [
+        expect.objectContaining({ name: "Before Hooks" }),
+        expect.objectContaining({
+          name: "outer step 1",
+          status: "passed",
+          steps: [
+            expect.objectContaining({ name: "inner step 1.1", status: "passed" }),
+            expect.objectContaining({ name: "inner step 1.2", status: "passed" }),
+          ],
+        }),
+        expect.objectContaining({
+          name: "outer step 2",
+          status: "failed",
+          steps: [
+            expect.objectContaining({
+              name: "inner step 2.1",
+              status: "failed",
+              statusDetails: expect.objectContaining({
+                message: expect.stringContaining("expect(received).toBe(expected)"),
+                trace: expect.stringMatching(
+                  /^\s*at\s+.*steps-should-report-failed-test-steps-project\/a\.test\.ts:12:26\)/,
+                ),
+              }),
+            }),
+          ],
+        }),
+        expect.objectContaining({ name: "After Hooks" }),
+      ],
+    }),
+  ]);
 });

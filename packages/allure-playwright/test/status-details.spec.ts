@@ -17,20 +17,20 @@
 import { expect, test } from "./fixtures";
 
 test("should report test status details", async ({ runInlineTest }) => {
-  const result = await runInlineTest(
-    {
-      "a.test.ts": /* ts */ `
+  const results = await runInlineTest({
+    "a.test.ts": /* ts */ `
       import { test, expect } from '@playwright/test';
       test('should fail', async ({}) => {
         expect(true).toBe(false);
       });
     `,
-    },
-    (writer) => {
-      return writer.tests[0].statusDetails;
-    },
-  );
-  expect(result.message).toContain("Object.is equality");
-  expect(result.trace).toContain("at ");
-  expect(result.trace.trim().startsWith("at ")).toBeTruthy();
+  });
+  expect(results.tests).toEqual([
+    expect.objectContaining({
+      statusDetails: expect.objectContaining({
+        message: expect.stringContaining("Object.is equality"),
+        trace: expect.stringMatching(/^\s*at\s/),
+      }),
+    }),
+  ]);
 });

@@ -18,7 +18,14 @@ import os from "os";
 import path from "path";
 import process from "process";
 import { FullConfig, TestStatus } from "@playwright/test";
-import { Reporter, Suite, TestCase, TestResult, TestStep } from "@playwright/test/reporter";
+import {
+  Reporter,
+  Suite,
+  TestCase,
+  TestError,
+  TestResult,
+  TestStep,
+} from "@playwright/test/reporter";
 import {
   AllureGroup,
   allureReportFolder,
@@ -28,12 +35,13 @@ import {
   Category,
   ExecutableItemWrapper,
   ImageDiffAttachment,
-  InMemoryAllureWriter,
   LabelName,
   md5,
+  MessageAllureWriter,
   MetadataMessage,
   readImageAsBase64,
   Status,
+  StatusDetails,
   stripAscii,
 } from "allure-js-commons";
 import {
@@ -42,7 +50,7 @@ import {
 } from "allure-js-commons/internal";
 import { extractMetadataFromString } from "./utils";
 
-type AllureReporterOptions = {
+export type AllureReporterOptions = {
   detail?: boolean;
   outputFolder?: string;
   suiteTitle?: boolean;
@@ -57,7 +65,7 @@ class AllureReporter implements Reporter {
   options: AllureReporterOptions;
 
   private allureWriter = process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST
-    ? new InMemoryAllureWriter()
+    ? new MessageAllureWriter()
     : undefined;
 
   private allureRuntime: AllureRuntime | undefined;
@@ -81,9 +89,6 @@ class AllureReporter implements Reporter {
       resultsDir: this.resultsDir,
       writer: this.allureWriter,
     });
-
-    this.allureRuntime.writeEnvironmentInfo(this.options?.environmentInfo || {});
-    this.allureRuntime.writeCategoriesDefinitions(this.options?.categories || []);
   }
 
   onTestBegin(test: TestCase): void {
@@ -97,6 +102,8 @@ class AllureReporter implements Reporter {
     titleMetadata.labels.forEach((label) => allureTest.addLabel(label.name, label.value));
 
     const [, projectSuiteTitle, fileSuiteTitle, ...suiteTitles] = suite.titlePath();
+    allureTest.addLabel("titlePath", suite.titlePath().join(" > "));
+
     if (projectSuiteTitle) {
       allureTest.addLabel(LabelName.PARENT_SUITE, projectSuiteTitle);
     }
@@ -107,8 +114,11 @@ class AllureReporter implements Reporter {
       allureTest.addLabel(LabelName.SUB_SUITE, suiteTitles.join(" > "));
     }
     const project = suite.project()!;
-    if (project?.name) {
+    if (project.name) {
       allureTest.addParameter("Project", project.name);
+    }
+    if (project.repeatEach > 1) {
+      allureTest.addParameter("Repetition", `${test.repeatEachIndex + 1}`);
     }
 
     const relativeFile = path
@@ -122,7 +132,6 @@ class AllureReporter implements Reporter {
 
     allureTest.fullName = fullName;
     allureTest.testCaseId = md5(testCaseIdSource);
-    allureTest.historyId = md5(`${fullName}${project.name || ""}`);
     this.allureTestCache.set(test, allureTest);
   }
 
@@ -147,6 +156,9 @@ class AllureReporter implements Reporter {
     }
     allureStep.endStep();
     allureStep.status = step.error ? Status.FAILED : Status.PASSED;
+    if (step.error) {
+      allureStep.statusDetails = getStatusDetails(step.error);
+    }
   }
 
   async onTestEnd(test: TestCase, result: TestResult): Promise<void> {
@@ -168,16 +180,9 @@ class AllureReporter implements Reporter {
     allureTest.addLabel(LabelName.THREAD, thread);
 
     allureTest.status = statusToAllureStats(result.status, test.expectedStatus);
-    if (result.error) {
-      const message = result.error.message && stripAscii(result.error.message);
-      let trace = result.error.stack && stripAscii(result.error.stack);
-      if (trace && message && trace.startsWith(`Error: ${message}`)) {
-        trace = trace.substr(message.length + "Error: ".length);
-      }
-      allureTest.statusDetails = {
-        message,
-        trace,
-      };
+    const error = result.error;
+    if (error) {
+      allureTest.statusDetails = getStatusDetails(error);
     }
     for (const attachment of result.attachments) {
       if (!attachment.body && !attachment.path) {
@@ -246,10 +251,6 @@ class AllureReporter implements Reporter {
       } else {
         allureTest.addAttachment(attachment.name, attachment.contentType, fileName);
       }
-
-      if (attachment.name === "diff" || attachment.name.endsWith("-diff.png")) {
-        allureTest.addLabel("testType", "screenshotDiff");
-      }
     }
 
     if (result.stdout.length > 0) {
@@ -267,6 +268,8 @@ class AllureReporter implements Reporter {
         runtime.writeAttachment(stripAscii(result.stderr.join("")), "text/plain"),
       );
     }
+
+    allureTest.calculateHistoryId();
 
     allureTest.endTest();
   }
@@ -307,15 +310,12 @@ class AllureReporter implements Reporter {
     for (const group of this.allureGroupCache.values()) {
       group.endGroup();
     }
-    if (process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST) {
-      try {
-        const writer = this.allureWriter;
-        void writer; // Used in `eval()`, below.
-        const postProcess = eval(process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST); // eslint-disable-line no-eval
-        console.log(JSON.stringify(postProcess(this.allureWriter))); // eslint-disable-line no-console
-      } catch (e) {
-        console.log(JSON.stringify({ error: (e as Error).stack || String(e) })); // eslint-disable-line no-console
-      }
+
+    if (this.options.environmentInfo) {
+      this.allureRuntime?.writeEnvironmentInfo(this.options?.environmentInfo);
+    }
+    if (this.options.categories) {
+      this.allureRuntime?.writeCategoriesDefinitions(this.options.categories);
     }
   }
 
@@ -373,6 +373,18 @@ const appendStep = (parent: ExecutableItemWrapper, step: TestStep) => {
   for (const child of step.steps || []) {
     appendStep(allureStep, child);
   }
+};
+
+const getStatusDetails = (error: TestError): StatusDetails => {
+  const message = error.message && stripAscii(error.message);
+  let trace = error.stack && stripAscii(error.stack);
+  if (trace && message && trace.startsWith(`Error: ${message}`)) {
+    trace = trace.substr(message.length + "Error: ".length);
+  }
+  return {
+    message,
+    trace,
+  };
 };
 
 export * from "./helpers";

@@ -6,9 +6,11 @@ export interface AllureResults {
   tests: TestResult[];
   groups: TestResultContainer[];
   attachments: Record<string, Buffer | string>;
+  envInfo?: Record<string, string | undefined>;
+  categories?: Category[];
 }
 
-export class InMemoryAllureWriter implements AllureWriter {
+export class InMemoryAllureWriter implements AllureWriter, AllureResults {
   public groups: TestResultContainer[] = [];
   public tests: TestResult[] = [];
   public attachments: Record<string, Buffer | string> = {};

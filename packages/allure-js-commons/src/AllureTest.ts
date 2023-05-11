@@ -2,6 +2,7 @@ import { AllureRuntime } from "./AllureRuntime";
 import { testResult } from "./constructors";
 import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
 import { LinkType, TestResult } from "./model";
+import { md5 } from "./utils";
 
 export class AllureTest extends ExecutableItemWrapper {
   private readonly testResult: TestResult;
@@ -48,5 +49,24 @@ export class AllureTest extends ExecutableItemWrapper {
 
   addTmsLink(url: string, name: string): void {
     this.addLink(url, name, LinkType.TMS);
+  }
+
+  calculateHistoryId(): void {
+    const tcId = this.testResult.testCaseId
+      ? this.testResult.testCaseId
+      : this.testResult.fullName
+      ? md5(this.testResult.fullName)
+      : null;
+
+    if (tcId) {
+      const paramsString = this.testResult.parameters
+        .filter((p) => !p?.excluded)
+        .sort((a, b) => a.name?.localeCompare(b?.name) || a.value?.localeCompare(b?.value))
+        .map((p) => `${p.name ?? "null"}:${p.value ?? "null"}`)
+        .join(",");
+
+      const paramsHash = md5(paramsString);
+      this.historyId = `${tcId}:${paramsHash}`;
+    }
   }
 }

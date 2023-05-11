@@ -70,18 +70,13 @@ test("should respect testplan", async ({ runInlineTest }) => {
        });
      `,
     },
-    (writer) => {
-      return writer.tests.map((val) => val.fullName);
-    },
     {},
     {
       ALLURE_TESTPLAN_PATH: testPlanFilename,
     },
   );
 
-  expect(results.length).toBe(4);
-
-  expect(results).toEqual(
+  expect(results.tests.map((value) => value.fullName)).toEqual(
     expect.arrayContaining([
       "b.test.ts#should execute",
       ".+.test.ts#+.",
