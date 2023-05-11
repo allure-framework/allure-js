@@ -98,7 +98,6 @@ const runPlaywrightTest = async (
   const results: AllureResults = { tests: [], groups: [], attachments: {} };
   testProcess.on("message", (message) => {
     const event: { path: string; type: string; data: string } = JSON.parse(message.toString());
-    // console.log(event);
 
     switch (event.type) {
       case "result": {
