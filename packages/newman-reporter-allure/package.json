@@ -1,6 +1,6 @@
 {
   "name": "newman-reporter-allure",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "Allure Newman integration",
   "author": {
     "name": "Qameta Software",
