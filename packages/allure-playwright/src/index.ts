@@ -107,7 +107,7 @@ class AllureReporter implements Reporter {
     if (projectSuiteTitle) {
       allureTest.addLabel(LabelName.PARENT_SUITE, projectSuiteTitle);
     }
-    if (this.options.suiteTitle && fileSuiteTitle) {
+    if (process.env.DISPLAY_FILE_SUITES_TITLE || (this.options.suiteTitle && fileSuiteTitle)) {
       allureTest.addLabel(LabelName.SUITE, fileSuiteTitle);
     }
     if (suiteTitles.length > 0) {
