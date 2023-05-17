@@ -278,7 +278,6 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
 
     currentTest.stage = Stage.FINISHED;
     currentTest.endTest(Date.now());
-    runningTests.delete(testId());
   });
 
   // it needs for tests because we need to read runtime writer data redefined in hermione config
