@@ -1,4 +1,5 @@
 module.exports = {
+  gridUrl: "http://localhost:4444/wd/hub",
   sets: {
     desktop: {
       browsers: ["headless"],
@@ -7,7 +8,6 @@ module.exports = {
   },
   browsers: {
     headless: {
-      automationProtocol: "devtools",
       desiredCapabilities: {
         browserName: "chrome",
         "goog:chromeOptions": {
@@ -17,11 +17,6 @@ module.exports = {
     },
   },
   plugins: {
-    "hermione-headless-chrome": {
-      enabled: true,
-      browserId: "headless",
-      version: "112",
-    },
     "allure-hermione": {
       writer: {
         results: [],
