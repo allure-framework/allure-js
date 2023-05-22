@@ -208,11 +208,16 @@ class AllureReporter {
   }
 
   testAfter(test: CodeceptTest) {
+    const currentRetrie = test._currentRetry;
+    if (currentRetrie !== 0) {
+      test = test._retriedTest;
+    };
     const allureTest = this.allureTestByCodeceptTest(test);
-
     allureTest?.endTest();
-
     this.currentTest = null;
+    if (test.state === "failed" && test._retries !== 0 && currentRetrie !== test._retries ) {
+      this.createTest(test);
+    }
   }
 
   getStepParents(step: CodeceptStep) {
