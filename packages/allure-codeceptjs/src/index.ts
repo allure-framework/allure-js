@@ -213,12 +213,12 @@ class AllureReporter {
     if (currentRetry !== 0) {
       // @ts-ignore
       test = test._retriedTest;
-    };
+    }
     const allureTest = this.allureTestByCodeceptTest(test);
     allureTest?.endTest();
     this.currentTest = null;
     // @ts-ignore
-    if (test.state === "failed" && test._retries !== 0 && currentRetry !== test._retries ) {
+    if (test.state === "failed" && test._retries !== 0 && currentRetry !== test._retries) {
       this.createTest(test);
     }
   }
