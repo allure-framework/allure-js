@@ -27,6 +27,7 @@ module.exports = {
     "@typescript-eslint",
   ],
   rules: {
+    "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/adjacent-overload-signatures": "error",
     "@typescript-eslint/array-type": [
       "error",
