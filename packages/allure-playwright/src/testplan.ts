@@ -9,15 +9,14 @@ export interface TestPlanFile {
 }
 
 export const testPlanFilter = () => {
+
   const testPlan = parseTestPlan();
   if (!testPlan) {
     return undefined;
   }
 
-  const selectedTests = testPlan.tests.map((testInfo) => {
+  return testPlan.tests.map((testInfo) => {
     const pattern = testInfo.selector.replace("#", " ");
-    return new RegExp(`^${escapeRegExp(pattern)}$`);
+    return new RegExp(`\\s${escapeRegExp(pattern)}$`);
   });
-
-  return selectedTests;
 };

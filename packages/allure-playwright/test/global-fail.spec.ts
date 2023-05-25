@@ -2,6 +2,8 @@ import { LabelName } from "allure-js-commons";
 import { expect, test } from "./fixtures";
 
 test("should report tests even if global setup fails", async ({ runInlineTest }) => {
+  test.skip(true, "in latest versions no test info is passed to the reporter in case of global setup failures");
+
   const results = await runInlineTest({
     "a.test.ts": /* ts */ `
       import test from '@playwright/test';

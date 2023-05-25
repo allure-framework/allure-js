@@ -41,7 +41,7 @@ const writeFiles = async (testInfo: TestInfo, files: Files) => {
           projects: [{ name: 'project' }],
           grep: require("../../dist/testplan.js").testPlanFilter(),
           reporter: [[require.resolve("../../dist/index.js"),
-          ${JSON.stringify(reporterOptions || false)} || undefined]],
+          ${JSON.stringify(reporterOptions || false)} || undefined], ["dot"]],
        };
       `,
     };
@@ -87,13 +87,18 @@ const runPlaywrightTest = async (
   if (additionalArgs) {
     args.push(...additionalArgs);
   }
-  const testProcess = fork(require.resolve("@playwright/test/cli"), args, {
+
+  const modulePath = require.resolve("@playwright/test/lib/cli");
+  await base.step(`${modulePath} ${args.join(" ")}`, () => {});
+
+  const testProcess = fork(modulePath, args, {
     env: {
       ...process.env,
       ...env,
       PW_ALLURE_POST_PROCESSOR_FOR_TEST: String("true"),
     },
     cwd: baseDir,
+    stdio: "pipe",
   });
   const results: AllureResults = { tests: [], groups: [], attachments: {} };
   testProcess.on("message", (message) => {
@@ -122,14 +127,10 @@ const runPlaywrightTest = async (
     }
   });
   testProcess.stdout?.on("data", (chunk) => {
-    if (process.env.PW_RUNNER_DEBUG) {
-      process.stdout.write(String(chunk));
-    }
+    process.stdout.write(String(chunk));
   });
   testProcess.stderr?.on("data", (chunk) => {
-    if (process.env.PW_RUNNER_DEBUG) {
-      process.stderr.write(String(chunk));
-    }
+    process.stderr.write(String(chunk));
   });
   await new Promise<number>((x) => testProcess.on("close", x));
   return results;
