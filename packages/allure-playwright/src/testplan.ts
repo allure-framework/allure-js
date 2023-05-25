@@ -9,7 +9,6 @@ export interface TestPlanFile {
 }
 
 export const testPlanFilter = () => {
-
   const testPlan = parseTestPlan();
   if (!testPlan) {
     return undefined;
