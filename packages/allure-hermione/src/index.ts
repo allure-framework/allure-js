@@ -37,6 +37,8 @@ export type AllureReportOptions = {
   resultsDir?: string;
 };
 
+export type TestIDFactory = (testId?: string) => string;
+
 const hostname = os.hostname();
 
 const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) => {
@@ -45,12 +47,18 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     resultsDir: "allure-results",
     ...opts,
   });
-  const getTestId = (context: string | Hermione.Test) => {
+  /**
+   * Creates browser-specific test ID to identify test in the reporter
+   *
+   * @param context Hermione test object, or browser ID string
+   * @returns Browser-specific test ID factory function
+   */
+  const getTestId = (context: string | Hermione.Test): TestIDFactory => {
     if (typeof context === "string") {
       return (testId?: string) => `${context}:${testId || ""}`;
     }
 
-    return () => `${context.sessionId}:${context.id()}`;
+    return () => `${context.browserId}:${context.id()}`;
   };
   const handleTestError = (test: Hermione.Test, error: Hermione.TestError) => {
     const testId = getTestId(test);
@@ -146,8 +154,8 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     currentTest.addStep(step);
   };
 
-  hermione.on(hermione.events.NEW_BROWSER, (browser) => {
-    const testId = getTestId(browser.sessionId);
+  hermione.on(hermione.events.NEW_BROWSER, (browser, { browserId }) => {
+    const testId = getTestId(browserId);
 
     browser.addCommand("label", async (id: string, name: string, value: string) => {
       await addLabel(testId(id), name, value);
@@ -220,6 +228,10 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     });
   });
   hermione.on(hermione.events.TEST_BEGIN, (test) => {
+    if (!test.sessionId) {
+      throw new Error("Test session hasn't been started correctly! Check the driver availability.");
+    }
+
     const testId = getTestId(test);
     const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env;
     const thread = ALLURE_THREAD_NAME || test.sessionId;
@@ -236,6 +248,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     currentTest.addLabel(LabelName.LANGUAGE, "javascript");
     currentTest.addLabel(LabelName.FRAMEWORK, "hermione");
     currentTest.addLabel(LabelName.THREAD, thread);
+    currentTest.addParameter("browser", test.browserId);
 
     if (parentSuite) {
       currentTest.addLabel(LabelName.PARENT_SUITE, parentSuite);
