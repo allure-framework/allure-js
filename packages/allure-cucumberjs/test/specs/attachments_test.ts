@@ -46,7 +46,7 @@ describe("CucumberJSAllureReporter > examples", () => {
     expect(attachmentsKeys).length(2);
     expect(results.attachments[attachmentsKeys[0]]).eq("some text");
 
-    const [attachment] = results.tests[0].attachments;
+    const [attachment] = results.tests[0].steps[0].attachments;
     expect(attachment.type).eq("text/plain");
     expect(attachment.source).eq(attachmentsKeys[0]);
   });
@@ -58,7 +58,7 @@ describe("CucumberJSAllureReporter > examples", () => {
     const attachmentsKeys = Object.keys(results.attachments);
     expect(attachmentsKeys).length(2);
 
-    const [imageAttachment] = results.tests[1].attachments;
+    const [imageAttachment] = results.tests[1].steps[0].attachments;
     expect(imageAttachment.type).eq("image/png");
   });
 });

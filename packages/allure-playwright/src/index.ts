@@ -319,6 +319,10 @@ class AllureReporter implements Reporter {
     }
   }
 
+  printsToStdio(): boolean {
+    return false;
+  }
+
   private getAllureRuntime(): AllureRuntime {
     if (!this.allureRuntime) {
       throw new Error("Unexpected state: `allureRuntime` is not initialized");

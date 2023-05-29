@@ -3,19 +3,28 @@
 import path from "path";
 import glob from "glob";
 import Mocha from "mocha";
+import selenium from "selenium-standalone";
 import "source-map-support/register";
 
-const mocha = new Mocha({
-  timeout: 30000,
-  reporter: "mocha-multi-reporters",
-  reporterOptions: {
-    reporterEnabled: "list, ../allure-mocha",
-    allureMochaReporterOptions: {
-      resultsDir: path.resolve(__dirname, "../out/allure-results"),
+(async () => {
+  await selenium.install();
+
+  const seleniumProcess = await selenium.start();
+  const mocha = new Mocha({
+    timeout: 30000,
+    reporter: "mocha-multi-reporters",
+    reporterOptions: {
+      reporterEnabled: "list, ../allure-mocha",
+      allureMochaReporterOptions: {
+        resultsDir: path.resolve(__dirname, "../out/allure-results"),
+      },
     },
-  },
-});
+  });
 
-glob.sync("./test/spec/**/*.test.ts").forEach((file) => mocha.addFile(file));
+  glob.sync("./test/spec/**/*.test.ts").forEach((file) => mocha.addFile(file));
 
-mocha.run((failures) => process.exit(failures === 0 ? 0 : 1));
+  mocha.run((failures) => {
+    seleniumProcess.kill();
+    process.exit(failures === 0 ? 0 : 1);
+  });
+})();
