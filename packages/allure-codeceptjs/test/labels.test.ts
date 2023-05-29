@@ -25,6 +25,7 @@ test("simple scenarios", async () => {
       `,
     },
   });
+  expect(res.tests[0]!.description).toBe("aga");
   expect(res.tests[0]!.labels).toMatchInlineSnapshot(`
     Array [
       Object {
