@@ -1,4 +1,4 @@
-const allurePlugin = require("../src/index.ts");
+const allure = require("../src/index.ts");
 
 describe("assign currentTest in suiteStarted", () => {
   it("should assign currentTest", () => {
@@ -12,7 +12,7 @@ describe("assign currentTest in suiteStarted", () => {
 
     const createTest = jest.fn();
 
-    const instance = allurePlugin({ outputDir: "./output" });
+    const instance = allure({ outputDir: "./output" });
     instance.createTest = createTest;
 
     instance.suiteStarted(suite);
