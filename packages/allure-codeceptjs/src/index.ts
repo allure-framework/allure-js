@@ -110,6 +110,8 @@ class AllureReporter {
     suite.tests.forEach((test) => {
       this.createTest(test);
     });
+    // @ts-ignore
+    this.currentTest = suite.ctx.currentTest;
   }
 
   allureTestByCodeceptTest(test: CodeceptTest) {
@@ -156,8 +158,6 @@ class AllureReporter {
   }
 
   testStarted(test: CodeceptTest & { tags: string[] }) {
-    this.currentTest = test;
-
     const allureTest = this.allureTestByCodeceptTest(test);
     const { labels } = extractMeta(test);
     if (allureTest) {
