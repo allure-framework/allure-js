@@ -158,6 +158,8 @@ class AllureReporter {
   }
 
   testStarted(test: CodeceptTest & { tags: string[] }) {
+    this.currentTest = test;
+
     const allureTest = this.allureTestByCodeceptTest(test);
     const { labels } = extractMeta(test);
     if (allureTest) {
