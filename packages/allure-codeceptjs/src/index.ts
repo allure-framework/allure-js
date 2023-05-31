@@ -221,6 +221,8 @@ class AllureReporter {
     this.currentTest = null;
     // @ts-ignore
     if (test.state === "failed" && test._retries !== 0 && currentRetry !== test._retries) {
+      // @ts-ignore
+      test.parent.ctx.currentTest = test;
       this.createTest(test);
     }
   }
