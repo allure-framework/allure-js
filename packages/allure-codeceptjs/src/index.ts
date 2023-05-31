@@ -105,13 +105,13 @@ class AllureReporter {
     allureTest.historyId = md5(fullName);
 
     this.allureTestCache.set(test, allureTest);
+    // @ts-ignore
+    this.currentTest = suite.ctx.currentTest;
   }
   suiteStarted(suite: CodeceptSuite) {
     suite.tests.forEach((test) => {
       this.createTest(test);
     });
-    // @ts-ignore
-    this.currentTest = suite.ctx.currentTest;
   }
 
   allureTestByCodeceptTest(test: CodeceptTest) {
