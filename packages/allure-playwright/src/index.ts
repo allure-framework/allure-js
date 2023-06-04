@@ -34,6 +34,7 @@ import {
   AllureTest,
   Category,
   ExecutableItemWrapper,
+  getSuitesLabels,
   ImageDiffAttachment,
   LabelName,
   md5,
@@ -101,22 +102,29 @@ class AllureReporter implements Reporter {
     const titleMetadata = extractMetadataFromString(test.title);
     titleMetadata.labels.forEach((label) => allureTest.addLabel(label.name, label.value));
 
-    const [, projectSuiteTitle, fileSuiteTitle, ...suiteTitles] = suite.titlePath();
+    const [, ...suites] = suite.titlePath();
+    const [projectSuite, fileSuite, subSuite] = getSuitesLabels(suites);
+
     allureTest.addLabel("titlePath", suite.titlePath().join(" > "));
 
-    if (projectSuiteTitle) {
-      allureTest.addLabel(LabelName.PARENT_SUITE, projectSuiteTitle);
+    if (projectSuite) {
+      allureTest.addLabel(LabelName.PARENT_SUITE, projectSuite);
     }
-    if (this.options.suiteTitle && fileSuiteTitle) {
-      allureTest.addLabel(LabelName.SUITE, fileSuiteTitle);
+
+    if (this.options.suiteTitle && fileSuite) {
+      allureTest.addLabel(LabelName.SUITE, fileSuite);
     }
-    if (suiteTitles.length > 0) {
-      allureTest.addLabel(LabelName.SUB_SUITE, suiteTitles.join(" > "));
+
+    if (subSuite) {
+      allureTest.addLabel(LabelName.SUB_SUITE, subSuite);
     }
+
     const project = suite.project()!;
+
     if (project.name) {
       allureTest.addParameter("Project", project.name);
     }
+
     if (project.repeatEach > 1) {
       allureTest.addParameter("Repetition", `${test.repeatEachIndex + 1}`);
     }
@@ -125,9 +133,9 @@ class AllureReporter implements Reporter {
       .relative(project?.testDir, test.location.file)
       .split(path.sep)
       .join("/");
-
-    const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
-    const fullName = `${relativeFile}#${nameSuites}${test.title}`;
+    const nameSuites = suites.slice(3).join(" ");
+    const nameSuitePrefix = nameSuites ? `${nameSuites} ` : "";
+    const fullName = `${relativeFile}#${nameSuitePrefix}${test.title}`;
     const testCaseIdSource = `${relativeFile}#${test.title}`;
 
     allureTest.fullName = fullName;
