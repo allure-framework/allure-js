@@ -225,35 +225,30 @@ describe("writers > utils > typeToExtension", () => {
 
 describe("utils > getSuitesLabels", () => {
   describe("with empty suites", () => {
-    it("returns empty object", () => {
-      expect(getSuitesLabels([])).eql({});
+    it("returns empty list", () => {
+      expect(getSuitesLabels([])).eql([]);
     });
   });
 
   describe("with single suite", () => {
-    it("returns only parent suite label", () => {
-      expect(getSuitesLabels(["foo"])).eql({
-        [LabelName.PARENT_SUITE]: "foo",
-      });
+    it("returns parent suite label as the first element", () => {
+      expect(getSuitesLabels(["foo"])).eql(["foo"]);
     });
   });
 
   describe("with two suites", () => {
-    it("returns parent suite and suite labels", () => {
-      expect(getSuitesLabels(["foo", "bar"])).eql({
-        [LabelName.PARENT_SUITE]: "foo",
-        [LabelName.SUITE]: "bar",
-      });
+    it("returns parent suite and suite labels as the first two elements", () => {
+      expect(getSuitesLabels(["foo", "bar"])).eql(["foo", "bar"]);
     });
   });
 
   describe("with three or more suites", () => {
-    it("returns parent suite, suite and sub suite labels", () => {
-      expect(getSuitesLabels(["foo", "bar", "baz", "beep", "boop"])).eql({
-        [LabelName.PARENT_SUITE]: "foo",
-        [LabelName.SUITE]: "bar",
-        [LabelName.SUB_SUITE]: "baz > beep > boop",
-      });
+    it("returns list of three elements where last one is a sub suite label", () => {
+      expect(getSuitesLabels(["foo", "bar", "baz", "beep", "boop"])).eql([
+        "foo",
+        "bar",
+        "baz > beep > boop",
+      ]);
     });
   });
 });

@@ -98,22 +98,22 @@ export const getStatusFromError = (error: Error): Status => {
 
 export const getSuitesLabels = (suites: string[]) => {
   if (suites.length === 0) {
-    return {};
+    return [];
   }
 
-  const labels: Partial<Record<LabelName, string>> = {};
+  const labels: [string?, string?, string?] = [];
   const [parentSuite, suite, ...subSuites] = suites;
 
   if (parentSuite) {
-    labels[LabelName.PARENT_SUITE] = parentSuite;
+    labels.push(parentSuite);
   }
 
   if (suite) {
-    labels[LabelName.SUITE] = suite;
+    labels.push(suite);
   }
 
   if (subSuites.length > 0) {
-    labels[LabelName.SUB_SUITE] = subSuites.join(" > ");
+    labels.push(subSuites.join(" > "));
   }
 
   return labels;

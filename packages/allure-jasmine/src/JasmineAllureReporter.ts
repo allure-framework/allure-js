@@ -8,6 +8,7 @@ import {
   AttachmentOptions,
   ContentType,
   ExecutableItemWrapper,
+  getSuitesLabels,
   isPromise,
   Label,
   LabelName,
@@ -122,22 +123,20 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
     allureTest.historyId = spec.fullName;
     allureTest.stage = Stage.RUNNING;
 
-    if (this.groupStack.length > 1) {
-      allureTest.addLabel(LabelName.PARENT_SUITE, this.groupStack[0].name);
+    const [parentSuite, suite, subSuite] = getSuitesLabels(
+      this.groupStack.map(({ name }) => name).slice(0, this.groupStack.length - 1),
+    );
+
+    if (parentSuite) {
+      allureTest.addLabel(LabelName.PARENT_SUITE, parentSuite);
     }
 
-    if (this.groupStack.length > 2) {
-      allureTest.addLabel(LabelName.SUITE, this.groupStack[1].name);
+    if (suite) {
+      allureTest.addLabel(LabelName.SUITE, suite);
     }
 
-    if (this.groupStack.length > 3) {
-      allureTest.addLabel(
-        LabelName.SUB_SUITE,
-        this.groupStack
-          .slice(2, this.groupStack.length - 1)
-          .map(({ name }) => name)
-          .join(" > "),
-      );
+    if (subSuite) {
+      allureTest.addLabel(LabelName.SUB_SUITE, subSuite);
     }
 
     for (const labels of this.labelStack) {
