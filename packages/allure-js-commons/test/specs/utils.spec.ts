@@ -2,7 +2,12 @@ import assert, { AssertionError } from "node:assert";
 import { expect } from "chai";
 import { expect as jestExpect } from "expect";
 import { ExecutableItem, LabelName, Status } from "../../src/model";
-import { allureLabelRegexp, getStatusFromError, isAnyStepFailed } from "../../src/utils";
+import {
+  allureLabelRegexp,
+  getStatusFromError,
+  isAnyStepFailed,
+  getSuitesLabels,
+} from "../../src/utils";
 import { typeToExtension } from "../../dist/src/writers";
 
 const fixtures = {
@@ -215,5 +220,40 @@ describe("writers > utils > typeToExtension", () => {
     });
 
     expect(extension).eq("");
+  });
+});
+
+describe("utils > getSuitesLabels", () => {
+  describe("with empty suites", () => {
+    it("returns empty object", () => {
+      expect(getSuitesLabels([])).eql({});
+    });
+  });
+
+  describe("with single suite", () => {
+    it("returns only parent suite label", () => {
+      expect(getSuitesLabels(["foo"])).eql({
+        [LabelName.PARENT_SUITE]: "foo",
+      });
+    });
+  });
+
+  describe("with two suites", () => {
+    it("returns parent suite and suite labels", () => {
+      expect(getSuitesLabels(["foo", "bar"])).eql({
+        [LabelName.PARENT_SUITE]: "foo",
+        [LabelName.SUITE]: "bar",
+      });
+    });
+  });
+
+  describe("with three or more suites", () => {
+    it("returns parent suite, suite and sub suite labels", () => {
+      expect(getSuitesLabels(["foo", "bar", "baz", "beep", "boop"])).eql({
+        [LabelName.PARENT_SUITE]: "foo",
+        [LabelName.SUITE]: "bar",
+        [LabelName.SUB_SUITE]: "baz > beep > boop",
+      });
+    });
   });
 });

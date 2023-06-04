@@ -2,8 +2,8 @@ import { createHash } from "crypto";
 import { readFile } from "fs/promises";
 import path from "path";
 import { env } from "process";
+import { ExecutableItem, Label, LabelName, Status } from "./model";
 
-import { ExecutableItem, Label, Status } from "./model";
 export const md5 = (data: string) => createHash("md5").update(data).digest("hex");
 
 export const getLabelsFromEnv = (): Label[] => {
@@ -94,4 +94,27 @@ export const getStatusFromError = (error: Error): Status => {
     default:
       return Status.BROKEN;
   }
+};
+
+export const getSuitesLabels = (suites: string[]) => {
+  if (suites.length === 0) {
+    return {};
+  }
+
+  const labels: Partial<Record<LabelName, string>> = {};
+  const [parentSuite, suite, ...subSuites] = suites;
+
+  if (parentSuite) {
+    labels[LabelName.PARENT_SUITE] = parentSuite;
+  }
+
+  if (suite) {
+    labels[LabelName.SUITE] = suite;
+  }
+
+  if (subSuites.length > 0) {
+    labels[LabelName.SUB_SUITE] = subSuites.join(" > ");
+  }
+
+  return labels;
 };
