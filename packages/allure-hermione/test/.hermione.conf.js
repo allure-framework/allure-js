@@ -15,7 +15,7 @@ module.exports = {
         browserName: "firefox",
         "moz:firefoxOptions": {
           args: ["--headless"],
-        },
+        }
       },
     },
   },
