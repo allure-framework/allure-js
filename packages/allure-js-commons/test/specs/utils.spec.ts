@@ -1,12 +1,15 @@
-import assert, { AssertionError } from "node:assert";
+import assert from "node:assert";
 import { expect } from "chai";
 import { expect as jestExpect } from "expect";
 import { ExecutableItem, LabelName, Status } from "../../src/model";
+import { AllureRuntime } from "../../src/AllureRuntime";
+import { InMemoryAllureWriter } from "../../src/writers/InMemoryAllureWriter";
+import { AllureTest } from "../../src/AllureTest";
 import {
   allureLabelRegexp,
+  assignSuitesLabels,
   getStatusFromError,
   isAnyStepFailed,
-  getSuitesLabels,
 } from "../../src/utils";
 import { typeToExtension } from "../../dist/src/writers";
 
@@ -223,31 +226,97 @@ describe("writers > utils > typeToExtension", () => {
   });
 });
 
-describe("utils > getSuitesLabels", () => {
+describe("utils > assignSuitesLabels", () => {
+  let runtime: AllureRuntime;
+  let writer: InMemoryAllureWriter;
+  let test: AllureTest;
+
+  beforeEach(() => {
+    writer = new InMemoryAllureWriter();
+    runtime = new AllureRuntime({
+      resultsDir: ".",
+      writer,
+    });
+    test = new AllureTest(runtime);
+  });
+
   describe("with empty suites", () => {
-    it("returns empty list", () => {
-      expect(getSuitesLabels([])).eql([]);
+    it("doesn't add any label", () => {
+      assignSuitesLabels(test, []);
+      test.endTest();
+
+      expect(writer.tests[0].labels).eql([]);
     });
   });
 
   describe("with single suite", () => {
     it("returns parent suite label as the first element", () => {
-      expect(getSuitesLabels(["foo"])).eql(["foo"]);
+      assignSuitesLabels(test, ["foo"]);
+      test.endTest();
+
+      expect(writer.tests[0].labels).eql([
+        {
+          name: LabelName.PARENT_SUITE,
+          value: "foo",
+        },
+      ]);
     });
   });
 
   describe("with two suites", () => {
     it("returns parent suite and suite labels as the first two elements", () => {
-      expect(getSuitesLabels(["foo", "bar"])).eql(["foo", "bar"]);
+      assignSuitesLabels(test, ["foo", "bar"]);
+      test.endTest();
+
+      expect(writer.tests[0].labels).eql([
+        {
+          name: LabelName.PARENT_SUITE,
+          value: "foo",
+        },
+        {
+          name: LabelName.SUITE,
+          value: "bar",
+        },
+      ]);
     });
   });
 
   describe("with three or more suites", () => {
     it("returns list of three elements where last one is a sub suite label", () => {
-      expect(getSuitesLabels(["foo", "bar", "baz", "beep", "boop"])).eql([
-        "foo",
-        "bar",
-        "baz > beep > boop",
+      assignSuitesLabels(test, ["foo", "bar", "baz", "beep", "boop"]);
+      test.endTest();
+
+      expect(writer.tests[0].labels).eql([
+        {
+          name: LabelName.PARENT_SUITE,
+          value: "foo",
+        },
+        {
+          name: LabelName.SUITE,
+          value: "bar",
+        },
+        {
+          name: LabelName.SUB_SUITE,
+          value: "baz > beep > boop",
+        },
+      ]);
+    });
+  });
+
+  describe("with skipped suite label", () => {
+    it("returns list of three elements where last one is a sub suite label", () => {
+      assignSuitesLabels(test, ["foo", "bar", "baz", "beep", "boop"], [LabelName.SUITE]);
+      test.endTest();
+
+      expect(writer.tests[0].labels).eql([
+        {
+          name: LabelName.PARENT_SUITE,
+          value: "foo",
+        },
+        {
+          name: LabelName.SUB_SUITE,
+          value: "baz > beep > boop",
+        },
       ]);
     });
   });

@@ -32,9 +32,9 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
+  assignSuitesLabels,
   Category,
   ExecutableItemWrapper,
-  getSuitesLabels,
   ImageDiffAttachment,
   LabelName,
   md5,
@@ -103,21 +103,10 @@ class AllureReporter implements Reporter {
     titleMetadata.labels.forEach((label) => allureTest.addLabel(label.name, label.value));
 
     const [, ...suites] = suite.titlePath();
-    const [projectSuite, fileSuite, subSuite] = getSuitesLabels(suites);
 
     allureTest.addLabel("titlePath", suite.titlePath().join(" > "));
 
-    if (projectSuite) {
-      allureTest.addLabel(LabelName.PARENT_SUITE, projectSuite);
-    }
-
-    if (this.options.suiteTitle && fileSuite) {
-      allureTest.addLabel(LabelName.SUITE, fileSuite);
-    }
-
-    if (subSuite) {
-      allureTest.addLabel(LabelName.SUB_SUITE, subSuite);
-    }
+    assignSuitesLabels(allureTest, suites, [this.options.suiteTitle && LabelName.SUITE]);
 
     const project = suite.project()!;
 
@@ -133,9 +122,9 @@ class AllureReporter implements Reporter {
       .relative(project?.testDir, test.location.file)
       .split(path.sep)
       .join("/");
-    const nameSuites = suites.slice(3).join(" ");
-    const nameSuitePrefix = nameSuites ? `${nameSuites} ` : "";
-    const fullName = `${relativeFile}#${nameSuitePrefix}${test.title}`;
+    const suiteTitles = suites.slice(3);
+    const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
+    const fullName = `${relativeFile}#${nameSuites}${test.title}`;
     const testCaseIdSource = `${relativeFile}#${test.title}`;
 
     allureTest.fullName = fullName;

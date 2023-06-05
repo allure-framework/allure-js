@@ -5,10 +5,10 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
+  assignSuitesLabels,
   AttachmentOptions,
   ContentType,
   ExecutableItemWrapper,
-  getSuitesLabels,
   LabelName,
   md5,
   Stage,
@@ -114,19 +114,8 @@ export class AllureReporter {
 
     if (test.parent) {
       const suites = this.getSuitePath(test);
-      const [parentSuite, suite, subSuite] = getSuitesLabels(suites);
 
-      if (parentSuite) {
-        this.currentTest.addLabel(LabelName.PARENT_SUITE, parentSuite);
-      }
-
-      if (suite) {
-        this.currentTest.addLabel(LabelName.SUITE, suite);
-      }
-
-      if (subSuite) {
-        this.currentTest.addLabel(LabelName.SUB_SUITE, subSuite);
-      }
+      assignSuitesLabels(this.currentTest, suites);
     }
   }
 

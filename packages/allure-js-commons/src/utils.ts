@@ -2,6 +2,7 @@ import { createHash } from "crypto";
 import { readFile } from "fs/promises";
 import path from "path";
 import { env } from "process";
+import { AllureTest } from "./AllureTest";
 import { ExecutableItem, Label, LabelName, Status } from "./model";
 
 export const md5 = (data: string) => createHash("md5").update(data).digest("hex");
@@ -96,25 +97,37 @@ export const getStatusFromError = (error: Error): Status => {
   }
 };
 
-export const getSuitesLabels = (suites: string[]) => {
+/**
+ * Assings possible suites labels from the given path to a given test (mutates the test)
+ * and returns it
+ *
+ * @param test
+ * @param suites
+ * @param skipLabels
+ */
+export const assignSuitesLabels = (
+  test: AllureTest,
+  suites: string[],
+  skipLabels: (LabelName | boolean | null | undefined)[] = [],
+) => {
   if (suites.length === 0) {
-    return [];
+    return test;
   }
 
-  const labels: [string?, string?, string?] = [];
   const [parentSuite, suite, ...subSuites] = suites;
+  const skipLabel = (label: LabelName) => skipLabels.filter(Boolean).includes(label);
 
-  if (parentSuite) {
-    labels.push(parentSuite);
+  if (parentSuite && !skipLabel(LabelName.PARENT_SUITE)) {
+    test.addLabel(LabelName.PARENT_SUITE, parentSuite);
   }
 
-  if (suite) {
-    labels.push(suite);
+  if (suite && !skipLabel(LabelName.SUITE)) {
+    test.addLabel(LabelName.SUITE, suite);
   }
 
-  if (subSuites.length > 0) {
-    labels.push(subSuites.join(" > "));
+  if (subSuites.length > 0 && !skipLabel(LabelName.SUB_SUITE)) {
+    test.addLabel(LabelName.SUB_SUITE, subSuites.join(" > "));
   }
 
-  return labels;
+  return test;
 };
