@@ -32,7 +32,7 @@
     "lint": "eslint ./src ./index.ts --ext .ts",
     "lint:fix": "eslint ./src ./index.ts --ext .ts --fix",
     "compile": "tsc",
-    "test": "nyc ts-node --project test/tsconfig.json test/runner.ts"
+    "test": "nyc tsx --tsconfig test/tsconfig.json test/runner.ts"
   },
   "devDependencies": {
     "@types/chai": "^4.2.21",
@@ -48,7 +48,6 @@
     "mocha-multi-reporters": "^1.5.1",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
-    "ts-node": "^10.2.1",
     "typescript": "^4.4.2"
   },
   "dependencies": {

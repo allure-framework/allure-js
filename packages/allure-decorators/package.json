@@ -25,7 +25,7 @@
     "compile": "tsc",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "allure-report": "allure serve ./out/allure-results",
-    "test": "nyc ts-node --project test/tsconfig.json test/runner.ts",
+    "test": "nyc tsx --tsconfig test/tsconfig.json test/runner.ts",
     "coverage": "codecov",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix"
@@ -51,7 +51,6 @@
     "nyc": "^15.0.1",
     "rimraf": "^3.0.2",
     "source-map-support": "^0.5.19",
-    "ts-node": "^10.2.1",
     "typescript": "^4.4.2"
   },
   "nyc": {
