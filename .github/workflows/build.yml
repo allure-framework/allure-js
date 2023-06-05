@@ -43,3 +43,7 @@ jobs:
       - name: yarn build
         run: |
           yarn run build
+
+      - name: yarn test
+        run: |
+          yarn run test
