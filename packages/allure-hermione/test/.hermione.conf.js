@@ -9,8 +9,8 @@ module.exports = {
   browsers: {
     headless: {
       desiredCapabilities: {
-        browserName: "chrome",
-        "goog:chromeOptions": {
+        browserName: "firefox",
+        "moz:firefoxOptions": {
           args: ["--headless"],
         },
       },
