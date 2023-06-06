@@ -1,13 +1,13 @@
 import { Parameter } from "allure-js-commons";
 import { expect } from "chai";
 import Hermione from "hermione";
-import { beforeEach, describe, it } from "mocha";
+import { before, describe, it } from "mocha";
 import { HermioneAllure } from "../types";
 
 describe("parameters", () => {
   let hermione: HermioneAllure;
 
-  beforeEach(async () => {
+  before(async () => {
     hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
 
     await hermione.run(["./test/fixtures/parameter.js"], {});

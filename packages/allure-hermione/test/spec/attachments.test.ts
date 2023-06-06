@@ -1,7 +1,7 @@
 import * as AllureCommons from "allure-js-commons";
 import { expect } from "chai";
 import Hermione from "hermione";
-import { beforeEach, describe, it } from "mocha";
+import { before, describe, it } from "mocha";
 import Sinon from "sinon";
 import { HermioneAllure } from "../types";
 
@@ -9,7 +9,7 @@ describe("attachments", () => {
   let hermione: HermioneAllure;
   let writeAttachmentStub: Sinon.SinonStub;
 
-  beforeEach(async () => {
+  before(async () => {
     Sinon.restore();
 
     writeAttachmentStub = Sinon.stub(AllureCommons.AllureRuntime.prototype, "writeAttachment");
