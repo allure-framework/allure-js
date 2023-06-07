@@ -1,23 +1,18 @@
-import { Label, LabelName } from "allure-js-commons";
+import { Label, LabelName, TestResult } from "allure-js-commons";
 import { expect } from "chai";
-import Hermione from "hermione";
 import { beforeEach, describe, it } from "mocha";
-import { HermioneAllure } from "../types";
+import { runHermioneTests } from "../runner";
 
 describe("labels", () => {
-  let hermione: HermioneAllure;
-
-  beforeEach(() => {
-    hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
-  });
+  let results: TestResult[];
 
   describe("label", () => {
     beforeEach(async () => {
-      await hermione.run(["./test/fixtures/label.js"], {});
+      results = await runHermioneTests(["./test/fixtures/label.js"]);
     });
 
     it("adds `foo` label", () => {
-      const { labels } = hermione.allure.writer.results[0];
+      const { labels } = results[0];
       const label = labels.find(({ name }) => name === "foo") as Label;
 
       expect(label.name).eq("foo");
@@ -27,11 +22,11 @@ describe("labels", () => {
 
   describe("allure id", () => {
     beforeEach(async () => {
-      await hermione.run(["./test/fixtures/allureId.js"], {});
+      results = await runHermioneTests(["./test/fixtures/allureId.js"]);
     });
 
     it("adds `42` allure id", () => {
-      const { labels } = hermione.allure.writer.results[0];
+      const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.ALLURE_ID) as Label;
 
       expect(label.value).eq("42");
@@ -40,11 +35,11 @@ describe("labels", () => {
 
   describe("epic", () => {
     beforeEach(async () => {
-      await hermione.run(["./test/fixtures/epic.js"], {});
+      results = await runHermioneTests(["./test/fixtures/epic.js"]);
     });
 
     it("adds `foo` epic", () => {
-      const { labels } = hermione.allure.writer.results[0];
+      const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.EPIC) as Label;
 
       expect(label.value).eq("foo");
@@ -53,11 +48,11 @@ describe("labels", () => {
 
   describe("feature", () => {
     beforeEach(async () => {
-      await hermione.run(["./test/fixtures/feature.js"], {});
+      results = await runHermioneTests(["./test/fixtures/feature.js"]);
     });
 
     it("adds `foo` feature", () => {
-      const { labels } = hermione.allure.writer.results[0];
+      const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.FEATURE) as Label;
 
       expect(label.value).eq("foo");
@@ -66,11 +61,11 @@ describe("labels", () => {
 
   describe("story", () => {
     beforeEach(async () => {
-      await hermione.run(["./test/fixtures/story.js"], {});
+      results = await runHermioneTests(["./test/fixtures/story.js"]);
     });
 
     it("adds `foo` story", () => {
-      const { labels } = hermione.allure.writer.results[0];
+      const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.STORY) as Label;
 
       expect(label.value).eq("foo");
@@ -79,11 +74,11 @@ describe("labels", () => {
 
   describe("suite", () => {
     beforeEach(async () => {
-      await hermione.run(["./test/fixtures/suite.js"], {});
+      results = await runHermioneTests(["./test/fixtures/suite.js"]);
     });
 
     it("adds `foo` suite", () => {
-      const { labels } = hermione.allure.writer.results[0];
+      const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.SUITE) as Label;
 
       expect(label.value).eq("foo");
@@ -92,11 +87,11 @@ describe("labels", () => {
 
   describe("parentSuite", () => {
     beforeEach(async () => {
-      await hermione.run(["./test/fixtures/parentSuite.js"], {});
+      results = await runHermioneTests(["./test/fixtures/parentSuite.js"]);
     });
 
     it("adds `foo` parentSuite", () => {
-      const { labels } = hermione.allure.writer.results[0];
+      const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.PARENT_SUITE) as Label;
 
       expect(label.value).eq("foo");
@@ -105,11 +100,11 @@ describe("labels", () => {
 
   describe("subSuite", () => {
     beforeEach(async () => {
-      await hermione.run(["./test/fixtures/subSuite.js"], {});
+      results = await runHermioneTests(["./test/fixtures/subSuite.js"]);
     });
 
     it("adds `foo` subSuite", () => {
-      const { labels } = hermione.allure.writer.results[0];
+      const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.SUB_SUITE) as Label;
 
       expect(label.value).eq("foo");
@@ -118,11 +113,11 @@ describe("labels", () => {
 
   describe("owner", () => {
     beforeEach(async () => {
-      await hermione.run(["./test/fixtures/owner.js"], {});
+      results = await runHermioneTests(["./test/fixtures/owner.js"]);
     });
 
     it("adds `foo` owner", () => {
-      const { labels } = hermione.allure.writer.results[0];
+      const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.OWNER) as Label;
 
       expect(label.value).eq("foo");
@@ -131,11 +126,11 @@ describe("labels", () => {
 
   describe("severity", () => {
     beforeEach(async () => {
-      await hermione.run(["./test/fixtures/severity.js"], {});
+      results = await runHermioneTests(["./test/fixtures/severity.js"]);
     });
 
     it("adds `foo` severity", () => {
-      const { labels } = hermione.allure.writer.results[0];
+      const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.SEVERITY) as Label;
 
       expect(label.value).eq("foo");
@@ -144,11 +139,11 @@ describe("labels", () => {
 
   describe("tag", () => {
     beforeEach(async () => {
-      await hermione.run(["./test/fixtures/tag.js"], {});
+      results = await runHermioneTests(["./test/fixtures/tag.js"]);
     });
 
     it("adds `foo` tag", () => {
-      const { labels } = hermione.allure.writer.results[0];
+      const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.TAG) as Label;
 
       expect(label.value).eq("foo");

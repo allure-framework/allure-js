@@ -2,9 +2,21 @@
 // which is not packed into an npm module
 import path from "path";
 import glob from "glob";
+import Hermione from "hermione";
 import Mocha from "mocha";
 import selenium from "selenium-standalone";
 import "source-map-support/register";
+import { HermioneAllure } from "./types";
+
+const hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
+
+export const runHermioneTests = async (tests: string[]) => {
+  hermione.allure.writer.results = [];
+
+  await hermione.run(tests, {});
+
+  return hermione.allure.writer.results;
+};
 
 (async () => {
   await selenium.install();
