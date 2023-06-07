@@ -2374,6 +2374,7 @@ __metadata:
     nyc: ^15.1.0
     rimraf: ^3.0.2
     sinon: ^14.0.0
+    tsx: ^3.12.7
     typescript: ^4.4.2
   languageName: unknown
   linkType: soft
@@ -2400,6 +2401,7 @@ __metadata:
     nyc: ^15.0.1
     rimraf: ^3.0.2
     source-map-support: ^0.5.19
+    tsx: ^3.12.7
     typescript: ^4.4.2
   languageName: unknown
   linkType: soft
@@ -2426,6 +2428,7 @@ __metadata:
     rimraf: ^3.0.2
     selenium-standalone: ^8.3.0
     source-map-support: ^0.5.19
+    tsx: ^3.12.7
     typescript: ^4.4.2
   languageName: unknown
   linkType: soft
@@ -2474,6 +2477,7 @@ __metadata:
     nyc: ^15.1.0
     properties: ^1.2.1
     rimraf: ^3.0.2
+    tsx: ^3.12.7
     typescript: ^4.4.2
     uuid: ^8.3.0
   languageName: unknown
@@ -2524,6 +2528,7 @@ __metadata:
     nyc: ^15.0.1
     rimraf: ^3.0.2
     source-map-support: ^0.5.19
+    tsx: ^3.12.7
     typescript: ^4.4.2
   peerDependencies:
     mocha: ">=6.2.x"

@@ -97,37 +97,34 @@ export const getStatusFromError = (error: Error): Status => {
   }
 };
 
-/**
- * Assings possible suites labels from the given path to a given test (mutates the test)
- * and returns it
- *
- * @param test
- * @param suites
- * @param skipLabels
- */
-export const assignSuitesLabels = (
-  test: AllureTest,
-  suites: string[],
-  skipLabels: (LabelName | boolean | null | undefined)[] = [],
-) => {
+export const getSuitesLabels = (suites: string[]): Label[] => {
   if (suites.length === 0) {
-    return test;
+    return [];
   }
 
   const [parentSuite, suite, ...subSuites] = suites;
-  const skipLabel = (label: LabelName) => skipLabels.filter(Boolean).includes(label);
+  const labels: Label[] = [];
 
-  if (parentSuite && !skipLabel(LabelName.PARENT_SUITE)) {
-    test.addLabel(LabelName.PARENT_SUITE, parentSuite);
+  if (parentSuite) {
+    labels.push({
+      name: LabelName.PARENT_SUITE,
+      value: parentSuite,
+    });
   }
 
-  if (suite && !skipLabel(LabelName.SUITE)) {
-    test.addLabel(LabelName.SUITE, suite);
+  if (suite) {
+    labels.push({
+      name: LabelName.SUITE,
+      value: suite,
+    });
   }
 
-  if (subSuites.length > 0 && !skipLabel(LabelName.SUB_SUITE)) {
-    test.addLabel(LabelName.SUB_SUITE, subSuites.join(" > "));
+  if (subSuites.length > 0) {
+    labels.push({
+      name: LabelName.SUB_SUITE,
+      value: subSuites.join(" > "),
+    });
   }
 
-  return test;
+  return labels;
 };

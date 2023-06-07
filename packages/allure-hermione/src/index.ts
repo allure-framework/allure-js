@@ -7,8 +7,8 @@ import {
   AllureCommandStepExecutable,
   AllureRuntime,
   AllureTest,
-  assignSuitesLabels,
   ContentType,
+  getSuitesLabels,
   LabelName,
   LinkType,
   md5,
@@ -91,17 +91,9 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       currentTest.addLabel(LabelName.THREAD, thread);
     }
 
-    if (parentSuite) {
-      currentTest.addLabel(LabelName.PARENT_SUITE, parentSuite);
-    }
-
-    if (suite) {
-      currentTest.addLabel(LabelName.SUITE, suite);
-    }
-
-    if (subSuite) {
-      currentTest.addLabel(LabelName.SUB_SUITE, subSuite);
-    }
+    getSuitesLabels(suites).forEach((label) => {
+      currentTest.addLabel(label.name, label.value);
+    });
 
     return currentTest;
   };

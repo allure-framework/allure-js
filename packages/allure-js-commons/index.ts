@@ -3,7 +3,7 @@ export {
   InMemoryAllureWriter,
   FileSystemAllureWriter,
   MessageAllureWriter,
-  AllureResults
+  AllureResults,
 } from "./src/writers";
 export { AllureConfig } from "./src/AllureConfig";
 export { AllureGroup } from "./src/AllureGroup";
@@ -15,7 +15,7 @@ export { Allure, StepInterface } from "./src/Allure";
 export {
   StepBodyFunction,
   AllureCommandStep,
-  AllureCommandStepExecutable
+  AllureCommandStepExecutable,
 } from "./src/AllureCommandStep";
 export {
   AttachmentOptions,
@@ -41,7 +41,7 @@ export {
   ParameterOptions,
   StepMetadata,
   AttachmentMetadata,
-  ImageDiffAttachment
+  ImageDiffAttachment,
 } from "./src/model";
 
 export {
@@ -53,7 +53,7 @@ export {
   stripAscii,
   allureIdRegexp,
   allureLabelRegexp,
-  assignSuitesLabels
+  getSuitesLabels,
 } from "./src/utils";
 
 export { parseTestPlan } from "./src/testplan";

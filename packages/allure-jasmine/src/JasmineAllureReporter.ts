@@ -5,13 +5,12 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
-  assignSuitesLabels,
   AttachmentOptions,
   ContentType,
   ExecutableItemWrapper,
+  getSuitesLabels,
   isPromise,
   Label,
-  LabelName,
   Stage,
   Status,
   StepInterface,
@@ -123,10 +122,9 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
     allureTest.historyId = spec.fullName;
     allureTest.stage = Stage.RUNNING;
 
-    assignSuitesLabels(
-      allureTest,
-      this.groupStack.map(({ name }) => name).slice(0, this.groupStack.length - 1),
-    );
+    getSuitesLabels(this.groupStack.map(({ name }) => name)).forEach((label) => {
+      allureTest.addLabel(label.name, label.value);
+    });
 
     for (const labels of this.labelStack) {
       for (const label of labels) {
