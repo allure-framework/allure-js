@@ -26,8 +26,7 @@ describe("assign currentTest in suiteStarted", () => {
     const instance = allure({ outputDir: "./output" });
 
     instance.createTest.call(context, testObject);
-
-    // Assert the value of this.currentTest after the method call
+    
     // @ts-ignore
     expect(context.currentTest).toEqual("mockCurrentTest");
   });
