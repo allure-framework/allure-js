@@ -4,41 +4,19 @@ import { before, describe, it } from "mocha";
 import { runHermioneTests } from "../runner";
 
 describe("skipped", () => {
-  let results: TestResult[];
-
-  before(async () => {
-    results = await runHermioneTests(["./test/fixtures/skipped.js"]);
-  });
-
-  it("doesn't exclude any skipped test from results", () => {
-    expect(results.length).eq(3);
-  });
-
-  it("marks all skipped tests as skipped", () => {
-    expect(results.every(({ status }) => status === Status.SKIPPED)).eq(true);
-  });
-
-  it("marks all skipped tests as finished", () => {
-    expect(results.every(({ stage }) => stage === Stage.FINISHED)).eq(true);
-  });
-
-  it("handles natively skipped test", () => {
-    const result = results.find(({ fullName }) => fullName === "should be skipped")!;
-
-    expect(result.status).eq(Status.SKIPPED);
-  });
-
-  it("handles natively skipped test inside a suite", () => {
-    const result = results.find(({ fullName }) => fullName === "with skip should be skipped")!;
-
-    expect(result.status).eq(Status.SKIPPED);
-  });
-
-  it("handles skipped test for a specific browser", () => {
-    const result = results.find(
+  it("doesn't exclude any skipped test from results and mark them as skipped", async () => {
+    const results = await runHermioneTests(["./test/fixtures/skipped.js"]);
+    const singleTest = results.find(({ fullName }) => fullName === "should be skipped")!;
+    const testInSuite = results.find(({ fullName }) => fullName === "with skip should be skipped")!;
+    const testForSpecificBrowser = results.find(
       ({ fullName }) => fullName === "with specific browser skip should be skipped",
     )!;
 
-    expect(result.status).eq(Status.SKIPPED);
+    expect(results.length).eq(3);
+    expect(results.every(({ status }) => status === Status.SKIPPED)).eq(true);
+    expect(results.every(({ stage }) => stage === Stage.FINISHED)).eq(true);
+    expect(singleTest.status).eq(Status.SKIPPED);
+    expect(testInSuite.status).eq(Status.SKIPPED);
+    expect(testForSpecificBrowser.status).eq(Status.SKIPPED);
   });
 });

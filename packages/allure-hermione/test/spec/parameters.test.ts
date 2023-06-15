@@ -4,13 +4,8 @@ import { before, describe, it } from "mocha";
 import { runHermioneTests } from "../runner";
 
 describe("parameters", () => {
-  let results: TestResult[];
-
-  before(async () => {
-    results = await runHermioneTests(["./test/fixtures/parameter.js"]);
-  });
-
-  it("adds `foo` parameter", () => {
+  it("adds `foo` parameter", async () => {
+    const results = await runHermioneTests(["./test/fixtures/parameter.js"]);
     const { parameters } = results[0];
     const parameter = parameters.find(({ name }) => name === "foo") as Parameter;
 

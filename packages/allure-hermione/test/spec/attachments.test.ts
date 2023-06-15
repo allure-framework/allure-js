@@ -6,17 +6,15 @@ import { runHermioneTests } from "../runner";
 
 describe("attachments", () => {
   let writeAttachmentStub: Sinon.SinonStub;
-  let results: AllureCommons.TestResult[];
 
   before(async () => {
     Sinon.restore();
 
     writeAttachmentStub = Sinon.stub(AllureCommons.AllureRuntime.prototype, "writeAttachment");
-
-    results = await runHermioneTests(["./test/fixtures/attachments.js"]);
   });
 
-  it("adds json attachment", () => {
+  it("adds json attachment", async () => {
+    const results = await runHermioneTests(["./test/fixtures/attachments.js"]);
     const {
       attachments: [attachment],
     } = results[0];

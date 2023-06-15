@@ -5,18 +5,13 @@ import Sinon from "sinon";
 import { runHermioneTests } from "../runner";
 
 describe("steps", () => {
-  let results: TestResult[];
-
   beforeEach(() => {
     Sinon.restore();
   });
 
   describe("passed steps", () => {
-    beforeEach(async () => {
-      results = await runHermioneTests(["./test/fixtures/passedSteps.js"]);
-    });
-
-    it("adds nested steps", () => {
+    it("adds nested steps", async () => {
+      const results = await runHermioneTests(["./test/fixtures/passedSteps.js"]);
       const { steps, labels } = results[0];
       const customLabel = labels.find(({ name }) => name === "foo");
 
@@ -31,11 +26,8 @@ describe("steps", () => {
   });
 
   describe("failed steps", () => {
-    beforeEach(async () => {
-      results = await runHermioneTests(["./test/fixtures/failedSteps.js"]);
-    });
-
-    it("fails the test with original step error", () => {
+    it("fails the test with original step error", async () => {
+      const results = await runHermioneTests(["./test/fixtures/failedSteps.js"]);
       const { status, statusDetails, steps } = results[0];
 
       expect(status).eq(Status.FAILED);

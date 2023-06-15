@@ -4,14 +4,9 @@ import { beforeEach, describe, it } from "mocha";
 import { runHermioneTests } from "../runner";
 
 describe("labels", () => {
-  let results: TestResult[];
-
   describe("label", () => {
-    beforeEach(async () => {
-      results = await runHermioneTests(["./test/fixtures/label.js"]);
-    });
-
-    it("adds `foo` label", () => {
+    it("adds `foo` label", async () => {
+      const results = await runHermioneTests(["./test/fixtures/label.js"]);
       const { labels } = results[0];
       const label = labels.find(({ name }) => name === "foo") as Label;
 
@@ -21,11 +16,8 @@ describe("labels", () => {
   });
 
   describe("allure id", () => {
-    beforeEach(async () => {
-      results = await runHermioneTests(["./test/fixtures/allureId.js"]);
-    });
-
-    it("adds `42` allure id", () => {
+    it("adds `42` allure id", async () => {
+      const results = await runHermioneTests(["./test/fixtures/allureId.js"]);
       const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.ALLURE_ID) as Label;
 
@@ -34,11 +26,8 @@ describe("labels", () => {
   });
 
   describe("epic", () => {
-    beforeEach(async () => {
-      results = await runHermioneTests(["./test/fixtures/epic.js"]);
-    });
-
-    it("adds `foo` epic", () => {
+    it("adds `foo` epic", async () => {
+      const results = await runHermioneTests(["./test/fixtures/epic.js"]);
       const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.EPIC) as Label;
 
@@ -47,11 +36,8 @@ describe("labels", () => {
   });
 
   describe("feature", () => {
-    beforeEach(async () => {
-      results = await runHermioneTests(["./test/fixtures/feature.js"]);
-    });
-
-    it("adds `foo` feature", () => {
+    it("adds `foo` feature", async () => {
+      const results = await runHermioneTests(["./test/fixtures/fixture.js"]);
       const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.FEATURE) as Label;
 
@@ -60,11 +46,8 @@ describe("labels", () => {
   });
 
   describe("story", () => {
-    beforeEach(async () => {
-      results = await runHermioneTests(["./test/fixtures/story.js"]);
-    });
-
-    it("adds `foo` story", () => {
+    it("adds `foo` story", async () => {
+      const results = await runHermioneTests(["./test/fixtures/story.js"]);
       const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.STORY) as Label;
 
@@ -73,11 +56,8 @@ describe("labels", () => {
   });
 
   describe("suite", () => {
-    beforeEach(async () => {
-      results = await runHermioneTests(["./test/fixtures/suite.js"]);
-    });
-
-    it("adds `foo` suite", () => {
+    it("adds `foo` suite", async () => {
+      const results = await runHermioneTests(["./test/fixtures/suite.js"]);
       const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.SUITE) as Label;
 
@@ -86,11 +66,8 @@ describe("labels", () => {
   });
 
   describe("parentSuite", () => {
-    beforeEach(async () => {
-      results = await runHermioneTests(["./test/fixtures/parentSuite.js"]);
-    });
-
-    it("adds `foo` parentSuite", () => {
+    it("adds `foo` parentSuite", async () => {
+      const results = await runHermioneTests(["./test/fixtures/parentSuite.js"]);
       const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.PARENT_SUITE) as Label;
 
@@ -99,11 +76,8 @@ describe("labels", () => {
   });
 
   describe("subSuite", () => {
-    beforeEach(async () => {
-      results = await runHermioneTests(["./test/fixtures/subSuite.js"]);
-    });
-
-    it("adds `foo` subSuite", () => {
+    it("adds `foo` subSuite", async () => {
+      const results = await runHermioneTests(["./test/fixtures/subSuite.js"]);
       const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.SUB_SUITE) as Label;
 
@@ -112,11 +86,8 @@ describe("labels", () => {
   });
 
   describe("owner", () => {
-    beforeEach(async () => {
-      results = await runHermioneTests(["./test/fixtures/owner.js"]);
-    });
-
-    it("adds `foo` owner", () => {
+    it("adds `foo` owner", async () => {
+      const results = await runHermioneTests(["./test/fixtures/owner.js"]);
       const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.OWNER) as Label;
 
@@ -125,11 +96,8 @@ describe("labels", () => {
   });
 
   describe("severity", () => {
-    beforeEach(async () => {
-      results = await runHermioneTests(["./test/fixtures/severity.js"]);
-    });
-
-    it("adds `foo` severity", () => {
+    it("adds `foo` severity", async () => {
+      const results = await runHermioneTests(["./test/fixtures/severity.js"]);
       const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.SEVERITY) as Label;
 
@@ -138,11 +106,8 @@ describe("labels", () => {
   });
 
   describe("tag", () => {
-    beforeEach(async () => {
-      results = await runHermioneTests(["./test/fixtures/tag.js"]);
-    });
-
-    it("adds `foo` tag", () => {
+    it("adds `foo` tag", async () => {
+      const results = await runHermioneTests(["./test/fixtures/tag.js"]);
       const { labels } = results[0];
       const label = labels.find(({ name }) => name === LabelName.TAG) as Label;
 
