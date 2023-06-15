@@ -42,7 +42,7 @@ export type TestIDFactory = (testId?: string) => string;
 const hostname = os.hostname();
 
 const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) => {
-  const loadedTests = new Map<string, Hermione.Test>();
+  const loadedTests: Map<string, Hermione.Test> = new Map();
   const runningTests: Map<string, AllureTest> = new Map();
   const runtime = new AllureRuntime({
     resultsDir: "allure-results",
