@@ -7,21 +7,30 @@ import Mocha from "mocha";
 import selenium from "selenium-standalone";
 import "source-map-support/register";
 import { HermioneAllure } from "./types";
+import { TestResult } from "allure-js-commons";
 
+let runResults: TestResult[] = [];
 const hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
 
-export const runHermioneTests = async (tests: string[]) => {
-  hermione.allure.writer.results = [];
-
-  await hermione.run(tests, {});
-
-  return hermione.allure.writer.results;
-};
+export const getHermioneTestResult = (fixtureName: string) =>
+  runResults.filter(
+    (result) =>
+      !!result.labels.find(
+        (label) => label.name === "fixture" && path.basename(label.value) === fixtureName,
+      ),
+  );
 
 (async () => {
   await selenium.install();
 
   const seleniumProcess = await selenium.start();
+
+  await hermione.run(glob.sync("./test/fixtures/*.js"), {});
+
+  seleniumProcess.kill();
+
+  runResults = hermione.allure.writer.results;
+
   const mocha = new Mocha({
     timeout: 30000,
     reporter: "mocha-multi-reporters",
@@ -36,7 +45,6 @@ export const runHermioneTests = async (tests: string[]) => {
   glob.sync("./test/spec/**/*.test.ts").forEach((file) => mocha.addFile(file));
 
   mocha.run((failures) => {
-    seleniumProcess.kill();
     process.exit(failures === 0 ? 0 : 1);
   });
 })();

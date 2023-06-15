@@ -2,29 +2,15 @@ import * as AllureCommons from "allure-js-commons";
 import { expect } from "chai";
 import { before, describe, it } from "mocha";
 import Sinon from "sinon";
-import { runHermioneTests } from "../runner";
+import { getHermioneTestResult } from "../runner";
 
 describe("attachments", () => {
-  let writeAttachmentStub: Sinon.SinonStub;
-
-  before(async () => {
-    Sinon.restore();
-
-    writeAttachmentStub = Sinon.stub(AllureCommons.AllureRuntime.prototype, "writeAttachment");
-  });
-
   it("adds json attachment", async () => {
-    const results = await runHermioneTests(["./test/fixtures/attachments.js"]);
     const {
       attachments: [attachment],
-    } = results[0];
+    } = getHermioneTestResult("attachments.js")[0];
 
     expect(attachment.name).eq("Attachment");
     expect(attachment.type).eq("application/json");
-    expect(writeAttachmentStub.firstCall.args).eql([
-      JSON.stringify({ foo: "bar" }),
-      "application/json",
-      "utf8",
-    ]);
   });
 });

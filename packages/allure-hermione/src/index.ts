@@ -42,6 +42,7 @@ export type TestIDFactory = (testId?: string) => string;
 const hostname = os.hostname();
 
 const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) => {
+  const { ALLURE_REPORTER_DEV_MODE } = process.env;
   const loadedTests: Map<string, Hermione.Test> = new Map();
   const runningTests: Map<string, AllureTest> = new Map();
   const runtime = new AllureRuntime({
@@ -83,6 +84,11 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     currentTest.addLabel(LabelName.LANGUAGE, "javascript");
     currentTest.addLabel(LabelName.FRAMEWORK, "hermione");
     currentTest.addParameter("browser", test.browserId);
+
+    // add test label to find the test inside the hermione results
+    if (ALLURE_REPORTER_DEV_MODE && test.file) {
+      currentTest.addLabel("fixture", test.file);
+    }
 
     if (thread) {
       currentTest.addLabel(LabelName.THREAD, thread);

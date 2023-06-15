@@ -1,11 +1,11 @@
 import { Stage, Status, TestResult } from "allure-js-commons";
 import { expect } from "chai";
 import { before, describe, it } from "mocha";
-import { runHermioneTests } from "../runner";
+import { getHermioneTestResult } from "../runner";
 
 describe("skipped", () => {
   it("doesn't exclude any skipped test from results and mark them as skipped", async () => {
-    const results = await runHermioneTests(["./test/fixtures/skipped.js"]);
+    const results = getHermioneTestResult("skipped.js");
     const singleTest = results.find(({ fullName }) => fullName === "should be skipped")!;
     const testInSuite = results.find(({ fullName }) => fullName === "with skip should be skipped")!;
     const testForSpecificBrowser = results.find(

@@ -2,7 +2,7 @@ import { Status, TestResult } from "allure-js-commons";
 import { expect } from "chai";
 import { beforeEach, describe, it } from "mocha";
 import Sinon from "sinon";
-import { runHermioneTests } from "../runner";
+import { getHermioneTestResult } from "../runner";
 
 describe("steps", () => {
   beforeEach(() => {
@@ -11,8 +11,7 @@ describe("steps", () => {
 
   describe("passed steps", () => {
     it("adds nested steps", async () => {
-      const results = await runHermioneTests(["./test/fixtures/passedSteps.js"]);
-      const { steps, labels } = results[0];
+      const { steps, labels } = getHermioneTestResult("passedSteps.js")[0];
       const customLabel = labels.find(({ name }) => name === "foo");
 
       expect(customLabel!.value).eq("bar");
@@ -27,8 +26,7 @@ describe("steps", () => {
 
   describe("failed steps", () => {
     it("fails the test with original step error", async () => {
-      const results = await runHermioneTests(["./test/fixtures/failedSteps.js"]);
-      const { status, statusDetails, steps } = results[0];
+      const { status, statusDetails, steps } = getHermioneTestResult("failedSteps.js")[0];
 
       expect(status).eq(Status.FAILED);
       expect(statusDetails.message).eq("foo");
