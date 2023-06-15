@@ -272,7 +272,9 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
   hermione.on(hermione.events.AFTER_TESTS_READ, (collection) => {
     // cache all the tests to handle skipped tests in future
     collection.eachTest((test) => {
-      loadedTests.set(test.fullTitle(), test);
+      const testId = getTestId(test);
+
+      loadedTests.set(testId(), test);
     });
   });
   hermione.on(hermione.events.TEST_BEGIN, (test) => {
@@ -318,7 +320,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
 
     currentTest.stage = Stage.FINISHED;
     currentTest.endTest(Date.now());
-    loadedTests.delete(test.fullTitle());
+    loadedTests.delete(testId());
     runningTests.delete(testId());
   });
   hermione.on(hermione.events.END, () => {
