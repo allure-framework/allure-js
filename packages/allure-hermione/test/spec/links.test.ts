@@ -1,36 +1,42 @@
 import { Link, LinkType, TestResult } from "allure-js-commons";
 import { expect } from "chai";
 import { before, describe, it } from "mocha";
-import { getHermioneTestResult } from "../runner";
+import { getTestResultByName } from "../runner";
+import { HermioneAllure } from "../types";
+import Hermione from "hermione";
 
 describe("links", () => {
-  describe("link", () => {
-    it("adds `foo` label", async () => {
-      const { links } = getHermioneTestResult("link.js")[0];
-      const link = links.find(({ type }) => type === "foo") as Link;
+  let results: TestResult[];
 
-      expect(link.name).eq("bar");
-      expect(link.url).eq("http://example.org");
-    });
+  before(async () => {
+    const hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
+
+    await hermione.run(["./test/fixtures/links.js"], {});
+
+    results = hermione.allure.writer.results;
   });
 
-  describe("tms", () => {
-    it("adds `foo` tms link", async () => {
-      const { links } = getHermioneTestResult("tms.js")[0];
-      const link = links.find(({ type }) => type === LinkType.TMS) as Link;
+  it("adds `bar` custom link", async () => {
+    const { links } = getTestResultByName(results, "custom");
+    const link = links.find(({ type }) => type === "foo") as Link;
 
-      expect(link.name).eq("foo");
-      expect(link.url).eq("http://example.org");
-    });
+    expect(link.name).eq("bar");
+    expect(link.url).eq("http://example.org");
   });
 
-  describe("issue", () => {
-    it("adds `foo` issue link", async () => {
-      const { links } = getHermioneTestResult("issue.js")[0];
-      const link = links.find(({ type }) => type === LinkType.ISSUE) as Link;
+  it("adds `foo` tms link", async () => {
+    const { links } = getTestResultByName(results, "tms");
+    const link = links.find(({ type }) => type === LinkType.TMS) as Link;
 
-      expect(link.name).eq("foo");
-      expect(link.url).eq("http://example.org");
-    });
+    expect(link.name).eq("foo");
+    expect(link.url).eq("http://example.org");
+  });
+
+  it("adds `foo` issue link", async () => {
+    const { links } = getTestResultByName(results, "issue");
+    const link = links.find(({ type }) => type === LinkType.ISSUE) as Link;
+
+    expect(link.name).eq("foo");
+    expect(link.url).eq("http://example.org");
   });
 });

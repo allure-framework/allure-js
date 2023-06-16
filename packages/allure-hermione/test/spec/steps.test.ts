@@ -1,17 +1,24 @@
 import { Status, TestResult } from "allure-js-commons";
 import { expect } from "chai";
-import { beforeEach, describe, it } from "mocha";
-import Sinon from "sinon";
-import { getHermioneTestResult } from "../runner";
+import { before, beforeEach, describe, it } from "mocha";
+import { HermioneAllure } from "../types";
+import { getTestResultByName } from "../runner";
+import Hermione from "hermione";
 
 describe("steps", () => {
-  beforeEach(() => {
-    Sinon.restore();
+  let results: TestResult[];
+
+  before(async () => {
+    const hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
+
+    await hermione.run(["./test/fixtures/steps.js"], {});
+
+    results = hermione.allure.writer.results;
   });
 
   describe("passed steps", () => {
     it("adds nested steps", async () => {
-      const { steps, labels } = getHermioneTestResult("passedSteps.js")[0];
+      const { steps, labels } = getTestResultByName(results, "passed");
       const customLabel = labels.find(({ name }) => name === "foo");
 
       expect(customLabel!.value).eq("bar");
@@ -26,7 +33,7 @@ describe("steps", () => {
 
   describe("failed steps", () => {
     it("fails the test with original step error", async () => {
-      const { status, statusDetails, steps } = getHermioneTestResult("failedSteps.js")[0];
+      const { status, statusDetails, steps, labels } = getTestResultByName(results, "failed");
 
       expect(status).eq(Status.FAILED);
       expect(statusDetails.message).eq("foo");

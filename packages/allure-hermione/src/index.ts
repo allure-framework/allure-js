@@ -85,11 +85,6 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     currentTest.addLabel(LabelName.FRAMEWORK, "hermione");
     currentTest.addParameter("browser", test.browserId);
 
-    // add test label to find the test inside the hermione results
-    if (ALLURE_REPORTER_DEV_MODE && test.file) {
-      currentTest.addLabel("fixture", test.file);
-    }
-
     if (thread) {
       currentTest.addLabel(LabelName.THREAD, thread);
     }

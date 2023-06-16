@@ -1,106 +1,96 @@
 import { Label, LabelName, TestResult } from "allure-js-commons";
 import { expect } from "chai";
-import { beforeEach, describe, it } from "mocha";
-import { getHermioneTestResult } from "../runner";
+import { beforeEach, before, describe, it } from "mocha";
+import Hermione from "hermione";
+import { HermioneAllure } from "../types";
+import { getTestResultByName } from "../runner";
 
 describe("labels", () => {
-  describe("label", () => {
-    it("adds `foo` label", async () => {
-      const { labels } = getHermioneTestResult("label.js")[0];
-      const label = labels.find(({ name }) => name === "foo") as Label;
+  let results: TestResult[];
 
-      expect(label.name).eq("foo");
-      expect(label.value).eq("bar");
-    });
+  before(async () => {
+    const hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
+
+    await hermione.run(["./test/fixtures/labels.js"], {});
+
+    results = hermione.allure.writer.results;
   });
 
-  describe("allure id", () => {
-    it("adds `42` allure id", async () => {
-      const { labels } = getHermioneTestResult("allureId.js")[0];
-      const label = labels.find(({ name }) => name === LabelName.ALLURE_ID) as Label;
+  it("adds `foo` custom label", async () => {
+    const { labels } = getTestResultByName(results, "custom");
+    const label = labels.find(({ name }) => name === "foo") as Label;
 
-      expect(label.value).eq("42");
-    });
+    expect(label.name).eq("foo");
+    expect(label.value).eq("bar");
   });
 
-  describe("epic", () => {
-    it("adds `foo` epic", async () => {
-      const { labels } = getHermioneTestResult("epic.js")[0];
-      const label = labels.find(({ name }) => name === LabelName.EPIC) as Label;
+  it("adds `42` allureId label", async () => {
+    const { labels } = getTestResultByName(results, "allureId");
+    const label = labels.find(({ name }) => name === LabelName.ALLURE_ID) as Label;
 
-      expect(label.value).eq("foo");
-    });
+    expect(label.value).eq("42");
   });
 
-  describe("feature", () => {
-    it("adds `foo` feature", async () => {
-      const { labels } = getHermioneTestResult("feature.js")[0];
-      const label = labels.find(({ name }) => name === LabelName.FEATURE) as Label;
+  it("adds `foo` epic label", async () => {
+    const { labels } = getTestResultByName(results, "epic");
+    const label = labels.find(({ name }) => name === LabelName.EPIC) as Label;
 
-      expect(label.value).eq("foo");
-    });
+    expect(label.value).eq("foo");
   });
 
-  describe("story", () => {
-    it("adds `foo` story", async () => {
-      const { labels } = getHermioneTestResult("story.js")[0];
-      const label = labels.find(({ name }) => name === LabelName.STORY) as Label;
+  it("adds `foo` feature label", async () => {
+    const { labels } = getTestResultByName(results, "feature");
+    const label = labels.find(({ name }) => name === LabelName.FEATURE) as Label;
 
-      expect(label.value).eq("foo");
-    });
+    expect(label.value).eq("foo");
   });
 
-  describe("suite", () => {
-    it("adds `foo` suite", async () => {
-      const { labels } = getHermioneTestResult("suite.js")[0];
-      const label = labels.find(({ name }) => name === LabelName.SUITE) as Label;
+  it("adds `foo` story label", async () => {
+    const { labels } = getTestResultByName(results, "story");
+    const label = labels.find(({ name }) => name === LabelName.STORY) as Label;
 
-      expect(label.value).eq("foo");
-    });
+    expect(label.value).eq("foo");
   });
 
-  describe("parentSuite", () => {
-    it("adds `foo` parentSuite", async () => {
-      const { labels } = getHermioneTestResult("parentSuite.js")[0];
-      const label = labels.find(({ name }) => name === LabelName.PARENT_SUITE) as Label;
+  it("adds `foo` suite label", async () => {
+    const { labels } = getTestResultByName(results, "suite");
+    const label = labels.find(({ name }) => name === LabelName.SUITE) as Label;
 
-      expect(label.value).eq("foo");
-    });
+    expect(label.value).eq("foo");
   });
 
-  describe("subSuite", () => {
-    it("adds `foo` subSuite", async () => {
-      const { labels } = getHermioneTestResult("subSuite.js")[0];
-      const label = labels.find(({ name }) => name === LabelName.SUB_SUITE) as Label;
+  it("adds `foo` parentSuite label", async () => {
+    const { labels } = getTestResultByName(results, "parentSuite");
+    const label = labels.find(({ name }) => name === LabelName.PARENT_SUITE) as Label;
 
-      expect(label.value).eq("foo");
-    });
+    expect(label.value).eq("foo");
   });
 
-  describe("owner", () => {
-    it("adds `foo` owner", async () => {
-      const { labels } = getHermioneTestResult("owner.js")[0];
-      const label = labels.find(({ name }) => name === LabelName.OWNER) as Label;
+  it("adds `foo` subSuite label", async () => {
+    const { labels } = getTestResultByName(results, "subSuite");
+    const label = labels.find(({ name }) => name === LabelName.SUB_SUITE) as Label;
 
-      expect(label.value).eq("foo");
-    });
+    expect(label.value).eq("foo");
   });
 
-  describe("severity", () => {
-    it("adds `foo` severity", async () => {
-      const { labels } = getHermioneTestResult("severity.js")[0];
-      const label = labels.find(({ name }) => name === LabelName.SEVERITY) as Label;
+  it("adds `foo` owner label", async () => {
+    const { labels } = getTestResultByName(results, "owner");
+    const label = labels.find(({ name }) => name === LabelName.OWNER) as Label;
 
-      expect(label.value).eq("foo");
-    });
+    expect(label.value).eq("foo");
   });
 
-  describe("tag", () => {
-    it("adds `foo` tag", async () => {
-      const { labels } = getHermioneTestResult("tag.js")[0];
-      const label = labels.find(({ name }) => name === LabelName.TAG) as Label;
+  it("adds `foo` severity label", async () => {
+    const { labels } = getTestResultByName(results, "severity");
+    const label = labels.find(({ name }) => name === LabelName.SEVERITY) as Label;
 
-      expect(label.value).eq("foo");
-    });
+    expect(label.value).eq("foo");
+  });
+
+  it("adds `foo` tag label", async () => {
+    const { labels } = getTestResultByName(results, "tag");
+    const label = labels.find(({ name }) => name === LabelName.TAG) as Label;
+
+    expect(label.value).eq("foo");
   });
 });

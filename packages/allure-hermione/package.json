@@ -23,7 +23,7 @@
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
-    "test": "ALLURE_REPORTER_DEV_MODE=true nyc ts-node --project ./tsconfig.json ./test/runner.ts",
+    "test": "nyc ts-node --project ./tsconfig.json ./test/runner.ts",
     "coverage": "codecov",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix"

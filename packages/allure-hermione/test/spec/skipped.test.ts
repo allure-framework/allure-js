@@ -1,22 +1,39 @@
 import { Stage, Status, TestResult } from "allure-js-commons";
 import { expect } from "chai";
 import { before, describe, it } from "mocha";
-import { getHermioneTestResult } from "../runner";
+import { getTestResultByName } from "../runner";
+import { HermioneAllure } from "../types";
+import Hermione from "hermione";
 
 describe("skipped", () => {
-  it("doesn't exclude any skipped test from results and mark them as skipped", async () => {
-    const results = getHermioneTestResult("skipped.js");
-    const singleTest = results.find(({ fullName }) => fullName === "should be skipped")!;
-    const testInSuite = results.find(({ fullName }) => fullName === "with skip should be skipped")!;
-    const testForSpecificBrowser = results.find(
-      ({ fullName }) => fullName === "with specific browser skip should be skipped",
-    )!;
+  let results: TestResult[];
 
-    expect(results.length).eq(3);
-    expect(results.every(({ status }) => status === Status.SKIPPED)).eq(true);
-    expect(results.every(({ stage }) => stage === Stage.FINISHED)).eq(true);
-    expect(singleTest.status).eq(Status.SKIPPED);
-    expect(testInSuite.status).eq(Status.SKIPPED);
-    expect(testForSpecificBrowser.status).eq(Status.SKIPPED);
+  before(async () => {
+    const hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
+
+    await hermione.run(["./test/fixtures/skipped.js"], {});
+
+    results = hermione.allure.writer.results;
+  });
+
+  it("handles natively skipped tests", () => {
+    const { status, stage } = getTestResultByName(results, "native");
+
+    expect(status).eq(Status.SKIPPED);
+    expect(stage).eq(Stage.FINISHED);
+  });
+
+  it("handles natively skipped tests inside suites", () => {
+    const { status, stage } = getTestResultByName(results, "suite");
+
+    expect(status).eq(Status.SKIPPED);
+    expect(stage).eq(Stage.FINISHED);
+  });
+
+  it("handles tests skipped by hermione for specific browsers", () => {
+    const { status, stage } = getTestResultByName(results, "browser");
+
+    expect(status).eq(Status.SKIPPED);
+    expect(stage).eq(Stage.FINISHED);
   });
 });

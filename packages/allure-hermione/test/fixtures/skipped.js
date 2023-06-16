@@ -1,10 +1,10 @@
-it.skip("should be skipped", () => {});
+it.skip("native", () => {});
 
-describe("with skip", () => {
-  it.skip("should be skipped", () => {});
+describe("", () => {
+  it.skip("suite", () => {});
 });
 
-describe("with specific browser skip", () => {
+describe("", () => {
   hermione.skip.in("headless");
-  it("should be skipped", () => {});
+  it("browser", () => {});
 });
