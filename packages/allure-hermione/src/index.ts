@@ -8,6 +8,7 @@ import {
   AllureRuntime,
   AllureTest,
   ContentType,
+  getSuitesLabels,
   LabelName,
   LinkType,
   md5,
@@ -73,7 +74,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     const thread = ALLURE_THREAD_NAME || test.sessionId;
     const hostnameLabel = ALLURE_HOST_NAME || hostname;
     const currentTest = new AllureTest(runtime, Date.now());
-    const [parentSuite, suite, ...subSuites] = getSuitePath(test);
+    const suites = getSuitePath(test);
 
     currentTest.name = test.title;
     currentTest.fullName = test.fullTitle();
@@ -89,17 +90,9 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       currentTest.addLabel(LabelName.THREAD, thread);
     }
 
-    if (parentSuite) {
-      currentTest.addLabel(LabelName.PARENT_SUITE, parentSuite);
-    }
-
-    if (suite) {
-      currentTest.addLabel(LabelName.SUITE, suite);
-    }
-
-    if (subSuites.length > 0) {
-      currentTest.addLabel(LabelName.SUB_SUITE, subSuites.join(" > "));
-    }
+    getSuitesLabels(suites).forEach((label) => {
+      currentTest.addLabel(label.name, label.value);
+    });
 
     return currentTest;
   };

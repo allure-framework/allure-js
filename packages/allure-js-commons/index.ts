@@ -52,7 +52,8 @@ export {
   allureReportFolder,
   stripAscii,
   allureIdRegexp,
-  allureLabelRegexp
+  allureLabelRegexp,
+  getSuitesLabels
 } from "./src/utils";
 
 export { parseTestPlan } from "./src/testplan";

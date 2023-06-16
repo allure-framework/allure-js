@@ -8,9 +8,9 @@ import {
   AttachmentOptions,
   ContentType,
   ExecutableItemWrapper,
+  getSuitesLabels,
   isPromise,
   Label,
-  LabelName,
   Stage,
   Status,
   StepInterface,
@@ -95,12 +95,14 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
   suiteStarted(suite: jasmine.CustomReporterResult): void {
     const name = suite.description;
     const group = (this.getCurrentGroup() || this.runtime).startGroup(name);
+
     this.groupStack.push(group);
     this.labelStack.push([]);
   }
 
   specStarted(spec: jasmine.CustomReporterResult): void {
     let currentGroup = this.getCurrentGroup();
+
     if (currentGroup === null) {
       throw new Error("No active suite");
     }
@@ -110,6 +112,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
 
     const name = spec.description;
     const allureTest = currentGroup.startTest(name);
+
     if (this.runningTest != null) {
       throw new Error("Test is starting before other ended!");
     }
@@ -119,17 +122,9 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
     allureTest.historyId = spec.fullName;
     allureTest.stage = Stage.RUNNING;
 
-    // ignore wrapper, index + 1
-    if (this.groupStack.length > 1) {
-      allureTest.addLabel(LabelName.PARENT_SUITE, this.groupStack[0].name);
-    }
-    if (this.groupStack.length > 2) {
-      allureTest.addLabel(LabelName.SUITE, this.groupStack[1].name);
-    }
-    if (this.groupStack.length > 3) {
-      allureTest.addLabel(LabelName.SUB_SUITE, this.groupStack[2].name);
-    }
-    // TODO: if more depth add something to test name
+    getSuitesLabels(this.groupStack.map(({ name }) => name)).forEach((label) => {
+      allureTest.addLabel(label.name, label.value);
+    });
 
     for (const labels of this.labelStack) {
       for (const label of labels) {

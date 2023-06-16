@@ -23,7 +23,7 @@
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
-    "test": "nyc ts-node --project ./tsconfig.json ./test/runner.ts",
+    "test": "nyc tsx --tsconfig ./tsconfig.json ./test/runner.ts",
     "coverage": "codecov",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix"
@@ -46,7 +46,7 @@
     "rimraf": "^3.0.2",
     "selenium-standalone": "^8.3.0",
     "source-map-support": "^0.5.19",
-    "ts-node": "^10.2.1",
+    "tsx": "^3.12.7",
     "typescript": "^4.4.2"
   },
   "dependencies": {

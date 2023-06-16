@@ -8,6 +8,7 @@ import {
   AttachmentOptions,
   ContentType,
   ExecutableItemWrapper,
+  getSuitesLabels,
   LabelName,
   md5,
   Stage,
@@ -112,19 +113,11 @@ export class AllureReporter {
     }
 
     if (test.parent) {
-      const [parentSuite, suite, ...subSuites] = this.getSuitePath(test);
+      const suites = this.getSuitePath(test);
 
-      if (parentSuite) {
-        this.currentTest.addLabel(LabelName.PARENT_SUITE, parentSuite);
-      }
-
-      if (suite) {
-        this.currentTest.addLabel(LabelName.SUITE, suite);
-      }
-
-      if (subSuites.length > 0) {
-        this.currentTest.addLabel(LabelName.SUB_SUITE, subSuites.join(" > "));
-      }
+      getSuitesLabels(suites).forEach((label) => {
+        this.currentTest!.addLabel(label.name, label.value);
+      });
     }
   }
 
