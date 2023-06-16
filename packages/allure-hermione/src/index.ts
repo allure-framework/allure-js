@@ -75,7 +75,6 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     const hostnameLabel = ALLURE_HOST_NAME || hostname;
     const currentTest = new AllureTest(runtime, Date.now());
     const suites = getSuitePath(test);
-    const [parentSuite, suite, subSuite] = getSuitesLabels(suites);
 
     currentTest.name = test.title;
     currentTest.fullName = test.fullTitle();
