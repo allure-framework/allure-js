@@ -2,7 +2,14 @@ import { PathLike } from "fs";
 import { v4 as randomUUID } from "uuid";
 import { AllureConfig } from "./AllureConfig";
 import { AllureGroup } from "./AllureGroup";
-import { AttachmentOptions, Category, ContentType, TestResult, TestResultContainer } from "./model";
+import {
+  AttachmentOptions,
+  Category,
+  ContentType,
+  ExecutorInfo,
+  TestResult,
+  TestResultContainer,
+} from "./model";
 import { AllureWriter, FileSystemAllureWriter, typeToExtension } from "./writers";
 
 const buildAttachmentFileName = (options: ContentType | string | AttachmentOptions): string => {
@@ -59,6 +66,10 @@ export class AllureRuntime {
 
   writeEnvironmentInfo(info?: Record<string, string>): void {
     this.writer.writeEnvironmentInfo(info || process.env);
+  }
+
+  writeExecutorInfo(info: ExecutorInfo): void {
+    this.writer.writeExecutorInfo(info);
   }
 
   writeCategoriesDefinitions(categories: Category[]): void {

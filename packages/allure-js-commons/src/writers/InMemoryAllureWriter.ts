@@ -1,5 +1,5 @@
 import { PathLike, readFileSync } from "fs";
-import { Category, TestResult, TestResultContainer } from "../model";
+import { Category, ExecutorInfo, TestResult, TestResultContainer } from "../model";
 import { AllureWriter } from "./AllureWriter";
 
 export interface AllureResults {
@@ -16,6 +16,7 @@ export class InMemoryAllureWriter implements AllureWriter, AllureResults {
   public attachments: Record<string, Buffer | string> = {};
   public categories?: Category[];
   public envInfo?: Record<string, string | undefined>;
+  public executorInfo?: ExecutorInfo;
 
   public writeGroup(result: TestResultContainer): void {
     this.groups.push(result);
@@ -47,6 +48,14 @@ export class InMemoryAllureWriter implements AllureWriter, AllureResults {
       console.warn("overwriting existing environment info");
     }
     this.envInfo = envInfo;
+  }
+
+  public writeExecutorInfo(executorInfo: ExecutorInfo): void {
+    if (this.executorInfo) {
+      // eslint-disable-next-line no-console
+      console.warn("overwriting existing executor info");
+    }
+    this.executorInfo = executorInfo;
   }
 
   public reset(): void {

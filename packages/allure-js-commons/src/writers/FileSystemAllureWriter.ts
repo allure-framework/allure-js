@@ -2,7 +2,7 @@ import { copyFileSync, existsSync, mkdirSync, PathLike, writeFileSync } from "fs
 import { join } from "path";
 import { stringify } from "properties";
 import { AllureConfig } from "../AllureConfig";
-import { Category, TestResult, TestResultContainer } from "../model";
+import { Category, ExecutorInfo, TestResult, TestResultContainer } from "../model";
 import { AllureWriter } from "./AllureWriter";
 
 const writeJson = (path: string, data: unknown): void => {
@@ -36,6 +36,11 @@ export class FileSystemAllureWriter implements AllureWriter {
     const text = stringify(info, { unicode: true }).toString();
     const path = this.buildPath("environment.properties");
     writeFileSync(path, text);
+  }
+
+  writeExecutorInfo(info: ExecutorInfo) {
+    const path = this.buildPath("executor.json");
+    writeJson(path, info);
   }
 
   writeCategoriesDefinitions(categories: Category[]): void {

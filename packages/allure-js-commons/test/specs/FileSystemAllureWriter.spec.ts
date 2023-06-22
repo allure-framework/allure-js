@@ -5,7 +5,13 @@ import path from "path";
 import { env } from "process";
 import { expect } from "chai";
 
-import { AllureConfig, AllureRuntime, ContentType, InMemoryAllureWriter } from "../../dist";
+import {
+  AllureConfig,
+  AllureRuntime,
+  ContentType,
+  FileSystemAllureWriter,
+  InMemoryAllureWriter,
+} from "../../dist";
 
 describe("FileSystemAllureWriter", () => {
   it("should save attachment from path", () => {
@@ -58,5 +64,37 @@ describe("FileSystemAllureWriter", () => {
     test.endTest();
     group.endGroup();
     expect(writer.tests[0].labels[0]).to.eql({ name: "tag", value: "testTag" });
+  });
+
+  it("Should add executor info", () => {
+    let writer: FileSystemAllureWriter;
+    const tmpReportPath = path.join(os.tmpdir(), `./allure-testing-dir/${randomUUID()}`);
+    const config: AllureConfig = {
+      resultsDir: tmpReportPath,
+      get writer() {
+        return writer;
+      },
+    };
+    writer = new FileSystemAllureWriter(config);
+    const runtime = new AllureRuntime(config);
+
+    const executorInfo = {
+      name: "Jenkins",
+      type: "jenkins",
+      url: "http://example.org",
+      buildOrder: 13,
+      buildName: "allure-report_deploy#13",
+      buildUrl: "http://example.org/build#13",
+      reportUrl: "http://example.org/build#13/AllureReport",
+      reportName: "Demo allure report",
+    };
+
+    runtime.writeExecutorInfo(executorInfo);
+    const resultFiles = readdirSync(tmpReportPath);
+    expect(resultFiles).length(1);
+    const savedExecutorInfo = JSON.parse(
+      readFileSync(path.join(tmpReportPath, resultFiles[0]), "utf8"),
+    );
+    expect(savedExecutorInfo).to.eql(executorInfo);
   });
 });

@@ -76,6 +76,17 @@ export interface ExecutableItem {
 export type FixtureResult = ExecutableItem;
 export type StepResult = ExecutableItem;
 
+export interface ExecutorInfo {
+  name?: string;
+  type?: "jenkins" | "bamboo" | "teamcity" | "gitlab" | "github" | "circleci" | string;
+  url?: string;
+  buildOrder?: number;
+  buildName?: string;
+  buildUrl?: string;
+  reportUrl?: string;
+  reportName?: string;
+}
+
 export interface TestResult extends ExecutableItem {
   uuid: string;
   historyId: string;

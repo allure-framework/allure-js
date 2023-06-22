@@ -1,6 +1,6 @@
 import { PathLike, readFileSync } from "fs";
 import { stringify } from "properties";
-import { Category, TestResult, TestResultContainer } from "../model";
+import { Category, ExecutorInfo, TestResult, TestResultContainer } from "../model";
 import { AllureWriter } from "./AllureWriter";
 
 type EventType = "result" | "container" | "attachment" | "misc";
@@ -42,6 +42,10 @@ export class MessageAllureWriter implements AllureWriter {
   writeEnvironmentInfo(info?: Record<string, string | undefined>): void {
     const text = stringify(info, { unicode: true }).toString();
     sendData("environment.properties", "misc", Buffer.from(text));
+  }
+
+  writeExecutorInfo(info: ExecutorInfo): void {
+    writeJson("executor.json", "misc", info);
   }
 
   writeCategoriesDefinitions(categories: Category[]): void {
