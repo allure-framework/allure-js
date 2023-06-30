@@ -125,7 +125,9 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     const currentTest = runningTests.get(testId);
 
     if (!currentTest) {
-      throw new Error("Can't set test metadata due browser session has been finished");
+      // eslint-disable-next-line no-console
+      console.error("Can't assing attachment due test has been finished or hasn't been started");
+      return;
     }
 
     const {
@@ -182,7 +184,11 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     const currentTest = runningTests.get(testId);
 
     if (!currentTest) {
-      throw new Error("Can't set test metadata due browser session has been finished");
+      // eslint-disable-next-line no-console
+      console.error(
+        `Can't create "${stepMetadata.name!}" step due test has been finished or hasn't been started`,
+      );
+      return;
     }
 
     const step = AllureCommandStepExecutable.toExecutableItem(runtime, stepMetadata);
