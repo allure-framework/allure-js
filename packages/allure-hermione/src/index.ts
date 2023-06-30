@@ -61,6 +61,11 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       return (testId?: string) => `${context}:${testId || ""}`;
     }
 
+    // hermone >= 7.0.0 has `id` property as a string
+    if (typeof context.id === "string") {
+      return () => `${context.browserId}:${context.id}`;
+    }
+
     return () => `${context.browserId}:${context.id()}`;
   };
   /**

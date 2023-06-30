@@ -12,8 +12,8 @@ module.exports = {
     headless: {
       automationProtocol: "webdriver",
       desiredCapabilities: {
-        browserName: "firefox",
-        "moz:firefoxOptions": {
+        browserName: "chrome",
+        "goog:chromeOptions": {
           args: ["--headless"],
         },
       },

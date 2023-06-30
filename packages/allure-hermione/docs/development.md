@@ -11,6 +11,9 @@ selenium-standalone install    # install selenium server
 selenium-standalone start      # start selenium server
 ```
 
+Then, install browsers you want to test with. **The grid installs only drivers not browsers
+theirself!**
+
 Then you are able to run Hermione tests with the following settings:
 
 ```js
