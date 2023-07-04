@@ -63,6 +63,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
 
     // hermone >= 7.0.0 has `id` property as a string
     if (typeof context.id === "string") {
+      // eslint-disable-next-line
       return () => `${context.browserId}:${context.id}`;
     }
 
