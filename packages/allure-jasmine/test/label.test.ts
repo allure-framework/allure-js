@@ -6,13 +6,13 @@ describe("Allure Result", () => {
   beforeAll(() => jasmine.addMatchers(matchers));
 
   describe("for test with bdd labels in 'it'", function () {
-    const example = (tetEnv: JasmineTestEnv, testAllure: Allure) => {
-      tetEnv.describe("Jasmine example", () => {
-        tetEnv.it("passed test", () => {
+    const example = (testEnv: JasmineTestEnv, testAllure: Allure) => {
+      testEnv.describe("Jasmine example", () => {
+        testEnv.it("passed test", () => {
           testAllure.epic("epic from it");
           testAllure.feature("feature from it");
           testAllure.story("story from it");
-          tetEnv.expect(true).toBeTruthy();
+          testEnv.expect(true).toBeTruthy();
         });
       });
     };
@@ -30,16 +30,16 @@ describe("Allure Result", () => {
   });
 
   describe("for test with bdd labels in 'describe'", function () {
-    const example = (tetEnv: any, testAllure: Allure) => {
-      tetEnv.describe("Jasmine example", () => {
-        tetEnv.beforeAll(() => {
+    const example = (testEnv: any, testAllure: Allure) => {
+      testEnv.describe("Jasmine example", () => {
+        testEnv.beforeAll(() => {
           testAllure.epic("epic from describe");
           testAllure.feature("feature from describe");
           testAllure.story("story from describe");
         });
 
-        tetEnv.it("passed test", () => {
-          tetEnv.expect(true).toBeTruthy();
+        testEnv.it("passed test", () => {
+          testEnv.expect(true).toBeTruthy();
         });
       });
     };

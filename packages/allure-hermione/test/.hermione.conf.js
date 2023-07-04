@@ -1,5 +1,7 @@
 module.exports = {
   gridUrl: "http://localhost:4444/wd/hub",
+  httpTimeout: 50000,
+  sessionQuitTimeout: 50000,
   sets: {
     desktop: {
       browsers: ["headless"],
@@ -8,6 +10,7 @@ module.exports = {
   },
   browsers: {
     headless: {
+      automationProtocol: "webdriver",
       desiredCapabilities: {
         browserName: "chrome",
         "goog:chromeOptions": {

@@ -2,13 +2,17 @@
 
 ## Running hermione tests locally
 
-The easiest way to run Hermione tests locally is [Selenium standalone grid](https://www.npmjs.com/package/selenium-standalone).
+The easiest way to run Hermione tests locally
+is [Selenium standalone grid](https://www.npmjs.com/package/selenium-standalone).
 
 ```shell
 npm i -g selenium-standalone   # install the package globally
 selenium-standalone install    # install selenium server
 selenium-standalone start      # start selenium server
 ```
+
+Then, install browsers you want to test with. **The grid installs only drivers not browsers
+theirself!**
 
 Then you are able to run Hermione tests with the following settings:
 
@@ -20,7 +24,10 @@ module.exports = {
 };
 ```
 
-Tests in the package already runs the grid before themselves, so you don't need to start it manually.
+Tests in the package already runs the grid before themselves, so you don't need to start it
+manually.
+
+**Don't forget to compile the reporter before running tests**!
 
 ## Using repeater
 

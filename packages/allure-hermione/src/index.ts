@@ -8,6 +8,7 @@ import {
   AllureRuntime,
   AllureTest,
   ContentType,
+  getSuitesLabels,
   LabelName,
   LinkType,
   md5,
@@ -42,6 +43,8 @@ export type TestIDFactory = (testId?: string) => string;
 const hostname = os.hostname();
 
 const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) => {
+  const { ALLURE_REPORTER_DEV_MODE } = process.env;
+  const loadedTests: Map<string, Hermione.Test> = new Map();
   const runningTests: Map<string, AllureTest> = new Map();
   const runtime = new AllureRuntime({
     resultsDir: "allure-results",
@@ -58,7 +61,46 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       return (testId?: string) => `${context}:${testId || ""}`;
     }
 
+    // hermone >= 7.0.0 has `id` property as a string
+    if (typeof context.id === "string") {
+      // eslint-disable-next-line
+      return () => `${context.browserId}:${context.id}`;
+    }
+
     return () => `${context.browserId}:${context.id()}`;
+  };
+  /**
+   * Create Allure test from Hermione test object with all the possible initial labels
+   *
+   * @param test Hermione test object
+   * @returns Allure test
+   */
+  const createAllureTest = (test: Hermione.Test): AllureTest => {
+    const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env;
+    const thread = ALLURE_THREAD_NAME || test.sessionId;
+    const hostnameLabel = ALLURE_HOST_NAME || hostname;
+    const currentTest = new AllureTest(runtime, Date.now());
+    const suites = getSuitePath(test);
+
+    currentTest.name = test.title;
+    currentTest.fullName = test.fullTitle();
+    currentTest.historyId = md5(test.fullTitle());
+    currentTest.stage = Stage.RUNNING;
+
+    currentTest.addLabel(LabelName.HOST, hostnameLabel);
+    currentTest.addLabel(LabelName.LANGUAGE, "javascript");
+    currentTest.addLabel(LabelName.FRAMEWORK, "hermione");
+    currentTest.addParameter("browser", test.browserId);
+
+    if (thread) {
+      currentTest.addLabel(LabelName.THREAD, thread);
+    }
+
+    getSuitesLabels(suites).forEach((label) => {
+      currentTest.addLabel(label.name, label.value);
+    });
+
+    return currentTest;
   };
   const handleTestError = (test: Hermione.Test, error: Hermione.TestError) => {
     const testId = getTestId(test);
@@ -89,7 +131,9 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     const currentTest = runningTests.get(testId);
 
     if (!currentTest) {
-      throw new Error("Can't set test metadata due browser session has been finished");
+      // eslint-disable-next-line no-console
+      console.error("Can't assing attachment due test has been finished or hasn't been started");
+      return;
     }
 
     const {
@@ -146,7 +190,11 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     const currentTest = runningTests.get(testId);
 
     if (!currentTest) {
-      throw new Error("Can't set test metadata due browser session has been finished");
+      // eslint-disable-next-line no-console
+      console.error(
+        `Can't create "${stepMetadata.name!}" step due test has been finished or hasn't been started`,
+      );
+      return;
     }
 
     const step = AllureCommandStepExecutable.toExecutableItem(runtime, stepMetadata);
@@ -227,40 +275,22 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       }
     });
   });
+  hermione.on(hermione.events.AFTER_TESTS_READ, (collection) => {
+    // cache all the tests to handle skipped tests in future
+    collection.eachTest((test) => {
+      const testId = getTestId(test);
+
+      loadedTests.set(testId(), test);
+    });
+  });
   hermione.on(hermione.events.TEST_BEGIN, (test) => {
+    // test hasn't been actually started
     if (!test.sessionId) {
-      throw new Error("Test session hasn't been started correctly! Check the driver availability.");
+      return;
     }
 
     const testId = getTestId(test);
-    const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env;
-    const thread = ALLURE_THREAD_NAME || test.sessionId;
-    const hostnameLabel = ALLURE_HOST_NAME || hostname;
-    const currentTest = new AllureTest(runtime, Date.now());
-    const [parentSuite, suite, ...subSuites] = getSuitePath(test);
-
-    currentTest.name = test.title;
-    currentTest.fullName = test.fullTitle();
-    currentTest.historyId = md5(test.fullTitle());
-    currentTest.stage = Stage.RUNNING;
-
-    currentTest.addLabel(LabelName.HOST, hostnameLabel);
-    currentTest.addLabel(LabelName.LANGUAGE, "javascript");
-    currentTest.addLabel(LabelName.FRAMEWORK, "hermione");
-    currentTest.addLabel(LabelName.THREAD, thread);
-    currentTest.addParameter("browser", test.browserId);
-
-    if (parentSuite) {
-      currentTest.addLabel(LabelName.PARENT_SUITE, parentSuite);
-    }
-
-    if (suite) {
-      currentTest.addLabel(LabelName.SUITE, suite);
-    }
-
-    if (subSuites.length > 0) {
-      currentTest.addLabel(LabelName.SUB_SUITE, subSuites.join(" > "));
-    }
+    const currentTest = createAllureTest(test);
 
     runningTests.set(testId(), currentTest);
   });
@@ -282,6 +312,11 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     currentTest.status = Status.FAILED;
   });
   hermione.on(hermione.events.TEST_END, (test) => {
+    // test hasn't been started
+    if (!test.startTime) {
+      return;
+    }
+
     const testId = getTestId(test);
     const currentTest = runningTests.get(testId())!;
 
@@ -291,7 +326,22 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
 
     currentTest.stage = Stage.FINISHED;
     currentTest.endTest(Date.now());
+    loadedTests.delete(testId());
     runningTests.delete(testId());
+  });
+  hermione.on(hermione.events.END, () => {
+    // all tests have been finished
+    if (loadedTests.size === 0) {
+      return;
+    }
+
+    loadedTests.forEach((test) => {
+      const currentTest = createAllureTest(test);
+
+      currentTest.status = Status.SKIPPED;
+      currentTest.stage = Stage.FINISHED;
+      currentTest.endTest();
+    });
   });
 
   // it needs for tests because we need to read runtime writer data redefined in hermione config

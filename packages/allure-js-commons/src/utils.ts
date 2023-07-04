@@ -2,8 +2,9 @@ import { createHash } from "crypto";
 import { readFile } from "fs/promises";
 import path from "path";
 import { env } from "process";
+import { AllureTest } from "./AllureTest";
+import { ExecutableItem, Label, LabelName, Status } from "./model";
 
-import { ExecutableItem, Label, Status } from "./model";
 export const md5 = (data: string) => createHash("md5").update(data).digest("hex");
 
 export const getLabelsFromEnv = (): Label[] => {
@@ -94,4 +95,36 @@ export const getStatusFromError = (error: Error): Status => {
     default:
       return Status.BROKEN;
   }
+};
+
+export const getSuitesLabels = (suites: string[]): Label[] => {
+  if (suites.length === 0) {
+    return [];
+  }
+
+  const [parentSuite, suite, ...subSuites] = suites;
+  const labels: Label[] = [];
+
+  if (parentSuite) {
+    labels.push({
+      name: LabelName.PARENT_SUITE,
+      value: parentSuite,
+    });
+  }
+
+  if (suite) {
+    labels.push({
+      name: LabelName.SUITE,
+      value: suite,
+    });
+  }
+
+  if (subSuites.length > 0) {
+    labels.push({
+      name: LabelName.SUB_SUITE,
+      value: subSuites.join(" > "),
+    });
+  }
+
+  return labels;
 };
