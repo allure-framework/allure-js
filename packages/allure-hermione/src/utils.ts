@@ -35,6 +35,24 @@ export const sendMetadata = async (testId: string, metadata: MetadataMessage): P
     );
   });
 
+export const setDisplayName = async (testId: string, displayName: string) => {
+  await sendMetadata(testId, {
+    displayName,
+  });
+};
+
+export const setDescription = async (testId: string, description: string) => {
+  await sendMetadata(testId, {
+    description,
+  });
+};
+
+export const setDescriptionHtml = async (testId: string, descriptionHtml: string) => {
+  await sendMetadata(testId, {
+    descriptionHtml,
+  });
+};
+
 export const addLabel = async (testId: string, name: string, value: string) => {
   await sendMetadata(testId, {
     labels: [{ name, value }],

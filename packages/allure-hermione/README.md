@@ -53,6 +53,27 @@ Don't forget to pass current test id as first argument to command!
 
 ## Supported commands
 
+### Display name
+
+Change your test case name on custom value on the fly using `displayName` method:
+
+```js
+it("my test", async ({ browser, currentTest }) => {
+  await browser.displayName(currentTest.id(), "my test custom name");
+});
+```
+
+### Description
+
+Provide description in markdown or html syntax:
+
+```js
+it("my test", async ({ browser, currentTest }) => {
+  await browser.description(currentTest.id(), "my **markdown description**");
+  await browser.descriptionHtml(currentTest.id(), "<p>my <b>html description</b></p>");
+});
+```
+
 ### Labels
 
 Markup you tests with labels using low-level `label` method:

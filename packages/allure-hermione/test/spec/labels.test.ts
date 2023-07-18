@@ -1,9 +1,9 @@
 import { Label, LabelName, TestResult } from "allure-js-commons";
 import { expect } from "chai";
-import { beforeEach, before, describe, it } from "mocha";
 import Hermione from "hermione";
-import { HermioneAllure } from "../types";
+import { before, describe, it } from "mocha";
 import { getTestResultByName } from "../runner";
+import { HermioneAllure } from "../types";
 
 describe("labels", () => {
   let results: TestResult[];
