@@ -285,7 +285,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
   });
   hermione.on(hermione.events.TEST_BEGIN, (test) => {
     // test hasn't been actually started
-    if (!test.sessionId) {
+    if (!test.browserId) {
       return;
     }
 
