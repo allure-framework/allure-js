@@ -2,7 +2,8 @@
 
 This project implements Allure integration with Mocha framework.
 
-**Allure API doesn't work in parallel mode**! If you want to use the functionality, please switch back to single thread mode!
+**Allure API doesn't work in parallel mode**! If you want to use the functionality, please switch
+back to single thread mode!
 
 ## Installation
 
@@ -43,7 +44,7 @@ into your code:
 const allureMocha = require("allure-mocha/runtime");
 
 it("is a test", () => {
-  allureMocha.allure.epic("Some info");
+  allureMocha.getAllure().epic("Some info");
 });
 ```
 
@@ -53,12 +54,13 @@ it("is a test", () => {
 import allureMocha from "allure-mocha/runtime";
 
 it("is a test", () => {
-  allureMocha.allure.parameter("parameterName", "parameterValue");
+  allureMocha.getAllure().parameter("parameterName", "parameterValue");
 });
 ```
 
 Also addParameter takes an third optional parameter with the hidden and excluded options:
-`mode: "hidden" | "masked"` - `masked` hide parameter value to secure sensitive data, and `hidden` entirely hide parameter from report
+`mode: "hidden" | "masked"` - `masked` hide parameter value to secure sensitive data, and `hidden`
+entirely hide parameter from report
 
 `excluded: true` - excludes parameter from the history
 
@@ -66,7 +68,7 @@ Also addParameter takes an third optional parameter with the hidden and excluded
 import allureMocha from "allure-mocha/runtime";
 
 it("is a test", () => {
-  allureMocha.allure.parameter("parameterName", "parameterValue", {
+  allureMocha.getAllure().parameter("parameterName", "parameterValue", {
     mode: "hidden",
     excluded: true,
   });
@@ -75,8 +77,10 @@ it("is a test", () => {
 
 ## Decorators Support
 
-To make tests more readable and avoid explicit API calls, you can use a special extension - [ts-test-decorators](https://github.com/sskorol/ts-test-decorators).
+To make tests more readable and avoid explicit API calls, you can use a special
+extension - [ts-test-decorators](https://github.com/sskorol/ts-test-decorators).
 
 ## Examples
 
-[mocha-allure-example](https://github.com/vovsemenv/mocha-allure-example) - minimal setup for using mocha with allure
+[mocha-allure-example](https://github.com/vovsemenv/mocha-allure-example) - minimal setup for using
+mocha with allure

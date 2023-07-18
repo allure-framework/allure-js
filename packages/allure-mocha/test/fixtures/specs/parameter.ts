@@ -1,10 +1,12 @@
 import { suite, test } from "@testdeck/mocha";
-import { allure } from "../../../runtime";
+import { getAllure } from "../../../runtime";
 
 @suite
 class Parameter {
   @test
   shouldAssignParameter() {
+    const allure = getAllure();
+
     allure.parameter("key", "value");
   }
 }

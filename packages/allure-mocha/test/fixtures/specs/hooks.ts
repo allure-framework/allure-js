@@ -1,6 +1,6 @@
 import { ContentType } from "allure-js-commons";
 import { expect } from "chai";
-import { allure } from "../../../runtime";
+import { getAllure } from "../../../runtime";
 
 describe("hooks test", () => {
   describe("before fails", () => {
@@ -21,6 +21,8 @@ describe("hooks test", () => {
 
   describe("beforeEach fails", () => {
     beforeEach(function () {
+      const allure = getAllure();
+
       allure.attachment("saved in beforeEach", "should be saved", ContentType.TEXT);
       throw new Error("In before each");
     });
@@ -30,6 +32,8 @@ describe("hooks test", () => {
 
   describe("afterEach fails", () => {
     afterEach(function () {
+      const allure = getAllure();
+
       allure.attachment("saved in afterEach", "should be saved", ContentType.TEXT);
       throw new Error("In after each");
     });
@@ -39,6 +43,8 @@ describe("hooks test", () => {
 
   describe("both afterEach and test fail", () => {
     afterEach(function () {
+      const allure = getAllure();
+
       allure.attachment("saved in afterEach", "should be saved", ContentType.TEXT);
       throw new Error("In after each");
     });

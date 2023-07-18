@@ -16,9 +16,15 @@ const {
   EVENT_HOOK_END,
 } = Mocha.Runner.constants;
 
+/**
+ * @deprecated use `getAllure` function instead because current implementaion is not reliable and
+ * will be removed soon
+ */
 // eslint-disable-next-line
 // @ts-ignore
 export let allure: MochaAllure = new ParallelMochaAllure();
+
+export const getAllure = () => allure;
 
 type ParallelRunner = Mocha.Runner & {
   linkPartialObjects?: (val: boolean) => ParallelRunner;

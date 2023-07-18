@@ -1,6 +1,6 @@
 import { suite, test } from "@testdeck/mocha";
 import { ContentType } from "allure-js-commons";
-import { allure } from "../../../runtime";
+import { getAllure } from "../../../runtime";
 
 @suite
 class DecoratedHooks {
@@ -8,6 +8,8 @@ class DecoratedHooks {
   shouldAddAfterHookAttachment() {}
 
   public after() {
+    const allure = getAllure();
+
     allure.attachment("test attachment 1", "test attachment 1 content", ContentType.TEXT);
   }
 }
