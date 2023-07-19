@@ -41,20 +41,20 @@ If you want to provide extra information, such as steps and attachments, import 
 into your code:
 
 ```javascript
-const allureMocha = require("allure-mocha/runtime");
+const {allure} = require("allure-mocha/runtime");
 
 it("is a test", () => {
-  allureMocha.getAllure().epic("Some info");
+  allure.epic("Some info");
 });
 ```
 
 ### Parameters usage
 
 ```ts
-import allureMocha from "allure-mocha/runtime";
+const {allure} = require("allure-mocha/runtime");
 
 it("is a test", () => {
-  allureMocha.getAllure().parameter("parameterName", "parameterValue");
+  allure.parameter("parameterName", "parameterValue");
 });
 ```
 
@@ -65,10 +65,10 @@ entirely hide parameter from report
 `excluded: true` - excludes parameter from the history
 
 ```ts
-import allureMocha from "allure-mocha/runtime";
+import {allure} from "allure-mocha/runtime";
 
 it("is a test", () => {
-  allureMocha.getAllure().parameter("parameterName", "parameterValue", {
+  allure.parameter("parameterName", "parameterValue", {
     mode: "hidden",
     excluded: true,
   });

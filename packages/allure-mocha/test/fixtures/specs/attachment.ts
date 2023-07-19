@@ -1,13 +1,11 @@
 import { suite, test } from "@testdeck/mocha";
 import { ContentType } from "allure-js-commons";
-import { getAllure } from "../../../runtime";
+import { allure } from "../../../runtime";
 
 @suite
 class AttachmentSubSuite {
   @test
   shouldAssignAttachments() {
-    const allure = getAllure();
-
     allure.testAttachment("test attachment 1", "test attachment 1 content", ContentType.TEXT);
     allure.step("step 1", () => {
       allure.attachment("step 1 attachment 1", "step 1 attachment 1 content", ContentType.TEXT);
