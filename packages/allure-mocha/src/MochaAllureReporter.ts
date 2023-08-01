@@ -20,7 +20,11 @@ let mochaAllure: MochaAllure;
 
 // eslint-disable-next-line
 // @ts-ignore
-export const allure: MochaAllure = new MochaAllureGateway(() => mochaAllure);
+export const allure: MochaAllure = mochaAllure;
+
+// eslint-disable-next-line
+// @ts-ignore
+export const allureGetter: () => MochaAllure = () => mochaAllure;
 
 type ParallelRunner = Mocha.Runner & {
   linkPartialObjects?: (val: boolean) => ParallelRunner;
