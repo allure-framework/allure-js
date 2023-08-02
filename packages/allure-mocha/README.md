@@ -41,7 +41,7 @@ If you want to provide extra information, such as steps and attachments, import 
 into your code:
 
 ```javascript
-const {allure} = require("allure-mocha/runtime");
+const { allure } = require("allure-mocha/runtime");
 
 it("is a test", () => {
   allure.epic("Some info");
