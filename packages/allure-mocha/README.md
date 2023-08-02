@@ -2,7 +2,8 @@
 
 This project implements Allure integration with Mocha framework.
 
-**Allure API doesn't work in parallel mode**! If you want to use the functionality, please switch back to single thread mode!
+**Allure API doesn't work in parallel mode**! If you want to use the functionality, please switch
+back to single thread mode!
 
 ## Installation
 
@@ -40,33 +41,34 @@ If you want to provide extra information, such as steps and attachments, import 
 into your code:
 
 ```javascript
-const allureMocha = require("allure-mocha/runtime");
+const { allure } = require("allure-mocha/runtime");
 
 it("is a test", () => {
-  allureMocha.allure.epic("Some info");
+  allure.epic("Some info");
 });
 ```
 
 ### Parameters usage
 
 ```ts
-import allureMocha from "allure-mocha/runtime";
+const { allure } = require("allure-mocha/runtime");
 
 it("is a test", () => {
-  allureMocha.allure.parameter("parameterName", "parameterValue");
+  allure.parameter("parameterName", "parameterValue");
 });
 ```
 
 Also addParameter takes an third optional parameter with the hidden and excluded options:
-`mode: "hidden" | "masked"` - `masked` hide parameter value to secure sensitive data, and `hidden` entirely hide parameter from report
+`mode: "hidden" | "masked"` - `masked` hide parameter value to secure sensitive data, and `hidden`
+entirely hide parameter from report
 
 `excluded: true` - excludes parameter from the history
 
 ```ts
-import allureMocha from "allure-mocha/runtime";
+import { allure } from "allure-mocha/runtime";
 
 it("is a test", () => {
-  allureMocha.allure.parameter("parameterName", "parameterValue", {
+  allure.parameter("parameterName", "parameterValue", {
     mode: "hidden",
     excluded: true,
   });
@@ -75,8 +77,10 @@ it("is a test", () => {
 
 ## Decorators Support
 
-To make tests more readable and avoid explicit API calls, you can use a special extension - [ts-test-decorators](https://github.com/sskorol/ts-test-decorators).
+To make tests more readable and avoid explicit API calls, you can use a special
+extension - [ts-test-decorators](https://github.com/sskorol/ts-test-decorators).
 
 ## Examples
 
-[mocha-allure-example](https://github.com/vovsemenv/mocha-allure-example) - minimal setup for using mocha with allure
+[mocha-allure-example](https://github.com/vovsemenv/mocha-allure-example) - minimal setup for using
+mocha with allure

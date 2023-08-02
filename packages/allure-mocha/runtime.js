@@ -23,6 +23,12 @@ Object.defineProperty(module.exports, "allure", {
     return _MochaAllureReporter.allure;
   },
 });
+Object.defineProperty(module.exports, "allureGetter", {
+  enumerable: true,
+  get: function () {
+    return _MochaAllureReporter.allureGetter;
+  },
+});
 Object.defineProperty(module.exports, "MochaAllureReporter", {
   enumerable: true,
   get: function () {
