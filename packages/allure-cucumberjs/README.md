@@ -208,3 +208,17 @@ Given(/my step/, async function () {
   });
 });
 ```
+
+## Cross-browser testing
+
+For cross-browser testing simply add a parameter using Allure API with the browser name to the `World` instance inside your scenario, i.e.:
+
+```js
+await this.parameter('Browser', 'firefox')
+```
+
+For better presentation, you can also group suites by browser names, i.e.:
+
+```js
+await this.parentSuite('Firefox')
+```

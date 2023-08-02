@@ -506,6 +506,7 @@ export class CucumberJSAllureFormatter extends Formatter {
       currentTest.status = Status.PASSED;
     }
 
+    currentTest.calculateHistoryId();
     currentTest.endTest(Date.now());
 
     this.currentTestsMap.delete(data.testCaseStartedId);
