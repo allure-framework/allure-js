@@ -18,13 +18,11 @@ const {
 
 let mochaAllure: MochaAllure;
 
-// eslint-disable-next-line
-// @ts-ignore
-export const allure: MochaAllure = mochaAllure;
+export const allureGetter = () => mochaAllure;
 
-// eslint-disable-next-line
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export const allureGetter: () => MochaAllure = () => mochaAllure;
+export const allure: MochaAllure = new MochaAllureGateway(allureGetter);
 
 type ParallelRunner = Mocha.Runner & {
   linkPartialObjects?: (val: boolean) => ParallelRunner;
