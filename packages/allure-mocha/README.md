@@ -65,7 +65,7 @@ entirely hide parameter from report
 `excluded: true` - excludes parameter from the history
 
 ```ts
-import {allure} from "allure-mocha/runtime";
+import { allure } from "allure-mocha/runtime";
 
 it("is a test", () => {
   allure.parameter("parameterName", "parameterValue", {
