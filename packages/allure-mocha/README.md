@@ -51,7 +51,7 @@ it("is a test", () => {
 ### Parameters usage
 
 ```ts
-const {allure} = require("allure-mocha/runtime");
+const { allure } = require("allure-mocha/runtime");
 
 it("is a test", () => {
   allure.parameter("parameterName", "parameterValue");
