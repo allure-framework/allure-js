@@ -2,7 +2,7 @@ import { AllureConfig, AllureRuntime } from "allure-js-commons";
 import * as Mocha from "mocha";
 import { AllureReporter } from "./AllureReporter";
 import { MochaAllure } from "./MochaAllure";
-import { ParallelMochaAllure } from "./ParallelMochaAllure";
+import { MochaAllureGateway } from "./MochaAllureGateway";
 
 const {
   EVENT_SUITE_BEGIN,
@@ -16,9 +16,13 @@ const {
   EVENT_HOOK_END,
 } = Mocha.Runner.constants;
 
-// eslint-disable-next-line
+let mochaAllure: MochaAllure;
+
+export const allureGetter = () => mochaAllure;
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export let allure: MochaAllure = new ParallelMochaAllure();
+export const allure: MochaAllure = new MochaAllureGateway(allureGetter);
 
 type ParallelRunner = Mocha.Runner & {
   linkPartialObjects?: (val: boolean) => ParallelRunner;
@@ -35,10 +39,11 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
       ...opts.reporterOptions,
       resultsDir,
     };
+    const runtime = new AllureRuntime(allureConfig);
 
-    this.coreReporter = new AllureReporter(new AllureRuntime(allureConfig));
+    this.coreReporter = new AllureReporter(runtime);
 
-    allure = this.coreReporter.getImplementation();
+    mochaAllure = this.coreReporter.getImplementation();
 
     if (runner.linkPartialObjects) {
       runner.linkPartialObjects(true);

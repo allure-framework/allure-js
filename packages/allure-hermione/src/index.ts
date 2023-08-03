@@ -27,6 +27,9 @@ import {
   addParameter,
   getSuitePath,
   sendMetadata,
+  setDescription,
+  setDescriptionHtml,
+  setDisplayName,
 } from "./utils";
 
 export type HermioneAttachmentMessage = {
@@ -144,6 +147,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       steps = [],
       description,
       descriptionHtml,
+      displayName,
     } = metadata;
 
     labels.forEach((label) => {
@@ -184,6 +188,10 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
 
     if (descriptionHtml) {
       currentTest.descriptionHtml = descriptionHtml;
+    }
+
+    if (displayName) {
+      currentTest.name = displayName;
     }
   };
   const handleAllureStep = (testId: string, stepMetadata: StepMetadata) => {
@@ -263,6 +271,15 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
         async (message: MetadataMessage) => await sendMetadata(testId(id), message),
       );
     });
+    browser.addCommand("displayName", async (id: string, value: string) => {
+      await setDisplayName(testId(id), value);
+    });
+    browser.addCommand("description", async (id: string, value: string) => {
+      await setDescription(testId(id), value);
+    });
+    browser.addCommand("descriptionHtml", async (id: string, value: string) => {
+      await setDescriptionHtml(testId(id), value);
+    });
   });
   hermione.on(hermione.events.NEW_WORKER_PROCESS, (worker) => {
     // eslint-disable-next-line
@@ -285,7 +302,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
   });
   hermione.on(hermione.events.TEST_BEGIN, (test) => {
     // test hasn't been actually started
-    if (!test.sessionId) {
+    if (!test.browserId) {
       return;
     }
 
