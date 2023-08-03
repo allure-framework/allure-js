@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { AllureCommandStepExecutable } from "../../src/AllureCommandStep";
-import { ContentType, LabelName, LinkType, Status } from "../../src/model";
+import { ContentType, LabelName, LinkType, MetadataMessage } from "../../src/model";
 
 const fixtures = {
   name: "my step name",
@@ -476,6 +476,24 @@ describe("AllureCommandStep.start()", () => {
         excluded: fixtures.parameter.options.excluded,
         mode: fixtures.parameter.options.mode,
       });
+    });
+  });
+
+  describe("description", () => {
+    let metadata: MetadataMessage;
+
+    beforeEach(async () => {
+      metadata = await currentStep.start((step) => {
+        step.description("foo");
+      });
+    });
+
+    it("doesn't provide description to metadata", () => {
+      expect(metadata.description).eq(undefined);
+    });
+
+    it("adds description to the step", () => {
+      expect(metadata.steps![0].description).eq("foo");
     });
   });
 
