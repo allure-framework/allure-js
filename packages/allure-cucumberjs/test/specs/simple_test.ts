@@ -32,7 +32,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
   parameterized: {
     supportCodeLibrary: buildSupportCodeLibrary(({ Given }) => {
       Given("a step", function () {
-        this.parameter("Browser", "Firefox");
+        this.parameter("Browser", "firefox");
       });
     }),
     sources: [
