@@ -122,10 +122,6 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
     allureTest.historyId = spec.fullName;
     allureTest.stage = Stage.RUNNING;
 
-    getSuitesLabels(this.groupStack.map(({ name }) => name)).forEach((label) => {
-      allureTest.addLabel(label.name, label.value);
-    });
-
     for (const labels of this.labelStack) {
       for (const label of labels) {
         allureTest.addLabel(label.name, label.value);
@@ -183,6 +179,11 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
 
     this.currentGroup.endGroup(); // popping the test wrapper
     this.groupStack.pop();
+
+    // need to add suites labels here because we need to remove test wrapper first
+    getSuitesLabels(this.groupStack.map(({ name }) => name)).forEach((label) => {
+      currentTest.addLabel(label.name, label.value);
+    });
   }
 
   suiteDone(): void {
