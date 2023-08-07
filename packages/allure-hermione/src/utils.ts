@@ -72,7 +72,7 @@ export const addParameter = async (
   options?: ParameterOptions,
 ) => {
   await sendMetadata(testId, {
-    parameter: [{ name, value: JSON.stringify(value), ...options }],
+    parameter: [{ name, value, ...options }],
   });
 };
 
