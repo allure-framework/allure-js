@@ -104,7 +104,7 @@ export class allure {
       parameter: [
         {
           name,
-          value: JSON.stringify(value),
+          value,
           ...options,
         },
       ],
