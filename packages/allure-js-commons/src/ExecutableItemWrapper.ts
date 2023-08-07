@@ -12,7 +12,7 @@ import {
   StepResult,
   TestResult,
 } from "./model";
-import { isAllStepsEnded, isAnyStepFailed } from "./utils";
+import { isAllStepsEnded, isAnyStepFailed, serialize } from "./utils";
 
 export class ExecutableItemWrapper {
   constructor(private readonly info: FixtureResult | TestResult) {}
@@ -58,7 +58,7 @@ export class ExecutableItemWrapper {
   }
 
   public parameter(name: string, value: any, options?: ParameterOptions): void {
-    this.info.parameters.push({ ...options, name, value: JSON.stringify(value) });
+    this.info.parameters.push({ ...options, name, value: serialize(value) });
   }
 
   public get isAnyStepFailed() {
