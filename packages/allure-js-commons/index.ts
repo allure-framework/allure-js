@@ -53,7 +53,8 @@ export {
   stripAscii,
   allureIdRegexp,
   allureLabelRegexp,
-  getSuitesLabels
+  getSuitesLabels,
+  serialize
 } from "./src/utils";
 
 export { parseTestPlan } from "./src/testplan";

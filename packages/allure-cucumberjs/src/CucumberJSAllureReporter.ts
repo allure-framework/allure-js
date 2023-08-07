@@ -411,7 +411,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     links.forEach((link) => payload.test.addLink(link.url, link.type, link.name));
     labels.forEach((label) => payload.test.addLabel(label.name, label.value));
     parameter.forEach(({ name, value, excluded, mode }) =>
-      payload.test.addParameter(name, value, {
+      payload.test.parameter(name, value, {
         excluded,
         mode,
       }),

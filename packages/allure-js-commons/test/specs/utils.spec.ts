@@ -8,6 +8,7 @@ import {
   getStatusFromError,
   getSuitesLabels,
   isAnyStepFailed,
+  serialize,
 } from "../../src/utils";
 
 const fixtures = {
@@ -272,6 +273,61 @@ describe("utils > getSuitesLabels", () => {
           value: "baz > beep > boop",
         },
       ]);
+    });
+  });
+});
+
+describe("serialize", () => {
+  describe("with object", () => {
+    it("returns JSON string", () => {
+      // eslint-disable-next-line @typescript-eslint/quotes
+      expect(serialize({ foo: "bar" })).eq('{"foo":"bar"}');
+    });
+  });
+
+  describe("with array", () => {
+    it("returns JSON string", () => {
+      // eslint-disable-next-line @typescript-eslint/quotes
+      expect(serialize(["foo", "bar"])).eq('["foo","bar"]');
+    });
+  });
+
+  describe("with map", () => {
+    it("returns JSON string", () => {
+      expect(serialize(new Map([["foo", "bar"]]))).eq("[object Map]");
+    });
+  });
+
+  describe("with set", () => {
+    it("returns JSON string", () => {
+      expect(serialize(new Set(["foo", "bar"]))).eq("[object Set]");
+    });
+  });
+
+  describe("with undefined", () => {
+    it("returns undefined string", () => {
+      expect(serialize(undefined)).eq("undefined");
+    });
+  });
+
+  describe("with null", () => {
+    it("returns null string", () => {
+      expect(serialize(null)).eq("null");
+    });
+  });
+
+  describe("with function", () => {
+    it("returns function string", () => {
+      expect(serialize(() => {})).eq("()=>{}");
+    });
+  });
+
+  describe("with primitives", () => {
+    it("returns stringified value", () => {
+      // eslint-disable-next-line @typescript-eslint/quotes
+      expect(serialize("foo")).eq("foo");
+      expect(serialize(123)).eq("123");
+      expect(serialize(true)).eq("true");
     });
   });
 });

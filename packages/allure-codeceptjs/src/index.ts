@@ -339,8 +339,7 @@ class AllureReporter {
       this.debug();
       return;
     }
-    const allureTest = this.allureTestByCodeceptTest(this.currentTest);
-    return allureTest;
+    return this.allureTestByCodeceptTest(this.currentTest);
   }
 
   addLabel(name: string, value: string) {
@@ -390,9 +389,9 @@ class AllureReporter {
     }
   };
 
-  parameter(name: string, value: string, options?: ParameterOptions) {
+  parameter(name: string, value: any, options?: ParameterOptions) {
     if (this.currentAllureTest) {
-      this.currentAllureTest.addParameter(name, value, options);
+      this.currentAllureTest.parameter(name, value, options);
     }
   }
 

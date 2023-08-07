@@ -271,7 +271,7 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.addParameter("parameterName", "parameterValue", { mode: "masked", excluded: true });
+  allure.parameter("parameterName", "parameterValue", { mode: "masked", excluded: true });
 });
 ```
 

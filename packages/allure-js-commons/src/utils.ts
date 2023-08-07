@@ -128,3 +128,15 @@ export const getSuitesLabels = (suites: string[]): Label[] => {
 
   return labels;
 };
+
+export const serialize = (val: unknown): string => {
+  if (typeof val === "object" && !(val instanceof Map || val instanceof Set)) {
+    return JSON.stringify(val);
+  }
+
+  if (val === undefined) {
+    return "undefined";
+  }
+
+  return (val as any).toString();
+};

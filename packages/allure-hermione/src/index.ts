@@ -157,7 +157,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       currentTest.addLink(link.url, link.name, link.type);
     });
     parameter.forEach((param) => {
-      currentTest.addParameter(param.name, param.value, {
+      currentTest.parameter(param.name, param.value, {
         excluded: param.excluded,
         mode: param.mode,
       });
@@ -221,7 +221,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     });
     browser.addCommand(
       "parameter",
-      async (id: string, name: string, value: string, options?: ParameterOptions) => {
+      async (id: string, name: string, value: any, options?: ParameterOptions) => {
         await addParameter(testId(id), name, value, options);
       },
     );

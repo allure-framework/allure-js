@@ -40,12 +40,12 @@ export class CucumberAllureWorld extends World implements AllureWorld {
     await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
   }
 
-  public async parameter(name: string, value: string, options?: ParameterOptions): Promise<void> {
+  public async parameter(name: string, value: any, options?: ParameterOptions): Promise<void> {
     const msgBody: MetadataMessage = {
       parameter: [
         {
           name,
-          value,
+          value: JSON.stringify(value),
           excluded: options?.excluded || false,
           mode: options?.mode,
         },
