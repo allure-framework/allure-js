@@ -94,11 +94,12 @@ class AllureReporter implements Reporter {
   onTestBegin(test: TestCase): void {
     const suite = test.parent;
     const group = this.ensureAllureGroupCreated(suite);
-    const allureTest = group.startTest(test.title);
+    const titleMetadata = extractMetadataFromString(test.title);
+    const allureTest = group.startTest(titleMetadata.cleanTitle);
+
     allureTest.addLabel(LabelName.LANGUAGE, "JavaScript");
     allureTest.addLabel(LabelName.FRAMEWORK, "Playwright");
 
-    const titleMetadata = extractMetadataFromString(test.title);
     titleMetadata.labels.forEach((label) => allureTest.addLabel(label.name, label.value));
 
     const [, projectSuiteTitle, fileSuiteTitle, ...suiteTitles] = suite.titlePath();
@@ -107,6 +108,7 @@ class AllureReporter implements Reporter {
     if (projectSuiteTitle) {
       allureTest.addLabel(LabelName.PARENT_SUITE, projectSuiteTitle);
     }
+
     if (this.options.suiteTitle && fileSuiteTitle) {
       allureTest.addLabel(LabelName.SUITE, fileSuiteTitle);
     }
@@ -127,8 +129,8 @@ class AllureReporter implements Reporter {
       .join("/");
 
     const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
-    const fullName = `${relativeFile}#${nameSuites}${test.title}`;
-    const testCaseIdSource = `${relativeFile}#${test.title}`;
+    const fullName = `${relativeFile}#${nameSuites}${titleMetadata.cleanTitle}`;
+    const testCaseIdSource = `${relativeFile}#${titleMetadata.cleanTitle}`;
 
     allureTest.fullName = fullName;
     allureTest.testCaseId = md5(testCaseIdSource);
