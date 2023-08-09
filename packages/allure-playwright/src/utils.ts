@@ -1,4 +1,11 @@
-import { allureIdRegexp, allureLabelRegexp, Label, LabelName } from "allure-js-commons";
+import {
+  allureIdRegexp,
+  allureIdRegexpGlobal,
+  allureLabelRegexp,
+  allureLabelRegexpGlobal,
+  Label,
+  LabelName,
+} from "allure-js-commons";
 
 export const extractMetadataFromString = (
   title: string,
@@ -17,7 +24,10 @@ export const extractMetadataFromString = (
     }
   });
 
-  const cleanTitle = title.replace(allureLabelRegexp, "").replace(allureIdRegexp, "").trim();
+  const cleanTitle = title
+    .replace(allureLabelRegexpGlobal, "")
+    .replace(allureIdRegexpGlobal, "")
+    .trim();
 
   return { labels, cleanTitle };
 };

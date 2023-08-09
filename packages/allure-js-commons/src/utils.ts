@@ -79,8 +79,11 @@ export const defaultReportFolder = (): string => {
   return path.resolve(process.cwd(), "allure-results");
 };
 
-export const allureIdRegexp = /@?allure.id[:=](?<id>.+)/;
-export const allureLabelRegexp = /@?allure.label.(?<name>.+?)[:=](?<value>.+)/;
+export const allureIdRegexp = /@?allure.id[:=](?<id>[^\s]+)/;
+export const allureIdRegexpGlobal = new RegExp(allureIdRegexp, "g");
+
+export const allureLabelRegexp = /@?allure.label.(?<name>[^\s]+?)[:=](?<value>[^\s]+)/;
+export const allureLabelRegexpGlobal = new RegExp(allureLabelRegexp, "g");
 
 export const getStatusFromError = (error: Error): Status => {
   switch (true) {
