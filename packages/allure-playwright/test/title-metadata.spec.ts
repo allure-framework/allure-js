@@ -45,7 +45,7 @@ something else in name @allure.label.l2=v2 @allure.label.l3=v3 some word\`, asyn
     }),
   ]);
 
-  expect(results.tests[0].fullName).toBe(
-    "a.test.ts#some strange name to test \nsomething else in name   some word",
+  expect(results.tests[0].name).toBe(
+    "some strange name to test \nsomething else in name   some word",
   );
 });

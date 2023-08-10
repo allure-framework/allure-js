@@ -108,7 +108,6 @@ class AllureReporter implements Reporter {
     if (projectSuiteTitle) {
       allureTest.addLabel(LabelName.PARENT_SUITE, projectSuiteTitle);
     }
-
     if (this.options.suiteTitle && fileSuiteTitle) {
       allureTest.addLabel(LabelName.SUITE, fileSuiteTitle);
     }
@@ -129,8 +128,8 @@ class AllureReporter implements Reporter {
       .join("/");
 
     const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
-    const fullName = `${relativeFile}#${nameSuites}${titleMetadata.cleanTitle}`;
-    const testCaseIdSource = `${relativeFile}#${titleMetadata.cleanTitle}`;
+    const fullName = `${relativeFile}#${nameSuites}${test.title}`;
+    const testCaseIdSource = `${relativeFile}#${test.title}`;
 
     allureTest.fullName = fullName;
     allureTest.testCaseId = md5(testCaseIdSource);
