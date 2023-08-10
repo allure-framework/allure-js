@@ -25,7 +25,7 @@ test("should respect testplan", async ({ runInlineTest }) => {
       },
       {
         id: 5,
-        selector: "aga.test.ts#selected name",
+        selector: "aga.test.ts#selected name @allure.id=5",
       },
     ],
   };
@@ -88,7 +88,7 @@ test("should respect testplan", async ({ runInlineTest }) => {
       ".+.test.ts#+.",
       "nested/super strange nested/super strange name.test.ts#also nested should execute",
       "aga.test.ts#a",
-      "aga.test.ts#selected name",
+      "aga.test.ts#selected name @allure.id=5",
     ]),
   );
 });

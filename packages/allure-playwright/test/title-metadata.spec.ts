@@ -20,7 +20,7 @@ test("should have metadata from title", async ({ runInlineTest }) => {
     }),
   ]);
 
-  expect(results.tests[0].fullName).toBe("a.test.ts#some strange name to test");
+  expect(results.tests[0].name).toBe("some strange name to test");
 });
 
 test("multiline name", async ({ runInlineTest }) => {
