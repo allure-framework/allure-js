@@ -16,6 +16,9 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "lint": "eslint ./test --ext .ts",
@@ -26,14 +29,17 @@
     "test": "rimraf ./out; yarn run jasmineTest"
   },
   "devDependencies": {
+    "@jest/environment": "^29.6.2",
+    "@jest/types": "^29.6.1",
     "@types/jasmine": "^3.3.12",
-    "@types/jest": "^26.0.10",
+    "@types/jest": "^29.5.3",
     "allure-jasmine": "workspace:*",
-    "jest": "^26.4.2",
     "rimraf": "^3.0.2",
     "typescript": "^4.4.2"
   },
   "dependencies": {
-    "allure-js-commons": "workspace:*"
+    "allure-js-commons": "workspace:*",
+    "jest-circus": "^29.6.2",
+    "jest-environment-node": "^29.6.2"
   }
 }

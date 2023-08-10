@@ -1,16 +1,10 @@
 {
   "extends": "../../tsconfig.json",
-  "include": [
-    "./test/**/*"
-  ],
+  "include": ["./src/**/*"],
   "compilerOptions": {
-    "types": [
-      "jasmine",
-      "node",
-      "jest"
-    ],
+    "types": ["node", "jest"],
     "skipLibCheck": true,
     "outDir": "./dist",
-    "rootDir": "./"
+    "rootDir": "./src"
   }
 }
