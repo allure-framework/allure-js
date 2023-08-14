@@ -1,11 +1,19 @@
 import { AllureRuntime } from "./AllureRuntime";
 import { AllureTest } from "./AllureTest";
 import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
-import { AttachmentOptions, Category, LinkType, ParameterOptions, Status } from "./model";
-import { ContentType } from "./model";
-import { LabelName } from "./model";
+import { AllureRuntimeApiInterface } from "./framework";
+import {
+  AttachmentOptions,
+  Category,
+  ContentType,
+  LabelName,
+  LinkType,
+  ParameterOptions,
+  Status,
+} from "./model";
 
-export abstract class Allure {
+// FIXME: step and attachment should be the same for each reporter implementation
+export abstract class Allure implements Omit<AllureRuntimeApiInterface, "step" | "attachment"> {
   protected abstract get currentTest(): AllureTest; // test only
   protected abstract get currentExecutable(): ExecutableItemWrapper; // step or test
 

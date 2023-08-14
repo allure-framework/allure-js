@@ -1,11 +1,11 @@
 // custom runner for mocha that allows to include a custom reporter
 // which is not packed into an npm module
 import path from "path";
+import { TestResult } from "allure-js-commons";
 import glob from "glob";
 import Mocha from "mocha";
 import selenium from "selenium-standalone";
 import "source-map-support/register";
-import { TestResult } from "allure-js-commons";
 
 export const getTestResultByName = (results: TestResult[], name: string) =>
   results.find((result) => result.name === name)!;

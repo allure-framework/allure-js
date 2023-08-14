@@ -1,14 +1,17 @@
 import type { Circus } from "@jest/types";
 
-export const getFullPath = (test: Circus.TestEntry | Circus.DescribeBlock): string[] => {
+/**
+ * Returns array of names which represents full test hierarchy
+ * Omits ROOT_DESCRIBE_BLOCK because it shouldn't be reported
+ *
+ * @param test Test or describe block
+ * @returns
+ */
+export const getTestPath = (test: Circus.TestEntry | Circus.DescribeBlock): string[] => {
   const path = [];
   let currentUnit: Circus.DescribeBlock | Circus.TestEntry | undefined = test;
 
   while (currentUnit) {
-    if (currentUnit.name === "ROOT_DESCRIBE_BLOCK") {
-      break;
-    }
-
     if (currentUnit.name) {
       path.unshift(currentUnit.name);
     }
@@ -16,25 +19,23 @@ export const getFullPath = (test: Circus.TestEntry | Circus.DescribeBlock): stri
     currentUnit = currentUnit.parent;
   }
 
-  return path;
+  // first element is always ROOT_DESCRIBE_BLOCK, which shouldn't be reported
+  return path.slice(1);
 };
 
-// TODO: reuse getFullPath
-export const getSuitePath = (test: Circus.TestEntry): string[] => {
-  const path = [];
-  let currentSuite: Circus.DescribeBlock | undefined = test.parent;
+/**
+ * Returns starndartized test name what can be used as test ID
+ *
+ * @doc https://github.com/jestjs/jest/blob/25a8785584c9d54a05887001ee7f498d489a5441/packages/jest-circus/src/utils.ts#L410
+ * @param path Path memebers
+ * @returns
+ */
+export const getTestID = (path: string[]): string => path.join(" ");
 
-  while (currentSuite) {
-    if (currentSuite.name === "ROOT_DESCRIBE_BLOCK") {
-      break;
-    }
-
-    if (currentSuite.name) {
-      path.unshift(currentSuite.name);
-    }
-
-    currentSuite = currentSuite.parent;
-  }
-
-  return path;
-};
+/**
+ * Returns test full name (test hierarchy joined by " > ")
+ *
+ * @param path Path memebers
+ * @returns
+ */
+export const getTestFullName = (path: string[]): string => path.join(" > ");
