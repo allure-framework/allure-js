@@ -1,5 +1,13 @@
+import { basename } from "path";
+import { cwd } from "process";
 import { MetadataMessage, ParameterOptions } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
+
+export const getFileSrcPath = (filePath: string): string => {
+  const baseDir = basename(cwd());
+
+  return filePath.replace(cwd(), baseDir);
+};
 
 export const getSuitePath = (test: Hermione.Test): string[] => {
   const path = [];
@@ -15,6 +23,7 @@ export const getSuitePath = (test: Hermione.Test): string[] => {
 
   return path;
 };
+
 export const sendMetadata = async (testId: string, metadata: MetadataMessage): Promise<void> =>
   new Promise((resolve, reject) => {
     process.send?.(

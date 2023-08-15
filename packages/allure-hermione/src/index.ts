@@ -25,6 +25,7 @@ import {
   addLabel,
   addLink,
   addParameter,
+  getFileSrcPath,
   getSuitePath,
   sendMetadata,
   setDescription,
@@ -84,21 +85,23 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env;
     const thread = ALLURE_THREAD_NAME || test.sessionId;
     const hostnameLabel = ALLURE_HOST_NAME || hostname;
+    const fileSrcPath = getFileSrcPath(test.file!);
+    const testFullTitle = test.fullTitle();
     const currentTest = new AllureTest(runtime, Date.now());
     const suites = getSuitePath(test);
 
     currentTest.name = test.title;
-    currentTest.fullName = test.fullTitle();
+    currentTest.fullName = testFullTitle;
     currentTest.stage = Stage.RUNNING;
-
-    // TODO:
-    // currentTest.calculateTestCaseId(test.id());
-    // currentTest.testCaseId = test.id();
 
     currentTest.addLabel(LabelName.HOST, hostnameLabel);
     currentTest.addLabel(LabelName.LANGUAGE, "javascript");
     currentTest.addLabel(LabelName.FRAMEWORK, "hermione");
     currentTest.addParameter("browser", test.browserId);
+
+    if (!currentTest.testCaseId) {
+      currentTest.testCaseId = md5(`${fileSrcPath}#${testFullTitle}`);
+    }
 
     if (thread) {
       currentTest.addLabel(LabelName.THREAD, thread);
