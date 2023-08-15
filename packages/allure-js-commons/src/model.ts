@@ -16,6 +16,8 @@ export interface StepMetadata extends Omit<ExecutableItem, "attachments" | "step
 export interface MetadataMessage {
   attachments?: AttachmentMetadata[];
   displayName?: string;
+  testCaseId?: string;
+  historyId?: string;
   labels?: Label[];
   links?: Link[];
   parameter?: Parameter[];

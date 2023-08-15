@@ -1,9 +1,9 @@
 import { Status, TestResult } from "allure-js-commons";
 import { expect } from "chai";
-import { before, beforeEach, describe, it } from "mocha";
-import { HermioneAllure } from "../types";
-import { getTestResultByName } from "../runner";
 import Hermione from "hermione";
+import { before, beforeEach, describe, it } from "mocha";
+import { getTestResultByName } from "../runner";
+import { HermioneAllure } from "../types";
 
 describe("steps", () => {
   let results: TestResult[];
@@ -32,7 +32,7 @@ describe("steps", () => {
   });
 
   describe("failed steps", () => {
-    it("fails the test with original step error", async () => {
+    it("fails the test with original step error", () => {
       const { status, statusDetails, steps, labels } = getTestResultByName(results, "failed");
 
       expect(status).eq(Status.FAILED);

@@ -30,6 +30,8 @@ import {
   setDescription,
   setDescriptionHtml,
   setDisplayName,
+  setHistoryId,
+  setTestCaseId,
 } from "./utils";
 
 export type HermioneAttachmentMessage = {
@@ -87,8 +89,11 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
 
     currentTest.name = test.title;
     currentTest.fullName = test.fullTitle();
-    currentTest.historyId = md5(test.fullTitle());
     currentTest.stage = Stage.RUNNING;
+
+    // TODO:
+    // currentTest.calculateTestCaseId(test.id());
+    // currentTest.testCaseId = test.id();
 
     currentTest.addLabel(LabelName.HOST, hostnameLabel);
     currentTest.addLabel(LabelName.LANGUAGE, "javascript");
@@ -139,75 +144,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       return;
     }
 
-    const {
-      attachments = [],
-      labels = [],
-      links = [],
-      parameter = [],
-      steps = [],
-      description,
-      descriptionHtml,
-      displayName,
-    } = metadata;
-
-    labels.forEach((label) => {
-      currentTest.addLabel(label.name, label.value);
-    });
-    links.forEach((link) => {
-      currentTest.addLink(link.url, link.name, link.type);
-    });
-    parameter.forEach((param) => {
-      currentTest.parameter(param.name, param.value, {
-        excluded: param.excluded,
-        mode: param.mode,
-      });
-    });
-    attachments.forEach((attachment) => {
-      const attachmentFilename = runtime.writeAttachment(
-        attachment.content,
-        attachment.type,
-        attachment.encoding,
-      );
-
-      currentTest.addAttachment(
-        "Attachment",
-        {
-          contentType: attachment.type,
-        },
-        attachmentFilename,
-      );
-    });
-
-    steps.forEach((step) => {
-      handleAllureStep(testId, step);
-    });
-
-    if (description) {
-      currentTest.description = description;
-    }
-
-    if (descriptionHtml) {
-      currentTest.descriptionHtml = descriptionHtml;
-    }
-
-    if (displayName) {
-      currentTest.name = displayName;
-    }
-  };
-  const handleAllureStep = (testId: string, stepMetadata: StepMetadata) => {
-    const currentTest = runningTests.get(testId);
-
-    if (!currentTest) {
-      // eslint-disable-next-line no-console
-      console.error(
-        `Can't create "${stepMetadata.name!}" step due test has been finished or hasn't been started`,
-      );
-      return;
-    }
-
-    const step = AllureCommandStepExecutable.toExecutableItem(runtime, stepMetadata);
-
-    currentTest.addStep(step);
+    currentTest.applyMetadata(metadata);
   };
 
   hermione.on(hermione.events.NEW_BROWSER, (browser, { browserId }) => {
@@ -280,6 +217,12 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     browser.addCommand("descriptionHtml", async (id: string, value: string) => {
       await setDescriptionHtml(testId(id), value);
     });
+    browser.addCommand("testCaseId", async (id: string, value: string) => {
+      await setTestCaseId(testId(id), value);
+    });
+    browser.addCommand("historyId", async (id: string, value: string) => {
+      await setHistoryId(testId(id), value);
+    });
   });
   hermione.on(hermione.events.NEW_WORKER_PROCESS, (worker) => {
     // eslint-disable-next-line
@@ -341,6 +284,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
       handleTestError(test, test.err);
     }
 
+    currentTest.calculateHistoryId();
     currentTest.stage = Stage.FINISHED;
     currentTest.endTest(Date.now());
     loadedTests.delete(testId());

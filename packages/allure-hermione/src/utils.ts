@@ -53,6 +53,18 @@ export const setDescriptionHtml = async (testId: string, descriptionHtml: string
   });
 };
 
+export const setTestCaseId = async (testId: string, testCaseId: string) => {
+  await sendMetadata(testId, {
+    testCaseId,
+  });
+};
+
+export const setHistoryId = async (testId: string, historyId: string) => {
+  await sendMetadata(testId, {
+    historyId,
+  });
+};
+
 export const addLabel = async (testId: string, name: string, value: string) => {
   await sendMetadata(testId, {
     labels: [{ name, value }],
