@@ -7,7 +7,6 @@ import * as messages from "@cucumber/messages";
 import { Tag, TestStepResultStatus } from "@cucumber/messages";
 import {
   Allure,
-  AllureCommandStepExecutable,
   AllureRuntime,
   AllureStep,
   AllureTest,
@@ -18,7 +17,6 @@ import {
   md5,
   MetadataMessage,
   Status,
-  StepMetadata,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 import { CucumberAllureWorld } from "./CucumberAllureWorld";

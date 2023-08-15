@@ -7,6 +7,7 @@ import { md5 } from "./utils";
 
 export class AllureTest extends ExecutableItemWrapper {
   private readonly testResult: TestResult;
+  private historyIdSetManually = false;
 
   constructor(private readonly runtime: AllureRuntime, start: number = Date.now()) {
     super(testResult());
@@ -25,6 +26,7 @@ export class AllureTest extends ExecutableItemWrapper {
   }
 
   set historyId(id: string) {
+    this.historyIdSetManually = true;
     this.testResult.historyId = id;
   }
 
@@ -57,7 +59,7 @@ export class AllureTest extends ExecutableItemWrapper {
    * Does nothing if `historyId` is already set
    */
   calculateHistoryId(): void {
-    if (this.testResult.historyId) {
+    if (this.historyIdSetManually) {
       return;
     }
 
