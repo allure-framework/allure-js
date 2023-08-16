@@ -41,4 +41,8 @@ export interface AllureRuntimeApiInterface {
   description(markdown: string): void;
 
   descriptionHtml(html: string): void;
+
+  testCaseId(id: string): void;
+
+  historyId(id: string): void;
 }

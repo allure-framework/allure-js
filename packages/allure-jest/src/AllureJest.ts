@@ -45,61 +45,8 @@ export default class AllureJest extends NodeEnvironment {
 
   handleAllureMetadata(payload: { currentTestName: string; metadata: MetadataMessage }) {
     const currentTest = this.runningTests.get(payload.currentTestName)!;
-    const {
-      attachments = [],
-      labels = [],
-      links = [],
-      parameter = [],
-      steps = [],
-      description,
-      descriptionHtml,
-      displayName,
-    } = payload.metadata;
 
-    labels.forEach((label) => {
-      currentTest.addLabel(label.name, label.value);
-    });
-    links.forEach((link) => {
-      currentTest.addLink(link.url, link.name, link.type);
-    });
-    parameter.forEach((param) => {
-      currentTest.parameter(param.name, param.value, {
-        excluded: param.excluded,
-        mode: param.mode,
-      });
-    });
-    attachments.forEach((attachment) => {
-      const attachmentFilename = this.runtime.writeAttachment(
-        attachment.content,
-        attachment.type,
-        attachment.encoding,
-      );
-
-      currentTest.addAttachment(
-        "Attachment",
-        {
-          contentType: attachment.type,
-        },
-        attachmentFilename,
-      );
-    });
-    steps.forEach((stepMetadata) => {
-      const step = AllureCommandStepExecutable.toExecutableItem(this.runtime, stepMetadata);
-
-      currentTest.addStep(step);
-    });
-
-    if (description) {
-      currentTest.description = description;
-    }
-
-    if (descriptionHtml) {
-      currentTest.descriptionHtml = descriptionHtml;
-    }
-
-    if (displayName) {
-      currentTest.name = displayName;
-    }
+    currentTest.applyMetadata(payload.metadata);
   }
 
   handleTestEvent(event: Circus.Event, state: Circus.State) {

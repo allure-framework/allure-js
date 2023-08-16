@@ -19,6 +19,14 @@ export abstract class Allure implements Omit<AllureRuntimeApiInterface, "step" |
 
   protected constructor(protected runtime: AllureRuntime) {}
 
+  testCaseId(id: string): void {
+    this.currentTest.testCaseId = id;
+  }
+
+  historyId(id: string): void {
+    this.currentTest.historyId = id;
+  }
+
   public epic(epic: string): void {
     this.label(LabelName.EPIC, epic);
   }
@@ -106,6 +114,7 @@ export abstract class Allure implements Omit<AllureRuntimeApiInterface, "step" |
   ): void;
 
   public abstract logStep(name: string, status?: Status): void;
+
   public abstract step<T>(name: string, body: (step: StepInterface) => T): T;
 }
 

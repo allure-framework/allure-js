@@ -163,4 +163,16 @@ export class AllureJestAPI implements AllureRuntimeApiInterface {
       descriptionHtml: html,
     });
   }
+
+  testCaseId(testCaseId: string): void {
+    this.sendMetadata({
+      testCaseId,
+    });
+  }
+
+  historyId(historyId: string): void {
+    this.sendMetadata({
+      historyId,
+    });
+  }
 }
