@@ -19,7 +19,15 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
           "  Scenario: b\n" +
           "    Given a step\n" +
           "    When do something\n" +
-          "    Then get something\n",
+          "    Then get something\n" +
+          "\n" +
+          "  Rule: c\n" +
+          "\n" +
+          "    @issue=3 @tms=4\n" +
+          "    Scenario: d\n" +,
+          "      Given a step\n" +
+          "      When do something\n" +
+          "      Then get something\n",
         uri: "withIssueLink.feature",
       },
     ],
@@ -46,11 +54,15 @@ describe("CucumberJSAllureReporter > examples", () => {
 
     const { links } = results.tests[0];
 
-    expect(links).length(2);
+    expect(links).length(4);
     expect(links[0].type).eq("issue");
     expect(links[0].url).eq("https://example.org/issues/1");
     expect(links[1].type).eq("tms");
     expect(links[1].url).eq("https://example.org/tasks/2");
+    expect(links[2].type).eq("issue");
+    expect(links[2].url).eq("https://example.org/issues/3");
+    expect(links[3].type).eq("tms");
+    expect(links[3].url).eq("https://example.org/tasks/4");
 
     const tags = results.tests[0].labels.filter((label) => label.name === LabelName.TAG);
     expect(tags).length(1);
