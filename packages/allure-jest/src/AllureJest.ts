@@ -1,8 +1,9 @@
 import os from "os";
 import process from "process";
 import { EnvironmentContext, JestEnvironmentConfig } from "@jest/environment";
-import type { Circus, Config } from "@jest/types";
+import type { Circus } from "@jest/types";
 import {
+  AllureCommandStepExecutable,
   AllureRuntime,
   AllureTest,
   getSuitesLabels,
@@ -82,10 +83,10 @@ export default class AllureJest extends NodeEnvironment {
         attachmentFilename,
       );
     });
+    steps.forEach((stepMetadata) => {
+      const step = AllureCommandStepExecutable.toExecutableItem(this.runtime, stepMetadata);
 
-    steps.forEach((step) => {
-      // debugger;
-      // handleAllureStep(testId, step);
+      currentTest.addStep(step);
     });
 
     if (description) {
@@ -113,8 +114,8 @@ export default class AllureJest extends NodeEnvironment {
       case "test_start":
         this.handleTestStart(event.test);
         break;
-      // TODO:
       case "test_todo":
+        this.handleTestTodo(event.test);
         break;
       case "test_fn_success":
         this.handleTestPass(event.test);
@@ -127,15 +128,6 @@ export default class AllureJest extends NodeEnvironment {
         break;
       case "test_done":
         this.handleTestDone(event.test);
-        break;
-      // TODO:
-      case "hook_start":
-        break;
-      // TODO:
-      case "hook_success":
-        break;
-      // TODO:
-      case "hook_failure":
         break;
       default:
         break;
@@ -211,6 +203,17 @@ export default class AllureJest extends NodeEnvironment {
   private handleTestDone(test: Circus.TestEntry) {
     const currentTestID = getTestID(getTestPath(test));
     const currentTest = this.runningTests.get(currentTestID)!;
+
+    currentTest.endTest();
+    this.runningTests.delete(currentTestID);
+  }
+
+  private handleTestTodo(test: Circus.TestEntry) {
+    const currentTestID = getTestID(getTestPath(test));
+    const currentTest = this.runningTests.get(currentTestID)!;
+
+    currentTest.stage = Stage.PENDING;
+    currentTest.status = Status.SKIPPED;
 
     currentTest.endTest();
     this.runningTests.delete(currentTestID);
