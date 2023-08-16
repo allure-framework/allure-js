@@ -1,6 +1,6 @@
 import { runJestTests, TestResultsByFullName } from "../utils";
 
-describe("label", () => {
+describe("labels", () => {
   let results: TestResultsByFullName;
 
   beforeEach(async () => {
