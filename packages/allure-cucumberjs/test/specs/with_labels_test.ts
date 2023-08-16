@@ -12,14 +12,22 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
     sources: [
       {
         data:
-          "@severity:foo @feature:bar\n" +
+          "@severity:foo @feature:qux\n" +
           "Feature: a\n" +
           "\n" +
           "  @severity:bar @feature:foo @foo\n" +
           "  Scenario: b\n" +
           "    Given a step\n" +
           "    When do something\n" +
-          "    Then get something\n",
+          "    Then get something\n" +
+          "\n" +
+          "  Rule: c\n" +
+          "\n" +
+          "    @severity:qux @feature:bar @bar\n" +
+          "    Scenario: d\n" +,
+          "      Given a step\n" +
+          "      When do something\n" +
+          "      Then get something\n",
         uri: "withIssueLink.feature",
       },
     ],
@@ -51,10 +59,12 @@ describe("CucumberJSAllureReporter > examples", () => {
       .filter((label) => label.name === LabelName.FEATURE)
       .map(({ value }) => value);
 
-    expect(tags).length(1);
+    expect(tags).length(2);
     expect(severityLabels).contains("foo");
     expect(severityLabels).contains("bar");
+    expect(severityLabels).contains("qux");
     expect(featureLabels).contains("foo");
     expect(featureLabels).contains("bar");
+    expect(featureLabels).contains("qux");
   });
 });
