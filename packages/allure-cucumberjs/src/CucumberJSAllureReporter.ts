@@ -7,7 +7,6 @@ import * as messages from "@cucumber/messages";
 import { Tag, TestStepResultStatus } from "@cucumber/messages";
 import {
   Allure,
-  AllureCommandStepExecutable,
   AllureRuntime,
   AllureStep,
   AllureTest,
@@ -18,7 +17,6 @@ import {
   md5,
   MetadataMessage,
   Status,
-  StepMetadata,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 import { CucumberAllureWorld } from "./CucumberAllureWorld";
@@ -300,7 +298,6 @@ export class CucumberJSAllureFormatter extends Formatter {
     currentTest.name = pickle.name;
     currentTest.fullName = fullName;
     currentTest.testCaseId = testCaseId;
-    currentTest.historyId = testCaseId;
 
     currentTest.addLabel(LabelName.HOST, this.hostname);
     currentTest.addLabel(LabelName.LANGUAGE, "javascript");
@@ -399,56 +396,14 @@ export class CucumberJSAllureFormatter extends Formatter {
     step?: AllureStep;
     metadata: MetadataMessage;
   }) {
-    const {
-      labels = [],
-      links = [],
-      parameter = [],
-      steps = [],
-      description,
-      descriptionHtml,
-    } = payload.metadata;
+    payload.test.applyMetadata(payload.metadata, (step) => {
+      if (payload.step) {
+        payload.step.addStep(step);
+        return;
+      }
 
-    links.forEach((link) => payload.test.addLink(link.url, link.type, link.name));
-    labels.forEach((label) => payload.test.addLabel(label.name, label.value));
-    parameter.forEach(({ name, value, excluded, mode }) =>
-      payload.test.parameter(name, value, {
-        excluded,
-        mode,
-      }),
-    );
-    steps.forEach((step) => {
-      this.handleAllureStep({
-        test: payload.test,
-        step: payload.step,
-        stepMetadata: step,
-      });
+      payload.test.addStep(step);
     });
-
-    if (description) {
-      payload.test.description = description;
-    }
-
-    if (descriptionHtml) {
-      payload.test.descriptionHtml = descriptionHtml;
-    }
-  }
-
-  private handleAllureStep(payload: {
-    test: AllureTest;
-    step?: AllureStep;
-    stepMetadata: StepMetadata;
-  }) {
-    const step = AllureCommandStepExecutable.toExecutableItem(
-      this.allureRuntime,
-      payload.stepMetadata,
-    );
-
-    if (payload.step) {
-      payload.step.addStep(step);
-      return;
-    }
-
-    payload.test.addStep(step);
   }
 
   private onTestCaseFinished(data: messages.TestCaseFinished): void {
