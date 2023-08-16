@@ -214,7 +214,7 @@ describe("AllureCommandStep.run()", () => {
           expect(parameter!.length).eq(1);
           expect(parameter![0]).eql({
             name: fixtures.parameter.name,
-            value: fixtures.parameter.value,
+            value: JSON.stringify(fixtures.parameter.value),
             excluded: fixtures.parameter.options.excluded,
             mode: fixtures.parameter.options.mode,
           });
@@ -472,7 +472,7 @@ describe("AllureCommandStep.start()", () => {
       expect(parameter!.length).eq(1);
       expect(parameter![0]).eql({
         name: fixtures.parameter.name,
-        value: fixtures.parameter.value,
+        value: JSON.stringify(fixtures.parameter.value),
         excluded: fixtures.parameter.options.excluded,
         mode: fixtures.parameter.options.mode,
       });

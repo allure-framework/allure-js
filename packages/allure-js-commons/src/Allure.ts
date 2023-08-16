@@ -39,8 +39,8 @@ export abstract class Allure {
     this.currentTest.addLabel(name, value);
   }
 
-  public parameter(name: string, value: string, options?: ParameterOptions): void {
-    this.currentExecutable.addParameter(name, value, options);
+  public parameter(name: string, value: any, options?: ParameterOptions): void {
+    this.currentExecutable.parameter(name, value, options);
   }
 
   public link(url: string, name?: string, type?: string): void {

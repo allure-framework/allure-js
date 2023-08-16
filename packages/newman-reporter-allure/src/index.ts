@@ -333,7 +333,7 @@ class AllureReporter {
     const requestDataURL = requestData && `${requestData.method} - ${requestData.url}`;
 
     if (requestData?.body?.mode === "raw" && requestData.body.raw) {
-      this.currentExecutable.addParameter("Request body", requestData.body.raw);
+      this.currentExecutable.parameter("Request body", requestData.body.raw);
     }
 
     let testDescription = "";
@@ -351,12 +351,12 @@ class AllureReporter {
     }
 
     if (requestDataURL) {
-      this.currentExecutable.addParameter("Request", requestDataURL);
+      this.currentExecutable.parameter("Request", requestDataURL);
     }
 
     const response = this.currentRunningItem?.pmItem.responseData;
     if (response?.code) {
-      this.currentExecutable.addParameter("Response Code", response?.code.toString(), {
+      this.currentExecutable.parameter("Response Code", response?.code.toString(), {
         excluded: true,
       });
     }
