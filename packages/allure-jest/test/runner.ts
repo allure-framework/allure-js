@@ -1,13 +1,16 @@
 // custom runner for mocha that allows to include a custom reporter
 // which is not packed into an npm module
 import path from "path";
-import { TestResult } from "allure-js-commons";
+import chai from "chai";
+import chaiLike from "chai-like";
+import chaiThings from "chai-things";
 import glob from "glob";
 import Mocha from "mocha";
 import "source-map-support/register";
 
-export const getTestResultByName = (results: TestResult[], name: string) =>
-  results.find((result) => result.name === name)!;
+chai.should();
+chai.use(chaiLike);
+chai.use(chaiThings);
 
 const mocha = new Mocha({
   timeout: 30000,

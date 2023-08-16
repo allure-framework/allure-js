@@ -3,7 +3,6 @@ import process from "process";
 import { EnvironmentContext, JestEnvironmentConfig } from "@jest/environment";
 import type { Circus } from "@jest/types";
 import {
-  AllureCommandStepExecutable,
   AllureRuntime,
   AllureTest,
   getSuitesLabels,
@@ -33,6 +32,7 @@ export default class AllureJest extends NodeEnvironment {
     });
     this.global.allure = new AllureJestAPI(this, this.global);
     this.testRootDirPath = config.projectConfig.rootDir;
+    this.global.hello = "world";
   }
 
   setup() {
