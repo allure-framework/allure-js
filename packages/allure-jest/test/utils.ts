@@ -3,11 +3,13 @@ import { cwd } from "process";
 import { runCLI } from "@jest/core";
 import type { Config } from "@jest/types";
 import type { TestResult } from "allure-js-commons";
-import { match, stub } from "sinon";
+import { match, restore, stub } from "sinon";
+
+export type TestResultsByFullName = Record<string, TestResult>;
 
 /**
  * Runs given jest tests (fixtures) with real jest runner and returns
- * allure test results
+ * mapped allure test results by test name
  *
  * @example
  * ```js
@@ -18,7 +20,7 @@ import { match, stub } from "sinon";
  * ```
  * @param fixtures Paths of fixtures should be tested
  */
-export const runJestTests = async (fixtures: string[]): Promise<TestResult[]> => {
+export const runJestTests = async (fixtures: string[]): Promise<TestResultsByFullName> => {
   const argv: Config.Argv = {
     config: require.resolve("./jest.config"),
     collectCoverage: false,
@@ -33,5 +35,11 @@ export const runJestTests = async (fixtures: string[]): Promise<TestResult[]> =>
 
   await runCLI(argv, [cwd()]);
 
-  return writeFileSpy.args.map(([, rawResult]) => JSON.parse(rawResult as string) as TestResult);
+  restore();
+
+  return writeFileSpy.args.reduce((acc, [, rawResult]) => {
+    const result = JSON.parse(rawResult as string) as TestResult;
+
+    return Object.assign(acc, { [result.fullName!]: result });
+  }, {});
 };
