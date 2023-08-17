@@ -24,8 +24,7 @@ export const runJestTests = async (fixtures: string[]): Promise<TestResultsByFul
   const argv: Config.Argv = {
     config: require.resolve("./jest.config"),
     collectCoverage: false,
-    verbose: false,
-    silent: true,
+    reporters: [],
     $0: "",
     _: fixtures,
   };

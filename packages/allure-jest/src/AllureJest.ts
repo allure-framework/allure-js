@@ -130,12 +130,15 @@ export default class AllureJest extends NodeEnvironment {
   private handleTestFail(test: Circus.TestEntry) {
     const currentTestID = getTestID(getTestPath(test));
     const currentTest = this.runningTests.get(currentTestID)!;
+    // jest collects all errors, but we need to report the first one because it's a reason why the test has been failed
+    const [error] = test.errors;
+    const hasMultipleErrors = Array.isArray(error);
 
     currentTest.stage = Stage.FINISHED;
     currentTest.status = Status.FAILED;
     currentTest.statusDetails = {
-      message: test.errors[0].message,
-      trace: test.errors[0].stack,
+      message: hasMultipleErrors ? error[0].message : error.message,
+      trace: hasMultipleErrors ? error[0].stack : error.stack,
     };
   }
 
@@ -145,6 +148,9 @@ export default class AllureJest extends NodeEnvironment {
 
     currentTest.stage = Stage.PENDING;
     currentTest.status = Status.SKIPPED;
+
+    currentTest.endTest();
+    this.runningTests.delete(currentTestID);
   }
 
   private handleTestDone(test: Circus.TestEntry) {
