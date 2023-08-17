@@ -240,9 +240,19 @@ export class CucumberJSAllureFormatter extends Formatter {
       this.documentMap.set(data.uri, data);
     }
 
-    data.feature?.children?.forEach((fc) => {
-      if (fc.scenario) {
-        this.onScenario(fc.scenario);
+    data.feature?.children?.forEach((c) => {
+      if (c.rule) {
+        this.onRule(c.rule);
+      } else if (c.scenario) {
+        this.onScenario(c.scenario);
+      }
+    });
+  }
+
+  private onRule(data: messages.Rule): void {
+    data.children?.forEach((c) => {
+      if (c.scenario) {
+        this.onScenario(c.scenario);
       }
     });
   }
