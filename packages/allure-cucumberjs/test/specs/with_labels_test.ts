@@ -12,7 +12,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
     sources: [
       {
         data:
-          "@severity:foo @feature:qux\n" +
+          "@severity:foo @feature:bar\n" +
           "Feature: a\n" +
           "\n" +
           "  @severity:bar @feature:foo @foo\n" +
