@@ -30,8 +30,8 @@
     "compile": "tsc",
     "test": "nyc tsx --tsconfig ./tsconfig.json ./test/runner.ts",
     "coverage": "codecov",
-    "lint": "eslint ./test --ext .ts",
-    "lint:fix": "eslint ./test --ext .ts --fix"
+    "lint": "eslint ./src --ext .ts",
+    "lint:fix": "eslint ./src --ext .ts --fix"
   },
   "nyc": {
     "check-coverage": false,
