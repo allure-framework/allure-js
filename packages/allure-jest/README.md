@@ -1,47 +1,43 @@
-# Allure integration for jest framework
+# allure-jest
+
+Allure integration for `jest@^27.x.x` (`jest-circus`).
 
 > **Warning**
-> This integration doesn't work with default runner since jest 27+.
-> To use this integration after jest 27 you need to change default runner to `Jasmine`.
+> If you're looking for `jest-jasmine` integration (`< 27.x.x`) you need to
+> change default runner to `Jasmine` and use `allure-jasmine` instead.
 
-## Examples
+## Installation
 
-You can find example setup and usage in this [repo](https://github.com/vovsemenv/allure-jest-example)
+Use your favorite node package manager to install required packages:
 
-## Circus test runner (default for jest@^27)
-
-Currently, we don't have official solution for circus test runner. Consider using this [community plugin](https://github.com/ryparker/jest-circus-allure-environment) instead
-
-## Jasmine test runner (default for jest@<27)
-
-### Install dependencies
-
-```bash
-npm i -D jest-jasmine2@INSTALLED_JEST_VERSION allure-jasmine allure-js-commons @types/jasmine
+```shell
+npm add -D allure-jest allure-js-commons jest-circus
 ```
 
-Create `allure-setup.ts` file:
+Then, add following lines to your `jest.config.js` file:
 
-```typescript
-import { JasmineAllureReporter } from "allure-jasmine";
-import { JasmineAllureInterface } from "allure-jasmine/dist/src/JasmineAllureReporter";
-
-const reporter = new JasmineAllureReporter({ resultsDir: "allure-results" });
-jasmine.getEnv().addReporter(reporter);
-// @ts-expect-error
-global.allure = reporter.getInterface();
-
-declare global {
-  const allure: JasmineAllureInterface;
+```diff
+/** @type {import('jest').Config} */
+const config = {
++  testRunner: "jest-circus/runner",
++  testEnvironment: "allure-jest",
 }
+
+module.exports = config
 ```
 
-### Change jest.config.js
+## Use Allure runtime API
 
-```js
-module.exports = {
-  testRunner: "jest-jasmine2",
-  preset: "ts-jest",
-  setupFilesAfterEnv: ["./allure-setup.ts"],
-};
+The plugin provides custom global commands which allow to add additional info
+inside your tests:
+
+```javascript
+it("my test", () => {
+  allure.attachment(currentTest.id(), screenshot, "image/png");
+  allure.epic(currentTest.id(), "my_epic");
+  allure.parameter(currentTest.id(), "parameter_name", "parameter_value", {
+    mode: "hidden",
+    excluded: false,
+  });
+});
 ```
