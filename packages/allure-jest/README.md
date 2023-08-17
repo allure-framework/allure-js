@@ -4,7 +4,7 @@ Allure integration for `jest@^27.x.x` (`jest-circus`).
 
 > **Warning**
 > If you're looking for `jest-jasmine` integration (`< 27.x.x`) you need to
-> change default runner to `Jasmine` and use `allure-jasmine` instead.
+> change default runner to `Jasmine` and use [`allure-jasmine` package][allure-jasmine] instead.
 
 ## Installation
 
@@ -41,3 +41,5 @@ it("my test", () => {
   });
 });
 ```
+
+[allure-jasmine]: https://github.com/allure-framework/allure-js/tree/master/packages/allure-jasmine
