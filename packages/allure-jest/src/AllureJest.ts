@@ -82,7 +82,7 @@ export default class AllureJest extends NodeEnvironment {
   }
 
   private handleTestAdd(payload: { testName: string; concurrent: boolean; state: Circus.State }) {
-    const { testName, state, concurrent } = payload;
+    const { testName, state } = payload;
     const { currentDescribeBlock } = state;
     const newTestSuitesPath = getTestPath(currentDescribeBlock);
     const newTestPath = newTestSuitesPath.concat(testName);

@@ -1,4 +1,4 @@
-import { Stage, Status } from "allure-js-commons";
+import { Status } from "allure-js-commons";
 import { expect } from "chai";
 import { runJestTests, TestResultsByFullName } from "../utils";
 
