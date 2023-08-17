@@ -11,7 +11,7 @@ import {
 } from "allure-js-commons";
 import AllureJest from "./AllureJest";
 
-export class AllureJestAPI implements AllureRuntimeApiInterface {
+export class AllureJestApi implements AllureRuntimeApiInterface {
   env: AllureJest;
   context: Global.Global;
 

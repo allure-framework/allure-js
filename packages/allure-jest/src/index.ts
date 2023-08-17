@@ -1,7 +1,7 @@
-import { AllureJestAPI } from "./AllureJestAPI";
+import { AllureJestApi } from "./AllureJestApi";
 
 export { default } from "./AllureJest";
 
 declare global {
-  const allure: AllureJestAPI;
+  const allure: AllureJestApi;
 }

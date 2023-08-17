@@ -12,8 +12,8 @@ import {
   Status,
 } from "allure-js-commons";
 import NodeEnvironment from "jest-environment-node";
-import { AllureJestAPI } from "./AllureJestAPI";
-import { getTestID, getTestPath } from "./utils";
+import { AllureJestApi } from "./AllureJestApi";
+import { getTestId, getTestPath } from "./utils";
 
 const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
 const hostname = os.hostname();
@@ -30,7 +30,7 @@ export default class AllureJest extends NodeEnvironment {
       // TODO: configure it later
       resultsDir: "allure-results",
     });
-    this.global.allure = new AllureJestAPI(this, this.global);
+    this.global.allure = new AllureJestApi(this, this.global);
     this.testRootDirPath = config.projectConfig.rootDir;
     this.global.hello = "world";
   }
@@ -86,7 +86,7 @@ export default class AllureJest extends NodeEnvironment {
     const { currentDescribeBlock } = state;
     const newTestSuitesPath = getTestPath(currentDescribeBlock);
     const newTestPath = newTestSuitesPath.concat(testName);
-    const newTestID = getTestID(newTestPath);
+    const newTestID = getTestId(newTestPath);
     const newTest = new AllureTest(this.runtime);
     const thread = ALLURE_THREAD_NAME || JEST_WORKER_ID || process.pid.toString();
     const host = ALLURE_HOST_NAME || hostname;
@@ -113,14 +113,14 @@ export default class AllureJest extends NodeEnvironment {
   }
 
   private handleTestStart(test: Circus.TestEntry) {
-    const currentTestID = getTestID(getTestPath(test));
+    const currentTestID = getTestId(getTestPath(test));
     const currentTest = this.runningTests.get(currentTestID)!;
 
     currentTest.stage = Stage.RUNNING;
   }
 
   private handleTestPass(test: Circus.TestEntry) {
-    const currentTestID = getTestID(getTestPath(test));
+    const currentTestID = getTestId(getTestPath(test));
     const currentTest = this.runningTests.get(currentTestID)!;
 
     currentTest.stage = Stage.FINISHED;
@@ -128,7 +128,7 @@ export default class AllureJest extends NodeEnvironment {
   }
 
   private handleTestFail(test: Circus.TestEntry) {
-    const currentTestID = getTestID(getTestPath(test));
+    const currentTestID = getTestId(getTestPath(test));
     const currentTest = this.runningTests.get(currentTestID)!;
     // jest collects all errors, but we need to report the first one because it's a reason why the test has been failed
     const [error] = test.errors;
@@ -143,7 +143,7 @@ export default class AllureJest extends NodeEnvironment {
   }
 
   private handleTestSkip(test: Circus.TestEntry) {
-    const currentTestID = getTestID(getTestPath(test));
+    const currentTestID = getTestId(getTestPath(test));
     const currentTest = this.runningTests.get(currentTestID)!;
 
     currentTest.stage = Stage.PENDING;
@@ -154,7 +154,7 @@ export default class AllureJest extends NodeEnvironment {
   }
 
   private handleTestDone(test: Circus.TestEntry) {
-    const currentTestID = getTestID(getTestPath(test));
+    const currentTestID = getTestId(getTestPath(test));
     const currentTest = this.runningTests.get(currentTestID)!;
 
     currentTest.endTest();
@@ -162,7 +162,7 @@ export default class AllureJest extends NodeEnvironment {
   }
 
   private handleTestTodo(test: Circus.TestEntry) {
-    const currentTestID = getTestID(getTestPath(test));
+    const currentTestID = getTestId(getTestPath(test));
     const currentTest = this.runningTests.get(currentTestID)!;
 
     currentTest.stage = Stage.PENDING;

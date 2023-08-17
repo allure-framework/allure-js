@@ -26,7 +26,7 @@ const config = {
 module.exports = config
 ```
 
-## Use Allure runtime API
+## Use Allure runtime Api
 
 The plugin provides custom global commands which allow to add additional info
 inside your tests:
