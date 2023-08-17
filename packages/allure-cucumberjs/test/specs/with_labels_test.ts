@@ -24,7 +24,7 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
           "  Rule: c\n" +
           "\n" +
           "    @severity:qux @feature:bar @bar\n" +
-          "    Scenario: d\n" +,
+          "    Scenario: d\n" +
           "      Given a step\n" +
           "      When do something\n" +
           "      Then get something\n",
