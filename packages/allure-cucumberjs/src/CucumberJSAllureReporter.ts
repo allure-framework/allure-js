@@ -242,9 +242,8 @@ export class CucumberJSAllureFormatter extends Formatter {
 
     data.feature?.children?.forEach((c) => {
       if (c.rule) {
-        this.onRule(c.rule);        
-      }
-      else if (c.scenario) {
+        this.onRule(c.rule);
+      } else if (c.scenario) {
         this.onScenario(c.scenario);
       }
     });
