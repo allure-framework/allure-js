@@ -6,13 +6,10 @@ For usage example see `test/Setup.ts`
 
 ## Usage with Jest (`jest@<27`)
 
-> If you're looking for `jest-circus` integration (`jest@27.x.x`) you need to
-> use [`allure-jest` package][allure-jest] instead.
-
 Use your favorite node package manager to install required packages:
 
 ```bash
-npm i -D jest-jasmine2 allure-jasmine allure-js-commons @types/jasmine
+npm add -D jest-jasmine2 allure-jasmine allure-js-commons @types/jasmine
 ```
 
 Create `allure-setup.ts` file:
