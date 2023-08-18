@@ -1,9 +1,16 @@
 // custom runner for mocha that allows to include a custom reporter
 // which is not packed into an npm module
 import path from "path";
+import chai from "chai";
+import chaiLike from "chai-like";
+import chaiThings from "chai-things";
 import glob from "glob";
 import Mocha from "mocha";
 import "source-map-support/register";
+
+chai.should();
+chai.use(chaiLike);
+chai.use(chaiThings);
 
 const mocha = new Mocha({
   timeout: 16000,
