@@ -1,25 +1,25 @@
 # allure-jest
 
-Allure integration for `jest@^27.x.x` (`jest-circus`).
-
 > **Warning**
-> If you're looking for `jest-jasmine` integration (`< 27.x.x`) you need to
-> change default runner to `Jasmine` and use [`allure-jasmine` package][allure-jasmine] instead.
+> If you are using `jest@<27.0.0` use [`allure-jasmine` package][allure-jasmine]
+> or consider to use `jest-circus` as a test runner with this package.
+>
+> The integration doesn't work with custom runners. If you want to use the
+> integration use `jest-circus` as a test runner.
 
 ## Installation
 
 Use your favorite node package manager to install required packages:
 
 ```shell
-npm add -D allure-jest allure-js-commons jest-circus
+npm add -D allure-jest allure-js-commons
 ```
 
-Then, add following lines to your `jest.config.js` file:
+Then, add following line to your `jest.config.js` file:
 
 ```diff
 /** @type {import('jest').Config} */
 const config = {
-+  testRunner: "jest-circus/runner",
 +  testEnvironment: "allure-jest",
 }
 
