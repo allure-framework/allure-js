@@ -300,9 +300,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     const thread = data.workerId || ALLURE_THREAD_NAME || process.pid.toString();
     const fullName = `${pickle.uri}#${pickle.name}`;
     // sometimes description starts with "Description:", but it's not actually required
-    const description = scenario?.description
-      ? scenario.description.replace(/\s+Description:\s?/, "")
-      : doc?.feature?.description;
+    const description = scenario?.description || doc?.feature?.description || "";
     const testCaseId = md5(fullName);
 
     this.testCaseStartedMap.set(data.id, data);
@@ -310,7 +308,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     this.currentTestsMap.set(data.id, currentTest);
 
     currentTest.name = pickle.name;
-    currentTest.description = description || "";
+    currentTest.description = description.trim();
     currentTest.fullName = fullName;
     currentTest.testCaseId = testCaseId;
 

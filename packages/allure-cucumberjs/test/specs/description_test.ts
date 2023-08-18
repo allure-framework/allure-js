@@ -54,7 +54,7 @@ describe("CucumberJSAllureReporter > description", () => {
       expect(results.tests).length(1);
       const [testResult] = results.tests;
 
-      expect(testResult.description).eq("Scenario's description");
+      expect(testResult.description).eq("Description: Scenario's description");
     });
   });
 });
