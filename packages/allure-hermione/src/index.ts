@@ -50,7 +50,6 @@ const hostname = os.hostname();
 
 const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) => {
   const { ALLURE_REPORTER_DEV_MODE } = process.env;
-  const loadedTests: Map<string, Hermione.Test> = new Map();
   const runningTests: Map<string, AllureTest> = new Map();
   const runtime = new AllureRuntime({
     resultsDir: "allure-results",
@@ -239,11 +238,17 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     });
   });
   hermione.on(hermione.events.AFTER_TESTS_READ, (collection) => {
-    // cache all the tests to handle skipped tests in future
+    // handle all skipped (pending) tests
     collection.eachTest((test) => {
-      const testId = getTestId(test);
+      if (!test.pending) {
+        return;
+      }
 
-      loadedTests.set(testId(), test);
+      const currentTest = createAllureTest(test);
+
+      currentTest.status = Status.SKIPPED;
+      currentTest.stage = Stage.FINISHED;
+      currentTest.endTest();
     });
   });
   hermione.on(hermione.events.TEST_BEGIN, (test) => {
@@ -290,22 +295,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     currentTest.calculateHistoryId();
     currentTest.stage = Stage.FINISHED;
     currentTest.endTest(Date.now());
-    loadedTests.delete(testId());
     runningTests.delete(testId());
-  });
-  hermione.on(hermione.events.END, () => {
-    // all tests have been finished
-    if (loadedTests.size === 0) {
-      return;
-    }
-
-    loadedTests.forEach((test) => {
-      const currentTest = createAllureTest(test);
-
-      currentTest.status = Status.SKIPPED;
-      currentTest.stage = Stage.FINISHED;
-      currentTest.endTest();
-    });
   });
 
   // it needs for tests because we need to read runtime writer data redefined in hermione config
