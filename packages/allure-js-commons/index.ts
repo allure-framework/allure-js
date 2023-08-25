@@ -57,4 +57,6 @@ export {
   serialize
 } from "./src/utils";
 
+export { AllureRuntimeApiInterface } from "./src/framework";
+
 export { parseTestPlan } from "./src/testplan";
