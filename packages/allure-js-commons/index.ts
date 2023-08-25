@@ -52,6 +52,8 @@ export {
   allureReportFolder,
   stripAscii,
   allureIdRegexp,
+  allureIdRegexpGlobal,
+  allureLabelRegexpGlobal,
   allureLabelRegexp,
   getSuitesLabels,
   serialize

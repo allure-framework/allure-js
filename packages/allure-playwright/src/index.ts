@@ -94,11 +94,12 @@ class AllureReporter implements Reporter {
   onTestBegin(test: TestCase): void {
     const suite = test.parent;
     const group = this.ensureAllureGroupCreated(suite);
-    const allureTest = group.startTest(test.title);
+    const titleMetadata = extractMetadataFromString(test.title);
+    const allureTest = group.startTest(titleMetadata.cleanTitle);
+
     allureTest.addLabel(LabelName.LANGUAGE, "JavaScript");
     allureTest.addLabel(LabelName.FRAMEWORK, "Playwright");
 
-    const titleMetadata = extractMetadataFromString(test.title);
     titleMetadata.labels.forEach((label) => allureTest.addLabel(label.name, label.value));
 
     const [, projectSuiteTitle, fileSuiteTitle, ...suiteTitles] = suite.titlePath();
