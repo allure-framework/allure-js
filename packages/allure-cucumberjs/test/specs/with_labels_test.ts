@@ -45,6 +45,27 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
       },
     ],
   },
+  withFeatureWideLabels: {
+    supportCodeLibrary: buildSupportCodeLibrary(({ Given }) => {
+      Given("a step", () => {});
+    }),
+    sources: [
+      {
+        data: [
+          "@severity:foo @feature:bar",
+          "Feature: a",
+          "\n",
+          "  Scenario: b",
+          "    Given a step",
+          "\n",
+          "  @foo:bar",
+          "  Scenario: c",
+          "    Given a step",
+        ].join("\n"),
+        uri: "withFeatureWideLabels.feature",
+      },
+    ],
+  },
 };
 
 describe("CucumberJSAllureReporter > examples", () => {
@@ -108,5 +129,41 @@ describe("CucumberJSAllureReporter > examples", () => {
     expect(severityLabels).contains("bar");
     expect(featureLabels).contains("foo");
     expect(featureLabels).contains("bar");
+  });
+
+  it("adds top level feature labels to all scenarios", async () => {
+    const results = await runFeatures(dataSet.withFeatureWideLabels, {
+      labels: [
+        {
+          pattern: [/@feature:(.*)/],
+          name: "feature",
+        },
+        {
+          pattern: [/@severity:(.*)/],
+          name: "severity",
+        },
+        {
+          pattern: [/@foo:(.*)/],
+          name: "foo",
+        },
+      ],
+    });
+
+    results.tests[0].labels.should.include.something.that.deep.equals({
+      name: "feature",
+      value: "bar",
+    });
+    results.tests[0].labels.should.include.something.that.deep.equals({
+      name: "severity",
+      value: "foo",
+    });
+    results.tests[1].labels.should.include.something.that.deep.equals({
+      name: "feature",
+      value: "bar",
+    });
+    results.tests[1].labels.should.include.something.that.deep.equals({
+      name: "severity",
+      value: "foo",
+    });
   });
 });

@@ -1690,6 +1690,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/chai-like@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "@types/chai-like@npm:1.1.1"
+  dependencies:
+    "@types/chai": "*"
+  checksum: fb055e85f323cab9b7eccf1767b58ff30205d4307441ba4b74fc96af6622c4b89361c2f04edc80df24b41280474838fe808271cf456b594053db18a239ba9fdb
+  languageName: node
+  linkType: hard
+
+"@types/chai-things@npm:^0.0.35":
+  version: 0.0.35
+  resolution: "@types/chai-things@npm:0.0.35"
+  dependencies:
+    "@types/chai": "*"
+  checksum: e3b87dbb1dffb20f63b2f4563d2ee071292a075c9c01c7f555c9b042cc37f7ccf4a753d9113362d55f69a42fdb3a7db5dbc655ef3338a6950f50f12dfa128fc9
+  languageName: node
+  linkType: hard
+
 "@types/chai@npm:*, @types/chai@npm:^4.2.11, @types/chai@npm:^4.2.21":
   version: 4.2.21
   resolution: "@types/chai@npm:4.2.21"
@@ -2472,6 +2490,8 @@ __metadata:
     "@cucumber/gherkin-utils": ^8.0.0
     "@cucumber/messages": ^20.0.0
     "@types/chai": ^4.2.21
+    "@types/chai-like": ^1.1.1
+    "@types/chai-things": ^0.0.35
     "@types/glob": ^8.0.0
     "@types/mocha": ^9.0.0
     "@types/node": ^16.7.8
@@ -2480,6 +2500,7 @@ __metadata:
     allure-mocha: "workspace:packages/allure-mocha"
     chai: ^4.3.4
     chai-like: ^1.1.1
+    chai-things: ^0.2.0
     glob: ^8.0.0
     mocha: ^9.1.1
     nyc: ^15.1.0
@@ -3798,6 +3819,13 @@ __metadata:
   peerDependencies:
     chai: 2 - 4
   checksum: c0b1162568b7a0188a099309a501c37b883ca29ea85a44ec01a1f5225665d811e15ef986f6641b001356aa30d8d051604a483a2fc1a17c4f9cc9a55d5b01e1c9
+  languageName: node
+  linkType: hard
+
+"chai-things@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "chai-things@npm:0.2.0"
+  checksum: 7830b41cf91147748b940d7bfbbf131d063bb73021cc041ad4cde9ced7fcefac7ac641b5301c076f8e652abbf511a79f86fd8780dd4b9672a026c15a70f4d90f
   languageName: node
   linkType: hard
 
