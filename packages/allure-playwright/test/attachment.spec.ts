@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import fs from "fs";
 import { expect, test } from "./fixtures";
+import * as fs from "fs";
 
 test("should not throw on missing attachment", async ({ runInlineTest }) => {
   const results = await runInlineTest({
@@ -69,4 +69,31 @@ test("should add snapshots correctly and provide a screenshot diff", async ({
       },
     ]),
   );
+});
+
+test("should correctly and automatically detect file extension", async ({
+  runInlineTest,
+  attachment,
+}) => {
+  const result = await runInlineTest(
+    {
+      "a.test.ts": `
+      import test from '@playwright/test';
+      test('should add attachment', async ({}, testInfo) => {
+        testInfo.attachments.push({
+          name: 'sound',
+          path: 'a.test.ts-snapshots/file-sound.mp3',
+          contentType: 'audio/mpeg'
+        })
+      });
+      `,
+      "a.test.ts-snapshots/file-sound.mp3": fs.readFileSync(attachment("empty.mp3")),
+    },
+    (writer) => {
+      return writer.tests[0].attachments;
+    },
+  );
+
+  expect(result.length).toBe(1);
+  expect(result[0].source).toEqual(expect.stringMatching(/.mp3$/));
 });

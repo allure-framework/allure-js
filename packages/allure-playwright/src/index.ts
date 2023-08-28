@@ -185,8 +185,12 @@ class AllureReporter implements Reporter {
     if (error) {
       allureTest.statusDetails = getStatusDetails(error);
     }
+
     for (const attachment of result.attachments) {
       if (!attachment.body && !attachment.path) {
+        if (!process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST) {
+          console.log(`Attachment ${attachment.name} has no body or path`); // eslint-disable-line no-console
+        }
         continue;
       }
 
@@ -216,8 +220,12 @@ class AllureReporter implements Reporter {
         fileName = runtime.writeAttachment(attachment.body, attachment.contentType);
       } else {
         if (!fs.existsSync(attachment.path!)) {
+          if (!process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST) {
+            console.log(`File does not exist: ${attachment.path!}`); // eslint-disable-line no-console
+          }
           continue;
         }
+
         fileName = runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
       }
 
