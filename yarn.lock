@@ -2948,15 +2948,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"abort-controller@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "abort-controller@npm:3.0.0"
-  dependencies:
-    event-target-shim: ^5.0.0
-  checksum: 170bdba9b47b7e65906a28c8ce4f38a7a369d78e2271706f020849c1bfe0ee2067d4261df8bbb66eb84f79208fd5b710df759d64191db58cfba7ce8ef9c54b75
-  languageName: node
-  linkType: hard
-
 "acorn-globals@npm:^6.0.0":
   version: 6.0.0
   resolution: "acorn-globals@npm:6.0.0"
@@ -3203,7 +3194,7 @@ __metadata:
     mocha-multi-reporters: ^1.5.1
     nyc: ^15.0.1
     rimraf: ^3.0.2
-    selenium-standalone: ^8.3.0
+    selenium-standalone: ^9.0.6
     source-map-support: ^0.5.19
     tsx: ^3.12.7
     typescript: ^5.1.3
@@ -3750,6 +3741,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:^0.27.2":
+  version: 0.27.2
+  resolution: "axios@npm:0.27.2"
+  dependencies:
+    follow-redirects: ^1.14.9
+    form-data: ^4.0.0
+  checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
+  languageName: node
+  linkType: hard
+
 "axios@npm:^1.3.3":
   version: 1.3.3
   resolution: "axios@npm:1.3.3"
@@ -3761,7 +3762,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"b4a@npm:^1.6.1":
+"b4a@npm:^1.6.4":
   version: 1.6.4
   resolution: "b4a@npm:1.6.4"
   checksum: 81b086f9af1f8845fbef4476307236bda3d660c158c201db976f19cdce05f41f93110ab6b12fd7a2696602a490cc43d5410ee36a56d6eef93afb0d6ca69ac3b2
@@ -3952,17 +3953,6 @@ __metadata:
     inherits: ^2.0.4
     readable-stream: ^3.4.0
   checksum: 9e8521fa7e83aa9427c6f8ccdcba6e8167ef30cc9a22df26effcc5ab682ef91d2cbc23a239f945d099289e4bbcfae7a192e9c28c84c6202e710a0dfec3722662
-  languageName: node
-  linkType: hard
-
-"bl@npm:^6.0.0":
-  version: 6.0.1
-  resolution: "bl@npm:6.0.1"
-  dependencies:
-    buffer: ^6.0.3
-    inherits: ^2.0.4
-    readable-stream: ^4.2.0
-  checksum: c03e58cf607ed4a328de7f08d8720e1aed60e7410a1cfe7673eeae7385a891778a2f55f10f631ec072933631a8e4d235817824293e709938c4f955d53b3726c7
   languageName: node
   linkType: hard
 
@@ -4328,16 +4318,6 @@ __metadata:
     base64-js: ^1.3.1
     ieee754: ^1.1.13
   checksum: e2cf8429e1c4c7b8cbd30834ac09bd61da46ce35f5c22a78e6c2f04497d6d25541b16881e30a019c6fd3154150650ccee27a308eff3e26229d788bbdeb08ab84
-  languageName: node
-  linkType: hard
-
-"buffer@npm:^6.0.3":
-  version: 6.0.3
-  resolution: "buffer@npm:6.0.3"
-  dependencies:
-    base64-js: ^1.3.1
-    ieee754: ^1.2.1
-  checksum: 5ad23293d9a731e4318e420025800b42bf0d264004c0286c8cc010af7a270c7a0f6522e84f54b9ad65cbd6db20b8badbfd8d2ebf4f80fa03dab093b89e68c3f9
   languageName: node
   linkType: hard
 
@@ -5188,7 +5168,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:8.3.0":
+"commander@npm:8.3.0, commander@npm:^8.3.0":
   version: 8.3.0
   resolution: "commander@npm:8.3.0"
   checksum: 0f82321821fc27b83bd409510bb9deeebcfa799ff0bf5d102128b500b7af22872c0c92cb6a0ebc5a4cf19c6b550fba9cedfa7329d18c6442a625f851377bacf0
@@ -5213,13 +5193,6 @@ __metadata:
   version: 9.4.1
   resolution: "commander@npm:9.4.1"
   checksum: bfb18e325a5bdf772763c2213d5c7d9e77144d944124e988bcd8e5e65fb6d45d5d4e86b09155d0f2556c9a59c31e428720e57968bcd050b2306e910a0bf3cf13
-  languageName: node
-  linkType: hard
-
-"commander@npm:^10.0.0":
-  version: 10.0.1
-  resolution: "commander@npm:10.0.1"
-  checksum: 436901d64a818295803c1996cd856621a74f30b9f9e28a588e726b2b1670665bccd7c1a77007ebf328729f0139838a88a19265858a0fa7a8728c4656796db948
   languageName: node
   linkType: hard
 
@@ -6693,13 +6666,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"event-target-shim@npm:^5.0.0":
-  version: 5.0.1
-  resolution: "event-target-shim@npm:5.0.1"
-  checksum: 1ffe3bb22a6d51bdeb6bf6f7cf97d2ff4a74b017ad12284cc9e6a279e727dc30a5de6bb613e5596ff4dc3e517841339ad09a7eec44266eccb1aa201a30448166
-  languageName: node
-  linkType: hard
-
 "eventemitter3@npm:4.0.7":
   version: 4.0.7
   resolution: "eventemitter3@npm:4.0.7"
@@ -7021,6 +6987,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-fifo@npm:^1.2.0":
+  version: 1.3.2
+  resolution: "fast-fifo@npm:1.3.2"
+  checksum: 6bfcba3e4df5af7be3332703b69a7898a8ed7020837ec4395bb341bd96cc3a6d86c3f6071dd98da289618cf2234c70d84b2a6f09a33dd6f988b1ff60d8e54275
+  languageName: node
+  linkType: hard
+
 "fast-glob@npm:^3.1.1":
   version: 3.2.7
   resolution: "fast-glob@npm:3.2.7"
@@ -7255,7 +7228,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.15.0":
+"follow-redirects@npm:^1.14.9, follow-redirects@npm:^1.15.0":
   version: 1.15.2
   resolution: "follow-redirects@npm:1.15.2"
   peerDependenciesMeta:
@@ -8236,7 +8209,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ieee754@npm:^1.1.13, ieee754@npm:^1.1.4, ieee754@npm:^1.2.1":
+"ieee754@npm:^1.1.13, ieee754@npm:^1.1.4":
   version: 1.2.1
   resolution: "ieee754@npm:1.2.1"
   checksum: 5144c0c9815e54ada181d80a0b810221a253562422e7c6c3a60b1901154184f49326ec239d618c416c1c5945a2e197107aee8d986a3dd836b53dffefd99b5e7e
@@ -12953,7 +12926,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"process@npm:^0.11.10, process@npm:~0.11.0":
+"process@npm:~0.11.0":
   version: 0.11.10
   resolution: "process@npm:0.11.10"
   checksum: bfcce49814f7d172a6e6a14d5fa3ac92cc3d0c3b9feb1279774708a719e19acd673995226351a082a9ae99978254e320ccda4240ddc474ba31a76c79491ca7c3
@@ -13308,18 +13281,6 @@ __metadata:
     string_decoder: ^1.1.1
     util-deprecate: ^1.0.1
   checksum: d4ea81502d3799439bb955a3a5d1d808592cf3133350ed352aeaa499647858b27b1c4013984900238b0873ec8d0d8defce72469fb7a83e61d53f5ad61cb80dc8
-  languageName: node
-  linkType: hard
-
-"readable-stream@npm:^4.2.0":
-  version: 4.4.0
-  resolution: "readable-stream@npm:4.4.0"
-  dependencies:
-    abort-controller: ^3.0.0
-    buffer: ^6.0.3
-    events: ^3.3.0
-    process: ^0.11.10
-  checksum: cc1630c2de134aee92646e77b1770019633000c408fd48609babf2caa53f00ca794928023aa9ad3d435a1044cec87d2ce7e2b7389dd1caf948b65c175edb7f52
   languageName: node
   linkType: hard
 
@@ -13853,11 +13814,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"selenium-standalone@npm:^8.3.0":
-  version: 8.3.0
-  resolution: "selenium-standalone@npm:8.3.0"
+"selenium-standalone@npm:^9.0.6":
+  version: 9.0.6
+  resolution: "selenium-standalone@npm:9.0.6"
   dependencies:
-    commander: ^10.0.0
+    axios: ^0.27.2
+    commander: ^8.3.0
     cross-spawn: ^7.0.3
     debug: ^4.3.1
     fs-extra: ^10.0.0
@@ -13868,12 +13830,12 @@ __metadata:
     minimist: ^1.2.5
     mkdirp: ^2.1.3
     progress: 2.0.3
-    tar-stream: 3.0.0
+    tar-stream: 3.1.6
     which: ^2.0.2
     yauzl: ^2.10.0
   bin:
     selenium-standalone: bin/selenium-standalone
-  checksum: fa98e3eb4ce08d341b4f98f36bee3903186a9d786e17f7aa579c514bdb26fb8b5083ba5fb211b5f84a28586e7378108a7e0c94262e30ed436a94d4b40a6a5034
+  checksum: 8547c6a6568b61fb62bbf1de23265b1e8a93c34b71138b6235d4cecf47e23dea94fa2bb4bb0d1aad81c232777b3ffa57bbd214b45a4631998349b76eeeca4561
   languageName: node
   linkType: hard
 
@@ -14562,13 +14524,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"streamx@npm:^2.12.5":
-  version: 2.13.2
-  resolution: "streamx@npm:2.13.2"
+"streamx@npm:^2.15.0":
+  version: 2.15.1
+  resolution: "streamx@npm:2.15.1"
   dependencies:
     fast-fifo: ^1.1.0
     queue-tick: ^1.0.1
-  checksum: 752a4b356fc81a2bfab311081700475b3d18ab1a23a272c7e3ab477a7a18a9ec95af371cdeb2f978530dee4207b25dc10f5fd2c0b3db6775fd293b49e8ba7589
+  checksum: 6f2b4fed68caacd28efbd44d4264f5d3c2b81b0a5de14419333dac57f2075c49ae648df8d03db632a33587a6c8ab7cb9cdb4f9a2f8305be0c2cd79af35742b15
   languageName: node
   linkType: hard
 
@@ -14904,14 +14866,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar-stream@npm:3.0.0":
-  version: 3.0.0
-  resolution: "tar-stream@npm:3.0.0"
+"tar-stream@npm:3.1.6":
+  version: 3.1.6
+  resolution: "tar-stream@npm:3.1.6"
   dependencies:
-    b4a: ^1.6.1
-    bl: ^6.0.0
-    streamx: ^2.12.5
-  checksum: a5879541196573fa22143fd2f3ba68af0d248494f5f29abf089fb22f61609ba5e86fb0298cc534de67d11fe238b581afbef2326587268cc0ef3783176a94080d
+    b4a: ^1.6.4
+    fast-fifo: ^1.2.0
+    streamx: ^2.15.0
+  checksum: f3627f918581976e954ff03cb8d370551053796b82564f8c7ca8fac84c48e4d042026d0854fc222171a34ff9c682b72fae91be9c9b0a112d4c54f9e4f443e9c5
   languageName: node
   linkType: hard
 
