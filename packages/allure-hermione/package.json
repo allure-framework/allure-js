@@ -43,7 +43,7 @@
     "mocha-multi-reporters": "^1.5.1",
     "nyc": "^15.0.1",
     "rimraf": "^3.0.2",
-    "selenium-standalone": "^8.3.0",
+    "selenium-standalone": "^9.0.6",
     "source-map-support": "^0.5.19",
     "tsx": "^3.12.7",
     "typescript": "^5.1.3"
