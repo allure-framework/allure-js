@@ -9,13 +9,13 @@ import {
   ParameterOptions,
   StepBodyFunction,
 } from "allure-js-commons";
-import AllureJest from "./AllureJest";
+import type { AllureEnvironment } from "./AllureJest";
 
 export class AllureJestApi implements AllureRuntimeApiInterface {
-  env: AllureJest;
+  env: AllureEnvironment;
   context: Global.Global;
 
-  constructor(env: AllureJest, context: Global.Global) {
+  constructor(env: AllureEnvironment, context: Global.Global) {
     this.env = env;
     this.context = context;
   }

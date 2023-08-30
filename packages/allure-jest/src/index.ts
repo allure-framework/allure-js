@@ -1,6 +1,8 @@
 import { AllureJestApi } from "./AllureJestApi";
 
-export { default } from "./AllureJest";
+export type { AllureJestApi } from "./AllureJestApi";
+
+export { AllureNodeEnv as default } from "./AllureJest";
 
 declare global {
   const allure: AllureJestApi;

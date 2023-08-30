@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["./src/**/*"],
   "compilerOptions": {
+    "lib": ["ES2017", "DOM"],
     "types": ["node", "jest", "chai"],
     "skipLibCheck": true,
     "outDir": "./dist",
