@@ -29,6 +29,19 @@ const dataSet: { [name: string]: ITestFormatterOptions } = {
       },
     ],
   },
+  parameterized: {
+    supportCodeLibrary: buildSupportCodeLibrary(({ Given }) => {
+      Given("a step", function () {
+        this.parameter("Browser", "firefox");
+      });
+    }),
+    sources: [
+      {
+        data: ["Feature: a", "Scenario: b", "Given a step"].join("\n"),
+        uri: "a.feature",
+      },
+    ],
+  },
 };
 
 describe("CucumberJSAllureReporter > simple", () => {
@@ -76,7 +89,7 @@ describe("CucumberJSAllureReporter > simple", () => {
     });
 
     it("sets fullName, testCaseId and historyId", async () => {
-      const results = await runFeatures(dataSet.passed);
+      const results = await runFeatures(dataSet.parameterized);
 
       expect(results.tests).length(1);
       const [testResult] = results.tests;
@@ -84,9 +97,12 @@ describe("CucumberJSAllureReporter > simple", () => {
 
       const name = source!.data.match(/\nScenario: (.+)\n/)?.[1];
       const fullName = `${source!.uri}#${name!}`;
+      const { name: paramName, value: paramValue } = testResult.parameters[0];
+      const paramsHash = md5(`${paramName}:${paramValue}`);
+      const historyId = `${testResult.testCaseId}:${paramsHash}`;
       expect(testResult.fullName).eq(fullName);
       expect(testResult.testCaseId).eq(md5(fullName));
-      expect(testResult.historyId).eq(testResult.testCaseId);
+      expect(testResult.historyId).eq(historyId);
     });
   });
 

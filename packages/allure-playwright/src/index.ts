@@ -94,11 +94,12 @@ class AllureReporter implements Reporter {
   onTestBegin(test: TestCase): void {
     const suite = test.parent;
     const group = this.ensureAllureGroupCreated(suite);
-    const allureTest = group.startTest(test.title);
+    const titleMetadata = extractMetadataFromString(test.title);
+    const allureTest = group.startTest(titleMetadata.cleanTitle);
+
     allureTest.addLabel(LabelName.LANGUAGE, "JavaScript");
     allureTest.addLabel(LabelName.FRAMEWORK, "Playwright");
 
-    const titleMetadata = extractMetadataFromString(test.title);
     titleMetadata.labels.forEach((label) => allureTest.addLabel(label.name, label.value));
 
     const [, projectSuiteTitle, fileSuiteTitle, ...suiteTitles] = suite.titlePath();
@@ -114,11 +115,11 @@ class AllureReporter implements Reporter {
       allureTest.addLabel(LabelName.SUB_SUITE, suiteTitles.join(" > "));
     }
     const project = suite.project()!;
-    if (project.name) {
-      allureTest.addParameter("Project", project.name);
+    if (project?.name) {
+      allureTest.parameter("Project", project.name);
     }
     if (project.repeatEach > 1) {
-      allureTest.addParameter("Repetition", `${test.repeatEachIndex + 1}`);
+      allureTest.parameter("Repetition", `${test.repeatEachIndex + 1}`);
     }
 
     const relativeFile = path
@@ -128,10 +129,9 @@ class AllureReporter implements Reporter {
 
     const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
     const fullName = `${relativeFile}#${nameSuites}${test.title}`;
-    const testCaseIdSource = `${relativeFile}#${test.title}`;
 
     allureTest.fullName = fullName;
-    allureTest.testCaseId = md5(testCaseIdSource);
+    allureTest.testCaseId = md5(fullName);
     this.allureTestCache.set(test, allureTest);
   }
 
@@ -198,7 +198,7 @@ class AllureReporter implements Reporter {
         metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
         metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
         metadata.parameter?.forEach((val) =>
-          allureTest.addParameter(val.name, val.value, {
+          allureTest.parameter(val.name, val.value, {
             excluded: val.excluded,
             mode: val.mode,
           }),

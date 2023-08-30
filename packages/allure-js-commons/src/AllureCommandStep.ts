@@ -57,6 +57,8 @@ export interface AllureCommandStep<T = MetadataMessage> {
     content: Buffer | string,
     options: ContentType | string,
   ): void | Promise<void>;
+
+  description(content: string): void | Promise<void>;
 }
 
 export class AllureCommandStepExecutable implements AllureCommandStep {
@@ -130,14 +132,14 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     });
   }
 
-  parameter(name: string, value: string, options?: ParameterOptions): void {
+  parameter(name: string, value: any, options?: ParameterOptions): void {
     if (!this.metadata.parameter) {
       this.metadata.parameter = [];
     }
 
     this.metadata.parameter.push({
       name,
-      value,
+      value: JSON.stringify(value),
       excluded: options?.excluded || false,
       mode: options?.mode,
     });
@@ -198,6 +200,10 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     });
   }
 
+  description(content: string): void {
+    this.metadata.description = content;
+  }
+
   async step(name: string, body: StepBodyFunction): Promise<void> {
     if (!this.metadata.steps) {
       this.metadata.steps = [];
@@ -228,8 +234,11 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
 
     try {
       await body.call(this, this);
+
+      const { steps = [], description = "", descriptionHtml = "", ...metadata } = this.metadata;
+
       await messageEmitter({
-        ...this.metadata,
+        ...metadata,
         steps: [
           {
             name: this.name,
@@ -240,15 +249,16 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
             statusDetails: {},
             attachments: this.attachments,
             parameters: [],
-            description: this.metadata.description || "",
-            descriptionHtml: this.metadata.descriptionHtml || "",
-            steps: this.metadata.steps || [],
+            steps,
+            description,
           },
         ],
       });
     } catch (e: any) {
+      const { steps = [], description = "", descriptionHtml = "", ...metadata } = this.metadata;
+
       await messageEmitter({
-        ...this.metadata,
+        ...metadata,
         steps: [
           {
             name: this.name,
@@ -262,9 +272,8 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
             },
             attachments: this.attachments,
             parameters: [],
-            description: this.metadata.description || "",
-            descriptionHtml: this.metadata.descriptionHtml || "",
-            steps: this.metadata.steps || [],
+            steps,
+            description,
           },
         ],
       });

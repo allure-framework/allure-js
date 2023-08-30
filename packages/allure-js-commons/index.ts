@@ -52,8 +52,13 @@ export {
   allureReportFolder,
   stripAscii,
   allureIdRegexp,
+  allureIdRegexpGlobal,
+  allureLabelRegexpGlobal,
   allureLabelRegexp,
-  getSuitesLabels
+  getSuitesLabels,
+  serialize
 } from "./src/utils";
+
+export { AllureRuntimeApiInterface } from "./src/framework";
 
 export { parseTestPlan } from "./src/testplan";

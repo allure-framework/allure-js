@@ -23,6 +23,10 @@ test("should respect testplan", async ({ runInlineTest }) => {
         id: 4,
         selector: "aga.test.ts#a",
       },
+      {
+        id: 5,
+        selector: "aga.test.ts#selected name @allure.id=5",
+      },
     ],
   };
   const testPlanFilename = "example-testplan.json";
@@ -62,6 +66,9 @@ test("should respect testplan", async ({ runInlineTest }) => {
        test('aa', async ({}, testInfo) => {
         expect(1).toBe(1);
        });
+       test('selected name @allure.id=5', async ({}, testInfo) => {
+        expect(1).toBe(1);
+       });
      `,
       "notaga.test.ts": /* ts */ `
        import { test, expect } from '@playwright/test';
@@ -75,13 +82,13 @@ test("should respect testplan", async ({ runInlineTest }) => {
       ALLURE_TESTPLAN_PATH: testPlanFilename,
     },
   );
-
   expect(results.tests.map((value) => value.fullName)).toEqual(
     expect.arrayContaining([
       "b.test.ts#should execute",
       ".+.test.ts#+.",
       "nested/super strange nested/super strange name.test.ts#also nested should execute",
       "aga.test.ts#a",
+      "aga.test.ts#selected name @allure.id=5",
     ]),
   );
 });

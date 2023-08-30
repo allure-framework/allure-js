@@ -10,17 +10,17 @@ This project aggregates Allure Javascript commons and reporters.
 
 [Read more](/packages/allure-cucumberjs/README.md)
 
-### Jasmine
+### Jest (`jest@>=27.x.x`)
+
+![npm](https://img.shields.io/npm/dm/allure-jest.svg) ![npm](https://img.shields.io/npm/v/allure-jest.svg)
+
+[Read more](/packages/allure-jest/README.md)
+
+### Jasmine and Jest (`jest@<27.x.x`)
 
 ![npm](https://img.shields.io/npm/dm/allure-jasmine.svg) ![npm](https://img.shields.io/npm/v/allure-jasmine.svg)
 
 [Read more](/packages/allure-jasmine/README.md)
-
-### Jest (Jasmine)
-
-Currently, we don't have official solution for circus test runner. Consider using [this community plugin](https://github.com/ryparker/jest-circus-allure-environment) instead.
-
-[Read more](/packages/allure-jest/README.md)
 
 ### Mocha
 
@@ -51,7 +51,6 @@ Currently, we don't have official solution for circus test runner. Consider usin
 ![npm](https://img.shields.io/npm/dm/allure-hermione.svg) ![npm](https://img.shields.io/npm/v/allure-hermione.svg)
 
 [Read more](/packages/allure-hermione/README.md)
-
 
 ### CodeceptJS
 

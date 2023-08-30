@@ -271,7 +271,7 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.addParameter("parameterName", "parameterValue", { mode: "masked", excluded: true });
+  allure.parameter("parameterName", "parameterValue", { mode: "masked", excluded: true });
 });
 ```
 
@@ -350,3 +350,7 @@ test("tst with severity @allure.label.severity=critical", async ({}) => {});
 test("test with epic @allure.label.epic=login", async ({}) => {});
 test("test with strangeLabel @allure.label.strangeLabel=strangeValue", async ({}) => {});
 ```
+
+> **Warning**
+> Note that changing title can cause creating new testcases in history.
+> To fix this please add `@allure.id={yourTestCaseId}` to the test name if you passing allure metadata from test title
