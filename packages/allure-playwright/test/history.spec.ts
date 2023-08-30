@@ -12,14 +12,14 @@ test("historical data should be fine", async ({ runInlineTest }) => {
       });
       `,
   });
-  const testCaseIdSource = "a.test.ts#test";
+  const fullName = "a.test.ts#nested test";
 
   expect(results.tests).toEqual([
     expect.objectContaining({
       name: "test",
-      fullName: "a.test.ts#nested test",
-      testCaseId: md5(testCaseIdSource),
-      historyId: md5(testCaseIdSource) + ":" + md5("Project:project"),
+      fullName: fullName,
+      testCaseId: md5(fullName),
+      historyId: md5(fullName) + ":" + md5("Project:project"),
     }),
   ]);
 });
