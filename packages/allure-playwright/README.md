@@ -203,9 +203,11 @@ test("basic test", async ({ page }, testInfo) => {
 ### Screenshot usage
 
 ```ts
+import { test, expect } from "@playwright/test";
+import { allure } from "allure-playwright";
+
 test("basic test", async ({ page }, testInfo) => {
-  await testInfo.attach("basic-page-screen", {
-    body: await page.screenshot(),
+  await allure.attachment("basic-page-screen", await page.screenshot(), {
     contentType: "image/png",
   });
 });
@@ -215,12 +217,12 @@ test("basic test", async ({ page }, testInfo) => {
 
 ```js
 import { test, expect } from "@playwright/test";
+import { allure } from "allure-playwright";
 
 export const TODO_ITEMS = ["buy some cheese", "feed the cat", "book a doctors appointment"];
 
 test("basic test", async ({ page }, testInfo) => {
-  await testInfo.attach("TODO_ITEMS", {
-    body: JSON.stringify(TODO_ITEMS),
+  await allure.attachment("TODO_ITEMS", JSON.stringify(TODO_ITEMS), {
     contentType: "application/json",
   });
 });
@@ -230,15 +232,16 @@ test("basic test", async ({ page }, testInfo) => {
 
 ```ts
 import { test, expect } from "@playwright/test";
+import { allure } from "allure-playwright";
 
 export const TODO_ITEMS = ["buy some cheese", "feed the cat", "book a doctors appointment"];
 
 test("basic test", async ({ page }, testInfo) => {
-  await test.step("Visit todolist page", async () => {
+  await allure.step("Visit todolist page", async () => {
     await page.goto("https://demo.playwright.dev/todomvc");
   });
 
-  await test.step("Create 1st todo.", async () => {
+  await allure.step("Create 1st todo.", async () => {
     await page.locator(".new-todo").fill(TODO_ITEMS[0]);
     await page.locator(".new-todo").press("Enter");
   });
