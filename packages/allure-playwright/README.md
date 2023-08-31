@@ -151,7 +151,7 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.label("labelName", "labelValue");
+  await allure.label("labelName", "labelValue");
 });
 ```
 
@@ -162,8 +162,8 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.link("https://playwright.dev", "playwright-site"); // link with name
-  allure.issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
+  await allure.link("https://playwright.dev", "playwright-site"); // link with name
+  await allure.issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
 });
 ```
 
@@ -174,7 +174,7 @@ import { test, expect } from "@playwright/test";
 import { allure, LabelName } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.id("420");
+  await allure.id("420");
 });
 ```
 
@@ -185,7 +185,7 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.epic("Some Epic");
+  await allure.epic("Some Epic");
 });
 ```
 
@@ -196,7 +196,7 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.story("Some Story");
+  await allure.story("Some Story");
 });
 ```
 
@@ -260,7 +260,7 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.parameter("parameterName", "parameterValue");
+  await allure.parameter("parameterName", "parameterValue");
 });
 ```
 
@@ -274,7 +274,7 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.parameter("parameterName", "parameterValue", { mode: "masked", excluded: true });
+  await allure.parameter("parameterName", "parameterValue", { mode: "masked", excluded: true });
 });
 ```
 
