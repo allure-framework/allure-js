@@ -26,60 +26,60 @@ test("simple scenarios", async () => {
     },
   });
   expect(res.tests[0]!.labels).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "name": "language",
         "value": "javascript",
       },
-      Object {
+      {
         "name": "framework",
         "value": "codeceptjs",
       },
-      Object {
+      {
         "name": "suite",
         "value": "login-feature",
       },
-      Object {
+      {
         "name": "name",
         "value": "value",
       },
-      Object {
+      {
         "name": "tag",
         "value": "tag1",
       },
-      Object {
+      {
         "name": "tag",
         "value": "tag2",
       },
-      Object {
+      {
         "name": "tag",
         "value": "tag3",
       },
-      Object {
+      {
         "name": "owner",
         "value": "eroshenkoam",
       },
-      Object {
+      {
         "name": "layer",
         "value": "UI",
       },
-      Object {
+      {
         "name": "ALLURE_ID",
         "value": "228",
       },
-      Object {
+      {
         "name": "story",
         "value": "aga",
       },
-      Object {
+      {
         "name": "feature",
         "value": "aga",
       },
-      Object {
+      {
         "name": "epic",
         "value": "aga",
       },
-      Object {
+      {
         "name": "epic",
         "value": "severity",
       },
