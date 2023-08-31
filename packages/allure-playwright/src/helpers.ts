@@ -1,5 +1,7 @@
 import test from "@playwright/test";
 import {
+  AttachmentOptions,
+  ContentType,
   Label,
   LabelName,
   Link,
@@ -8,17 +10,42 @@ import {
   ParameterOptions,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
+import { v4 as randomUUID } from "uuid";
 
 export class allure {
-  static addMetadataAttachment(metadata: MetadataMessage) {
-    test.info().attach("allure-metadata.json", {
+  static async logStep(name: string): Promise<void> {
+    await this.step(name, async () => {});
+  }
+
+  static step<T>(name: string, body: () => Promise<T>): Promise<T> {
+    return test.step(name, body);
+  }
+
+  static async attachment(
+    name: string,
+    content: Buffer | string,
+    options: ContentType | string | Pick<AttachmentOptions, "contentType">,
+  ) {
+    const stepName = `allureattach_${randomUUID()}_${name}`;
+
+    const contentType = typeof options === "string" ? options : options.contentType;
+    await this.step(stepName, async () => {
+      await test.info().attach(stepName, {
+        body: content,
+        contentType,
+      });
+    });
+  }
+
+  static async addMetadataAttachment(metadata: MetadataMessage) {
+    await test.info().attach("allure-metadata.json", {
       contentType: ALLURE_METADATA_CONTENT_TYPE,
       body: Buffer.from(JSON.stringify(metadata), "utf8"),
     });
   }
 
-  static label(label: string, value: string) {
-    this.addMetadataAttachment({
+  static async label(label: string, value: string) {
+    await this.addMetadataAttachment({
       labels: [{ name: label, value }],
     });
   }
@@ -27,14 +54,14 @@ export class allure {
     values.forEach(({ name, value }) => this.label(name, value));
   }
 
-  static description(value: string) {
-    this.addMetadataAttachment({
+  static async description(value: string) {
+    await this.addMetadataAttachment({
       description: value,
     });
   }
 
-  static link(url: string, name?: string, type?: string) {
-    this.addMetadataAttachment({
+  static async link(url: string, name?: string, type?: string) {
+    await this.addMetadataAttachment({
       links: [{ url, name, type }],
     });
   }
@@ -43,64 +70,64 @@ export class allure {
     values.forEach(({ url, name, type }) => this.link(url, name, type));
   }
 
-  static id(id: string) {
-    this.label(LabelName.ALLURE_ID, id);
+  static async id(id: string) {
+    await this.label(LabelName.ALLURE_ID, id);
   }
 
-  static epic(epic: string) {
-    this.label(LabelName.EPIC, epic);
+  static async epic(epic: string) {
+    await this.label(LabelName.EPIC, epic);
   }
 
-  static feature(epic: string) {
-    this.label(LabelName.FEATURE, epic);
+  static async feature(epic: string) {
+    await this.label(LabelName.FEATURE, epic);
   }
 
-  static story(story: string): void {
-    this.label(LabelName.STORY, story);
+  static async story(story: string) {
+    await this.label(LabelName.STORY, story);
   }
 
-  static suite(name: string): void {
-    this.label(LabelName.SUITE, name);
+  static async suite(name: string) {
+    await this.label(LabelName.SUITE, name);
   }
 
-  static parentSuite(name: string) {
-    this.label(LabelName.PARENT_SUITE, name);
+  static async parentSuite(name: string) {
+    await this.label(LabelName.PARENT_SUITE, name);
   }
 
-  static layer(layerName: string) {
-    this.label(LabelName.LAYER, layerName);
+  static async layer(layerName: string) {
+    await this.label(LabelName.LAYER, layerName);
   }
 
-  static subSuite(name: string) {
-    this.label(LabelName.SUB_SUITE, name);
+  static async subSuite(name: string) {
+    await this.label(LabelName.SUB_SUITE, name);
   }
 
-  static owner(owner: string) {
-    this.label(LabelName.OWNER, owner);
+  static async owner(owner: string) {
+    await this.label(LabelName.OWNER, owner);
   }
 
-  static severity(severity: string) {
-    this.label(LabelName.SEVERITY, severity);
+  static async severity(severity: string) {
+    await this.label(LabelName.SEVERITY, severity);
   }
 
-  static tag(tag: string) {
-    this.label(LabelName.TAG, tag);
+  static async tag(tag: string) {
+    await this.label(LabelName.TAG, tag);
   }
 
-  static tags(...values: string[]) {
-    values.forEach((value) => this.tag(value));
+  static async tags(...values: string[]) {
+    await Promise.allSettled(values.map(async (value) => await this.tag(value)));
   }
 
-  static issue(name: string, url: string) {
-    this.link(url, name, LinkType.ISSUE);
+  static async issue(name: string, url: string) {
+    await this.link(url, name, LinkType.ISSUE);
   }
 
-  static tms(name: string, url: string) {
-    this.link(url, name, LinkType.TMS);
+  static async tms(name: string, url: string) {
+    await this.link(url, name, LinkType.TMS);
   }
 
-  static parameter(name: string, value: any, options?: ParameterOptions) {
-    this.addMetadataAttachment({
+  static async parameter(name: string, value: any, options?: ParameterOptions) {
+    await this.addMetadataAttachment({
       parameter: [
         {
           name,
@@ -114,8 +141,8 @@ export class allure {
   /**
    * @deprecated use parameter instead
    */
-  static addParameter(name: string, value: string, options?: ParameterOptions) {
-    this.parameter(name, value, options);
+  static async addParameter(name: string, value: string, options?: ParameterOptions) {
+    await this.parameter(name, value, options);
   }
 }
 
