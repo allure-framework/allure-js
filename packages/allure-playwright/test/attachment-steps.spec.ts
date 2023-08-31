@@ -24,7 +24,7 @@ test("should add attachments into steps", async ({ runInlineTest }) => {
       test('should add attachment', async ({}, testInfo) => {
         await test.step('outer step 1', async () => {
           await test.step('inner step 1.1', async () => {
-            allure.attachment('some', 'some-data', 'text/plain');
+            await allure.attachment('some', 'some-data', 'text/plain');
           });
           await test.step('inner step 1.2', async () => {
           });
@@ -33,7 +33,7 @@ test("should add attachments into steps", async ({ runInlineTest }) => {
           await test.step('inner step 2.1', async () => {
           });
           await test.step('inner step 2.2', async () => {
-            allure.attachment('some', 'other-data', 'text/plain');
+            await allure.attachment('some', 'other-data', 'text/plain');
           });
         });
       });
