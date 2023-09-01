@@ -11,8 +11,8 @@ import {
   Stage,
   Status,
 } from "allure-js-commons";
-import JsDomEnvironment from "jest-environment-jsdom";
-import NodeEnvironment from "jest-environment-node";
+// import JsDomEnvironment from "jest-environment-jsdom";
+// import NodeEnvironment from "jest-environment-node";
 import { AllureJestApi } from "./AllureJestApi";
 import { getTestId, getTestPath } from "./utils";
 
@@ -39,7 +39,6 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       });
       this.global.allure = new AllureJestApi(this, this.global);
       this.testRootDirPath = config.projectConfig.rootDir;
-      this.global.hello = "world";
     }
 
     setup() {
@@ -181,8 +180,8 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
   };
 };
 
-export const AllureJsDomEnv = createJestEnvironment(JsDomEnvironment);
+// export const AllureJsDomEnv = createJestEnvironment(JsDomEnvironment);
 
-export const AllureNodeEnv = createJestEnvironment(NodeEnvironment);
+// export const AllureNodeEnv = createJestEnvironment(NodeEnvironment);
 
 export default createJestEnvironment;

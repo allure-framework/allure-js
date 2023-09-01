@@ -20,7 +20,7 @@ If you're using `jest` for testing `node` add following line to your `jest.confi
 ```diff
 /** @type {import('jest').Config} */
 const config = {
-+  testEnvironment: "allure-jest",
++  testEnvironment: "allure-jest/node",
 }
 
 module.exports = config

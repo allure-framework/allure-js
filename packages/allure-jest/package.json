@@ -29,6 +29,9 @@
     ".": {
       "require": "./dist/index.js"
     },
+    "./node": {
+      "require": "./dist/node.js"
+    },
     "./jsdom": {
       "require": "./dist/jsdom.js"
     }
