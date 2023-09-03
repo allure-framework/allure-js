@@ -84,8 +84,8 @@ class AllureReporter implements Reporter {
 
   private processedDiffs: string[] = [];
 
-  constructor(options: AllureReporterOptions = { suiteTitle: true, detail: true }) {
-    this.options = options;
+  constructor(options: AllureReporterOptions) {
+    this.options = { suiteTitle: true, detail: true, ...options };
   }
 
   onBegin(config: FullConfig, suite: Suite): void {
