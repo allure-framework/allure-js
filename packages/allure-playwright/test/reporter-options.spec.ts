@@ -2,7 +2,7 @@ import { LabelName } from "allure-js-commons";
 import { expect, test } from "./fixtures";
 
 const testFile = {
-    "a.test.ts": /* ts */ `
+  "a.test.ts": /* ts */ `
     import test from '@playwright/test';
 
     test.beforeEach(() => {
@@ -18,65 +18,63 @@ const testFile = {
 };
 
 const suiteTitle = {
-    labels: expect.arrayContaining([
-    { name: LabelName.SUITE, value: "a.test.ts" },
-    ]),
+  labels: expect.arrayContaining([{ name: LabelName.SUITE, value: "a.test.ts" }]),
 };
 
 const detailSteps = {
-    steps: [
-        expect.objectContaining({ name: "Before Hooks", status: "passed" }),
-        expect.objectContaining({ name: "After Hooks", status: "passed" }),
-      ],
+  steps: [
+    expect.objectContaining({ name: "Before Hooks", status: "passed" }),
+    expect.objectContaining({ name: "After Hooks", status: "passed" }),
+  ],
 };
 
 test.describe("reporter options", () => {
-    test("default options should include detail and suiteTitle", async ({ runInlineTest }) => {
-        const results = await runInlineTest({
-            ...testFile,
-            reporterOptions: JSON.stringify({}),
-        });
-
-        expect(results.tests).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining(suiteTitle),
-                expect.objectContaining(detailSteps),
-        ]));
+  test("default options should include detail and suiteTitle", async ({ runInlineTest }) => {
+    const results = await runInlineTest({
+      ...testFile,
+      reporterOptions: JSON.stringify({}),
     });
 
-    test("detail and suiteTitle true", async ({ runInlineTest }) => {
-        const results = await runInlineTest({
-            ...testFile,
-            reporterOptions: JSON.stringify({
-            detail: true,
-            suiteTitle: true,
-          }),
-        });
+    expect(results.tests).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining(suiteTitle),
+        expect.objectContaining(detailSteps),
+      ]),
+    );
+  });
 
-        expect(results.tests).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining(suiteTitle),
-                expect.objectContaining(detailSteps),
-        ]));
+  test("detail and suiteTitle true", async ({ runInlineTest }) => {
+    const results = await runInlineTest({
+      ...testFile,
+      reporterOptions: JSON.stringify({
+        detail: true,
+        suiteTitle: true,
+      }),
     });
 
-    test("detail and suiteTitle false", async ({ runInlineTest }) => {
-        const results = await runInlineTest({
-            ...testFile,
-            reporterOptions: JSON.stringify({
-            detail: false,
-            suiteTitle: false,
-          }),
-        });
+    expect(results.tests).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining(suiteTitle),
+        expect.objectContaining(detailSteps),
+      ]),
+    );
+  });
 
-        expect(results.tests).not.toEqual(
-            expect.arrayContaining([
-                expect.objectContaining(suiteTitle),
-        ]));
-
-        expect(results.tests).not.toEqual(
-            expect.arrayContaining([
-                expect.objectContaining(detailSteps),
-        ]));
+  test("detail and suiteTitle false", async ({ runInlineTest }) => {
+    const results = await runInlineTest({
+      ...testFile,
+      reporterOptions: JSON.stringify({
+        detail: false,
+        suiteTitle: false,
+      }),
     });
+
+    expect(results.tests).not.toEqual(
+      expect.arrayContaining([expect.objectContaining(suiteTitle)]),
+    );
+
+    expect(results.tests).not.toEqual(
+      expect.arrayContaining([expect.objectContaining(detailSteps)]),
+    );
+  });
 });
