@@ -1,14 +1,20 @@
 {
-  "private": true,
   "name": "allure-jest",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "Allure Jest integration",
   "license": "Apache-2.0",
+  "packageManager": "yarn@3.4.1",
   "author": {
     "name": "Qameta Software",
     "email": "allure@qameta.io",
     "url": "https://qameta.io/"
   },
+  "keywords": [
+    "jest",
+    "circus",
+    "typescript",
+    "allure"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/allure-framework/allure-js.git",
@@ -16,24 +22,71 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "clean": "rimraf ./dist ./out",
-    "lint": "eslint ./test --ext .ts",
-    "lint:fix": "eslint ./test --ext .ts --fix",
     "compile": "tsc",
-    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "jasmineTest": "jest --config ./test/default-runner/jest.config.js",
-    "test": "rimraf ./out; yarn run jasmineTest"
+    "test": "nyc tsx --tsconfig ./tsconfig.json ./test/runner.ts",
+    "coverage": "codecov",
+    "lint": "eslint ./src --ext .ts",
+    "lint:fix": "eslint ./src --ext .ts --fix"
+  },
+  "nyc": {
+    "check-coverage": false,
+    "lines": 80,
+    "statements": 80,
+    "functions": 75,
+    "branches": 70,
+    "extension": [
+      ".ts"
+    ],
+    "exclude": [
+      "test/**/*.*",
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "all": true,
+    "report-dir": "./out/coverage",
+    "temp-dir": "./out/.nyc"
   },
   "devDependencies": {
+    "@jest/core": "^29.6.2",
+    "@jest/environment": "^29.6.2",
+    "@jest/types": "^29.6.1",
+    "@types/chai": "^4.3.5",
+    "@types/chai-like": "^1.1.1",
+    "@types/chai-things": "^0.0.35",
+    "@types/glob": "^8.1.0",
     "@types/jasmine": "^3.3.12",
-    "@types/jest": "^26.0.10",
-    "allure-jasmine": "workspace:*",
-    "jest": "^26.4.2",
+    "@types/jest": "^29.5.3",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^16.7.8",
+    "@types/sinon": "^10.0.16",
+    "@types/source-map-support": "^0",
+    "chai": "^4.3.7",
+    "chai-like": "^1.1.1",
+    "chai-things": "^0.2.0",
+    "codecov": "^3.8.3",
+    "glob": "^7.1.7",
+    "jest-cli": "^29.6.2",
+    "mocha": "^10.2.0",
+    "mocha-multi-reporters": "^1.5.1",
+    "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
-    "typescript": "^4.4.2"
+    "sinon": "^15.2.0",
+    "source-map-support": "^0.5.21",
+    "tsx": "^3.12.7",
+    "typescript": "^5.1.3"
   },
   "dependencies": {
-    "allure-js-commons": "workspace:*"
+    "@jest/expect": "^29.6.2",
+    "allure-js-commons": "workspace:*",
+    "jest-circus": "^29.6.2",
+    "jest-environment-node": "^29.6.2"
   }
 }

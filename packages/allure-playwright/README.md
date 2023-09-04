@@ -151,7 +151,7 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.label("labelName", "labelValue");
+  await allure.label("labelName", "labelValue");
 });
 ```
 
@@ -162,8 +162,8 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.link("https://playwright.dev", "playwright-site"); // link with name
-  allure.issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
+  await allure.link("https://playwright.dev", "playwright-site"); // link with name
+  await allure.issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
 });
 ```
 
@@ -174,7 +174,7 @@ import { test, expect } from "@playwright/test";
 import { allure, LabelName } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.id("420");
+  await allure.id("420");
 });
 ```
 
@@ -185,7 +185,7 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.epic("Some Epic");
+  await allure.epic("Some Epic");
 });
 ```
 
@@ -196,16 +196,18 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.story("Some Story");
+  await allure.story("Some Story");
 });
 ```
 
 ### Screenshot usage
 
 ```ts
+import { test, expect } from "@playwright/test";
+import { allure } from "allure-playwright";
+
 test("basic test", async ({ page }, testInfo) => {
-  await testInfo.attach("basic-page-screen", {
-    body: await page.screenshot(),
+  await allure.attachment("basic-page-screen", await page.screenshot(), {
     contentType: "image/png",
   });
 });
@@ -215,12 +217,12 @@ test("basic test", async ({ page }, testInfo) => {
 
 ```js
 import { test, expect } from "@playwright/test";
+import { allure } from "allure-playwright";
 
 export const TODO_ITEMS = ["buy some cheese", "feed the cat", "book a doctors appointment"];
 
 test("basic test", async ({ page }, testInfo) => {
-  await testInfo.attach("TODO_ITEMS", {
-    body: JSON.stringify(TODO_ITEMS),
+  await allure.attachment("TODO_ITEMS", JSON.stringify(TODO_ITEMS), {
     contentType: "application/json",
   });
 });
@@ -230,15 +232,16 @@ test("basic test", async ({ page }, testInfo) => {
 
 ```ts
 import { test, expect } from "@playwright/test";
+import { allure } from "allure-playwright";
 
 export const TODO_ITEMS = ["buy some cheese", "feed the cat", "book a doctors appointment"];
 
 test("basic test", async ({ page }, testInfo) => {
-  await test.step("Visit todolist page", async () => {
+  await allure.step("Visit todolist page", async () => {
     await page.goto("https://demo.playwright.dev/todomvc");
   });
 
-  await test.step("Create 1st todo.", async () => {
+  await allure.step("Create 1st todo.", async () => {
     await page.locator(".new-todo").fill(TODO_ITEMS[0]);
     await page.locator(".new-todo").press("Enter");
   });
@@ -257,7 +260,7 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.parameter("parameterName", "parameterValue");
+  await allure.parameter("parameterName", "parameterValue");
 });
 ```
 
@@ -271,7 +274,7 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 
 test("basic test", async ({ page }, testInfo) => {
-  allure.parameter("parameterName", "parameterValue", { mode: "masked", excluded: true });
+  await allure.parameter("parameterName", "parameterValue", { mode: "masked", excluded: true });
 });
 ```
 
@@ -350,3 +353,7 @@ test("tst with severity @allure.label.severity=critical", async ({}) => {});
 test("test with epic @allure.label.epic=login", async ({}) => {});
 test("test with strangeLabel @allure.label.strangeLabel=strangeValue", async ({}) => {});
 ```
+
+> **Warning**
+> Note that changing title can cause creating new testcases in history.
+> To fix this please add `@allure.id={yourTestCaseId}` to the test name if you passing allure metadata from test title

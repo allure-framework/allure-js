@@ -33,7 +33,7 @@ describe("CucumberJSAllureReporter > step arguments", () => {
 
     const [testResult] = results.tests;
 
-    expect(testResult.steps.map((step) => step.name)).to.have.all.members([
+    expect(testResult.steps.map((step) => step.name)).eql([
       "Given a is 5",
       "Given b is 10",
       "When I add a to b",
