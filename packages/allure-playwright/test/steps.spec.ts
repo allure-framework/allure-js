@@ -35,6 +35,7 @@ test("should report test steps", async ({ runInlineTest }) => {
         });
       });
     `,
+    reporterOptions: JSON.stringify({ detail: false }),
   });
   expect(results.tests).toEqual([
     expect.objectContaining({
@@ -82,6 +83,7 @@ test("should report failed test steps", async ({ runInlineTest }) => {
         });
       });
     `,
+    reporterOptions: JSON.stringify({ detail: false }),
   });
   expect(results.tests).toEqual([
     expect.objectContaining({

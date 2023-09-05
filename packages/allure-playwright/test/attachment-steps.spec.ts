@@ -38,6 +38,7 @@ test("should add attachments into steps", async ({ runInlineTest }) => {
         });
       });
     `,
+    reporterOptions: JSON.stringify({ detail: false }),
   });
   const testResult = results.tests[0];
 
