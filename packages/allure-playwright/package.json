@@ -1,6 +1,6 @@
 {
   "name": "allure-playwright",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "description": "Allure Playwright integration",
   "license": "Apache-2.0",
   "author": {
