@@ -60,7 +60,7 @@
     "@jest/types": "^29.6.1",
     "@types/chai": "^4.3.5",
     "@types/chai-like": "^1.1.1",
-    "@types/chai-things": "^0.0.35",
+    "@types/chai-things": "^0.0.36",
     "@types/glob": "^8.1.0",
     "@types/jasmine": "^3.3.12",
     "@types/jest": "^29.5.3",
