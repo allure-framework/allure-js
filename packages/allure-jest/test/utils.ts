@@ -32,9 +32,15 @@ export const runJestTests = async (fixtures: string[]): Promise<TestResultsByFul
     .withArgs(match("allure-results"))
     .returns(undefined);
 
-  await runCLI(argv, [cwd()]);
+  const res = await runCLI(argv, [cwd()]);
 
   restore();
+
+  if (!res.results.success) {
+    const firstFailedTest = res.results.testResults.find((test) => !!test.testExecError);
+
+    throw firstFailedTest!.testExecError;
+  }
 
   return writeFileSpy.args.reduce((acc, [, rawResult]) => {
     const result = JSON.parse(rawResult as string) as TestResult;

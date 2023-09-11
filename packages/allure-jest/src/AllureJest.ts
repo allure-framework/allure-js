@@ -11,8 +11,6 @@ import {
   Stage,
   Status,
 } from "allure-js-commons";
-// import JsDomEnvironment from "jest-environment-jsdom";
-// import NodeEnvironment from "jest-environment-node";
 import { AllureJestApi } from "./AllureJestApi";
 import { getTestId, getTestPath } from "./utils";
 
@@ -92,13 +90,13 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const { currentDescribeBlock } = state;
       const newTestSuitesPath = getTestPath(currentDescribeBlock);
       const newTestPath = newTestSuitesPath.concat(testName);
-      const newTestID = getTestId(newTestPath);
+      const newTestId = getTestId(newTestPath);
       const newTest = new AllureTest(this.runtime);
       const thread = ALLURE_THREAD_NAME || JEST_WORKER_ID || process.pid.toString();
       const host = ALLURE_HOST_NAME || hostname;
 
       newTest.name = testName;
-      newTest.fullName = newTestID;
+      newTest.fullName = newTestId;
 
       newTest.addLabel(LabelName.LANGUAGE, "javascript");
       newTest.addLabel(LabelName.FRAMEWORK, "jest");
@@ -115,27 +113,38 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         newTest.addLabel(label.name, label.value);
       });
 
-      this.runningTests.set(newTestID, newTest);
+      /**
+       * if user have some tests with the same name, reporter will throw an
+       * unexpected error due the test with the same name could be removed from
+       * the running tests, so better to throw an explicit error
+       */
+      if (this.runningTests.has(newTestId)) {
+        throw new Error(
+          `Test "${newTestId}" has been already added to run! To continue with reporting, please rename the test.`,
+        );
+      }
+
+      this.runningTests.set(newTestId, newTest);
     }
 
     private handleTestStart(test: Circus.TestEntry) {
-      const currentTestID = getTestId(getTestPath(test));
-      const currentTest = this.runningTests.get(currentTestID)!;
+      const currentTestId = getTestId(getTestPath(test));
+      const currentTest = this.runningTests.get(currentTestId)!;
 
       currentTest.stage = Stage.RUNNING;
     }
 
     private handleTestPass(test: Circus.TestEntry) {
-      const currentTestID = getTestId(getTestPath(test));
-      const currentTest = this.runningTests.get(currentTestID)!;
+      const currentTestId = getTestId(getTestPath(test));
+      const currentTest = this.runningTests.get(currentTestId)!;
 
       currentTest.stage = Stage.FINISHED;
       currentTest.status = Status.PASSED;
     }
 
     private handleTestFail(test: Circus.TestEntry) {
-      const currentTestID = getTestId(getTestPath(test));
-      const currentTest = this.runningTests.get(currentTestID)!;
+      const currentTestId = getTestId(getTestPath(test));
+      const currentTest = this.runningTests.get(currentTestId)!;
       // jest collects all errors, but we need to report the first one because it's a reason why the test has been failed
       const [error] = test.errors;
       const hasMultipleErrors = Array.isArray(error);
@@ -149,39 +158,35 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     }
 
     private handleTestSkip(test: Circus.TestEntry) {
-      const currentTestID = getTestId(getTestPath(test));
-      const currentTest = this.runningTests.get(currentTestID)!;
+      const currentTestId = getTestId(getTestPath(test));
+      const currentTest = this.runningTests.get(currentTestId)!;
 
       currentTest.stage = Stage.PENDING;
       currentTest.status = Status.SKIPPED;
 
       currentTest.endTest();
-      this.runningTests.delete(currentTestID);
+      this.runningTests.delete(currentTestId);
     }
 
     private handleTestDone(test: Circus.TestEntry) {
-      const currentTestID = getTestId(getTestPath(test));
-      const currentTest = this.runningTests.get(currentTestID)!;
+      const currentTestId = getTestId(getTestPath(test));
+      const currentTest = this.runningTests.get(currentTestId)!;
 
       currentTest.endTest();
-      this.runningTests.delete(currentTestID);
+      this.runningTests.delete(currentTestId);
     }
 
     private handleTestTodo(test: Circus.TestEntry) {
-      const currentTestID = getTestId(getTestPath(test));
-      const currentTest = this.runningTests.get(currentTestID)!;
+      const currentTestId = getTestId(getTestPath(test));
+      const currentTest = this.runningTests.get(currentTestId)!;
 
       currentTest.stage = Stage.PENDING;
       currentTest.status = Status.SKIPPED;
 
       currentTest.endTest();
-      this.runningTests.delete(currentTestID);
+      this.runningTests.delete(currentTestId);
     }
   };
 };
-
-// export const AllureJsDomEnv = createJestEnvironment(JsDomEnvironment);
-
-// export const AllureNodeEnv = createJestEnvironment(NodeEnvironment);
 
 export default createJestEnvironment;
