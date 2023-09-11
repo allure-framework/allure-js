@@ -25,6 +25,17 @@
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.js"
+    },
+    "./node": {
+      "require": "./dist/node.js"
+    },
+    "./jsdom": {
+      "require": "./dist/jsdom.js"
+    }
+  },
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
@@ -56,7 +67,7 @@
   },
   "devDependencies": {
     "@jest/core": "^29.6.2",
-    "@jest/environment": "^29.6.2",
+    "@jest/environment": "^29.6.4",
     "@jest/types": "^29.6.1",
     "@types/chai": "^4.3.5",
     "@types/chai-like": "^1.1.1",
@@ -87,6 +98,7 @@
     "@jest/expect": "^29.6.2",
     "allure-js-commons": "workspace:*",
     "jest-circus": "^29.6.2",
-    "jest-environment-node": "^29.6.2"
+    "jest-environment-jsdom": "^29.6.4",
+    "jest-environment-node": "^29.6.4"
   }
 }

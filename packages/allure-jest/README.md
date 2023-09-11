@@ -15,12 +15,23 @@ Use your favorite node package manager to install required packages:
 npm add -D allure-jest allure-js-commons
 ```
 
-Then, add following line to your `jest.config.js` file:
+If you're using `jest` for testing `node` add following line to your `jest.config.js` file:
 
 ```diff
 /** @type {import('jest').Config} */
 const config = {
-+  testEnvironment: "allure-jest",
++  testEnvironment: "allure-jest/node",
+}
+
+module.exports = config
+```
+
+If you're using `jest` for testing browser code (`jsdom`) add next to your `jest.config.js` file:
+
+```diff
+/** @type {import('jest').Config} */
+const config = {
++  testEnvironment: "allure-jest/jsdom",
 }
 
 module.exports = config

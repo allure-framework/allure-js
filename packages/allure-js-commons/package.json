@@ -39,7 +39,6 @@
     "@types/glob": "^8.0.0",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.7.10",
-    "@types/uuid": "^8.3.0",
     "allure-mocha": "workspace:packages/allure-mocha",
     "chai": "^4.3.4",
     "expect": "^29.5.0",
@@ -52,8 +51,7 @@
     "typescript": "^4.4.2"
   },
   "dependencies": {
-    "properties": "^1.2.1",
-    "uuid": "^8.3.0"
+    "properties": "^1.2.1"
   },
   "files": [
     "dist"

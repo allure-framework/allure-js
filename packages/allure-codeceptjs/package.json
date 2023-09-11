@@ -23,8 +23,9 @@
   },
   "devDependencies": {
     "codeceptjs": "^3.4.1",
-    "jest": "^26.4.2",
-    "ts-jest": "^26.4.2",
+    "jest": "^29.6.4",
+    "jest-environment-jsdom": "^29.6.4",
+    "ts-jest": "^29.1.1",
     "typescript": "^4.4.2"
   },
   "dependencies": {

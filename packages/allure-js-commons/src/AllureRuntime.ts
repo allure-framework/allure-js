@@ -1,5 +1,5 @@
+import { randomUUID } from "crypto";
 import { PathLike } from "fs";
-import { v4 as randomUUID } from "uuid";
 import { AllureConfig } from "./AllureConfig";
 import { AllureGroup } from "./AllureGroup";
 import { AttachmentOptions, Category, ContentType, TestResult, TestResultContainer } from "./model";
