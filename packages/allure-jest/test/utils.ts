@@ -33,13 +33,12 @@ export const runJestTests = async (fixtures: string[]): Promise<TestResultsByFul
     .returns(undefined);
 
   const res = await runCLI(argv, [cwd()]);
+  const failedTestInRuntime = res.results.testResults.find((test) => !!test.testExecError);
 
   restore();
 
-  if (!res.results.success) {
-    const firstFailedTest = res.results.testResults.find((test) => !!test.testExecError);
-
-    throw firstFailedTest!.testExecError;
+  if (failedTestInRuntime) {
+    throw failedTestInRuntime.testExecError;
   }
 
   return writeFileSpy.args.reduce((acc, [, rawResult]) => {
