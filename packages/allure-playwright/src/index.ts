@@ -150,6 +150,10 @@ class AllureReporter implements Reporter {
     if (!this.options.detail && step.category !== "test.step") {
       return;
     }
+    // ignore attach steps since attachments are already in the report
+    if (step.category === "attach") {
+      return;
+    }
     const allureStep = this.ensureAllureStepCreated(step, allureTest);
     const name = allureStep.wrappedItem?.name;
     if (name?.match(stepAttachRegexp)) {
