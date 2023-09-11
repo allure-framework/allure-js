@@ -1,9 +1,9 @@
 {
   "name": "allure-jest",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "description": "Allure Jest integration",
   "license": "Apache-2.0",
-  "packageManager": "yarn@3.4.1",
+  "packageManager": "yarn@3.6.3",
   "author": {
     "name": "Qameta Software",
     "email": "allure@qameta.io",

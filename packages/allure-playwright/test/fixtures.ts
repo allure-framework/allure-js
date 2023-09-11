@@ -20,6 +20,7 @@ import path from "path";
 import { test as base, TestInfo } from "@playwright/test";
 import type { AllureResults } from "allure-js-commons";
 import { parse } from "properties";
+import { allure } from "../src";
 export { expect } from "@playwright/test";
 
 type RunResult = any;
@@ -50,11 +51,7 @@ const writeFiles = async (testInfo: TestInfo, files: Files) => {
   await Promise.all(
     Object.keys(files).map(async (name) => {
       const fullName = path.join(baseDir, name);
-      testInfo.attachments.push({
-        name: name,
-        body: Buffer.from(files[name]),
-        contentType: "text/plain",
-      });
+      await allure.attachment(name, Buffer.from(files[name]), "text/plain");
       await fs.promises.mkdir(path.dirname(fullName), { recursive: true });
       await fs.promises.writeFile(fullName, files[name]);
     }),
@@ -89,7 +86,7 @@ const runPlaywrightTest = async (
   }
 
   const modulePath = require.resolve("@playwright/test/lib/cli");
-  await base.step(`${modulePath} ${args.join(" ")}`, () => {});
+  await allure.logStep(`${modulePath} ${args.join(" ")}`);
 
   const testProcess = fork(modulePath, args, {
     env: {
@@ -149,11 +146,11 @@ export const test = base.extend<Fixtures>({
       const baseDir = await base.step("write files", async () => await writeFiles(testInfo, files));
       runResult = await base.step("run tests", async () => {
         const allureResults = await runPlaywrightTest(baseDir, params, env);
-        testInfo.attachments.push({
-          name: "allure-results",
-          body: Buffer.from(JSON.stringify(allureResults, null, 2)),
-          contentType: "application/json",
-        });
+        await allure.attachment(
+          "allure-results",
+          Buffer.from(JSON.stringify(allureResults, null, 2)),
+          "application/json",
+        );
         return allureResults;
       });
       return runResult;

@@ -33,6 +33,7 @@ import {
   AllureStep,
   AllureTest,
   Category,
+  ExecutableItem,
   ExecutableItemWrapper,
   ImageDiffAttachment,
   LabelName,
@@ -49,6 +50,11 @@ import {
   ALLURE_METADATA_CONTENT_TYPE,
 } from "allure-js-commons/internal";
 import { extractMetadataFromString } from "./utils";
+
+const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
+const stepAttachRegexp = /^allureattach_(\w{8}-\w{4}-\w{4}-\w{4}-\w{12})_/i;
+// 12 (allureattach) + 1 (_) + 36 (uuid v4) + 1 (_)
+const stepAttachPrefixLength = 50;
 
 export type AllureReporterOptions = {
   detail?: boolean;
@@ -72,13 +78,14 @@ class AllureReporter implements Reporter {
   private allureGroupCache = new Map<Suite, AllureGroup>();
   private allureTestCache = new Map<TestCase, AllureTest>();
   private allureStepCache = new Map<TestStep, AllureStep>();
+  private allureAttachmentSteps = new Map<string, AllureStep>();
   private hostname = process.env.ALLURE_HOST_NAME || os.hostname();
   private globalStartTime = new Date();
 
   private processedDiffs: string[] = [];
 
-  constructor(options: AllureReporterOptions = { suiteTitle: true, detail: true }) {
-    this.options = options;
+  constructor(options: AllureReporterOptions) {
+    this.options = { suiteTitle: true, detail: true, ...options };
   }
 
   onBegin(config: FullConfig, suite: Suite): void {
@@ -143,7 +150,12 @@ class AllureReporter implements Reporter {
     if (!this.options.detail && step.category !== "test.step") {
       return;
     }
-    this.ensureAllureStepCreated(step, allureTest);
+    const allureStep = this.ensureAllureStepCreated(step, allureTest);
+    const name = allureStep.wrappedItem?.name;
+    if (name?.match(stepAttachRegexp)) {
+      allureStep.name = name.substring(stepAttachPrefixLength);
+      this.allureAttachmentSteps.set(name, allureStep);
+    }
   }
 
   onStepEnd(_test: TestCase, _result: TestResult, step: TestStep): void {
@@ -185,72 +197,7 @@ class AllureReporter implements Reporter {
       allureTest.statusDetails = getStatusDetails(error);
     }
     for (const attachment of result.attachments) {
-      if (!attachment.body && !attachment.path) {
-        continue;
-      }
-
-      if (attachment.contentType === ALLURE_METADATA_CONTENT_TYPE) {
-        if (!attachment.body) {
-          continue;
-        }
-
-        const metadata: MetadataMessage = JSON.parse(attachment.body.toString());
-        metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
-        metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
-        metadata.parameter?.forEach((val) =>
-          allureTest.parameter(val.name, val.value, {
-            excluded: val.excluded,
-            mode: val.mode,
-          }),
-        );
-
-        if (metadata.description) {
-          allureTest.description = metadata.description;
-        }
-        continue;
-      }
-
-      let fileName;
-      if (attachment.body) {
-        fileName = runtime.writeAttachment(attachment.body, attachment.contentType);
-      } else {
-        if (!fs.existsSync(attachment.path!)) {
-          continue;
-        }
-        fileName = runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
-      }
-
-      const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
-
-      if (attachment.name.match(diffEndRegexp)) {
-        const pathWithoutEnd = attachment.path!.replace(diffEndRegexp, "");
-
-        if (this.processedDiffs.includes(pathWithoutEnd)) {
-          continue;
-        }
-
-        const actualBase64 = await readImageAsBase64(`${pathWithoutEnd}-actual.png`),
-          expectedBase64 = await readImageAsBase64(`${pathWithoutEnd}-expected.png`),
-          diffBase64 = await readImageAsBase64(`${pathWithoutEnd}-diff.png`);
-
-        const diffName = attachment.name.replace(diffEndRegexp, "");
-
-        const res = this.allureRuntime?.writeAttachment(
-          JSON.stringify({
-            expected: expectedBase64,
-            actual: actualBase64,
-            diff: diffBase64,
-            name: diffName,
-          } as ImageDiffAttachment),
-          { contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE, fileExtension: "imagediff" },
-        );
-
-        allureTest.addAttachment(diffName, { contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE }, res!);
-
-        this.processedDiffs.push(pathWithoutEnd);
-      } else {
-        allureTest.addAttachment(attachment.name, attachment.contentType, fileName);
-      }
+      await this.processAttachment(attachment, allureTest, runtime);
     }
 
     if (result.stdout.length > 0) {
@@ -352,6 +299,101 @@ class AllureReporter implements Reporter {
       this.allureStepCache.set(step, allureStep);
     }
     return allureStep;
+  }
+
+  private findStep(stepName: string): AllureStep | undefined {
+    return this.allureAttachmentSteps.get(stepName);
+  }
+
+  private async processAttachment(
+    attachment: {
+      name: string;
+      contentType: string;
+      path?: string;
+      body?: Buffer;
+    },
+    allureTest: AllureTest,
+    runtime: AllureRuntime,
+  ) {
+    if (!attachment.body && !attachment.path) {
+      return;
+    }
+
+    if (attachment.contentType === ALLURE_METADATA_CONTENT_TYPE) {
+      if (!attachment.body) {
+        return;
+      }
+
+      const metadata: MetadataMessage = JSON.parse(attachment.body.toString());
+      metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
+      metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
+      metadata.parameter?.forEach((val) =>
+        allureTest.parameter(val.name, val.value, {
+          excluded: val.excluded,
+          mode: val.mode,
+        }),
+      );
+
+      if (metadata.description) {
+        allureTest.description = metadata.description;
+      }
+      return;
+    }
+
+    let fileName;
+    if (attachment.body) {
+      fileName = runtime.writeAttachment(attachment.body, attachment.contentType);
+    } else {
+      if (!fs.existsSync(attachment.path!)) {
+        return;
+      }
+      fileName = runtime.writeAttachmentFromPath(attachment.path!, attachment.contentType);
+    }
+
+    let name;
+    let attachmentContext: ExecutableItemWrapper;
+    if (attachment.name.match(stepAttachRegexp)) {
+      name = attachment.name.substring(stepAttachPrefixLength);
+      const maybeStep = this.findStep(attachment.name);
+      attachmentContext = maybeStep || allureTest;
+    } else {
+      name = attachment.name;
+      attachmentContext = allureTest;
+    }
+
+    if (name.match(diffEndRegexp)) {
+      const pathWithoutEnd = attachment.path!.replace(diffEndRegexp, "");
+
+      if (this.processedDiffs.includes(pathWithoutEnd)) {
+        return;
+      }
+
+      const actualBase64 = await readImageAsBase64(`${pathWithoutEnd}-actual.png`),
+        expectedBase64 = await readImageAsBase64(`${pathWithoutEnd}-expected.png`),
+        diffBase64 = await readImageAsBase64(`${pathWithoutEnd}-diff.png`);
+
+      const diffName = name.replace(diffEndRegexp, "");
+
+      const res = this.allureRuntime?.writeAttachment(
+        JSON.stringify({
+          expected: expectedBase64,
+          actual: actualBase64,
+          diff: diffBase64,
+          name: diffName,
+        } as ImageDiffAttachment),
+        { contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE, fileExtension: "imagediff" },
+      );
+
+      attachmentContext.addAttachment(
+        diffName,
+        { contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE },
+        res!,
+      );
+
+      this.processedDiffs.push(pathWithoutEnd);
+    } else {
+      attachmentContext.addAttachment(name, attachment.contentType, fileName);
+    }
   }
 }
 
