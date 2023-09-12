@@ -163,6 +163,7 @@ class AllureReporter {
     }
 
     item.forEachParent((parent) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       chain.unshift(parent.name || parent.id);
     });
 

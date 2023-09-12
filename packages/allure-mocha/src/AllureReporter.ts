@@ -1,4 +1,3 @@
-import { createHash } from "crypto";
 import { basename, normalize } from "path";
 import {
   AllureGroup,
@@ -104,10 +103,10 @@ export class AllureReporter {
     this.currentTest.stage = Stage.RUNNING;
 
     if (testPath) {
-      const normalizedTestPath = normalize(testPath || "")
+      const normalizedTestPath: string[] = normalize(testPath || "")
         .replace(/^\//, "")
         .split("/")
-        .filter((item) => item !== basename(testPath));
+        .filter((item: string) => item !== basename(testPath));
 
       this.currentTest.addLabel(LabelName.PACKAGE, normalizedTestPath.join("."));
     }

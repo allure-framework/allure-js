@@ -33,16 +33,25 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
 
       - name: yarn install
         run: |
-          yarn install
+          yarn install --immutable --immutable-cache --check-cache
 
       - run: yarn workspace allure-playwright playwright install chromium --with-deps
 
       - name: yarn build
         run: |
           yarn run build
+
+      - name: yarn lint
+        run: |
+          yarn run lint
+
+      - name: yarn prettier:check
+        run: |
+          yarn run prettier:check
 
       - name: yarn test
         run: |

@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "exclude": ["test/**", "runtime.d.ts"],
   "compilerOptions": {
-    "types": [],
+    "types": ["node"],
     "rootDir": "./src",
     "outDir": "./dist"
   },

@@ -34,7 +34,6 @@ export class MochaAllureGateway {
     this.allureGetter = allureGetter;
 
     METHODS_TO_WRAP.forEach((method) => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       this[method] = this.wrapMethod(method);
     });
@@ -52,8 +51,8 @@ export class MochaAllureGateway {
         return;
       }
 
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       allure[methodName](...args);
     };
   }

@@ -19,6 +19,7 @@ export const processDescriptor = <T>(
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   for (const prop of Object.keys(original)) {
     if (Object.prototype.hasOwnProperty.call(original, prop) && propsFilter(prop)) {
       descriptor.value[prop] = original[prop];

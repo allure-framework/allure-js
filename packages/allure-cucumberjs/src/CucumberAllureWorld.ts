@@ -23,6 +23,7 @@ export class CucumberAllureWorld extends World implements AllureWorld {
       ],
     };
 
+    // eslint-disable-next-line @typescript-eslint/await-thenable
     await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
   }
 
@@ -37,6 +38,7 @@ export class CucumberAllureWorld extends World implements AllureWorld {
       ],
     };
 
+    // eslint-disable-next-line @typescript-eslint/await-thenable
     await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
   }
 
@@ -52,6 +54,7 @@ export class CucumberAllureWorld extends World implements AllureWorld {
       ],
     };
 
+    // eslint-disable-next-line @typescript-eslint/await-thenable
     await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
   }
 
@@ -60,6 +63,7 @@ export class CucumberAllureWorld extends World implements AllureWorld {
       description: markdown,
     };
 
+    // eslint-disable-next-line @typescript-eslint/await-thenable
     await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
   }
 
@@ -68,6 +72,7 @@ export class CucumberAllureWorld extends World implements AllureWorld {
       descriptionHtml: html,
     };
 
+    // eslint-disable-next-line @typescript-eslint/await-thenable
     await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
   }
 
@@ -75,6 +80,7 @@ export class CucumberAllureWorld extends World implements AllureWorld {
     const testStep = new AllureCommandStepExecutable(name);
 
     await testStep.run(body, async (msgBody) => {
+      // eslint-disable-next-line @typescript-eslint/await-thenable
       await this.attach(JSON.stringify(msgBody), ALLURE_METADATA_CONTENT_TYPE);
     });
   }

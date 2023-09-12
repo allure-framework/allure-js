@@ -116,6 +116,7 @@ class AllureReporter {
     let allureTest = this.allureTestCache.get(test);
 
     if (!allureTest) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       allureTest = this.allureTestCache.get((test as any).ctx?.currentTest);
     }
 

@@ -14,7 +14,10 @@ import { AllureReporter } from "./AllureReporter";
 import { StepWrapper } from "./StepWrapper";
 
 export class MochaAllure extends Allure {
-  constructor(private readonly reporter: AllureReporter, runtime: AllureRuntime) {
+  constructor(
+    private readonly reporter: AllureReporter,
+    runtime: AllureRuntime,
+  ) {
     super(runtime);
   }
 

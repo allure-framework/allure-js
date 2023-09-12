@@ -9,7 +9,10 @@ export class AllureTest extends ExecutableItemWrapper {
   private readonly testResult: TestResult;
   private historyIdSetManually = false;
 
-  constructor(private readonly runtime: AllureRuntime, start: number = Date.now()) {
+  constructor(
+    private readonly runtime: AllureRuntime,
+    start: number = Date.now(),
+  ) {
     super(testResult());
     this.testResult = this.wrappedItem as TestResult;
     this.testResult.start = start;

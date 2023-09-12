@@ -24,7 +24,7 @@ export class AllureJestApi implements AllureRuntimeApiInterface {
     const { currentTestName, currentConcurrentTestName } = (
       this.context.expect as JestExpect
     ).getState();
-    const testName = currentTestName || currentConcurrentTestName?.getStore?.();
+    const testName = currentTestName || currentConcurrentTestName?.();
 
     return new Promise((resolve) => {
       this.env.handleAllureMetadata({
