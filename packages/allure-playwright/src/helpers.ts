@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import test from "@playwright/test";
 import {
   AttachmentOptions,
@@ -10,7 +11,6 @@ import {
   ParameterOptions,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
-import { v4 as randomUUID } from "uuid";
 
 export class allure {
   static async logStep(name: string): Promise<void> {
