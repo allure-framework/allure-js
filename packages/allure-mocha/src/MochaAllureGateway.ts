@@ -54,7 +54,7 @@ export class MochaAllureGateway {
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      allure[methodName](...args);
+      return allure[methodName](...args);
     };
   }
 }
