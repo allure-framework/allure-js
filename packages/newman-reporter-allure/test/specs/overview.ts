@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/quotes */
 import { LabelName, md5, Status } from "allure-js-commons";
-import { runNewman } from "./helpers/runNewman";
-import { server } from "./mocks/server";
+import { runNewman } from "../helpers/runNewman";
+import { server } from "../mocks/server";
+import { before, afterEach, after, it } from "mocha";
+import { expect } from "chai";
 
-beforeAll(() => server.listen());
+before(() => server.listen());
 afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+after(() => server.close());
 
-test("complex test overview", async () => {
+it("complex test overview", async () => {
   const [result] = await runNewman({
     info: {
       name: "fff",
@@ -72,28 +74,26 @@ test("complex test overview", async () => {
   const name = "testReq";
   const fullName = `ParentName/SuiteName/SubSub1/SubSub1#${name}`;
 
-  expect(result.status).toBe(Status.PASSED);
-  expect(result.name).toBe(name);
-  expect(result.parameters).toEqual([
+  expect(result.status).eq(Status.PASSED);
+  expect(result.name).eq(name);
+  expect(result.parameters).eq([
     { name: "Request", value: "GET - http://example.com/test?dfgdfg" },
     { name: "Response Code", value: "200", excluded: true },
   ]);
 
-  expect(result.steps).toEqual([
-    {
-      status: "passed" as any,
-      stage: "finished" as any,
-      statusDetails: {},
-      steps: [],
-      attachments: [],
-      parameters: [],
-      name: "Status code is 200",
-      start: expect.any(Number),
-      stop: expect.any(Number),
-    },
-  ]);
-  expect(result.descriptionHtml).toBe("testDescription<br><br>multiline<br><br>somethingBold");
-  expect(result.labels).toEqual([
+  expect(result.steps).to.have.length(1);
+
+  expect(result.steps[0]).include({
+    status: "passed" as any,
+    stage: "finished" as any,
+    statusDetails: {},
+    steps: [],
+    attachments: [],
+    parameters: [],
+    name: "Status code is 200",
+  });
+  expect(result.descriptionHtml).eq("testDescription<br><br>multiline<br><br>somethingBold");
+  expect(result.labels).eq([
     { name: "parentSuite", value: "ParentName" },
     { name: "suite", value: "SuiteName" },
     { name: "subSuite", value: "SubSub1 > SubSub1" },
@@ -101,6 +101,6 @@ test("complex test overview", async () => {
     { name: "custom", value: "test" },
   ]);
 
-  expect(result.fullName).toBe(fullName);
-  expect(result.testCaseId).toBe(md5(fullName));
+  expect(result.fullName).eq(fullName);
+  expect(result.testCaseId).eq(md5(fullName));
 });

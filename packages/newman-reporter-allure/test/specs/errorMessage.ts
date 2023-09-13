@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/quotes */
-import { md5, Status } from "allure-js-commons";
-import { runNewman } from "./helpers/runNewman";
-import { server } from "./mocks/server";
+import { runNewman } from "../helpers/runNewman";
+import { server } from "../mocks/server";
+import { before, afterEach, after, it } from "mocha";
+import { expect } from "chai";
 
-beforeAll(() => server.listen());
+before(() => server.listen());
 afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+after(() => server.close());
 
 test("complex test overview", async () => {
   const [result] = await runNewman({
@@ -40,7 +41,7 @@ test("complex test overview", async () => {
       },
     ],
   });
-  expect(result.statusDetails.message).toBe(
+  expect(result.statusDetails.message).eq(
     "Текст проверки на русском(она должна зафейлится), (Turkish name) Türkçe metni kontrol et",
   );
 });

@@ -1,5 +1,3 @@
-// custom runner for mocha that allows to include a custom reporter
-// which is not packed into an npm module
 import path from "path";
 import { TestResult } from "allure-js-commons";
 import glob from "glob";
@@ -11,13 +9,16 @@ export const getTestResultByName = (results: TestResult[], name: string) =>
   results.find((result) => result.name === name)!;
 
 (async () => {
-  await selenium.install();
+  // await selenium.install();
 
-  const seleniumProcess = await selenium.start();
+  const chromedriver = require('chromedriver');
+  chromedriver.start();
+
+  // const seleniumProcess = await selenium.start();
 
   const mocha = new Mocha({
     timeout: 30000,
-    reporter: "mocha-multi-reporters",
+    reporter: require("mocha-multi-reporters"),
     reporterOptions: {
       reporterEnabled: "list, ../allure-mocha",
       allureMochaReporterOptions: {
@@ -29,7 +30,8 @@ export const getTestResultByName = (results: TestResult[], name: string) =>
   glob.sync("./test/spec/**/*.test.ts").forEach((file) => mocha.addFile(file));
 
   mocha.run((failures) => {
-    seleniumProcess.kill();
+    // seleniumProcess.kill();
+    chromedriver.stop();
     process.exit(failures === 0 ? 0 : 1);
   });
 })();
