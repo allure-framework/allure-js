@@ -39,7 +39,7 @@
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
-    "test": "nyc tsx --tsconfig ./tsconfig.json ./test/runner.ts",
+    "test": "ts-node --project ./tsconfig.json ./test/runner.ts",
     "coverage": "codecov",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix"
@@ -100,6 +100,7 @@
     "rimraf": "^5.0.1",
     "sinon": "^15.2.0",
     "source-map-support": "^0.5.21",
+    "ts-node": "^10.9.1",
     "tsx": "^3.12.7",
     "typescript": "^5.2.2"
   },
