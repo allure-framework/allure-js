@@ -21,6 +21,9 @@ If you're using `jest` for testing `node` add following line to your `jest.confi
 /** @type {import('jest').Config} */
 const config = {
 +  testEnvironment: "allure-jest/node",
++  testEnvironmentOptions: {
++    resultsDir: "./allure-results"
++  }
 }
 
 module.exports = config
@@ -32,6 +35,9 @@ If you're using `jest` for testing browser code (`jsdom`) add next to your `jest
 /** @type {import('jest').Config} */
 const config = {
 +  testEnvironment: "allure-jest/jsdom",
++  testEnvironmentOptions: {
++    resultsDir: "./allure-results"
++  }
 }
 
 module.exports = config
