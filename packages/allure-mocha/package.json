@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/allure-framework/allure-js.git",
+    "url": "https://github.com/SergeyPirogov/allure-js.git",
     "directory": "packages/allure-mocha"
   },
   "keywords": [
@@ -50,7 +50,7 @@
     "typescript": "^4.4.2"
   },
   "dependencies": {
-    "allure-js-commons": "workspace:*"
+    "allure-js-commons": "2.8.1"
   },
   "peerDependencies": {
     "mocha": ">=6.2.x"
