@@ -2,9 +2,11 @@ const allurePlugin = require("../src/index.ts");
 describe("handleRetries", () => {
   it("should handle retries if the test has retried", () => {
     // Mock the necessary dependencies and setup test data
+    const suite = { title: "suite title", ctx: { currentTest: "mockCurrentTest" } };
     const test = {
       _currentRetry: 1,
       _retriedTest: {
+        parent: suite,
         state: "failed",
         _retries: 2,
       },
