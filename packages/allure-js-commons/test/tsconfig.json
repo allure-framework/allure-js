@@ -4,7 +4,6 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "rootDir": ".",
-    "paths": {"allure-mocha/*": ["../node_modules/allure-mocha/*"]},
     "baseUrl": "."
   },
   "include": [

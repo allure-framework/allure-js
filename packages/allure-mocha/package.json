@@ -25,9 +25,7 @@
     "compile": "tsc",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "allure-report": "allure serve ./out/allure-results",
-    "test:compile": "nyc tsx --tsconfig test/tsconfig.json",
-    "test": "nyc tsx --tsconfig test/tsconfig.json test/runner.ts",
-    "coverage": "codecov",
+    "test": "ts-node --project test/tsconfig.json test/runner.ts",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix"
   },
@@ -38,6 +36,7 @@
     "@types/glob": "^8.0.0",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.7.8",
+    "@types/sinon": "^10.0.16",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
     "chai": "^4.2.0",
@@ -54,7 +53,9 @@
     "mocha-multi-reporters": "^1.5.1",
     "nyc": "^15.0.1",
     "rimraf": "^5.0.1",
+    "sinon": "^15.2.0",
     "source-map-support": "^0.5.19",
+    "ts-node": "^10.9.1",
     "tsx": "^3.12.7",
     "typescript": "^5.2.2"
   },

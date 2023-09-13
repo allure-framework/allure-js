@@ -21,7 +21,7 @@
     "lint:fix": "eslint --fix ./src ./index.ts --ext .ts",
     "compile": "tsc",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "test": "nyc tsx --tsconfig test/tsconfig.json test/runner.ts"
+    "test": "ts-node --project test/tsconfig.json test/runner.ts"
   },
   "devDependencies": {
     "@types/chai": "^4.2.21",
@@ -50,6 +50,7 @@
     "nyc": "^15.1.0",
     "rimraf": "^5.0.1",
     "sinon": "^14.0.0",
+    "ts-node": "^10.9.1",
     "tsx": "^3.12.7",
     "typescript": "^5.2.2"
   },

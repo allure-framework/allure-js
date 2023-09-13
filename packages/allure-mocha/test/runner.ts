@@ -1,5 +1,3 @@
-// custom runner for mocha that allows to include a custom reporter
-// which is not packed into an npm module
 import path from "path";
 import glob from "glob";
 import Mocha from "mocha";
@@ -7,7 +5,7 @@ import "source-map-support/register";
 
 const mocha = new Mocha({
   timeout: 16000,
-  reporter: "mocha-multi-reporters",
+  reporter: require("mocha-multi-reporters"),
   reporterOptions: {
     reporterEnabled: "list, ../allure-mocha",
     allureMochaReporterOptions: {

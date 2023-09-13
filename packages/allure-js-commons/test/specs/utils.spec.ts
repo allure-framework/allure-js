@@ -318,7 +318,7 @@ describe("serialize", () => {
 
   describe("with function", () => {
     it("returns function string", () => {
-      expect(serialize(() => {})).eq("()=>{}");
+      expect(serialize(() => {})).eq("() => { }");
     });
   });
 

@@ -1,9 +1,8 @@
 import EventEmitter from "events";
 import { IRuntimeOptions } from "@cucumber/cucumber";
 import { assembleTestCases } from "@cucumber/cucumber/lib/runtime/assemble_test_cases";
-import { PredictableTestRunStopwatch } from "@cucumber/cucumber/lib/runtime/stopwatch";
 import TestCaseRunner from "@cucumber/cucumber/lib/runtime/test_case_runner";
-import { SupportCodeLibraryBuilder } from "@cucumber/cucumber/lib/support_code_library_builder/index";
+import { SupportCodeLibraryBuilder } from "@cucumber/cucumber/lib/support_code_library_builder";
 import {
   IDefineSupportCodeMethods,
   ISupportCodeLibrary,
@@ -12,6 +11,7 @@ import { valueOrDefault } from "@cucumber/cucumber/lib/value_checker";
 import { IdGenerator } from "@cucumber/messages";
 import * as messages from "@cucumber/messages";
 import IEnvelope = messages.Envelope;
+import { create } from "@cucumber/cucumber/lib/runtime/stopwatch";
 
 export const buildOptions = (overrides: Partial<IRuntimeOptions>): IRuntimeOptions => {
   return {
@@ -65,7 +65,7 @@ export const testRunner = async (options: ITestRunnerRequest): Promise<ITestRunn
   eventBroadcaster.on("envelope", (e) => envelopes.push(e));
   const runner = new TestCaseRunner({
     eventBroadcaster,
-    stopwatch: new PredictableTestRunStopwatch(),
+    stopwatch: create(),
     gherkinDocument: options.gherkinDocument,
     newId,
     pickle: options.pickle,
