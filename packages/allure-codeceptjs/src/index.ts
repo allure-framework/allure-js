@@ -1,16 +1,17 @@
 import path from "path";
+import process from "process";
 import {
   AllureGroup,
   allureReportFolder,
   AllureRuntime,
   AllureStep,
   AllureTest,
-  InMemoryAllureWriter,
   Label,
   LabelName,
   Link,
   LinkType,
   md5,
+  MessageAllureWriter,
   ParameterOptions,
   Stage,
   Status,
@@ -29,13 +30,12 @@ import { extractMeta } from "./helpers";
 
 interface ReporterOptions {
   outputDir: string;
-  postProcessorForTest?: any;
 }
 class AllureReporter {
   allureRuntime?: AllureRuntime;
   allureGroupCache = new Map<CodeceptSuite, AllureGroup>();
   allureTestCache = new Map<CodeceptTest, AllureTest>();
-  allureWriter?: InMemoryAllureWriter;
+  allureWriter = process.env.ALLURE_POST_PROCESSOR_FOR_TEST ? new MessageAllureWriter() : undefined;
 
   allureStepCache = new Map<AllureTest, Map<CodeceptStep, AllureStep>>();
 
@@ -44,7 +44,6 @@ class AllureReporter {
   constructor(config: ReporterOptions) {
     this.registerEvents();
     const resultsDir = allureReportFolder(config.outputDir);
-    this.allureWriter = config.postProcessorForTest ? new InMemoryAllureWriter() : undefined;
     this.allureRuntime = new AllureRuntime({ resultsDir, writer: this.allureWriter });
     this.reporterOptions = config || {};
   }
@@ -70,8 +69,6 @@ class AllureReporter {
     event.dispatcher.addListener(event.step.failed, this.stepFailed.bind(this));
     event.dispatcher.addListener(event.step.finished, this.stepFinished.bind(this));
     event.dispatcher.addListener(event.step.comment, this.stepComment.bind(this));
-
-    event.dispatcher.addListener(event.all.result, this.afterAll.bind(this));
   }
 
   hookStarted(hook: CodeceptHook) {
@@ -301,12 +298,6 @@ class AllureReporter {
     if (allureStep) {
       allureStep.status = allureStep.isAnyStepFailed ? Status.FAILED : Status.PASSED;
       allureStep.endStep();
-    }
-  }
-
-  afterAll() {
-    if (this.reporterOptions.postProcessorForTest) {
-      this.reporterOptions.postProcessorForTest(this.allureWriter);
     }
   }
 

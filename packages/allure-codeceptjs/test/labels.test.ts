@@ -1,11 +1,12 @@
-import { expect } from "@jest/globals";
-
+import { it } from "mocha";
 import { runTests } from "./utils/run-tests";
+import { expect } from "expect";
 
-test("simple scenarios", async () => {
-  const res = await runTests({
-    files: {
-      "login.test.js": /* js */ `
+it("simple scenarios", async () => {
+  const res = await runTests(
+    {
+      files: {
+        "login.test.js": /* js */ `
         Feature("login-feature");
         Scenario("login-scenario1", async () => {
           const allure = codeceptjs.container.plugins("allure");
@@ -23,66 +24,71 @@ test("simple scenarios", async () => {
           allure.epic("severity");
         });
       `,
+      },
     },
-  });
-  expect(res.tests[0]!.labels).toMatchInlineSnapshot(`
-    [
+    "labels.test.ts",
+  );
+
+  const labels = res.tests[0].labels;
+
+  expect(labels).toEqual(
+    expect.arrayContaining([
       {
-        "name": "language",
-        "value": "javascript",
+        name: "language",
+        value: "javascript",
       },
       {
-        "name": "framework",
-        "value": "codeceptjs",
+        name: "framework",
+        value: "codeceptjs",
       },
       {
-        "name": "suite",
-        "value": "login-feature",
+        name: "suite",
+        value: "login-feature",
       },
       {
-        "name": "name",
-        "value": "value",
+        name: "name",
+        value: "value",
       },
       {
-        "name": "tag",
-        "value": "tag1",
+        name: "tag",
+        value: "tag1",
       },
       {
-        "name": "tag",
-        "value": "tag2",
+        name: "tag",
+        value: "tag2",
       },
       {
-        "name": "tag",
-        "value": "tag3",
+        name: "tag",
+        value: "tag3",
       },
       {
-        "name": "owner",
-        "value": "eroshenkoam",
+        name: "owner",
+        value: "eroshenkoam",
       },
       {
-        "name": "layer",
-        "value": "UI",
+        name: "layer",
+        value: "UI",
       },
       {
-        "name": "ALLURE_ID",
-        "value": "228",
+        name: "ALLURE_ID",
+        value: "228",
       },
       {
-        "name": "story",
-        "value": "aga",
+        name: "story",
+        value: "aga",
       },
       {
-        "name": "feature",
-        "value": "aga",
+        name: "feature",
+        value: "aga",
       },
       {
-        "name": "epic",
-        "value": "aga",
+        name: "epic",
+        value: "aga",
       },
       {
-        "name": "epic",
-        "value": "severity",
+        name: "epic",
+        value: "severity",
       },
-    ]
-  `);
+    ]),
+  );
 });

@@ -53,7 +53,7 @@ export class MochaAllureGateway {
 
       // @ts-ignore
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      allure[methodName](...args);
+      return allure[methodName](...args);
     };
   }
 }

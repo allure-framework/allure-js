@@ -98,8 +98,9 @@ export class AllureReporter {
     const testPath = test.file?.replace(this.cwd, "");
 
     this.currentTest = this.currentSuite.startTest(test.title);
-    this.currentTest.fullName = test.title;
-    this.currentTest.historyId = md5(test.fullTitle());
+    const fullName = (testPath ? `${testPath}: ` : "") + test.titlePath().join(" > ");
+    this.currentTest.fullName = fullName;
+    this.currentTest.historyId = md5(fullName);
     this.currentTest.stage = Stage.RUNNING;
 
     if (testPath) {

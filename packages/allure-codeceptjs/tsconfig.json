@@ -8,7 +8,7 @@
     "./test/**/*",
   ],
   "compilerOptions": {
-    "types": ["jest", "codeceptjs"],
+    "types": ["codeceptjs"],
     "rootDir": "./src",
     "outDir": "./dist",
     "skipLibCheck": true
