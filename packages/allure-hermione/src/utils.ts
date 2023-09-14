@@ -3,6 +3,16 @@ import { cwd } from "process";
 import { MetadataMessage, ParameterOptions } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
+export const testIt = () => {
+  const get = () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
+    // const Browser = require("@wdio/globals");
+    // return Browser.prototype.executionContext?.ctx;
+    return undefined;
+  };
+  return get();
+};
+
 export const getFileSrcPath = (filePath: string): string => {
   const baseDir = basename(cwd());
 

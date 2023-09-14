@@ -1,10 +1,11 @@
+const { allure } = require("../../dist/runtime");
 describe("hooks", () => {
-  beforeEach(async ({ browser, currentTest }) => {
-    await browser.label(currentTest.id, "hook", "before");
+  beforeEach(async ({ browser }) => {
+    await allure(browser).label("hook", "before");
   });
 
-  afterEach(async ({ browser, currentTest }) => {
-    await browser.label(currentTest.id, "hook", "after");
+  afterEach(async ({ browser }) => {
+    await allure(browser).label("hook", "before");
   });
 
   it("first test", () => {});

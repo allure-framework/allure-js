@@ -5,6 +5,7 @@ import * as process from "node:process";
 import Hermione from "hermione";
 import {
   AllureCommandStepExecutable,
+  allureReportFolder,
   AllureRuntime,
   AllureTest,
   ContentType,
@@ -17,7 +18,6 @@ import {
   Stage,
   Status,
   StepBodyFunction,
-  StepMetadata,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 import {
@@ -34,6 +34,7 @@ import {
   setHistoryId,
   setTestCaseId,
 } from "./utils";
+import { AllureWriter } from "allure-js-commons/dist/src/writers";
 
 export type HermioneAttachmentMessage = {
   testId: string;
@@ -42,37 +43,117 @@ export type HermioneAttachmentMessage = {
 
 export type AllureReportOptions = {
   resultsDir?: string;
+  writer?: AllureWriter;
 };
 
 export type TestIDFactory = (testId?: string) => string;
 
 const hostname = os.hostname();
 
-const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) => {
-  const { ALLURE_REPORTER_DEV_MODE } = process.env;
-  const runningTests: Map<string, AllureTest> = new Map();
-  const runtime = new AllureRuntime({
-    resultsDir: "allure-results",
-    ...opts,
+const addCommands = (browser: WebdriverIO.Browser, testIdFactory: (testId?: string) => string) => {
+  browser.addCommand("label", async (id: string, name: string, value: string) => {
+    await addLabel(testIdFactory(id), name, value);
   });
+  browser.addCommand("link", async (id: string, url: string, name?: string, type?: string) => {
+    await addLink(testIdFactory(id), url, name, type);
+  });
+  browser.addCommand(
+    "parameter",
+    async (id: string, name: string, value: any, options?: ParameterOptions) => {
+      await addParameter(testIdFactory(id), name, value, options);
+    },
+  );
+  browser.addCommand("id", async (id: string, value: string) => {
+    await addLabel(testIdFactory(id), LabelName.ALLURE_ID, value);
+  });
+  browser.addCommand("epic", async (id: string, value: string) => {
+    await addLabel(testIdFactory(id), LabelName.EPIC, value);
+  });
+  browser.addCommand("feature", async (id: string, value: string) => {
+    await addLabel(testIdFactory(id), LabelName.FEATURE, value);
+  });
+  browser.addCommand("story", async (id: string, value: string) => {
+    await addLabel(testIdFactory(id), LabelName.STORY, value);
+  });
+  browser.addCommand("suite", async (id: string, value: string) => {
+    await addLabel(testIdFactory(id), LabelName.SUITE, value);
+  });
+  browser.addCommand("parentSuite", async (id: string, value: string) => {
+    await addLabel(testIdFactory(id), LabelName.PARENT_SUITE, value);
+  });
+  browser.addCommand("subSuite", async (id: string, value: string) => {
+    await addLabel(testIdFactory(id), LabelName.SUB_SUITE, value);
+  });
+  browser.addCommand("owner", async (id: string, value: string) => {
+    await addLabel(testIdFactory(id), LabelName.OWNER, value);
+  });
+  browser.addCommand("severity", async (id: string, value: string) => {
+    await addLabel(testIdFactory(id), LabelName.SEVERITY, value);
+  });
+  browser.addCommand("tag", async (id: string, value: string) => {
+    await addLabel(testIdFactory(id), LabelName.TAG, value);
+  });
+  browser.addCommand("issue", async (id: string, name: string, url: string) => {
+    await addLink(testIdFactory(id), url, name, LinkType.ISSUE);
+  });
+  browser.addCommand("tms", async (id: string, name: string, url: string) => {
+    await addLink(testIdFactory(id), url, name, LinkType.TMS);
+  });
+  browser.addCommand("attach", async (id: string, source: string, mimetype: string) => {
+    await addAttachment(testIdFactory(id), source, mimetype);
+  });
+  browser.addCommand("step", async (id: string, name: string, body: StepBodyFunction) => {
+    const step = new AllureCommandStepExecutable(name);
+    await step.run(
+      body,
+      async (message: MetadataMessage) => await sendMetadata(testIdFactory(id), message),
+    );
+  });
+  browser.addCommand("displayName", async (id: string, value: string) => {
+    await setDisplayName(testIdFactory(id), value);
+  });
+  browser.addCommand("description", async (id: string, value: string) => {
+    await setDescription(testIdFactory(id), value);
+  });
+  browser.addCommand("descriptionHtml", async (id: string, value: string) => {
+    await setDescriptionHtml(testIdFactory(id), value);
+  });
+  browser.addCommand("testCaseId", async (id: string, value: string) => {
+    await setTestCaseId(testIdFactory(id), value);
+  });
+  browser.addCommand("historyId", async (id: string, value: string) => {
+    await setHistoryId(testIdFactory(id), value);
+  });
+};
+
+const hermioneAllureReporter = (hermione: Hermione, opts?: AllureReportOptions) => {
+  const runningTests: Map<string, AllureTest> = new Map();
+  const browsers: Map<string, any> = new Map();
+  const allureWriter = opts?.writer;
+  const resultsDir = allureReportFolder(opts?.resultsDir);
+  const runtime = new AllureRuntime({ resultsDir, writer: allureWriter });
   /**
    * Creates browser-specific test ID to identify test in the reporter
    *
    * @param context Hermione test object, or browser ID string
    * @returns Browser-specific test ID factory function
    */
-  const getTestId = (context: string | Hermione.Test): TestIDFactory => {
+  const getTestId = (
+    context: string | Hermione.Test | (Omit<Hermione.Test, "id"> & { id: () => string }),
+  ): TestIDFactory => {
     if (typeof context === "string") {
       return (testId?: string) => `${context}:${testId || ""}`;
     }
+
+    const x = context;
 
     // hermone >= 7.0.0 has `id` property as a string
     if (typeof context.id === "string") {
       // eslint-disable-next-line
       return () => `${context.browserId}:${context.id}`;
     }
-
-    return () => `${context.browserId}:${context.id()}`;
+    const contextId = context.id();
+    return () => `${context.browserId}:${contextId}`;
   };
   /**
    * Create Allure test from Hermione test object with all the possible initial labels
@@ -142,89 +223,18 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
 
     if (!currentTest) {
       // eslint-disable-next-line no-console
-      console.error("Can't assing attachment due test has been finished or hasn't been started");
+      console.error("Can't assign attachment due test has been finished or hasn't been started");
       return;
     }
 
     currentTest.applyMetadata(metadata);
   };
 
-  hermione.on(hermione.events.NEW_BROWSER, (browser, { browserId }) => {
-    const testId = getTestId(browserId);
+  hermione.on(hermione.events.SESSION_START, (browser, { browserId }) => {
+    const testIdFactory = getTestId(browserId);
+    browsers.set(browserId, browser);
 
-    browser.addCommand("label", async (id: string, name: string, value: string) => {
-      await addLabel(testId(id), name, value);
-    });
-    browser.addCommand("link", async (id: string, url: string, name?: string, type?: string) => {
-      await addLink(testId(id), url, name, type);
-    });
-    browser.addCommand(
-      "parameter",
-      async (id: string, name: string, value: any, options?: ParameterOptions) => {
-        await addParameter(testId(id), name, value, options);
-      },
-    );
-    browser.addCommand("id", async (id: string, value: string) => {
-      await addLabel(testId(id), LabelName.ALLURE_ID, value);
-    });
-    browser.addCommand("epic", async (id: string, value: string) => {
-      await addLabel(testId(id), LabelName.EPIC, value);
-    });
-    browser.addCommand("feature", async (id: string, value: string) => {
-      await addLabel(testId(id), LabelName.FEATURE, value);
-    });
-    browser.addCommand("story", async (id: string, value: string) => {
-      await addLabel(testId(id), LabelName.STORY, value);
-    });
-    browser.addCommand("suite", async (id: string, value: string) => {
-      await addLabel(testId(id), LabelName.SUITE, value);
-    });
-    browser.addCommand("parentSuite", async (id: string, value: string) => {
-      await addLabel(testId(id), LabelName.PARENT_SUITE, value);
-    });
-    browser.addCommand("subSuite", async (id: string, value: string) => {
-      await addLabel(testId(id), LabelName.SUB_SUITE, value);
-    });
-    browser.addCommand("owner", async (id: string, value: string) => {
-      await addLabel(testId(id), LabelName.OWNER, value);
-    });
-    browser.addCommand("severity", async (id: string, value: string) => {
-      await addLabel(testId(id), LabelName.SEVERITY, value);
-    });
-    browser.addCommand("tag", async (id: string, value: string) => {
-      await addLabel(testId(id), LabelName.TAG, value);
-    });
-    browser.addCommand("issue", async (id: string, name: string, url: string) => {
-      await addLink(testId(id), url, name, LinkType.ISSUE);
-    });
-    browser.addCommand("tms", async (id: string, name: string, url: string) => {
-      await addLink(testId(id), url, name, LinkType.TMS);
-    });
-    browser.addCommand("attach", async (id: string, source: string, mimetype: string) => {
-      await addAttachment(testId(id), source, mimetype);
-    });
-    browser.addCommand("step", async (id: string, name: string, body: StepBodyFunction) => {
-      const step = new AllureCommandStepExecutable(name);
-      await step.run(
-        body,
-        async (message: MetadataMessage) => await sendMetadata(testId(id), message),
-      );
-    });
-    browser.addCommand("displayName", async (id: string, value: string) => {
-      await setDisplayName(testId(id), value);
-    });
-    browser.addCommand("description", async (id: string, value: string) => {
-      await setDescription(testId(id), value);
-    });
-    browser.addCommand("descriptionHtml", async (id: string, value: string) => {
-      await setDescriptionHtml(testId(id), value);
-    });
-    browser.addCommand("testCaseId", async (id: string, value: string) => {
-      await setTestCaseId(testId(id), value);
-    });
-    browser.addCommand("historyId", async (id: string, value: string) => {
-      await setHistoryId(testId(id), value);
-    });
+    addCommands(browser, testIdFactory);
   });
   hermione.on(hermione.events.NEW_WORKER_PROCESS, (worker) => {
     // eslint-disable-next-line
@@ -258,6 +268,13 @@ const hermioneAllureReporter = (hermione: Hermione, opts: AllureReportOptions) =
     }
 
     const testId = getTestId(test);
+
+    const browser = browsers.get(test.browserId);
+    if (browser) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      addCommands(browser, testId);
+    }
+
     const currentTest = createAllureTest(test);
 
     runningTests.set(testId(), currentTest);

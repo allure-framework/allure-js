@@ -1,23 +1,14 @@
-import { Status, TestResult } from "allure-js-commons";
+import { Status } from "allure-js-commons";
 import { expect } from "chai";
-import Hermione from "hermione";
-import { before, beforeEach, describe, it } from "mocha";
+import { describe, it } from "mocha";
 import { getTestResultByName } from "../runner";
-import { HermioneAllure } from "../types";
+import { runHermione } from "../helper/run_helper";
 
 describe("steps", () => {
-  let results: TestResult[];
-
-  before(async () => {
-    const hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
-
-    await hermione.run(["./test/fixtures/steps.js"], {});
-
-    results = hermione.allure.writer.results;
-  });
-
   describe("passed steps", () => {
     it("adds nested steps", async () => {
+      const { tests: results } = await runHermione(["./test/fixtures/steps.js"]);
+
       const { steps, labels } = getTestResultByName(results, "passed");
       const customLabel = labels.find(({ name }) => name === "foo");
 
@@ -32,7 +23,9 @@ describe("steps", () => {
   });
 
   describe("failed steps", () => {
-    it("fails the test with original step error", () => {
+    it("fails the test with original step error", async () => {
+      const { tests: results } = await runHermione(["./test/fixtures/steps.js"]);
+
       const { status, statusDetails, steps, labels } = getTestResultByName(results, "failed");
 
       expect(status).eq(Status.FAILED);

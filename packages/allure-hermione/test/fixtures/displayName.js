@@ -1,3 +1,5 @@
-it("display name", async ({ browser, currentTest }) => {
-  await browser.displayName(currentTest.id, "foo");
+const { allure } = require("../../dist/runtime");
+
+it("display name", async ({ browser }) => {
+  await allure(browser).displayName("foo");
 });

@@ -38,10 +38,11 @@
     "@types/sinon": "^10.0.16",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
+    "allure-mocha": "workspace:*",
     "chai": "^4.2.0",
-    "chromedriver": "^116.0.0",
+    "chromedriver": "114.0.1",
     "codecov": "^3.6.5",
-    "escape-string-regexp": "^5.0.0",
+    "download-chromium": "^3.0.0",
     "eslint": "^8.49.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.28.1",
@@ -50,7 +51,7 @@
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "fs-jetpack": "^4.1.0",
     "glob": "^7.1.7",
-    "hermione": "^6.1.3",
+    "hermione": "^7.1.4",
     "mocha": "^9.1.3",
     "mocha-multi-reporters": "^1.5.1",
     "nyc": "^15.0.1",
@@ -64,27 +65,6 @@
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
-  },
-  "nyc": {
-    "check-coverage": false,
-    "lines": 80,
-    "statements": 80,
-    "functions": 75,
-    "branches": 70,
-    "extension": [
-      ".ts"
-    ],
-    "exclude": [
-      "test/**/*.*",
-      "**/*.d.ts"
-    ],
-    "reporter": [
-      "lcov",
-      "text"
-    ],
-    "all": true,
-    "report-dir": "./out/coverage",
-    "temp-dir": "./out/.nyc"
   },
   "files": [
     "dist"

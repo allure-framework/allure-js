@@ -13,10 +13,9 @@ chai.use(chaiThings);
 const mocha = new Mocha({
   timeout: 16000,
   reporter: require("mocha-multi-reporters"),
-  asyncOnly: true,
   reporterOptions: {
-    reporterEnabled: "list, ../allure-mocha",
-    allureMochaReporterOptions: {
+    reporterEnabled: `list, ${(require.resolve("allure-mocha"))}`,
+    reporterOptions: {
       resultsDir: path.resolve(__dirname, "../out/allure-results"),
     },
   },

@@ -2,13 +2,12 @@ import Mocha from "mocha";
 import path from "path";
 import { globSync } from "glob";
 import "source-map-support/register";
-const resolve = require.resolve("allure-mocha");
 
 const mocha = new Mocha({
   timeout: 16000,
   reporter: require("mocha-multi-reporters"),
   reporterOptions: {
-    reporterEnabled: `list, ${resolve}`,
+    reporterEnabled: `list, ${(require.resolve("allure-mocha"))}`,
     reporterOptions: {
       resultsDir: path.resolve(__dirname, "../out/allure-results"),
     },

@@ -1,19 +1,16 @@
 import { Label, LabelName, TestResult } from "allure-js-commons";
 import { expect } from "chai";
-import Hermione from "hermione";
-import { before, describe, it } from "mocha";
+import { describe, it } from "mocha";
 import { getTestResultByName } from "../runner";
-import { HermioneAllure } from "../types";
+import { runHermione } from "../helper/run_helper";
 
 describe("labels", () => {
   let results: TestResult[];
 
   before(async () => {
-    const hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
+    const { tests } = await runHermione(["./test/fixtures/labels.js"]);
 
-    await hermione.run(["./test/fixtures/labels.js"], {});
-
-    results = hermione.allure.writer.results;
+    results = tests;
   });
 
   it("adds `foo` custom label", async () => {
@@ -81,6 +78,8 @@ describe("labels", () => {
   });
 
   it("adds `foo` severity label", async () => {
+    const { tests: results } = await runHermione(["./test/fixtures/labels.js"]);
+
     const { labels } = getTestResultByName(results, "severity");
     const label = labels.find(({ name }) => name === LabelName.SEVERITY) as Label;
 
