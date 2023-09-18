@@ -1,15 +1,15 @@
 module.exports = {
-  gridUrl: "http://localhost:4444/wd/hub",
   browsers: {
     headless: {
-      automationProtocol: "webdriver",
+      automationProtocol: "devtools",
       desiredCapabilities: {
         browserName: "chrome",
+        logLevel: "error",
         "goog:chromeOptions": {
           args: ["headless"],
         },
       },
     },
   },
-  saveHistoryMode: 'none',
+  saveHistoryMode: "none",
 };
