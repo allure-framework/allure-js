@@ -12,9 +12,10 @@ chai.use(chaiThings);
 
 const mocha = new Mocha({
   timeout: 16000,
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   reporter: require("mocha-multi-reporters"),
   reporterOptions: {
-    reporterEnabled: `list, ${(require.resolve("allure-mocha"))}`,
+    reporterEnabled: `list, ${require.resolve("allure-mocha")}`,
     reporterOptions: {
       resultsDir: path.resolve(__dirname, "../out/allure-results"),
     },

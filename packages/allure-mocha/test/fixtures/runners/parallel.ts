@@ -1,6 +1,6 @@
-import MochaAllureReporter from "allure-mocha";
 import { globSync } from "glob";
 import Mocha from "mocha";
+import MochaAllureReporter from "allure-mocha";
 import "source-map-support/register";
 
 const mocha = new Mocha({

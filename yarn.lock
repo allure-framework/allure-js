@@ -2806,6 +2806,8 @@ __metadata:
   resolution: "allure-hermione@workspace:packages/allure-hermione"
   dependencies:
     "@types/chai": ^4.2.11
+    "@types/chai-like": ^1.1.1
+    "@types/chai-things": ^0.0.35
     "@types/eslint": ^8
     "@types/glob": ^7.1.4
     "@types/mocha": ^10.0.0
@@ -2816,6 +2818,8 @@ __metadata:
     allure-js-commons: "workspace:*"
     allure-mocha: "workspace:*"
     chai: ^4.2.0
+    chai-like: ^1.1.1
+    chai-things: ^0.2.0
     chromedriver: 114.0.1
     codecov: ^3.6.5
     download-chromium: ^3.0.0

@@ -1,4 +1,11 @@
-import { LabelName, LinkType, MetadataMessage, ParameterOptions } from "allure-js-commons";
+import {
+  LabelName,
+  LinkType,
+  MetadataMessage,
+  ParameterOptions,
+  StepBodyFunction,
+  AllureCommandStepExecutable,
+} from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
 const id = async (browser: any) => {
@@ -27,6 +34,7 @@ const sendMetadata = async (browser: any, metadata: MetadataMessage): Promise<vo
     );
   });
 };
+
 export const allure = (browser: any) => ({
   description: async (value: string) => {
     await sendMetadata(browser, {
@@ -160,5 +168,11 @@ export const allure = (browser: any) => ({
     await sendMetadata(browser, {
       displayName,
     });
+  },
+
+  step: async (name: string, body: StepBodyFunction) => {
+    const step = new AllureCommandStepExecutable(name);
+
+    await step.run(body, async (message: MetadataMessage) => await sendMetadata(browser, message));
   },
 });

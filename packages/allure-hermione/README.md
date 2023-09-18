@@ -1,6 +1,6 @@
 # allure-hermione
 
-Allure integration for `hermione@^5.x.x`.
+Allure integration for `hermione@^5.x.x` and above.
 
 ## Installation
 
@@ -31,16 +31,17 @@ inside your tests:
 
 ```javascript
 import { expect } from "chai";
+import { allure } from "allure-hermione/runtime";
 
-it("my test", async ({ browser, currentTest }) => {
+it("my test", async ({ browser }) => {
   await browser.url("https://www.example.org/");
   await browser.$("#btn").click();
 
   const screenshot = await browser.takeScreenshot();
 
-  await browser.attach(currentTest.id(), screenshot, "image/png");
-  await browser.epic(currentTest.id(), "my_epic");
-  await browser.parameter(currentTest.id(), "parameter_name", "parameter_value", {
+  await allure(browser).attach(screenshot, "image/png");
+  await allure(browser).epic("my_epic");
+  await allure(browser).parameter("parameter_name", "parameter_value", {
     mode: "hidden",
     excluded: false,
   });
@@ -58,8 +59,10 @@ Don't forget to pass current test id as first argument to command!
 Change your test case name on custom value on the fly using `displayName` method:
 
 ```js
+import { allure } from "allure-hermione/runtime";
+
 it("my test", async ({ browser, currentTest }) => {
-  await browser.displayName(currentTest.id(), "my test custom name");
+  await allure(browser).displayName("my test custom name");
 });
 ```
 
@@ -68,9 +71,11 @@ it("my test", async ({ browser, currentTest }) => {
 Provide description in markdown or html syntax:
 
 ```js
-it("my test", async ({ browser, currentTest }) => {
-  await browser.description(currentTest.id(), "my **markdown description**");
-  await browser.descriptionHtml(currentTest.id(), "<p>my <b>html description</b></p>");
+import { allure } from "allure-hermione/runtime";
+
+it("my test", async ({ browser }) => {
+  await allure(browser).description("my **markdown description**");
+  await allure(browser).descriptionHtml("<p>my <b>html description</b></p>");
 });
 ```
 
@@ -79,8 +84,10 @@ it("my test", async ({ browser, currentTest }) => {
 Markup you tests with labels using low-level `label` method:
 
 ```js
+import { allure } from "allure-hermione/runtime";
+
 it("my test", async ({ browser, currentTest }) => {
-  await browser.label(currentTest.id(), "label_name", "label_value");
+  await allure(browser).label("label_name", "label_value");
 });
 ```
 
@@ -88,8 +95,10 @@ Or using aliases: `id`, `epic`, `feature`, `story`, `suite`, `parentSuite`, `sub
 `owner`, `severity`, `tag`:
 
 ```js
+import { allure } from "allure-hermione/runtime";
+
 it("my test", async ({ browser, currentTest }) => {
-  await browser.epic(currentTest.id(), "my_epic");
+  await allure(browser).epic("my_epic");
 });
 ```
 
@@ -98,16 +107,20 @@ it("my test", async ({ browser, currentTest }) => {
 Add any link by low-level `link` method:
 
 ```js
+import { allure } from "allure-hermione/runtime";
+
 it("my test", async ({ browser, currentTest }) => {
-  await browser.link(currentTest.id(), "http://example.org", "my_link_name", "my_link_type");
+  await allure(browser).link("http://example.org", "my_link_name", "my_link_type");
 });
 ```
 
 Or using aliases: `issue`, `tms`:
 
 ```js
+import { allure } from "allure-hermione/runtime";
+
 it("my test", async ({ browser, currentTest }) => {
-  await browser.issue(currentTest.id(), "my_link_name", "http://example.org");
+  await allure(browser).issue("my_link_name", "http://example.org");
 });
 ```
 
@@ -116,8 +129,10 @@ it("my test", async ({ browser, currentTest }) => {
 Test parameters can be added by `parameter` method:
 
 ```js
+import { allure } from "allure-hermione/runtime";
+
 it("my test", async ({ browser, currentTest }) => {
-  await browser.parameter(currentTest.id(), "param_name", "param_value", {
+  await allure(browser).parameter("param_name", "param_value", {
     excluded: false,
   });
 });
@@ -128,18 +143,22 @@ it("my test", async ({ browser, currentTest }) => {
 Attach any file as string or buffer using `attach` method:
 
 ```js
+import { allure } from "allure-hermione/runtime";
+
 it("my test", async ({ browser, currentTest }) => {
-  await browser.attach(currentTest.id(), JSON.stringify({ foo: "bar" }), "application/json");
+  await allure(browser).attach(JSON.stringify({ foo: "bar" }), "application/json");
 });
 ```
 
 If you want to attach a screenshot generated in tests, you can use the same method:
 
 ```js
-it("adds screenshots", async ({ browser, currentTest }) => {
-  const screenshot = await browser.takeScreenshot();
+import { allure } from "allure-hermione/runtime";
 
-  await browser.attach(currentTest.id(), screenshot, "image/png");
+it("adds screenshots", async ({ browser, currentTest }) => {
+  const screenshot = await allure(browser).takeScreenshot();
+
+  await allure(browser).attach(screenshot, "image/png");
 });
 ```
 
@@ -148,8 +167,10 @@ it("adds screenshots", async ({ browser, currentTest }) => {
 The reporter provides `step` method to add steps inside your tests for better structure:
 
 ```js
+import { allure } from "allure-hermione/runtime";
+
 it("my test", async ({ browser, currentTest }) => {
-  await browser.step(currentTest.id(), "first step name", async (s1) => {
+  await allure(browser).step("first step name", async (s1) => {
     await s1.step("second step name", async (s2) => {
       await s2.step("third step name", (s3) => {
         // you can add infinite nested steps with any function inside

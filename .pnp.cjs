@@ -3749,6 +3749,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["allure-hermione", "workspace:packages/allure-hermione"],\
             ["@types/chai", "npm:4.3.6"],\
+            ["@types/chai-like", "npm:1.1.1"],\
+            ["@types/chai-things", "npm:0.0.35"],\
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/glob", "npm:7.2.0"],\
             ["@types/mocha", "npm:10.0.1"],\
@@ -3759,6 +3761,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["allure-js-commons", "workspace:packages/allure-js-commons"],\
             ["allure-mocha", "virtual:d11e5e1ac355da813a1b7f67fabb49db55984574cb5b33beafbc91363e05e6b70c13cc4a20f4355007abd0716592ec6d160e17c85ccdb06340df12b7d17d1742#workspace:packages/allure-mocha"],\
             ["chai", "npm:4.3.8"],\
+            ["chai-like", "virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:1.1.1"],\
+            ["chai-things", "npm:0.2.0"],\
             ["chromedriver", "npm:114.0.1"],\
             ["codecov", "npm:3.8.2"],\
             ["download-chromium", "npm:3.0.0"],\

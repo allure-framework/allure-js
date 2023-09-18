@@ -49,7 +49,29 @@ export type AllureReportOptions = {
 export type TestIDFactory = (testId?: string) => string;
 
 const hostname = os.hostname();
+/**
+ * Creates browser-specific test ID to identify test in the reporter
+ *
+ * @param context Hermione test object, or browser ID string
+ * @returns Browser-specific test ID factory function
+ */
+const getTestId = (
+  context: string | Hermione.Test | (Omit<Hermione.Test, "id"> & { id: () => string }),
+): TestIDFactory => {
+  if (typeof context === "string") {
+    return (testId?: string) => `${context}:${testId || ""}`;
+  }
 
+  // hermone >= 7.0.0 has `id` property as a string
+  if (typeof context.id === "string") {
+    // eslint-disable-next-line
+    return () => `${context.browserId}:${context.id}`;
+  }
+
+  const contextId = context.id();
+
+  return () => `${context.browserId}:${contextId}`;
+};
 const addCommands = (browser: WebdriverIO.Browser, testIdFactory: (testId?: string) => string) => {
   browser.addCommand("label", async (id: string, name: string, value: string) => {
     await addLabel(testIdFactory(id), name, value);
@@ -104,6 +126,7 @@ const addCommands = (browser: WebdriverIO.Browser, testIdFactory: (testId?: stri
   });
   browser.addCommand("step", async (id: string, name: string, body: StepBodyFunction) => {
     const step = new AllureCommandStepExecutable(name);
+
     await step.run(
       body,
       async (message: MetadataMessage) => await sendMetadata(testIdFactory(id), message),
@@ -132,29 +155,6 @@ const hermioneAllureReporter = (hermione: Hermione, opts?: AllureReportOptions) 
   const allureWriter = opts?.writer;
   const resultsDir = allureReportFolder(opts?.resultsDir);
   const runtime = new AllureRuntime({ resultsDir, writer: allureWriter });
-  /**
-   * Creates browser-specific test ID to identify test in the reporter
-   *
-   * @param context Hermione test object, or browser ID string
-   * @returns Browser-specific test ID factory function
-   */
-  const getTestId = (
-    context: string | Hermione.Test | (Omit<Hermione.Test, "id"> & { id: () => string }),
-  ): TestIDFactory => {
-    if (typeof context === "string") {
-      return (testId?: string) => `${context}:${testId || ""}`;
-    }
-
-    const x = context;
-
-    // hermone >= 7.0.0 has `id` property as a string
-    if (typeof context.id === "string") {
-      // eslint-disable-next-line
-      return () => `${context.browserId}:${context.id}`;
-    }
-    const contextId = context.id();
-    return () => `${context.browserId}:${contextId}`;
-  };
   /**
    * Create Allure test from Hermione test object with all the possible initial labels
    *
@@ -232,6 +232,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts?: AllureReportOptions) 
 
   hermione.on(hermione.events.SESSION_START, (browser, { browserId }) => {
     const testIdFactory = getTestId(browserId);
+
     browsers.set(browserId, browser);
 
     addCommands(browser, testIdFactory);
@@ -268,8 +269,8 @@ const hermioneAllureReporter = (hermione: Hermione, opts?: AllureReportOptions) 
     }
 
     const testId = getTestId(test);
-
     const browser = browsers.get(test.browserId);
+
     if (browser) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       addCommands(browser, testId);
