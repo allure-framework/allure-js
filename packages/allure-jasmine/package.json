@@ -44,26 +44,6 @@
   "dependencies": {
     "allure-js-commons": "workspace:*"
   },
-  "nyc": {
-    "check-coverage": false,
-    "lines": 85,
-    "statements": 85,
-    "functions": 85,
-    "branches": 75,
-    "extension": [
-      ".ts"
-    ],
-    "include": [
-      "**/src/**/*"
-    ],
-    "reporter": [
-      "lcov",
-      "text"
-    ],
-    "all": true,
-    "report-dir": "./out/coverage",
-    "temp-dir": "./out/.nyc"
-  },
   "files": [
     "dist"
   ]

@@ -44,34 +44,13 @@
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix"
   },
-  "nyc": {
-    "check-coverage": false,
-    "lines": 80,
-    "statements": 80,
-    "functions": 75,
-    "branches": 70,
-    "extension": [
-      ".ts"
-    ],
-    "exclude": [
-      "test/**/*.*",
-      "**/*.d.ts"
-    ],
-    "reporter": [
-      "lcov",
-      "text"
-    ],
-    "all": true,
-    "report-dir": "./out/coverage",
-    "temp-dir": "./out/.nyc"
-  },
   "devDependencies": {
     "@jest/core": "^29.6.2",
     "@jest/environment": "^29.6.4",
     "@jest/types": "^29.6.1",
-    "@types/chai": "^4.3.5",
+    "@types/chai": "^4.3.6",
     "@types/chai-like": "^1.1.1",
-    "@types/chai-things": "^0.0.35",
+    "@types/chai-things": "^0.0.36",
     "@types/eslint": "^8",
     "@types/glob": "^8.1.0",
     "@types/jasmine": "^3.3.12",
@@ -82,7 +61,7 @@
     "@types/source-map-support": "^0",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
-    "chai": "^4.3.7",
+    "chai": "^4.3.8",
     "chai-like": "^1.1.1",
     "chai-things": "^0.2.0",
     "codecov": "^3.8.3",
@@ -96,12 +75,10 @@
     "jest-cli": "^29.6.2",
     "mocha": "^10.2.0",
     "mocha-multi-reporters": "^1.5.1",
-    "nyc": "^15.1.0",
     "rimraf": "^5.0.1",
-    "sinon": "^15.2.0",
+    "sinon": "^16.0.0",
     "source-map-support": "^0.5.21",
     "ts-node": "^10.9.1",
-    "tsx": "^3.12.7",
     "typescript": "^5.2.2"
   },
   "dependencies": {

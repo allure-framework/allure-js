@@ -38,7 +38,7 @@
     "@types/sinon": "^10.0.16",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
-    "chai": "^4.2.0",
+    "chai": "^4.3.8",
     "codecov": "^3.6.5",
     "eslint": "^8.49.0",
     "eslint-config-prettier": "^9.0.0",
@@ -48,14 +48,12 @@
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "fs-jetpack": "^4.1.0",
     "glob": "^10.3.4",
-    "mocha": "^9.1.3",
+    "mocha": "^10.2.0",
     "mocha-multi-reporters": "^1.5.1",
-    "nyc": "^15.0.1",
     "rimraf": "^5.0.1",
-    "sinon": "^15.2.0",
+    "sinon": "^16.0.0",
     "source-map-support": "^0.5.19",
     "ts-node": "^10.9.1",
-    "tsx": "^3.12.7",
     "typescript": "^5.2.2"
   },
   "dependencies": {
@@ -63,28 +61,6 @@
   },
   "peerDependencies": {
     "mocha": ">=6.2.x"
-  },
-  "nyc": {
-    "check-coverage": false,
-    "lines": 80,
-    "statements": 80,
-    "functions": 75,
-    "branches": 70,
-    "extension": [
-      ".ts"
-    ],
-    "exclude": [
-      "test/**/*.*",
-      "**/*.d.ts",
-      "runtime.js"
-    ],
-    "reporter": [
-      "lcov",
-      "text"
-    ],
-    "all": true,
-    "report-dir": "./out/coverage",
-    "temp-dir": "./out/.nyc"
   },
   "files": [
     "dist",
