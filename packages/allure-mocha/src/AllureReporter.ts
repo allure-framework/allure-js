@@ -96,11 +96,10 @@ export class AllureReporter {
     }
 
     const testPath = test.file?.replace(this.cwd, "");
+    const fullName = (testPath ? `${testPath}: ` : "") + test.titlePath().join(" > ");
 
     this.currentTest = this.currentSuite.startTest(test.title);
-    const fullName = (testPath ? `${testPath}: ` : "") + test.titlePath().join(" > ");
     this.currentTest.fullName = fullName;
-    this.currentTest.historyId = md5(fullName);
     this.currentTest.stage = Stage.RUNNING;
 
     if (testPath) {
@@ -119,6 +118,8 @@ export class AllureReporter {
         this.currentTest!.addLabel(label.name, label.value);
       });
     }
+
+    this.currentTest.calculateHistoryId();
   }
 
   public passTestCase(test: Mocha.Test): void {
