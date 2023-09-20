@@ -22,6 +22,6 @@ const mocha = new Mocha({
   },
 });
 
-glob.sync("test/specs/**/*.ts").forEach((file) => mocha.addFile(file));
+glob.sync("test/specs/**/*.test.ts").forEach((file) => mocha.addFile(file));
 
 mocha.run((failures) => process.exit(failures === 0 ? 0 : 1));

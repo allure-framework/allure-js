@@ -1,18 +1,31 @@
 import fs from "node:fs";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 import { cwd } from "node:process";
 import { loadConfiguration, loadSupport, runCucumber } from "@cucumber/cucumber/api";
 import { TestResult } from "allure-js-commons";
 import { match, restore, stub } from "sinon";
+import { type CucumberJSAllureFormatterConfig } from "../src/CucumberJSAllureReporter";
 
-export const runCucumberTests = async (tests: string[]) => {
+export interface LaunchSummary {
+  results: Record<string, TestResult>;
+  attachments: Record<string, { content: string; encoding: string }>;
+}
+
+export const runCucumberTests = async (
+  tests: string[],
+  reporterConfig?: CucumberJSAllureFormatterConfig,
+): Promise<LaunchSummary> => {
   const writeFileSpy = stub(fs, "writeFileSync")
     .withArgs(match("allure-results"))
     .returns(undefined);
   const { runConfiguration } = await loadConfiguration({
     provided: {
-      paths: [join(cwd(), "test/fixtures/features")],
+      parallel: 0,
+      paths: tests.map((test) => join(cwd(), "test/fixtures/features", `${test}.feature`)),
       format: [join(cwd(), "test/reporter.cjs")],
+      formatOptions: {
+        ...reporterConfig,
+      },
     },
   });
   const support = await loadSupport({
@@ -28,14 +41,35 @@ export const runCucumberTests = async (tests: string[]) => {
     support,
   });
 
+  const rawResults = [...writeFileSpy.args];
+
   restore();
 
-  return writeFileSpy.args.reduce(
-    (acc, [, rawResult]) => {
-      const result = JSON.parse(rawResult as string) as TestResult;
+  const results = rawResults
+    .filter(([path]) => /result\.json$/.test(path as string))
+    .reduce(
+      (acc, [, rawResult]) => {
+        const result = JSON.parse(rawResult as string) as TestResult;
 
-      return Object.assign(acc, { [result.name!]: result });
-    },
-    {} as Record<string, TestResult>,
-  );
+        return Object.assign(acc, { [result.name!]: result });
+      },
+      {} as Record<string, TestResult>,
+    );
+  const attachments = rawResults
+    .filter(([path]) => /attachment\.\S+$/.test(path as string))
+    .reduce(
+      (acc, [path, content, encoding]) =>
+        Object.assign(acc, {
+          [relative("allure-results", path as string)]: {
+            content,
+            encoding,
+          },
+        }),
+      {} as Record<string, { content: string; encoding: string }>,
+    );
+
+  return {
+    results,
+    attachments,
+  };
 };
