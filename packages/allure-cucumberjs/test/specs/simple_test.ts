@@ -1,123 +1,54 @@
-import { md5, Status } from "allure-js-commons";
+import { Status } from "allure-js-commons";
+import { TestResult } from "allure-js-commons/src/model";
 import { expect } from "chai";
-import { describe, it } from "mocha";
-import { ITestFormatterOptions, runFeatures } from "../helpers/formatter_helpers";
-import { buildSupportCodeLibrary } from "../helpers/runtime_helpers";
+import { before, describe, it } from "mocha";
+import { runCucumberTests } from "../utils";
 
-const dataSet: { [name: string]: ITestFormatterOptions } = {
-  passed: {
-    supportCodeLibrary: buildSupportCodeLibrary(({ Given }) => {
-      Given("a step", () => {});
-    }),
-    sources: [
-      {
-        data: ["Feature: a", "Scenario: b", "Given a step"].join("\n"),
-        uri: "a.feature",
-      },
-    ],
-  },
-  failed: {
-    supportCodeLibrary: buildSupportCodeLibrary(({ Given }) => {
-      Given("failed step", () => {
-        expect(123).eq(2225);
-      });
-    }),
-    sources: [
-      {
-        data: ["Feature: failed", "Scenario: failed scenario", "Given failed step"].join("\n"),
-        uri: "b.feature",
-      },
-    ],
-  },
-  parameterized: {
-    supportCodeLibrary: buildSupportCodeLibrary(({ Given }) => {
-      Given("a step", function () {
-        this.parameter("Browser", "firefox");
-      });
-    }),
-    sources: [
-      {
-        data: ["Feature: a", "Scenario: b", "Given a step"].join("\n"),
-        uri: "a.feature",
-      },
-    ],
-  },
-};
+describe("simple", () => {
+  let results: Record<string, TestResult>;
 
-describe("CucumberJSAllureReporter > simple", () => {
-  describe("passed", () => {
-    it("sets name", async () => {
-      const results = await runFeatures(dataSet.passed);
+  before(async () => {
+    results = await runCucumberTests(["simple"]);
+  });
 
-      expect(results.tests).length(1);
-      const [testResult] = results.tests;
+  it("sets fullName, testCaseId and historyId", () => {
+    const passed = results.passed;
 
-      expect(testResult.name).eq("b");
-    });
+    expect(passed.fullName).eq("test/fixtures/features/simple.feature#passed");
+    expect(passed.testCaseId).eq("4dc70bb7b4b8db0847961b8a454ed052");
+    expect(passed.historyId).eq(
+      "4dc70bb7b4b8db0847961b8a454ed052:d41d8cd98f00b204e9800998ecf8427e",
+    );
+  });
 
-    it("sets passed status", async () => {
-      const results = await runFeatures(dataSet.passed);
+  it("reports passed test", () => {
+    const passed = results.passed;
 
-      expect(results.tests).length(1);
-      const [testResult] = results.tests;
-
-      expect(testResult.status).eq(Status.PASSED);
-    });
-
-    it("sets timings", async () => {
-      const before = Date.now();
-      const results = await runFeatures(dataSet.passed);
-      const after = Date.now();
-
-      expect(results.tests).length(1);
-      const [testResult] = results.tests;
-
-      expect(testResult.start).greaterThanOrEqual(before);
-      expect(testResult.start).lessThanOrEqual(after);
-      expect(testResult.stop).greaterThanOrEqual(before);
-      expect(testResult.stop).lessThanOrEqual(after);
-      expect(testResult.start).lessThanOrEqual(testResult.stop!);
-    });
-
-    it("processes scenario parameters", async () => {
-      const results = await runFeatures(dataSet.passed);
-
-      expect(results.tests).length(1);
-
-      const [testResult] = results.tests;
-      expect(testResult.name).eq("b");
-    });
-
-    it("sets fullName, testCaseId and historyId", async () => {
-      const results = await runFeatures(dataSet.parameterized);
-
-      expect(results.tests).length(1);
-      const [testResult] = results.tests;
-      const source = dataSet.passed.sources?.[0];
-
-      const name = source!.data.match(/\nScenario: (.+)\n/)?.[1];
-      const fullName = `${source!.uri}#${name!}`;
-      const { name: paramName, value: paramValue } = testResult.parameters[0];
-      const paramsHash = md5(`${paramName}:${paramValue}`);
-      const historyId = `${testResult.testCaseId}:${paramsHash}`;
-      expect(testResult.fullName).eq(fullName);
-      expect(testResult.testCaseId).eq(md5(fullName));
-      expect(testResult.historyId).eq(historyId);
+    expect(passed.status).eq(Status.PASSED);
+    passed.steps.should.contain.something.like({
+      name: "Given a passed step",
+      status: Status.PASSED,
     });
   });
 
-  describe("failed", () => {
-    it("sets failed status", async () => {
-      const results = await runFeatures(dataSet.failed);
+  it("reports failed test", () => {
+    const failed = results.failed;
 
-      expect(results.tests).length(1);
-      const [testResult] = results.tests;
+    expect(failed.status).eq(Status.FAILED);
+    expect(failed.statusDetails.message).contains("AssertionError").contains("1").contains("2");
+    failed.steps.should.contain.something.like({
+      name: "Given a failed step",
+      status: Status.FAILED,
+    });
+  });
 
-      expect(testResult.status).eq(Status.FAILED);
-      expect(testResult.statusDetails.message)
-        .contains("AssertionError")
-        .contains("123")
-        .contains("2225");
+  it("reports test with manually added parameter", () => {
+    const parameterized = results.parameterized;
+
+    parameterized.parameters.should.contain.something.like({
+      name: "Browser",
+      value: JSON.stringify("firefox"),
+      excluded: false,
     });
   });
 });
