@@ -14,6 +14,7 @@
     "lint": "yarn workspaces foreach -vpt run lint",
     "lint:fix": "yarn workspaces foreach -vpt run lint:fix",
     "test": "yarn workspaces foreach -vpt run test",
+    "test:node-14": "yarn workspaces foreach -vpt --exclude allure-js --exclude allure-hermione run test",
     "build": "yarn run clean && yarn run compile"
   },
   "lint-staged": {

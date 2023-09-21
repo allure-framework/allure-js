@@ -1,7 +1,7 @@
 // custom runner for mocha that allows to include a custom reporter
 // which is not packed into an npm module
 import path from "path";
-import glob from "glob";
+import * as glob from "glob";
 import Mocha from "mocha";
 import "source-map-support/register";
 
@@ -17,6 +17,6 @@ const mocha = new Mocha({
   },
 });
 
-glob.sync("test/specs/**/*.ts").forEach((file) => mocha.addFile(file));
+glob.globSync("test/specs/**/*.ts").forEach((file) => mocha.addFile(file));
 
 mocha.run((failures) => process.exit(failures === 0 ? 0 : 1));

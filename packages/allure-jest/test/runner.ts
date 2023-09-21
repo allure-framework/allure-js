@@ -2,7 +2,7 @@ import path from "path";
 import chai from "chai";
 import chaiLike from "chai-like";
 import chaiThings from "chai-things";
-import glob from "glob";
+import * as glob from "glob";
 import Mocha from "mocha";
 import "source-map-support/register";
 
@@ -22,7 +22,7 @@ const mocha = new Mocha({
   },
 });
 
-glob.sync("./test/spec/**/*.test.ts").forEach((file) => mocha.addFile(file));
+glob.globSync("./test/spec/**/*.test.ts").forEach((file) => mocha.addFile(file));
 
 mocha.run((failures) => {
   process.exit(failures === 0 ? 0 : 1);

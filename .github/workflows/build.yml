@@ -33,7 +33,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: yarn install
         run: |
@@ -45,6 +45,12 @@ jobs:
         run: |
           yarn run build
 
-      - name: yarn test
+      - name: yarn test node@14
+        if: ${{ matrix.node-version == '14.x' }}
+        run: |
+          yarn run test:node-14
+
+      - name: yarn test node@16 and above
+        if: ${{ matrix.node-version != '14.x' }}
         run: |
           yarn run test
