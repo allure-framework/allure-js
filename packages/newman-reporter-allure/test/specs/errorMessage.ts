@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/quotes */
+import { expect } from "chai";
+import { after, afterEach, before, test } from "mocha";
 import { runNewman } from "../helpers/runNewman";
 import { server } from "../mocks/server";
-import { before, afterEach, after, it } from "mocha";
-import { expect } from "chai";
 
 before(() => server.listen());
 afterEach(() => server.resetHandlers());

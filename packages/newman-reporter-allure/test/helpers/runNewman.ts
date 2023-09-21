@@ -1,6 +1,6 @@
 import { InMemoryAllureWriter, TestResult } from "allure-js-commons";
 import { run } from "newman";
-import { CollectionDefinition } from "postman-collection";
+import type { CollectionDefinition } from "postman-collection";
 
 export const runNewman = async (collection: CollectionDefinition): Promise<TestResult[]> => {
   return new Promise((resolve) => {

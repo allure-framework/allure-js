@@ -13,7 +13,7 @@ import {
   Status,
   StatusDetails,
 } from "allure-js-commons";
-import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion, NewmanRunOptions } from "newman";
+import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
 import type {
   Collection,
   CollectionDefinition,

@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/quotes */
 import { LabelName, md5, Status } from "allure-js-commons";
+import { expect } from "chai";
+import { after, afterEach, before, test } from "mocha";
 import { runNewman } from "../helpers/runNewman";
 import { server } from "../mocks/server";
-import { before, afterEach, after, it } from "mocha";
-import { expect } from "chai";
 
 before(() => server.listen());
 afterEach(() => server.resetHandlers());
 after(() => server.close());
 
-it("complex test overview", async () => {
+test("complex test overview", async () => {
   const [result] = await runNewman({
     info: {
       name: "fff",
