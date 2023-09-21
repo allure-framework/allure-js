@@ -1,19 +1,13 @@
 @severity:foo
 Feature: with labels
 
-  @foo
-  Scenario: a
+  Scenario: without labels
     Given a step
-    # When do something
-    # Then get something
 
-  @severity:bar @bar
-  Scenario: b
-    Rule: r
-      Scenario: b
-        Given a step
-        # When do something
-        # Then get something
+  Rule: r
+    @feature:foo
+    Scenario: with labels
+      Given a step
 
-  Scenario: c
+  Scenario: with runtime labels
     Given a step with label
