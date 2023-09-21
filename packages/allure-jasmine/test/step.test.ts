@@ -16,8 +16,9 @@ describe("Allure result", () => {
       });
     };
 
-    it("should contain passed step", async function () {
+    it("should contain passed step", async () => {
       const result = await runTest(example);
+
       expect(result).toHaveTestLike({
         status: Status.PASSED,
         steps: [
@@ -43,21 +44,22 @@ describe("Allure result", () => {
 
     let result: any;
 
-    beforeAll(async function () {
+    beforeAll(async () => {
       result = await runTest(example);
     });
 
-    xit("should contain failed step", () => {
-      expect(result).toHaveTestLike({
-        status: Status.FAILED,
-        steps: [
-          {
-            name: "failed step name",
-            status: Status.FAILED,
-          },
-        ],
-      });
-    });
+    // FIXME: temporarily removed `xit` because it breaks the test on CI level
+    // it("should contain failed step", () => {
+    //   expect(result).toHaveTestLike({
+    //     status: Status.FAILED,
+    //     steps: [
+    //       {
+    //         name: "failed step name",
+    //         status: Status.FAILED,
+    //       },
+    //     ],
+    //   });
+    // });
 
     it("should contain details message", () => {
       expect(result).toHaveTestLike({
@@ -82,8 +84,9 @@ describe("Allure result", () => {
       });
     };
 
-    it("should contain all nested step", async function () {
+    it("should contain all nested step", async () => {
       const result = await runTest(example);
+
       expect(result).toHaveTestLike({
         status: Status.PASSED,
         steps: [
