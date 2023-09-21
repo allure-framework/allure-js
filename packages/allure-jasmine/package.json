@@ -20,7 +20,6 @@
     "lint": "eslint ./src ./index.ts --ext .ts",
     "lint:fix": "eslint ./src ./index.ts --ext .ts --fix",
     "compile": "tsc",
-    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "runTest": "tsc -p tsconfig-tests.json && yarn run jasmine ./dist-tests/test/*.js",
     "runTestDebug": "node $NODE_DEBUG_OPTION ./node_modules/.bin/jasmine ./dist/test/*.js",
     "test": "rimraf ./out ; yarn run runTest"
