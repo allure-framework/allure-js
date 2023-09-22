@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/quotes */
-import { expect } from "chai";
+import { expect } from "expect";
 import { after, afterEach, before, test } from "mocha";
 import { runNewman } from "../helpers/runNewman";
 import { server } from "../mocks/server";
@@ -41,7 +41,7 @@ test("complex test overview", async () => {
       },
     ],
   });
-  expect(result.statusDetails.message).eq(
+  expect(result.statusDetails.message).toBe(
     "Текст проверки на русском(она должна зафейлится), (Turkish name) Türkçe metni kontrol et",
   );
 });

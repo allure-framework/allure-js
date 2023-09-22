@@ -1759,15 +1759,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@mswjs/interceptors", [\
-        ["npm:0.17.9", {\
-          "packageLocation": "./.yarn/cache/@mswjs-interceptors-npm-0.17.9-209f8a4795-4df726cbee.zip/node_modules/@mswjs/interceptors/",\
+        ["npm:0.17.10", {\
+          "packageLocation": "./.yarn/cache/@mswjs-interceptors-npm-0.17.10-c1199a9424-0e6d32f399.zip/node_modules/@mswjs/interceptors/",\
           "packageDependencies": [\
-            ["@mswjs/interceptors", "npm:0.17.9"],\
+            ["@mswjs/interceptors", "npm:0.17.10"],\
             ["@open-draft/until", "npm:1.0.3"],\
             ["@types/debug", "npm:4.1.8"],\
             ["@xmldom/xmldom", "npm:0.8.10"],\
             ["debug", "virtual:feb0771c9f8eadaf509cfed41e14a8bebbea5442233275c1c87085111077a08ef71eb773b899665b154d8203a55a489610a54117ae059fce5f5b8b844493b1b1#npm:4.3.4"],\
-            ["headers-polyfill", "npm:3.2.3"],\
+            ["headers-polyfill", "npm:3.2.5"],\
             ["outvariant", "npm:1.4.0"],\
             ["strict-event-emitter", "npm:0.2.8"],\
             ["web-encoding", "npm:1.1.5"]\
@@ -8858,17 +8858,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["headers-polyfill", [\
-        ["npm:3.2.3", {\
-          "packageLocation": "./.yarn/cache/headers-polyfill-npm-3.2.3-e75f9ee697-771bb2093e.zip/node_modules/headers-polyfill/",\
+        ["npm:3.2.5", {\
+          "packageLocation": "./.yarn/cache/headers-polyfill-npm-3.2.5-5873ac13a0-a3c4bdd661.zip/node_modules/headers-polyfill/",\
           "packageDependencies": [\
-            ["headers-polyfill", "npm:3.2.3"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
-        ["npm:3.3.0", {\
-          "packageLocation": "./.yarn/cache/headers-polyfill-npm-3.3.0-9b18abfd30-6dd010544b.zip/node_modules/headers-polyfill/",\
-          "packageDependencies": [\
-            ["headers-polyfill", "npm:3.3.0"]\
+            ["headers-polyfill", "npm:3.2.5"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -11941,19 +11934,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["msw", [\
-        ["npm:1.3.0", {\
-          "packageLocation": "./.yarn/unplugged/msw-virtual-b56df58c18/node_modules/msw/",\
+        ["npm:1.3.1", {\
+          "packageLocation": "./.yarn/unplugged/msw-virtual-c849d4a6d8/node_modules/msw/",\
           "packageDependencies": [\
-            ["msw", "npm:1.3.0"]\
+            ["msw", "npm:1.3.1"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.0", {\
-          "packageLocation": "./.yarn/unplugged/msw-virtual-b56df58c18/node_modules/msw/",\
+        ["virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.1", {\
+          "packageLocation": "./.yarn/unplugged/msw-virtual-c849d4a6d8/node_modules/msw/",\
           "packageDependencies": [\
-            ["msw", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.0"],\
+            ["msw", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.1"],\
             ["@mswjs/cookies", "npm:0.2.2"],\
-            ["@mswjs/interceptors", "npm:0.17.9"],\
+            ["@mswjs/interceptors", "npm:0.17.10"],\
             ["@open-draft/until", "npm:1.0.3"],\
             ["@types/cookie", "npm:0.4.1"],\
             ["@types/js-levenshtein", "npm:1.1.1"],\
@@ -11962,7 +11955,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["chokidar", "npm:3.5.3"],\
             ["cookie", "npm:0.4.2"],\
             ["graphql", "npm:16.8.0"],\
-            ["headers-polyfill", "npm:3.3.0"],\
+            ["headers-polyfill", "npm:3.2.5"],\
             ["inquirer", "npm:8.2.6"],\
             ["is-node-process", "npm:1.2.0"],\
             ["js-levenshtein", "npm:1.1.6"],\
@@ -12118,7 +12111,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./packages/newman-reporter-allure/",\
           "packageDependencies": [\
             ["newman-reporter-allure", "workspace:packages/newman-reporter-allure"],\
-            ["@types/chai", "npm:4.3.6"],\
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/mocha", "npm:10.0.1"],\
             ["@types/newman", "npm:5.3.3"],\
@@ -12130,17 +12122,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
             ["allure-js-commons", "workspace:packages/allure-js-commons"],\
             ["allure-mocha", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#workspace:packages/allure-mocha"],\
-            ["chai", "npm:4.3.8"],\
             ["eslint", "npm:8.49.0"],\
             ["eslint-config-prettier", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:9.0.0"],\
             ["eslint-plugin-import", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:2.28.1"],\
             ["eslint-plugin-jsdoc", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:46.6.0"],\
             ["eslint-plugin-no-null", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.0.2"],\
             ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
+            ["expect", "npm:29.7.0"],\
             ["glob", "npm:10.3.5"],\
             ["mocha", "npm:10.2.0"],\
             ["mocha-multi-reporters", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:1.5.1"],\
-            ["msw", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.0"],\
+            ["msw", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.1"],\
             ["newman", "npm:5.3.2"],\
             ["postman-collection", "npm:4.2.1"],\
             ["rimraf", "npm:5.0.1"],\

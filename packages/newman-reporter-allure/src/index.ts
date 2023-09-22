@@ -340,6 +340,7 @@ class AllureReporter {
     let testDescription = "";
 
     const rawDescription = args.item.request.description;
+
     if (rawDescription !== undefined) {
       if (typeof rawDescription === "string") {
         testDescription = rawDescription || "";
@@ -356,6 +357,7 @@ class AllureReporter {
     }
 
     const response = this.currentRunningItem?.pmItem.responseData;
+
     if (response?.code) {
       this.currentExecutable.parameter("Response Code", response?.code.toString(), {
         excluded: true,
@@ -379,6 +381,7 @@ class AllureReporter {
     }
 
     const failedAssertions = this.currentRunningItem?.pmItem.failedAssertions;
+
     if (response && failedAssertions?.length) {
       const msg = this.escape(failedAssertions.join(", "));
       const details = this.escape(`Response code: ${response.code}, status: ${response.status}`);
