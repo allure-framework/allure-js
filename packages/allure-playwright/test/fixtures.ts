@@ -15,12 +15,12 @@
  */
 
 import { fork } from "child_process";
-import fs from "fs";
-import path from "path";
+import { mkdir, writeFile } from "fs/promises";
+import { join, dirname } from "path";
 import { test as base, TestInfo } from "@playwright/test";
 import type { AllureResults } from "allure-js-commons";
 import { parse } from "properties";
-import { allure } from "../src";
+import { allure } from "allure-playwright";
 export { expect } from "@playwright/test";
 
 type RunResult = any;
@@ -50,10 +50,10 @@ const writeFiles = async (testInfo: TestInfo, files: Files) => {
 
   await Promise.all(
     Object.keys(files).map(async (name) => {
-      const fullName = path.join(baseDir, name);
+      const fullName = join(baseDir, name);
       await allure.attachment(name, Buffer.from(files[name]), "text/plain");
-      await fs.promises.mkdir(path.dirname(fullName), { recursive: true });
-      await fs.promises.writeFile(fullName, files[name]);
+      await mkdir(dirname(fullName), { recursive: true });
+      await writeFile(fullName, files[name]);
     }),
   );
 
@@ -77,12 +77,12 @@ const runPlaywrightTest = async (
       paramList.push(params[key] === true ? `${k}` : `${k}=${value}`);
     }
   }
-  const outputDir = path.join(baseDir, "test-results");
+  const outputDir = join(baseDir, "test-results");
   const args = ["test"];
   args.push(`--output=${outputDir}`, "--workers=2", ...paramList);
 
   if (additionalArgs) {
-    args.push(...additionalArgs);
+    args.push(additionalArgs);
   }
 
   const modulePath = require.resolve("@playwright/test/lib/cli");
@@ -162,6 +162,6 @@ export const test = base.extend<Fixtures>({
   },
   // eslint-disable-next-line no-empty-pattern
   attachment: async ({}, use) => {
-    await use((name) => path.join(__dirname, "assets", name));
+    await use((name) => join(__dirname, "assets", name));
   },
 });

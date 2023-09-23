@@ -64,4 +64,4 @@ export {
 
 export { AllureRuntimeApiInterface } from "./src/framework";
 
-export { parseTestPlan } from "./src/testplan";
+export { TestPlanV1, parseTestPlan } from "./src/testplan";

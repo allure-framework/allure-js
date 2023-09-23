@@ -1,8 +1,8 @@
-import { TestPlanFile } from "../src/testplan";
 import { expect, test } from "./fixtures";
+import { TestPlanV1 } from "allure-js-commons";
 
 test("should respect testplan", async ({ runInlineTest }) => {
-  const exampleTestPlan: TestPlanFile = {
+  const exampleTestPlan: TestPlanV1 = {
     version: "1.0",
     tests: [
       {

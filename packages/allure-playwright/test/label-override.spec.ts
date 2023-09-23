@@ -1,6 +1,6 @@
 import { LabelName, TestResult } from "allure-js-commons";
 import { expect, test } from "./fixtures";
-import { allure } from "../dist";
+import { allure } from "allure-playwright";
 
 async function checkContainsOnlyOneLabel(
   testResult: TestResult,

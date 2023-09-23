@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import fs from "fs";
+import { readFileSync } from "fs";
 import { expect, test } from "./fixtures";
 
 test("should not throw on missing attachment", async ({ runInlineTest }) => {
@@ -56,7 +56,7 @@ test("should add snapshots correctly and provide a screenshot diff", async ({
         test.expect(await page.screenshot()).toMatchSnapshot("foo.png");
       });
     `,
-    "a.test.ts-snapshots/foo-project.png": fs.readFileSync(
+    "a.test.ts-snapshots/foo-project.png": readFileSync(
       attachment("attachment-1-not-expected.png"),
     ),
   });

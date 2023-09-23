@@ -1,13 +1,5 @@
 import { escapeRegExp, parseTestPlan } from "allure-js-commons";
 
-export interface TestPlanFile {
-  version: string;
-  tests: {
-    id: number;
-    selector: string;
-  }[];
-}
-
 export const testPlanFilter = () => {
   const testPlan = parseTestPlan();
   if (!testPlan) {

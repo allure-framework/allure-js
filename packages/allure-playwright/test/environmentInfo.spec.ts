@@ -1,5 +1,4 @@
 /* eslint-disable quote-props */
-import { Status } from "allure-js-commons";
 import { expect, test } from "./fixtures";
 
 test("should have envInfo", async ({ runInlineTest }) => {
