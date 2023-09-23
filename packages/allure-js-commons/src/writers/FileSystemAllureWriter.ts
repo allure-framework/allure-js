@@ -35,6 +35,7 @@ export class FileSystemAllureWriter implements AllureWriter {
   writeEnvironmentInfo(info?: Record<string, string | undefined>): void {
     const text = stringify(info, { unicode: true }).toString();
     const path = this.buildPath("environment.properties");
+
     writeFileSync(path, text);
   }
 
