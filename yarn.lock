@@ -2672,9 +2672,6 @@ __metadata:
     prettier: ^3.0.3
     rimraf: ^5.0.1
     typescript: ^5.2.2
-  dependenciesMeta:
-    selenium-standalone@9.1.1:
-      unplugged: true
   languageName: unknown
   linkType: soft
 
