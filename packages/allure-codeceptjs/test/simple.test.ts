@@ -1,21 +1,24 @@
-import { expect } from "@jest/globals";
+import { expect } from "expect";
 import { runTests } from "./utils/run-tests";
 
-test("simple scenarios", async () => {
-  const res = await runTests({
-    files: {
-      "nested/login.test.js": /* js */ `
+it("simple scenarios", async () => {
+  const res = await runTests(
+    {
+      files: {
+        "nested/login.test.js": /* js */ `
         Feature("login-feature");
         Scenario("login-scenario1", async () => {});
         Scenario("login-scenario2", async () => {});
       `,
-      "logout.test.js": /* js */ `
+        "logout.test.js": /* js */ `
         Feature("logout-feature");
         Scenario("logout-scenario1", async () => {});
         Scenario("logout-scenario2", async () => {});
       `,
+      },
     },
-  });
+    "simple.test.ts",
+  );
   const tests = res.tests;
   expect(tests.length).toBe(4);
 

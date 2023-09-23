@@ -41,10 +41,7 @@ const compare: (actual: any, expected: any) => boolean = (actual, expected) => {
 };
 
 export const matchers = {
-  toHaveTestLike: (
-    util: MatchersUtil,
-    customEqualityTesters: Readonly<CustomEqualityTester[]>,
-  ) => ({
+  toHaveTestLike: (util: MatchersUtil) => ({
     compare: (actual: any, expected: any) => ({
       pass: compare(actual, { tests: [expected] }),
       message:

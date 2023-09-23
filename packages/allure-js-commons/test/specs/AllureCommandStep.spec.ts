@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { AllureCommandStepExecutable } from "../../src/AllureCommandStep";
-import { ContentType, LabelName, LinkType, MetadataMessage } from "../../src/model";
+import { AllureCommandStepExecutable } from "allure-js-commons";
+import { ContentType, LabelName, LinkType, MetadataMessage } from "allure-js-commons";
 
 const fixtures = {
   name: "my step name",

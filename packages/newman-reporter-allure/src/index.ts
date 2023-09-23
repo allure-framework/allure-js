@@ -13,7 +13,7 @@ import {
   Status,
   StatusDetails,
 } from "allure-js-commons";
-import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion, NewmanRunOptions } from "newman";
+import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
 import type {
   Collection,
   CollectionDefinition,
@@ -163,6 +163,7 @@ class AllureReporter {
     }
 
     item.forEachParent((parent) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       chain.unshift(parent.name || parent.id);
     });
 
@@ -339,6 +340,7 @@ class AllureReporter {
     let testDescription = "";
 
     const rawDescription = args.item.request.description;
+
     if (rawDescription !== undefined) {
       if (typeof rawDescription === "string") {
         testDescription = rawDescription || "";
@@ -355,6 +357,7 @@ class AllureReporter {
     }
 
     const response = this.currentRunningItem?.pmItem.responseData;
+
     if (response?.code) {
       this.currentExecutable.parameter("Response Code", response?.code.toString(), {
         excluded: true,
@@ -378,6 +381,7 @@ class AllureReporter {
     }
 
     const failedAssertions = this.currentRunningItem?.pmItem.failedAssertions;
+
     if (response && failedAssertions?.length) {
       const msg = this.escape(failedAssertions.join(", "));
       const details = this.escape(`Response code: ${response.code}, status: ${response.status}`);

@@ -1,35 +1,33 @@
-// custom runner for mocha that allows to include a custom reporter
-// which is not packed into an npm module
 import path from "path";
 import { TestResult } from "allure-js-commons";
-import glob from "glob";
+import chai from "chai";
+import chaiLike from "chai-like";
+import chaiThings from "chai-things";
+import * as glob from "glob";
 import Mocha from "mocha";
-import selenium from "selenium-standalone";
 import "source-map-support/register";
+
+chai.should();
+chai.use(chaiLike);
+chai.use(chaiThings);
 
 export const getTestResultByName = (results: TestResult[], name: string) =>
   results.find((result) => result.name === name)!;
 
-(async () => {
-  await selenium.install();
-
-  const seleniumProcess = await selenium.start();
-
-  const mocha = new Mocha({
-    timeout: 30000,
-    reporter: "mocha-multi-reporters",
+const mocha = new Mocha({
+  timeout: 30000,
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  reporter: require("mocha-multi-reporters"),
+  reporterOptions: {
+    reporterEnabled: `list, ${require.resolve("allure-mocha")}`,
     reporterOptions: {
-      reporterEnabled: "list, ../allure-mocha",
-      allureMochaReporterOptions: {
-        resultsDir: path.resolve(__dirname, "../out/allure-results"),
-      },
+      resultsDir: path.resolve(__dirname, "../out/allure-results"),
     },
-  });
+  },
+});
 
-  glob.sync("./test/spec/**/*.test.ts").forEach((file) => mocha.addFile(file));
+glob.globSync("./test/spec/**/*.test.ts").forEach((file) => mocha.addFile(file));
 
-  mocha.run((failures) => {
-    seleniumProcess.kill();
-    process.exit(failures === 0 ? 0 : 1);
-  });
-})();
+mocha.run((failures) => {
+  process.exit(failures === 0 ? 0 : 1);
+});

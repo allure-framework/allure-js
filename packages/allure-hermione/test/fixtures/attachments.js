@@ -1,3 +1,5 @@
-it("json", async ({ browser, currentTest }) => {
-  await browser.attach(currentTest.id, JSON.stringify({ foo: "bar" }), "application/json");
+const { allure } = require("../../dist/runtime");
+
+it("json", async ({ browser }) => {
+  await allure(browser).attachment(JSON.stringify({ foo: "bar" }), "application/json");
 });

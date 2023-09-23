@@ -3,8 +3,7 @@ import { expect } from "chai";
 import Sinon from "sinon";
 import { beforeEach, describe, it } from "mocha";
 import { getTestResultByName } from "../runner";
-import { HermioneAllure } from "../types";
-import Hermione from "hermione";
+import { runHermione } from "../helper/run_helper";
 
 describe("attachments", () => {
   let writeAttachmentStub: Sinon.SinonStub;
@@ -16,11 +15,9 @@ describe("attachments", () => {
   });
 
   it("adds json attachment", async () => {
-    const hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
+    const allureResults = await runHermione(["./test/fixtures/attachments.js"]);
 
-    await hermione.run(["./test/fixtures/attachments.js"], {});
-
-    const { results } = hermione.allure.writer;
+    const { tests: results } = allureResults;
     const {
       attachments: [attachment],
     } = getTestResultByName(results, "json");

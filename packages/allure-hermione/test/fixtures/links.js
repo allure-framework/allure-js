@@ -1,11 +1,12 @@
-it("custom", async ({ browser, currentTest }) => {
-  await browser.link(currentTest.id, "http://example.org", "bar", "foo");
+const { allure } = require("../../dist/runtime");
+it("custom", async ({ browser }) => {
+  await allure(browser).link("https://example.org", "bar", "foo");
 });
 
-it("tms", async ({ browser, currentTest }) => {
-  await browser.tms(currentTest.id, "foo", "http://example.org");
+it("tms", async ({ browser }) => {
+  await allure(browser).tms("https://example.org", "foo");
 });
 
-it("issue", async ({ browser, currentTest }) => {
-  await browser.issue(currentTest.id, "foo", "http://example.org");
+it("issue", async ({ browser }) => {
+  await allure(browser).issue("https://example.org", "foo");
 });

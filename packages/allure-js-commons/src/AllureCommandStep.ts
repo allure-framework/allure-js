@@ -12,10 +12,10 @@ import {
   StepMetadata,
 } from "./model";
 
-export type StepBodyFunction = (
+export type StepBodyFunction<T = any> = (
   this: AllureCommandStepExecutable,
   step: AllureCommandStepExecutable,
-) => any | Promise<any>;
+) => T | Promise<T>;
 
 export interface AllureCommandStep<T = MetadataMessage> {
   name: string;

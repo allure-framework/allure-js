@@ -78,7 +78,7 @@ class AllureReporter implements Reporter {
   private allureTestCache = new Map<TestCase, AllureTest>();
   private allureStepCache = new Map<TestStep, AllureStep>();
   private allureAttachmentSteps = new Map<string, AllureStep>();
-  private hostname = process.env.ALLURE_HOST_NAME || os.hostname();
+  private hostname: string = process.env.ALLURE_HOST_NAME || os.hostname();
   private globalStartTime = new Date();
 
   private processedDiffs: string[] = [];
@@ -179,7 +179,7 @@ class AllureReporter implements Reporter {
     // We need to check parallelIndex first because pw introduced this field only in v1.30.0
     const threadId = result.parallelIndex !== undefined ? result.parallelIndex : result.workerIndex;
 
-    const thread =
+    const thread: string =
       process.env.ALLURE_THREAD_NAME ||
       `${this.hostname}-${process.pid}-playwright-worker-${threadId}`;
 
@@ -333,6 +333,7 @@ class AllureReporter implements Reporter {
         return;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const metadata: MetadataMessage = JSON.parse(attachment.body.toString());
       metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
       metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));

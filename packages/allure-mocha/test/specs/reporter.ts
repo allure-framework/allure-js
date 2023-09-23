@@ -14,8 +14,8 @@ describe("reporter", () => {
   describe("parallel mode", () => {
     it("prints warnings about allure api", () => {
       const out = spawnSync(
-        "tsx",
-        ["--tsconfig", "test/tsconfig.json", "test/fixtures/runners/parallel.ts"],
+        "ts-node",
+        ["--project", "test/tsconfig.json", "test/fixtures/runners/parallel.ts"],
         {
           cwd: process.cwd(),
         },
@@ -28,8 +28,8 @@ describe("reporter", () => {
   describe("single thread mode", () => {
     it("doesn't print any warning about allure api", () => {
       const out = spawnSync(
-        "tsx",
-        ["--tsconfig", "test/tsconfig.json", "test/fixtures/runners/singleThread.ts"],
+        "ts-node",
+        ["--project", "test/tsconfig.json", "test/fixtures/runners/singleThread.ts"],
         {
           cwd: process.cwd(),
         },

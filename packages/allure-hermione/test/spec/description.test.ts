@@ -1,30 +1,21 @@
-import { TestResult } from "allure-js-commons";
 import { expect } from "chai";
-import Hermione from "hermione";
-import { before, describe, it } from "mocha";
+import { describe, it } from "mocha";
 import { getTestResultByName } from "../runner";
-import { HermioneAllure } from "../types";
+import { runHermione } from "../helper/run_helper";
 
 describe("description", () => {
-  let results: TestResult[];
+  it("adds `foo` markdown description", async () => {
+    const allureResults = await runHermione(["./test/fixtures/description.js"]);
 
-  before(async () => {
-    const hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
-
-    await hermione.run(["./test/fixtures/description.js"], {});
-
-    results = hermione.allure.writer.results;
-  });
-
-  it("adds `foo` markdown description", () => {
-    const { description } = getTestResultByName(results, "markdown description");
-
+    const { description } = getTestResultByName(allureResults.tests, "markdown description");
     expect(description).eq("foo");
   });
 
-  it("adds `foo` html description", () => {
-    const { descriptionHtml } = getTestResultByName(results, "html description");
+  it("adds `foo` html description", async () => {
+    const allureResults = await runHermione(["./test/fixtures/description.js"]);
 
-    expect(descriptionHtml).eq("foo");
+    const { descriptionHtml } = getTestResultByName(allureResults.tests, "html description");
+
+    expect(descriptionHtml).eq("fooHtml");
   });
 });

@@ -1,6 +1,6 @@
+import { suite, test } from "@testdeck/mocha";
 import { Status } from "allure-js-commons";
 import { expect } from "chai";
-import { suite, test } from "@testdeck/mocha";
 import { findStep, runTests } from "../utils";
 
 @suite
@@ -41,6 +41,6 @@ class StepSuite {
     test = writerStub.getTestByName("shouldIgnoreStepWithError");
     expect(test).not.eq(undefined);
     expect(test.status).eq(Status.PASSED);
-    expect(test.steps).is.ofSize(0);
+    expect(test.steps).length(0);
   }
 }

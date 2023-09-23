@@ -140,7 +140,7 @@ export enum LabelName {
   /**
    * @deprecated please use ALLURE_ID instead
    */
-  AS_ID = "ALLURE_ID",
+  AS_ID = ALLURE_ID,
   SUITE = "suite",
   PARENT_SUITE = "parentSuite",
   SUB_SUITE = "subSuite",

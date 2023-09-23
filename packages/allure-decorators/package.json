@@ -25,7 +25,7 @@
     "compile": "tsc",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "allure-report": "allure serve ./out/allure-results",
-    "test": "nyc tsx --tsconfig test/tsconfig.json test/runner.ts",
+    "test": "ts-node --project test/tsconfig.json test/runner.ts",
     "coverage": "codecov",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix"
@@ -35,46 +35,32 @@
   },
   "devDependencies": {
     "@testdeck/mocha": "0.1.2",
-    "@types/chai": "^4.2.11",
+    "@types/chai": "^4.3.6",
     "@types/chai-arrays": "2.0.0",
-    "@types/glob": "^8.0.0",
-    "@types/mocha": "^9.0.0",
-    "@types/node": "^16.7.8",
+    "@types/eslint": "^8",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^20.6.3",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
     "allure-mocha": "workspace:*",
-    "chai": "^4.2.0",
+    "chai": "^4.3.8",
     "chai-arrays": "^2.2.0",
     "codecov": "^3.6.5",
+    "eslint": "^8.49.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-jsdoc": "^46.6.0",
+    "eslint-plugin-no-null": "^1.0.2",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
     "fs-jetpack": "^4.1.0",
-    "glob": "^8.0.0",
-    "mocha": "^9.1.3",
+    "glob": "^10.3.5",
+    "mocha": "^10.2.0",
     "mocha-multi-reporters": "^1.5.1",
-    "nyc": "^15.0.1",
-    "rimraf": "^3.0.2",
-    "source-map-support": "^0.5.19",
-    "tsx": "^3.12.7",
-    "typescript": "^4.4.2"
-  },
-  "nyc": {
-    "check-coverage": false,
-    "lines": 80,
-    "statements": 80,
-    "functions": 75,
-    "branches": 70,
-    "extension": [
-      ".ts"
-    ],
-    "exclude": [
-      "test/**/*.*",
-      "**/*.d.ts",
-      "index.ts"
-    ],
-    "reporter": [
-      "lcov",
-      "text"
-    ],
-    "all": true,
-    "report-dir": "./out/coverage",
-    "temp-dir": "./out/.nyc"
+    "rimraf": "^5.0.1",
+    "source-map-support": "^0.5.21",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
   },
   "files": [
     "dist"

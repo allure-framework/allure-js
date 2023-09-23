@@ -1,17 +1,13 @@
-import { Parameter, TestResult } from "allure-js-commons";
+import { Parameter } from "allure-js-commons";
 import { expect } from "chai";
-import { before, describe, it } from "mocha";
+import { describe, it } from "mocha";
 import { getTestResultByName } from "../runner";
-import { HermioneAllure } from "../types";
-import Hermione from "hermione";
+import { runHermione } from "../helper/run_helper";
 
 describe("parameters", () => {
   it("adds `foo` custom parameter", async () => {
-    const hermione = new Hermione("./test/.hermione.conf.js") as HermioneAllure;
+    const { tests: results } = await runHermione(["./test/fixtures/parameters.js"]);
 
-    await hermione.run(["./test/fixtures/parameters.js"], {});
-
-    const { results } = hermione.allure.writer;
     const { parameters } = getTestResultByName(results, "custom");
     const parameter = parameters.find(({ name }) => name === "foo") as Parameter;
 

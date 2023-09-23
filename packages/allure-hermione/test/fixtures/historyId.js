@@ -1,3 +1,4 @@
+const { allure } = require("../../dist/runtime");
 it("historyId", async ({ browser, currentTest }) => {
-  await browser.historyId(currentTest.id, "foo");
+  await allure(browser).historyId("foo");
 });

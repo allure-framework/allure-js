@@ -143,8 +143,11 @@ export class ExecutableItemWrapper {
 
 // This class is here because of circular dependency with ExecutableItemWrapper
 export class AllureStep extends ExecutableItemWrapper {
-  // eslint-disable-next-line no-shadow
-  constructor(private readonly stepResult: StepResult, start: number = Date.now()) {
+  constructor(
+    // eslint-disable-next-line no-shadow
+    private readonly stepResult: StepResult,
+    start: number = Date.now(),
+  ) {
     super(stepResult);
     this.stepResult.start = start;
   }

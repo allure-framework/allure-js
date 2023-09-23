@@ -1,4 +1,5 @@
 module.exports = {
+  root: true,
   globals: {
     __PATH_PREFIX__: true,
   },
@@ -96,7 +97,7 @@ module.exports = {
         },
       },
     ],
-    "@typescript-eslint/member-ordering": "error",
+    "@typescript-eslint/member-ordering": "off",
     "@typescript-eslint/naming-convention": "off",
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-empty-interface": "off",
@@ -114,11 +115,13 @@ module.exports = {
     "@typescript-eslint/no-namespace": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-parameter-properties": "off",
+    "@typescript-eslint/no-redundant-type-constituents": "off",
     "@typescript-eslint/no-require-imports": "error",
     "@typescript-eslint/no-this-alias": "error",
     "@typescript-eslint/no-unsafe-assignment": "off",
-    "@typescript-eslint/no-unsafe-member-access": "off",
     "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-unsafe-enum-comparison": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
     "@typescript-eslint/no-unsafe-return": "off",
     "@typescript-eslint/no-unused-expressions": "error",
     "@typescript-eslint/no-unused-vars": "off",
@@ -126,8 +129,8 @@ module.exports = {
     "@typescript-eslint/no-var-requires": "error",
     "@typescript-eslint/prefer-for-of": "error",
     "@typescript-eslint/prefer-function-type": "error",
-    "@typescript-eslint/prefer-regexp-exec": "off",
     "@typescript-eslint/prefer-namespace-keyword": "error",
+    "@typescript-eslint/prefer-regexp-exec": "off",
     "@typescript-eslint/quotes": ["error", "double"],
     "@typescript-eslint/restrict-template-expressions": [
       "error",
@@ -185,7 +188,6 @@ module.exports = {
     "import/order": ["error", { alphabetize: { order: "asc", caseInsensitive: true } }],
     "jsdoc/check-alignment": "error",
     "jsdoc/check-indentation": "error",
-    "jsdoc/newline-after-description": "error",
     "max-classes-per-file": ["error", 5],
     // "max-len": [
     //   "error",

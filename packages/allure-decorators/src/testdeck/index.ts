@@ -44,6 +44,7 @@ const makeParamsFunction = <T>(execution?: Execution): ParamsDecorator => {
       const adjustedParams: any = typeof params === "function" ? params() : params;
       target[propertyKey][testNameSymbol] = propertyKey.toString();
       target[propertyKey][parametersSymbol] = target[propertyKey][parametersSymbol] || [];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       [].concat(adjustedParams || []).forEach((param) => {
         target[propertyKey][parametersSymbol].push({ execution, name, params: param });
       });

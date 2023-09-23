@@ -20,7 +20,6 @@ let mochaAllure: MochaAllure;
 
 export const allureGetter = () => mochaAllure;
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 export const allure: MochaAllure = new MochaAllureGateway(allureGetter);
 
@@ -31,7 +30,10 @@ type ParallelRunner = Mocha.Runner & {
 export class MochaAllureReporter extends Mocha.reporters.Base {
   private coreReporter: AllureReporter;
 
-  constructor(readonly runner: ParallelRunner, readonly opts: Mocha.MochaOptions) {
+  constructor(
+    readonly runner: ParallelRunner,
+    readonly opts: Mocha.MochaOptions,
+  ) {
     super(runner, opts);
 
     const { resultsDir = "allure-results" } = opts.reporterOptions || {};
@@ -89,6 +91,7 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   }
 
   private onHookEnd(hook: Mocha.Hook): void {
-    this.coreReporter.endHook(hook?.error?.());
+    const error: Error | undefined = hook?.error?.();
+    this.coreReporter.endHook(error);
   }
 }

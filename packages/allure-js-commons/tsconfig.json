@@ -3,7 +3,7 @@
   "include": [
     "./src/**/*",
     "index.ts",
-    "internal.ts"
+    "internal.ts",
   ],
   "compilerOptions": {
     "types": [

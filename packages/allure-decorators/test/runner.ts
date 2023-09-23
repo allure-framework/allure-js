@@ -1,13 +1,14 @@
 // custom runner for mocha that allows to include a custom reporter
 // which is not packed into an npm module
-import Mocha from "mocha";
 import path from "path";
-import glob from "glob";
+import * as glob from "glob";
+import Mocha from "mocha";
 import "source-map-support/register";
 
 const mocha = new Mocha({
   timeout: 16000,
-  reporter: "mocha-multi-reporters",
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  reporter: require("mocha-multi-reporters"),
   reporterOptions: {
     reporterEnabled: "list, ../allure-mocha",
     allureMochaReporterOptions: {
@@ -16,6 +17,6 @@ const mocha = new Mocha({
   },
 });
 
-glob.sync("test/specs/**/*.ts").forEach((file) => mocha.addFile(file));
+glob.globSync("test/specs/**/*.ts").forEach((file) => mocha.addFile(file));
 
 mocha.run((failures) => process.exit(failures === 0 ? 0 : 1));

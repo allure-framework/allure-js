@@ -17,9 +17,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [16.x]
+        node-version: [ 16.x ]
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@v4.0.0
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -27,10 +27,13 @@ jobs:
           cache: "yarn"
       - name: yarn install
         run: |
-          yarn install
-      - name: prettier:check
+          yarn install --immutable --immutable-cache --check-cache
+      - name: build
         run: |
-          yarn prettier:check
-      - name: yarn lint
+          yarn run build
+      - name: prettier
+        run: |
+          yarn run prettier:check
+      - name: eslint
         run: |
           yarn run lint

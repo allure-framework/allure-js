@@ -100,7 +100,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
     this.labelStack.push([]);
   }
 
-  specStarted(spec: jasmine.CustomReporterResult): void {
+  specStarted(result: jasmine.SuiteResult): void {
     let currentGroup = this.getCurrentGroup();
 
     if (currentGroup === null) {
@@ -110,7 +110,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
     currentGroup = currentGroup.startGroup("Test wrapper"); // needed to hold beforeEach/AfterEach
     this.groupStack.push(currentGroup);
 
-    const name = spec.description;
+    const name = result.description;
     const allureTest = currentGroup.startTest(name);
 
     if (this.runningTest != null) {
@@ -118,8 +118,8 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
     }
     this.runningTest = allureTest;
 
-    allureTest.fullName = spec.fullName;
-    allureTest.historyId = spec.fullName;
+    allureTest.fullName = result.fullName;
+    allureTest.historyId = result.fullName;
     allureTest.stage = Stage.RUNNING;
 
     for (const labels of this.labelStack) {
@@ -129,7 +129,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
     }
   }
 
-  specDone(spec: jasmine.CustomReporterResult): void {
+  specDone(spec: jasmine.SpecResult): void {
     const currentTest = this.runningTest;
     if (currentTest === null) {
       throw new Error("specDone while no test is running");
@@ -257,6 +257,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
                 new Promise((resolve, reject) => {
                   const t: any = resolve;
                   t.fail = reject;
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                   action(t);
                 }),
             )();
@@ -271,6 +272,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
               })
               .catch((e) => {
                 this.runningExecutable = null;
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 done.fail(e);
               });
           } else {
@@ -302,7 +304,10 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
 }
 
 export class JasmineAllureInterface extends Allure {
-  constructor(private readonly reporter: JasmineAllureReporter, runtime: AllureRuntime) {
+  constructor(
+    private readonly reporter: JasmineAllureReporter,
+    runtime: AllureRuntime,
+  ) {
     super(runtime);
   }
 

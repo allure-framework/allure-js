@@ -1,15 +1,17 @@
 import assert from "node:assert";
 import { expect } from "chai";
 import { expect as jestExpect } from "expect";
-import { typeToExtension } from "../../dist/src/writers";
-import { ExecutableItem, LabelName, Status } from "../../src/model";
 import {
+  ExecutableItem,
+  LabelName,
+  Status,
   allureLabelRegexp,
   getStatusFromError,
   getSuitesLabels,
   isAnyStepFailed,
   serialize,
-} from "../../src/utils";
+  typeToExtension,
+} from "allure-js-commons";
 
 const fixtures = {
   withoutFailed: {
@@ -318,7 +320,7 @@ describe("serialize", () => {
 
   describe("with function", () => {
     it("returns function string", () => {
-      expect(serialize(() => {})).eq("()=>{}");
+      expect(serialize(() => {})).eq("() => { }");
     });
   });
 

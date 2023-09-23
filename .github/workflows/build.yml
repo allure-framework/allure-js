@@ -17,9 +17,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [14.x, 16.x]
+        node-version: [14.x, 16.x, 18.x, 20.x]
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@v4.0.0
 
       - uses: browser-actions/setup-chrome@v1
         with:
@@ -37,7 +37,7 @@ jobs:
 
       - name: yarn install
         run: |
-          yarn install
+          yarn install --immutable --immutable-cache --check-cache
 
       - run: yarn workspace allure-playwright playwright install chromium --with-deps
 
@@ -45,6 +45,12 @@ jobs:
         run: |
           yarn run build
 
-      - name: yarn test
+      - name: yarn test node@14
+        if: ${{ matrix.node-version == '14.x' }}
+        run: |
+          yarn run test:node-14
+
+      - name: yarn test node@16 and above
+        if: ${{ matrix.node-version != '14.x' }}
         run: |
           yarn run test

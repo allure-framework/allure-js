@@ -1,5 +1,7 @@
-it("custom", async ({ browser, currentTest }) => {
-  await browser.parameter(currentTest.id, "foo", "bar", {
+const { allure } = require("../../dist/runtime");
+
+it("custom", async ({ browser }) => {
+  await allure(browser).parameter("foo", "bar", {
     excluded: false,
     mode: "hidden",
   });

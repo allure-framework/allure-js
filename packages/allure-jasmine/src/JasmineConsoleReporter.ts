@@ -4,7 +4,7 @@ export class JasmineConsoleReporter implements jasmine.CustomReporter {
     console.log(new Date().toISOString(), message);
   }
 
-  suiteStarted(suite: jasmine.CustomReporterResult): void {
+  suiteStarted(suite: jasmine.SuiteResult): void {
     this.log(`Suite started: ${suite.fullName}`);
   }
 
@@ -12,11 +12,11 @@ export class JasmineConsoleReporter implements jasmine.CustomReporter {
     this.log("Suite ended\n\n");
   }
 
-  specStarted(spec: jasmine.CustomReporterResult): void {
+  specStarted(spec: jasmine.SpecResult): void {
     this.log(`Case started: ${spec.description}`);
   }
 
-  specDone(spec: jasmine.CustomReporterResult): void {
+  specDone(spec: jasmine.SpecResult): void {
     this.log(`Case ended: ${spec.status}\n\n`);
     /* for (const fail of spec.failedExpectations) {
       console.error(fail.message);

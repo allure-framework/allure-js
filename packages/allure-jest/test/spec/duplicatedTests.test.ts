@@ -6,6 +6,7 @@ describe("tests with the same name", () => {
     try {
       await runJestTests(["./test/fixtures/duplicatedTests.test.js"]);
     } catch (err) {
+      // @ts-ignore
       expect(err.message).eq(
         // eslint-disable-next-line @typescript-eslint/quotes
         'Test "has the same name" has been already added to run! To continue with reporting, please rename the test.',

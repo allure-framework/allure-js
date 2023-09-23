@@ -1,5 +1,6 @@
 export { AllureRuntime } from "./src/AllureRuntime";
 export {
+  typeToExtension,
   InMemoryAllureWriter,
   FileSystemAllureWriter,
   MessageAllureWriter,
@@ -45,18 +46,20 @@ export {
 } from "./src/model";
 
 export {
-  md5,
-  escapeRegExp,
-  isAnyStepFailed,
-  readImageAsBase64,
-  allureReportFolder,
-  stripAscii,
   allureIdRegexp,
   allureIdRegexpGlobal,
-  allureLabelRegexpGlobal,
   allureLabelRegexp,
+  allureLabelRegexpGlobal,
+  allureReportFolder,
+  escapeRegExp,
+  getLabelsFromEnv,
+  getStatusFromError,
   getSuitesLabels,
-  serialize
+  isAnyStepFailed,
+  md5,
+  readImageAsBase64,
+  serialize,
+  stripAscii
 } from "./src/utils";
 
 export { AllureRuntimeApiInterface } from "./src/framework";

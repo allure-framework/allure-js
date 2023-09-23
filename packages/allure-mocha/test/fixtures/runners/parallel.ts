@@ -1,6 +1,6 @@
-import MochaAllureReporter from "allure-mocha";
-import glob from "glob";
+import { globSync } from "glob";
 import Mocha from "mocha";
+import MochaAllureReporter from "allure-mocha";
 import "source-map-support/register";
 
 const mocha = new Mocha({
@@ -9,6 +9,6 @@ const mocha = new Mocha({
   parallel: true,
 });
 
-glob.sync("test/fixtures/specs/runtime.ts").forEach((file) => mocha.addFile(file));
+globSync("test/fixtures/specs/runtime.ts").forEach((file) => mocha.addFile(file));
 
 mocha.run((failures) => process.exit(failures === 0 ? 0 : 1));

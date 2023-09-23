@@ -1,13 +1,15 @@
-import { randomUUID } from "crypto";
-import { mkdir, readFile, writeFile } from "fs/promises";
-import { dirname, resolve } from "path";
+import { mkdir, rm, readFile, writeFile } from "fs/promises";
+import { dirname, resolve, extname } from "path";
+import type { AllureResults } from "allure-js-commons";
+import { fork } from "child_process";
+import { allure } from "allure-mocha/runtime";
 
-import { InMemoryAllureWriter } from "allure-js-commons";
-import codeceptRun from "codeceptjs/lib/command/run";
-
-export const runTests = async (params: {
-  files: Record<string, string>;
-}): Promise<InMemoryAllureWriter> => {
+const runTestsInternal = async (
+  params: {
+    files: Record<string, string>;
+  },
+  path: string,
+): Promise<AllureResults> => {
   const configFile = "codecept.config.js";
 
   if (!(configFile in params.files)) {
@@ -17,8 +19,12 @@ export const runTests = async (params: {
     );
   }
 
-  let data;
-  const testPath = resolve(__dirname, `../../test-results/${randomUUID()}`);
+  const testPath = resolve(__dirname, `../../test-results/${path}`);
+
+  await rm(testPath, {
+    recursive: true,
+    force: true,
+  });
 
   await mkdir(testPath, {
     recursive: true,
@@ -27,20 +33,76 @@ export const runTests = async (params: {
   await Promise.all(
     Object.keys(params.files).map(async (fileName) => {
       const filePath = resolve(testPath, fileName);
+      const content = params.files[fileName];
+
+      allure.attachment(fileName, content, {
+        contentType: "text/plain",
+        fileExtension: extname(fileName),
+      });
+
       await mkdir(dirname(filePath), { recursive: true });
-      await writeFile(filePath, params.files[fileName], {});
+      await writeFile(filePath, content, {});
     }),
   );
 
-  global.postProcessorForTest = (writer: InMemoryAllureWriter) => {
-    data = writer;
-  };
+  const modulePath = require.resolve("codeceptjs/bin/codecept.js");
 
-  const configPath = resolve(testPath, configFile);
+  const args = ["run", "-c", testPath];
+  allure.logStep(`${modulePath} ${args.join(" ")}`);
 
-  await codeceptRun(undefined, {
-    config: configPath,
+  const testProcess = fork(modulePath, args, {
+    execArgv: [],
+    env: {
+      ...process.env,
+      ALLURE_POST_PROCESSOR_FOR_TEST: String("true"),
+    },
+    cwd: testPath,
+    stdio: "pipe",
   });
 
-  return data as any;
+  const results: AllureResults = { tests: [], groups: [], attachments: {} };
+  testProcess.on("message", (message) => {
+    const event: { path: string; type: string; data: string } = JSON.parse(message.toString());
+
+    switch (event.type) {
+      case "result": {
+        results.tests.push(JSON.parse(Buffer.from(event.data, "base64").toString()));
+        break;
+      }
+      case "container": {
+        results.groups.push(JSON.parse(Buffer.from(event.data, "base64").toString()));
+        break;
+      }
+      case "attachment": {
+        results.attachments[event.path] = event.data;
+        break;
+      }
+      case "misc": {
+        if (event.path === "categories.json") {
+          results.categories = JSON.parse(Buffer.from(event.data, "base64").toString());
+        }
+      }
+    }
+  });
+
+  testProcess.stdout?.on("data", (chunk) => {
+    process.stdout.write(String(chunk));
+  });
+  testProcess.stderr?.on("data", (chunk) => {
+    process.stderr.write(String(chunk));
+  });
+
+  await new Promise<number>((x) => testProcess.on("close", x));
+
+  allure.attachment(
+    "allure-results",
+    Buffer.from(JSON.stringify(results, null, 2)),
+    "application/json",
+  );
+
+  return results;
 };
+//
+export const runTests: typeof runTestsInternal = (...args) =>
+  allure.step("run tests", () => runTestsInternal(...args));
+// export const runTests: typeof runTestsInternal = (...args) => runTestsInternal(...args);

@@ -1,4 +1,3 @@
-import { createHash } from "crypto";
 import { basename, normalize } from "path";
 import {
   AllureGroup,
@@ -97,17 +96,17 @@ export class AllureReporter {
     }
 
     const testPath = test.file?.replace(this.cwd, "");
+    const fullName = (testPath ? `${testPath}: ` : "") + test.titlePath().join(" > ");
 
     this.currentTest = this.currentSuite.startTest(test.title);
-    this.currentTest.fullName = test.title;
-    this.currentTest.historyId = md5(test.fullTitle());
+    this.currentTest.fullName = fullName;
     this.currentTest.stage = Stage.RUNNING;
 
     if (testPath) {
-      const normalizedTestPath = normalize(testPath || "")
+      const normalizedTestPath: string[] = normalize(testPath || "")
         .replace(/^\//, "")
         .split("/")
-        .filter((item) => item !== basename(testPath));
+        .filter((item: string) => item !== basename(testPath));
 
       this.currentTest.addLabel(LabelName.PACKAGE, normalizedTestPath.join("."));
     }
@@ -119,6 +118,8 @@ export class AllureReporter {
         this.currentTest!.addLabel(label.name, label.value);
       });
     }
+
+    this.currentTest.calculateHistoryId();
   }
 
   public passTestCase(test: Mocha.Test): void {

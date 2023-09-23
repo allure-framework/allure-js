@@ -6,8 +6,7 @@
   ],
   "compilerOptions": {
     "types": [
-      "node",
-      "jasmine"
+      "node", "jasmine"
     ],
     "outDir": "./dist"
   }
