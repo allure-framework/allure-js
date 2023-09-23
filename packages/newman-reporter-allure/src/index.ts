@@ -18,6 +18,7 @@ import type {
   Collection,
   CollectionDefinition,
   Event,
+  HeaderList,
   Item,
   Request,
   RequestBody,
@@ -46,12 +47,14 @@ interface PmRequestData {
   url: string;
   method: string;
   body?: RequestBody;
+  header?: HeaderList;
 }
 
 interface PmResponseData {
   status: string;
   code: number;
   body: string;
+  header?: HeaderList;
 }
 
 interface RunningItem {
@@ -333,8 +336,32 @@ class AllureReporter {
     const requestData = this.currentRunningItem?.pmItem.requestData;
     const requestDataURL = requestData && `${requestData.method} - ${requestData.url}`;
 
+    if (requestData?.header && requestData?.header?.count() > 0) {
+      const headers = requestData.header
+        .all()
+        .map((h) => `${h.key}: ${h.value}`)
+        .join("\n");
+      const attachment = this.allureRuntime.writeAttachment(headers, {
+        contentType: ContentType.TEXT,
+      });
+
+      this.currentExecutable.addAttachment(
+        "Request Headers",
+        { contentType: ContentType.TEXT },
+        attachment,
+      );
+    }
+
     if (requestData?.body?.mode === "raw" && requestData.body.raw) {
-      this.currentExecutable.parameter("Request body", requestData.body.raw);
+      const attachment = this.allureRuntime.writeAttachment(requestData.body.raw, {
+        contentType: ContentType.TEXT,
+      });
+
+      this.currentExecutable.addAttachment(
+        "Request Body",
+        { contentType: ContentType.TEXT },
+        attachment,
+      );
     }
 
     let testDescription = "";
@@ -368,13 +395,29 @@ class AllureReporter {
       this.setDescriptionHtml(testDescription);
     }
 
+    if (response?.header && response?.header?.count() > 0) {
+      const headers = response.header
+        .all()
+        .map((h) => `${h.key}: ${h.value}`)
+        .join("\n");
+      const attachment = this.allureRuntime.writeAttachment(headers, {
+        contentType: ContentType.TEXT,
+      });
+
+      this.currentExecutable.addAttachment(
+        "Response Headers",
+        { contentType: ContentType.TEXT },
+        attachment,
+      );
+    }
+
     if (response?.body) {
       const attachment = this.allureRuntime.writeAttachment(response.body, {
         contentType: ContentType.TEXT,
       });
 
       this.currentExecutable.addAttachment(
-        "response",
+        "Response Body",
         { contentType: ContentType.TEXT },
         attachment,
       );
@@ -418,6 +461,20 @@ class AllureReporter {
 
     if (this.currentRunningItem && execScript) {
       this.currentRunningItem.pmItem.testScript = execScript;
+
+      // not typed postman-collection error property ?
+      const doh: any = args.executions[0];
+
+      if (doh.error) {
+        const errName: string = doh.error.name;
+        const errMsg: string = doh.error.message;
+        const currStep = this.startStep(errName);
+        currStep.detailsMessage = errMsg;
+        currStep.status = Status.FAILED;
+        currStep.stage = Stage.FINISHED;
+        this.currentRunningItem.pmItem.failedAssertions.push(errName);
+        currStep.endStep();
+      }
     }
   }
 
@@ -457,12 +514,14 @@ class AllureReporter {
       url: url,
       method: req.method,
       body: req.body,
+      header: req.headers,
     };
 
     this.runningItems[this.runningItems.length - 1].pmItem.responseData = {
       status: args.response.status,
       code: args.response.code,
       body: respBody,
+      header: args.response.headers,
     };
   }
 
@@ -473,6 +532,9 @@ class AllureReporter {
     if (err && this.currentRunningItem) {
       this.currentRunningItem.pmItem.passed = false;
       this.currentRunningItem.pmItem.failedAssertions.push(args.assertion);
+
+      currStep.detailsMessage = args.error.message;
+      currStep.detailsTrace = args.error.stack;
 
       currStep.status = Status.FAILED;
       currStep.stage = Stage.FINISHED;
