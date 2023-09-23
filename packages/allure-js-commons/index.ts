@@ -4,7 +4,7 @@ export {
   InMemoryAllureWriter,
   FileSystemAllureWriter,
   MessageAllureWriter,
-  AllureResults
+  AllureResults,
 } from "./src/writers";
 export { AllureConfig } from "./src/AllureConfig";
 export { AllureGroup } from "./src/AllureGroup";
@@ -16,7 +16,7 @@ export { Allure, StepInterface } from "./src/Allure";
 export {
   StepBodyFunction,
   AllureCommandStep,
-  AllureCommandStepExecutable
+  AllureCommandStepExecutable,
 } from "./src/AllureCommandStep";
 export {
   AttachmentOptions,
@@ -42,7 +42,7 @@ export {
   ParameterOptions,
   StepMetadata,
   AttachmentMetadata,
-  ImageDiffAttachment
+  ImageDiffAttachment,
 } from "./src/model";
 
 export {
@@ -59,9 +59,9 @@ export {
   md5,
   readImageAsBase64,
   serialize,
-  stripAscii
+  stripAscii,
 } from "./src/utils";
 
 export { AllureRuntimeApiInterface } from "./src/framework";
 
-export { parseTestPlan } from "./src/testplan";
+export { TestPlanV1, parseTestPlan } from "./src/testplan";
