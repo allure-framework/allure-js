@@ -16,7 +16,7 @@ import {
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 import { JSHandle } from "playwright-core";
 
-const selectorsCache = new Map<string, { fullPath: string; type: string }>();
+const elementsHandlesSelectorsCache = new Map<string, { fullPath: string; type: string }>();
 
 const getSelectorType = (selector: string): "css" | "xpath" => {
   if (selector.startsWith("//" || selector.toLocaleLowerCase().startsWith("(xpath=//"))) {
@@ -51,7 +51,7 @@ const makePageMethodProxy = (
     const res = await originalMethod.call(this, ...args);
 
     if (!saveOriginalSelector) {
-      selectorsCache.set(res._guid as string, selectorData);
+      elementsHandlesSelectorsCache.set(res._guid as string, selectorData);
     }
 
     await allure.addMetadataAttachment({
@@ -66,7 +66,6 @@ const makePageMethodProxy = (
   // @ts-ignore
   Target[method].proxy = true;
 };
-
 const makeElementHandleMethodProxy = (
   Target: JSHandle,
   method: keyof JSHandle,
@@ -84,7 +83,7 @@ const makeElementHandleMethodProxy = (
     const url = await urlGetter();
     const el = this.asElement();
     // @ts-ignore
-    const selector = selectorsCache.get(el!._guid as string)!;
+    const selector = elementsHandlesSelectorsCache.get(el!._guid as string)!;
 
     await allure.addMetadataAttachment({
       allureInspectorEntry: {
@@ -99,6 +98,40 @@ const makeElementHandleMethodProxy = (
   // @ts-ignore
   Target[method].proxy = true;
 };
+const makeLocatorMethodProxy = (
+  Target: JSHandle,
+  method: keyof JSHandle,
+  urlGetter: () => Promise<string>,
+) => {
+  const originalMethod = Target[method];
+
+  // @ts-ignore
+  if (originalMethod.proxy) {
+    return;
+  }
+
+  // @ts-ignore
+  Target[method] = function (...args: any[]) {
+    // @ts-ignore
+    const selector = this._selector as string;
+    // @ts-ignore
+    const url = this._frame.url() as string;
+
+    allure.addMetadataAttachment({
+      allureInspectorEntry: {
+        fullPath: selector,
+        type: getSelectorType(selector),
+        urls: [url],
+      },
+    });
+
+    // @ts-ignore
+    return originalMethod.call(this, ...args);
+  };
+  // @ts-ignore
+  Target[method].proxy = true;
+};
+
 
 export class allure {
   static async logStep(name: string): Promise<void> {
@@ -228,12 +261,16 @@ export class allure {
 
   static async attachLogger(page: Page) {
     const urlGetter = () => page.evaluate(() => window.location.href);
-    // need to get JsHandle class prototype, to stub its methods
-    const res = await page.$("html");
+    const jsHandleInstanse = await page.$("html");
+    const locatorInstanse = page.locator("html");
     // @ts-ignore
     const ChannelOwner = page.__proto__;
     // @ts-ignore
-    const JsHandle = res.__proto__;
+    const JsHandle = jsHandleInstanse.__proto__;
+    // @ts-ignore
+    const Locator = locatorInstanse.__proto__;
+
+    // @ts-ignore
     const pageMethodsToCacheProxy: (keyof Page)[] = ["waitForSelector", "$", "$$"];
     const pageMethodsToCachelessProxy: (keyof Page)[] = [
       "click",
@@ -292,6 +329,10 @@ export class allure {
     elementHandlerMethodsToProxy.forEach((method) => {
       // @ts-ignore
       makeElementHandleMethodProxy(JsHandle, method, urlGetter);
+    });
+    elementHandlerMethodsToProxy.forEach((method) => {
+      // @ts-ignore
+      makeLocatorMethodProxy(Locator, method, urlGetter);
     });
   }
 

@@ -379,9 +379,9 @@ class AllureReporter implements Reporter {
         this.allureInspectorEntries.set(test, []);
       }
 
-      const domLoggerEntries = this.allureInspectorEntries.get(test)!;
+      const allureInspectorEntries = this.allureInspectorEntries.get(test)!;
 
-      domLoggerEntries.push(metadata.allureInspectorEntry);
+      allureInspectorEntries.push(metadata.allureInspectorEntry);
       return;
     }
 

@@ -11,7 +11,7 @@ test("should create playwright commands log and attach it as json file to the te
         await allure.attachLogger(page)
         await page.goto('https://duckduckgo.com/');
 
-        const searchInput = await page.waitForSelector('form[role=search] input[type=text]');
+        const searchInput = page.locator('form[role=search] input[type=text]')
         const submitButton = await page.waitForSelector('form[role=search] button[type=submit]');
 
         await searchInput.type('query')
@@ -36,29 +36,32 @@ test("should create playwright commands log and attach it as json file to the te
 
   expect(JSON.parse(attachment)).toEqual([
     {
-      fullPath: "form[role=search] input[type=text]",
-      type: "css",
-      urls: ["https://duckduckgo.com/"],
-    },
-    {
       fullPath: "form[role=search] button[type=submit]",
       type: "css",
-      urls: ["https://duckduckgo.com/"],
+      urls: [
+        "https://duckduckgo.com/",
+      ],
     },
     {
       fullPath: "form[role=search] input[type=text]",
       type: "css",
-      urls: ["https://duckduckgo.com/"],
+      urls: [
+        "https://duckduckgo.com/",
+      ],
     },
     {
       fullPath: "form[role=search] button[type=submit]",
       type: "css",
-      urls: ["https://duckduckgo.com/"],
+      urls: [
+        "https://duckduckgo.com/",
+      ],
     },
     {
       fullPath: "[data-testid=result]",
       type: "css",
-      urls: ["https://duckduckgo.com/?t=h_&q=query"],
+      urls: [
+        "https://duckduckgo.com/?t=h_&q=query",
+      ],
     },
   ]);
 });
