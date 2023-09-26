@@ -11,10 +11,12 @@ test("should create playwright commands log and attach it as json file to the te
         await allure.attachLogger(page)
         await page.goto('https://duckduckgo.com/');
 
+        const searchInput = await page.waitForSelector('form[role=search] input[type=text]');
         const submitButton = await page.waitForSelector('form[role=search] button[type=submit]');
 
-        await page.type('form[role=search] input[type=text]', 'query')
+        await searchInput.type('query')
         await submitButton.click()
+
         await page.waitForSelector('[data-testid=result]')
       });
     `,
@@ -33,6 +35,11 @@ test("should create playwright commands log and attach it as json file to the te
   ).toString();
 
   expect(JSON.parse(attachment)).toEqual([
+    {
+      fullPath: "form[role=search] input[type=text]",
+      type: "css",
+      urls: ["https://duckduckgo.com/"],
+    },
     {
       fullPath: "form[role=search] button[type=submit]",
       type: "css",

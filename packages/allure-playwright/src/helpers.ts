@@ -233,7 +233,6 @@ export class allure {
     const ChannelOwner = page.__proto__;
     // @ts-ignore
     const JsHandle = res.__proto__;
-
     const pageMethodsToCacheProxy: (keyof Page)[] = ["waitForSelector", "$", "$$"];
     const pageMethodsToCachelessProxy: (keyof Page)[] = [
       "click",
@@ -265,6 +264,23 @@ export class allure {
       "isHidden",
       "isVisible",
     ];
+    const elementHandlerMethodsToProxy = [
+      "check",
+      "click",
+      "dblclick",
+      "dispatchEvent",
+      "fill",
+      "focus",
+      "hover",
+      "press",
+      "selectOption",
+      "selectText",
+      "setChecked",
+      "setInputFiles",
+      "tap",
+      "type",
+      "uncheck",
+    ];
 
     pageMethodsToCacheProxy.forEach((method) => {
       makePageMethodProxy(ChannelOwner, method, urlGetter);
@@ -272,9 +288,10 @@ export class allure {
     pageMethodsToCachelessProxy.forEach((method) => {
       makePageMethodProxy(ChannelOwner, method, urlGetter, true);
     });
-
-    // @ts-ignore
-    makeElementHandleMethodProxy(JsHandle, "click", urlGetter);
+    elementHandlerMethodsToProxy.forEach((method) => {
+      // @ts-ignore
+      makeElementHandleMethodProxy(JsHandle, method, urlGetter);
+    });
   }
 
   /**
