@@ -33,6 +33,7 @@ import {
   AllureStep,
   AllureTest,
   Category,
+  AllureInspectorEntry,
   ExecutableItemWrapper,
   ImageDiffAttachment,
   LabelName,
@@ -78,6 +79,7 @@ class AllureReporter implements Reporter {
   private allureTestCache = new Map<TestCase, AllureTest>();
   private allureStepCache = new Map<TestStep, AllureStep>();
   private allureAttachmentSteps = new Map<string, AllureStep>();
+  private allureInspectorEntries = new Map<TestCase, AllureInspectorEntry[]>();
   private hostname: string = process.env.ALLURE_HOST_NAME || os.hostname();
   private globalStartTime = new Date();
 
@@ -135,18 +137,23 @@ class AllureReporter implements Reporter {
 
   onStepBegin(test: TestCase, _result: TestResult, step: TestStep): void {
     const allureTest = this.allureTestCache.get(test);
+
     if (!allureTest) {
       return;
     }
+
     if (!this.options.detail && step.category !== "test.step") {
       return;
     }
+
     // ignore attach steps since attachments are already in the report
     if (step.category === "attach") {
       return;
     }
+
     const allureStep = this.ensureAllureStepCreated(step, allureTest);
     const name = allureStep.wrappedItem?.name;
+
     if (name?.match(stepAttachRegexp)) {
       allureStep.name = name.substring(stepAttachPrefixLength);
       this.allureAttachmentSteps.set(name, allureStep);
@@ -155,14 +162,18 @@ class AllureReporter implements Reporter {
 
   onStepEnd(_test: TestCase, _result: TestResult, step: TestStep): void {
     const allureStep = this.allureStepCache.get(step);
+
     if (!allureStep) {
       return;
     }
+
     if (!this.options.detail && step.category !== "test.step") {
       return;
     }
+
     allureStep.endStep();
     allureStep.status = step.error ? Status.FAILED : Status.PASSED;
+
     if (step.error) {
       allureStep.statusDetails = getStatusDetails(step.error);
     }
@@ -187,12 +198,21 @@ class AllureReporter implements Reporter {
     allureTest.addLabel(LabelName.THREAD, thread);
 
     allureTest.status = statusToAllureStats(result.status, test.expectedStatus);
+
     const error = result.error;
+
     if (error) {
       allureTest.statusDetails = getStatusDetails(error);
     }
+
     for (const attachment of result.attachments) {
-      await this.processAttachment(attachment, allureTest, runtime);
+      await this.processAttachment(attachment, test, runtime);
+    }
+
+    const allureInspectorEntries = this.allureInspectorEntries.get(test);
+
+    if (allureInspectorEntries?.length) {
+      await this.processAllureInspectorEntries(test, allureInspectorEntries);
     }
 
     if (result.stdout.length > 0) {
@@ -321,9 +341,11 @@ class AllureReporter implements Reporter {
       path?: string;
       body?: Buffer;
     },
-    allureTest: AllureTest,
+    test: TestCase,
     runtime: AllureRuntime,
   ) {
+    const allureTest = this.allureTestCache.get(test)!;
+
     if (!attachment.body && !attachment.path) {
       return;
     }
@@ -335,6 +357,7 @@ class AllureReporter implements Reporter {
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const metadata: MetadataMessage = JSON.parse(attachment.body.toString());
+
       metadata.links?.forEach((val) => allureTest.addLink(val.url, val.name, val.type));
       metadata.labels?.forEach((val) => allureTest.addLabel(val.name, val.value));
       metadata.parameter?.forEach((val) =>
@@ -347,6 +370,18 @@ class AllureReporter implements Reporter {
       if (metadata.description) {
         allureTest.description = metadata.description;
       }
+
+      if (!metadata.allureInspectorEntry) {
+        return;
+      }
+
+      if (!this.allureInspectorEntries.has(test)) {
+        this.allureInspectorEntries.set(test, []);
+      }
+
+      const domLoggerEntries = this.allureInspectorEntries.get(test)!;
+
+      domLoggerEntries.push(metadata.allureInspectorEntry);
       return;
     }
 
@@ -404,6 +439,16 @@ class AllureReporter implements Reporter {
     } else {
       attachmentContext.addAttachment(name, attachment.contentType, fileName);
     }
+  }
+
+  private processAllureInspectorEntries(test: TestCase, entries: AllureInspectorEntry[]) {
+    const allureTest = this.allureTestCache.get(test)!;
+    const res = this.allureRuntime?.writeAttachment(JSON.stringify(entries), {
+      contentType: "application/json",
+      fileExtension: "json",
+    });
+
+    allureTest.addAttachment("allure-inspector-log.json", "application/json", res!);
   }
 }
 

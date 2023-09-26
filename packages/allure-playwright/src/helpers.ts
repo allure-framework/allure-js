@@ -1,5 +1,6 @@
+/* eslint-disable no-underscore-dangle */
 import { randomUUID } from "crypto";
-import test from "@playwright/test";
+import test, { Page } from "@playwright/test";
 import {
   AttachmentOptions,
   ContentType,
@@ -11,6 +12,92 @@ import {
   ParameterOptions,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
+import { JSHandle } from "playwright-core";
+
+const selectorsCache = new Map<string, { fullPath: string; type: string }>();
+
+const getSelectorType = (selector: string): "css" | "xpath" => {
+  if (selector.startsWith("//" || selector.toLocaleLowerCase().startsWith("(xpath=//"))) {
+    return "xpath";
+  }
+
+  return "css";
+};
+
+const makePageMethodProxy = (
+  Target: Page,
+  method: keyof Page,
+  urlGetter: () => Promise<string>,
+  saveOriginalSelector?: boolean,
+) => {
+  const originalMethod = Target[method];
+
+  // @ts-ignore
+  if (originalMethod.proxy) {
+    return;
+  }
+
+  // @ts-ignore
+  Target[method] = async function (...args: any[]) {
+    const url = await urlGetter();
+    const selectorData = {
+      fullPath: args[0],
+      type: getSelectorType(args[0]),
+    };
+
+    // @ts-ignore
+    const res = await originalMethod.call(this, ...args);
+
+    if (!saveOriginalSelector) {
+      // eslint-disable-next-line no-underscore-dangle
+      selectorsCache.set(res._guid, selectorData);
+    }
+
+    await allure.addMetadataAttachment({
+      allureInspectorEntry: {
+        ...selectorData,
+        urls: [url],
+      },
+    });
+
+    return res;
+  };
+  // @ts-ignore
+  Target[method].proxy = true;
+};
+
+const makeElementHandleMethodProxy = (
+  Target: JSHandle,
+  method: keyof JSHandle,
+  urlGetter: () => Promise<string>,
+) => {
+  const originalMethod = Target[method];
+
+  // @ts-ignore
+  if (originalMethod.proxy) {
+    return;
+  }
+
+  // @ts-ignore
+  Target[method] = async function (...args: any[]) {
+    const url = await urlGetter();
+    const el = this.asElement();
+    // @ts-ignore
+    const selector = selectorsCache.get(el!._guid)!;
+
+    await allure.addMetadataAttachment({
+      allureInspectorEntry: {
+        ...selector,
+        urls: [url],
+      },
+    });
+
+    // @ts-ignore
+    return originalMethod.call(this, ...args);
+  };
+  // @ts-ignore
+  Target[method].proxy = true;
+};
 
 export class allure {
   static async logStep(name: string): Promise<void> {
@@ -136,6 +223,58 @@ export class allure {
         },
       ],
     });
+  }
+
+  static async attachLogger(page: Page) {
+    const urlGetter = () => page.evaluate(() => window.location.href);
+    // need to get JsHandle class prototype, to stub its methods
+    const res = await page.$("html");
+    // @ts-ignore
+    const ChannelOwner = page.__proto__;
+    // @ts-ignore
+    const JsHandle = res.__proto__;
+
+    const pageMethodsToCacheProxy: (keyof Page)[] = ["waitForSelector", "$", "$$"];
+    const pageMethodsToCachelessProxy: (keyof Page)[] = [
+      "click",
+      "type",
+      "press",
+      "hover",
+      "check",
+      "click",
+      "dblclick",
+      "dispatchEvent",
+      "dragAndDrop",
+      "fill",
+      "focus",
+      "selectOption",
+      "setChecked",
+      "setInputFiles",
+      "tap",
+      "type",
+      "uncheck",
+      "textContent",
+      "getAttribute",
+      "innerText",
+      "innerHTML",
+      "inputValue",
+      "isChecked",
+      "isDisabled",
+      "isEditable",
+      "isEnabled",
+      "isHidden",
+      "isVisible",
+    ];
+
+    pageMethodsToCacheProxy.forEach((method) => {
+      makePageMethodProxy(ChannelOwner, method, urlGetter);
+    });
+    pageMethodsToCachelessProxy.forEach((method) => {
+      makePageMethodProxy(ChannelOwner, method, urlGetter, true);
+    });
+
+    // @ts-ignore
+    makeElementHandleMethodProxy(JsHandle, "click", urlGetter);
   }
 
   /**
