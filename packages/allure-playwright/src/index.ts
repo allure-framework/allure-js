@@ -28,12 +28,12 @@ import {
 } from "@playwright/test/reporter";
 import {
   AllureGroup,
+  AllureInspectorEntry,
   allureReportFolder,
   AllureRuntime,
   AllureStep,
   AllureTest,
   Category,
-  AllureInspectorEntry,
   ExecutableItemWrapper,
   ImageDiffAttachment,
   LabelName,
@@ -212,7 +212,7 @@ class AllureReporter implements Reporter {
     const allureInspectorEntries = this.allureInspectorEntries.get(test);
 
     if (allureInspectorEntries?.length) {
-      await this.processAllureInspectorEntries(test, allureInspectorEntries);
+      this.processAllureInspectorEntries(test, allureInspectorEntries);
     }
 
     if (result.stdout.length > 0) {

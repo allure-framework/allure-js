@@ -1,4 +1,6 @@
+// FIXME: we do many monkey patching there, so better to move the logic to separate file and ignore some rules in it
 /* eslint-disable no-underscore-dangle */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { randomUUID } from "crypto";
 import test, { Page } from "@playwright/test";
 import {
@@ -42,15 +44,14 @@ const makePageMethodProxy = (
     const url = await urlGetter();
     const selectorData = {
       fullPath: args[0],
-      type: getSelectorType(args[0]),
+      type: getSelectorType(args[0] as string),
     };
 
     // @ts-ignore
     const res = await originalMethod.call(this, ...args);
 
     if (!saveOriginalSelector) {
-      // eslint-disable-next-line no-underscore-dangle
-      selectorsCache.set(res._guid, selectorData);
+      selectorsCache.set(res._guid as string, selectorData);
     }
 
     await allure.addMetadataAttachment({
@@ -83,7 +84,7 @@ const makeElementHandleMethodProxy = (
     const url = await urlGetter();
     const el = this.asElement();
     // @ts-ignore
-    const selector = selectorsCache.get(el!._guid)!;
+    const selector = selectorsCache.get(el!._guid as string)!;
 
     await allure.addMetadataAttachment({
       allureInspectorEntry: {
