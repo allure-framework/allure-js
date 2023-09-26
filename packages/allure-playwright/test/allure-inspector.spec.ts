@@ -1,6 +1,8 @@
 import { expect, test } from "./fixtures";
 
-test("should do this", async ({ browser, runInlineTest }) => {
+test("should create playwright commands log and attach it as json file to the test", async ({
+  runInlineTest,
+}) => {
   const results = await runInlineTest({
     "a.test.ts": /* ts */ `
       import test from '@playwright/test';
