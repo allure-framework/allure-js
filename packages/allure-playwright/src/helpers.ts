@@ -111,13 +111,13 @@ const makeLocatorMethodProxy = (
   }
 
   // @ts-ignore
-  Target[method] = function (...args: any[]) {
+  Target[method] = async function (...args: any[]) {
     // @ts-ignore
     const selector = this._selector as string;
     // @ts-ignore
     const url = this._frame.url() as string;
 
-    allure.addMetadataAttachment({
+    await allure.addMetadataAttachment({
       allureInspectorEntry: {
         fullPath: selector,
         type: getSelectorType(selector),
