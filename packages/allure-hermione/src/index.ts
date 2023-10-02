@@ -248,20 +248,6 @@ const hermioneAllureReporter = (hermione: Hermione, opts?: AllureReportOptions) 
       }
     });
   });
-  hermione.on(hermione.events.AFTER_TESTS_READ, (collection) => {
-    // handle all skipped (pending) tests
-    collection.eachTest((test) => {
-      if (!test.pending) {
-        return;
-      }
-
-      const currentTest = createAllureTest(test);
-
-      currentTest.status = Status.SKIPPED;
-      currentTest.stage = Stage.FINISHED;
-      currentTest.endTest();
-    });
-  });
   hermione.on(hermione.events.TEST_BEGIN, (test) => {
     // test hasn't been actually started
     if (!test.browserId) {
@@ -298,11 +284,6 @@ const hermioneAllureReporter = (hermione: Hermione, opts?: AllureReportOptions) 
     currentTest.status = Status.FAILED;
   });
   hermione.on(hermione.events.TEST_END, (test) => {
-    // test hasn't been started
-    if (!test.startTime) {
-      return;
-    }
-
     const testId = getTestId(test);
     const currentTest = runningTests.get(testId())!;
 
@@ -311,6 +292,12 @@ const hermioneAllureReporter = (hermione: Hermione, opts?: AllureReportOptions) 
     }
 
     currentTest.calculateHistoryId();
+
+    // the test has been skipped
+    if (test.pending) {
+      currentTest.status = Status.SKIPPED;
+    }
+
     currentTest.stage = Stage.FINISHED;
     currentTest.endTest(Date.now());
     runningTests.delete(testId());
