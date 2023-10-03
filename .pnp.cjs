@@ -3547,6 +3547,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/mocha", "npm:10.0.1"],\
             ["@types/node", "npm:20.6.3"],\
+            ["@types/sinon", "npm:10.0.16"],\
             ["@types/source-map-support", "npm:0.5.7"],\
             ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
             ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
@@ -3564,6 +3565,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mocha-multi-reporters", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:1.5.1"],\
             ["properties", "npm:1.2.1"],\
             ["rimraf", "npm:5.0.1"],\
+            ["sinon", "npm:16.0.0"],\
             ["source-map-support", "npm:0.5.21"],\
             ["ts-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"]\

@@ -2631,6 +2631,7 @@ __metadata:
     "@types/eslint": ^8
     "@types/mocha": ^10.0.1
     "@types/node": ^20.6.3
+    "@types/sinon": ^10.0.16
     "@types/source-map-support": ^0.5.7
     "@typescript-eslint/eslint-plugin": ^6.7.0
     "@typescript-eslint/parser": ^6.7.0
@@ -2648,6 +2649,7 @@ __metadata:
     mocha-multi-reporters: ^1.5.1
     properties: ^1.2.1
     rimraf: ^5.0.1
+    sinon: ^16.0.0
     source-map-support: ^0.5.21
     ts-node: ^10.9.1
     typescript: ^5.2.2
