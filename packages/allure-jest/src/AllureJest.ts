@@ -21,10 +21,6 @@ export interface AllureEnvironment extends JestEnvironment {
   handleAllureMetadata(payload: { currentTestName: string; metadata: MetadataMessage }): void;
 }
 
-export interface AllureEnvironmentConfig extends JestEnvironmentConfig {
-  resultsDir?: string;
-}
-
 const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
   // @ts-expect-error (ts(2545)) Incorrect assumption about a mixin class: https://github.com/microsoft/TypeScript/issues/37142
   return class extends Base {
@@ -32,14 +28,14 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     runtime: AllureRuntime;
     runningTests: Map<string, AllureTest> = new Map();
 
-    constructor(config: AllureEnvironmentConfig, context: EnvironmentContext) {
+    constructor(config: JestEnvironmentConfig, context: EnvironmentContext) {
       super(config, context);
 
       this.runtime = new AllureRuntime({
-        resultsDir: config.resultsDir || "allure-results",
+        resultsDir: (config?.projectConfig?.testEnvironmentOptions?.resultsDir as string) || "allure-results",
       });
       this.global.allure = new AllureJestApi(this, this.global);
-      this.testRootDirPath = config.projectConfig.rootDir;
+      this.testRootDirPath = config.globalConfig.rootDir;
     }
 
     setup() {
