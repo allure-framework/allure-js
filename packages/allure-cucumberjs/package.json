@@ -1,6 +1,6 @@
 {
   "name": "allure-cucumberjs",
-  "version": "2.9.1",
+  "version": "2.9.2",
   "description": "Allure Cucumber.JS integration",
   "license": "Apache-2.0",
   "author": {
