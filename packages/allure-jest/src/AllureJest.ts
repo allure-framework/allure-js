@@ -32,7 +32,8 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       super(config, context);
 
       this.runtime = new AllureRuntime({
-        resultsDir: (config?.projectConfig?.testEnvironmentOptions?.resultsDir as string) || "allure-results",
+        resultsDir:
+          (config?.projectConfig?.testEnvironmentOptions?.resultsDir as string) || "allure-results",
       });
       this.global.allure = new AllureJestApi(this, this.global);
       this.testRootDirPath = config.globalConfig.rootDir;
