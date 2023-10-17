@@ -46,7 +46,7 @@ jobs:
           git push origin ${GITHUB_REF}
 
       - name: "Publish Github Release"
-        uses: toolmantim/release-drafter@v5.21.1
+        uses: toolmantim/release-drafter@v5.25.0
         with:
           name: ${{ github.event.inputs.releaseVersion }}
           version: ${{ github.event.inputs.releaseVersion }}
