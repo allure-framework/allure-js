@@ -39,3 +39,14 @@ export const getTestId = (path: string[]): string => path.join(" ");
  * @returns
  */
 export const getTestFullName = (path: string[]): string => path.join(" > ");
+
+/**
+ * Removes all ANSI colors codes from given string
+ * Could be useful, when the codes render in the report, but shouldn't
+ *
+ * @param str Source string
+ * @returns
+ */
+export const removeAnsiColorsFromString = (str: string): string =>
+  // eslint-disable-next-line no-control-regex
+  str.replace(/\u001b\[\d{1,2}m/g, "");
