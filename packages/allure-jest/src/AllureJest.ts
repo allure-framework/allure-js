@@ -12,17 +12,13 @@ import {
   Status,
 } from "allure-js-commons";
 import { AllureJestApi } from "./AllureJestApi";
-import { getTestId, getTestPath } from "./utils";
+import { getTestId, getTestPath, removeAnsiColorsFromString } from "./utils";
 
 const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
 const hostname = os.hostname();
 
 export interface AllureEnvironment extends JestEnvironment {
   handleAllureMetadata(payload: { currentTestName: string; metadata: MetadataMessage }): void;
-}
-
-export interface AllureEnvironmentConfig extends JestEnvironmentConfig {
-  resultsDir?: string;
 }
 
 const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
@@ -32,14 +28,15 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     runtime: AllureRuntime;
     runningTests: Map<string, AllureTest> = new Map();
 
-    constructor(config: AllureEnvironmentConfig, context: EnvironmentContext) {
+    constructor(config: JestEnvironmentConfig, context: EnvironmentContext) {
       super(config, context);
 
       this.runtime = new AllureRuntime({
-        resultsDir: config.resultsDir || "allure-results",
+        resultsDir:
+          (config?.projectConfig?.testEnvironmentOptions?.resultsDir as string) || "allure-results",
       });
       this.global.allure = new AllureJestApi(this, this.global);
-      this.testRootDirPath = config.projectConfig.rootDir;
+      this.testRootDirPath = config.globalConfig.rootDir;
     }
 
     setup() {
@@ -151,12 +148,14 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       // jest collects all errors, but we need to report the first one because it's a reason why the test has been failed
       const [error] = test.errors;
       const hasMultipleErrors = Array.isArray(error);
+      const errorMessage = (hasMultipleErrors ? error[0].message : error.message) as string;
+      const errorTrace = (hasMultipleErrors ? error[0].stack : error.stack) as string;
 
       currentTest.stage = Stage.FINISHED;
       currentTest.status = Status.FAILED;
       currentTest.statusDetails = {
-        message: hasMultipleErrors ? error[0].message : error.message,
-        trace: hasMultipleErrors ? error[0].stack : error.stack,
+        message: removeAnsiColorsFromString(errorMessage),
+        trace: removeAnsiColorsFromString(errorTrace),
       };
     }
 

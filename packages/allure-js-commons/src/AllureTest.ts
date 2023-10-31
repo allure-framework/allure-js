@@ -3,7 +3,7 @@ import { AllureRuntime } from "./AllureRuntime";
 import { testResult } from "./constructors";
 import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
 import { ExecutableItem, LinkType, MetadataMessage, TestResult } from "./model";
-import { md5 } from "./utils";
+import { getLabelsFromEnv, md5 } from "./utils";
 
 export class AllureTest extends ExecutableItemWrapper {
   private readonly testResult: TestResult;
@@ -14,8 +14,13 @@ export class AllureTest extends ExecutableItemWrapper {
     start: number = Date.now(),
   ) {
     super(testResult());
+
+    const globalLabels = getLabelsFromEnv();
+
     this.testResult = this.wrappedItem as TestResult;
     this.testResult.start = start;
+
+    globalLabels.forEach((label) => this.addLabel(label.name, label.value));
   }
 
   endTest(stop: number = Date.now()): void {
