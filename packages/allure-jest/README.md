@@ -63,7 +63,7 @@ it("my test", () => {
 
 ```js
 it("basic test", () => {
-  allure.link("https://playwright.dev", "playwright-site"); // link with name
+  allure.link("https://allurereport.org", "Allure Report"); // link with name
   allure.issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
 });
 ```
