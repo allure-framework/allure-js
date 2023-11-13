@@ -25,7 +25,7 @@ export interface AllureEnvironment extends JestEnvironment {
 }
 
 export interface LinkMatcher {
-  name: LinkType | string;
+  type: LinkType | string;
   urlTemplate: string;
 }
 
@@ -61,7 +61,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
 
     transformLinks(links: Link[]): Link[] {
       return links.map((link) => {
-        const matcher = this.linksMatchers.find((m) => m.name === link.type);
+        const matcher = this.linksMatchers.find((m) => m.type === link.type);
 
         if (!matcher) {
           return link;

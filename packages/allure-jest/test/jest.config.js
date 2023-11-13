@@ -5,11 +5,11 @@ const config = {
   testEnvironmentOptions: {
     links: [
       {
-        name: "issue",
+        type: "issue",
         urlTemplate: "http://example.org/issues/%s",
       },
       {
-        name: "tms",
+        type: "tms",
         urlTemplate: "http://example.org/tasks/%s",
       },
     ],

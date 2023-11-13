@@ -79,15 +79,15 @@ const config = {
     resultsDir: "./allure-results",
 +    links: [
 +      {
-+        name: "issue",
++        type: "issue",
 +        urlTemplate: "https://example.org/issues/%s"
 +      },
 +      {
-+        name: "tms",
++        type: "tms",
 +        urlTemplate: "https://example.org/tasks/%s"
 +      },
 +      {
-+        name: "custom",
++        type: "custom",
 +        urlTemplate: "https://example.org/custom/%s"
 +      },
 +    ]
