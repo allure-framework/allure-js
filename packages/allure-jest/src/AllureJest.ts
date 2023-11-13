@@ -7,6 +7,8 @@ import {
   AllureTest,
   getSuitesLabels,
   LabelName,
+  Link,
+  LinkType,
   MetadataMessage,
   Stage,
   Status,
@@ -18,7 +20,13 @@ const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
 const hostname = os.hostname();
 
 export interface AllureEnvironment extends JestEnvironment {
+  transformLinks(links: Link[]): Link[];
   handleAllureMetadata(payload: { currentTestName: string; metadata: MetadataMessage }): void;
+}
+
+export interface LinkMatcher {
+  name: LinkType | string;
+  urlTemplate: string;
 }
 
 const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
@@ -26,15 +34,19 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
   return class extends Base {
     testRootDirPath: string;
     runtime: AllureRuntime;
+    linksMatchers: LinkMatcher[];
     runningTests: Map<string, AllureTest> = new Map();
 
     constructor(config: JestEnvironmentConfig, context: EnvironmentContext) {
       super(config, context);
 
+      const { resultsDir = "allure-results", links = [] } =
+        config?.projectConfig?.testEnvironmentOptions || {};
+
       this.runtime = new AllureRuntime({
-        resultsDir:
-          (config?.projectConfig?.testEnvironmentOptions?.resultsDir as string) || "allure-results",
+        resultsDir: resultsDir as string,
       });
+      this.linksMatchers = links as LinkMatcher[];
       this.global.allure = new AllureJestApi(this, this.global);
       this.testRootDirPath = config.globalConfig.rootDir;
     }
@@ -45,6 +57,21 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
 
     teardown() {
       return super.teardown();
+    }
+
+    transformLinks(links: Link[]): Link[] {
+      return links.map((link) => {
+        const matcher = this.linksMatchers.find((m) => m.name === link.type);
+
+        if (!matcher) {
+          return link;
+        }
+
+        return {
+          ...link,
+          url: matcher.urlTemplate.replace("%s", link.url),
+        };
+      });
     }
 
     handleAllureMetadata(payload: { currentTestName: string; metadata: MetadataMessage }) {

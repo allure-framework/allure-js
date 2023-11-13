@@ -59,4 +59,52 @@ it("my test", () => {
 });
 ```
 
+## Links usage
+
+```js
+it("basic test", () => {
+  allure.link("https://playwright.dev", "playwright-site"); // link with name
+  allure.issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
+});
+```
+
+You can also configure links formatters to make usage much more convenient. `%s`
+in `urlTemplate` parameter will be replaced by given value.
+
+```diff
+/** @type {import('jest').Config} */
+const config = {
+  testEnvironment: "allure-jest/node",
+  testEnvironmentOptions: {
+    resultsDir: "./allure-results",
++    links: [
++      {
++        name: "issue",
++        urlTemplate: "https://example.org/issues/%s"
++      },
++      {
++        name: "tms",
++        urlTemplate: "https://example.org/tasks/%s"
++      },
++      {
++        name: "custom",
++        urlTemplate: "https://example.org/custom/%s"
++      },
++    ]
+  }
+}
+
+module.exports = config
+```
+
+Then you can assign link using shorter notation:
+
+```js
+it("basic test", () => {
+  allure.issue("Issue Name", "352");
+  allure.tms("Task Name", "352");
+  allure.link("352", "Link name", "custom");
+});
+```
+
 [allure-jasmine]: https://github.com/allure-framework/allure-js/tree/master/packages/allure-jasmine

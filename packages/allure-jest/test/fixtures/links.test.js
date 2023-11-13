@@ -3,9 +3,9 @@ it("custom", () => {
 });
 
 it("tms", () => {
-  allure.tms("foo", "http://example.org");
+  allure.tms("foo", "1");
 });
 
 it("issue", () => {
-  allure.issue("foo", "http://example.org");
+  allure.issue("foo", "1");
 });
