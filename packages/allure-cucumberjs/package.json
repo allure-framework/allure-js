@@ -26,7 +26,7 @@
   "devDependencies": {
     "@types/chai": "^4.3.6",
     "@types/chai-like": "^1.1.1",
-    "@types/chai-things": "^0.0.36",
+    "@types/chai-things": "^0.0.38",
     "@types/eslint": "^8",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",

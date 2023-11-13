@@ -1574,12 +1574,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai-things@npm:^0.0.36":
-  version: 0.0.36
-  resolution: "@types/chai-things@npm:0.0.36"
+"@types/chai-things@npm:^0.0.38":
+  version: 0.0.38
+  resolution: "@types/chai-things@npm:0.0.38"
   dependencies:
     "@types/chai": "*"
-  checksum: cb51a87adb79bdba107ed8a1b799695152d104f8140e440dcef4549cf05823088a7c09d5aa3fda8c7ccdaec1baaa6b140e018e61151d4de830ea1fd34b03cd97
+  checksum: 7c43cc3ee598979d48828da40856340fd58e5611dfe3eac33a613c81660befcf7adda629dcf3b83e3f9c40194477e17c06af03adafbf3e8a989bf236d930ba03
   languageName: node
   linkType: hard
 
@@ -2449,7 +2449,7 @@ __metadata:
     "@cucumber/messages": ^22.0.0
     "@types/chai": ^4.3.6
     "@types/chai-like": ^1.1.1
-    "@types/chai-things": ^0.0.36
+    "@types/chai-things": ^0.0.38
     "@types/eslint": ^8
     "@types/glob": ^8.1.0
     "@types/mocha": ^10.0.1
@@ -2519,7 +2519,7 @@ __metadata:
   dependencies:
     "@types/chai": ^4.3.6
     "@types/chai-like": ^1.1.1
-    "@types/chai-things": ^0.0.36
+    "@types/chai-things": ^0.0.38
     "@types/eslint": ^8
     "@types/glob": ^8.1.0
     "@types/mocha": ^10.0.1
@@ -2586,7 +2586,7 @@ __metadata:
     "@jest/types": ^29.6.1
     "@types/chai": ^4.3.6
     "@types/chai-like": ^1.1.1
-    "@types/chai-things": ^0.0.36
+    "@types/chai-things": ^0.0.38
     "@types/eslint": ^8
     "@types/glob": ^8.1.0
     "@types/jasmine": ^3.3.12

@@ -2284,10 +2284,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/chai-things", [\
-        ["npm:0.0.36", {\
-          "packageLocation": "./.yarn/cache/@types-chai-things-npm-0.0.36-8cbf3af8f6-cb51a87adb.zip/node_modules/@types/chai-things/",\
+        ["npm:0.0.38", {\
+          "packageLocation": "./.yarn/cache/@types-chai-things-npm-0.0.38-67e414d8f8-7c43cc3ee5.zip/node_modules/@types/chai-things/",\
           "packageDependencies": [\
-            ["@types/chai-things", "npm:0.0.36"],\
+            ["@types/chai-things", "npm:0.0.38"],\
             ["@types/chai", "npm:4.3.6"]\
           ],\
           "linkType": "HARD"\
@@ -3332,7 +3332,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@cucumber/messages", "npm:22.0.0"],\
             ["@types/chai", "npm:4.3.6"],\
             ["@types/chai-like", "npm:1.1.1"],\
-            ["@types/chai-things", "npm:0.0.36"],\
+            ["@types/chai-things", "npm:0.0.38"],\
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/glob", "npm:8.1.0"],\
             ["@types/mocha", "npm:10.0.1"],\
@@ -3406,7 +3406,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["allure-hermione", "workspace:packages/allure-hermione"],\
             ["@types/chai", "npm:4.3.6"],\
             ["@types/chai-like", "npm:1.1.1"],\
-            ["@types/chai-things", "npm:0.0.36"],\
+            ["@types/chai-things", "npm:0.0.38"],\
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/glob", "npm:8.1.0"],\
             ["@types/mocha", "npm:10.0.1"],\
@@ -3477,7 +3477,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@jest/types", "npm:29.6.3"],\
             ["@types/chai", "npm:4.3.6"],\
             ["@types/chai-like", "npm:1.1.1"],\
-            ["@types/chai-things", "npm:0.0.36"],\
+            ["@types/chai-things", "npm:0.0.38"],\
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/glob", "npm:8.1.0"],\
             ["@types/jasmine", "npm:3.10.12"],\
