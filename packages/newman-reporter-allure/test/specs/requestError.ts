@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/quotes */
 import { Status } from "allure-js-commons";
-import { runNewman } from "./helpers/runNewman";
-import { server } from "./mocks/server";
+import { expect } from "expect";
+import { after, before, afterEach, test } from "mocha";
+import { runNewman } from "../helpers/runNewman";
+import { server } from "../mocks/server";
 
-beforeAll(() => server.listen());
+before(() => server.listen());
 afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+after(() => server.close());
 
 test("Mark test as failed when a request error occurs", async () => {
   const [result] = await runNewman({
