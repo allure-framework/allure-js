@@ -1,5 +1,8 @@
 import { runJestTests, TestResultsByFullName } from "../utils";
 
+/**
+ * Issues and TMS links templates are defined in `test/jest.config.js`
+ */
 describe("links", () => {
   let results: TestResultsByFullName;
 
@@ -23,7 +26,7 @@ describe("links", () => {
     links.should.include.something.that.deep.equals({
       type: "tms",
       name: "foo",
-      url: "http://example.org",
+      url: "http://example.org/tasks/1",
     });
   });
 
@@ -33,7 +36,7 @@ describe("links", () => {
     links.should.include.something.that.deep.equals({
       type: "issue",
       name: "foo",
-      url: "http://example.org",
+      url: "http://example.org/issues/1",
     });
   });
 });
