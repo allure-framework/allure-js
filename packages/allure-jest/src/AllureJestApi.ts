@@ -75,14 +75,16 @@ export class AllureJestApi implements AllureRuntimeApiInterface {
   }
 
   link(url: string, name?: string, type?: string): void {
+    const links = this.env.transformLinks([
+      {
+        url,
+        name,
+        type,
+      },
+    ]);
+
     this.sendMetadata({
-      links: [
-        {
-          name,
-          type,
-          url,
-        },
-      ],
+      links,
     });
   }
 
