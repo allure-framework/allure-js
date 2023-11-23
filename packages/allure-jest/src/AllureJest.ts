@@ -21,6 +21,7 @@ const hostname = os.hostname();
 
 export interface AllureEnvironment extends JestEnvironment {
   transformLinks(links: Link[]): Link[];
+
   handleAllureMetadata(payload: { currentTestName: string; metadata: MetadataMessage }): void;
 }
 
@@ -141,13 +142,12 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       });
 
       /**
-       * if user have some tests with the same name, reporter will throw an
-       * unexpected error due the test with the same name could be removed from
-       * the running tests, so better to throw an explicit error
+       * If user have some tests with the same name, reporter will throw an error due the test with
+       * the same name could be removed from the running tests, so better to throw an explicit error
        */
       if (this.runningTests.has(newTestId)) {
         throw new Error(
-          `Test "${newTestId}" has been already added to run! To continue with reporting, please rename the test.`,
+          `Test "${newTestId}" has been already initialized! To continue with reporting, please rename the test.`,
         );
       }
 
@@ -158,12 +158,24 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const currentTestId = getTestId(getTestPath(test));
       const currentTest = this.runningTests.get(currentTestId)!;
 
+      if (!currentTest) {
+        // eslint-disable-next-line no-console
+        console.error(`Can't find "${currentTestId}" test while tried to start it!`);
+        return;
+      }
+
       currentTest.stage = Stage.RUNNING;
     }
 
     private handleTestPass(test: Circus.TestEntry) {
       const currentTestId = getTestId(getTestPath(test));
       const currentTest = this.runningTests.get(currentTestId)!;
+
+      if (!currentTest) {
+        // eslint-disable-next-line no-console
+        console.error(`Can't find "${currentTestId}" test while tried to mark it as passed!`);
+        return;
+      }
 
       currentTest.stage = Stage.FINISHED;
       currentTest.status = Status.PASSED;
@@ -172,6 +184,13 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     private handleTestFail(test: Circus.TestEntry) {
       const currentTestId = getTestId(getTestPath(test));
       const currentTest = this.runningTests.get(currentTestId)!;
+
+      if (!currentTest) {
+        // eslint-disable-next-line no-console
+        console.error(`Can't find "${currentTestId}" test while tried to mark it as failed!`);
+        return;
+      }
+
       // jest collects all errors, but we need to report the first one because it's a reason why the test has been failed
       const [error] = test.errors;
       const hasMultipleErrors = Array.isArray(error);
@@ -190,6 +209,12 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const currentTestId = getTestId(getTestPath(test));
       const currentTest = this.runningTests.get(currentTestId)!;
 
+      if (!currentTest) {
+        // eslint-disable-next-line no-console
+        console.error(`Can't find "${currentTestId}" test while tried to mark it as skipped!`);
+        return;
+      }
+
       currentTest.stage = Stage.PENDING;
       currentTest.status = Status.SKIPPED;
 
@@ -201,6 +226,12 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const currentTestId = getTestId(getTestPath(test));
       const currentTest = this.runningTests.get(currentTestId)!;
 
+      if (!currentTest) {
+        // eslint-disable-next-line no-console
+        console.error(`Can't find "${currentTestId}" test while tried to dispose it after start!`);
+        return;
+      }
+
       currentTest.endTest();
       this.runningTests.delete(currentTestId);
     }
@@ -208,6 +239,12 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     private handleTestTodo(test: Circus.TestEntry) {
       const currentTestId = getTestId(getTestPath(test));
       const currentTest = this.runningTests.get(currentTestId)!;
+
+      if (!currentTest) {
+        // eslint-disable-next-line no-console
+        console.error(`Can't find "${currentTestId}" test while tried to mark it as todo!`);
+        return;
+      }
 
       currentTest.stage = Stage.PENDING;
       currentTest.status = Status.SKIPPED;
