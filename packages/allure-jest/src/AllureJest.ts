@@ -1,5 +1,6 @@
-import os from "os";
-import process from "process";
+import os from "node:os";
+import { dirname, sep } from "node:path";
+import process from "node:process";
 import { EnvironmentContext, JestEnvironment, JestEnvironmentConfig } from "@jest/environment";
 import type { Circus } from "@jest/types";
 import {
@@ -33,7 +34,8 @@ export interface LinkMatcher {
 const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
   // @ts-expect-error (ts(2545)) Incorrect assumption about a mixin class: https://github.com/microsoft/TypeScript/issues/37142
   return class extends Base {
-    testRootDirPath: string;
+    // testRootDirPath: string;
+    testPath: string;
     runtime: AllureRuntime;
     linksMatchers: LinkMatcher[];
     runningTests: Map<string, AllureTest> = new Map();
@@ -49,7 +51,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       });
       this.linksMatchers = links as LinkMatcher[];
       this.global.allure = new AllureJestApi(this, this.global);
-      this.testRootDirPath = config.globalConfig.rootDir;
+      this.testPath = context.testPath.replace(config.globalConfig.rootDir, "").replace(sep, "");
     }
 
     setup() {
@@ -120,21 +122,23 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const newTestPath = newTestSuitesPath.concat(testName);
       const newTestId = getTestId(newTestPath);
       const newTest = new AllureTest(this.runtime);
-      const thread = ALLURE_THREAD_NAME || JEST_WORKER_ID || process.pid.toString();
-      const host = ALLURE_HOST_NAME || hostname;
+      const threadLabel = ALLURE_THREAD_NAME || JEST_WORKER_ID || process.pid.toString();
+      const hostLabel = ALLURE_HOST_NAME || hostname;
+      const packageLabel = dirname(this.testPath).split(sep).join(".");
 
       newTest.name = testName;
       newTest.fullName = newTestId;
 
       newTest.addLabel(LabelName.LANGUAGE, "javascript");
       newTest.addLabel(LabelName.FRAMEWORK, "jest");
+      newTest.addLabel(LabelName.PACKAGE, packageLabel);
 
-      if (thread) {
-        newTest.addLabel(LabelName.THREAD, thread);
+      if (threadLabel) {
+        newTest.addLabel(LabelName.THREAD, threadLabel);
       }
 
-      if (host) {
-        newTest.addLabel(LabelName.HOST, host);
+      if (hostLabel) {
+        newTest.addLabel(LabelName.HOST, hostLabel);
       }
 
       getSuitesLabels(newTestSuitesPath).forEach((label) => {

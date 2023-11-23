@@ -1,11 +1,23 @@
 import expect from "expect";
 import { runJestTests, TestResultsByFullName } from "../utils";
+import { LabelName } from "allure-js-commons";
 
 describe("labels", () => {
   let results: TestResultsByFullName;
 
   beforeEach(async () => {
     results = await runJestTests(["./test/fixtures/labels.test.js"]);
+  });
+
+  it("adds package label", () => {
+    const { labels } = results.package;
+
+    expect(labels).toContainEqual(
+      expect.objectContaining({
+        name: LabelName.PACKAGE,
+        value: "fixtures",
+      }),
+    );
   });
 
   it("adds custom label", () => {
