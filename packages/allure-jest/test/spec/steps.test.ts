@@ -1,5 +1,5 @@
 import { Status } from "allure-js-commons";
-import { expect } from "chai";
+import expect from "expect";
 import { runJestTests, TestResultsByFullName } from "../utils";
 
 describe("steps", () => {
@@ -13,17 +13,18 @@ describe("steps", () => {
     it("adds nested steps", () => {
       const { steps, labels } = results.passed;
 
-      labels.should.include.something.that.deep.equals({
-        name: "foo",
-        value: "bar",
-      });
-
-      expect(steps.length).eq(1);
-      expect(steps[0].name).eq("first step name");
-      expect(steps[0].steps.length).eq(1);
-      expect(steps[0].steps[0].name).eq("second step name");
-      expect(steps[0].steps[0].steps.length).eq(1);
-      expect(steps[0].steps[0].steps[0].name).eq("third step name");
+      expect(labels).toContainEqual(
+        expect.objectContaining({
+          name: "foo",
+          value: "bar",
+        }),
+      );
+      expect(steps.length).toBe(1);
+      expect(steps[0].name).toBe("first step name");
+      expect(steps[0].steps.length).toBe(1);
+      expect(steps[0].steps[0].name).toBe("second step name");
+      expect(steps[0].steps[0].steps.length).toBe(1);
+      expect(steps[0].steps[0].steps[0].name).toBe("third step name");
     });
   });
 
@@ -31,20 +32,20 @@ describe("steps", () => {
     it("fails the test with original step error", () => {
       const { status, statusDetails, steps } = results.failed;
 
-      expect(status).eq(Status.FAILED);
-      expect(statusDetails.message).eq("foo");
-      expect(steps).to.have.length(1);
-      expect(steps[0].name).eq("first step name");
-      expect(steps[0].status).eq(Status.BROKEN);
-      expect(steps[0].statusDetails.message).eq("foo");
-      expect(steps[0].steps.length).eq(1);
-      expect(steps[0].steps[0].name).eq("second step name");
-      expect(steps[0].steps[0].status).eq(Status.BROKEN);
-      expect(steps[0].steps[0].statusDetails.message).eq("foo");
-      expect(steps[0].steps[0].steps.length).eq(1);
-      expect(steps[0].steps[0].steps[0].name).eq("third step name");
-      expect(steps[0].steps[0].steps[0].status).eq(Status.BROKEN);
-      expect(steps[0].steps[0].steps[0].statusDetails.message).eq("foo");
+      expect(status).toBe(Status.FAILED);
+      expect(statusDetails.message).toBe("foo");
+      expect(steps).toHaveLength(1);
+      expect(steps[0].name).toBe("first step name");
+      expect(steps[0].status).toBe(Status.BROKEN);
+      expect(steps[0].statusDetails.message).toBe("foo");
+      expect(steps[0].steps.length).toBe(1);
+      expect(steps[0].steps[0].name).toBe("second step name");
+      expect(steps[0].steps[0].status).toBe(Status.BROKEN);
+      expect(steps[0].steps[0].statusDetails.message).toBe("foo");
+      expect(steps[0].steps[0].steps.length).toBe(1);
+      expect(steps[0].steps[0].steps[0].name).toBe("third step name");
+      expect(steps[0].steps[0].steps[0].status).toBe(Status.BROKEN);
+      expect(steps[0].steps[0].steps[0].statusDetails.message).toBe("foo");
     });
   });
 });

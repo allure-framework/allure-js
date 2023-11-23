@@ -1,3 +1,4 @@
+import expect from "expect";
 import { runJestTests, TestResultsByFullName } from "../utils";
 
 describe("attachments", () => {
@@ -10,9 +11,11 @@ describe("attachments", () => {
   it("adds markdown description", () => {
     const { attachments } = results.json;
 
-    attachments.should.include.something.like({
-      name: "Attachment",
-      type: "application/json",
-    });
+    expect(attachments).toContainEqual(
+      expect.objectContaining({
+        name: "Attachment",
+        type: "application/json",
+      }),
+    );
   });
 });
