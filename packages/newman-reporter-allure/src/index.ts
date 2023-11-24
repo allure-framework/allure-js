@@ -35,6 +35,7 @@ interface PmItem {
   name: string;
   passed: boolean;
   failedAssertions: string[];
+  requestError?: string;
   consoleLogs: string[];
   requestData?: PmRequestData;
   responseData?: PmResponseData;
@@ -381,6 +382,7 @@ class AllureReporter {
     }
 
     const failedAssertions = this.currentRunningItem?.pmItem.failedAssertions;
+    const requestError = this.currentRunningItem?.pmItem.requestError;
 
     if (response && failedAssertions?.length) {
       const msg = this.escape(failedAssertions.join(", "));
@@ -401,6 +403,11 @@ class AllureReporter {
 
       if (this.currentRunningItem) {
         this.endTest(this.currentRunningItem.allureTest, status, { message: error.message });
+      }
+    } else if (requestError) {
+      const errorMsg = this.escape(requestError);
+      if (this.currentRunningItem) {
+        this.endTest(this.currentRunningItem?.allureTest, Status.BROKEN, { message: errorMsg });
       }
     } else if (this.currentRunningItem) {
       this.endTest(this.currentRunningItem?.allureTest, Status.PASSED);
@@ -440,24 +447,28 @@ class AllureReporter {
       response: Response;
     },
   ) {
-    if (err) {
-      return;
-    }
-
     const req = args.request;
 
     const url = `${
       req.url.protocol || ""
     }://${args.request.url.getHost()}${req.url.getPathWithQuery()}`;
 
-    const respStream = args.response.stream;
-    const respBody = (respStream && Buffer.from(respStream).toString()) || "";
-
     this.runningItems[this.runningItems.length - 1].pmItem.requestData = {
       url: url,
       method: req.method,
       body: req.body,
     };
+
+    if (err) {
+      if (this.currentRunningItem) {
+        this.currentRunningItem.pmItem.passed = false;
+        this.currentRunningItem.pmItem.requestError = err.message;
+      }
+      return;
+    }
+
+    const respStream = args.response.stream;
+    const respBody = (respStream && Buffer.from(respStream).toString()) || "";
 
     this.runningItems[this.runningItems.length - 1].pmItem.responseData = {
       status: args.response.status,
