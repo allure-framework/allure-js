@@ -1,5 +1,5 @@
 import { Stage, Status } from "allure-js-commons";
-import { expect } from "chai";
+import expect from "expect";
 import { runJestTests, TestResultsByFullName } from "../utils";
 
 describe("todo", () => {
@@ -12,7 +12,7 @@ describe("todo", () => {
   it("marks todo tests as skipped", () => {
     const { stage, status } = results.todo;
 
-    expect(stage).eq(Stage.PENDING);
-    expect(status).eq(Status.SKIPPED);
+    expect(stage).toBe(Stage.PENDING);
+    expect(status).toBe(Status.SKIPPED);
   });
 });
