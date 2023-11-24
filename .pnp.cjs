@@ -2264,10 +2264,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/chai-arrays", [\
-        ["npm:2.0.0", {\
-          "packageLocation": "./.yarn/cache/@types-chai-arrays-npm-2.0.0-e981b6aa00-6ee2b904b1.zip/node_modules/@types/chai-arrays/",\
+        ["npm:2.0.3", {\
+          "packageLocation": "./.yarn/cache/@types-chai-arrays-npm-2.0.3-bd81117c4c-26da0d01f5.zip/node_modules/@types/chai-arrays/",\
           "packageDependencies": [\
-            ["@types/chai-arrays", "npm:2.0.0"],\
+            ["@types/chai-arrays", "npm:2.0.3"],\
             ["@types/chai", "npm:4.3.6"]\
           ],\
           "linkType": "HARD"\
@@ -3369,7 +3369,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["allure-decorators", "workspace:packages/allure-decorators"],\
             ["@testdeck/mocha", "npm:0.1.2"],\
             ["@types/chai", "npm:4.3.6"],\
-            ["@types/chai-arrays", "npm:2.0.0"],\
+            ["@types/chai-arrays", "npm:2.0.3"],\
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/glob", "npm:8.1.0"],\
             ["@types/mocha", "npm:10.0.1"],\

@@ -1556,12 +1556,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai-arrays@npm:2.0.0":
-  version: 2.0.0
-  resolution: "@types/chai-arrays@npm:2.0.0"
+"@types/chai-arrays@npm:2.0.3":
+  version: 2.0.3
+  resolution: "@types/chai-arrays@npm:2.0.3"
   dependencies:
     "@types/chai": "*"
-  checksum: 6ee2b904b1cb2b65deda58beca2b294811a08b0d0df621f5386af78e375c0541414ac3f18051840ec7f4aa9ccab1ac779393a3e02a469ea0813ed9ad9294ecd8
+  checksum: 26da0d01f5c998e7e3bf45495761d60d20bea9fe0a05a196f671dc60642e0d2d39632e9ad5020b32d7c1cb893aeedb27ab74535c60132d4cdfa153ebd952f436
   languageName: node
   linkType: hard
 
@@ -2484,7 +2484,7 @@ __metadata:
   dependencies:
     "@testdeck/mocha": 0.1.2
     "@types/chai": ^4.3.6
-    "@types/chai-arrays": 2.0.0
+    "@types/chai-arrays": 2.0.3
     "@types/eslint": ^8
     "@types/glob": ^8.1.0
     "@types/mocha": ^10.0.1
