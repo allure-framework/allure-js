@@ -1,3 +1,5 @@
+it("package", () => {});
+
 it("custom", () => {
   allure.label("foo", "bar");
 });

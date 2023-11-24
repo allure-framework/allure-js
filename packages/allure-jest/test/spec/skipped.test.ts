@@ -1,5 +1,5 @@
 import { Stage, Status } from "allure-js-commons";
-import { expect } from "chai";
+import expect from "expect";
 import { runJestTests, TestResultsByFullName } from "../utils";
 
 describe("skipped", () => {
@@ -12,14 +12,14 @@ describe("skipped", () => {
   it("marks skipped test as skipped", () => {
     const { stage, status } = results.skipped;
 
-    expect(stage).eq(Stage.PENDING);
-    expect(status).eq(Status.SKIPPED);
+    expect(stage).toBe(Stage.PENDING);
+    expect(status).toBe(Status.SKIPPED);
   });
 
   it("marks test inside skipped suite as skipped", () => {
     const { stage, status } = results["suite skipped"];
 
-    expect(stage).eq(Stage.PENDING);
-    expect(status).eq(Status.SKIPPED);
+    expect(stage).toBe(Stage.PENDING);
+    expect(status).toBe(Status.SKIPPED);
   });
 });

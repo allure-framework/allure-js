@@ -1,3 +1,4 @@
+import expect from "expect";
 import { runJestTests, TestResultsByFullName } from "../utils";
 
 /**
@@ -13,30 +14,36 @@ describe("links", () => {
   it("adds custom link", () => {
     const { links } = results.custom;
 
-    links.should.include.something.that.deep.equals({
-      type: "foo",
-      name: "bar",
-      url: "http://example.org",
-    });
+    expect(links).toContainEqual(
+      expect.objectContaining({
+        type: "foo",
+        name: "bar",
+        url: "http://example.org",
+      }),
+    );
   });
 
   it("adds tms link", () => {
     const { links } = results.tms;
 
-    links.should.include.something.that.deep.equals({
-      type: "tms",
-      name: "foo",
-      url: "http://example.org/tasks/1",
-    });
+    expect(links).toContainEqual(
+      expect.objectContaining({
+        type: "tms",
+        name: "foo",
+        url: "http://example.org/tasks/1",
+      }),
+    );
   });
 
   it("adds issue link", () => {
     const { links } = results.issue;
 
-    links.should.include.something.that.deep.equals({
-      type: "issue",
-      name: "foo",
-      url: "http://example.org/issues/1",
-    });
+    expect(links).toContainEqual(
+      expect.objectContaining({
+        type: "issue",
+        name: "foo",
+        url: "http://example.org/issues/1",
+      }),
+    );
   });
 });
