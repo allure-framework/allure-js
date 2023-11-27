@@ -125,7 +125,7 @@ By default, the reporter uses the test file path as the suite name.
 
 If tests uses the `allure.suite()` and it's value must be used in Allure TestOps custom fields, then set the option `suiteTitle: false`
 
-## Proving extra information
+## Providing extra information
 
 Tests extra information can be provided by labels:
 
