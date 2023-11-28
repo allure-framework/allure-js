@@ -24,6 +24,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/allure-cucumberjs"\
       },\
       {\
+        "name": "allure-cypress",\
+        "reference": "workspace:packages/allure-cypress"\
+      },\
+      {\
         "name": "allure-decorators",\
         "reference": "workspace:packages/allure-decorators"\
       },\
@@ -65,6 +69,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "fallbackExclusionList": [\
       ["allure-codeceptjs", ["workspace:packages/allure-codeceptjs"]],\
       ["allure-cucumberjs", ["workspace:packages/allure-cucumberjs"]],\
+      ["allure-cypress", ["workspace:packages/allure-cypress"]],\
       ["allure-decorators", ["workspace:packages/allure-decorators"]],\
       ["allure-jasmine", ["workspace:packages/allure-jasmine"]],\
       ["allure-jest", ["workspace:packages/allure-jest"]],\
@@ -3933,6 +3938,41 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mocha-multi-reporters", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:1.5.1"],\
             ["rimraf", "npm:5.0.1"],\
             ["sinon", "npm:17.0.1"],\
+            ["ts-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:10.9.1"],\
+            ["typescript", "patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["allure-cypress", [\
+        ["workspace:packages/allure-cypress", {\
+          "packageLocation": "./packages/allure-cypress/",\
+          "packageDependencies": [\
+            ["allure-cypress", "workspace:packages/allure-cypress"],\
+            ["@types/eslint", "npm:8.44.2"],\
+            ["@types/glob", "npm:8.1.0"],\
+            ["@types/jasmine", "npm:3.10.12"],\
+            ["@types/mocha", "npm:10.0.1"],\
+            ["@types/node", "npm:20.6.3"],\
+            ["@types/sinon", "npm:10.0.16"],\
+            ["@types/source-map-support", "npm:0.5.7"],\
+            ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
+            ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
+            ["allure-js-commons", "workspace:packages/allure-js-commons"],\
+            ["codecov", "npm:3.8.3"],\
+            ["eslint", "npm:8.49.0"],\
+            ["eslint-config-prettier", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:9.0.0"],\
+            ["eslint-plugin-import", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:2.28.1"],\
+            ["eslint-plugin-jsdoc", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:46.6.0"],\
+            ["eslint-plugin-no-null", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.0.2"],\
+            ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
+            ["expect", "npm:29.7.0"],\
+            ["glob", "npm:10.3.5"],\
+            ["mocha", "npm:10.2.0"],\
+            ["mocha-multi-reporters", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:1.5.1"],\
+            ["rimraf", "npm:5.0.1"],\
+            ["sinon", "npm:16.0.0"],\
+            ["source-map-support", "npm:0.5.21"],\
             ["ts-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"]\
           ],\

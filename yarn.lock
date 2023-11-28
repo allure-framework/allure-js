@@ -2975,6 +2975,39 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"allure-cypress@workspace:packages/allure-cypress":
+  version: 0.0.0-use.local
+  resolution: "allure-cypress@workspace:packages/allure-cypress"
+  dependencies:
+    "@types/eslint": ^8
+    "@types/glob": ^8.1.0
+    "@types/jasmine": ^3.3.12
+    "@types/mocha": ^10.0.1
+    "@types/node": ^20.6.3
+    "@types/sinon": ^10.0.16
+    "@types/source-map-support": ^0.5.7
+    "@typescript-eslint/eslint-plugin": ^6.7.0
+    "@typescript-eslint/parser": ^6.7.0
+    allure-js-commons: "workspace:*"
+    codecov: ^3.8.3
+    eslint: ^8.49.0
+    eslint-config-prettier: ^9.0.0
+    eslint-plugin-import: ^2.28.1
+    eslint-plugin-jsdoc: ^46.6.0
+    eslint-plugin-no-null: ^1.0.2
+    eslint-plugin-prefer-arrow: ^1.2.3
+    expect: ^29.7.0
+    glob: ^10.3.5
+    mocha: ^10.2.0
+    mocha-multi-reporters: ^1.5.1
+    rimraf: ^5.0.1
+    sinon: ^16.0.0
+    source-map-support: ^0.5.21
+    ts-node: ^10.9.1
+    typescript: ^5.2.2
+  languageName: unknown
+  linkType: soft
+
 "allure-decorators@workspace:packages/allure-decorators":
   version: 0.0.0-use.local
   resolution: "allure-decorators@workspace:packages/allure-decorators"
