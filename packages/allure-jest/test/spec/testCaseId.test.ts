@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import expect from "expect";
 import { runJestTests, TestResultsByFullName } from "../utils";
 
 describe("testCaseId", () => {
@@ -11,6 +11,6 @@ describe("testCaseId", () => {
   it("adds custom history id", () => {
     const { testCaseId } = results.testCaseId;
 
-    expect(testCaseId).eq("foo");
+    expect(testCaseId).toBe("foo");
   });
 });

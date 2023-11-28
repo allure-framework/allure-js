@@ -1,5 +1,6 @@
-import os from "os";
-import process from "process";
+import os from "node:os";
+import { dirname, sep } from "node:path";
+import process from "node:process";
 import { EnvironmentContext, JestEnvironment, JestEnvironmentConfig } from "@jest/environment";
 import type { Circus } from "@jest/types";
 import {
@@ -7,36 +8,50 @@ import {
   AllureTest,
   getSuitesLabels,
   LabelName,
+  Link,
+  LinkType,
   MetadataMessage,
   Stage,
   Status,
 } from "allure-js-commons";
 import { AllureJestApi } from "./AllureJestApi";
-import { getTestId, getTestPath } from "./utils";
+import { getTestId, getTestPath, removeAnsiColorsFromString } from "./utils";
 
 const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
 const hostname = os.hostname();
 
 export interface AllureEnvironment extends JestEnvironment {
+  transformLinks(links: Link[]): Link[];
+
   handleAllureMetadata(payload: { currentTestName: string; metadata: MetadataMessage }): void;
+}
+
+export interface LinkMatcher {
+  type: LinkType | string;
+  urlTemplate: string;
 }
 
 const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
   // @ts-expect-error (ts(2545)) Incorrect assumption about a mixin class: https://github.com/microsoft/TypeScript/issues/37142
   return class extends Base {
-    testRootDirPath: string;
+    // testRootDirPath: string;
+    testPath: string;
     runtime: AllureRuntime;
+    linksMatchers: LinkMatcher[];
     runningTests: Map<string, AllureTest> = new Map();
 
     constructor(config: JestEnvironmentConfig, context: EnvironmentContext) {
       super(config, context);
 
+      const { resultsDir = "allure-results", links = [] } =
+        config?.projectConfig?.testEnvironmentOptions || {};
+
       this.runtime = new AllureRuntime({
-        resultsDir:
-          (config?.projectConfig?.testEnvironmentOptions?.resultsDir as string) || "allure-results",
+        resultsDir: resultsDir as string,
       });
+      this.linksMatchers = links as LinkMatcher[];
       this.global.allure = new AllureJestApi(this, this.global);
-      this.testRootDirPath = config.globalConfig.rootDir;
+      this.testPath = context.testPath.replace(config.globalConfig.rootDir, "").replace(sep, "");
     }
 
     setup() {
@@ -45,6 +60,21 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
 
     teardown() {
       return super.teardown();
+    }
+
+    transformLinks(links: Link[]): Link[] {
+      return links.map((link) => {
+        const matcher = this.linksMatchers.find((m) => m.type === link.type);
+
+        if (!matcher) {
+          return link;
+        }
+
+        return {
+          ...link,
+          url: matcher.urlTemplate.replace("%s", link.url),
+        };
+      });
     }
 
     handleAllureMetadata(payload: { currentTestName: string; metadata: MetadataMessage }) {
@@ -92,21 +122,23 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const newTestPath = newTestSuitesPath.concat(testName);
       const newTestId = getTestId(newTestPath);
       const newTest = new AllureTest(this.runtime);
-      const thread = ALLURE_THREAD_NAME || JEST_WORKER_ID || process.pid.toString();
-      const host = ALLURE_HOST_NAME || hostname;
+      const threadLabel = ALLURE_THREAD_NAME || JEST_WORKER_ID || process.pid.toString();
+      const hostLabel = ALLURE_HOST_NAME || hostname;
+      const packageLabel = dirname(this.testPath).split(sep).join(".");
 
       newTest.name = testName;
       newTest.fullName = newTestId;
 
       newTest.addLabel(LabelName.LANGUAGE, "javascript");
       newTest.addLabel(LabelName.FRAMEWORK, "jest");
+      newTest.addLabel(LabelName.PACKAGE, packageLabel);
 
-      if (thread) {
-        newTest.addLabel(LabelName.THREAD, thread);
+      if (threadLabel) {
+        newTest.addLabel(LabelName.THREAD, threadLabel);
       }
 
-      if (host) {
-        newTest.addLabel(LabelName.HOST, host);
+      if (hostLabel) {
+        newTest.addLabel(LabelName.HOST, hostLabel);
       }
 
       getSuitesLabels(newTestSuitesPath).forEach((label) => {
@@ -114,13 +146,12 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       });
 
       /**
-       * if user have some tests with the same name, reporter will throw an
-       * unexpected error due the test with the same name could be removed from
-       * the running tests, so better to throw an explicit error
+       * If user have some tests with the same name, reporter will throw an error due the test with
+       * the same name could be removed from the running tests, so better to throw an explicit error
        */
       if (this.runningTests.has(newTestId)) {
         throw new Error(
-          `Test "${newTestId}" has been already added to run! To continue with reporting, please rename the test.`,
+          `Test "${newTestId}" has been already initialized! To continue with reporting, please rename the test.`,
         );
       }
 
@@ -131,12 +162,24 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const currentTestId = getTestId(getTestPath(test));
       const currentTest = this.runningTests.get(currentTestId)!;
 
+      if (!currentTest) {
+        // eslint-disable-next-line no-console
+        console.error(`Can't find "${currentTestId}" test while tried to start it!`);
+        return;
+      }
+
       currentTest.stage = Stage.RUNNING;
     }
 
     private handleTestPass(test: Circus.TestEntry) {
       const currentTestId = getTestId(getTestPath(test));
       const currentTest = this.runningTests.get(currentTestId)!;
+
+      if (!currentTest) {
+        // eslint-disable-next-line no-console
+        console.error(`Can't find "${currentTestId}" test while tried to mark it as passed!`);
+        return;
+      }
 
       currentTest.stage = Stage.FINISHED;
       currentTest.status = Status.PASSED;
@@ -145,21 +188,36 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     private handleTestFail(test: Circus.TestEntry) {
       const currentTestId = getTestId(getTestPath(test));
       const currentTest = this.runningTests.get(currentTestId)!;
+
+      if (!currentTest) {
+        // eslint-disable-next-line no-console
+        console.error(`Can't find "${currentTestId}" test while tried to mark it as failed!`);
+        return;
+      }
+
       // jest collects all errors, but we need to report the first one because it's a reason why the test has been failed
       const [error] = test.errors;
       const hasMultipleErrors = Array.isArray(error);
+      const errorMessage = (hasMultipleErrors ? error[0].message : error.message) as string;
+      const errorTrace = (hasMultipleErrors ? error[0].stack : error.stack) as string;
 
       currentTest.stage = Stage.FINISHED;
       currentTest.status = Status.FAILED;
       currentTest.statusDetails = {
-        message: hasMultipleErrors ? error[0].message : error.message,
-        trace: hasMultipleErrors ? error[0].stack : error.stack,
+        message: removeAnsiColorsFromString(errorMessage),
+        trace: removeAnsiColorsFromString(errorTrace),
       };
     }
 
     private handleTestSkip(test: Circus.TestEntry) {
       const currentTestId = getTestId(getTestPath(test));
       const currentTest = this.runningTests.get(currentTestId)!;
+
+      if (!currentTest) {
+        // eslint-disable-next-line no-console
+        console.error(`Can't find "${currentTestId}" test while tried to mark it as skipped!`);
+        return;
+      }
 
       currentTest.stage = Stage.PENDING;
       currentTest.status = Status.SKIPPED;
@@ -172,6 +230,12 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const currentTestId = getTestId(getTestPath(test));
       const currentTest = this.runningTests.get(currentTestId)!;
 
+      if (!currentTest) {
+        // eslint-disable-next-line no-console
+        console.error(`Can't find "${currentTestId}" test while tried to dispose it after start!`);
+        return;
+      }
+
       currentTest.endTest();
       this.runningTests.delete(currentTestId);
     }
@@ -179,6 +243,12 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     private handleTestTodo(test: Circus.TestEntry) {
       const currentTestId = getTestId(getTestPath(test));
       const currentTest = this.runningTests.get(currentTestId)!;
+
+      if (!currentTest) {
+        // eslint-disable-next-line no-console
+        console.error(`Can't find "${currentTestId}" test while tried to mark it as todo!`);
+        return;
+      }
 
       currentTest.stage = Stage.PENDING;
       currentTest.status = Status.SKIPPED;

@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import expect from "expect";
 import { runJestTests, TestResultsByFullName } from "../utils";
 
 describe("description", () => {
@@ -11,12 +11,12 @@ describe("description", () => {
   it("adds markdown description", () => {
     const { description } = results.markdown;
 
-    expect(description).eq("foo");
+    expect(description).toBe("foo");
   });
 
   it("adds custom history id", () => {
     const { descriptionHtml } = results.html;
 
-    expect(descriptionHtml).eq("foo");
+    expect(descriptionHtml).toBe("foo");
   });
 });

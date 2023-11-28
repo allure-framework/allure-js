@@ -16,4 +16,8 @@ export const handlers = [
       ctx.status(200),
     );
   }),
+
+  rest.get("http://example.com/timeout", (req, res, ctx) => {
+    return res.networkError("Timeout");
+  }),
 ];

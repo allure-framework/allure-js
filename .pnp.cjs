@@ -2264,10 +2264,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/chai-arrays", [\
-        ["npm:2.0.0", {\
-          "packageLocation": "./.yarn/cache/@types-chai-arrays-npm-2.0.0-e981b6aa00-6ee2b904b1.zip/node_modules/@types/chai-arrays/",\
+        ["npm:2.0.3", {\
+          "packageLocation": "./.yarn/cache/@types-chai-arrays-npm-2.0.3-bd81117c4c-26da0d01f5.zip/node_modules/@types/chai-arrays/",\
           "packageDependencies": [\
-            ["@types/chai-arrays", "npm:2.0.0"],\
+            ["@types/chai-arrays", "npm:2.0.3"],\
             ["@types/chai", "npm:4.3.6"]\
           ],\
           "linkType": "HARD"\
@@ -3369,7 +3369,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["allure-decorators", "workspace:packages/allure-decorators"],\
             ["@testdeck/mocha", "npm:0.1.2"],\
             ["@types/chai", "npm:4.3.6"],\
-            ["@types/chai-arrays", "npm:2.0.0"],\
+            ["@types/chai-arrays", "npm:2.0.3"],\
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/glob", "npm:8.1.0"],\
             ["@types/mocha", "npm:10.0.1"],\
@@ -3475,9 +3475,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@jest/environment", "npm:29.7.0"],\
             ["@jest/expect", "npm:29.7.0"],\
             ["@jest/types", "npm:29.6.3"],\
-            ["@types/chai", "npm:4.3.6"],\
-            ["@types/chai-like", "npm:1.1.1"],\
-            ["@types/chai-things", "npm:0.0.36"],\
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/glob", "npm:8.1.0"],\
             ["@types/jasmine", "npm:3.10.12"],\
@@ -3489,9 +3486,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
             ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
             ["allure-js-commons", "workspace:packages/allure-js-commons"],\
-            ["chai", "npm:4.3.8"],\
-            ["chai-like", "virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:1.1.1"],\
-            ["chai-things", "npm:0.2.0"],\
             ["codecov", "npm:3.8.3"],\
             ["eslint", "npm:8.49.0"],\
             ["eslint-config-prettier", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:9.0.0"],\
@@ -3499,6 +3493,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-jsdoc", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:46.6.0"],\
             ["eslint-plugin-no-null", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.0.2"],\
             ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
+            ["expect", "npm:29.7.0"],\
             ["glob", "npm:10.3.5"],\
             ["jest-circus", "npm:29.7.0"],\
             ["jest-cli", "virtual:f22a73b9c1f4f0e2e1c95f149ccb41c96491085e4b2ecd3061e554432306c4df6c2976f3c6ce3a6d62abead3ccc6cf04e88b4aebf1de7356583819351e2346e2#npm:29.7.0"],\

@@ -1,3 +1,4 @@
+import expect from "expect";
 import { runJestTests, TestResultsByFullName } from "../utils";
 
 describe("parameters", () => {
@@ -10,11 +11,13 @@ describe("parameters", () => {
   it("adds custom parameter", () => {
     const { parameters } = results.custom;
 
-    parameters.should.include.something.that.deep.equals({
-      name: "foo",
-      value: "bar",
-      excluded: false,
-      mode: "hidden",
-    });
+    expect(parameters).toContainEqual(
+      expect.objectContaining({
+        name: "foo",
+        value: "bar",
+        excluded: false,
+        mode: "hidden",
+      }),
+    );
   });
 });
