@@ -64,8 +64,8 @@ test("Verify Headers", async () => {
     },
     {
       name: "Request Headers",
-      source: expect.stringContaining("attachment.txt"),
-      type: "text/plain",
+      source: expect.stringContaining("attachment.json"),
+      type: "application/json",
     },
     {
       name: "Request Body",
@@ -74,8 +74,8 @@ test("Verify Headers", async () => {
     },
     {
       name: "Response Headers",
-      source: expect.stringContaining("attachment.txt"),
-      type: "text/plain",
+      source: expect.stringContaining("attachment.json"),
+      type: "application/json",
     },
     {
       name: "Response Body",

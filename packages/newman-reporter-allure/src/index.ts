@@ -220,6 +220,14 @@ class AllureReporter {
     step.endStep();
   }
 
+  headerListToJsonString(headers: HeaderList) {
+    const ret: { [k: string]: any } = {};
+    headers.all().forEach((h) => {
+      ret[h.key] = h.value;
+    });
+    return JSON.stringify(ret, null, 4);
+  }
+
   escape(val: string) {
     return (
       val
@@ -338,17 +346,13 @@ class AllureReporter {
     const requestDataURL = requestData && `${requestData.method} - ${requestData.url}`;
 
     if (requestData?.headers && requestData?.headers?.count() > 0) {
-      const headers = requestData.headers
-        .all()
-        .map((h) => `${h.key}: ${h.value}`)
-        .join("\n");
-      const attachment = this.allureRuntime.writeAttachment(headers, {
-        contentType: ContentType.TEXT,
+      const attachment = this.allureRuntime.writeAttachment(this.headerListToJsonString(requestData.headers), {
+        contentType: ContentType.JSON,
       });
 
       this.currentExecutable.addAttachment(
         "Request Headers",
-        { contentType: ContentType.TEXT },
+        { contentType: ContentType.JSON },
         attachment,
       );
     }
@@ -397,17 +401,13 @@ class AllureReporter {
     }
 
     if (response?.headers && response?.headers?.count() > 0) {
-      const headers = response.headers
-        .all()
-        .map((h) => `${h.key}: ${h.value}`)
-        .join("\n");
-      const attachment = this.allureRuntime.writeAttachment(headers, {
-        contentType: ContentType.TEXT,
+      const attachment = this.allureRuntime.writeAttachment(this.headerListToJsonString(response.headers), {
+        contentType: ContentType.JSON,
       });
 
       this.currentExecutable.addAttachment(
         "Response Headers",
-        { contentType: ContentType.TEXT },
+        { contentType: ContentType.JSON },
         attachment,
       );
     }
@@ -508,7 +508,7 @@ class AllureReporter {
 
     const url = `${
       req.url.protocol || ""
-    }://${args.request.url.getHost()}${req.url.getPathWithQuery()}`;
+      }://${args.request.url.getHost()}${req.url.getPathWithQuery()}`;
 
     this.runningItems[this.runningItems.length - 1].pmItem.requestData = {
       url: url,
