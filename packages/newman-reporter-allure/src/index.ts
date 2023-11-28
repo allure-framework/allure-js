@@ -48,14 +48,14 @@ interface PmRequestData {
   url: string;
   method: string;
   body?: RequestBody;
-  header?: HeaderList;
+  headers?: HeaderList;
 }
 
 interface PmResponseData {
   status: string;
   code: number;
   body: string;
-  header?: HeaderList;
+  headers?: HeaderList;
 }
 
 interface RunningItem {
@@ -337,8 +337,8 @@ class AllureReporter {
     const requestData = this.currentRunningItem?.pmItem.requestData;
     const requestDataURL = requestData && `${requestData.method} - ${requestData.url}`;
 
-    if (requestData?.header && requestData?.header?.count() > 0) {
-      const headers = requestData.header
+    if (requestData?.headers && requestData?.headers?.count() > 0) {
+      const headers = requestData.headers
         .all()
         .map((h) => `${h.key}: ${h.value}`)
         .join("\n");
@@ -396,8 +396,8 @@ class AllureReporter {
       this.setDescriptionHtml(testDescription);
     }
 
-    if (response?.header && response?.header?.count() > 0) {
-      const headers = response.header
+    if (response?.headers && response?.headers?.count() > 0) {
+      const headers = response.headers
         .all()
         .map((h) => `${h.key}: ${h.value}`)
         .join("\n");
@@ -470,11 +470,11 @@ class AllureReporter {
       this.currentRunningItem.pmItem.testScript = execScript;
 
       // not typed postman-collection error property ?
-      const doh: any = args.executions[0];
+      const testArgs: any = args.executions[0];
 
-      if (doh.error) {
-        const errName: string = doh.error.name;
-        const errMsg: string = doh.error.message;
+      if (testArgs.error) {
+        const errName: string = testArgs.error.name;
+        const errMsg: string = testArgs.error.message;
         const currStep = this.startStep(errName);
         currStep.detailsMessage = errMsg;
         currStep.status = Status.FAILED;
@@ -514,7 +514,7 @@ class AllureReporter {
       url: url,
       method: req.method,
       body: req.body,
-      header: req.headers,
+      headers: req.headers,
     };
 
     if (err) {
@@ -532,7 +532,7 @@ class AllureReporter {
       status: args.response.status,
       code: args.response.code,
       body: respBody,
-      header: args.response.headers,
+      headers: args.response.headers,
     };
   }
 
