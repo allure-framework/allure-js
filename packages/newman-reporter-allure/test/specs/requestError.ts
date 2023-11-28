@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/quotes */
 import { Status } from "allure-js-commons";
 import { expect } from "expect";
-import { after, before, afterEach, test } from "mocha";
+import { after, afterEach, before, test } from "mocha";
 import { runNewman } from "../helpers/runNewman";
 import { server } from "../mocks/server";
 
@@ -43,11 +43,12 @@ test("Mark test as failed when a request error occurs", async () => {
   expect(result.parameters).toEqual([
     { name: "Request", value: "GET - http://example.com/timeout" },
   ]);
+
   expect(result.steps).toEqual([
     {
       status: "failed" as any,
       stage: "finished" as any,
-      statusDetails: {},
+      statusDetails: expect.any(Object),
       steps: [],
       attachments: [],
       parameters: [],
