@@ -419,13 +419,18 @@ class AllureReporter {
     }
 
     if (response?.body) {
+      const contentTypeHeader = response.headers?.get("Content-Type") || "";
+      const isJsonResponse = /application\/json/i.test(contentTypeHeader);
+
+      const contentType = isJsonResponse ? ContentType.JSON : ContentType.TEXT;
+
       const attachment = this.allureRuntime.writeAttachment(response.body, {
-        contentType: ContentType.TEXT,
+      contentType: contentType,
       });
 
       this.currentExecutable.addAttachment(
         "Response Body",
-        { contentType: ContentType.TEXT },
+        { contentType: contentType },
         attachment,
       );
     }
