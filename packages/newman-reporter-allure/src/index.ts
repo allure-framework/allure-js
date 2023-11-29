@@ -18,6 +18,7 @@ import type {
   Collection,
   CollectionDefinition,
   Event,
+  HeaderList,
   Item,
   Request,
   RequestBody,
@@ -47,12 +48,14 @@ interface PmRequestData {
   url: string;
   method: string;
   body?: RequestBody;
+  headers?: HeaderList;
 }
 
 interface PmResponseData {
   status: string;
   code: number;
   body: string;
+  headers?: HeaderList;
 }
 
 interface RunningItem {
@@ -217,6 +220,14 @@ class AllureReporter {
     step.endStep();
   }
 
+  headerListToJsonString(headers: HeaderList) {
+    const ret: { [k: string]: any } = {};
+    headers.all().forEach((h) => {
+      ret[h.key] = h.value;
+    });
+    return JSON.stringify(ret, null, 4);
+  }
+
   escape(val: string) {
     return (
       val
@@ -334,8 +345,31 @@ class AllureReporter {
     const requestData = this.currentRunningItem?.pmItem.requestData;
     const requestDataURL = requestData && `${requestData.method} - ${requestData.url}`;
 
+    if (requestData?.headers && requestData?.headers?.count() > 0) {
+      const attachment = this.allureRuntime.writeAttachment(
+        this.headerListToJsonString(requestData.headers),
+        {
+          contentType: ContentType.JSON,
+        },
+      );
+
+      this.currentExecutable.addAttachment(
+        "Request Headers",
+        { contentType: ContentType.JSON },
+        attachment,
+      );
+    }
+
     if (requestData?.body?.mode === "raw" && requestData.body.raw) {
-      this.currentExecutable.parameter("Request body", requestData.body.raw);
+      const attachment = this.allureRuntime.writeAttachment(requestData.body.raw, {
+        contentType: ContentType.TEXT,
+      });
+
+      this.currentExecutable.addAttachment(
+        "Request Body",
+        { contentType: ContentType.TEXT },
+        attachment,
+      );
     }
 
     let testDescription = "";
@@ -369,13 +403,28 @@ class AllureReporter {
       this.setDescriptionHtml(testDescription);
     }
 
+    if (response?.headers && response?.headers?.count() > 0) {
+      const attachment = this.allureRuntime.writeAttachment(
+        this.headerListToJsonString(response.headers),
+        {
+          contentType: ContentType.JSON,
+        },
+      );
+
+      this.currentExecutable.addAttachment(
+        "Response Headers",
+        { contentType: ContentType.JSON },
+        attachment,
+      );
+    }
+
     if (response?.body) {
       const attachment = this.allureRuntime.writeAttachment(response.body, {
         contentType: ContentType.TEXT,
       });
 
       this.currentExecutable.addAttachment(
-        "response",
+        "Response Body",
         { contentType: ContentType.TEXT },
         attachment,
       );
@@ -425,6 +474,20 @@ class AllureReporter {
 
     if (this.currentRunningItem && execScript) {
       this.currentRunningItem.pmItem.testScript = execScript;
+
+      // not typed postman-collection error property ?
+      const testArgs: any = args.executions[0];
+
+      if (testArgs.error) {
+        const errName: string = testArgs.error.name;
+        const errMsg: string = testArgs.error.message;
+        const currStep = this.startStep(errName);
+        currStep.detailsMessage = errMsg;
+        currStep.status = Status.FAILED;
+        currStep.stage = Stage.FINISHED;
+        this.currentRunningItem.pmItem.failedAssertions.push(errName);
+        currStep.endStep();
+      }
     }
   }
 
@@ -457,6 +520,7 @@ class AllureReporter {
       url: url,
       method: req.method,
       body: req.body,
+      headers: req.headers,
     };
 
     if (err) {
@@ -474,6 +538,7 @@ class AllureReporter {
       status: args.response.status,
       code: args.response.code,
       body: respBody,
+      headers: args.response.headers,
     };
   }
 
@@ -484,6 +549,9 @@ class AllureReporter {
     if (err && this.currentRunningItem) {
       this.currentRunningItem.pmItem.passed = false;
       this.currentRunningItem.pmItem.failedAssertions.push(args.assertion);
+
+      currStep.detailsMessage = args.error.message;
+      currStep.detailsTrace = args.error.stack;
 
       currStep.status = Status.FAILED;
       currStep.stage = Stage.FINISHED;

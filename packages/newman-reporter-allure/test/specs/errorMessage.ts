@@ -22,7 +22,7 @@ test("complex test overview", async () => {
                 "    pm.response.to.have.status(555);",
                 "});",
                 'pm.test("(Turkish name) Türkçe metni kontrol et", function () {',
-                "    pm.response.to.have.status(555);",
+                "    pm.response.to.have.status(666);",
                 "});",
               ],
               type: "text/javascript",
@@ -41,7 +41,22 @@ test("complex test overview", async () => {
       },
     ],
   });
-  expect(result.statusDetails.message).toBe(
+
+  expect(result.steps[0].statusDetails).toEqual({
+    message: "expected response to have status code 555 but got 200",
+    trace: expect.stringContaining(
+      "AssertionError: expected response to have status code 555 but got 200",
+    ),
+  });
+
+  expect(result.steps[1].statusDetails).toEqual({
+    message: "expected response to have status code 666 but got 200",
+    trace: expect.stringContaining(
+      "AssertionError: expected response to have status code 666 but got 200",
+    ),
+  });
+
+  expect(result.statusDetails.message).toEqual(
     "Текст проверки на русском(она должна зафейлится), (Turkish name) Türkçe metni kontrol et",
   );
 });
