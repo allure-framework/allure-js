@@ -346,9 +346,12 @@ class AllureReporter {
     const requestDataURL = requestData && `${requestData.method} - ${requestData.url}`;
 
     if (requestData?.headers && requestData?.headers?.count() > 0) {
-      const attachment = this.allureRuntime.writeAttachment(this.headerListToJsonString(requestData.headers), {
-        contentType: ContentType.JSON,
-      });
+      const attachment = this.allureRuntime.writeAttachment(
+        this.headerListToJsonString(requestData.headers),
+        {
+          contentType: ContentType.JSON,
+        },
+      );
 
       this.currentExecutable.addAttachment(
         "Request Headers",
@@ -401,9 +404,12 @@ class AllureReporter {
     }
 
     if (response?.headers && response?.headers?.count() > 0) {
-      const attachment = this.allureRuntime.writeAttachment(this.headerListToJsonString(response.headers), {
-        contentType: ContentType.JSON,
-      });
+      const attachment = this.allureRuntime.writeAttachment(
+        this.headerListToJsonString(response.headers),
+        {
+          contentType: ContentType.JSON,
+        },
+      );
 
       this.currentExecutable.addAttachment(
         "Response Headers",
@@ -508,7 +514,7 @@ class AllureReporter {
 
     const url = `${
       req.url.protocol || ""
-      }://${args.request.url.getHost()}${req.url.getPathWithQuery()}`;
+    }://${args.request.url.getHost()}${req.url.getPathWithQuery()}`;
 
     this.runningItems[this.runningItems.length - 1].pmItem.requestData = {
       url: url,
