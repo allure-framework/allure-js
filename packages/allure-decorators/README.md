@@ -1,6 +1,16 @@
 # Allure Decorators
 
-This project introduces TS decorators integration for Allure framework.
+> Testdeck decorators integration for Allure framework
+
+<!--<img src="https://allurereport.org/public/img/allure-report.svg" alt="Allure Report logo" style="float: right" />-->
+
+- Learn more about Allure Report at https://allurereport.org
+- 📚 [Documentation](https://allurereport.org/docs/) – discover official documentation for Allure Report
+- ❓ [Questions and Support](https://github.com/orgs/allure-framework/discussions/categories/questions-support) – get help from the team and community
+- 📢 [Official annoucements](https://github.com/orgs/allure-framework/discussions/categories/announcements) – be in touch with the latest updates
+- 💬 [General Discussion ](https://github.com/orgs/allure-framework/discussions/categories/general-discussion) – engage in casual conversations, share insights and ideas with the community
+
+---
 
 ## Installation based on allure-mocha reporter
 
