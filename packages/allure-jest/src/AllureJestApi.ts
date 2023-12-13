@@ -59,13 +59,13 @@ export class AllureJestApi implements AllureRuntimeApiInterface {
     });
   }
 
-  attachment(content: string | Buffer, type: string): void {
+  attachment(content: string | Buffer, type: string, name?: string): void {
     const isBuffer = Buffer.isBuffer(content);
 
     this.sendMetadata({
       attachments: [
         {
-          name: "Attachment",
+          name: name || "Attachment",
           content: isBuffer ? content.toString("base64") : content,
           encoding: isBuffer ? "base64" : "utf8",
           type,

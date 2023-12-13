@@ -18,4 +18,15 @@ describe("attachments", () => {
       }),
     );
   });
+
+  it("adds markdown description with name", () => {
+    const { attachments } = results["with name"];
+
+    expect(attachments).toContainEqual(
+      expect.objectContaining({
+        name: "Request Body",
+        type: "application/json",
+      }),
+    );
+  });
 });

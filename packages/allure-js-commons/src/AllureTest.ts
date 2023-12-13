@@ -146,7 +146,7 @@ export class AllureTest extends ExecutableItemWrapper {
       );
 
       this.addAttachment(
-        "Attachment",
+        attachment.name,
         {
           contentType: attachment.type,
         },
