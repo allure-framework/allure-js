@@ -65,7 +65,7 @@ export class AllureJestApi implements AllureRuntimeApiInterface {
     this.sendMetadata({
       attachments: [
         {
-          name: name ? name: "Attachment",
+          name: name ? name : "Attachment",
           content: isBuffer ? content.toString("base64") : content,
           encoding: isBuffer ? "base64" : "utf8",
           type,
