@@ -1,6 +1,6 @@
 {
   "name": "allure-mocha",
-  "version": "2.9.2",
+  "version": "2.10.0",
   "description": "Allure Mocha integration",
   "license": "Apache-2.0",
   "author": {
