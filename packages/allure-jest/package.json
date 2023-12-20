@@ -1,6 +1,6 @@
 {
   "name": "allure-jest",
-  "version": "2.9.2",
+  "version": "2.10.0",
   "description": "Allure Jest integration",
   "license": "Apache-2.0",
   "packageManager": "yarn@3.6.3",
