@@ -2,7 +2,11 @@
 
 > Allure framework integration for CodeceptJS
 
-<img src="https://allurereport.org/public/img/allure-report.svg" height="85px" alt="Allure Report logo" align="right" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://allurereport.org/public/img/allure-report.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://allurereport.org/public/img/allure-report.svg">
+  <img src="https://allurereport.org/public/img/allure-report.svg" height="85px" alt="Allure Report logo" align="right" />
+</picture>
 
 - Learn more about Allure Report at https://allurereport.org
 - 📚 [Documentation](https://allurereport.org/docs/) – discover official documentation for Allure Report
@@ -19,7 +23,7 @@ npm i -D allure-codeceptjs
 ```
 
 ## Usage
-Add the allure plugin inside you plugins section of your CodeceptJS config file. 
+Add the allure plugin inside you plugins section of your CodeceptJS config file.
 For instance the config file is `codecept.config.(js|ts)` then:
 ```
   plugins: {

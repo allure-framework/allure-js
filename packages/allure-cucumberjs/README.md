@@ -1,8 +1,12 @@
 # allure-cucumberjs
 
 > Allure integration for `cucumber-js` compatible with `@cucumber/cucumber@^8.x.x` and Allure 2+.
- 
-<img src="https://allurereport.org/public/img/allure-report.svg" height="85px" alt="Allure Report logo" align="right" />
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://allurereport.org/public/img/allure-report.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://allurereport.org/public/img/allure-report.svg">
+  <img src="https://allurereport.org/public/img/allure-report.svg" height="85px" alt="Allure Report logo" align="right" />
+</picture>
 
 - Learn more about Allure Report at https://allurereport.org
 - 📚 [Documentation](https://allurereport.org/docs/) – discover official documentation for Allure Report

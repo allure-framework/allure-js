@@ -2,7 +2,11 @@
 
 > Testdeck decorators integration for Allure framework
 
-<img src="https://allurereport.org/public/img/allure-report.svg" height="85px" alt="Allure Report logo" align="right" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://allurereport.org/public/img/allure-report.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://allurereport.org/public/img/allure-report.svg">
+  <img src="https://allurereport.org/public/img/allure-report.svg" height="85px" alt="Allure Report logo" align="right" />
+</picture>
 
 - Learn more about Allure Report at https://allurereport.org
 - 📚 [Documentation](https://allurereport.org/docs/) – discover official documentation for Allure Report
@@ -129,14 +133,14 @@ You should pay attention to the following line:
 decorate<MochaAllure>(allure)
 ```
 
-To be able to use decorators, you have to call `decorate` function explicitly and set your reporter's instance in `before` hook. This was done intentionally to allow clients decide which reporter they want to use with decorators module.  
+To be able to use decorators, you have to call `decorate` function explicitly and set your reporter's instance in `before` hook. This was done intentionally to allow clients decide which reporter they want to use with decorators module.
 
 Note that `data` is a [testdeck](https://github.com/testdeck/testdeck) specific extension which allows injecting parameters into Allure scope.
 At the moment, **testdeck** supports only Mocha, Jest and Jasmine frameworks.
-If you want to add the other integration, feel free to contact Allure team to discuss the potential design options. 
+If you want to add the other integration, feel free to contact Allure team to discuss the potential design options.
 
 
 #### ToDo
 
-- [ ] Update [mocha-allure2-example](https://github.com/sskorol/mocha-allure2-example) with new `allure-decorators` dependency.   
+- [ ] Update [mocha-allure2-example](https://github.com/sskorol/mocha-allure2-example) with new `allure-decorators` dependency.
 - [ ] Explore potential `data` decorator extension for the other frameworks.
