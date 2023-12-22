@@ -419,20 +419,29 @@ class AllureReporter {
     }
 
     if (response?.body) {
-      const contentTypeHeader = response.headers?.get("Content-Type") || "";
-      const isJsonResponse = /application\/json/i.test(contentTypeHeader);
+      const contentTypeHeader = response.headers || "";
 
-      const contentType = isJsonResponse ? ContentType.JSON : ContentType.TEXT;
+      if (/application\/json/i.test(contentTypeHeader)) {
+        const attachment = this.allureRuntime.writeAttachment(response.body, {
+          contentType: ContentType.JSON,
+        });
 
-      const attachment = this.allureRuntime.writeAttachment(response.body, {
-      contentType: contentType,
-      });
+        this.currentExecutable.addAttachment(
+          "Response Body",
+          { contentType: ContentType.JSON },
+          attachment,
+        );
+      } else {
+        const attachment = this.allureRuntime.writeAttachment(response.body, {
+          contentType: ContentType.TEXT,
+        });
 
-      this.currentExecutable.addAttachment(
-        "Response Body",
-        { contentType: contentType },
-        attachment,
-      );
+        this.currentExecutable.addAttachment(
+          "Response Body",
+          { contentType: ContentType.TEXT },
+          attachment,
+        );
+      }
     }
 
     const failedAssertions = this.currentRunningItem?.pmItem.failedAssertions;
