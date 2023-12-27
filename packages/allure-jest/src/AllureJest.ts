@@ -222,6 +222,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       currentTest.stage = Stage.PENDING;
       currentTest.status = Status.SKIPPED;
 
+      currentTest.calculateHistoryId();
       currentTest.endTest();
       this.runningTests.delete(currentTestId);
     }
@@ -236,6 +237,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
+      currentTest.calculateHistoryId();
       currentTest.endTest();
       this.runningTests.delete(currentTestId);
     }
@@ -253,6 +255,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       currentTest.stage = Stage.PENDING;
       currentTest.status = Status.SKIPPED;
 
+      currentTest.calculateHistoryId();
       currentTest.endTest();
       this.runningTests.delete(currentTestId);
     }
