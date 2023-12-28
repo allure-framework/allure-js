@@ -4,6 +4,7 @@
   "description": "Allure Jest integration",
   "license": "Apache-2.0",
   "packageManager": "yarn@3.6.3",
+  "homepage": "https://allurereport.org/docs/jest/",
   "author": {
     "name": "Qameta Software",
     "email": "allure@qameta.io",

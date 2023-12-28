@@ -2,6 +2,7 @@
   "name": "newman-reporter-allure",
   "version": "2.10.0",
   "description": "Allure Newman integration",
+  "homepage": "https://allurereport.org",
   "author": {
     "name": "Qameta Software",
     "email": "allure@qameta.io",
