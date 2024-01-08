@@ -2,11 +2,7 @@
 
 > Common utilities for Allure framework JavaScript integrations
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://allurereport.org/public/img/allure-report.svg">
-  <source media="(prefers-color-scheme: light)" srcset="https://allurereport.org/public/img/allure-report.svg">
-  <img src="https://allurereport.org/public/img/allure-report.svg" height="85px" alt="Allure Report logo" align="right" />
-</picture>
+[<img src="https://allurereport.org/public/img/allure-report.svg" height="85px" alt="Allure Report logo" align="right" />](https://allurereport.org "Allure Report")
 
 - Learn more about Allure Report at https://allurereport.org
 - 📚 [Documentation](https://allurereport.org/docs/) – discover official documentation for Allure Report
