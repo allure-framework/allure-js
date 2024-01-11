@@ -66,7 +66,7 @@ export default class AllureReporter implements Reporter {
     } else {
       const test = parent.startTest(task.name, 0);
       test.name = task.name;
-      test.fullName = `${task.file!.name}#${task.name}`;
+      test.fullName = `${task.file.name}#${task.name}`;
       const { allure } = task.meta as { allure: AllureMeta };
       if (allure) {
         for (const step of allure.currentTest.steps) {
