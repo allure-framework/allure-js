@@ -57,9 +57,9 @@ export interface AllureApi {
   // parameter: (name: string, value: any, options?: ParameterOptions) => void;
   // testCaseId: (id: string) => void;
   // historyId: (id: string) => void;
-  // link: (url: string, name?: string, type?: string) => void;
-  // issue: (name: string, url: string) => void;
-  // tms: (name: string, url: string) => void;
+  link: (url: string, name?: string, type?: string) => void;
+  issue: (name: string, url: string) => void;
+  tms: (name: string, url: string) => void;
   // description: (markdown: string) => void;
   // descriptionHtml: (html: string) => void;
   // attachment: (name: string, content: Buffer | string, options: string | AttachmentOptions) => void;

@@ -4086,6 +4086,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["npm-run-all", "npm:4.1.5"],\
             ["rimraf", "npm:5.0.1"],\
             ["typescript", "patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"],\
+            ["vite", "virtual:f37ad3099f3665d5bbc9ee71081416c8874087a5d9739472f56367e210ca9246356f462b31407a28e510bc022801edd4632f86364db715287d62bd50b42e2c00#npm:5.0.11"],\
             ["vitest", "virtual:f37ad3099f3665d5bbc9ee71081416c8874087a5d9739472f56367e210ca9246356f462b31407a28e510bc022801edd4632f86364db715287d62bd50b42e2c00#npm:1.1.3"]\
           ],\
           "linkType": "SOFT"\
@@ -17263,10 +17264,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:b84d40e24a07707b3b21dab213a9bf230a524b41fae4c264c334e73d61463e082b1e2b45367c9fcee087c08d07d5ce60690b9e5f8c3c7b4535e7711ad2087eec#npm:5.0.11", {\
-          "packageLocation": "./.yarn/__virtual__/vite-virtual-44401a1dc6/0/cache/vite-npm-5.0.11-d5457a8b86-262e41f25c.zip/node_modules/vite/",\
+        ["virtual:f37ad3099f3665d5bbc9ee71081416c8874087a5d9739472f56367e210ca9246356f462b31407a28e510bc022801edd4632f86364db715287d62bd50b42e2c00#npm:5.0.11", {\
+          "packageLocation": "./.yarn/__virtual__/vite-virtual-78e8ad89ce/0/cache/vite-npm-5.0.11-d5457a8b86-262e41f25c.zip/node_modules/vite/",\
           "packageDependencies": [\
-            ["vite", "virtual:b84d40e24a07707b3b21dab213a9bf230a524b41fae4c264c334e73d61463e082b1e2b45367c9fcee087c08d07d5ce60690b9e5f8c3c7b4535e7711ad2087eec#npm:5.0.11"],\
+            ["vite", "virtual:f37ad3099f3665d5bbc9ee71081416c8874087a5d9739472f56367e210ca9246356f462b31407a28e510bc022801edd4632f86364db715287d62bd50b42e2c00#npm:5.0.11"],\
             ["@types/less", null],\
             ["@types/lightningcss", null],\
             ["@types/node", "npm:20.6.3"],\
@@ -17397,7 +17398,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["strip-literal", "npm:1.3.0"],\
             ["tinybench", "npm:2.5.1"],\
             ["tinypool", "npm:0.8.1"],\
-            ["vite", "virtual:b84d40e24a07707b3b21dab213a9bf230a524b41fae4c264c334e73d61463e082b1e2b45367c9fcee087c08d07d5ce60690b9e5f8c3c7b4535e7711ad2087eec#npm:5.0.11"],\
+            ["vite", "virtual:f37ad3099f3665d5bbc9ee71081416c8874087a5d9739472f56367e210ca9246356f462b31407a28e510bc022801edd4632f86364db715287d62bd50b42e2c00#npm:5.0.11"],\
             ["vite-node", "npm:1.1.3"],\
             ["why-is-node-running", "npm:2.2.2"]\
           ],\

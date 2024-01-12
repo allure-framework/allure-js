@@ -1,8 +1,9 @@
 import {
   AllureGroup,
   AllureRuntime,
-  ExecutableItem,
   LabelName,
+  Link,
+  MessageAllureWriter,
   MetadataMessage,
   Stage,
   Status,
@@ -10,12 +11,47 @@ import {
 import { File, Reporter, Task } from "vitest";
 import { AllureMeta, AllureStep } from "./model.js";
 
+export interface AllureReporterOptions {
+  testMode?: boolean;
+  resultsDir?: string;
+  links?: {
+    type: string;
+    urlTemplate: string;
+  }[];
+}
+
 export default class AllureReporter implements Reporter {
   private allureRuntime: AllureRuntime;
+  private options: AllureReporterOptions;
 
-  onInit(ctx) {
+  constructor(options: AllureReporterOptions) {
+    this.options = options;
+  }
+
+  private processMetadataLinks(links: Link[]): Link[] {
+    return links.map((link) => {
+      // TODO:
+      // @ts-ignore
+      const matcher = this.options.links?.find?.(({ type }) => type === link.type);
+
+      // TODO:
+      if (!matcher || link.url.startsWith("http")) {
+        return link;
+      }
+
+      const url = matcher.urlTemplate.replace("%s", link.url);
+
+      return {
+        ...link,
+        url,
+      };
+    });
+  }
+
+  onInit() {
     this.allureRuntime = new AllureRuntime({
-      resultsDir: ctx.config.outputFile.allure ?? "allure-results",
+      resultsDir: this.options.resultsDir ?? "allure-results",
+      writer: this.options.testMode ? new MessageAllureWriter() : undefined,
     });
   }
 
@@ -52,12 +88,18 @@ export default class AllureReporter implements Reporter {
     }
 
     const { allureMetadataMessage = {} } = task.meta as { allureMetadataMessage: MetadataMessage };
+    const links = allureMetadataMessage.links
+      ? this.processMetadataLinks(allureMetadataMessage.links)
+      : [];
     const test = parent.startTest(task.name, 0);
 
     test.name = task.name;
     test.fullName = `${task.file.name}#${task.name}`;
 
-    test.applyMetadata(allureMetadataMessage);
+    test.applyMetadata({
+      ...allureMetadataMessage,
+      links,
+    });
     test.addLabel(LabelName.SUITE, parent.name);
 
     if (task.suite.suite?.name) {

@@ -1,16 +1,21 @@
-import { LabelName, LinkType, ParameterOptions, Status, MetadataMessage } from "allure-js-commons";
+import { LabelName, LinkType, MetadataMessage, Stage, StepMetadata } from "allure-js-commons";
 import { test } from "vitest";
 import { AllureApi, AllureMeta, AllureStep } from "./model.js";
 
 export const allureTest = test.extend<{ allure: AllureApi }>({
   allure: async ({ task }, use) => {
-    const taskMeta = task.meta as { allureMetadataMessage: MetadataMessage };
+    const taskMeta = task.meta as {
+      allureMetadataMessage: MetadataMessage;
+      currentStep: StepMetadata;
+    };
 
     // taskMeta.allureMetadataMessage = { currentStep: currentTest, currentTest: currentTest };
     taskMeta.allureMetadataMessage = {
       displayName: task.name || "root-test",
       labels: [],
+      links: [],
     };
+    taskMeta.currentStep = undefined;
 
     await use({
       label: (name, value) => {
@@ -49,8 +54,45 @@ export const allureTest = test.extend<{ allure: AllureApi }>({
       tag: (value) => {
         taskMeta.allureMetadataMessage.labels.push({ name: LabelName.TAG, value });
       },
+      link: (url: string, name?: string, type?: string) => {
+        taskMeta.allureMetadataMessage.links.push({ name, url, type });
+      },
+      issue: (name: string, url: string) => {
+        taskMeta.allureMetadataMessage.links.push({ name, url, type: LinkType.ISSUE });
+      },
+      tms: (name: string, url: string) => {
+        taskMeta.allureMetadataMessage.links.push({ name, url, type: LinkType.TMS });
+      },
       // parameter: (name: string, value: string, options?: ParameterOptions) => {
       //   taskMeta.allureMetadataMessage.currentTest.parameter.push({ name, value, ...options });
+      // },
+      // step: async (name, body) => {
+      //   // const prevStep = taskMeta.currentStep || taskMeta.allureMetadataMessage.steps[taskMeta.allureMetadataMessage.steps.length - 1];
+      //   // TODO: change stage and status
+      //   // const nextStep: Partial<StepMetadata> = {
+      //   //   name,
+      //   //   steps: [],
+      //   // };
+      //   // if (!prevStep) {
+      //   //   taskMeta.allureMetadataMessage.steps.push(nextStep as StepMetadata);
+      //   // } else {
+      //   //   prevStep.steps.push(nextStep as StepMetadata);
+      //   // }
+      //   // // taskMeta.allureMetadataMessage.currentStep = nextStep;
+      //   // try {
+      //   //   const result = await body();
+      //   //   nextStep.status = Status.PASSED;
+      //   //   return result;
+      //   // } catch (error) {
+      //   //   nextStep.status = Status.FAILED;
+      //   //   if (error instanceof Error) {
+      //   //     nextStep.statusDetails = { message: error.message, trace: error.stack };
+      //   //   }
+      //   //   throw error;
+      //   // } finally {
+      //   //   nextStep.stop = Date.now();
+      //   //   taskMeta.allureMetadataMessage.currentStep = prevStep;
+      //   // }
       // },
     });
 
@@ -114,42 +156,7 @@ export const allureTest = test.extend<{ allure: AllureApi }>({
     //   },
     //   descriptionHtml: (html: string) => {
     //     taskMeta.allureMetadataMessage.currentTest.descriptionHtml = html;
-    //   },
-    //   link: (url: string, name?: string, type?: string) => {
-    //     taskMeta.allureMetadataMessage.currentTest.links.push({ name, url, type });
-    //   },
-    //   issue: (name: string, url: string) => {
-    //     taskMeta.allureMetadataMessage.currentTest.links.push({ name, url, type: LinkType.ISSUE });
-    //   },
-    //   tms: (name: string, url: string) => {
-    //     taskMeta.allureMetadataMessage.currentTest.links.push({ name, url, type: LinkType.TMS });
-    //   },
-    //   step: async (name, body) => {
-    //     const prevStep = taskMeta.allureMetadataMessage.currentStep;
-    //     const nextStep: AllureStep = { name, attachments: [], steps: [], start: Date.now() };
-
-    //     prevStep.steps.push(nextStep);
-    //     taskMeta.allureMetadataMessage.currentStep = nextStep;
-
-    //     try {
-    //       const result = await body();
-
-    //       nextStep.status = Status.PASSED;
-
-    //       return result;
-    //     } catch (error) {
-    //       nextStep.status = Status.FAILED;
-
-    //       if (error instanceof Error) {
-    //         nextStep.statusDetails = { message: error.message, trace: error.stack };
-    //       }
-
-    //       throw error;
-    //     } finally {
-    //       nextStep.stop = Date.now();
-    //       taskMeta.allureMetadataMessage.currentStep = prevStep;
-    //     }
-    //   },
+    //   }
     // });
   },
 });

@@ -29,9 +29,7 @@
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "allure-report": "allure serve ./out/allure-results",
     "pretest": "run compile",
-    "test": "run-s test:fixtures test:specs",
-    "test:fixtures": "rimraf ./test/fixtures/allure-results && vitest run --dir ./test/fixtures --config ./test/vitest.config.ts",
-    "test:specs": "vitest run --dir ./test/spec --config ./vitest.config.ts",
+    "test": "vitest run --dir ./test/spec --config ./vitest.config.ts",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix"
   },
@@ -57,6 +55,7 @@
     "npm-run-all": "^4.1.5",
     "rimraf": "^5.0.1",
     "typescript": "^5.2.2",
+    "vite": "^5.0.11",
     "vitest": "^1.1.3"
   }
 }

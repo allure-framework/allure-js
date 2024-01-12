@@ -1,78 +1,162 @@
 import { LabelName } from "allure-js-commons";
-import { describe, expect, it, vitest } from "vitest";
-import { getTestResult } from "../utils.js";
+import { describe, expect, it } from "vitest";
+import { runVitestInlineTest } from "../utils.js";
 
 describe("labels", () => {
   it("label", async () => {
-    const result = await getTestResult("label");
+    const { results } = await runVitestInlineTest(`
+      import { allureTest } from "allure-vitest/test";
 
-    expect(result.labels).toContainEqual({ name: "foo", value: "bar" });
+      allureTest("label", ({ allure }) => {
+        allure.label("foo", "bar");
+      });
+    `);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].labels).toContainEqual({ name: "foo", value: "bar" });
   });
 
   it("epic", async () => {
-    const result = await getTestResult("epic");
+    const { results } = await runVitestInlineTest(`
+      import { allureTest } from "allure-vitest/test";
 
-    expect(result.labels).toContainEqual({ name: LabelName.EPIC, value: "foo" });
+      allureTest("epic", ({ allure }) => {
+        allure.epic("foo");
+      });
+    `);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].labels).toContainEqual({ name: LabelName.EPIC, value: "foo" });
   });
 
   it("feature", async () => {
-    const result = await getTestResult("feature");
+    const { results } = await runVitestInlineTest(`
+      import { allureTest } from "allure-vitest/test";
 
-    expect(result.labels).toContainEqual({ name: LabelName.FEATURE, value: "foo" });
+      allureTest("feature", ({ allure }) => {
+        allure.feature("foo");
+      });
+    `);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].labels).toContainEqual({ name: LabelName.FEATURE, value: "foo" });
   });
 
   it("story", async () => {
-    const result = await getTestResult("story");
+    const { results } = await runVitestInlineTest(`
+      import { allureTest } from "allure-vitest/test";
 
-    expect(result.labels).toContainEqual({ name: LabelName.STORY, value: "foo" });
+      allureTest("story", ({ allure }) => {
+        allure.story("foo");
+      });
+    `);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].labels).toContainEqual({ name: LabelName.STORY, value: "foo" });
   });
 
   it("suite", async () => {
-    const result = await getTestResult("suite");
+    const { results } = await runVitestInlineTest(`
+      import { allureTest } from "allure-vitest/test";
 
-    expect(result.labels).toContainEqual({ name: LabelName.SUITE, value: "foo" });
+      allureTest("suite", ({ allure }) => {
+        allure.suite("foo");
+      });
+    `);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].labels).toContainEqual({ name: LabelName.SUITE, value: "foo" });
   });
 
   it("parentSuite", async () => {
-    const result = await getTestResult("parentSuite");
+    const { results } = await runVitestInlineTest(`
+      import { allureTest } from "allure-vitest/test";
 
-    expect(result.labels).toContainEqual({ name: LabelName.PARENT_SUITE, value: "foo" });
+      allureTest("parentSuite", ({ allure }) => {
+        allure.parentSuite("foo");
+      });
+    `);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].labels).toContainEqual({ name: LabelName.PARENT_SUITE, value: "foo" });
   });
 
   it("subSuite", async () => {
-    const result = await getTestResult("subSuite");
+    const { results } = await runVitestInlineTest(`
+      import { allureTest } from "allure-vitest/test";
 
-    expect(result.labels).toContainEqual({ name: LabelName.SUB_SUITE, value: "foo" });
+      allureTest("subSuite", ({ allure }) => {
+        allure.subSuite("foo");
+      });
+    `);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].labels).toContainEqual({ name: LabelName.SUB_SUITE, value: "foo" });
   });
 
   it("owner", async () => {
-    const result = await getTestResult("owner");
+    const { results } = await runVitestInlineTest(`
+      import { allureTest } from "allure-vitest/test";
 
-    expect(result.labels).toContainEqual({ name: LabelName.OWNER, value: "foo" });
+      allureTest("owner", ({ allure }) => {
+        allure.owner("foo");
+      });
+    `);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].labels).toContainEqual({ name: LabelName.OWNER, value: "foo" });
   });
 
   it("severity", async () => {
-    const result = await getTestResult("severity");
+    const { results } = await runVitestInlineTest(`
+      import { allureTest } from "allure-vitest/test";
 
-    expect(result.labels).toContainEqual({ name: LabelName.SEVERITY, value: "foo" });
+      allureTest("severity", ({ allure }) => {
+        allure.severity("foo");
+      });
+    `);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].labels).toContainEqual({ name: LabelName.SEVERITY, value: "foo" });
   });
 
   it("layer", async () => {
-    const result = await getTestResult("layer");
+    const { results } = await runVitestInlineTest(`
+      import { allureTest } from "allure-vitest/test";
 
-    expect(result.labels).toContainEqual({ name: LabelName.LAYER, value: "foo" });
+      allureTest("layer", ({ allure }) => {
+        allure.layer("foo");
+      });
+    `);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].labels).toContainEqual({ name: LabelName.LAYER, value: "foo" });
   });
 
   it("id", async () => {
-    const result = await getTestResult("id");
+    const { results } = await runVitestInlineTest(`
+      import { allureTest } from "allure-vitest/test";
 
-    expect(result.labels).toContainEqual({ name: LabelName.ALLURE_ID, value: "foo" });
+      allureTest("id", ({ allure }) => {
+        allure.id("foo");
+      });
+    `);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].labels).toContainEqual({ name: LabelName.ALLURE_ID, value: "foo" });
   });
 
   it("tag", async () => {
-    const result = await getTestResult("tag");
+    const { results } = await runVitestInlineTest(`
+      import { allureTest } from "allure-vitest/test";
 
-    expect(result.labels).toContainEqual({ name: LabelName.TAG, value: "foo" });
+      allureTest("tag", ({ allure }) => {
+        allure.tag("foo");
+      });
+    `);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].labels).toContainEqual({ name: LabelName.TAG, value: "foo" });
   });
 });
 
