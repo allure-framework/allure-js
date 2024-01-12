@@ -1,38 +1,155 @@
-import { Status } from "allure-js-commons";
+import { LabelName, LinkType, ParameterOptions, Status, MetadataMessage } from "allure-js-commons";
 import { test } from "vitest";
 import { AllureApi, AllureMeta, AllureStep } from "./model.js";
 
 export const allureTest = test.extend<{ allure: AllureApi }>({
   allure: async ({ task }, use) => {
-    const meta = task.meta as { allure: AllureMeta };
-    const currentTest = { name: "root-test", labels: [], attachments: [], steps: [] };
-    meta.allure = { currentStep: currentTest, currentTest: currentTest };
+    const taskMeta = task.meta as { allureMetadataMessage: MetadataMessage };
+
+    // taskMeta.allureMetadataMessage = { currentStep: currentTest, currentTest: currentTest };
+    taskMeta.allureMetadataMessage = {
+      displayName: task.name || "root-test",
+      labels: [],
+    };
+
     await use({
-      attachment: (name, content, options) => {
-        const parsedOptions = typeof options === "string" ? { contentType: options } : options;
-        meta.allure.currentStep.attachments.push({ name, content, ...parsedOptions });
+      label: (name, value) => {
+        taskMeta.allureMetadataMessage.labels.push({ name, value });
       },
-      label: (name, value) => meta.allure.currentTest.labels.push({ name, value }),
-      step: async (name, body) => {
-        const prevStep = meta.allure.currentStep;
-        const nextStep: AllureStep = { name, attachments: [], steps: [], start: Date.now() };
-        prevStep.steps.push(nextStep);
-        meta.allure.currentStep = nextStep;
-        try {
-          const result = await body();
-          nextStep.status = Status.PASSED;
-          return result;
-        } catch (error) {
-          nextStep.status = Status.FAILED;
-          if (error instanceof Error) {
-            nextStep.statusDetails = { message: error.message, trace: error.stack };
-          }
-          throw error;
-        } finally {
-          nextStep.stop = Date.now();
-          meta.allure.currentStep = prevStep;
-        }
+      epic: (value) => {
+        taskMeta.allureMetadataMessage.labels.push({ name: LabelName.EPIC, value });
       },
+      feature: (value) => {
+        taskMeta.allureMetadataMessage.labels.push({ name: LabelName.FEATURE, value });
+      },
+      story: (value) => {
+        taskMeta.allureMetadataMessage.labels.push({ name: LabelName.STORY, value });
+      },
+      suite: (value) => {
+        taskMeta.allureMetadataMessage.labels.push({ name: LabelName.SUITE, value });
+      },
+      parentSuite: (value) => {
+        taskMeta.allureMetadataMessage.labels.push({ name: LabelName.PARENT_SUITE, value });
+      },
+      subSuite: (value) => {
+        taskMeta.allureMetadataMessage.labels.push({ name: LabelName.SUB_SUITE, value });
+      },
+      owner: (value) => {
+        taskMeta.allureMetadataMessage.labels.push({ name: LabelName.OWNER, value });
+      },
+      severity: (value) => {
+        taskMeta.allureMetadataMessage.labels.push({ name: LabelName.SEVERITY, value });
+      },
+      layer: (value) => {
+        taskMeta.allureMetadataMessage.labels.push({ name: LabelName.LAYER, value });
+      },
+      id: (value) => {
+        taskMeta.allureMetadataMessage.labels.push({ name: LabelName.ALLURE_ID, value });
+      },
+      tag: (value) => {
+        taskMeta.allureMetadataMessage.labels.push({ name: LabelName.TAG, value });
+      },
+      // parameter: (name: string, value: string, options?: ParameterOptions) => {
+      //   taskMeta.allureMetadataMessage.currentTest.parameter.push({ name, value, ...options });
+      // },
     });
+
+    // await use({
+    //   attachment: (name, content, options) => {
+    //     const parsedOptions = typeof options === "string" ? { contentType: options } : options;
+
+    //     taskMeta.allureMetadataMessage.currentStep.attachments.push({
+    //       name,
+    //       content,
+    //       ...parsedOptions,
+    //     });
+    //   },
+    //   label: (name, value) =>
+    //     taskMeta.allureMetadataMessage.currentTest.labels.push({ name, value }),
+    //   epic: (value) =>
+    //     taskMeta.allureMetadataMessage.currentTest.labels.push({ name: LabelName.EPIC, value }),
+    //   feature: (value) =>
+    //     taskMeta.allureMetadataMessage.currentTest.labels.push({ name: LabelName.FEATURE, value }),
+    //   story: (value) =>
+    //     taskMeta.allureMetadataMessage.currentTest.labels.push({ name: LabelName.STORY, value }),
+    //   suite: (value) =>
+    //     taskMeta.allureMetadataMessage.currentTest.labels.push({ name: LabelName.SUITE, value }),
+    //   parentSuite: (value) =>
+    //     taskMeta.allureMetadataMessage.currentTest.labels.push({
+    //       name: LabelName.PARENT_SUITE,
+    //       value,
+    //     }),
+    //   subSuite: (value) =>
+    //     taskMeta.allureMetadataMessage.currentTest.labels.push({
+    //       name: LabelName.SUB_SUITE,
+    //       value,
+    //     }),
+    //   owner: (value) =>
+    //     taskMeta.allureMetadataMessage.currentTest.labels.push({ name: LabelName.OWNER, value }),
+    //   severity: (value) =>
+    //     taskMeta.allureMetadataMessage.currentTest.labels.push({ name: LabelName.SEVERITY, value }),
+    //   layer: (value) =>
+    //     taskMeta.allureMetadataMessage.currentTest.labels.push({ name: LabelName.LAYER, value }),
+    //   id: (value) =>
+    //     taskMeta.allureMetadataMessage.currentTest.labels.push({
+    //       name: LabelName.ALLURE_ID,
+    //       value,
+    //     }),
+    //   tag: (value) =>
+    //     taskMeta.allureMetadataMessage.currentTest.labels.push({ name: LabelName.TAG, value }),
+    //   parameter: (name: string, value: string, options?: ParameterOptions) => {
+    //     taskMeta.allureMetadataMessage.currentTest.parameter.push({ name, value, ...options });
+    //   },
+    //   displayName: (name: string) => {
+    //     taskMeta.allureMetadataMessage.currentTest.name = name;
+    //   },
+    //   testCaseId: (id: string) => {
+    //     taskMeta.allureMetadataMessage.currentTest.testCaseId = id;
+    //   },
+    //   historyId: (id: string) => {
+    //     taskMeta.allureMetadataMessage.currentTest.historyId = id;
+    //   },
+    //   description: (markdown: string) => {
+    //     taskMeta.allureMetadataMessage.currentTest.description = markdown;
+    //   },
+    //   descriptionHtml: (html: string) => {
+    //     taskMeta.allureMetadataMessage.currentTest.descriptionHtml = html;
+    //   },
+    //   link: (url: string, name?: string, type?: string) => {
+    //     taskMeta.allureMetadataMessage.currentTest.links.push({ name, url, type });
+    //   },
+    //   issue: (name: string, url: string) => {
+    //     taskMeta.allureMetadataMessage.currentTest.links.push({ name, url, type: LinkType.ISSUE });
+    //   },
+    //   tms: (name: string, url: string) => {
+    //     taskMeta.allureMetadataMessage.currentTest.links.push({ name, url, type: LinkType.TMS });
+    //   },
+    //   step: async (name, body) => {
+    //     const prevStep = taskMeta.allureMetadataMessage.currentStep;
+    //     const nextStep: AllureStep = { name, attachments: [], steps: [], start: Date.now() };
+
+    //     prevStep.steps.push(nextStep);
+    //     taskMeta.allureMetadataMessage.currentStep = nextStep;
+
+    //     try {
+    //       const result = await body();
+
+    //       nextStep.status = Status.PASSED;
+
+    //       return result;
+    //     } catch (error) {
+    //       nextStep.status = Status.FAILED;
+
+    //       if (error instanceof Error) {
+    //         nextStep.statusDetails = { message: error.message, trace: error.stack };
+    //       }
+
+    //       throw error;
+    //     } finally {
+    //       nextStep.stop = Date.now();
+    //       taskMeta.allureMetadataMessage.currentStep = prevStep;
+    //     }
+    //   },
+    // });
   },
 });

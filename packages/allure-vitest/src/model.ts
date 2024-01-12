@@ -1,4 +1,10 @@
-import { AttachmentOptions, Status, StatusDetails } from "allure-js-commons";
+import {
+  AttachmentOptions,
+  MetadataMessage,
+  ParameterOptions,
+  Status,
+  StatusDetails,
+} from "allure-js-commons";
 
 export interface AllureAttachment {
   name: string;
@@ -17,9 +23,18 @@ export interface AllureStep {
   statusDetails?: StatusDetails;
 }
 
-export interface AllureTest extends AllureStep {
-  labels: { name: string; value: string }[];
-}
+export interface AllureTest
+  extends AllureStep,
+    Pick<
+      MetadataMessage,
+      | "labels"
+      | "links"
+      | "parameter"
+      | "description"
+      | "descriptionHtml"
+      | "historyId"
+      | "testCaseId"
+    > {}
 
 export interface AllureMeta {
   currentTest: AllureTest;
@@ -28,6 +43,26 @@ export interface AllureMeta {
 
 export interface AllureApi {
   label: (name: string, value: string) => void;
-  attachment: (name: string, content: Buffer | string, options: string | AttachmentOptions) => void;
-  step: <T>(name: string, body: () => Promise<T>) => Promise<T>;
+  epic: (epic: string) => void;
+  feature: (feature: string) => void;
+  story: (story: string) => void;
+  suite: (name: string) => void;
+  parentSuite: (name: string) => void;
+  subSuite: (name: string) => void;
+  owner: (owner: string) => void;
+  severity: (severity: string) => void;
+  layer: (layer: string) => void;
+  id: (allureId: string) => void;
+  tag: (tag: string) => void;
+  // parameter: (name: string, value: any, options?: ParameterOptions) => void;
+  // testCaseId: (id: string) => void;
+  // historyId: (id: string) => void;
+  // link: (url: string, name?: string, type?: string) => void;
+  // issue: (name: string, url: string) => void;
+  // tms: (name: string, url: string) => void;
+  // description: (markdown: string) => void;
+  // descriptionHtml: (html: string) => void;
+  // attachment: (name: string, content: Buffer | string, options: string | AttachmentOptions) => void;
+  // displayName: (name: string) => void;
+  // step: <T>(name: string, body: () => Promise<T>) => Promise<T>;
 }

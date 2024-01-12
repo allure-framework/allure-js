@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     reporters: ["default", "./src/reporter"],
     outputFile: {
-      allure: "build/results",
+      allure: "./test/fixtures/allure-results",
     },
   },
 });
