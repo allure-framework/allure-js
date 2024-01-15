@@ -3,6 +3,7 @@
   "version": "2.10.0",
   "description": "Allure Cucumber.JS integration",
   "license": "Apache-2.0",
+  "homepage": "https://allurereport.org/",
   "author": {
     "name": "Qameta Software",
     "email": "allure@qameta.io",
