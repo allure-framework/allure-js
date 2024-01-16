@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rmdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "url";
-import type { Attachment, AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
+import type { AllureResults, Attachment, TestResult, TestResultContainer } from "allure-js-commons";
 
 const fileDirname = dirname(fileURLToPath(import.meta.url));
 
@@ -24,6 +24,7 @@ export const runVitestInlineTest = async (test: string): Promise<AllureResults> 
   const testFilePath = join(testDir, "sample.test.ts");
 
   await mkdir(testDir, { recursive: true });
+  // TODO: make possible to pass custom conf
   await writeFile(
     configFilePath,
     `
@@ -33,6 +34,7 @@ export const runVitestInlineTest = async (test: string): Promise<AllureResults> 
       export default defineConfig({
         test: {
           reporters: [
+            "default",
             new AllureReporter({
               testMode: true,
               links: [

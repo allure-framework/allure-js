@@ -3,6 +3,7 @@
   "version": "2.10.0",
   "description": "Allure Vitest integration",
   "license": "Apache-2.0",
+  "homepage": "https://allurereport.org/",
   "author": {
     "name": "Qameta Software",
     "email": "allure@qameta.io",
@@ -15,6 +16,7 @@
   },
   "keywords": [
     "vitest",
+    "typescript",
     "allure"
   ],
   "type": "module",
@@ -23,6 +25,10 @@
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": "./dist/src/reporter.js",
+    "./test": "./dist/src/test.js"
+  },
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
@@ -32,10 +38,6 @@
     "test": "vitest run --dir ./test/spec --config ./vitest.config.ts",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix"
-  },
-  "exports": {
-    ".": "./dist/src/reporter.js",
-    "./test": "./dist/src/test.js"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
