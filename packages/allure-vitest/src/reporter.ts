@@ -87,17 +87,15 @@ export default class AllureReporter implements Reporter {
       return;
     }
 
-    const { allureMetadataMessage = {} } = task.meta as { allureMetadataMessage: MetadataMessage };
-    const links = allureMetadataMessage.links
-      ? this.processMetadataLinks(allureMetadataMessage.links)
-      : [];
+    const { currentTest = {} } = task.meta as { currentTest: MetadataMessage };
+    const links = currentTest.links ? this.processMetadataLinks(currentTest.links) : [];
     const test = parent.startTest(task.name, 0);
 
     test.name = task.name;
     test.fullName = `${task.file.name}#${task.name}`;
 
     test.applyMetadata({
-      ...allureMetadataMessage,
+      ...currentTest,
       links,
     });
     test.addLabel(LabelName.SUITE, parent.name);
@@ -108,8 +106,8 @@ export default class AllureReporter implements Reporter {
 
     switch (task.result?.state) {
       case "fail": {
-        test.detailsMessage = task.result.errors[0].message;
-        test.detailsTrace = task.result.errors[0].stack;
+        test.detailsMessage = task.result.errors?.[0]?.message || "";
+        test.detailsTrace = task.result.errors?.[0]?.stack || "";
         test.status = Status.FAILED;
         break;
       }
@@ -123,6 +121,7 @@ export default class AllureReporter implements Reporter {
       }
     }
 
+    test.stage = Stage.FINISHED;
     test.calculateHistoryId();
     test.endTest(task.result?.duration);
   }

@@ -54,15 +54,15 @@ export interface AllureApi {
   layer: (layer: string) => void;
   id: (allureId: string) => void;
   tag: (tag: string) => void;
-  // parameter: (name: string, value: any, options?: ParameterOptions) => void;
-  // testCaseId: (id: string) => void;
-  // historyId: (id: string) => void;
+  parameter: (name: string, value: any, options?: ParameterOptions) => void;
+  testCaseId: (id: string) => void;
+  historyId: (id: string) => void;
   link: (url: string, name?: string, type?: string) => void;
   issue: (name: string, url: string) => void;
   tms: (name: string, url: string) => void;
-  // description: (markdown: string) => void;
-  // descriptionHtml: (html: string) => void;
-  // attachment: (name: string, content: Buffer | string, options: string | AttachmentOptions) => void;
-  // displayName: (name: string) => void;
-  // step: <T>(name: string, body: () => Promise<T>) => Promise<T>;
+  description: (markdown: string) => void;
+  descriptionHtml: (html: string) => void;
+  displayName: (name: string) => void;
+  attachment: (name: string, content: Buffer | string, type: string) => void;
+  step: (name: string, body: () => Promise<any>) => Promise<any>;
 }

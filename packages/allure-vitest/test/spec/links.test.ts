@@ -4,7 +4,7 @@ import { runVitestInlineTest } from "../utils.js";
 
 describe("links", () => {
   it("link", async () => {
-    const { results } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest(`
       import { allureTest } from "allure-vitest/test";
 
       allureTest("link", ({ allure }) => {
@@ -12,8 +12,8 @@ describe("links", () => {
       });
     `);
 
-    expect(results).toHaveLength(1);
-    expect(results[0].links).toContainEqual({
+    expect(tests).toHaveLength(1);
+    expect(tests[0].links).toContainEqual({
       name: "foo",
       type: "bar",
       url: "https://example.org",
@@ -21,7 +21,7 @@ describe("links", () => {
   });
 
   it("issue", async () => {
-    const { results } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest(`
       import { allureTest } from "allure-vitest/test";
 
       allureTest("issue", ({ allure }) => {
@@ -30,13 +30,13 @@ describe("links", () => {
       });
     `);
 
-    expect(results).toHaveLength(1);
-    expect(results[0].links).toContainEqual({
+    expect(tests).toHaveLength(1);
+    expect(tests[0].links).toContainEqual({
       name: "foo",
       type: LinkType.ISSUE,
       url: "https://example.org/issue/1",
     });
-    expect(results[0].links).toContainEqual({
+    expect(tests[0].links).toContainEqual({
       name: "bar",
       type: LinkType.ISSUE,
       url: "https://example.org/issue/2",
@@ -44,7 +44,7 @@ describe("links", () => {
   });
 
   it("tms", async () => {
-    const { results } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest(`
       import { allureTest } from "allure-vitest/test";
 
       allureTest("tms", ({ allure }) => {
@@ -53,13 +53,13 @@ describe("links", () => {
       });
     `);
 
-    expect(results).toHaveLength(1);
-    expect(results[0].links).toContainEqual({
+    expect(tests).toHaveLength(1);
+    expect(tests[0].links).toContainEqual({
       name: "foo",
       type: LinkType.TMS,
       url: "https://example.org/tms/1",
     });
-    expect(results[0].links).toContainEqual({
+    expect(tests[0].links).toContainEqual({
       name: "bar",
       type: LinkType.TMS,
       url: "https://example.org/tms/2",

@@ -4,7 +4,7 @@ import { runVitestInlineTest } from "../utils.js";
 
 describe("labels", () => {
   it("label", async () => {
-    const { results } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest(`
       import { allureTest } from "allure-vitest/test";
 
       allureTest("label", ({ allure }) => {
@@ -12,12 +12,12 @@ describe("labels", () => {
       });
     `);
 
-    expect(results).toHaveLength(1);
-    expect(results[0].labels).toContainEqual({ name: "foo", value: "bar" });
+    expect(tests).toHaveLength(1);
+    expect(tests[0].labels).toContainEqual({ name: "foo", value: "bar" });
   });
 
   it("epic", async () => {
-    const { results } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest(`
       import { allureTest } from "allure-vitest/test";
 
       allureTest("epic", ({ allure }) => {
@@ -25,12 +25,12 @@ describe("labels", () => {
       });
     `);
 
-    expect(results).toHaveLength(1);
-    expect(results[0].labels).toContainEqual({ name: LabelName.EPIC, value: "foo" });
+    expect(tests).toHaveLength(1);
+    expect(tests[0].labels).toContainEqual({ name: LabelName.EPIC, value: "foo" });
   });
 
   it("feature", async () => {
-    const { results } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest(`
       import { allureTest } from "allure-vitest/test";
 
       allureTest("feature", ({ allure }) => {
@@ -38,12 +38,12 @@ describe("labels", () => {
       });
     `);
 
-    expect(results).toHaveLength(1);
-    expect(results[0].labels).toContainEqual({ name: LabelName.FEATURE, value: "foo" });
+    expect(tests).toHaveLength(1);
+    expect(tests[0].labels).toContainEqual({ name: LabelName.FEATURE, value: "foo" });
   });
 
   it("story", async () => {
-    const { results } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest(`
       import { allureTest } from "allure-vitest/test";
 
       allureTest("story", ({ allure }) => {
@@ -51,12 +51,12 @@ describe("labels", () => {
       });
     `);
 
-    expect(results).toHaveLength(1);
-    expect(results[0].labels).toContainEqual({ name: LabelName.STORY, value: "foo" });
+    expect(tests).toHaveLength(1);
+    expect(tests[0].labels).toContainEqual({ name: LabelName.STORY, value: "foo" });
   });
 
   it("suite", async () => {
-    const { results } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest(`
       import { allureTest } from "allure-vitest/test";
 
       allureTest("suite", ({ allure }) => {
@@ -64,12 +64,12 @@ describe("labels", () => {
       });
     `);
 
-    expect(results).toHaveLength(1);
-    expect(results[0].labels).toContainEqual({ name: LabelName.SUITE, value: "foo" });
+    expect(tests).toHaveLength(1);
+    expect(tests[0].labels).toContainEqual({ name: LabelName.SUITE, value: "foo" });
   });
 
   it("parentSuite", async () => {
-    const { results } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest(`
       import { allureTest } from "allure-vitest/test";
 
       allureTest("parentSuite", ({ allure }) => {
@@ -77,12 +77,12 @@ describe("labels", () => {
       });
     `);
 
-    expect(results).toHaveLength(1);
-    expect(results[0].labels).toContainEqual({ name: LabelName.PARENT_SUITE, value: "foo" });
+    expect(tests).toHaveLength(1);
+    expect(tests[0].labels).toContainEqual({ name: LabelName.PARENT_SUITE, value: "foo" });
   });
 
   it("subSuite", async () => {
-    const { results } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest(`
       import { allureTest } from "allure-vitest/test";
 
       allureTest("subSuite", ({ allure }) => {
@@ -90,12 +90,12 @@ describe("labels", () => {
       });
     `);
 
-    expect(results).toHaveLength(1);
-    expect(results[0].labels).toContainEqual({ name: LabelName.SUB_SUITE, value: "foo" });
+    expect(tests).toHaveLength(1);
+    expect(tests[0].labels).toContainEqual({ name: LabelName.SUB_SUITE, value: "foo" });
   });
 
   it("owner", async () => {
-    const { results } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest(`
       import { allureTest } from "allure-vitest/test";
 
       allureTest("owner", ({ allure }) => {
@@ -103,12 +103,12 @@ describe("labels", () => {
       });
     `);
 
-    expect(results).toHaveLength(1);
-    expect(results[0].labels).toContainEqual({ name: LabelName.OWNER, value: "foo" });
+    expect(tests).toHaveLength(1);
+    expect(tests[0].labels).toContainEqual({ name: LabelName.OWNER, value: "foo" });
   });
 
   it("severity", async () => {
-    const { results } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest(`
       import { allureTest } from "allure-vitest/test";
 
       allureTest("severity", ({ allure }) => {
@@ -116,12 +116,12 @@ describe("labels", () => {
       });
     `);
 
-    expect(results).toHaveLength(1);
-    expect(results[0].labels).toContainEqual({ name: LabelName.SEVERITY, value: "foo" });
+    expect(tests).toHaveLength(1);
+    expect(tests[0].labels).toContainEqual({ name: LabelName.SEVERITY, value: "foo" });
   });
 
   it("layer", async () => {
-    const { results } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest(`
       import { allureTest } from "allure-vitest/test";
 
       allureTest("layer", ({ allure }) => {
@@ -129,12 +129,12 @@ describe("labels", () => {
       });
     `);
 
-    expect(results).toHaveLength(1);
-    expect(results[0].labels).toContainEqual({ name: LabelName.LAYER, value: "foo" });
+    expect(tests).toHaveLength(1);
+    expect(tests[0].labels).toContainEqual({ name: LabelName.LAYER, value: "foo" });
   });
 
   it("id", async () => {
-    const { results } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest(`
       import { allureTest } from "allure-vitest/test";
 
       allureTest("id", ({ allure }) => {
@@ -142,12 +142,12 @@ describe("labels", () => {
       });
     `);
 
-    expect(results).toHaveLength(1);
-    expect(results[0].labels).toContainEqual({ name: LabelName.ALLURE_ID, value: "foo" });
+    expect(tests).toHaveLength(1);
+    expect(tests[0].labels).toContainEqual({ name: LabelName.ALLURE_ID, value: "foo" });
   });
 
   it("tag", async () => {
-    const { results } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest(`
       import { allureTest } from "allure-vitest/test";
 
       allureTest("tag", ({ allure }) => {
@@ -155,8 +155,8 @@ describe("labels", () => {
       });
     `);
 
-    expect(results).toHaveLength(1);
-    expect(results[0].labels).toContainEqual({ name: LabelName.TAG, value: "foo" });
+    expect(tests).toHaveLength(1);
+    expect(tests[0].labels).toContainEqual({ name: LabelName.TAG, value: "foo" });
   });
 });
 

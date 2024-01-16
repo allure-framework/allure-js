@@ -83,7 +83,7 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
       steps: [],
     };
 
-    if (stepMetadata.attachments.length > 0) {
+    if (stepMetadata.attachments?.length > 0) {
       stepMetadata.attachments.forEach((attachment) => {
         const attachmentContent = Buffer.from(attachment.content, attachment.encoding);
         const attachmentFilename = runtime.writeAttachment(
@@ -100,7 +100,7 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
       });
     }
 
-    if (stepMetadata.steps.length > 0) {
+    if (stepMetadata.steps?.length > 0) {
       executable.steps = stepMetadata.steps.map((nestedStep) =>
         AllureCommandStepExecutable.toExecutableItem(runtime, nestedStep),
       );

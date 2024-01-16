@@ -3,20 +3,21 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rmdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "url";
-import type { TestResult, TestResultContainer } from "allure-js-commons";
+import type { Attachment, AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
 
 const fileDirname = dirname(fileURLToPath(import.meta.url));
 
 interface RunResults {
   results: TestResult[];
   containers: TestResultContainer[];
+  attachments: Attachment[];
 }
 
-export const runVitestInlineTest = async (test: string): Promise<RunResults> => {
-  const res: RunResults = {
-    results: [] as TestResult[],
-    containers: [] as TestResultContainer[],
-    // attachments: [] as atta
+export const runVitestInlineTest = async (test: string): Promise<AllureResults> => {
+  const res: AllureResults = {
+    tests: [],
+    groups: [],
+    attachments: {},
   };
   const testDir = join(fileDirname, "fixtures", randomUUID());
   const configFilePath = join(testDir, "vitest.config.ts");
@@ -44,6 +45,7 @@ export const runVitestInlineTest = async (test: string): Promise<RunResults> => 
                   urlTemplate: "https://example.org/tms/%s",
                 },
               ],
+              resultsDir: "${join(testDir, "allure-results")}",
             }),
           ],
         },
@@ -60,29 +62,39 @@ export const runVitestInlineTest = async (test: string): Promise<RunResults> => 
       ALLURE_POST_PROCESSOR_FOR_TEST: String("true"),
     },
     cwd: testDir,
+    stdio: "pipe",
   });
 
   testProcess.on("message", (message: string) => {
     const event: { path: string; type: string; data: string } = JSON.parse(message);
-    const data = JSON.parse(Buffer.from(event.data, "base64").toString());
+    const data =
+      event.type !== "attachment"
+        ? JSON.parse(Buffer.from(event.data, "base64").toString())
+        : event.data;
 
     switch (event.type) {
       case "container":
-        res.containers.push(data as TestResultContainer);
+        res.groups.push(data as TestResultContainer);
         break;
       case "result":
-        res.results.push(data as TestResult);
+        res.tests.push(data as TestResult);
         break;
       case "attachment":
-        // TODO:
+        res.attachments[event.path] = event.data;
         break;
       default:
         break;
     }
   });
+  testProcess.stdout?.on("data", (chunk) => {
+    process.stdout.write(String(chunk));
+  });
+  testProcess.stderr?.on("data", (chunk) => {
+    process.stderr.write(String(chunk));
+  });
 
   return new Promise((resolve, reject) => {
-    testProcess.on("exit", async (code) => {
+    testProcess.on("close", async (code) => {
       await rmdir(testDir, { recursive: true });
 
       if (code === 0) {
