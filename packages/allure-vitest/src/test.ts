@@ -1,14 +1,14 @@
 import {
   LabelName,
   LinkType,
-  ParameterOptions,
   MetadataMessage,
-  Status,
+  ParameterOptions,
   Stage,
+  Status,
   StepMetadata,
 } from "allure-js-commons";
 import { test } from "vitest";
-import { AllureApi, AllureMeta, AllureStep } from "./model.js";
+import { AllureApi } from "./model.js";
 
 export const allureTest = test.extend<{ allure: AllureApi }>({
   allure: async ({ task }, use) => {
@@ -126,11 +126,6 @@ export const allureTest = test.extend<{ allure: AllureApi }>({
         } finally {
           nextStep.stop = Date.now();
           nextStep.stage = Stage.FINISHED;
-
-          console.log({
-            nextStep,
-            prevStep,
-          });
 
           taskMeta.currentStep = prevStep;
         }
