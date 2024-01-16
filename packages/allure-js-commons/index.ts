@@ -23,6 +23,7 @@ export {
   MetadataMessage,
   Attachment,
   Category,
+  AllureInspectorEntry,
   ExecutableItem,
   StepResult,
   Parameter,

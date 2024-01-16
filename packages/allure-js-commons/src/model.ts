@@ -13,6 +13,12 @@ export interface StepMetadata extends Omit<ExecutableItem, "attachments" | "step
   attachments: AttachmentMetadata[];
 }
 
+export interface AllureInspectorEntry {
+  fullPath: string;
+  type: string;
+  urls: string[];
+}
+
 export interface MetadataMessage {
   attachments?: AttachmentMetadata[];
   displayName?: string;
@@ -24,6 +30,7 @@ export interface MetadataMessage {
   description?: string;
   descriptionHtml?: string;
   steps?: StepMetadata[];
+  allureInspectorEntry?: AllureInspectorEntry;
 }
 
 export interface Attachment {
