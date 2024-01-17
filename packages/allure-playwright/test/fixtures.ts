@@ -81,7 +81,7 @@ const runPlaywrightTest = async (baseDir: string, params: any, env: Env): Promis
     args.push(additionalArgs);
   }
 
-  const modulePath = require.resolve("@playwright/test/lib/cli");
+  const modulePath = require.resolve("@playwright/test/cli");
   await allure.logStep(`${modulePath} ${args.join(" ")}`);
 
   const testProcess = fork(modulePath, args, {
