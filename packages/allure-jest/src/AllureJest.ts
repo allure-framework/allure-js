@@ -1,18 +1,18 @@
+import { EnvironmentContext, JestEnvironment, JestEnvironmentConfig } from "@jest/environment";
+import type { Circus } from "@jest/types";
 import os from "node:os";
 import { dirname, sep } from "node:path";
 import process from "node:process";
-import { EnvironmentContext, JestEnvironment, JestEnvironmentConfig } from "@jest/environment";
-import type { Circus } from "@jest/types";
 import {
   AllureRuntime,
   AllureTest,
-  getSuitesLabels,
   LabelName,
   Link,
   LinkType,
   MetadataMessage,
   Stage,
   Status,
+  getSuitesLabels,
 } from "allure-js-commons";
 import { AllureJestApi } from "./AllureJestApi";
 import { getTestId, getTestPath, removeAnsiColorsFromString } from "./utils";
@@ -43,8 +43,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     constructor(config: JestEnvironmentConfig, context: EnvironmentContext) {
       super(config, context);
 
-      const { resultsDir = "allure-results", links = [] } =
-        config?.projectConfig?.testEnvironmentOptions || {};
+      const { resultsDir = "allure-results", links = [] } = config?.projectConfig?.testEnvironmentOptions || {};
 
       this.runtime = new AllureRuntime({
         resultsDir: resultsDir as string,

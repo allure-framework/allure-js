@@ -52,11 +52,7 @@ export interface AllureCommandStep<T = MetadataMessage> {
 
   tms(issue: string, url: string): void | Promise<void>;
 
-  attach(
-    name: string,
-    content: Buffer | string,
-    options: ContentType | string,
-  ): void | Promise<void>;
+  attach(name: string, content: Buffer | string, options: ContentType | string): void | Promise<void>;
 
   description(content: string): void | Promise<void>;
 }
@@ -86,11 +82,7 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     if (stepMetadata.attachments?.length > 0) {
       stepMetadata.attachments.forEach((attachment) => {
         const attachmentContent = Buffer.from(attachment.content, attachment.encoding);
-        const attachmentFilename = runtime.writeAttachment(
-          attachmentContent,
-          attachment.type,
-          attachment.encoding,
-        );
+        const attachmentFilename = runtime.writeAttachment(attachmentContent, attachment.type, attachment.encoding);
 
         executable.attachments.push({
           name: attachment.name,
@@ -226,10 +218,7 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     );
   }
 
-  async run(
-    body: StepBodyFunction,
-    messageEmitter: (message: MetadataMessage) => Promise<void>,
-  ): Promise<void> {
+  async run(body: StepBodyFunction, messageEmitter: (message: MetadataMessage) => Promise<void>): Promise<void> {
     const startDate = new Date().getTime();
 
     try {

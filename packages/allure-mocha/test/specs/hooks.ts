@@ -1,6 +1,6 @@
 import { suite, test } from "@testdeck/mocha";
-import { InMemoryAllureWriter, Status } from "allure-js-commons";
 import { expect } from "chai";
+import { InMemoryAllureWriter, Status } from "allure-js-commons";
 import { runTests } from "../utils";
 
 @suite

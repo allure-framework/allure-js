@@ -1,11 +1,7 @@
 import { Allure, ContentType, Severity } from "allure-js-commons";
 import { processDescriptor } from "./descriptor";
 
-type TestDecorator = (
-  target: unknown,
-  property: string,
-  descriptor: PropertyDescriptor,
-) => PropertyDescriptor;
+type TestDecorator = (target: unknown, property: string, descriptor: PropertyDescriptor) => PropertyDescriptor;
 
 /* eslint-disable no-shadow */
 const enum LinkType {
@@ -65,9 +61,7 @@ export const testCaseId = <T>(idFn: string | ((arg: T) => string)): TestDecorato
 };
 
 export const issue = <T>(idFn: string | ((arg: T) => string)): TestDecorator => {
-  return processDecorator(idFn, (id) =>
-    getAllure().link(`${getPmsUrl()}/${id}`, id, LinkType.ISSUE),
-  );
+  return processDecorator(idFn, (id) => getAllure().link(`${getPmsUrl()}/${id}`, id, LinkType.ISSUE));
 };
 
 export const feature = <T>(featureFn: string | ((arg: T) => string)): TestDecorator => {
@@ -78,9 +72,7 @@ export const story = <T>(storyFn: string | ((arg: T) => string)): TestDecorator 
   return processDecorator(storyFn, (name) => getAllure().story(name));
 };
 
-export const severity = <T>(
-  severityFn: Severity | string | ((arg: T) => string | Severity),
-): TestDecorator => {
+export const severity = <T>(severityFn: Severity | string | ((arg: T) => string | Severity)): TestDecorator => {
   return processDecorator(severityFn, (name) => getAllure().severity(name));
 };
 

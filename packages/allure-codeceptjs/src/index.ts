@@ -1,8 +1,8 @@
+import { event } from "codeceptjs";
 import path from "path";
 import process from "process";
 import {
   AllureGroup,
-  allureReportFolder,
   AllureRuntime,
   AllureStep,
   AllureTest,
@@ -10,22 +10,15 @@ import {
   LabelName,
   Link,
   LinkType,
-  md5,
   MessageAllureWriter,
   ParameterOptions,
   Stage,
   Status,
+  allureReportFolder,
+  md5,
   stripAscii,
 } from "allure-js-commons";
-import { event } from "codeceptjs";
-import {
-  CodeceptError,
-  CodeceptHook,
-  CodeceptStep,
-  CodeceptSuite,
-  CodeceptTest,
-} from "./codecept-types";
-
+import { CodeceptError, CodeceptHook, CodeceptStep, CodeceptSuite, CodeceptTest } from "./codecept-types";
 import { extractMeta } from "./helpers";
 
 interface ReporterOptions {
@@ -304,9 +297,7 @@ class AllureReporter {
   ensureAllureGroupCreated(suite: CodeceptSuite): AllureGroup {
     let group = this.allureGroupCache.get(suite);
     if (!group) {
-      const parent = suite.parent
-        ? this.ensureAllureGroupCreated(suite.parent)
-        : this.getAllureRuntime();
+      const parent = suite.parent ? this.ensureAllureGroupCreated(suite.parent) : this.getAllureRuntime();
 
       group = parent.startGroup(suite.fullTitle());
       this.allureGroupCache.set(suite, group);

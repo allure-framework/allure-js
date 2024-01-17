@@ -1,5 +1,5 @@
-import { expect, test } from "./fixtures";
 import { TestPlanV1 } from "allure-js-commons";
+import { expect, test } from "./fixtures";
 
 test("should respect testplan", async ({ runInlineTest }) => {
   const exampleTestPlan: TestPlanV1 = {
@@ -7,8 +7,7 @@ test("should respect testplan", async ({ runInlineTest }) => {
     tests: [
       {
         id: 1,
-        selector:
-          "nested/super strange nested/super strange name.test.ts#also nested should execute",
+        selector: "nested/super strange nested/super strange name.test.ts#also nested should execute",
       },
       {
         id: 2,

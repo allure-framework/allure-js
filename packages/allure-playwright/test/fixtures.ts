@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { TestInfo, test as base } from "@playwright/test";
 import { fork } from "child_process";
 import { mkdir, writeFile } from "fs/promises";
 import { dirname, join } from "path";
-import { test as base, TestInfo } from "@playwright/test";
-import type { AllureResults } from "allure-js-commons";
 import { parse } from "properties";
+import type { AllureResults } from "allure-js-commons";
 import { allure } from "allure-playwright";
+
 export { expect } from "@playwright/test";
 
 type RunResult = any;
@@ -60,11 +60,7 @@ const writeFiles = async (testInfo: TestInfo, files: Files) => {
   return baseDir;
 };
 
-const runPlaywrightTest = async (
-  baseDir: string,
-  params: any,
-  env: Env,
-): Promise<AllureResults> => {
+const runPlaywrightTest = async (baseDir: string, params: any, env: Env): Promise<AllureResults> => {
   const paramList = [];
   let additionalArgs = "";
   for (const key of Object.keys(params)) {

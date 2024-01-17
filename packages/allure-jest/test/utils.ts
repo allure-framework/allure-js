@@ -1,9 +1,9 @@
-import fs from "fs";
-import { cwd } from "process";
 import { runCLI } from "@jest/core";
 import type { Config } from "@jest/types";
-import type { TestResult } from "allure-js-commons";
+import fs from "fs";
+import { cwd } from "process";
 import { match, restore, stub } from "sinon";
+import type { TestResult } from "allure-js-commons";
 
 export type TestResultsByFullName = Record<string, TestResult>;
 
@@ -28,9 +28,7 @@ export const runJestTests = async (fixtures: string[]): Promise<TestResultsByFul
     $0: "",
     _: fixtures,
   };
-  const writeFileSpy = stub(fs, "writeFileSync")
-    .withArgs(match("allure-results"))
-    .returns(undefined);
+  const writeFileSpy = stub(fs, "writeFileSync").withArgs(match("allure-results")).returns(undefined);
 
   const res = await runCLI(argv, [cwd()]);
   const failedTestInRuntime = res.results.testResults.find((test) => !!test.testExecError);

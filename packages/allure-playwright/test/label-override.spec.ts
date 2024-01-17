@@ -1,12 +1,8 @@
 import { LabelName, TestResult } from "allure-js-commons";
-import { expect, test } from "./fixtures";
 import { allure } from "allure-playwright";
+import { expect, test } from "./fixtures";
 
-async function checkContainsOnlyOneLabel(
-  testResult: TestResult,
-  labelName: LabelName,
-  expectedValue: string,
-) {
+async function checkContainsOnlyOneLabel(testResult: TestResult, labelName: LabelName, expectedValue: string) {
   await allure.step("check labels", async () => {
     const labels = testResult.labels.filter((l) => l.name === labelName);
     await allure.attachment("labels", JSON.stringify(labels, null, 2), "application/json");

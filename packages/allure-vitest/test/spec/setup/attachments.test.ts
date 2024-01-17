@@ -15,7 +15,5 @@ it("adds attachments", async () => {
   const [attachment] = tests[0].attachments;
 
   expect(attachment.name).toBe("foo.txt");
-  expect(Buffer.from(attachments[attachment.source] as string, "base64").toString("utf8")).toBe(
-    "bar",
-  );
+  expect(Buffer.from(attachments[attachment.source] as string, "base64").toString("utf8")).toBe("bar");
 });

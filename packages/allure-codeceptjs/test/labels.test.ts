@@ -1,6 +1,6 @@
+import { expect } from "expect";
 import { it } from "mocha";
 import { runTests } from "./utils/run-tests";
-import { expect } from "expect";
 
 it("simple scenarios", async () => {
   const res = await runTests(

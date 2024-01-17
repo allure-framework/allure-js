@@ -1,6 +1,6 @@
-import { Status } from "allure-js-commons";
 import { expect } from "chai";
 import { describe, it } from "mocha";
+import { Status } from "allure-js-commons";
 import { LaunchSummary, runCucumberTests } from "../utils";
 
 describe("with undefined steps", () => {

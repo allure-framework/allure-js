@@ -7,12 +7,12 @@ import {
   AttachmentOptions,
   ContentType,
   ExecutableItemWrapper,
-  getSuitesLabels,
   LabelName,
-  md5,
   Stage,
   Status,
   StatusDetails,
+  getSuitesLabels,
+  md5,
 } from "allure-js-commons";
 import { MochaAllure } from "./MochaAllure";
 
@@ -149,10 +149,7 @@ export class AllureReporter {
     this.endTest(status, { message: error.message, trace: error.stack });
   }
 
-  public writeAttachment(
-    content: Buffer | string,
-    options: ContentType | string | AttachmentOptions,
-  ): string {
+  public writeAttachment(content: Buffer | string, options: ContentType | string | AttachmentOptions): string {
     return this.allureRuntime.writeAttachment(content, options);
   }
 

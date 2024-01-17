@@ -1,15 +1,13 @@
 import {
+  Label,
+  LabelName,
   allureIdRegexp,
   allureIdRegexpGlobal,
   allureLabelRegexp,
   allureLabelRegexpGlobal,
-  Label,
-  LabelName,
 } from "allure-js-commons";
 
-export const extractMetadataFromString = (
-  title: string,
-): { labels: Label[]; cleanTitle: string } => {
+export const extractMetadataFromString = (title: string): { labels: Label[]; cleanTitle: string } => {
   const labels = [] as Label[];
   title.split(" ").forEach((val) => {
     const idValue = val.match(allureIdRegexp)?.groups?.id;
@@ -24,10 +22,7 @@ export const extractMetadataFromString = (
     }
   });
 
-  const cleanTitle = title
-    .replace(allureLabelRegexpGlobal, "")
-    .replace(allureIdRegexpGlobal, "")
-    .trim();
+  const cleanTitle = title.replace(allureLabelRegexpGlobal, "").replace(allureIdRegexpGlobal, "").trim();
 
   return { labels, cleanTitle };
 };

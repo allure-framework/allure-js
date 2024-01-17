@@ -1,9 +1,9 @@
+import { loadConfiguration, loadSupport, runCucumber } from "@cucumber/cucumber/api";
 import fs from "node:fs";
 import { join, relative } from "node:path";
 import { cwd } from "node:process";
-import { loadConfiguration, loadSupport, runCucumber } from "@cucumber/cucumber/api";
-import { TestResult } from "allure-js-commons";
 import { match, restore, stub } from "sinon";
+import { TestResult } from "allure-js-commons";
 import { type CucumberJSAllureFormatterConfig } from "../src/CucumberJSAllureReporter";
 
 export interface LaunchSummary {
@@ -15,9 +15,7 @@ export const runCucumberTests = async (
   tests: string[],
   reporterConfig?: CucumberJSAllureFormatterConfig,
 ): Promise<LaunchSummary> => {
-  const writeFileSpy = stub(fs, "writeFileSync")
-    .withArgs(match("allure-results"))
-    .returns(undefined);
+  const writeFileSpy = stub(fs, "writeFileSync").withArgs(match("allure-results")).returns(undefined);
   const { runConfiguration } = await loadConfiguration({
     provided: {
       parallel: 0,

@@ -1,13 +1,5 @@
-import {
-  LabelName,
-  LinkType,
-  MetadataMessage,
-  ParameterOptions,
-  Stage,
-  Status,
-  StepMetadata,
-} from "allure-js-commons";
 import * as vitest from "vitest";
+import { LabelName, LinkType, MetadataMessage, ParameterOptions, Stage, Status, StepMetadata } from "allure-js-commons";
 
 interface AllureTestMeta extends vitest.TaskMeta {
   currentTest: MetadataMessage;
@@ -110,12 +102,7 @@ export const tms = (context: vitest.TaskContext, name: string, url: string) => {
   link(context, LinkType.TMS, url, name);
 };
 
-export const parameter = (
-  context: vitest.TaskContext,
-  name: string,
-  value: string,
-  options?: ParameterOptions,
-) => {
+export const parameter = (context: vitest.TaskContext, name: string, value: string, options?: ParameterOptions) => {
   injectAllureMeta(context);
   (context.task.meta as AllureTestMeta).currentTest.parameter.push({
     name,
@@ -149,12 +136,7 @@ export const testCaseId = (context: vitest.TaskContext, value: string) => {
   (context.task.meta as AllureTestMeta).currentTest.testCaseId = value;
 };
 
-export const attachment = (
-  context: vitest.TaskContext,
-  name: string,
-  content: Buffer | string,
-  type: string,
-) => {
+export const attachment = (context: vitest.TaskContext, name: string, content: Buffer | string, type: string) => {
   injectAllureMeta(context);
 
   const { currentTest, currentStep } = context.task.meta as AllureTestMeta;
@@ -168,11 +150,7 @@ export const attachment = (
   });
 };
 
-export const step = async (
-  context: vitest.TaskContext,
-  name: string,
-  body: () => Promise<void>,
-) => {
+export const step = async (context: vitest.TaskContext, name: string, body: () => Promise<void>) => {
   injectAllureMeta(context);
 
   const { currentTest, currentStep } = context.task.meta as AllureTestMeta;

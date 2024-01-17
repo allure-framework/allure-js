@@ -1,18 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { EventEmitter } from "events";
-import {
-  AllureGroup,
-  AllureRuntime,
-  AllureStep,
-  AllureTest,
-  ContentType,
-  InMemoryAllureWriter,
-  LabelName,
-  md5,
-  Stage,
-  Status,
-  StatusDetails,
-} from "allure-js-commons";
 import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
 import type {
   Collection,
@@ -24,6 +11,19 @@ import type {
   RequestBody,
   Response,
 } from "postman-collection";
+import {
+  AllureGroup,
+  AllureRuntime,
+  AllureStep,
+  AllureTest,
+  ContentType,
+  InMemoryAllureWriter,
+  LabelName,
+  Stage,
+  Status,
+  StatusDetails,
+  md5,
+} from "allure-js-commons";
 import { extractMeta } from "./helpers";
 
 interface AllureOptions {
@@ -84,9 +84,7 @@ class AllureReporter {
     },
   ) {
     this.currentNMGroup = options.collection as Collection;
-    this.allureWriter = reporterOptions.postProcessorForTest
-      ? new InMemoryAllureWriter()
-      : undefined;
+    this.allureWriter = reporterOptions.postProcessorForTest ? new InMemoryAllureWriter() : undefined;
 
     this.allureRuntime = new AllureRuntime({
       resultsDir: reporterOptions.export || "allure-results",
@@ -153,11 +151,7 @@ class AllureReporter {
   }
 
   pathToItem(item: Item): string[] {
-    if (
-      !item ||
-      !(typeof item.parent === "function") ||
-      !(typeof item.forEachParent === "function")
-    ) {
+    if (!item || !(typeof item.parent === "function") || !(typeof item.forEachParent === "function")) {
       return [];
     }
     const chain: string[] = [];
@@ -346,18 +340,11 @@ class AllureReporter {
     const requestDataURL = requestData && `${requestData.method} - ${requestData.url}`;
 
     if (requestData?.headers && requestData?.headers?.count() > 0) {
-      const attachment = this.allureRuntime.writeAttachment(
-        this.headerListToJsonString(requestData.headers),
-        {
-          contentType: ContentType.JSON,
-        },
-      );
+      const attachment = this.allureRuntime.writeAttachment(this.headerListToJsonString(requestData.headers), {
+        contentType: ContentType.JSON,
+      });
 
-      this.currentExecutable.addAttachment(
-        "Request Headers",
-        { contentType: ContentType.JSON },
-        attachment,
-      );
+      this.currentExecutable.addAttachment("Request Headers", { contentType: ContentType.JSON }, attachment);
     }
 
     if (requestData?.body?.mode === "raw" && requestData.body.raw) {
@@ -365,11 +352,7 @@ class AllureReporter {
         contentType: ContentType.TEXT,
       });
 
-      this.currentExecutable.addAttachment(
-        "Request Body",
-        { contentType: ContentType.TEXT },
-        attachment,
-      );
+      this.currentExecutable.addAttachment("Request Body", { contentType: ContentType.TEXT }, attachment);
     }
 
     let testDescription = "";
@@ -404,18 +387,11 @@ class AllureReporter {
     }
 
     if (response?.headers && response?.headers?.count() > 0) {
-      const attachment = this.allureRuntime.writeAttachment(
-        this.headerListToJsonString(response.headers),
-        {
-          contentType: ContentType.JSON,
-        },
-      );
+      const attachment = this.allureRuntime.writeAttachment(this.headerListToJsonString(response.headers), {
+        contentType: ContentType.JSON,
+      });
 
-      this.currentExecutable.addAttachment(
-        "Response Headers",
-        { contentType: ContentType.JSON },
-        attachment,
-      );
+      this.currentExecutable.addAttachment("Response Headers", { contentType: ContentType.JSON }, attachment);
     }
 
     if (response?.body) {
@@ -423,11 +399,7 @@ class AllureReporter {
         contentType: ContentType.TEXT,
       });
 
-      this.currentExecutable.addAttachment(
-        "Response Body",
-        { contentType: ContentType.TEXT },
-        attachment,
-      );
+      this.currentExecutable.addAttachment("Response Body", { contentType: ContentType.TEXT }, attachment);
     }
 
     const failedAssertions = this.currentRunningItem?.pmItem.failedAssertions;
@@ -497,9 +469,7 @@ class AllureReporter {
     }
 
     if (args.level) {
-      this.currentRunningItem?.pmItem.consoleLogs.push(
-        `level: ${args.level}, messages: ${args.messages.toString()}`,
-      );
+      this.currentRunningItem?.pmItem.consoleLogs.push(`level: ${args.level}, messages: ${args.messages.toString()}`);
     }
   }
 
@@ -512,9 +482,7 @@ class AllureReporter {
   ) {
     const req = args.request;
 
-    const url = `${
-      req.url.protocol || ""
-    }://${args.request.url.getHost()}${req.url.getPathWithQuery()}`;
+    const url = `${req.url.protocol || ""}://${args.request.url.getHost()}${req.url.getPathWithQuery()}`;
 
     this.runningItems[this.runningItems.length - 1].pmItem.requestData = {
       url: url,

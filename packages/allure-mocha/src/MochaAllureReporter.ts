@@ -1,5 +1,5 @@
-import { AllureConfig, AllureRuntime } from "allure-js-commons";
 import * as Mocha from "mocha";
+import { AllureConfig, AllureRuntime } from "allure-js-commons";
 import { AllureReporter } from "./AllureReporter";
 import { MochaAllure } from "./MochaAllure";
 import { MochaAllureGateway } from "./MochaAllureGateway";

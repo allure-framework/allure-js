@@ -1,7 +1,7 @@
 import { Allure, LabelName } from "allure-js-commons";
+import { AllureWriter } from "allure-js-commons/dist/src/writers";
 import { JasmineTestEnv, runTest } from "./helpers";
 import { matchers } from "./matchers";
-import { AllureWriter } from "allure-js-commons/dist/src/writers";
 
 describe("Allure Result", () => {
   beforeAll(() => jasmine.addMatchers(matchers));

@@ -1,5 +1,5 @@
 import expect from "expect";
-import { runJestTests, TestResultsByFullName } from "../utils";
+import { TestResultsByFullName, runJestTests } from "../utils";
 
 /**
  * Issues and TMS links templates are defined in `test/jest.config.js`

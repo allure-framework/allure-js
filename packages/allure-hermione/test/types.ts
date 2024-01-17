@@ -1,5 +1,5 @@
-import { AllureResults, AllureRuntime, Attachment, TestResult } from "allure-js-commons";
 import Hermione from "hermione";
+import { AllureResults, AllureRuntime, Attachment, TestResult } from "allure-js-commons";
 
 export interface AllureInMemoryWriter {
   results: TestResult[];

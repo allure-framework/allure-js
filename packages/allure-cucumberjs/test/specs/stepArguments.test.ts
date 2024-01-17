@@ -1,6 +1,6 @@
-import { TestResult } from "allure-js-commons/src/model";
 import { expect } from "chai";
 import { before, describe, it } from "mocha";
+import { TestResult } from "allure-js-commons/src/model";
 import { LaunchSummary, runCucumberTests } from "../utils";
 
 describe("step arguments", () => {

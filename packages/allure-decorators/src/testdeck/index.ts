@@ -11,11 +11,7 @@ const nameForParametersSymbol: string = nodeSymbol("nameForParameters");
 
 type Params = any | ((arg?: any) => any);
 type Execution = undefined | "pending" | "only" | "skip" | "execution";
-type TestDecorator = (
-  target: unknown,
-  property: string,
-  descriptor: PropertyDescriptor,
-) => PropertyDescriptor;
+type TestDecorator = (target: unknown, property: string, descriptor: PropertyDescriptor) => PropertyDescriptor;
 type ParamsDecorator = (params: Params, name?: string) => TestDecorator;
 
 interface ParameterizedPropertyDescriptor extends PropertyDescriptor {
@@ -39,22 +35,21 @@ const makeParamsNameFunction = (): any => {
 };
 
 const makeParamsFunction = <T>(execution?: Execution): ParamsDecorator => {
-  return (params: Params, name?: string) =>
-    (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
-      const adjustedParams: any = typeof params === "function" ? params() : params;
-      target[propertyKey][testNameSymbol] = propertyKey.toString();
-      target[propertyKey][parametersSymbol] = target[propertyKey][parametersSymbol] || [];
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      [].concat(adjustedParams || []).forEach((param) => {
-        target[propertyKey][parametersSymbol].push({ execution, name, params: param });
-      });
-      return processDescriptor<T>(
-        (args) => JSON.stringify(args),
-        (arg) => getAllure().parameter("inputs", arg),
-        descriptor,
-        (prop) => prop.startsWith("__testdeck_"),
-      );
-    };
+  return (params: Params, name?: string) => (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+    const adjustedParams: any = typeof params === "function" ? params() : params;
+    target[propertyKey][testNameSymbol] = propertyKey.toString();
+    target[propertyKey][parametersSymbol] = target[propertyKey][parametersSymbol] || [];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    [].concat(adjustedParams || []).forEach((param) => {
+      target[propertyKey][parametersSymbol].push({ execution, name, params: param });
+    });
+    return processDescriptor<T>(
+      (args) => JSON.stringify(args),
+      (arg) => getAllure().parameter("inputs", arg),
+      descriptor,
+      (prop) => prop.startsWith("__testdeck_"),
+    );
+  };
 };
 
 const makeParamsObject = (): any => {
