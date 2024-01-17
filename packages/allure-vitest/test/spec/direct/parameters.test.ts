@@ -1,12 +1,13 @@
 import { expect, it } from "vitest";
-import { runVitestInlineTest } from "../utils.js";
+import { runVitestInlineTest } from "../../utils.js";
 
 it("sets parameters", async () => {
   const { tests } = await runVitestInlineTest(`
-    import { allureTest } from "allure-vitest/test";
+    import { test } from "vitest";
+    import { parameter } from "allure-vitest";
 
-    allureTest("parameter", ({ allure }) => {
-      allure.parameter("foo", "bar", { mode: "hidden", excluded: true });
+    test("parameter", async (t) => {
+      await parameter(t, "foo", "bar", { mode: "hidden", excluded: true });
     });
   `);
 

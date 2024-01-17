@@ -9,7 +9,6 @@ import {
   Status,
 } from "allure-js-commons";
 import { File, Reporter, Task } from "vitest";
-import { AllureMeta, AllureStep } from "./model.js";
 
 export interface AllureReporterOptions {
   testMode?: boolean;

@@ -34,6 +34,8 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
+    // add setup file to be able to use Allure API via `this.allure` in your tests
+    setupFiles: ["allure-vitest/setup],
     reporters: [
       // do not forget to keep the "default" if you want to see something in the console
       "default",
@@ -66,13 +68,25 @@ Some reporter settings can set by following options:
 
 ## API
 
-To use Allure Runtime API, use `allureTest` instead of `test` function to define
-your tests cases:
+If you use setup file shipped by the integration, use `this.allure` to get access
+to Allure Runtime API:
 
 ```js
-import { allureTest } from "allure-vitest/test";
+import { test } from "vitest";
 
-allureTest("labels", ({ allure }) => {
-  allure.label("demo", "works");
+test("sample test", async () => {
+  await this.allure.label("foo", "bar");
+});
+```
+
+Additionally, you can call Allure Runtime API methods directly passing the
+context argument to the method:
+
+```js
+import { test } from "vitest";
+import * as allure from "allure-vitest";
+
+test("sample test", async (context) => {
+  await allure.label(context, "foo", "bar");
 });
 ```

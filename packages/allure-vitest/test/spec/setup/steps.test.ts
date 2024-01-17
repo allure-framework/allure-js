@@ -1,13 +1,13 @@
-import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
-import { runVitestInlineTest } from "../utils.js";
+import { expect, it } from "vitest";
+import { runVitestInlineTest } from "../../utils.js";
 
 it("handles single lambda step", async () => {
   const { tests } = await runVitestInlineTest(`
-    import { allureTest } from "allure-vitest/test";
+    import { test } from "vitest";
 
-    allureTest("steps", async ({ allure }) => {
-      await allure.step("step", () => {});
+    test("steps", async () => {
+      await this.allure.step("step", () => {});
     });
   `);
 
@@ -22,11 +22,11 @@ it("handles single lambda step", async () => {
 
 it("handles single lambda step with attachment", async () => {
   const { tests, attachments } = await runVitestInlineTest(`
-    import { allureTest } from "allure-vitest/test";
+    import { test } from "vitest";
 
-    allureTest("steps", async ({ allure }) => {
-      await allure.step("step", () => {
-        allure.attachment("foo.txt", Buffer.from("bar"), "text/plain");
+    test("steps", async () => {
+      await this.allure.step("step", () => {
+        this.allure.attachment("foo.txt", Buffer.from("bar"), "text/plain");
       });
     });
   `);
@@ -46,12 +46,12 @@ it("handles single lambda step with attachment", async () => {
 
 it("handles nested lambda steps", async () => {
   const { tests } = await runVitestInlineTest(`
-    import { allureTest } from "allure-vitest/test";
+    import { test } from "vitest";
 
-    allureTest("steps", async ({ allure }) => {
-      await allure.step("step 1", async () => {
-        await allure.step("step 2", async () => {
-          await allure.step("step 3", () => {
+    test("steps", async () => {
+      await this.allure.step("step 1", async () => {
+        await this.allure.step("step 2", async () => {
+          await this.allure.step("step 3", () => {
           });
         });
       });

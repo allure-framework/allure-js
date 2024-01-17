@@ -1,14 +1,15 @@
 import { LabelName } from "allure-js-commons";
 import { describe, expect, it } from "vitest";
-import { runVitestInlineTest } from "../utils.js";
+import { runVitestInlineTest } from "../../utils.js";
 
 describe("labels", () => {
   it("label", async () => {
     const { tests } = await runVitestInlineTest(`
-      import { allureTest } from "allure-vitest/test";
+      import { test } from "vitest";
+      import { label } from "allure-vitest";
 
-      allureTest("label", ({ allure }) => {
-        allure.label("foo", "bar");
+      test("label", async (t) => {
+        await label(t, "foo", "bar");
       });
     `);
 
@@ -18,10 +19,11 @@ describe("labels", () => {
 
   it("epic", async () => {
     const { tests } = await runVitestInlineTest(`
-      import { allureTest } from "allure-vitest/test";
+      import { test } from "vitest";
+      import { epic } from "allure-vitest";
 
-      allureTest("epic", ({ allure }) => {
-        allure.epic("foo");
+      test("epic", async (t) => {
+        await epic(t, "foo");
       });
     `);
 
@@ -31,10 +33,11 @@ describe("labels", () => {
 
   it("feature", async () => {
     const { tests } = await runVitestInlineTest(`
-      import { allureTest } from "allure-vitest/test";
+      import { test } from "vitest";
+      import { feature } from "allure-vitest";
 
-      allureTest("feature", ({ allure }) => {
-        allure.feature("foo");
+      test("feature", async (t) => {
+        await feature(t, "foo");
       });
     `);
 
@@ -44,10 +47,11 @@ describe("labels", () => {
 
   it("story", async () => {
     const { tests } = await runVitestInlineTest(`
-      import { allureTest } from "allure-vitest/test";
+      import { test } from "vitest";
+      import { story } from "allure-vitest";
 
-      allureTest("story", ({ allure }) => {
-        allure.story("foo");
+      test("story", async (t) => {
+        await story(t, "foo");
       });
     `);
 
@@ -57,10 +61,11 @@ describe("labels", () => {
 
   it("suite", async () => {
     const { tests } = await runVitestInlineTest(`
-      import { allureTest } from "allure-vitest/test";
+      import { test } from "vitest";
+      import { suite } from "allure-vitest";
 
-      allureTest("suite", ({ allure }) => {
-        allure.suite("foo");
+      test("suite", async (t) => {
+        await suite(t, "foo");
       });
     `);
 
@@ -70,10 +75,11 @@ describe("labels", () => {
 
   it("parentSuite", async () => {
     const { tests } = await runVitestInlineTest(`
-      import { allureTest } from "allure-vitest/test";
+      import { test } from "vitest";
+      import { parentSuite } from "allure-vitest";
 
-      allureTest("parentSuite", ({ allure }) => {
-        allure.parentSuite("foo");
+      test("parentSuite", async (t) => {
+        await parentSuite(t, "foo");
       });
     `);
 
@@ -83,10 +89,11 @@ describe("labels", () => {
 
   it("subSuite", async () => {
     const { tests } = await runVitestInlineTest(`
-      import { allureTest } from "allure-vitest/test";
+      import { test } from "vitest";
+      import { subSuite } from "allure-vitest";
 
-      allureTest("subSuite", ({ allure }) => {
-        allure.subSuite("foo");
+      test("subSuite", async (t) => {
+        await subSuite(t, "foo");
       });
     `);
 
@@ -96,10 +103,11 @@ describe("labels", () => {
 
   it("owner", async () => {
     const { tests } = await runVitestInlineTest(`
-      import { allureTest } from "allure-vitest/test";
+      import { test } from "vitest";
+      import { owner } from "allure-vitest";
 
-      allureTest("owner", ({ allure }) => {
-        allure.owner("foo");
+      test("owner", async (t) => {
+        await owner(t, "foo");
       });
     `);
 
@@ -109,10 +117,11 @@ describe("labels", () => {
 
   it("severity", async () => {
     const { tests } = await runVitestInlineTest(`
-      import { allureTest } from "allure-vitest/test";
+      import { test } from "vitest";
+      import { severity } from "allure-vitest";
 
-      allureTest("severity", ({ allure }) => {
-        allure.severity("foo");
+      test("severity", async (t) => {
+        await severity(t, "foo");
       });
     `);
 
@@ -122,10 +131,11 @@ describe("labels", () => {
 
   it("layer", async () => {
     const { tests } = await runVitestInlineTest(`
-      import { allureTest } from "allure-vitest/test";
+      import { test } from "vitest";
+      import { layer } from "allure-vitest";
 
-      allureTest("layer", ({ allure }) => {
-        allure.layer("foo");
+      test("layer", async (t) => {
+        await layer(t, "foo");
       });
     `);
 
@@ -135,10 +145,11 @@ describe("labels", () => {
 
   it("id", async () => {
     const { tests } = await runVitestInlineTest(`
-      import { allureTest } from "allure-vitest/test";
+      import { test } from "vitest";
+      import { allureId } from "allure-vitest";
 
-      allureTest("id", ({ allure }) => {
-        allure.id("foo");
+      test("id", async (t) => {
+        await allureId(t, "foo");
       });
     `);
 
@@ -148,10 +159,11 @@ describe("labels", () => {
 
   it("tag", async () => {
     const { tests } = await runVitestInlineTest(`
-      import { allureTest } from "allure-vitest/test";
+      import { test } from "vitest";
+      import { tag } from "allure-vitest";
 
-      allureTest("tag", ({ allure }) => {
-        allure.tag("foo");
+      test("tag", async (t) => {
+        await tag(t, "foo");
       });
     `);
 

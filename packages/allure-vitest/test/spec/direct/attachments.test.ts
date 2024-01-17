@@ -1,12 +1,13 @@
 import { expect, it } from "vitest";
-import { runVitestInlineTest } from "../utils.js";
+import { runVitestInlineTest } from "../../utils.js";
 
 it("adds attachments", async () => {
   const { tests, attachments } = await runVitestInlineTest(`
-    import { allureTest } from "allure-vitest/test";
+    import { test } from "vitest";
+    import { attachment } from "allure-vitest";
 
-    allureTest("text attachment", ({ allure }) => {
-      allure.attachment("foo.txt", Buffer.from("bar"), "text/plain");
+    test("text attachment", async (t) => {
+      await attachment(t, "foo.txt", Buffer.from("bar"), "text/plain");
     });
   `);
 

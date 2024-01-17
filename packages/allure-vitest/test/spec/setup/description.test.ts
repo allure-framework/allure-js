@@ -1,12 +1,12 @@
 import { expect, it } from "vitest";
-import { runVitestInlineTest } from "../utils.js";
+import { runVitestInlineTest } from "../../utils.js";
 
 it("sets description", async () => {
   const { tests } = await runVitestInlineTest(`
-    import { allureTest } from "allure-vitest/test";
+    import { test } from "vitest";
 
-    allureTest("description", ({ allure }) => {
-      allure.description("foo");
+    test("description", () => {
+      this.allure.description("foo");
     });
   `);
 
@@ -16,10 +16,10 @@ it("sets description", async () => {
 
 it("sets html description", async () => {
   const { tests } = await runVitestInlineTest(`
-    import { allureTest } from "allure-vitest/test";
+    import { test } from "vitest";
 
-    allureTest("description html", ({ allure }) => {
-      allure.descriptionHtml("foo");
+    test("description html", () => {
+      this.allure.descriptionHtml("foo");
     });
   `);
 

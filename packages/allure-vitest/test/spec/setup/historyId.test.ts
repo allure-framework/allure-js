@@ -1,12 +1,12 @@
 import { expect, it } from "vitest";
-import { runVitestInlineTest } from "../utils.js";
+import { runVitestInlineTest } from "../../utils.js";
 
 it("sets test history id", async () => {
   const { tests } = await runVitestInlineTest(`
-    import { allureTest } from "allure-vitest/test";
+    import { test } from "vitest";
 
-    allureTest("history id", ({ allure }) => {
-      allure.historyId("foo");
+    test("history id", () => {
+      this.allure.historyId("foo");
     });
   `);
 

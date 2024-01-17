@@ -28,11 +28,12 @@ export const runVitestInlineTest = async (test: string): Promise<AllureResults> 
   await writeFile(
     configFilePath,
     `
-      import AllureReporter from "allure-vitest";
+      import AllureReporter from "allure-vitest/reporter";
       import { defineConfig } from "vitest/config";
 
       export default defineConfig({
         test: {
+          setupFiles: ["allure-vitest/setup"],
           reporters: [
             "default",
             new AllureReporter({

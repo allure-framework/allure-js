@@ -26,8 +26,9 @@
     "dist"
   ],
   "exports": {
-    ".": "./dist/src/reporter.js",
-    "./test": "./dist/src/test.js"
+    ".": "./dist/src/index.js",
+    "./setup": "./dist/src/setup.js",
+    "./reporter": "./dist/src/reporter.js"
   },
   "scripts": {
     "clean": "rimraf ./dist ./out",

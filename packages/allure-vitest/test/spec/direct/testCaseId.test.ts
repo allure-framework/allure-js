@@ -1,12 +1,13 @@
 import { expect, it } from "vitest";
-import { runVitestInlineTest } from "../utils.js";
+import { runVitestInlineTest } from "../../utils.js";
 
 it("sets test case id", async () => {
   const { tests } = await runVitestInlineTest(`
-    import { allureTest } from "allure-vitest/test";
+    import { test } from "vitest";
+    import { testCaseId } from "allure-vitest";
 
-    allureTest("test case id", ({ allure }) => {
-      allure.testCaseId("foo");
+    test("test case id", async (t) => {
+      await testCaseId(t, "foo");
     });
   `);
 
