@@ -3,17 +3,14 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rmdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "url";
-import type { AllureResults, Attachment, TestResult, TestResultContainer } from "allure-js-commons";
+import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
 
 const fileDirname = dirname(fileURLToPath(import.meta.url));
 
-interface RunResults {
-  results: TestResult[];
-  containers: TestResultContainer[];
-  attachments: Attachment[];
-}
-
-export const runVitestInlineTest = async (test: string): Promise<AllureResults> => {
+export const runVitestInlineTest = async (
+  test: string,
+  config?: (cwd: string) => string,
+): Promise<AllureResults> => {
   const res: AllureResults = {
     tests: [],
     groups: [],
@@ -22,12 +19,9 @@ export const runVitestInlineTest = async (test: string): Promise<AllureResults> 
   const testDir = join(fileDirname, "fixtures", randomUUID());
   const configFilePath = join(testDir, "vitest.config.ts");
   const testFilePath = join(testDir, "sample.test.ts");
-
-  await mkdir(testDir, { recursive: true });
-  // TODO: make possible to pass custom conf
-  await writeFile(
-    configFilePath,
-    `
+  const configContent = config
+    ? config(testDir)
+    : `
       import AllureReporter from "allure-vitest/reporter";
       import { defineConfig } from "vitest/config";
 
@@ -38,23 +32,15 @@ export const runVitestInlineTest = async (test: string): Promise<AllureResults> 
             "default",
             new AllureReporter({
               testMode: true,
-              links: [
-                {
-                  type: "issue",
-                  urlTemplate: "https://example.org/issue/%s",
-                },
-                {
-                  type: "tms",
-                  urlTemplate: "https://example.org/tms/%s",
-                },
-              ],
               resultsDir: "${join(testDir, "allure-results")}",
             }),
           ],
         },
       });
-    `,
-  );
+  `;
+
+  await mkdir(testDir, { recursive: true });
+  await writeFile(configFilePath, configContent, "utf8");
   await writeFile(testFilePath, test, "utf8");
 
   const modulePath = require.resolve("vitest/dist/cli-wrapper.js");

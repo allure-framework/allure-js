@@ -1,3 +1,5 @@
+import { basename, normalize } from "node:path";
+import { pid } from "node:process";
 import {
   AllureGroup,
   AllureRuntime,
@@ -8,7 +10,7 @@ import {
   Stage,
   Status,
 } from "allure-js-commons";
-import { File, Reporter, Task } from "vitest";
+import { File, Reporter, Task, Vitest } from "vitest";
 
 export interface AllureReporterOptions {
   testMode?: boolean;
@@ -22,6 +24,7 @@ export interface AllureReporterOptions {
 export default class AllureReporter implements Reporter {
   private allureRuntime: AllureRuntime;
   private options: AllureReporterOptions;
+  private rootDir: string;
 
   constructor(options: AllureReporterOptions) {
     this.options = options;
@@ -47,7 +50,8 @@ export default class AllureReporter implements Reporter {
     });
   }
 
-  onInit() {
+  onInit(vitest: Vitest) {
+    this.rootDir = vitest.runner.root;
     this.allureRuntime = new AllureRuntime({
       resultsDir: this.options.resultsDir ?? "allure-results",
       writer: this.options.testMode ? new MessageAllureWriter() : undefined,
@@ -89,6 +93,10 @@ export default class AllureReporter implements Reporter {
     const { currentTest = {} } = task.meta as { currentTest: MetadataMessage };
     const links = currentTest.links ? this.processMetadataLinks(currentTest.links) : [];
     const test = parent.startTest(task.name, 0);
+    const normalizedTestPath = normalize(task.file.filepath.replace(this.rootDir, ""))
+      .replace(/^\//, "")
+      .split("/")
+      .filter((item: string) => item !== basename(task.file.filepath));
 
     test.name = task.name;
     test.fullName = `${task.file.name}#${task.name}`;
@@ -98,6 +106,13 @@ export default class AllureReporter implements Reporter {
       links,
     });
     test.addLabel(LabelName.SUITE, parent.name);
+    test.addLabel(LabelName.FRAMEWORK, "vitest");
+    test.addLabel(LabelName.LANGUAGE, "javascript");
+    test.addLabel(LabelName.THREAD, pid.toString());
+
+    if (normalizedTestPath.length) {
+      test.addLabel(LabelName.PACKAGE, normalizedTestPath.join("."));
+    }
 
     if (task.suite.suite?.name) {
       test.addLabel(LabelName.PARENT_SUITE, task.suite.suite.name);
