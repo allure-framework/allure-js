@@ -1,6 +1,6 @@
-import { Stage, Status } from "allure-js-commons";
 import expect from "expect";
-import { runJestTests, TestResultsByFullName } from "../utils";
+import { Stage, Status } from "allure-js-commons";
+import { TestResultsByFullName, runJestTests } from "../utils";
 
 describe("each", () => {
   it("handles all the 3 tests with data tables", async () => {

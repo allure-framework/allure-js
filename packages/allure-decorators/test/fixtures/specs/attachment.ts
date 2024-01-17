@@ -1,6 +1,6 @@
 import { suite, test } from "@testdeck/mocha";
-import { attachment, step } from "../../../";
 import { ContentType } from "allure-js-commons";
+import { attachment, step } from "../../../";
 import { BaseTest } from "./baseTest";
 
 @suite

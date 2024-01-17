@@ -1,6 +1,6 @@
 import { suite, test } from "@testdeck/mocha";
-import { LabelName, Status } from "allure-js-commons";
 import { expect } from "chai";
+import { LabelName, Status } from "allure-js-commons";
 import { findLabelValue, runTests } from "../utils";
 
 @suite
@@ -28,16 +28,12 @@ class CommonSuite {
 
     const simplePending = writerStub.getTestByName("simple pending");
     expect(simplePending.status).eq(Status.SKIPPED);
-    expect(simplePending.historyId).eq(
-      "7bb8f8614d6c2bafb60878af9abc9b46:d41d8cd98f00b204e9800998ecf8427e",
-    );
+    expect(simplePending.historyId).eq("7bb8f8614d6c2bafb60878af9abc9b46:d41d8cd98f00b204e9800998ecf8427e");
     expect(findLabelValue(simplePending, LabelName.PARENT_SUITE)).eq("Pending tests");
 
     const skippedInRuntime = writerStub.getTestByName("skipped in runtime");
     expect(skippedInRuntime.status).eq(Status.SKIPPED);
-    expect(skippedInRuntime.historyId).eq(
-      "c3dbeb24ccd3c07f3504d664439d51f5:d41d8cd98f00b204e9800998ecf8427e",
-    );
+    expect(skippedInRuntime.historyId).eq("c3dbeb24ccd3c07f3504d664439d51f5:d41d8cd98f00b204e9800998ecf8427e");
     expect(findLabelValue(skippedInRuntime, LabelName.PARENT_SUITE)).eq("Pending tests");
   }
 }

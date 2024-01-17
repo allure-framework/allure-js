@@ -1,5 +1,5 @@
-import { allureIdRegexp, allureLabelRegexp, Label, LabelName } from "allure-js-commons";
 import { EventList } from "postman-collection";
+import { Label, LabelName, allureIdRegexp, allureLabelRegexp } from "allure-js-commons";
 
 export const extractMeta = (eventList: EventList) => {
   const labels: Label[] = [];

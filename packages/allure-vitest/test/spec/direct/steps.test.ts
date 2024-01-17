@@ -1,5 +1,5 @@
-import { Stage, Status } from "allure-js-commons";
 import { expect, it } from "vitest";
+import { Stage, Status } from "allure-js-commons";
 import { runVitestInlineTest } from "../../utils.js";
 
 it("handles single lambda step", async () => {
@@ -41,9 +41,7 @@ it("handles single lambda step with attachment", async () => {
 
   expect(attachment.name).toBe("foo.txt");
   expect(attachment.type).toBe("text/plain");
-  expect(Buffer.from(attachments[attachment.source] as string, "base64").toString("utf8")).toBe(
-    "bar",
-  );
+  expect(Buffer.from(attachments[attachment.source] as string, "base64").toString("utf8")).toBe("bar");
 });
 
 it("handles nested lambda steps", async () => {

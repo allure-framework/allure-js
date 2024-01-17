@@ -76,11 +76,7 @@ export class ExecutableItemWrapper {
     this.parameter(name, value, options);
   }
 
-  public addAttachment(
-    name: string,
-    options: ContentType | string | AttachmentOptions,
-    fileName: string,
-  ): void {
+  public addAttachment(name: string, options: ContentType | string | AttachmentOptions, fileName: string): void {
     if (typeof options === "string") {
       options = { contentType: options };
     }

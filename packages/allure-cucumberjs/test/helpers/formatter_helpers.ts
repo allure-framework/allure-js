@@ -1,7 +1,3 @@
-import { EventEmitter } from "events";
-import process from "process";
-import { PassThrough } from "stream";
-import { promisify } from "util";
 import { FormatterBuilder, IRuntimeOptions, Runtime } from "@cucumber/cucumber";
 import { emitSupportCodeMessages } from "@cucumber/cucumber/lib/cli/helpers";
 import { FormatOptions } from "@cucumber/cucumber/lib/formatter";
@@ -10,11 +6,12 @@ import EventDataCollector from "@cucumber/cucumber/lib/formatter/helpers/event_d
 import { ISupportCodeLibrary } from "@cucumber/cucumber/lib/support_code_library_builder/types";
 import * as messages from "@cucumber/messages";
 import { IdGenerator } from "@cucumber/messages";
+import { EventEmitter } from "events";
+import process from "process";
+import { PassThrough } from "stream";
+import { promisify } from "util";
 import { AllureResults, AllureRuntime, InMemoryAllureWriter } from "allure-js-commons";
-import {
-  CucumberJSAllureFormatter,
-  CucumberJSAllureFormatterConfig,
-} from "../../src/CucumberJSAllureReporter";
+import { CucumberJSAllureFormatter, CucumberJSAllureFormatterConfig } from "../../src/CucumberJSAllureReporter";
 import { generateEvents } from "./gherkin_helpers";
 import { buildOptions } from "./runtime_helpers";
 
@@ -37,12 +34,7 @@ export interface ITestFormatterOptions extends ITestRunOptions {
 }
 
 export const runFeatures = async (
-  {
-    parsedArgvOptions = {},
-    runtimeOptions = {},
-    supportCodeLibrary,
-    sources = [],
-  }: ITestFormatterOptions,
+  { parsedArgvOptions = {}, runtimeOptions = {}, supportCodeLibrary, sources = [] }: ITestFormatterOptions,
   config?: CucumberJSAllureFormatterConfig,
 ): Promise<AllureResults> => {
   const eventBroadcaster = new EventEmitter();

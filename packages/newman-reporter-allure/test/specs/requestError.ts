@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/quotes */
-import { Status } from "allure-js-commons";
 import { expect } from "expect";
 import { after, afterEach, before, test } from "mocha";
+import { Status } from "allure-js-commons";
 import { runNewman } from "../helpers/runNewman";
 import { server } from "../mocks/server";
 
@@ -18,11 +18,7 @@ test("Mark test as failed when a request error occurs", async () => {
           {
             listen: "test",
             script: {
-              exec: [
-                'pm.test("Status code is 200", function () {',
-                "    pm.response.to.have.status(200);",
-                "});",
-              ],
+              exec: ['pm.test("Status code is 200", function () {', "    pm.response.to.have.status(200);", "});"],
               type: "text/javascript",
             },
           },
@@ -40,9 +36,7 @@ test("Mark test as failed when a request error occurs", async () => {
     ],
   });
   expect(result.status).toBe(Status.BROKEN);
-  expect(result.parameters).toEqual([
-    { name: "Request", value: "GET - http://example.com/timeout" },
-  ]);
+  expect(result.parameters).toEqual([{ name: "Request", value: "GET - http://example.com/timeout" }]);
 
   expect(result.steps).toEqual([
     {

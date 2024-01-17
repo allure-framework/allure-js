@@ -1,10 +1,10 @@
-import os from "os";
-import process from "process";
 import { Formatter, World } from "@cucumber/cucumber";
 import { IFormatterOptions } from "@cucumber/cucumber/lib/formatter";
 import TestCaseHookDefinition from "@cucumber/cucumber/lib/models/test_case_hook_definition";
 import * as messages from "@cucumber/messages";
 import { Tag, TestStepResultStatus } from "@cucumber/messages";
+import os from "os";
+import process from "process";
 import {
   Allure,
   AllureRuntime,
@@ -14,9 +14,9 @@ import {
   Label,
   LabelName,
   Link,
-  md5,
   MetadataMessage,
   Status,
+  md5,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 import { CucumberAllureWorld } from "./CucumberAllureWorld";
@@ -190,9 +190,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     this.labelsMatchers.forEach((matcher) => {
-      const matchedTags = tags.filter((tag) =>
-        matcher.pattern.some((pattern) => pattern.test(tag.name)),
-      );
+      const matchedTags = tags.filter((tag) => matcher.pattern.some((pattern) => pattern.test(tag.name)));
       const matchedLabels = matchedTags.map((tag) => {
         const tagValue = tag.name.replace(/^@\S+:/, "");
 
@@ -217,9 +215,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     this.linksMatchers.forEach((matcher) => {
-      const matchedTags = tags.filter((tag) =>
-        matcher.pattern.some((pattern) => pattern.test(tag.name)),
-      );
+      const matchedTags = tags.filter((tag) => matcher.pattern.some((pattern) => pattern.test(tag.name)));
       const matchedLinks = matchedTags.map((tag) => {
         const tagValue = tag.name.replace(tagKeyRe, "");
 
@@ -343,11 +339,9 @@ export class CucumberJSAllureFormatter extends Formatter {
     }
 
     scenario.examples.forEach((example) => {
-      const csvDataTableHeader =
-        example?.tableHeader?.cells.map((cell) => cell.value).join(",") || "";
+      const csvDataTableHeader = example?.tableHeader?.cells.map((cell) => cell.value).join(",") || "";
       const csvDataTableBody =
-        example?.tableBody.map((row) => row.cells.map((cell) => cell.value).join(",")).join("\n") ||
-        "";
+        example?.tableBody.map((row) => row.cells.map((cell) => cell.value).join(",")).join("\n") || "";
 
       if (!csvDataTableHeader && !csvDataTableBody) {
         return;
@@ -404,11 +398,7 @@ export class CucumberJSAllureFormatter extends Formatter {
     );
   }
 
-  private handleAllureAttachment(payload: {
-    test: AllureTest;
-    step?: AllureStep;
-    metadata: MetadataMessage;
-  }) {
+  private handleAllureAttachment(payload: { test: AllureTest; step?: AllureStep; metadata: MetadataMessage }) {
     payload.test.applyMetadata(payload.metadata, (step) => {
       if (payload.step) {
         payload.step.addStep(step);
@@ -457,14 +447,10 @@ export class CucumberJSAllureFormatter extends Formatter {
     if (testStepResults?.length) {
       const worstTestStepResult = messages.getWorstTestStepResult(testStepResults);
 
-      currentTest.status = currentTest.isAnyStepFailed
-        ? Status.FAILED
-        : this.convertStatus(worstTestStepResult.status);
+      currentTest.status = currentTest.isAnyStepFailed ? Status.FAILED : this.convertStatus(worstTestStepResult.status);
 
       const message = this.exceptionFormatter(
-        currentTest.status
-          ? worstTestStepResult.message
-          : "The test doesn't have an implementation.",
+        currentTest.status ? worstTestStepResult.message : "The test doesn't have an implementation.",
       );
 
       currentTest.statusDetails = {

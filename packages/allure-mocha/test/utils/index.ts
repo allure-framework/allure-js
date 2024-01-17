@@ -1,8 +1,9 @@
+import Mocha from "mocha";
 import * as path from "path";
 import { InMemoryAllureWriter, TestResult } from "allure-js-commons";
-import jetpack = require("fs-jetpack");
-import Mocha from "mocha";
 import MochaAllureReporter from "../..";
+
+import jetpack = require("fs-jetpack");
 
 const testDir = "./test/fixtures/specs";
 

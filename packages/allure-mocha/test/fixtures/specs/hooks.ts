@@ -1,5 +1,5 @@
-import { ContentType } from "allure-js-commons";
 import { expect } from "chai";
+import { ContentType } from "allure-js-commons";
 import { allure } from "../../../runtime";
 
 describe("hooks test", () => {

@@ -1,8 +1,8 @@
-import { Link, LinkType, TestResult } from "allure-js-commons";
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { getTestResultByName } from "../runner";
+import { Link, LinkType, TestResult } from "allure-js-commons";
 import { runHermione } from "../helper/run_helper";
+import { getTestResultByName } from "../runner";
 
 describe("links", () => {
   let results: TestResult[];

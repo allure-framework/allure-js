@@ -1,5 +1,6 @@
 import { basename, normalize } from "node:path";
 import { pid } from "node:process";
+import { File, Reporter, Task, Vitest } from "vitest";
 import {
   AllureGroup,
   AllureRuntime,
@@ -10,7 +11,6 @@ import {
   Stage,
   Status,
 } from "allure-js-commons";
-import { File, Reporter, Task, Vitest } from "vitest";
 
 export interface AllureReporterOptions {
   testMode?: boolean;

@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { expect, test } from "./fixtures";
 import { LabelName } from "allure-js-commons";
+import { expect, test } from "./fixtures";
 
 test("should report structure a.test.ts", async ({ runInlineTest }) => {
   const results = await runInlineTest({

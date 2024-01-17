@@ -1,10 +1,9 @@
+import { expect } from "chai";
 import { randomUUID } from "crypto";
-import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "fs";
 import * as os from "os";
 import path from "path";
 import { env } from "process";
-import { expect } from "chai";
-
 import { AllureConfig, AllureRuntime, ContentType, InMemoryAllureWriter } from "../../dist";
 
 describe("FileSystemAllureWriter", () => {

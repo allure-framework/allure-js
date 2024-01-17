@@ -8,13 +8,14 @@ import {
   AttachmentOptions,
   ContentType,
   ExecutableItemWrapper,
-  getSuitesLabels,
-  isPromise,
   Label,
   Stage,
   Status,
   StepInterface,
+  getSuitesLabels,
+  isPromise,
 } from "allure-js-commons";
+
 // eslint-disable-next-line no-undef
 import FailedExpectation = jasmine.FailedExpectation;
 
@@ -83,10 +84,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
     return this.runningExecutable;
   }
 
-  writeAttachment(
-    content: Buffer | string,
-    options: ContentType | string | AttachmentOptions,
-  ): string {
+  writeAttachment(content: Buffer | string, options: ContentType | string | AttachmentOptions): string {
     return this.runtime.writeAttachment(content, options);
   }
 
@@ -167,8 +165,7 @@ export class JasmineAllureReporter implements jasmine.CustomReporter {
       currentTest.status = Status.FAILED;
     }
 
-    const exceptionInfo =
-      findMessageAboutThrow(spec.failedExpectations) || findAnyError(spec.failedExpectations);
+    const exceptionInfo = findMessageAboutThrow(spec.failedExpectations) || findAnyError(spec.failedExpectations);
     if (exceptionInfo !== null) {
       currentTest.detailsMessage = exceptionInfo.message;
       currentTest.detailsTrace = exceptionInfo.stack;
@@ -353,28 +350,18 @@ export class JasmineAllureInterface extends Allure {
     step.endStep();
   }
 
-  attachment(
-    name: string,
-    content: Buffer | string,
-    options: ContentType | string | AttachmentOptions,
-  ): void {
+  attachment(name: string, content: Buffer | string, options: ContentType | string | AttachmentOptions): void {
     const file = this.reporter.writeAttachment(content, options);
     this.currentExecutable.addAttachment(name, options, file);
   }
 
-  testAttachment(
-    name: string,
-    content: Buffer | string,
-    options: ContentType | string | AttachmentOptions,
-  ): void {
+  testAttachment(name: string, content: Buffer | string, options: ContentType | string | AttachmentOptions): void {
     const file = this.reporter.writeAttachment(content, options);
     this.currentTest.addAttachment(name, options, file);
   }
 
   protected get currentExecutable(): ExecutableItemWrapper {
-    return (
-      this.reporter.currentStep || this.reporter.currentExecutable || this.reporter.currentTest
-    );
+    return this.reporter.currentStep || this.reporter.currentExecutable || this.reporter.currentTest;
   }
 
   protected get currentTest(): AllureTest {

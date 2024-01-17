@@ -2,33 +2,41 @@
   "name": "allure-mocha",
   "version": "2.10.0",
   "description": "Allure Mocha integration",
-  "license": "Apache-2.0",
-  "homepage": "https://allurereport.org/",
-  "author": {
-    "name": "Qameta Software",
-    "email": "allure@qameta.io",
-    "url": "https://qameta.io/"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/allure-framework/allure-js.git",
-    "directory": "packages/allure-mocha"
-  },
   "keywords": [
     "mocha",
     "typescript",
     "allure"
   ],
+  "homepage": "https://allurereport.org/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allure-framework/allure-js.git",
+    "directory": "packages/allure-mocha"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Qameta Software",
+    "email": "allure@qameta.io",
+    "url": "https://qameta.io/"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "runtime.js",
+    "runtime.d.ts"
+  ],
   "scripts": {
+    "allure-report": "allure serve ./out/allure-results",
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "allure-report": "allure serve ./out/allure-results",
-    "test": "ts-node --project test/tsconfig.json test/runner.ts",
     "lint": "eslint ./src --ext .ts",
-    "lint:fix": "eslint ./src --ext .ts --fix"
+    "lint:fix": "eslint ./src --ext .ts --fix",
+    "test": "ts-node --project test/tsconfig.json test/runner.ts"
+  },
+  "dependencies": {
+    "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
     "@testdeck/mocha": "0.1.2",
@@ -57,15 +65,7 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   },
-  "dependencies": {
-    "allure-js-commons": "workspace:*"
-  },
   "peerDependencies": {
     "mocha": ">=6.2.x"
-  },
-  "files": [
-    "dist",
-    "runtime.js",
-    "runtime.d.ts"
-  ]
+  }
 }

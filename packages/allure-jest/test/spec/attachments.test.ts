@@ -1,5 +1,5 @@
 import expect from "expect";
-import { runJestTests, TestResultsByFullName } from "../utils";
+import { TestResultsByFullName, runJestTests } from "../utils";
 
 describe("attachments", () => {
   let results: TestResultsByFullName;

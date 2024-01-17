@@ -8,8 +8,7 @@ export const processDescriptor = <T>(
   if (typeof original === "function") {
     descriptor.value = function (...args: [T]) {
       try {
-        const value: string =
-          typeof parameterFn === "function" ? parameterFn.apply(this, args) : parameterFn;
+        const value: string = typeof parameterFn === "function" ? parameterFn.apply(this, args) : parameterFn;
         reporterFn(value);
       } catch (e) {
         // eslint-disable-next-line no-console, @typescript-eslint/restrict-template-expressions

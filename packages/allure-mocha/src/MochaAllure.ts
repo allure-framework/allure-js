@@ -6,9 +6,9 @@ import {
   AttachmentOptions,
   ContentType,
   ExecutableItemWrapper,
-  isPromise,
   Status,
   StepInterface,
+  isPromise,
 } from "allure-js-commons";
 import { AllureReporter } from "./AllureReporter";
 import { StepWrapper } from "./StepWrapper";
@@ -63,11 +63,7 @@ export class MochaAllure extends Allure {
     this.step(name, () => {}); // todo status
   }
 
-  public attachment(
-    name: string,
-    content: Buffer | string,
-    options: ContentType | string | AttachmentOptions,
-  ): void {
+  public attachment(name: string, content: Buffer | string, options: ContentType | string | AttachmentOptions): void {
     const file = this.reporter.writeAttachment(content, options);
     this.currentExecutable.addAttachment(name, options, file);
   }

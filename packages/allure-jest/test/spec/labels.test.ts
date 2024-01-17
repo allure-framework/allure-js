@@ -1,6 +1,6 @@
 import expect from "expect";
-import { runJestTests, TestResultsByFullName } from "../utils";
 import { LabelName } from "allure-js-commons";
+import { TestResultsByFullName, runJestTests } from "../utils";
 
 describe("labels", () => {
   let results: TestResultsByFullName;

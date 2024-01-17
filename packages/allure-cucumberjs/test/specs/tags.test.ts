@@ -1,5 +1,5 @@
-import { LabelName } from "allure-js-commons";
 import { describe, it } from "mocha";
+import { LabelName } from "allure-js-commons";
 import { runCucumberTests } from "../utils";
 
 describe("tags", () => {

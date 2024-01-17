@@ -1,6 +1,6 @@
 import { suite, test } from "@testdeck/mocha";
-import { LabelName } from "allure-js-commons";
 import { expect } from "chai";
+import { LabelName } from "allure-js-commons";
 import { runTests } from "../utils";
 
 @suite
