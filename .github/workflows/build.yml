@@ -19,7 +19,7 @@ jobs:
       matrix:
         node-version: [14.x, 16.x, 18.x, 20.x]
     steps:
-      - uses: actions/checkout@v4.0.0
+      - uses: actions/checkout@v4
 
       - uses: browser-actions/setup-chrome@v1
         with:
@@ -30,7 +30,7 @@ jobs:
           ${{ steps.setup-chrome.outputs.chrome-path }} --version
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: "yarn"
