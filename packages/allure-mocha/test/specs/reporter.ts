@@ -1,8 +1,8 @@
+import { expect } from "chai";
+import { beforeEach, describe, it } from "mocha";
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import process from "node:process";
-import { expect } from "chai";
-import { beforeEach, describe, it } from "mocha";
 import { restore, stub } from "sinon";
 
 describe("reporter", () => {
@@ -13,13 +13,9 @@ describe("reporter", () => {
 
   describe("parallel mode", () => {
     it("prints warnings about allure api", () => {
-      const out = spawnSync(
-        "ts-node",
-        ["--project", "test/tsconfig.json", "test/fixtures/runners/parallel.ts"],
-        {
-          cwd: process.cwd(),
-        },
-      );
+      const out = spawnSync("ts-node", ["--project", "test/tsconfig.json", "test/fixtures/runners/parallel.ts"], {
+        cwd: process.cwd(),
+      });
 
       expect(out.stderr.toString("utf8")).contains("can't be used in parallel mode");
     });
@@ -27,13 +23,9 @@ describe("reporter", () => {
 
   describe("single thread mode", () => {
     it("doesn't print any warning about allure api", () => {
-      const out = spawnSync(
-        "ts-node",
-        ["--project", "test/tsconfig.json", "test/fixtures/runners/singleThread.ts"],
-        {
-          cwd: process.cwd(),
-        },
-      );
+      const out = spawnSync("ts-node", ["--project", "test/tsconfig.json", "test/fixtures/runners/singleThread.ts"], {
+        cwd: process.cwd(),
+      });
 
       expect(out.stderr.toString("utf8")).not.contains("can't be used in parallel mode");
     });

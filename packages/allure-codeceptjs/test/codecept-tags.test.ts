@@ -1,5 +1,5 @@
-import { it } from "mocha";
 import { expect } from "expect";
+import { it } from "mocha";
 import { runTests } from "./utils/run-tests";
 
 it("simple scenarios", async () => {

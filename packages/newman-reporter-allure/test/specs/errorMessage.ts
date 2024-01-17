@@ -44,16 +44,12 @@ test("complex test overview", async () => {
 
   expect(result.steps[0].statusDetails).toEqual({
     message: "expected response to have status code 555 but got 200",
-    trace: expect.stringContaining(
-      "AssertionError: expected response to have status code 555 but got 200",
-    ),
+    trace: expect.stringContaining("AssertionError: expected response to have status code 555 but got 200"),
   });
 
   expect(result.steps[1].statusDetails).toEqual({
     message: "expected response to have status code 666 but got 200",
-    trace: expect.stringContaining(
-      "AssertionError: expected response to have status code 666 but got 200",
-    ),
+    trace: expect.stringContaining("AssertionError: expected response to have status code 666 but got 200"),
   });
 
   expect(result.statusDetails.message).toEqual(

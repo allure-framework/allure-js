@@ -2,27 +2,40 @@
   "name": "allure-cucumberjs",
   "version": "2.10.0",
   "description": "Allure Cucumber.JS integration",
-  "license": "Apache-2.0",
   "homepage": "https://allurereport.org/",
-  "author": {
-    "name": "Qameta Software",
-    "email": "allure@qameta.io",
-    "url": "https://qameta.io/"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/allure-framework/allure-js.git",
     "directory": "packages/allure-cucumberjs"
   },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Qameta Software",
+    "email": "allure@qameta.io",
+    "url": "https://qameta.io/"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist/src/**/*",
+    "dist/index.*"
+  ],
   "scripts": {
     "clean": "rimraf ./dist ./out",
-    "lint": "eslint ./src ./index.ts --ext .ts",
-    "lint:fix": "eslint --fix ./src ./index.ts --ext .ts",
     "compile": "tsc",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
+    "lint": "eslint ./src ./index.ts --ext .ts",
+    "lint:fix": "eslint --fix ./src ./index.ts --ext .ts",
     "test": "ts-node --project ./test/tsconfig.json ./test/runner.ts"
+  },
+  "dependencies": {
+    "@cucumber/cucumber": "^9.5.1",
+    "@cucumber/gherkin": "^27.0.0",
+    "@cucumber/gherkin-streams": "^5.0.1",
+    "@cucumber/gherkin-utils": "^8.0.5",
+    "@cucumber/message-streams": "^4.0.1",
+    "@cucumber/messages": "^22.0.0",
+    "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
     "@types/chai": "^4.3.6",
@@ -52,18 +65,5 @@
     "sinon": "^16.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
-  },
-  "dependencies": {
-    "@cucumber/cucumber": "^9.5.1",
-    "@cucumber/gherkin": "^27.0.0",
-    "@cucumber/gherkin-streams": "^5.0.1",
-    "@cucumber/gherkin-utils": "^8.0.5",
-    "@cucumber/message-streams": "^4.0.1",
-    "@cucumber/messages": "^22.0.0",
-    "allure-js-commons": "workspace:*"
-  },
-  "files": [
-    "dist/src/**/*",
-    "dist/index.*"
-  ]
+  }
 }

@@ -1,6 +1,6 @@
-import { Stage, Status } from "allure-js-commons";
 import expect from "expect";
-import { runJestTests, TestResultsByFullName } from "../utils";
+import { Stage, Status } from "allure-js-commons";
+import { TestResultsByFullName, runJestTests } from "../utils";
 
 describe("todo", () => {
   let results: TestResultsByFullName;

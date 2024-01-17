@@ -1,5 +1,5 @@
+import { MochaAllure, allureGetter } from "allure-mocha/runtime";
 import { decorate } from "../../../";
-import { allureGetter, MochaAllure } from "allure-mocha/runtime";
 
 export class BaseTest {
   public static readonly TEST_URL = "https://custom.domain.com";

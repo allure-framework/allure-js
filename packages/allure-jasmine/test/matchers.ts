@@ -18,15 +18,12 @@ const compare: (actual: any, expected: any) => boolean = (actual, expected) => {
 
   if (Array.isArray(expected) && Array.isArray(actual)) {
     return (
-      actual.length >= expected.length &&
-      expected.every((exp: any) => actual.some((act: any) => compare(act, exp)))
+      actual.length >= expected.length && expected.every((exp: any) => actual.some((act: any) => compare(act, exp)))
     );
   }
 
   if (typeof actual == "object" && typeof expected == "object") {
-    return Object.keys(expected).every(
-      (key) => key in actual && compare(actual[key], expected[key]),
-    );
+    return Object.keys(expected).every((key) => key in actual && compare(actual[key], expected[key]));
   }
 
   if (expected instanceof RegExp) {
@@ -34,9 +31,7 @@ const compare: (actual: any, expected: any) => boolean = (actual, expected) => {
   }
 
   return (
-    typeof actual == typeof expected &&
-    ["string", "number", "boolean"].includes(typeof actual) &&
-    actual == expected
+    typeof actual == typeof expected && ["string", "number", "boolean"].includes(typeof actual) && actual == expected
   );
 };
 

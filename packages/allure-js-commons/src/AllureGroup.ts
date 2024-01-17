@@ -1,7 +1,7 @@
 import { AllureRuntime } from "./AllureRuntime";
 import { AllureTest } from "./AllureTest";
-import { fixtureResult, testResultContainer } from "./constructors";
 import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
+import { fixtureResult, testResultContainer } from "./constructors";
 import { TestResultContainer } from "./model";
 
 export class AllureGroup {

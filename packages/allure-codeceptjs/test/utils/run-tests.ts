@@ -1,7 +1,7 @@
-import { mkdir, rm, readFile, writeFile } from "fs/promises";
-import { dirname, resolve, extname } from "path";
-import type { AllureResults } from "allure-js-commons";
 import { fork } from "child_process";
+import { mkdir, readFile, rm, writeFile } from "fs/promises";
+import { dirname, extname, resolve } from "path";
+import type { AllureResults } from "allure-js-commons";
 import { allure } from "allure-mocha/runtime";
 
 const runTestsInternal = async (
@@ -13,10 +13,7 @@ const runTestsInternal = async (
   const configFile = "codecept.config.js";
 
   if (!(configFile in params.files)) {
-    params.files[configFile] = await readFile(
-      resolve(__dirname, "./default-codecept.config.js"),
-      "utf-8",
-    );
+    params.files[configFile] = await readFile(resolve(__dirname, "./default-codecept.config.js"), "utf-8");
   }
 
   const testPath = resolve(__dirname, `../../test-results/${path}`);
@@ -94,15 +91,10 @@ const runTestsInternal = async (
 
   await new Promise<number>((x) => testProcess.on("close", x));
 
-  allure.attachment(
-    "allure-results",
-    Buffer.from(JSON.stringify(results, null, 2)),
-    "application/json",
-  );
+  allure.attachment("allure-results", Buffer.from(JSON.stringify(results, null, 2)), "application/json");
 
   return results;
 };
 //
-export const runTests: typeof runTestsInternal = (...args) =>
-  allure.step("run tests", () => runTestsInternal(...args));
+export const runTests: typeof runTestsInternal = (...args) => allure.step("run tests", () => runTestsInternal(...args));
 // export const runTests: typeof runTestsInternal = (...args) => runTestsInternal(...args);

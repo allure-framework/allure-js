@@ -1,6 +1,6 @@
-import { TestResult } from "allure-js-commons";
 import { expect } from "chai";
 import { describe, it } from "mocha";
+import { TestResult } from "allure-js-commons";
 import { runHermione } from "../helper/run_helper";
 
 describe("hooks", () => {
@@ -10,10 +10,8 @@ describe("hooks", () => {
       return !!result.labels.find(({ name, value }) => name === "hook" && value === hook);
     };
 
-    expect(
-      allureResults.tests.every(
-        (result) => hasHookLabel(result, "before") && hasHookLabel(result, "after"),
-      ),
-    ).eq(true);
+    expect(allureResults.tests.every((result) => hasHookLabel(result, "before") && hasHookLabel(result, "after"))).eq(
+      true,
+    );
   });
 });

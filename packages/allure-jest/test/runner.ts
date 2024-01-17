@@ -1,6 +1,6 @@
-import path from "path";
 import * as glob from "glob";
 import Mocha from "mocha";
+import path from "path";
 import "source-map-support/register";
 
 const mocha = new Mocha({

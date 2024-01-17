@@ -204,11 +204,7 @@ describe("AllureCommandStep.run()", () => {
     it("adds custom parameter", async () => {
       await currentStep.run(
         (step) => {
-          step.parameter(
-            fixtures.parameter.name,
-            fixtures.parameter.value,
-            fixtures.parameter.options,
-          );
+          step.parameter(fixtures.parameter.name, fixtures.parameter.value, fixtures.parameter.options);
         },
         async ({ parameter }) => {
           expect(parameter!.length).eq(1);
@@ -247,9 +243,7 @@ describe("AllureCommandStep.run()", () => {
           },
           async ({ steps }) => {
             expect(steps![0].attachments.length).eq(1);
-            expect(steps![0].attachments[0].content).eq(
-              fixtures.binaryAttachment.toString("base64"),
-            );
+            expect(steps![0].attachments[0].content).eq(fixtures.binaryAttachment.toString("base64"));
             expect(steps![0].attachments[0].encoding).eq("base64");
           },
         );
@@ -462,11 +456,7 @@ describe("AllureCommandStep.start()", () => {
   describe("parameters", () => {
     it("adds custom parameter", async () => {
       const { parameter } = await currentStep.start((step) => {
-        step.parameter(
-          fixtures.parameter.name,
-          fixtures.parameter.value,
-          fixtures.parameter.options,
-        );
+        step.parameter(fixtures.parameter.name, fixtures.parameter.value, fixtures.parameter.options);
       });
 
       expect(parameter!.length).eq(1);

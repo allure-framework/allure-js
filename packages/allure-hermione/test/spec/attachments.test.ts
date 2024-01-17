@@ -1,9 +1,9 @@
-import * as AllureCommons from "allure-js-commons";
 import { expect } from "chai";
-import Sinon from "sinon";
 import { beforeEach, describe, it } from "mocha";
-import { getTestResultByName } from "../runner";
+import Sinon from "sinon";
+import * as AllureCommons from "allure-js-commons";
 import { runHermione } from "../helper/run_helper";
+import { getTestResultByName } from "../runner";
 
 describe("attachments", () => {
   let writeAttachmentStub: Sinon.SinonStub;
@@ -24,10 +24,6 @@ describe("attachments", () => {
 
     expect(attachment.name).eq("Attachment");
     expect(attachment.type).eq("application/json");
-    expect(writeAttachmentStub.firstCall.args).eql([
-      JSON.stringify({ foo: "bar" }),
-      "application/json",
-      "utf8",
-    ]);
+    expect(writeAttachmentStub.firstCall.args).eql([JSON.stringify({ foo: "bar" }), "application/json", "utf8"]);
   });
 });

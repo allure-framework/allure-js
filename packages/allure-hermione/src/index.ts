@@ -1,24 +1,26 @@
 /* eslint no-underscore-dangle: 0 */
+
 /* eslint import/order: 0 */
+import Hermione from "hermione";
 import * as os from "node:os";
 import * as process from "node:process";
-import Hermione from "hermione";
 import {
   AllureCommandStepExecutable,
-  allureReportFolder,
   AllureRuntime,
   AllureTest,
   ContentType,
-  getSuitesLabels,
   LabelName,
   LinkType,
-  md5,
   MetadataMessage,
   ParameterOptions,
   Stage,
   Status,
   StepBodyFunction,
+  allureReportFolder,
+  getSuitesLabels,
+  md5,
 } from "allure-js-commons";
+import { AllureWriter } from "allure-js-commons/dist/src/writers";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 import {
   addAttachment,
@@ -34,7 +36,6 @@ import {
   setHistoryId,
   setTestCaseId,
 } from "./utils";
-import { AllureWriter } from "allure-js-commons/dist/src/writers";
 
 export type HermioneAttachmentMessage = {
   testId: string;
@@ -79,12 +80,9 @@ const addCommands = (browser: WebdriverIO.Browser, testIdFactory: (testId?: stri
   browser.addCommand("link", async (id: string, url: string, name?: string, type?: string) => {
     await addLink(testIdFactory(id), url, name, type);
   });
-  browser.addCommand(
-    "parameter",
-    async (id: string, name: string, value: any, options?: ParameterOptions) => {
-      await addParameter(testIdFactory(id), name, value, options);
-    },
-  );
+  browser.addCommand("parameter", async (id: string, name: string, value: any, options?: ParameterOptions) => {
+    await addParameter(testIdFactory(id), name, value, options);
+  });
   browser.addCommand("id", async (id: string, value: string) => {
     await addLabel(testIdFactory(id), LabelName.ALLURE_ID, value);
   });
@@ -127,10 +125,7 @@ const addCommands = (browser: WebdriverIO.Browser, testIdFactory: (testId?: stri
   browser.addCommand("step", async (id: string, name: string, body: StepBodyFunction) => {
     const step = new AllureCommandStepExecutable(name);
 
-    await step.run(
-      body,
-      async (message: MetadataMessage) => await sendMetadata(testIdFactory(id), message),
-    );
+    await step.run(body, async (message: MetadataMessage) => await sendMetadata(testIdFactory(id), message));
   });
   browser.addCommand("displayName", async (id: string, value: string) => {
     await setDisplayName(testIdFactory(id), value);
@@ -202,11 +197,7 @@ const hermioneAllureReporter = (hermione: Hermione, opts?: AllureReportOptions) 
     currentTest.detailsTrace = stack;
 
     if (screenshot) {
-      const attachmentFilename = runtime.writeAttachment(
-        screenshot.base64,
-        ContentType.PNG,
-        "base64",
-      );
+      const attachmentFilename = runtime.writeAttachment(screenshot.base64, ContentType.PNG, "base64");
 
       currentTest.addAttachment(
         // TODO: do we need to give the file much more exact name?

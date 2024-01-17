@@ -96,12 +96,7 @@ export const addLink = async (testId: string, url: string, name?: string, type?:
   });
 };
 
-export const addParameter = async (
-  testId: string,
-  name: string,
-  value: any,
-  options?: ParameterOptions,
-) => {
+export const addParameter = async (testId: string, name: string, value: any, options?: ParameterOptions) => {
   await sendMetadata(testId, {
     parameter: [{ name, value, ...options }],
   });

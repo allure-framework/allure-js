@@ -901,9 +901,7 @@ const extensionsByType: Record<string, string> = {
 
 export const typeToExtension = (options: AttachmentOptions): string => {
   if (options.fileExtension) {
-    return options.fileExtension.startsWith(".")
-      ? options.fileExtension
-      : `.${options.fileExtension}`;
+    return options.fileExtension.startsWith(".") ? options.fileExtension : `.${options.fileExtension}`;
   }
   return extensionsByType[options.contentType] || "";
 };

@@ -2,7 +2,22 @@
   "name": "newman-reporter-allure",
   "version": "2.10.0",
   "description": "Allure Newman integration",
+  "keywords": [
+    "allure",
+    "newman",
+    "reporter",
+    "reports",
+    "api",
+    "postman",
+    "tests"
+  ],
   "homepage": "https://allurereport.org/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allure-framework/allure-js.git",
+    "directory": "packages/newman-reporter-allure"
+  },
+  "license": "Apache-2.0",
   "author": {
     "name": "Qameta Software",
     "email": "allure@qameta.io",
@@ -20,21 +35,6 @@
     "lint:fix": "eslint ./src --ext .ts --fix",
     "test": "ts-node --project test/tsconfig.json test/runner.ts"
   },
-  "keywords": [
-    "allure",
-    "newman",
-    "reporter",
-    "reports",
-    "api",
-    "postman",
-    "tests"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/allure-framework/allure-js.git",
-    "directory": "packages/newman-reporter-allure"
-  },
-  "license": "Apache-2.0",
   "dependencies": {
     "allure-js-commons": "workspace:*"
   },

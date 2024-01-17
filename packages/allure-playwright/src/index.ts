@@ -13,22 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { FullConfig, TestStatus } from "@playwright/test";
+import { Reporter, Suite, TestCase, TestError, TestResult, TestStep } from "@playwright/test/reporter";
 import fs from "fs";
 import os from "os";
 import path from "path";
 import process from "process";
-import { FullConfig, TestStatus } from "@playwright/test";
-import {
-  Reporter,
-  Suite,
-  TestCase,
-  TestError,
-  TestResult,
-  TestStep,
-} from "@playwright/test/reporter";
 import {
   AllureGroup,
-  allureReportFolder,
   AllureRuntime,
   AllureStep,
   AllureTest,
@@ -36,18 +28,16 @@ import {
   ExecutableItemWrapper,
   ImageDiffAttachment,
   LabelName,
-  md5,
   MessageAllureWriter,
   MetadataMessage,
-  readImageAsBase64,
   Status,
   StatusDetails,
+  allureReportFolder,
+  md5,
+  readImageAsBase64,
   stripAscii,
 } from "allure-js-commons";
-import {
-  ALLURE_IMAGEDIFF_CONTENT_TYPE,
-  ALLURE_METADATA_CONTENT_TYPE,
-} from "allure-js-commons/internal";
+import { ALLURE_IMAGEDIFF_CONTENT_TYPE, ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 import { extractMetadataFromString } from "./utils";
 
 const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
@@ -69,9 +59,7 @@ class AllureReporter implements Reporter {
   resultsDir!: string;
   options: AllureReporterOptions;
 
-  private allureWriter = process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST
-    ? new MessageAllureWriter()
-    : undefined;
+  private allureWriter = process.env.PW_ALLURE_POST_PROCESSOR_FOR_TEST ? new MessageAllureWriter() : undefined;
 
   private allureRuntime: AllureRuntime | undefined;
   private allureGroupCache = new Map<Suite, AllureGroup>();
@@ -120,10 +108,7 @@ class AllureReporter implements Reporter {
       allureTest.parameter("Repetition", `${test.repeatEachIndex + 1}`);
     }
 
-    const relativeFile = path
-      .relative(project?.testDir, test.location.file)
-      .split(path.sep)
-      .join("/");
+    const relativeFile = path.relative(project?.testDir, test.location.file).split(path.sep).join("/");
 
     const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
     const fullName = `${relativeFile}#${nameSuites}${test.title}`;
@@ -180,8 +165,7 @@ class AllureReporter implements Reporter {
     const threadId = result.parallelIndex !== undefined ? result.parallelIndex : result.workerIndex;
 
     const thread: string =
-      process.env.ALLURE_THREAD_NAME ||
-      `${this.hostname}-${process.pid}-playwright-worker-${threadId}`;
+      process.env.ALLURE_THREAD_NAME || `${this.hostname}-${process.pid}-playwright-worker-${threadId}`;
 
     allureTest.addLabel(LabelName.HOST, this.hostname);
     allureTest.addLabel(LabelName.THREAD, thread);
@@ -231,9 +215,7 @@ class AllureReporter implements Reporter {
   }
 
   addSkippedResults() {
-    const unprocessedCases = this.suite
-      .allTests()
-      .filter((testCase) => !this.allureTestCache.has(testCase));
+    const unprocessedCases = this.suite.allTests().filter((testCase) => !this.allureTestCache.has(testCase));
 
     unprocessedCases.forEach((testCase) => {
       this.onTestBegin(testCase);
@@ -289,9 +271,7 @@ class AllureReporter implements Reporter {
   private ensureAllureGroupCreated(suite: Suite): AllureGroup {
     let group = this.allureGroupCache.get(suite);
     if (!group) {
-      const parent = suite.parent
-        ? this.ensureAllureGroupCreated(suite.parent)
-        : this.getAllureRuntime();
+      const parent = suite.parent ? this.ensureAllureGroupCreated(suite.parent) : this.getAllureRuntime();
       group = parent.startGroup(suite.title);
       this.allureGroupCache.set(suite, group);
     }
@@ -301,9 +281,7 @@ class AllureReporter implements Reporter {
   private ensureAllureStepCreated(step: TestStep, allureTest: AllureTest): AllureStep {
     let allureStep = this.allureStepCache.get(step);
     if (!allureStep) {
-      const parent = step.parent
-        ? this.ensureAllureStepCreated(step.parent, allureTest)
-        : allureTest;
+      const parent = step.parent ? this.ensureAllureStepCreated(step.parent, allureTest) : allureTest;
       allureStep = parent.startStep(step.title);
       this.allureStepCache.set(step, allureStep);
     }
@@ -394,11 +372,7 @@ class AllureReporter implements Reporter {
         { contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE, fileExtension: "imagediff" },
       );
 
-      attachmentContext.addAttachment(
-        diffName,
-        { contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE },
-        res!,
-      );
+      attachmentContext.addAttachment(diffName, { contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE }, res!);
 
       this.processedDiffs.push(pathWithoutEnd);
     } else {

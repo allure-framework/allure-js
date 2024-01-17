@@ -1,4 +1,4 @@
-import { allureIdRegexp, allureLabelRegexp, Label, LabelName } from "allure-js-commons";
+import { Label, LabelName, allureIdRegexp, allureLabelRegexp } from "allure-js-commons";
 import { CodeceptTest } from "./codecept-types";
 
 export const extractMeta = (test: CodeceptTest & { tags: string[] }) => {
