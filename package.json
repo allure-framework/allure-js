@@ -9,12 +9,12 @@
     "prepare": "husky install",
     "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}'",
     "prettier:check": "prettier --check './packages/*/{src,test,features}/**/*.{js,ts}'",
-    "clean": "yarn workspaces foreach -vpt run clean",
-    "compile": "yarn workspaces foreach -vpt run compile",
-    "lint": "yarn workspaces foreach -vpt run lint",
-    "lint:fix": "yarn workspaces foreach -vpt run lint:fix",
-    "test": "yarn workspaces foreach -vpt run test",
-    "test:node-14": "yarn workspaces foreach -vpt --exclude allure-js --exclude allure-vitest --exclude allure-hermione run test",
+    "clean": "yarn workspaces foreach -Avpt run clean",
+    "compile": "yarn workspaces foreach -vApt run compile",
+    "lint": "yarn workspaces foreach -Avpt run lint",
+    "lint:fix": "yarn workspaces foreach -Avpt run lint:fix",
+    "test": "yarn workspaces foreach -Avpt run test",
+    "test:node-14": "yarn workspaces foreach -Avpt --exclude allure-js --exclude allure-vitest --exclude allure-hermione run test",
     "build": "yarn run clean && yarn run compile"
   },
   "lint-staged": {
@@ -38,5 +38,5 @@
     "rimraf": "^5.0.1",
     "typescript": "^5.2.2"
   },
-  "packageManager": "yarn@3.6.3"
+  "packageManager": "yarn@4.0.2"
 }
