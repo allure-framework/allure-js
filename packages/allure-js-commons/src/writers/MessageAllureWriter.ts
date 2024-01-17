@@ -23,16 +23,8 @@ const writeJson = (path: string, type: EventType, data: any): void => {
 };
 
 export class MessageAllureWriter implements AllureWriter {
-  writeAttachment(
-    name: string,
-    content: Buffer | string,
-    encoding: BufferEncoding = "utf-8",
-  ): void {
-    sendData(
-      name,
-      "attachment",
-      typeof content === "string" ? Buffer.from(content, encoding) : content,
-    );
+  writeAttachment(name: string, content: Buffer | string, encoding: BufferEncoding = "utf-8"): void {
+    sendData(name, "attachment", typeof content === "string" ? Buffer.from(content, encoding) : content);
   }
 
   writeAttachmentFromPath(from: PathLike, distFileName: string): void {

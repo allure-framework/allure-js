@@ -1,6 +1,6 @@
-import { Status } from "allure-js-commons";
-import { expect } from "chai";
 import { suite, test } from "@testdeck/mocha";
+import { expect } from "chai";
+import { Status } from "allure-js-commons";
 import { findParameter, runTests } from "../utils";
 
 @suite

@@ -1,6 +1,6 @@
-import { Status } from "allure-js-commons";
 import { expect } from "chai";
 import { describe, it } from "mocha";
+import { Status } from "allure-js-commons";
 import { runCucumberTests } from "../utils";
 
 describe("with allure world constructor", () => {

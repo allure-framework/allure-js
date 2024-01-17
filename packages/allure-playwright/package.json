@@ -2,33 +2,39 @@
   "name": "allure-playwright",
   "version": "2.10.0",
   "description": "Allure Playwright integration",
-  "license": "Apache-2.0",
+  "keywords": [
+    "playwright",
+    "allure"
+  ],
   "homepage": "https://allurereport.org/",
-  "author": {
-    "name": "Qameta Software",
-    "email": "allure@qameta.io",
-    "url": "https://qameta.io/"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/allure-framework/allure-js.git",
     "directory": "packages/allure-playwright"
   },
-  "keywords": [
-    "playwright",
-    "allure"
-  ],
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Qameta Software",
+    "email": "allure@qameta.io",
+    "url": "https://qameta.io/"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "allure-report": "allure serve ./out/allure-results",
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "allure-report": "allure serve ./out/allure-results",
-    "pretest": "run compile",
-    "test": "playwright test -c test",
     "lint": "eslint ./src --ext .ts",
-    "lint:fix": "eslint ./src --ext .ts --fix"
+    "lint:fix": "eslint ./src --ext .ts --fix",
+    "pretest": "run compile",
+    "test": "playwright test -c test"
+  },
+  "dependencies": {
+    "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
     "@playwright/test": "^1.41.0",
@@ -45,11 +51,5 @@
     "properties": "^1.2.1",
     "rimraf": "^5.0.5",
     "typescript": "^5.3.3"
-  },
-  "dependencies": {
-    "allure-js-commons": "workspace:*"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }

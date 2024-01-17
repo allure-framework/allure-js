@@ -1,11 +1,11 @@
-import path from "path";
-import { TestResult } from "allure-js-commons";
 import chai from "chai";
 import chaiLike from "chai-like";
 import chaiThings from "chai-things";
 import * as glob from "glob";
 import Mocha from "mocha";
+import path from "path";
 import "source-map-support/register";
+import { TestResult } from "allure-js-commons";
 
 chai.should();
 chai.use(chaiLike);

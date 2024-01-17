@@ -1,7 +1,8 @@
 import { Allure, InMemoryAllureWriter } from "allure-js-commons";
-import { JasmineAllureReporter } from "../src/JasmineAllureReporter";
-import Env = jasmine.Env;
 import { AllureWriter } from "allure-js-commons/dist/src/writers";
+import { JasmineAllureReporter } from "../src/JasmineAllureReporter";
+
+import Env = jasmine.Env;
 
 export interface JasmineTestEnv extends Env {
   // These functions are not available in the public Jasmine API
@@ -14,9 +15,7 @@ export interface JasmineTestEnv extends Env {
   xit(name: string, content: () => void): void;
 }
 
-export const runTest = async (
-  fun: (testEnv: JasmineTestEnv, testAllure: Allure) => void,
-): Promise<AllureWriter> => {
+export const runTest = async (fun: (testEnv: JasmineTestEnv, testAllure: Allure) => void): Promise<AllureWriter> => {
   const writer = new InMemoryAllureWriter();
   await new Promise((resolve, reject) => {
     const reporter = new JasmineAllureReporter({ writer, resultsDir: "unused" });

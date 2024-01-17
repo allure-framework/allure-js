@@ -5,8 +5,8 @@
     "allowJs": true,
     "esModuleInterop": true,
     "rootDir": ".",
-    "baseUrl": "."
+    "baseUrl": ".",
   },
   "include": ["./**/*.ts", "types.d.ts"],
-  "exclude": []
+  "exclude": [],
 }

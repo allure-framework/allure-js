@@ -1,6 +1,6 @@
-import assert from "node:assert";
 import { expect } from "chai";
 import { expect as jestExpect } from "expect";
+import assert from "node:assert";
 import {
   ExecutableItem,
   LabelName,

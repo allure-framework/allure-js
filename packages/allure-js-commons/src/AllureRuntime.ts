@@ -27,8 +27,7 @@ export class AllureRuntime {
   }
 
   writeResult(result: TestResult): void {
-    const modifiedResult =
-      this.config.testMapper !== undefined ? this.config.testMapper(result) : result;
+    const modifiedResult = this.config.testMapper !== undefined ? this.config.testMapper(result) : result;
     if (modifiedResult != null) {
       this.writer.writeResult(modifiedResult);
     }
@@ -48,10 +47,7 @@ export class AllureRuntime {
     return fileName;
   }
 
-  writeAttachmentFromPath(
-    fromPath: PathLike,
-    options: ContentType | string | AttachmentOptions,
-  ): string {
+  writeAttachmentFromPath(fromPath: PathLike, options: ContentType | string | AttachmentOptions): string {
     const fileName = buildAttachmentFileName(options);
     this.writer.writeAttachmentFromPath(fromPath, fileName);
     return fileName;

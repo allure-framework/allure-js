@@ -4,9 +4,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "rootDir": ".",
-    "baseUrl": "."
+    "baseUrl": ".",
   },
-  "include": [
-    "**/*.ts"
-  ]
+  "include": ["**/*.ts"],
 }

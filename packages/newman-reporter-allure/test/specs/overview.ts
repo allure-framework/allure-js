@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/quotes */
-import { LabelName, md5, Status } from "allure-js-commons";
 import { expect } from "expect";
 import { after, afterEach, before, test } from "mocha";
+import { LabelName, Status, md5 } from "allure-js-commons";
 import { runNewman } from "../helpers/runNewman";
 import { server } from "../mocks/server";
 

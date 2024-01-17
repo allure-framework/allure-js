@@ -2,34 +2,34 @@
   "name": "allure-vitest",
   "version": "2.10.0",
   "description": "Allure Vitest integration",
-  "license": "Apache-2.0",
-  "homepage": "https://allurereport.org/",
-  "author": {
-    "name": "Qameta Software",
-    "email": "allure@qameta.io",
-    "url": "https://qameta.io/"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/allure-framework/allure-js.git",
-    "directory": "packages/allure-vitest"
-  },
   "keywords": [
     "vitest",
     "typescript",
     "allure"
   ],
+  "homepage": "https://allurereport.org/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allure-framework/allure-js.git",
+    "directory": "packages/allure-vitest"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Qameta Software",
+    "email": "allure@qameta.io",
+    "url": "https://qameta.io/"
+  },
   "type": "module",
-  "main": "./dist/src/index.js",
-  "types": "./dist/src/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "exports": {
     ".": "./dist/src/index.js",
     "./setup": "./dist/src/setup.js",
     "./reporter": "./dist/src/reporter.js"
   },
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",

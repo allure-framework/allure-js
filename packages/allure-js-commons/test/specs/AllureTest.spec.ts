@@ -1,5 +1,5 @@
-import process from "process";
 import { expect } from "chai";
+import process from "process";
 import { restore, stub } from "sinon";
 import { AllureRuntime, AllureTest } from "allure-js-commons";
 

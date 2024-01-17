@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { expect, test } from "./fixtures";
 
 test("should report stdout", async ({ runInlineTest }) => {
@@ -51,9 +50,7 @@ test("should report stdout", async ({ runInlineTest }) => {
 
   const stdout = results.tests[0].attachments.find((a) => a.name === "stdout");
   expect(results.attachments[stdout!.source]).toEqual(
-    Buffer.from(
-      "Test log\nTest log 2\n{ foo: 'bar' }\n[ 1, 2, 3, 'test' ]\nTest nested log\n",
-    ).toString("base64"),
+    Buffer.from("Test log\nTest log 2\n{ foo: 'bar' }\n[ 1, 2, 3, 'test' ]\nTest nested log\n").toString("base64"),
   );
 });
 
@@ -93,8 +90,6 @@ test("should report stderr", async ({ runInlineTest }) => {
 
   const stderr = results.tests[0].attachments.find((a) => a.name === "stderr");
   expect(results.attachments[stderr!.source]).toEqual(
-    Buffer.from(
-      "System err 1\nSystem err 2\n{ foo: 'bar' }\n[ 1, 2, 3, 'test' ]\nSystem err 3\n",
-    ).toString("base64"),
+    Buffer.from("System err 1\nSystem err 2\n{ foo: 'bar' }\n[ 1, 2, 3, 'test' ]\nSystem err 3\n").toString("base64"),
   );
 });

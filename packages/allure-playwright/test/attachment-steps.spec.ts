@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { expect, test } from "./fixtures";
 
 test("should add attachments into steps", async ({ runInlineTest }) => {
@@ -50,9 +49,7 @@ test("should add attachments into steps", async ({ runInlineTest }) => {
     expect.objectContaining({ name: "some", type: "text/plain" }),
   ]);
 
-  const content1 = results.attachments[
-    testResult.steps[0].steps[0].steps[0].attachments[0].source
-  ] as string;
+  const content1 = results.attachments[testResult.steps[0].steps[0].steps[0].attachments[0].source] as string;
   expect(Buffer.from(content1, "base64").toString()).toEqual("some-data");
 
   expect(testResult.steps[1].name).toBe("outer step 2");
@@ -63,9 +60,7 @@ test("should add attachments into steps", async ({ runInlineTest }) => {
     expect.objectContaining({ name: "some", type: "text/plain" }),
   ]);
 
-  const content2 = results.attachments[
-    testResult.steps[1].steps[1].steps[0].attachments[0].source
-  ] as string;
+  const content2 = results.attachments[testResult.steps[1].steps[1].steps[0].attachments[0].source] as string;
   expect(Buffer.from(content2, "base64").toString()).toEqual("other-data");
 });
 

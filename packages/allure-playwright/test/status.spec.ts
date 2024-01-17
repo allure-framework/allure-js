@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { expect, test } from "./fixtures";
 
 test("should report test status", async ({ runInlineTest }) => {

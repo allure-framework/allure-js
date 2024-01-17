@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { getTestResultByName } from "../runner";
 import { runHermione } from "../helper/run_helper";
+import { getTestResultByName } from "../runner";
 
 describe("historyId", () => {
   it("sets custom history id", async () => {

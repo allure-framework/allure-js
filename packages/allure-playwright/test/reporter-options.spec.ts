@@ -36,10 +36,7 @@ test.describe("reporter options", () => {
     });
 
     expect(results.tests).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining(suiteTitle),
-        expect.objectContaining(detailSteps),
-      ]),
+      expect.arrayContaining([expect.objectContaining(suiteTitle), expect.objectContaining(detailSteps)]),
     );
   });
 
@@ -53,10 +50,7 @@ test.describe("reporter options", () => {
     });
 
     expect(results.tests).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining(suiteTitle),
-        expect.objectContaining(detailSteps),
-      ]),
+      expect.arrayContaining([expect.objectContaining(suiteTitle), expect.objectContaining(detailSteps)]),
     );
   });
 
@@ -69,12 +63,8 @@ test.describe("reporter options", () => {
       }),
     });
 
-    expect(results.tests).not.toEqual(
-      expect.arrayContaining([expect.objectContaining(suiteTitle)]),
-    );
+    expect(results.tests).not.toEqual(expect.arrayContaining([expect.objectContaining(suiteTitle)]));
 
-    expect(results.tests).not.toEqual(
-      expect.arrayContaining([expect.objectContaining(detailSteps)]),
-    );
+    expect(results.tests).not.toEqual(expect.arrayContaining([expect.objectContaining(detailSteps)]));
   });
 });

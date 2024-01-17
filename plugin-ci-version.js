@@ -12,22 +12,14 @@ module.exports = {
       strategy = Option.String();
 
       async execute() {
-        const configuration = await Configuration.find(
-          this.context.cwd,
-          this.context.plugins,
-        );
-        const { project, workspace } = await Project.find(
-          configuration,
-          this.context.cwd,
-        );
+        const configuration = await Configuration.find(this.context.cwd, this.context.plugins);
+        const { project, workspace } = await Project.find(configuration, this.context.cwd);
         const cache = await Cache.find(configuration);
 
-        if (!workspace)
-          throw new WorkspaceRequiredError(project.cwd, this.context.cwd);
+        if (!workspace) throw new WorkspaceRequiredError(project.cwd, this.context.cwd);
 
         const valid = semver.valid(this.strategy);
-        if (!valid)
-          throw new Error(`should be a valid semver: ${this.strategy}`);
+        if (!valid) throw new Error(`should be a valid semver: ${this.strategy}`);
 
         const currentVersion = workspace.manifest.version;
         if (currentVersion === this.strategy) {

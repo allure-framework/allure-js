@@ -1,6 +1,6 @@
 import { join } from "node:path";
-import { LinkType } from "allure-js-commons";
 import { describe, expect, it } from "vitest";
+import { LinkType } from "allure-js-commons";
 import { runVitestInlineTest } from "../../utils.js";
 
 const config = (testDir: string) => `

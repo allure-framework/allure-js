@@ -1,7 +1,7 @@
 import { globSync } from "glob";
 import Mocha from "mocha";
-import MochaAllureReporter from "allure-mocha";
 import "source-map-support/register";
+import MochaAllureReporter from "allure-mocha";
 
 const mocha = new Mocha({
   timeout: 16000,

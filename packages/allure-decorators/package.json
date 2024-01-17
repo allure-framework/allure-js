@@ -2,34 +2,37 @@
   "name": "allure-decorators",
   "version": "2.10.0",
   "description": "Write your tests in a Java-like annotation-driven manner via JS decorators.",
-  "license": "Apache-2.0",
-  "homepage": "https://allurereport.org/",
-  "author": {
-    "name": "Qameta Software",
-    "email": "allure@qameta.io",
-    "url": "https://qameta.io/"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/allure-framework/allure-js.git",
-    "directory": "packages/allure-decorators"
-  },
   "keywords": [
     "typescript",
     "allure",
     "decorators"
   ],
+  "homepage": "https://allurereport.org/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allure-framework/allure-js.git",
+    "directory": "packages/allure-decorators"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Qameta Software",
+    "email": "allure@qameta.io",
+    "url": "https://qameta.io/"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "allure-report": "allure serve ./out/allure-results",
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
-    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "allure-report": "allure serve ./out/allure-results",
-    "test": "ts-node --project test/tsconfig.json test/runner.ts",
     "coverage": "codecov",
+    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "eslint ./src --ext .ts",
-    "lint:fix": "eslint ./src --ext .ts --fix"
+    "lint:fix": "eslint ./src --ext .ts --fix",
+    "test": "ts-node --project test/tsconfig.json test/runner.ts"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
@@ -62,8 +65,5 @@
     "source-map-support": "^0.5.21",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }

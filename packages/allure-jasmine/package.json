@@ -2,28 +2,34 @@
   "name": "allure-jasmine",
   "version": "2.10.0",
   "description": "Allure Jasmine integration",
-  "license": "Apache-2.0",
   "homepage": "https://allurereport.org/",
-  "author": {
-    "name": "Qameta Software",
-    "email": "allure@qameta.io",
-    "url": "https://qameta.io/"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/allure-framework/allure-js.git",
     "directory": "packages/allure-jasmine"
   },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Qameta Software",
+    "email": "allure@qameta.io",
+    "url": "https://qameta.io/"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "clean": "rimraf ./dist ./out",
+    "compile": "tsc",
     "lint": "eslint ./src ./index.ts --ext .ts",
     "lint:fix": "eslint ./src ./index.ts --ext .ts --fix",
-    "compile": "tsc",
     "runTest": "tsc -p tsconfig-tests.json && yarn run jasmine ./dist-tests/test/*.js",
     "runTestDebug": "node $NODE_DEBUG_OPTION ./node_modules/.bin/jasmine ./dist/test/*.js",
     "test": "rimraf ./out ; yarn run runTest"
+  },
+  "dependencies": {
+    "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
     "@types/eslint": "^8.56.2",
@@ -40,11 +46,5 @@
     "jasmine": "^3.99.0",
     "rimraf": "^5.0.5",
     "typescript": "^5.3.3"
-  },
-  "dependencies": {
-    "allure-js-commons": "workspace:*"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }

@@ -1,7 +1,7 @@
 import { AllureCommandStepExecutable } from "./AllureCommandStep";
 import { AllureRuntime } from "./AllureRuntime";
-import { testResult } from "./constructors";
 import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
+import { testResult } from "./constructors";
 import { ExecutableItem, LinkType, MetadataMessage, TestResult } from "./model";
 import { getLabelsFromEnv, md5 } from "./utils";
 
@@ -74,8 +74,8 @@ export class AllureTest extends ExecutableItemWrapper {
     const tcId = this.testResult.testCaseId
       ? this.testResult.testCaseId
       : this.testResult.fullName
-      ? md5(this.testResult.fullName)
-      : null;
+        ? md5(this.testResult.fullName)
+        : null;
 
     if (!tcId) {
       return;
@@ -139,11 +139,7 @@ export class AllureTest extends ExecutableItemWrapper {
       });
     });
     attachments.forEach((attachment) => {
-      const attachmentFilename = this.runtime.writeAttachment(
-        attachment.content,
-        attachment.type,
-        attachment.encoding,
-      );
+      const attachmentFilename = this.runtime.writeAttachment(attachment.content, attachment.type, attachment.encoding);
 
       this.addAttachment(
         attachment.name,

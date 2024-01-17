@@ -3,8 +3,8 @@
   "compilerOptions": {
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "rootDir": "."
+    "rootDir": ".",
   },
   "exclude": [],
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts"],
 }

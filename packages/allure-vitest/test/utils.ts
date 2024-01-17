@@ -7,10 +7,7 @@ import type { AllureResults, TestResult, TestResultContainer } from "allure-js-c
 
 const fileDirname = dirname(fileURLToPath(import.meta.url));
 
-export const runVitestInlineTest = async (
-  test: string,
-  config?: (cwd: string) => string,
-): Promise<AllureResults> => {
+export const runVitestInlineTest = async (test: string, config?: (cwd: string) => string): Promise<AllureResults> => {
   const res: AllureResults = {
     tests: [],
     groups: [],
@@ -56,10 +53,7 @@ export const runVitestInlineTest = async (
 
   testProcess.on("message", (message: string) => {
     const event: { path: string; type: string; data: string } = JSON.parse(message);
-    const data =
-      event.type !== "attachment"
-        ? JSON.parse(Buffer.from(event.data, "base64").toString())
-        : event.data;
+    const data = event.type !== "attachment" ? JSON.parse(Buffer.from(event.data, "base64").toString()) : event.data;
 
     switch (event.type) {
       case "container":

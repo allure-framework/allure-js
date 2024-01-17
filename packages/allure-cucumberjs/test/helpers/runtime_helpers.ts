@@ -1,14 +1,12 @@
+import { loadConfiguration, loadSupport, runCucumber } from "@cucumber/cucumber/api";
 import fs from "node:fs";
 import { join } from "node:path";
 import { cwd } from "node:process";
-import { loadConfiguration, loadSupport, runCucumber } from "@cucumber/cucumber/api";
-import { TestResult } from "allure-js-commons";
 import { match, restore, stub } from "sinon";
+import { TestResult } from "allure-js-commons";
 
 export const runCucumberTests = async (tests: string[]) => {
-  const writeFileSpy = stub(fs, "writeFileSync")
-    .withArgs(match("allure-results"))
-    .returns(undefined);
+  const writeFileSpy = stub(fs, "writeFileSync").withArgs(match("allure-results")).returns(undefined);
   const { runConfiguration } = await loadConfiguration({
     provided: {
       paths: [join(cwd(), "test/fixtures/features")],

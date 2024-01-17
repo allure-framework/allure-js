@@ -1,6 +1,6 @@
-import { Status } from "allure-js-commons";
 import { expect } from "chai";
 import { before, describe, it } from "mocha";
+import { Status } from "allure-js-commons";
 import { LaunchSummary, runCucumberTests } from "../utils";
 
 describe("simple", () => {
@@ -15,9 +15,7 @@ describe("simple", () => {
 
     expect(passed.fullName).eq("test/fixtures/features/simple.feature#passed");
     expect(passed.testCaseId).eq("4dc70bb7b4b8db0847961b8a454ed052");
-    expect(passed.historyId).eq(
-      "4dc70bb7b4b8db0847961b8a454ed052:d41d8cd98f00b204e9800998ecf8427e",
-    );
+    expect(passed.historyId).eq("4dc70bb7b4b8db0847961b8a454ed052:d41d8cd98f00b204e9800998ecf8427e");
   });
 
   it("reports passed test", () => {

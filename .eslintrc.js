@@ -185,7 +185,6 @@ module.exports = {
     "id-match": "error",
     "import/no-default-export": "off",
     "import/no-unassigned-import": "off",
-    "import/order": ["error", { alphabetize: { order: "asc", caseInsensitive: true } }],
     "jsdoc/check-alignment": "error",
     "jsdoc/check-indentation": "error",
     "max-classes-per-file": ["error", 5],
@@ -238,7 +237,6 @@ module.exports = {
     "prefer-template": "error",
     "quote-props": ["error", "consistent-as-needed"],
     radix: "error",
-    "sort-imports": ["error", { ignoreDeclarationSort: true, ignoreCase: true }],
     "space-before-function-paren": [
       "error",
       {

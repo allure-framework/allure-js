@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { readFileSync } from "fs";
 import { expect, test } from "./fixtures";
 
@@ -39,15 +38,10 @@ test("should not throw on missing attachment", async ({ runInlineTest }) => {
     expect.objectContaining({ name: "buffer-attachment", type: "text/plain" }),
   ]);
 
-  expect(results.attachments[results.tests[0].attachments[0].source]).toEqual(
-    Buffer.from("foo").toString("base64"),
-  );
+  expect(results.attachments[results.tests[0].attachments[0].source]).toEqual(Buffer.from("foo").toString("base64"));
 });
 
-test("should add snapshots correctly and provide a screenshot diff", async ({
-  runInlineTest,
-  attachment,
-}) => {
+test("should add snapshots correctly and provide a screenshot diff", async ({ runInlineTest, attachment }) => {
   const result = await runInlineTest({
     "a.test.ts": /* ts */ `
       import test from '@playwright/test';
@@ -56,9 +50,7 @@ test("should add snapshots correctly and provide a screenshot diff", async ({
         test.expect(await page.screenshot()).toMatchSnapshot("foo.png");
       });
     `,
-    "a.test.ts-snapshots/foo-project.png": readFileSync(
-      attachment("attachment-1-not-expected.png"),
-    ),
+    "a.test.ts-snapshots/foo-project.png": readFileSync(attachment("attachment-1-not-expected.png")),
   });
   expect(result.tests[0].attachments).toEqual(
     expect.arrayContaining([

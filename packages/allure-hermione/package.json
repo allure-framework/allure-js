@@ -1,33 +1,38 @@
 {
   "name": "allure-hermione",
   "version": "2.10.0",
-  "packageManager": "yarn@3.6.3",
-  "license": "Apache-2.0",
-  "homepage": "https://allurereport.org/",
-  "author": {
-    "name": "Qameta Software",
-    "email": "allure@qameta.io",
-    "url": "https://qameta.io/"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/allure-framework/allure-js.git",
-    "directory": "packages/allure-hermione"
-  },
   "keywords": [
     "hermione",
     "typescript",
     "allure"
   ],
+  "homepage": "https://allurereport.org/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allure-framework/allure-js.git",
+    "directory": "packages/allure-hermione"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Qameta Software",
+    "email": "allure@qameta.io",
+    "url": "https://qameta.io/"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
-    "test": "ts-node --project ./test/tsconfig.json ./test/runner.ts",
     "coverage": "codecov",
     "lint": "eslint ./src --ext .ts",
-    "lint:fix": "eslint ./src --ext .ts --fix"
+    "lint:fix": "eslint ./src --ext .ts --fix",
+    "test": "ts-node --project ./test/tsconfig.json ./test/runner.ts"
+  },
+  "dependencies": {
+    "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
     "@types/chai": "^4.3.11",
@@ -64,10 +69,5 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
-  "dependencies": {
-    "allure-js-commons": "workspace:*"
-  },
-  "files": [
-    "dist"
-  ]
+  "packageManager": "yarn@3.6.3"
 }

@@ -1,27 +1,37 @@
 {
   "name": "allure-js",
-  "private": true,
   "version": "2.10.0",
+  "private": true,
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "prepare": "husky install",
-    "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}'",
-    "prettier:check": "prettier --check './packages/*/{src,test,features}/**/*.{js,ts}'",
+    "build": "yarn run clean && yarn run compile",
     "clean": "yarn workspaces foreach -Avpt run clean",
     "compile": "yarn workspaces foreach -vApt run compile",
     "lint": "yarn workspaces foreach -Avpt run lint",
     "lint:fix": "yarn workspaces foreach -Avpt run lint:fix",
-    "test": "yarn workspaces foreach -Avpt run test",
-    "build": "yarn run clean && yarn run compile"
+    "prepare": "husky install",
+    "prettier:check": "prettier --check './packages/*/{src,test,features}/**/*.{js,ts}' '**/package.json' .prettierrc.js plugin-ci-version.js",
+    "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}' '**/package.json' .prettierrc.js plugin-ci-version.js",
+    "test": "yarn workspaces foreach -Avpt run test"
   },
   "lint-staged": {
-    "*.ts": [
+    "packages/*/{src,test,features}/**/*.{js,ts,tsx}": [
+      "prettier --write"
+    ],
+    "**/package.json": [
+      "prettier --write"
+    ],
+    ".prettierrc.js": [
+      "prettier --write"
+    ],
+    "plugin-ci-version.js": [
       "prettier --write"
     ]
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/eslint": "^8.56.2",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
@@ -34,6 +44,7 @@
     "husky": "^7.0.4",
     "lint-staged": "^11.2.6",
     "prettier": "^3.2.4",
+    "prettier-plugin-packagejson": "^2.4.9",
     "rimraf": "^5.0.5",
     "typescript": "^5.3.3"
   },

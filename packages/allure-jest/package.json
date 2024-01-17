@@ -2,30 +2,24 @@
   "name": "allure-jest",
   "version": "2.10.0",
   "description": "Allure Jest integration",
-  "license": "Apache-2.0",
-  "packageManager": "yarn@3.6.3",
-  "homepage": "https://allurereport.org/",
-  "author": {
-    "name": "Qameta Software",
-    "email": "allure@qameta.io",
-    "url": "https://qameta.io/"
-  },
   "keywords": [
     "jest",
     "circus",
     "typescript",
     "allure"
   ],
+  "homepage": "https://allurereport.org/",
   "repository": {
     "type": "git",
     "url": "https://github.com/allure-framework/allure-js.git",
     "directory": "packages/allure-jest"
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Qameta Software",
+    "email": "allure@qameta.io",
+    "url": "https://qameta.io/"
+  },
   "exports": {
     ".": {
       "require": "./dist/index.js"
@@ -37,13 +31,25 @@
       "require": "./dist/jsdom.js"
     }
   },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
-    "test": "ts-node --project ./tsconfig.json ./test/runner.ts",
     "coverage": "codecov",
     "lint": "eslint ./src --ext .ts",
-    "lint:fix": "eslint ./src --ext .ts --fix"
+    "lint:fix": "eslint ./src --ext .ts --fix",
+    "test": "ts-node --project ./tsconfig.json ./test/runner.ts"
+  },
+  "dependencies": {
+    "@jest/expect": "^29.7.0",
+    "allure-js-commons": "workspace:*",
+    "jest-circus": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-environment-node": "^29.7.0"
   },
   "devDependencies": {
     "@jest/core": "^29.7.0",
@@ -77,11 +83,5 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
-  "dependencies": {
-    "@jest/expect": "^29.7.0",
-    "allure-js-commons": "workspace:*",
-    "jest-circus": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
-    "jest-environment-node": "^29.7.0"
-  }
+  "packageManager": "yarn@3.6.3"
 }

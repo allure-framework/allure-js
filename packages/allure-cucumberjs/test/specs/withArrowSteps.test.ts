@@ -1,6 +1,6 @@
-import { LabelName, Status } from "allure-js-commons";
 import { expect } from "chai";
 import { before, describe, it } from "mocha";
+import { LabelName, Status } from "allure-js-commons";
 import { LaunchSummary, runCucumberTests } from "../utils";
 
 describe("with lambda arrow steps", () => {
