@@ -16,7 +16,7 @@
 
 import { fork } from "child_process";
 import { mkdir, writeFile } from "fs/promises";
-import { join, dirname } from "path";
+import { dirname, join } from "path";
 import { test as base, TestInfo } from "@playwright/test";
 import type { AllureResults } from "allure-js-commons";
 import { parse } from "properties";
@@ -31,9 +31,9 @@ type Env = { [key: string]: string | number | boolean | undefined };
 
 const writeFiles = async (testInfo: TestInfo, files: Files) => {
   const baseDir = testInfo.outputPath();
-
   const hasConfig = Object.keys(files).some((name) => name.includes(".config."));
   const reporterOptions = files.reporterOptions && JSON.parse(files.reporterOptions.toString());
+
   if (!hasConfig) {
     files = {
       ...files,

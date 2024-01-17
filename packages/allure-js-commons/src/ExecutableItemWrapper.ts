@@ -84,6 +84,7 @@ export class ExecutableItemWrapper {
     if (typeof options === "string") {
       options = { contentType: options };
     }
+
     this.info.attachments.push({ name, type: options.contentType, source: fileName });
   }
 
