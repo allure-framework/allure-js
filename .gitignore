@@ -1,5 +1,7 @@
+# allure commandline
 .allure
 
+# yarn
 .yarn/*
 !.yarn/cache
 !.yarn/patches
@@ -28,10 +30,9 @@ node_modules
 .repo
 
 #Mac OS stuff
-.DS_Store
+**/.DS_Store
 
 #Junk
-
 out
 dist
 dist-tests
