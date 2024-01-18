@@ -2543,20 +2543,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@testdeck/core", [\
-        ["npm:0.1.2", {\
-          "packageLocation": "./.yarn/cache/@testdeck-core-npm-0.1.2-db57e4aca3-6dade21d57.zip/node_modules/@testdeck/core/",\
+        ["npm:0.3.3", {\
+          "packageLocation": "./.yarn/cache/@testdeck-core-npm-0.3.3-e615ae168c-c275df1c73.zip/node_modules/@testdeck/core/",\
           "packageDependencies": [\
-            ["@testdeck/core", "npm:0.1.2"]\
+            ["@testdeck/core", "npm:0.3.3"]\
           ],\
           "linkType": "HARD"\
         }]\
       ]],\
       ["@testdeck/mocha", [\
-        ["npm:0.1.2", {\
-          "packageLocation": "./.yarn/cache/@testdeck-mocha-npm-0.1.2-027c19c6a8-65c7345f75.zip/node_modules/@testdeck/mocha/",\
+        ["npm:0.3.3", {\
+          "packageLocation": "./.yarn/cache/@testdeck-mocha-npm-0.3.3-ad944772d9-1c16ba6d94.zip/node_modules/@testdeck/mocha/",\
           "packageDependencies": [\
-            ["@testdeck/mocha", "npm:0.1.2"],\
-            ["@testdeck/core", "npm:0.1.2"]\
+            ["@testdeck/mocha", "npm:0.3.3"],\
+            ["@testdeck/core", "npm:0.3.3"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -3907,7 +3907,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./packages/allure-decorators/",\
           "packageDependencies": [\
             ["allure-decorators", "workspace:packages/allure-decorators"],\
-            ["@testdeck/mocha", "npm:0.1.2"],\
+            ["@testdeck/mocha", "npm:0.3.3"],\
             ["@types/chai", "npm:4.3.6"],\
             ["@types/chai-arrays", "npm:2.0.3"],\
             ["@types/eslint", "npm:8.44.2"],\
@@ -4115,7 +4115,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/__virtual__/allure-mocha-virtual-6d38a828fa/1/packages/allure-mocha/",\
           "packageDependencies": [\
             ["allure-mocha", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#workspace:packages/allure-mocha"],\
-            ["@testdeck/mocha", "npm:0.1.2"],\
+            ["@testdeck/mocha", "npm:0.3.3"],\
             ["@types/chai", "npm:4.3.6"],\
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/mocha", "npm:10.0.1"],\
@@ -4152,7 +4152,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./packages/allure-mocha/",\
           "packageDependencies": [\
             ["allure-mocha", "workspace:packages/allure-mocha"],\
-            ["@testdeck/mocha", "npm:0.1.2"],\
+            ["@testdeck/mocha", "npm:0.3.3"],\
             ["@types/chai", "npm:4.3.6"],\
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/mocha", "npm:10.0.1"],\
@@ -28991,7 +28991,7 @@ function makeManager(pnpapi, opts) {
     apiEntry.lastRefreshCheck = timeNow;
     const stats = opts.fakeFs.statSync(pnpApiPath);
     if (stats.mtime > apiEntry.stats.mtime) {
-      process.emitWarning(`[Warning] The runtime detected new informations in a PnP file; reloading the API instance (${npath.fromPortablePath(pnpApiPath)})`);
+      process.emitWarning(`[Warning] The runtime detected new information in a PnP file; reloading the API instance (${npath.fromPortablePath(pnpApiPath)})`);
       apiEntry.stats = stats;
       apiEntry.instance = loadApiInstance(pnpApiPath);
     }
