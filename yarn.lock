@@ -2158,10 +2158,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:20.6.3, @types/node@npm:^20.6.3":
-  version: 20.6.3
-  resolution: "@types/node@npm:20.6.3"
-  checksum: 444a6f1f41cfa8d3e20ce0108e6e43960fb2ae0e481f233bb1c14d6252aa63a92e021de561cd317d9fdb411688f871065f40175a1f18763282dee2613a08f8a3
+"@types/node@npm:20.11.5":
+  version: 20.11.5
+  resolution: "@types/node@npm:20.11.5"
+  dependencies:
+    undici-types: ~5.26.4
+  checksum: a542727de1334ae20a3ca034b0ecf4b464a57ca01efc4f9cf43bd9ab93896125ab3c2de060ecd8f6ae23b86c6bf3463f681b643e69c032c6a662d376c98a6092
   languageName: node
   linkType: hard
 
@@ -2169,6 +2171,13 @@ __metadata:
   version: 18.17.15
   resolution: "@types/node@npm:18.17.15"
   checksum: eed11d4398ccdb999a4c65658ee75de621a4ad57aece48ed2fb8803b1e2711fadf58d8aefbdb0a447d69cf3cba602ca32fe0fc92077575950a796e1dc13baa0f
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.6.3":
+  version: 20.6.3
+  resolution: "@types/node@npm:20.6.3"
+  checksum: 444a6f1f41cfa8d3e20ce0108e6e43960fb2ae0e481f233bb1c14d6252aa63a92e021de561cd317d9fdb411688f871065f40175a1f18763282dee2613a08f8a3
   languageName: node
   linkType: hard
 
@@ -11012,7 +11021,7 @@ __metadata:
     "@types/eslint": ^8
     "@types/mocha": ^10.0.1
     "@types/newman": ^5.3.3
-    "@types/node": 20.6.3
+    "@types/node": 20.11.5
     "@types/postman-collection": ^3.5.7
     "@types/source-map-support": ^0.5.7
     "@types/yargs": ^17.0.24
@@ -14944,6 +14953,13 @@ __metadata:
   version: 1.12.1
   resolution: "underscore@npm:1.12.1"
   checksum: ec327603aa112b99fe9d74cd9bf3b3b7451465a9d2610ceab269a532e3f191650ab017903be34dc86fe406a11d04d8905a3b04dd4c129493e51bee09a3f3074c
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~5.26.4":
+  version: 5.26.5
+  resolution: "undici-types@npm:5.26.5"
+  checksum: 3192ef6f3fd5df652f2dc1cd782b49d6ff14dc98e5dced492aa8a8c65425227da5da6aafe22523c67f035a272c599bb89cfe803c1db6311e44bed3042fc25487
   languageName: node
   linkType: hard
 

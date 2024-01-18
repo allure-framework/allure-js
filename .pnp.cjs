@@ -2980,6 +2980,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
+        ["npm:20.11.5", {\
+          "packageLocation": "./.yarn/cache/@types-node-npm-20.11.5-b807d46a1a-a542727de1.zip/node_modules/@types/node/",\
+          "packageDependencies": [\
+            ["@types/node", "npm:20.11.5"],\
+            ["undici-types", "npm:5.26.5"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["npm:20.6.0", {\
           "packageLocation": "./.yarn/cache/@types-node-npm-20.6.0-73d5022935-52611801af.zip/node_modules/@types/node/",\
           "packageDependencies": [\
@@ -13029,7 +13037,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/mocha", "npm:10.0.1"],\
             ["@types/newman", "npm:5.3.3"],\
-            ["@types/node", "npm:20.6.3"],\
+            ["@types/node", "npm:20.11.5"],\
             ["@types/postman-collection", "npm:3.5.7"],\
             ["@types/source-map-support", "npm:0.5.7"],\
             ["@types/yargs", "npm:17.0.24"],\
@@ -13052,7 +13060,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["postman-collection", "npm:4.2.1"],\
             ["rimraf", "npm:5.0.1"],\
             ["source-map-support", "npm:0.5.21"],\
-            ["ts-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:10.9.1"],\
+            ["ts-node", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"]\
           ],\
           "linkType": "SOFT"\
@@ -16911,6 +16919,42 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             "typescript"\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:10.9.1", {\
+          "packageLocation": "./.yarn/__virtual__/ts-node-virtual-baf54b7423/0/cache/ts-node-npm-10.9.1-6c268be7f4-090adff130.zip/node_modules/ts-node/",\
+          "packageDependencies": [\
+            ["ts-node", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:10.9.1"],\
+            ["@cspotcode/source-map-support", "npm:0.8.1"],\
+            ["@swc/core", null],\
+            ["@swc/wasm", null],\
+            ["@tsconfig/node10", "npm:1.0.9"],\
+            ["@tsconfig/node12", "npm:1.0.11"],\
+            ["@tsconfig/node14", "npm:1.0.3"],\
+            ["@tsconfig/node16", "npm:1.0.4"],\
+            ["@types/node", "npm:20.11.5"],\
+            ["@types/swc__core", null],\
+            ["@types/swc__wasm", null],\
+            ["@types/typescript", null],\
+            ["acorn", "npm:8.10.0"],\
+            ["acorn-walk", "npm:8.2.0"],\
+            ["arg", "npm:4.1.3"],\
+            ["create-require", "npm:1.1.1"],\
+            ["diff", "npm:4.0.2"],\
+            ["make-error", "npm:1.3.6"],\
+            ["typescript", "patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"],\
+            ["v8-compile-cache-lib", "npm:3.0.1"],\
+            ["yn", "npm:3.1.1"]\
+          ],\
+          "packagePeers": [\
+            "@swc/core",\
+            "@swc/wasm",\
+            "@types/node",\
+            "@types/swc__core",\
+            "@types/swc__wasm",\
+            "@types/typescript",\
+            "typescript"\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["tsconfig-paths", [\
@@ -17229,6 +17273,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/underscore-npm-1.12.1-f5ca0889f5-ec327603aa.zip/node_modules/underscore/",\
           "packageDependencies": [\
             ["underscore", "npm:1.12.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["undici-types", [\
+        ["npm:5.26.5", {\
+          "packageLocation": "./.yarn/cache/undici-types-npm-5.26.5-de4f7c7bb9-3192ef6f3f.zip/node_modules/undici-types/",\
+          "packageDependencies": [\
+            ["undici-types", "npm:5.26.5"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -28991,7 +29044,7 @@ function makeManager(pnpapi, opts) {
     apiEntry.lastRefreshCheck = timeNow;
     const stats = opts.fakeFs.statSync(pnpApiPath);
     if (stats.mtime > apiEntry.stats.mtime) {
-      process.emitWarning(`[Warning] The runtime detected new informations in a PnP file; reloading the API instance (${npath.fromPortablePath(pnpApiPath)})`);
+      process.emitWarning(`[Warning] The runtime detected new information in a PnP file; reloading the API instance (${npath.fromPortablePath(pnpApiPath)})`);
       apiEntry.stats = stats;
       apiEntry.instance = loadApiInstance(pnpApiPath);
     }
