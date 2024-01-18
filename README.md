@@ -20,6 +20,13 @@
 
 [Read more](/packages/allure-cucumberjs/README.md)
 
+
+### Vitest
+
+![npm](https://img.shields.io/npm/dm/allure-vitest.svg) ![npm](https://img.shields.io/npm/v/allure-vitest.svg)
+
+[Read more](/packages/allure-vitest/README.md)
+
 ### Jest (`jest@>=27.x.x`)
 
 ![npm](https://img.shields.io/npm/dm/allure-jest.svg) ![npm](https://img.shields.io/npm/v/allure-jest.svg)
