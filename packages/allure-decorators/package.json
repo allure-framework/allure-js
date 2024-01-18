@@ -38,7 +38,7 @@
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
-    "@testdeck/mocha": "0.1.2",
+    "@testdeck/mocha": "0.3.3",
     "@types/chai": "^4.3.6",
     "@types/chai-arrays": "2.0.3",
     "@types/eslint": "^8",

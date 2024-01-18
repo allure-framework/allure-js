@@ -1790,21 +1790,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testdeck/core@npm:^0.1.2":
-  version: 0.1.2
-  resolution: "@testdeck/core@npm:0.1.2"
-  checksum: 6dade21d5727150c4af6249266b2e8176da648cd79202c97bdc6d3d1505d9b1fc55dbeb2c4abd3c6b5654516ad7e33db15d4e93375390e24d69d8c5f6dc958c9
+"@testdeck/core@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "@testdeck/core@npm:0.3.3"
+  checksum: c275df1c731b21b81fc43d64b0d3f3e11cde1d8b2012789a1bd83c823138cb8dc1781e9229b8cd22d688b46c398a9eb8e8f2ede3b780ad39caf7275fab94cb39
   languageName: node
   linkType: hard
 
-"@testdeck/mocha@npm:0.1.2":
-  version: 0.1.2
-  resolution: "@testdeck/mocha@npm:0.1.2"
+"@testdeck/mocha@npm:0.3.3":
+  version: 0.3.3
+  resolution: "@testdeck/mocha@npm:0.3.3"
   dependencies:
-    "@testdeck/core": ^0.1.2
+    "@testdeck/core": ^0.3.3
   bin:
     testdeck-watch: bin/watch
-  checksum: 65c7345f75a0dd259f33fa0af0253ec295c8383e433ca888a47a44257bb3a9879a4131e0e7fef0fc83d6bcde80ea2d7b0f6cfa2b26980a31c8638b5a80142291
+  checksum: 1c16ba6d9421284a7f1277477483ffce5d805bfb97d7a8bf378de3510207669256695e0bf3e8cc6bea89b7f308bf0c75c64a45bd33486937a49044cdb9643ab1
   languageName: node
   linkType: hard
 
@@ -2940,7 +2940,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-decorators@workspace:packages/allure-decorators"
   dependencies:
-    "@testdeck/mocha": 0.1.2
+    "@testdeck/mocha": 0.3.3
     "@types/chai": ^4.3.6
     "@types/chai-arrays": 2.0.3
     "@types/eslint": ^8
@@ -3136,7 +3136,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-mocha@workspace:packages/allure-mocha"
   dependencies:
-    "@testdeck/mocha": 0.1.2
+    "@testdeck/mocha": 0.3.3
     "@types/chai": ^4.3.6
     "@types/eslint": ^8
     "@types/mocha": ^10.0.1
