@@ -48,7 +48,7 @@
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
     "allure-mocha": "workspace:*",
-    "chai": "^4.3.8",
+    "chai": "^5.0.0",
     "chai-arrays": "^2.2.0",
     "codecov": "^3.6.5",
     "eslint": "^8.49.0",
