@@ -103,7 +103,12 @@ export const tms = async (context: vitest.TaskContext, name: string, url: string
   link(context, LinkType.TMS, url, name);
 };
 
-export const parameter = async (context: vitest.TaskContext, name: string, value: string, options?: ParameterOptions) => {
+export const parameter = async (
+  context: vitest.TaskContext,
+  name: string,
+  value: string,
+  options?: ParameterOptions,
+) => {
   injectAllureMeta(context);
   (context.task.meta as AllureTestMeta).currentTest.parameter.push({
     name,
@@ -188,14 +193,16 @@ export const bindAllureApi = (task: vitest.Task) => {
   return {
     label: (name: string, value: string) => label({ task } as vitest.TaskContext, name, value),
     link: (type: LinkType, url: string, name?: string) => link({ task } as vitest.TaskContext, type, url, name),
-    parameter: (name: string, value: string, options?: ParameterOptions) => parameter({ task } as vitest.TaskContext, name, value, options),
+    parameter: (name: string, value: string, options?: ParameterOptions) =>
+      parameter({ task } as vitest.TaskContext, name, value, options),
     description: (markdown: string) => description({ task } as vitest.TaskContext, markdown),
     descriptionHtml: (html: string) => descriptionHtml({ task } as vitest.TaskContext, html),
     testCaseId: (id: string) => testCaseId({ task } as vitest.TaskContext, id),
     historyId: (id: string) => historyId({ task } as vitest.TaskContext, id),
     allureId: (id: string) => allureId({ task } as vitest.TaskContext, id),
     displayName: (name: string) => displayName({ task } as vitest.TaskContext, name),
-    attachment: (name: string, content: Buffer | string, type: string) => attachment({ task } as vitest.TaskContext, name, content, type),
+    attachment: (name: string, content: Buffer | string, type: string) =>
+      attachment({ task } as vitest.TaskContext, name, content, type),
     issue: (name: string, url: string) => issue({ task } as vitest.TaskContext, name, url),
     tms: (name: string, url: string) => tms({ task } as vitest.TaskContext, name, url),
     epic: (name: string) => epic({ task } as vitest.TaskContext, name),
