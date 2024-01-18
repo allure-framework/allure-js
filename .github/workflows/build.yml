@@ -19,7 +19,7 @@ jobs:
       matrix:
         node-version: [14.x, 16.x, 18.x, 20.x]
     steps:
-      - uses: actions/checkout@v4.0.0
+      - uses: actions/checkout@v4.1.1
 
       - uses: browser-actions/setup-chrome@v1
         with:
