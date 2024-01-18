@@ -4,11 +4,12 @@
     "lib": ["es2022"],
     "types": [],
     "skipLibCheck": true,
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "NodeNext",
     "declaration": true,
-    "rootDir": ".",
-    "outDir": "dist"
+    "rootDir": "./src",
+    "outDir": "./dist"
   },
-  "include": ["src"]
+  "include": [
+    "./src/**/*",
+  ],
 }

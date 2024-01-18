@@ -5,8 +5,8 @@ it("sets parameters", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
 
-    test("parameter", () => {
-      this.allure.parameter("foo", "bar", { mode: "hidden", excluded: true });
+    test("parameter", async () => {
+      await allure.parameter("foo", "bar", { mode: "hidden", excluded: true });
     });
   `);
 

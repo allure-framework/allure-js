@@ -1,5 +1,5 @@
-import AllureReporter from "allure-vitest/reporter";
 import { defineConfig } from "vitest/config";
+import AllureReporter from "allure-vitest/reporter";
 
 export default defineConfig({
   test: {

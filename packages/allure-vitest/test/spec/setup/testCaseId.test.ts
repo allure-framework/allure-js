@@ -5,8 +5,8 @@ it("sets test case id", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
 
-    test("test case id", () => {
-      this.allure.testCaseId("foo");
+    test("test case id", async () => {
+      await allure.testCaseId("foo");
     });
   `);
 
