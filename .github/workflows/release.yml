@@ -16,7 +16,7 @@ jobs:
         run: |
           expr "${{ github.event.inputs.releaseVersion }}" : '\(^[1-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\(-beta\.[1-9][0-9]*\)\{0,1\}\)$'
 
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.QAMETA_CI }}
 
@@ -25,7 +25,7 @@ jobs:
           git config --global user.name qameta-ci
           git config --global user.email qameta-ci@qameta.io
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 16
           cache: 'yarn'
@@ -47,11 +47,11 @@ jobs:
           git push origin ${GITHUB_REF}
 
       - name: "Publish Github Release"
-        uses: toolmantim/release-drafter@v5.21.1
+        uses: octokit/request-action@v2
         with:
-          name: ${{ github.event.inputs.releaseVersion }}
-          version: ${{ github.event.inputs.releaseVersion }}
-          tag: v${{ github.event.inputs.releaseVersion }}
-          publish: "true"
+          route: POST /repos/${{ github.repository }}/releases
+          tag_name: ${{ github.event.inputs.releaseVersion }}
+          generate_release_notes: true
+          target_commitish: ${{ github.ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.QAMETA_CI }}

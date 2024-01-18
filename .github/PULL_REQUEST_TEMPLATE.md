@@ -20,4 +20,4 @@ Describe the problem or feature in addition to a link to the issues
 - [ ] [Sign Allure CLA][cla]
 - [ ] Provide unit tests
 
-[cla]: https://cla-assistant.io/accept/allure-framework/allure2
+[cla]: https://cla-assistant.io/accept/allure-framework/allure-js

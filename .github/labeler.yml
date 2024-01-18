@@ -11,11 +11,17 @@
   - "tsconfig.json"
   - ".husky/**"
 
-"theme:decorators":
-  - "packages/allure-decorators/**"
+"theme:codeceptjs":
+  - "packages/allure-codeceptjs/**"
 
 "theme:cucumberjs":
   - "packages/allure-cucumberjs/**"
+
+"theme:decorators":
+  - "packages/allure-decorators/**"
+
+"theme:hermione":
+  - "packages/allure-hermione/**"
 
 "theme:jasmine":
   - "packages/allure-jasmine/**"
@@ -32,8 +38,8 @@
 "theme:playwright":
   - "packages/allure-playwright/**"
 
-"theme:codeceptjs":
-  - "packages/allure-codeceptjs/**"
+"theme:vitest":
+  - "packages/allure-vitest/**"
 
 "theme:newman":
   - "packages/newman-reporter-allure/**"
