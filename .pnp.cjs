@@ -3967,7 +3967,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["chai", "npm:4.3.8"],\
             ["chai-like", "virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:1.1.1"],\
             ["chai-things", "npm:0.2.0"],\
-            ["chromedriver", "npm:114.0.3"],\
+            ["chromedriver", "npm:120.0.1"],\
             ["codecov", "npm:3.8.2"],\
             ["download-chromium", "npm:3.0.0"],\
             ["eslint", "npm:8.49.0"],\
@@ -5863,10 +5863,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["chromedriver", [\
-        ["npm:114.0.3", {\
-          "packageLocation": "./.yarn/unplugged/chromedriver-npm-114.0.3-71185e4637/node_modules/chromedriver/",\
+        ["npm:120.0.1", {\
+          "packageLocation": "./.yarn/unplugged/chromedriver-npm-120.0.1-5544a83bc3/node_modules/chromedriver/",\
           "packageDependencies": [\
-            ["chromedriver", "npm:114.0.3"],\
+            ["chromedriver", "npm:120.0.1"],\
             ["@testim/chrome-version", "npm:1.1.4"],\
             ["axios", "npm:1.6.5"],\
             ["compare-versions", "npm:6.1.0"],\
