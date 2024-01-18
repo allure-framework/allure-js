@@ -45,6 +45,6 @@ jobs:
         run: |
           yarn run build
 
-      - name: yarn test node@16 and above
+      - name: yarn test
         run: |
           yarn run test

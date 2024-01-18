@@ -47,7 +47,7 @@ jobs:
           git push origin ${GITHUB_REF}
 
       - name: "Publish Github Release"
-        uses: octokit/request-action@v2
+        uses: octokit/request-action@v2.1.9
         with:
           route: POST /repos/${{ github.repository }}/releases
           tag_name: ${{ github.event.inputs.releaseVersion }}
