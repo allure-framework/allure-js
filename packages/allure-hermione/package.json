@@ -58,7 +58,7 @@
     "eslint-plugin-jsdoc": "^46.6.0",
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "fs-jetpack": "^4.1.0",
+    "fs-jetpack": "^5.0.0",
     "glob": "^10.3.5",
     "hermione": "^7.1.4",
     "mocha": "^10.2.0",

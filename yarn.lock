@@ -2960,7 +2960,7 @@ __metadata:
     eslint-plugin-jsdoc: ^46.6.0
     eslint-plugin-no-null: ^1.0.2
     eslint-plugin-prefer-arrow: ^1.2.3
-    fs-jetpack: ^4.1.0
+    fs-jetpack: ^5.0.0
     glob: ^10.3.5
     mocha: ^10.2.0
     mocha-multi-reporters: ^1.5.1
@@ -2999,7 +2999,7 @@ __metadata:
     eslint-plugin-jsdoc: ^46.6.0
     eslint-plugin-no-null: ^1.0.2
     eslint-plugin-prefer-arrow: ^1.2.3
-    fs-jetpack: ^4.1.0
+    fs-jetpack: ^5.0.0
     glob: ^10.3.5
     hermione: ^7.1.4
     mocha: ^10.2.0
@@ -3153,7 +3153,7 @@ __metadata:
     eslint-plugin-jsdoc: ^46.6.0
     eslint-plugin-no-null: ^1.0.2
     eslint-plugin-prefer-arrow: ^1.2.3
-    fs-jetpack: ^4.1.0
+    fs-jetpack: ^5.0.0
     glob: ^10.3.5
     mocha: ^10.2.0
     mocha-multi-reporters: ^1.5.1
@@ -7245,13 +7245,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-jetpack@npm:^4.1.0":
-  version: 4.3.1
-  resolution: "fs-jetpack@npm:4.3.1"
+"fs-jetpack@npm:^5.0.0":
+  version: 5.1.0
+  resolution: "fs-jetpack@npm:5.1.0"
   dependencies:
-    minimatch: ^3.0.2
-    rimraf: ^2.6.3
-  checksum: ffe90946ec250c6042569faa2ec7753594779ca0e8a72eea0b76b82574542c50d580974f54c5d6885f44f5719ece173be778cf82dc50ad90f43dab043f4061c9
+    minimatch: ^5.1.0
+  checksum: a30fc7884ded99619b981f16bf096d93693d36c53dab87f1d8339d63f6c9c89c45981c47ddd4d08f4045c3181cc843ee2a83ed4834683eb8cb96665332f89b36
   languageName: node
   linkType: hard
 
@@ -13090,7 +13089,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rimraf@npm:2, rimraf@npm:^2.5.4, rimraf@npm:^2.6.3":
+"rimraf@npm:2, rimraf@npm:^2.5.4":
   version: 2.7.1
   resolution: "rimraf@npm:2.7.1"
   dependencies:
