@@ -1,6 +1,6 @@
 {
   "name": "allure-decorators",
-  "version": "2.10.0",
+  "version": "2.11.0",
   "description": "Write your tests in a Java-like annotation-driven manner via JS decorators.",
   "keywords": [
     "typescript",
