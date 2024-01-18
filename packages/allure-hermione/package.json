@@ -60,7 +60,7 @@
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "fs-jetpack": "^4.1.0",
     "glob": "^10.3.5",
-    "hermione": "^7.1.4",
+    "hermione": "^8.0.0",
     "mocha": "^10.2.0",
     "mocha-multi-reporters": "^1.5.1",
     "rimraf": "^5.0.1",
