@@ -1808,7 +1808,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testim/chrome-version@npm:^1.1.3":
+"@testim/chrome-version@npm:^1.1.4":
   version: 1.1.4
   resolution: "@testim/chrome-version@npm:1.1.4"
   checksum: 63817db694ab4a49d240217063a30dc2aac9799561132b51da97699207c47cb3355ae043ad1f8b15b770447834cbf36202133641b078f3944d0a502435b40827
@@ -2990,7 +2990,7 @@ __metadata:
     chai: ^4.3.8
     chai-like: ^1.1.1
     chai-things: ^0.2.0
-    chromedriver: 114.0.3
+    chromedriver: 120.0.1
     codecov: ^3.6.5
     download-chromium: ^3.0.0
     eslint: ^8.49.0
@@ -3707,7 +3707,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.4.0":
+"axios@npm:^1.6.0":
   version: 1.6.5
   resolution: "axios@npm:1.6.5"
   dependencies:
@@ -4623,20 +4623,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chromedriver@npm:114.0.3":
-  version: 114.0.3
-  resolution: "chromedriver@npm:114.0.3"
+"chromedriver@npm:120.0.1":
+  version: 120.0.1
+  resolution: "chromedriver@npm:120.0.1"
   dependencies:
-    "@testim/chrome-version": ^1.1.3
-    axios: ^1.4.0
-    compare-versions: ^6.0.0
+    "@testim/chrome-version": ^1.1.4
+    axios: ^1.6.0
+    compare-versions: ^6.1.0
     extract-zip: ^2.0.1
     https-proxy-agent: ^5.0.1
     proxy-from-env: ^1.1.0
-    tcp-port-used: ^1.0.1
+    tcp-port-used: ^1.0.2
   bin:
     chromedriver: bin/chromedriver
-  checksum: a7e5f5f686cd5074e6b71b8fc93d362d1db991beaa4e2391e2e82008eadb93fb170edb5f5daad4aabefe73bf997b698d4cf65a2b5d826a9b28dad04b30fb99db
+  checksum: 7498e9c62583c56641905181b3500354d7597354b5126d8971b81a2f3fed93ab1a5e7c10c54ee76634b651b278527343653f0d9a956e7a4ade8ae395eed79396
   languageName: node
   linkType: hard
 
@@ -5124,7 +5124,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"compare-versions@npm:^6.0.0":
+"compare-versions@npm:^6.1.0":
   version: 6.1.0
   resolution: "compare-versions@npm:6.1.0"
   checksum: d4e2a45706a023d8d0b6680338b66b79e20bd02d1947f0ac6531dab634cbed89fa373b3f03d503c5e489761194258d6e1bae67a07f88b1efc61648454f2d47e7
@@ -14333,7 +14333,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tcp-port-used@npm:^1.0.1":
+"tcp-port-used@npm:^1.0.2":
   version: 1.0.2
   resolution: "tcp-port-used@npm:1.0.2"
   dependencies:
