@@ -29,13 +29,13 @@ yarn add -D vitest allure-vitest
 Add instance of the reporter to the [`reporters` section](https://vitest.dev/config/#reporters) of your Vitest config:
 
 ```js
-import AllureReporter from "allure-vitest";
+import AllureReporter from "allure-vitest/reporter";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
     // add setup file to be able to use Allure API via `this.allure` in your tests
-    setupFiles: ["allure-vitest/setup],
+    setupFiles: ["allure-vitest/setup"],
     reporters: [
       // do not forget to keep the "default" if you want to see something in the console
       "default",
@@ -75,7 +75,7 @@ to Allure Runtime API:
 import { test } from "vitest";
 
 test("sample test", async () => {
-  await this.allure.label("foo", "bar");
+  await allure.label("foo", "bar");
 });
 ```
 

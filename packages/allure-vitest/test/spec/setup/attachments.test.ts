@@ -5,8 +5,8 @@ it("adds attachments", async () => {
   const { tests, attachments } = await runVitestInlineTest(`
     import { test } from "vitest";
 
-    test("text attachment", () => {
-      this.allure.attachment("foo.txt", Buffer.from("bar"), "text/plain");
+    test("text attachment", async () => {
+      await allure.attachment("foo.txt", Buffer.from("bar"), "text/plain");
     });
   `);
 

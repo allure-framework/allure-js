@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/require-await: 0 */
 import * as vitest from "vitest";
 import { LabelName, LinkType, MetadataMessage, ParameterOptions, Stage, Status, StepMetadata } from "allure-js-commons";
 
@@ -27,82 +28,82 @@ const injectAllureMeta = (context: vitest.TaskContext) => {
   };
 };
 
-export const label = (context: vitest.TaskContext, name: string, value: string) => {
+export const label = async (context: vitest.TaskContext, name: string, value: string) => {
   injectAllureMeta(context);
   (context.task.meta as AllureTestMeta).currentTest.labels.push({ name, value });
 };
 
-export const link = (context: vitest.TaskContext, type: LinkType, url: string, name?: string) => {
+export const link = async (context: vitest.TaskContext, type: LinkType, url: string, name?: string) => {
   injectAllureMeta(context);
   (context.task.meta as AllureTestMeta).currentTest.links.push({ type, url, name });
 };
 
-export const epic = (context: vitest.TaskContext, value: string) => {
+export const epic = async (context: vitest.TaskContext, value: string) => {
   injectAllureMeta(context);
   label(context, LabelName.EPIC, value);
 };
 
-export const feature = (context: vitest.TaskContext, value: string) => {
+export const feature = async (context: vitest.TaskContext, value: string) => {
   injectAllureMeta(context);
   label(context, LabelName.FEATURE, value);
 };
 
-export const story = (context: vitest.TaskContext, value: string) => {
+export const story = async (context: vitest.TaskContext, value: string) => {
   injectAllureMeta(context);
   label(context, LabelName.STORY, value);
 };
 
-export const suite = (context: vitest.TaskContext, value: string) => {
+export const suite = async (context: vitest.TaskContext, value: string) => {
   injectAllureMeta(context);
   label(context, LabelName.SUITE, value);
 };
 
-export const parentSuite = (context: vitest.TaskContext, value: string) => {
+export const parentSuite = async (context: vitest.TaskContext, value: string) => {
   injectAllureMeta(context);
   label(context, LabelName.PARENT_SUITE, value);
 };
 
-export const subSuite = (context: vitest.TaskContext, value: string) => {
+export const subSuite = async (context: vitest.TaskContext, value: string) => {
   injectAllureMeta(context);
   label(context, LabelName.SUB_SUITE, value);
 };
 
-export const owner = (context: vitest.TaskContext, value: string) => {
+export const owner = async (context: vitest.TaskContext, value: string) => {
   injectAllureMeta(context);
   label(context, LabelName.OWNER, value);
 };
 
-export const severity = (context: vitest.TaskContext, value: string) => {
+export const severity = async (context: vitest.TaskContext, value: string) => {
   injectAllureMeta(context);
   label(context, LabelName.SEVERITY, value);
 };
 
-export const layer = (context: vitest.TaskContext, value: string) => {
+export const layer = async (context: vitest.TaskContext, value: string) => {
   injectAllureMeta(context);
   label(context, LabelName.LAYER, value);
 };
 
-export const tag = (context: vitest.TaskContext, value: string) => {
+export const tag = async (context: vitest.TaskContext, value: string) => {
   injectAllureMeta(context);
   label(context, LabelName.TAG, value);
 };
 
-export const allureId = (context: vitest.TaskContext, value: string) => {
+export const allureId = async (context: vitest.TaskContext, value: string) => {
   injectAllureMeta(context);
   label(context, LabelName.ALLURE_ID, value);
 };
 
-export const issue = (context: vitest.TaskContext, name: string, url: string) => {
+export const issue = async (context: vitest.TaskContext, name: string, url: string) => {
   injectAllureMeta(context);
   link(context, LinkType.ISSUE, url, name);
 };
 
-export const tms = (context: vitest.TaskContext, name: string, url: string) => {
+export const tms = async (context: vitest.TaskContext, name: string, url: string) => {
   injectAllureMeta(context);
   link(context, LinkType.TMS, url, name);
 };
 
-export const parameter = (context: vitest.TaskContext, name: string, value: string, options?: ParameterOptions) => {
+export const parameter = async (context: vitest.TaskContext, name: string, value: string, options?: ParameterOptions) => {
   injectAllureMeta(context);
   (context.task.meta as AllureTestMeta).currentTest.parameter.push({
     name,
@@ -111,32 +112,32 @@ export const parameter = (context: vitest.TaskContext, name: string, value: stri
   });
 };
 
-export const description = (context: vitest.TaskContext, markdown: string) => {
+export const description = async (context: vitest.TaskContext, markdown: string) => {
   injectAllureMeta(context);
   (context.task.meta as AllureTestMeta).currentTest.description = markdown;
 };
 
-export const descriptionHtml = (context: vitest.TaskContext, html: string) => {
+export const descriptionHtml = async (context: vitest.TaskContext, html: string) => {
   injectAllureMeta(context);
   (context.task.meta as AllureTestMeta).currentTest.descriptionHtml = html;
 };
 
-export const displayName = (context: vitest.TaskContext, name: string) => {
+export const displayName = async (context: vitest.TaskContext, name: string) => {
   injectAllureMeta(context);
   (context.task.meta as AllureTestMeta).currentTest.displayName = name;
 };
 
-export const historyId = (context: vitest.TaskContext, value: string) => {
+export const historyId = async (context: vitest.TaskContext, value: string) => {
   injectAllureMeta(context);
   (context.task.meta as AllureTestMeta).currentTest.historyId = value;
 };
 
-export const testCaseId = (context: vitest.TaskContext, value: string) => {
+export const testCaseId = async (context: vitest.TaskContext, value: string) => {
   injectAllureMeta(context);
   (context.task.meta as AllureTestMeta).currentTest.testCaseId = value;
 };
 
-export const attachment = (context: vitest.TaskContext, name: string, content: Buffer | string, type: string) => {
+export const attachment = async (context: vitest.TaskContext, name: string, content: Buffer | string, type: string) => {
   injectAllureMeta(context);
 
   const { currentTest, currentStep } = context.task.meta as AllureTestMeta;
@@ -185,74 +186,28 @@ export const step = async (context: vitest.TaskContext, name: string, body: () =
 
 export const bindAllureApi = (task: vitest.Task) => {
   return {
-    label: (name: string, value: string) => {
-      label({ task } as vitest.TaskContext, name, value);
-    },
-    link: (type: LinkType, url: string, name?: string) => {
-      link({ task } as vitest.TaskContext, type, url, name);
-    },
-    parameter: (name: string, value: string, options?: ParameterOptions) => {
-      parameter({ task } as vitest.TaskContext, name, value, options);
-    },
-    description: (markdown: string) => {
-      description({ task } as vitest.TaskContext, markdown);
-    },
-    descriptionHtml: (html: string) => {
-      descriptionHtml({ task } as vitest.TaskContext, html);
-    },
-    testCaseId: (id: string) => {
-      testCaseId({ task } as vitest.TaskContext, id);
-    },
-    historyId: (id: string) => {
-      historyId({ task } as vitest.TaskContext, id);
-    },
-    allureId: (id: string) => {
-      allureId({ task } as vitest.TaskContext, id);
-    },
-    displayName: (name: string) => {
-      displayName({ task } as vitest.TaskContext, name);
-    },
-    attachment: (name: string, content: Buffer | string, type: string) => {
-      attachment({ task } as vitest.TaskContext, name, content, type);
-    },
-    issue: (name: string, url: string) => {
-      issue({ task } as vitest.TaskContext, name, url);
-    },
-    tms: (name: string, url: string) => {
-      tms({ task } as vitest.TaskContext, name, url);
-    },
-    epic: (name: string) => {
-      epic({ task } as vitest.TaskContext, name);
-    },
-    feature: (name: string) => {
-      feature({ task } as vitest.TaskContext, name);
-    },
-    story: (name: string) => {
-      story({ task } as vitest.TaskContext, name);
-    },
-    suite: (name: string) => {
-      suite({ task } as vitest.TaskContext, name);
-    },
-    parentSuite: (name: string) => {
-      parentSuite({ task } as vitest.TaskContext, name);
-    },
-    subSuite: (name: string) => {
-      subSuite({ task } as vitest.TaskContext, name);
-    },
-    owner: (name: string) => {
-      owner({ task } as vitest.TaskContext, name);
-    },
-    severity: (name: string) => {
-      severity({ task } as vitest.TaskContext, name);
-    },
-    layer: (name: string) => {
-      layer({ task } as vitest.TaskContext, name);
-    },
-    tag: (name: string) => {
-      tag({ task } as vitest.TaskContext, name);
-    },
-    step: (name: string, body: () => Promise<void>) => {
-      step({ task } as vitest.TaskContext, name, body);
-    },
+    label: (name: string, value: string) => label({ task } as vitest.TaskContext, name, value),
+    link: (type: LinkType, url: string, name?: string) => link({ task } as vitest.TaskContext, type, url, name),
+    parameter: (name: string, value: string, options?: ParameterOptions) => parameter({ task } as vitest.TaskContext, name, value, options),
+    description: (markdown: string) => description({ task } as vitest.TaskContext, markdown),
+    descriptionHtml: (html: string) => descriptionHtml({ task } as vitest.TaskContext, html),
+    testCaseId: (id: string) => testCaseId({ task } as vitest.TaskContext, id),
+    historyId: (id: string) => historyId({ task } as vitest.TaskContext, id),
+    allureId: (id: string) => allureId({ task } as vitest.TaskContext, id),
+    displayName: (name: string) => displayName({ task } as vitest.TaskContext, name),
+    attachment: (name: string, content: Buffer | string, type: string) => attachment({ task } as vitest.TaskContext, name, content, type),
+    issue: (name: string, url: string) => issue({ task } as vitest.TaskContext, name, url),
+    tms: (name: string, url: string) => tms({ task } as vitest.TaskContext, name, url),
+    epic: (name: string) => epic({ task } as vitest.TaskContext, name),
+    feature: (name: string) => feature({ task } as vitest.TaskContext, name),
+    story: (name: string) => story({ task } as vitest.TaskContext, name),
+    suite: (name: string) => suite({ task } as vitest.TaskContext, name),
+    parentSuite: (name: string) => parentSuite({ task } as vitest.TaskContext, name),
+    subSuite: (name: string) => subSuite({ task } as vitest.TaskContext, name),
+    owner: (name: string) => owner({ task } as vitest.TaskContext, name),
+    severity: (name: string) => severity({ task } as vitest.TaskContext, name),
+    layer: (name: string) => layer({ task } as vitest.TaskContext, name),
+    tag: (name: string) => tag({ task } as vitest.TaskContext, name),
+    step: (name: string, body: () => Promise<void>) => step({ task } as vitest.TaskContext, name, body),
   };
 };

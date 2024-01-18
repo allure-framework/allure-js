@@ -5,8 +5,8 @@ it("sets test display name", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
 
-    test("display name", () => {
-      this.allure.displayName("foo");
+    test("display name", async () => {
+      await allure.displayName("foo");
     });
   `);
 

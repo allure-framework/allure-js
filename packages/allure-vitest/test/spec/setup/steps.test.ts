@@ -7,7 +7,7 @@ it("handles single lambda step", async () => {
     import { test } from "vitest";
 
     test("steps", async () => {
-      await this.allure.step("step", () => {});
+      await allure.step("step", () => {});
     });
   `);
 
@@ -25,8 +25,8 @@ it("handles single lambda step with attachment", async () => {
     import { test } from "vitest";
 
     test("steps", async () => {
-      await this.allure.step("step", () => {
-        this.allure.attachment("foo.txt", Buffer.from("bar"), "text/plain");
+      await allure.step("step", () => {
+        allure.attachment("foo.txt", Buffer.from("bar"), "text/plain");
       });
     });
   `);
@@ -47,9 +47,9 @@ it("handles nested lambda steps", async () => {
     import { test } from "vitest";
 
     test("steps", async () => {
-      await this.allure.step("step 1", async () => {
-        await this.allure.step("step 2", async () => {
-          await this.allure.step("step 3", () => {
+      await allure.step("step 1", async () => {
+        await allure.step("step 2", async () => {
+          await allure.step("step 3", () => {
           });
         });
       });
