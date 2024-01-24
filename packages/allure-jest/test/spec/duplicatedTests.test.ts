@@ -1,10 +1,12 @@
-import expect from "expect";
-import { runJestTests } from "../utils";
+import { expect, it } from "@jest/globals";
+import { runJestInlineTest } from "../utils";
 
-describe("tests with the same name", () => {
-  it("throws an user-friendly error", async () => {
-    await expect(() => runJestTests(["./test/fixtures/duplicatedTests.test.js"])).rejects.toThrow(
-      'Test "has the same name" has been already initialized! To continue with reporting, please rename the test.',
-    );
-  });
+it("doesn't report tests with the same name several times", async () => {
+  const { tests } = await runJestInlineTest(`
+    it("has the same name", () => {});
+
+    it("has the same name", () => {});
+  `);
+
+  expect(tests).toHaveLength(1);
 });

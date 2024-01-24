@@ -1,16 +1,15 @@
-import expect from "expect";
-import { TestResultsByFullName, runJestTests } from "../utils";
+import { describe, expect, it } from "@jest/globals";
+import { runJestInlineTest } from "../utils";
 
 describe("testCaseId", () => {
-  let results: TestResultsByFullName;
+  it("testCaseId", async () => {
+    const { tests } = await runJestInlineTest(`
+      it("testCaseId", async () => {
+        await allure.testCaseId("foo");
+      })
+    `);
 
-  beforeEach(async () => {
-    results = await runJestTests(["./test/fixtures/testCaseId.test.js"]);
-  });
-
-  it("adds custom history id", () => {
-    const { testCaseId } = results.testCaseId;
-
-    expect(testCaseId).toBe("foo");
+    expect(tests).toHaveLength(1);
+    expect(tests[0].testCaseId).toBe("foo");
   });
 });

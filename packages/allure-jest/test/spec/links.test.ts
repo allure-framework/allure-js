@@ -1,20 +1,17 @@
-import expect from "expect";
-import { TestResultsByFullName, runJestTests } from "../utils";
+import { describe, expect, it } from "@jest/globals";
+import { LinkType } from "allure-js-commons";
+import { runJestInlineTest } from "../utils";
 
-/**
- * Issues and TMS links templates are defined in `test/jest.config.js`
- */
 describe("links", () => {
-  let results: TestResultsByFullName;
+  it("link", async () => {
+    const { tests } = await runJestInlineTest(`
+      it("link", async () => {
+        allure.link("http://example.org", "bar", "foo");
+      })
+    `);
 
-  beforeEach(async () => {
-    results = await runJestTests(["./test/fixtures/links.test.js"]);
-  });
-
-  it("adds custom link", () => {
-    const { links } = results.custom;
-
-    expect(links).toContainEqual(
+    expect(tests).toHaveLength(1);
+    expect(tests[0].links).toContainEqual(
       expect.objectContaining({
         type: "foo",
         name: "bar",
@@ -23,26 +20,52 @@ describe("links", () => {
     );
   });
 
-  it("adds tms link", () => {
-    const { links } = results.tms;
+  it("issue", async () => {
+    const { tests } = await runJestInlineTest(`
+      it("issue", async () => {
+        allure.issue("foo", "http://example.org/issues/1");
+        allure.issue("bar", "2");
+      })
+    `);
 
-    expect(links).toContainEqual(
+    expect(tests).toHaveLength(1);
+    expect(tests[0].links).toContainEqual(
       expect.objectContaining({
-        type: "tms",
+        type: LinkType.ISSUE,
         name: "foo",
-        url: "http://example.org/tasks/1",
+        url: "http://example.org/issues/1",
+      }),
+    );
+    expect(tests[0].links).toContainEqual(
+      expect.objectContaining({
+        type: LinkType.ISSUE,
+        name: "bar",
+        url: "http://example.org/issues/2",
       }),
     );
   });
 
-  it("adds issue link", () => {
-    const { links } = results.issue;
+  it("tms", async () => {
+    const { tests } = await runJestInlineTest(`
+      it("tms", async () => {
+        allure.tms("foo", "http://example.org/tasks/1");
+        allure.tms("bar", "2");
+      })
+    `);
 
-    expect(links).toContainEqual(
+    expect(tests).toHaveLength(1);
+    expect(tests[0].links).toContainEqual(
       expect.objectContaining({
-        type: "issue",
+        type: LinkType.TMS,
         name: "foo",
-        url: "http://example.org/issues/1",
+        url: "http://example.org/tasks/1",
+      }),
+    );
+    expect(tests[0].links).toContainEqual(
+      expect.objectContaining({
+        type: LinkType.TMS,
+        name: "bar",
+        url: "http://example.org/tasks/2",
       }),
     );
   });

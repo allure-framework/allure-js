@@ -1,22 +1,26 @@
-import expect from "expect";
-import { TestResultsByFullName, runJestTests } from "../utils";
+import { describe, expect, it } from "@jest/globals";
+import { runJestInlineTest } from "../utils";
 
 describe("description", () => {
-  let results: TestResultsByFullName;
+  it("description", async () => {
+    const { tests } = await runJestInlineTest(`
+      it("description", async () => {
+        await allure.description("foo");
+      })
+    `);
 
-  beforeEach(async () => {
-    results = await runJestTests(["./test/fixtures/description.test.js"]);
+    expect(tests).toHaveLength(1);
+    expect(tests[0].description).toBe("foo");
   });
 
-  it("adds markdown description", () => {
-    const { description } = results.markdown;
+  it("descriptionHtml", async () => {
+    const { tests } = await runJestInlineTest(`
+      it("descriptionHtml", async () => {
+        await allure.descriptionHtml("foo");
+      })
+    `);
 
-    expect(description).toBe("foo");
-  });
-
-  it("adds custom history id", () => {
-    const { descriptionHtml } = results.html;
-
-    expect(descriptionHtml).toBe("foo");
+    expect(tests).toHaveLength(1);
+    expect(tests[0].descriptionHtml).toBe("foo");
   });
 });

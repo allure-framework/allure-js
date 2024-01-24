@@ -3,19 +3,21 @@ import type { Circus } from "@jest/types";
 import os from "node:os";
 import { dirname, sep } from "node:path";
 import process from "node:process";
+import stripAnsi from "strip-ansi";
 import {
   AllureRuntime,
   AllureTest,
   LabelName,
   Link,
   LinkType,
+  MessageAllureWriter,
   MetadataMessage,
   Stage,
   Status,
   getSuitesLabels,
 } from "allure-js-commons";
 import { AllureJestApi } from "./AllureJestApi";
-import { getTestId, getTestPath, removeAnsiColorsFromString } from "./utils";
+import { getTestId, getTestPath } from "./utils";
 
 const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
 const hostname = os.hostname();
@@ -43,10 +45,15 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     constructor(config: JestEnvironmentConfig, context: EnvironmentContext) {
       super(config, context);
 
-      const { resultsDir = "allure-results", links = [] } = config?.projectConfig?.testEnvironmentOptions || {};
+      const {
+        resultsDir = "allure-results",
+        links = [],
+        testMode = false,
+      } = config?.projectConfig?.testEnvironmentOptions || {};
 
       this.runtime = new AllureRuntime({
         resultsDir: resultsDir as string,
+        writer: testMode ? new MessageAllureWriter() : undefined,
       });
       this.linksMatchers = links as LinkMatcher[];
       this.global.allure = new AllureJestApi(this, this.global);
@@ -65,7 +72,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       return links.map((link) => {
         const matcher = this.linksMatchers.find((m) => m.type === link.type);
 
-        if (!matcher) {
+        if (!matcher || link.url.startsWith("http")) {
           return link;
         }
 
@@ -149,9 +156,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
        * the same name could be removed from the running tests, so better to throw an explicit error
        */
       if (this.runningTests.has(newTestId)) {
-        throw new Error(
+        // eslint-disable-next-line no-console
+        console.error(
           `Test "${newTestId}" has been already initialized! To continue with reporting, please rename the test.`,
         );
+        return;
       }
 
       this.runningTests.set(newTestId, newTest);
@@ -203,8 +212,8 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       currentTest.stage = Stage.FINISHED;
       currentTest.status = Status.FAILED;
       currentTest.statusDetails = {
-        message: removeAnsiColorsFromString(errorMessage),
-        trace: removeAnsiColorsFromString(errorTrace),
+        message: stripAnsi(errorMessage),
+        trace: stripAnsi(errorTrace),
       };
     }
 
