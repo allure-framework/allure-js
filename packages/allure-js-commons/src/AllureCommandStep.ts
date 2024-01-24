@@ -257,8 +257,8 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
             stage: Stage.FINISHED,
             status: Status.BROKEN,
             statusDetails: {
-              message: stripAnsi(e.message as string),
-              trace: stripAnsi(e.stack as string),
+              message: stripAnsi((e.message || "") as string),
+              trace: stripAnsi((e.stack || "") as string),
             },
             attachments: this.attachments,
             parameters: [],

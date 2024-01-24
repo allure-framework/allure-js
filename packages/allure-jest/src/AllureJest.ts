@@ -206,14 +206,14 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       // jest collects all errors, but we need to report the first one because it's a reason why the test has been failed
       const [error] = test.errors;
       const hasMultipleErrors = Array.isArray(error);
-      const errorMessage = (hasMultipleErrors ? error[0].message : error.message) as string;
-      const errorTrace = (hasMultipleErrors ? error[0].stack : error.stack) as string;
+      const errorMessage = (hasMultipleErrors ? error[0]?.message : error.message) as string;
+      const errorTrace = (hasMultipleErrors ? error[0]?.stack : error.stack) as string;
 
       currentTest.stage = Stage.FINISHED;
       currentTest.status = Status.FAILED;
       currentTest.statusDetails = {
-        message: stripAnsi(errorMessage),
-        trace: stripAnsi(errorTrace),
+        message: stripAnsi(errorMessage || ""),
+        trace: stripAnsi(errorTrace || ""),
       };
     }
 
