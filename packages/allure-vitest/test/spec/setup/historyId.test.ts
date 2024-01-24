@@ -5,8 +5,8 @@ it("sets test history id", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
 
-    test("history id", () => {
-      this.allure.historyId("foo");
+    test("history id", async () => {
+      await allure.historyId("foo");
     });
   `);
 

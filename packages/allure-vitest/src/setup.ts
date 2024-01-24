@@ -13,13 +13,9 @@ beforeEach((ctx) => {
     attachments: [],
   };
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  this.allure = bindAllureApi(ctx.task);
+  global.allure = bindAllureApi(ctx.task);
 });
 
 afterEach(() => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  this.allure = undefined;
+  global.allure = undefined;
 });

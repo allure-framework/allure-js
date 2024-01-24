@@ -5,8 +5,8 @@ it("sets description", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
 
-    test("description", () => {
-      this.allure.description("foo");
+    test("description", async () => {
+      await allure.description("foo");
     });
   `);
 
@@ -18,8 +18,8 @@ it("sets html description", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
 
-    test("description html", () => {
-      this.allure.descriptionHtml("foo");
+    test("description html", async () => {
+      await allure.descriptionHtml("foo");
     });
   `);
 

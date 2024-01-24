@@ -7,8 +7,8 @@ describe("labels", () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
 
-      test("label", () => {
-        this.allure.label("foo", "bar");
+      test("label", async () => {
+        await allure.label("foo", "bar");
       });
     `);
 
@@ -20,8 +20,8 @@ describe("labels", () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
 
-      test("epic", () => {
-        this.allure.epic("foo");
+      test("epic", async () => {
+        await allure.epic("foo");
       });
     `);
 
@@ -33,8 +33,8 @@ describe("labels", () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
 
-      test("feature", () => {
-        this.allure.feature("foo");
+      test("feature", async () => {
+        await allure.feature("foo");
       });
     `);
 
@@ -46,8 +46,8 @@ describe("labels", () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
 
-      test("story", () => {
-        this.allure.story("foo");
+      test("story", async () => {
+        await allure.story("foo");
       });
     `);
 
@@ -59,8 +59,8 @@ describe("labels", () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
 
-      test("suite", () => {
-        this.allure.suite("foo");
+      test("suite", async () => {
+        await allure.suite("foo");
       });
     `);
 
@@ -72,8 +72,8 @@ describe("labels", () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
 
-      test("parentSuite", () => {
-        this.allure.parentSuite("foo");
+      test("parentSuite", async () => {
+        await allure.parentSuite("foo");
       });
     `);
 
@@ -85,8 +85,8 @@ describe("labels", () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
 
-      test("subSuite", () => {
-        this.allure.subSuite("foo");
+      test("subSuite", async () => {
+        await allure.subSuite("foo");
       });
     `);
 
@@ -98,8 +98,8 @@ describe("labels", () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
 
-      test("owner", () => {
-        this.allure.owner("foo");
+      test("owner", async () => {
+        await allure.owner("foo");
       });
     `);
 
@@ -111,8 +111,8 @@ describe("labels", () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
 
-      test("severity", () => {
-        this.allure.severity("foo");
+      test("severity", async () => {
+        await allure.severity("foo");
       });
     `);
 
@@ -124,8 +124,8 @@ describe("labels", () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
 
-      test("layer", () => {
-        this.allure.layer("foo");
+      test("layer", async () => {
+        await allure.layer("foo");
       });
     `);
 
@@ -137,8 +137,8 @@ describe("labels", () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
 
-      test("allureId", () => {
-        this.allure.allureId("foo");
+      test("allureId", async () => {
+        await allure.allureId("foo");
       });
     `);
 
@@ -150,8 +150,8 @@ describe("labels", () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
 
-      test("tag", () => {
-        this.allure.tag("foo");
+      test("tag", async () => {
+        await allure.tag("foo");
       });
     `);
 
