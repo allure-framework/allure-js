@@ -11,6 +11,7 @@ it("adds attachments", async () => {
   `);
 
   expect(tests).toHaveLength(1);
+  expect(tests[0].attachments).toHaveLength(1);
 
   const [attachment] = tests[0].attachments;
 

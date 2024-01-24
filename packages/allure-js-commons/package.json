@@ -39,7 +39,8 @@
     "test": "ts-node --project test/tsconfig.json test/runner.ts"
   },
   "dependencies": {
-    "properties": "^1.2.1"
+    "properties": "^1.2.1",
+    "strip-ansi": "^5.2.0"
   },
   "devDependencies": {
     "@types/chai": "^4.3.6",

@@ -1,25 +1,25 @@
-import expect from "expect";
+import { expect, it } from "@jest/globals";
 import { Stage, Status } from "allure-js-commons";
-import { TestResultsByFullName, runJestTests } from "../utils";
+import { runJestInlineTest } from "../utils";
 
-describe("skipped", () => {
-  let results: TestResultsByFullName;
+it("skipped test", async () => {
+  const { tests } = await runJestInlineTest(`
+      it.skip("skipped", () => {});
+    `);
 
-  beforeEach(async () => {
-    results = await runJestTests(["./test/fixtures/skipped.test.js"]);
-  });
+  expect(tests).toHaveLength(1);
+  expect(tests[0].stage).toBe(Stage.PENDING);
+  expect(tests[0].status).toBe(Status.SKIPPED);
+});
 
-  it("marks skipped test as skipped", () => {
-    const { stage, status } = results.skipped;
+it("test inside skipped suite", async () => {
+  const { tests } = await runJestInlineTest(`
+      describe.skip("suite", () => {
+        it("skipped", () => {});
+      });
+    `);
 
-    expect(stage).toBe(Stage.PENDING);
-    expect(status).toBe(Status.SKIPPED);
-  });
-
-  it("marks test inside skipped suite as skipped", () => {
-    const { stage, status } = results["suite skipped"];
-
-    expect(stage).toBe(Stage.PENDING);
-    expect(status).toBe(Status.SKIPPED);
-  });
+  expect(tests).toHaveLength(1);
+  expect(tests[0].stage).toBe(Stage.PENDING);
+  expect(tests[0].status).toBe(Status.SKIPPED);
 });

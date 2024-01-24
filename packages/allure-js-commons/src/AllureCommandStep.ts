@@ -1,3 +1,4 @@
+import stripAnsi from "strip-ansi";
 import { AllureRuntime } from "./AllureRuntime";
 import {
   AttachmentMetadata,
@@ -256,8 +257,8 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
             stage: Stage.FINISHED,
             status: Status.BROKEN,
             statusDetails: {
-              message: e.message,
-              trace: e.trace,
+              message: stripAnsi((e.message || "") as string),
+              trace: stripAnsi((e.stack || "") as string),
             },
             attachments: this.attachments,
             parameters: [],

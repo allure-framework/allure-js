@@ -2,7 +2,6 @@ import { createHash } from "crypto";
 import { readFile } from "fs/promises";
 import path from "path";
 import { env } from "process";
-import { AllureTest } from "./AllureTest";
 import { ExecutableItem, Label, LabelName, Status } from "./model";
 
 export const md5 = (data: string) => createHash("md5").update(data).digest("hex");

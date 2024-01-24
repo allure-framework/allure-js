@@ -1,47 +1,88 @@
-import { runCLI } from "@jest/core";
-import type { Config } from "@jest/types";
-import fs from "fs";
-import { cwd } from "process";
-import { match, restore, stub } from "sinon";
-import type { TestResult } from "allure-js-commons";
+import { fork } from "node:child_process";
+import { randomUUID } from "node:crypto";
+import { mkdir, rm, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
 
 export type TestResultsByFullName = Record<string, TestResult>;
 
-/**
- * Runs given jest tests (fixtures) with real jest runner and returns
- * mapped allure test results by test name
- *
- * @example
- * ```js
- * import { runJestTests } from "./test/utils"
- *
- * // path should be relative to `./test` directory in the project
- * const res = await runJestTests(["./fixtures/myTest.test.js"])
- * ```
- * @param fixtures Paths of fixtures should be tested
- */
-export const runJestTests = async (fixtures: string[]): Promise<TestResultsByFullName> => {
-  const argv: Config.Argv = {
-    config: require.resolve("./jest.config"),
-    collectCoverage: false,
-    reporters: [],
-    $0: "",
-    _: fixtures,
+export const runJestInlineTest = async (test: string): Promise<AllureResults> => {
+  const res: AllureResults = {
+    tests: [],
+    groups: [],
+    attachments: {},
   };
-  const writeFileSpy = stub(fs, "writeFileSync").withArgs(match("allure-results")).returns(undefined);
+  const testDir = join(__dirname, "fixtures", randomUUID());
+  const configFilePath = join(testDir, "jest.config.js");
+  const testFilePath = join(testDir, "sample.test.js");
+  const configContent = `
+    const config = {
+      testEnvironment: require.resolve("allure-jest/node"),
+      testEnvironmentOptions: {
+        testMode: true,
+        links: [
+          {
+            type: "issue",
+            urlTemplate: "http://example.org/issues/%s",
+          },
+          {
+            type: "tms",
+            urlTemplate: "http://example.org/tasks/%s",
+          },
+        ],
+      },
+    };
 
-  const res = await runCLI(argv, [cwd()]);
-  const failedTestInRuntime = res.results.testResults.find((test) => !!test.testExecError);
+    module.exports = config;
+  `;
 
-  restore();
+  await mkdir(testDir, { recursive: true });
+  await writeFile(configFilePath, configContent, "utf8");
+  await writeFile(testFilePath, test, "utf8");
 
-  if (failedTestInRuntime) {
-    throw failedTestInRuntime.testExecError;
-  }
+  const modulePath = require.resolve("jest-cli/bin/jest");
+  const args = ["--config", configFilePath, testDir];
+  const testProcess = fork(modulePath, args, {
+    env: {
+      ...process.env,
+      ALLURE_POST_PROCESSOR_FOR_TEST: String("true"),
+    },
+    cwd: testDir,
+    stdio: "pipe",
+  });
+  let processError = "";
 
-  return writeFileSpy.args.reduce((acc, [, rawResult]) => {
-    const result = JSON.parse(rawResult as string) as TestResult;
+  testProcess.on("message", (message: string) => {
+    const event: { path: string; type: string; data: string } = JSON.parse(message);
+    const data = event.type !== "attachment" ? JSON.parse(Buffer.from(event.data, "base64").toString()) : event.data;
 
-    return Object.assign(acc, { [result.fullName!]: result });
-  }, {});
+    switch (event.type) {
+      case "container":
+        res.groups.push(data as TestResultContainer);
+        break;
+      case "result":
+        res.tests.push(data as TestResult);
+        break;
+      case "attachment":
+        res.attachments[event.path] = event.data;
+        break;
+      default:
+        break;
+    }
+  });
+  testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
+    process.stdout.write(String(chunk));
+  });
+  testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
+    process.stderr.write(String(chunk));
+    processError += chunk;
+  });
+
+  return new Promise((resolve) => {
+    testProcess.on("close", async () => {
+      await rm(testDir, { recursive: true });
+
+      return resolve(res);
+    });
+  });
 };

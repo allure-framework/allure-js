@@ -58,6 +58,7 @@ export const runVitestInlineTest = async (test: string): Promise<AllureResults> 
     cwd: testDir,
     stdio: "pipe",
   });
+  let processError = "";
 
   testProcess.on("message", (message: string) => {
     const event: { path: string; type: string; data: string } = JSON.parse(message);
@@ -77,22 +78,19 @@ export const runVitestInlineTest = async (test: string): Promise<AllureResults> 
         break;
     }
   });
-  testProcess.stdout?.on("data", (chunk) => {
+  testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
     process.stdout.write(String(chunk));
   });
-  testProcess.stderr?.on("data", (chunk) => {
+  testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
     process.stderr.write(String(chunk));
+    processError += chunk;
   });
 
   return new Promise((resolve, reject) => {
-    testProcess.on("close", async (code) => {
+    testProcess.on("close", async () => {
       await rm(testDir, { recursive: true });
 
-      if (code === 0) {
-        return resolve(res);
-      }
-
-      return reject();
+      return resolve(res);
     });
   });
 };

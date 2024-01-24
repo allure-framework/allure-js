@@ -1,18 +1,13 @@
-import expect from "expect";
+import { expect, it } from "@jest/globals";
 import { Stage, Status } from "allure-js-commons";
-import { TestResultsByFullName, runJestTests } from "../utils";
+import { runJestInlineTest } from "../utils";
 
-describe("todo", () => {
-  let results: TestResultsByFullName;
+it("todo", async () => {
+  const { tests } = await runJestInlineTest(`
+      it.todo("todo")
+    `);
 
-  beforeEach(async () => {
-    results = await runJestTests(["./test/fixtures/todo.test.js"]);
-  });
-
-  it("marks todo tests as skipped", () => {
-    const { stage, status } = results.todo;
-
-    expect(stage).toBe(Stage.PENDING);
-    expect(status).toBe(Status.SKIPPED);
-  });
+  expect(tests).toHaveLength(1);
+  expect(tests[0].stage).toBe(Stage.PENDING);
+  expect(tests[0].status).toBe(Status.SKIPPED);
 });
