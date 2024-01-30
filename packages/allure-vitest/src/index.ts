@@ -42,7 +42,7 @@ declare global {
  * runtime errors when the metadata is not available
  */
 const injectAllureMeta = (context: vitest.TaskContext) => {
-  if ((context.task.meta as AllureTestMeta)?.currentTest) {
+  if ((context?.task?.meta as AllureTestMeta)?.currentTest) {
     return;
   }
 
