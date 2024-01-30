@@ -13,9 +13,11 @@ beforeEach((ctx) => {
     attachments: [],
   };
 
+  // @ts-ignore
   global.allure = bindAllureApi(ctx.task);
 });
 
 afterEach(() => {
+  // @ts-ignore
   global.allure = undefined;
 });
