@@ -2990,7 +2990,7 @@ __metadata:
     chai: ^4.3.8
     chai-like: ^1.1.1
     chai-things: ^0.2.0
-    chromedriver: 120.0.2
+    chromedriver: 121.0.0
     codecov: ^3.6.5
     download-chromium: ^3.0.0
     eslint: ^8.49.0
@@ -4637,9 +4637,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chromedriver@npm:120.0.2":
-  version: 120.0.2
-  resolution: "chromedriver@npm:120.0.2"
+"chromedriver@npm:121.0.0":
+  version: 121.0.0
+  resolution: "chromedriver@npm:121.0.0"
   dependencies:
     "@testim/chrome-version": ^1.1.4
     axios: ^1.6.5
@@ -4650,7 +4650,7 @@ __metadata:
     tcp-port-used: ^1.0.2
   bin:
     chromedriver: bin/chromedriver
-  checksum: 8412594f6950ec1d30a85136408dd9cc38eb46b2b23f9e5c600f2075fbe8e2eb3440fb448214d380a0c4d0dce74b1ddc25343072d0ad88c643efd5ccfebb0afe
+  checksum: 15ecfd6959e50817ae4a689e1cf3e09b49318c271b80bc563b0af3d1bd17adb6faa845f7d9bd9dc3ffe38e30941d595755748e6ac0f98a1043bdd2e4376ff431
   languageName: node
   linkType: hard
 
