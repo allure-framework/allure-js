@@ -3967,7 +3967,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["chai", "npm:4.3.8"],\
             ["chai-like", "virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:1.1.1"],\
             ["chai-things", "npm:0.2.0"],\
-            ["chromedriver", "npm:120.0.1"],\
+            ["chromedriver", "npm:120.0.2"],\
             ["codecov", "npm:3.8.2"],\
             ["download-chromium", "npm:3.0.0"],\
             ["eslint", "npm:8.49.0"],\
@@ -4787,11 +4787,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["npm:1.6.5", {\
-          "packageLocation": "./.yarn/cache/axios-npm-1.6.5-87404a12d6-e28d67b2d9.zip/node_modules/axios/",\
+        ["npm:1.6.6", {\
+          "packageLocation": "./.yarn/cache/axios-npm-1.6.6-a57206d7df-0a299c2264.zip/node_modules/axios/",\
           "packageDependencies": [\
-            ["axios", "npm:1.6.5"],\
-            ["follow-redirects", "virtual:87404a12d617a0f284f46fa368966665b2913bbd41d7ad24d282540aefa3360d8754e9717ae9b8aa4b57d1893372657e94658e9e39b9d068bbcf6ea38c2ceb2f#npm:1.15.5"],\
+            ["axios", "npm:1.6.6"],\
+            ["follow-redirects", "virtual:a57206d7df63450c743e1dad6cbbbe255736ff596551717a9d2763d2077f1a84cf47134f24080b064d227af32b56b6062156d3f62159fee5d2a9abc87caf3773#npm:1.15.5"],\
             ["form-data", "npm:4.0.0"],\
             ["proxy-from-env", "npm:1.1.0"]\
           ],\
@@ -5878,12 +5878,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["chromedriver", [\
-        ["npm:120.0.1", {\
-          "packageLocation": "./.yarn/unplugged/chromedriver-npm-120.0.1-5544a83bc3/node_modules/chromedriver/",\
+        ["npm:120.0.2", {\
+          "packageLocation": "./.yarn/unplugged/chromedriver-npm-120.0.2-5fbe3da408/node_modules/chromedriver/",\
           "packageDependencies": [\
-            ["chromedriver", "npm:120.0.1"],\
+            ["chromedriver", "npm:120.0.2"],\
             ["@testim/chrome-version", "npm:1.1.4"],\
-            ["axios", "npm:1.6.5"],\
+            ["axios", "npm:1.6.6"],\
             ["compare-versions", "npm:6.1.0"],\
             ["extract-zip", "npm:2.0.1"],\
             ["https-proxy-agent", "npm:5.0.1"],\
@@ -8728,10 +8728,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["virtual:87404a12d617a0f284f46fa368966665b2913bbd41d7ad24d282540aefa3360d8754e9717ae9b8aa4b57d1893372657e94658e9e39b9d068bbcf6ea38c2ceb2f#npm:1.15.5", {\
-          "packageLocation": "./.yarn/__virtual__/follow-redirects-virtual-1897902bf4/0/cache/follow-redirects-npm-1.15.5-9d14db76ca-5ca49b5ce6.zip/node_modules/follow-redirects/",\
+        ["virtual:a57206d7df63450c743e1dad6cbbbe255736ff596551717a9d2763d2077f1a84cf47134f24080b064d227af32b56b6062156d3f62159fee5d2a9abc87caf3773#npm:1.15.5", {\
+          "packageLocation": "./.yarn/__virtual__/follow-redirects-virtual-00f22d4844/0/cache/follow-redirects-npm-1.15.5-9d14db76ca-5ca49b5ce6.zip/node_modules/follow-redirects/",\
           "packageDependencies": [\
-            ["follow-redirects", "virtual:87404a12d617a0f284f46fa368966665b2913bbd41d7ad24d282540aefa3360d8754e9717ae9b8aa4b57d1893372657e94658e9e39b9d068bbcf6ea38c2ceb2f#npm:1.15.5"],\
+            ["follow-redirects", "virtual:a57206d7df63450c743e1dad6cbbbe255736ff596551717a9d2763d2077f1a84cf47134f24080b064d227af32b56b6062156d3f62159fee5d2a9abc87caf3773#npm:1.15.5"],\
             ["@types/debug", null],\
             ["debug", null]\
           ],\

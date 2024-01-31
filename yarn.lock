@@ -2990,7 +2990,7 @@ __metadata:
     chai: ^4.3.8
     chai-like: ^1.1.1
     chai-things: ^0.2.0
-    chromedriver: 120.0.1
+    chromedriver: 120.0.2
     codecov: ^3.6.5
     download-chromium: ^3.0.0
     eslint: ^8.49.0
@@ -3712,14 +3712,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.6.0":
-  version: 1.6.5
-  resolution: "axios@npm:1.6.5"
+"axios@npm:^1.6.5":
+  version: 1.6.6
+  resolution: "axios@npm:1.6.6"
   dependencies:
     follow-redirects: ^1.15.4
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
-  checksum: e28d67b2d9134cb4608c44d8068b0678cfdccc652742e619006f27264a30c7aba13b2cd19c6f1f52ae195b5232734925928fb192d5c85feea7edd2f273df206d
+  checksum: 0a299c22643992a4f00c8f143e5d41815ff3c2bd56b9b9cc9cd3b6dfe43e9beabdd305b6d0d6ef41748021498a389165d32963c556da4a48f4042b1ea95dd30e
   languageName: node
   linkType: hard
 
@@ -4637,12 +4637,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chromedriver@npm:120.0.1":
-  version: 120.0.1
-  resolution: "chromedriver@npm:120.0.1"
+"chromedriver@npm:120.0.2":
+  version: 120.0.2
+  resolution: "chromedriver@npm:120.0.2"
   dependencies:
     "@testim/chrome-version": ^1.1.4
-    axios: ^1.6.0
+    axios: ^1.6.5
     compare-versions: ^6.1.0
     extract-zip: ^2.0.1
     https-proxy-agent: ^5.0.1
@@ -4650,7 +4650,7 @@ __metadata:
     tcp-port-used: ^1.0.2
   bin:
     chromedriver: bin/chromedriver
-  checksum: 7498e9c62583c56641905181b3500354d7597354b5126d8971b81a2f3fed93ab1a5e7c10c54ee76634b651b278527343653f0d9a956e7a4ade8ae395eed79396
+  checksum: 8412594f6950ec1d30a85136408dd9cc38eb46b2b23f9e5c600f2075fbe8e2eb3440fb448214d380a0c4d0dce74b1ddc25343072d0ad88c643efd5ccfebb0afe
   languageName: node
   linkType: hard
 
