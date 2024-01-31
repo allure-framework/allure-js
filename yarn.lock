@@ -2062,10 +2062,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jasmine@npm:^3.3.12":
-  version: 3.10.12
-  resolution: "@types/jasmine@npm:3.10.12"
-  checksum: 6103fa21fc07d966535e44fbe956794b8df51bfd647a4af36787effe244511e3fe235148ca4409bfb3a7a0acbfc4831861da92b3a70f22feafc0e34714a445e8
+"@types/jasmine@npm:^5.0.0":
+  version: 5.1.4
+  resolution: "@types/jasmine@npm:5.1.4"
+  checksum: 1b2048d988077aee747a72fab31f4e0820f928c25e886ab91aa5a1ee2d4277655c22f81feed5d7b3b15cc61542878568a24b2381457eb21dfc84250c693f980a
   languageName: node
   linkType: hard
 
@@ -3017,7 +3017,7 @@ __metadata:
   resolution: "allure-jasmine@workspace:packages/allure-jasmine"
   dependencies:
     "@types/eslint": ^8
-    "@types/jasmine": ^3.3.12
+    "@types/jasmine": ^5.0.0
     "@types/node": ^20.6.3
     "@typescript-eslint/eslint-plugin": ^6.7.0
     "@typescript-eslint/parser": ^6.7.0
@@ -3028,7 +3028,7 @@ __metadata:
     eslint-plugin-jsdoc: ^48.0.0
     eslint-plugin-no-null: ^1.0.2
     eslint-plugin-prefer-arrow: ^1.2.3
-    jasmine: ^3.4.0
+    jasmine: ^5.0.0
     rimraf: ^5.0.1
     typescript: ^5.2.2
   languageName: unknown
@@ -3045,7 +3045,7 @@ __metadata:
     "@jest/types": ^29.6.1
     "@types/eslint": ^8
     "@types/glob": ^8.1.0
-    "@types/jasmine": ^3.3.12
+    "@types/jasmine": ^5.0.0
     "@types/jest": ^29.5.11
     "@types/mocha": ^10.0.1
     "@types/node": ^20.6.3
@@ -9098,22 +9098,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jasmine-core@npm:~3.99.0":
-  version: 3.99.1
-  resolution: "jasmine-core@npm:3.99.1"
-  checksum: 4e4a89739d99e471b86c7ccc4c5c244a77cc6d1e17b2b0d87d81266b8415697354d8873f7e764790a10661744f73a753a6e9bcd9b3e48c66a0c9b8a092b071b7
+"jasmine-core@npm:~5.1.0":
+  version: 5.1.1
+  resolution: "jasmine-core@npm:5.1.1"
+  checksum: 84f1b3a0af7769c9bd514cdde1e366e7798a0b1110efa5a09157c653c53cdad77e1c84bffd5cafe07649c9dba7141cd602c444ac37813f111f8f5b5e3f8f6c99
   languageName: node
   linkType: hard
 
-"jasmine@npm:^3.4.0":
-  version: 3.99.0
-  resolution: "jasmine@npm:3.99.0"
+"jasmine@npm:^5.0.0":
+  version: 5.1.0
+  resolution: "jasmine@npm:5.1.0"
   dependencies:
-    glob: ^7.1.6
-    jasmine-core: ~3.99.0
+    glob: ^10.2.2
+    jasmine-core: ~5.1.0
   bin:
     jasmine: bin/jasmine.js
-  checksum: baa9a5d8555b844063cd6e11bb272d424a17fa3ebd31c62b211a80c9b8dbb4d9c26218b33212b4f8122e38204a443c2eefbcce89c1c72ee3f0044037ec651427
+  checksum: 68ca655f05d66fb80d541d2d3305a9a683b76efc21adc5b99a748938881d16dccc3bfe3d091fff802e8c85a9bfce7f825c8ab28ee1656faf268b2ed8cb3b7c4c
   languageName: node
   linkType: hard
 

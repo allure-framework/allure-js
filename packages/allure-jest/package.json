@@ -59,7 +59,7 @@
     "@jest/types": "^29.6.1",
     "@types/eslint": "^8",
     "@types/glob": "^8.1.0",
-    "@types/jasmine": "^3.3.12",
+    "@types/jasmine": "^5.0.0",
     "@types/jest": "^29.5.11",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.6.3",

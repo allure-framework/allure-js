@@ -2866,10 +2866,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/jasmine", [\
-        ["npm:3.10.12", {\
-          "packageLocation": "./.yarn/cache/@types-jasmine-npm-3.10.12-496e56ff91-6103fa21fc.zip/node_modules/@types/jasmine/",\
+        ["npm:5.1.4", {\
+          "packageLocation": "./.yarn/cache/@types-jasmine-npm-5.1.4-2a05d96f38-1b2048d988.zip/node_modules/@types/jasmine/",\
           "packageDependencies": [\
-            ["@types/jasmine", "npm:3.10.12"]\
+            ["@types/jasmine", "npm:5.1.4"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -3996,7 +3996,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["allure-jasmine", "workspace:packages/allure-jasmine"],\
             ["@types/eslint", "npm:8.44.2"],\
-            ["@types/jasmine", "npm:3.10.12"],\
+            ["@types/jasmine", "npm:5.1.4"],\
             ["@types/node", "npm:20.6.3"],\
             ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
             ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
@@ -4007,7 +4007,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-jsdoc", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:48.0.2"],\
             ["eslint-plugin-no-null", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.0.2"],\
             ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
-            ["jasmine", "npm:3.99.0"],\
+            ["jasmine", "npm:5.1.0"],\
             ["rimraf", "npm:5.0.1"],\
             ["typescript", "patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"]\
           ],\
@@ -4026,7 +4026,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@jest/types", "npm:29.6.3"],\
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/glob", "npm:8.1.0"],\
-            ["@types/jasmine", "npm:3.10.12"],\
+            ["@types/jasmine", "npm:5.1.4"],\
             ["@types/jest", "npm:29.5.11"],\
             ["@types/mocha", "npm:10.0.1"],\
             ["@types/node", "npm:20.6.3"],\
@@ -10830,21 +10830,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["jasmine", [\
-        ["npm:3.99.0", {\
-          "packageLocation": "./.yarn/cache/jasmine-npm-3.99.0-714ceeff99-baa9a5d855.zip/node_modules/jasmine/",\
+        ["npm:5.1.0", {\
+          "packageLocation": "./.yarn/cache/jasmine-npm-5.1.0-0fc0381342-68ca655f05.zip/node_modules/jasmine/",\
           "packageDependencies": [\
-            ["jasmine", "npm:3.99.0"],\
-            ["glob", "npm:7.2.3"],\
-            ["jasmine-core", "npm:3.99.1"]\
+            ["jasmine", "npm:5.1.0"],\
+            ["glob", "npm:10.3.4"],\
+            ["jasmine-core", "npm:5.1.1"]\
           ],\
           "linkType": "HARD"\
         }]\
       ]],\
       ["jasmine-core", [\
-        ["npm:3.99.1", {\
-          "packageLocation": "./.yarn/cache/jasmine-core-npm-3.99.1-07f52d92cc-4e4a89739d.zip/node_modules/jasmine-core/",\
+        ["npm:5.1.1", {\
+          "packageLocation": "./.yarn/cache/jasmine-core-npm-5.1.1-601ff0f2c2-84f1b3a0af.zip/node_modules/jasmine-core/",\
           "packageDependencies": [\
-            ["jasmine-core", "npm:3.99.1"]\
+            ["jasmine-core", "npm:5.1.1"]\
           ],\
           "linkType": "HARD"\
         }]\
