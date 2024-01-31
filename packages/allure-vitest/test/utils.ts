@@ -1,13 +1,17 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, rm, rmdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "url";
 import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
 
 const fileDirname = dirname(fileURLToPath(import.meta.url));
 
-export const runVitestInlineTest = async (test: string): Promise<AllureResults> => {
+export const runVitestInlineTest = async (
+  test: string,
+  externalConfigFactory?: (tempDir: string) => string,
+  beforeTestCb?: (tempDir: string) => Promise<void>,
+): Promise<AllureResults> => {
   const res: AllureResults = {
     tests: [],
     groups: [],
@@ -16,7 +20,9 @@ export const runVitestInlineTest = async (test: string): Promise<AllureResults> 
   const testDir = join(fileDirname, "fixtures", randomUUID());
   const configFilePath = join(testDir, "vitest.config.ts");
   const testFilePath = join(testDir, "sample.test.ts");
-  const configContent = `
+  const configContent = externalConfigFactory
+    ? externalConfigFactory(testDir)
+    : `
     import AllureReporter from "allure-vitest/reporter";
     import { defineConfig } from "vitest/config";
 
@@ -48,12 +54,15 @@ export const runVitestInlineTest = async (test: string): Promise<AllureResults> 
   await writeFile(configFilePath, configContent, "utf8");
   await writeFile(testFilePath, test, "utf8");
 
+  if (beforeTestCb) {
+    await beforeTestCb(testDir);
+  }
+
   const modulePath = require.resolve("vitest/dist/cli-wrapper.js");
   const args = ["run", "--config", configFilePath, "--dir", testDir];
   const testProcess = fork(modulePath, args, {
     env: {
       ...process.env,
-      ALLURE_POST_PROCESSOR_FOR_TEST: String("true"),
     },
     cwd: testDir,
     stdio: "pipe",
@@ -88,7 +97,7 @@ export const runVitestInlineTest = async (test: string): Promise<AllureResults> 
 
   return new Promise((resolve, reject) => {
     testProcess.on("close", async () => {
-      await rm(testDir, { recursive: true });
+      await rmdir(testDir, { recursive: true });
 
       return resolve(res);
     });
