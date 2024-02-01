@@ -13,6 +13,8 @@ it("supports test plan", async () => {
       test("bar", () => {});
 
       test("baz @allure.id=2", () => {});
+
+      test("beep @allure.id=3", () => {});
     `,
     undefined,
     async (testDir) => {
@@ -23,12 +25,10 @@ it("supports test plan", async () => {
         JSON.stringify({
           tests: [
             {
-              id: 1,
-              selector: "sample.test.ts#foo",
+              selector: "sample.test.ts#baz @allure.id=2",
             },
             {
-              id: 2,
-              selector: "sample.test.ts#baz @allure.id=2",
+              id: 3,
             },
           ],
         }),
@@ -39,6 +39,6 @@ it("supports test plan", async () => {
   );
 
   expect(tests).toHaveLength(2);
-  expect(tests).toContainEqual(expect.objectContaining({ name: "foo", fullName: "sample.test.ts#foo" }));
   expect(tests).toContainEqual(expect.objectContaining({ name: "baz", fullName: "sample.test.ts#baz @allure.id=2" }));
+  expect(tests).toContainEqual(expect.objectContaining({ name: "beep", fullName: "sample.test.ts#beep @allure.id=3" }));
 });
