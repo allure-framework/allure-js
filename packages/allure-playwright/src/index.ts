@@ -33,12 +33,12 @@ import {
   Status,
   StatusDetails,
   allureReportFolder,
+  extractMetadataFromString,
   md5,
   readImageAsBase64,
   stripAscii,
 } from "allure-js-commons";
 import { ALLURE_IMAGEDIFF_CONTENT_TYPE, ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
-import { extractMetadataFromString } from "./utils";
 
 const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
 const stepAttachRegexp = /^allureattach_(\w{8}-\w{4}-\w{4}-\w{4}-\w{12})_/i;

@@ -2,9 +2,39 @@
 import * as vitest from "vitest";
 import { LabelName, LinkType, MetadataMessage, ParameterOptions, Stage, Status, StepMetadata } from "allure-js-commons";
 
+export interface AllureVitestApi {
+  label: (name: string, value: string) => Promise<void>;
+  link: (type: string, url: string, name?: string) => Promise<void>;
+  parameter: (name: string, value: string, options?: ParameterOptions) => Promise<void>;
+  description: (markdown: string) => Promise<void>;
+  descriptionHtml: (html: string) => Promise<void>;
+  testCaseId: (id: string) => Promise<void>;
+  historyId: (id: string) => Promise<void>;
+  allureId: (id: string) => Promise<void>;
+  displayName: (name: string) => Promise<void>;
+  attachment: (name: string, content: Buffer | string, type: string) => Promise<void>;
+  issue: (name: string, url: string) => Promise<void>;
+  tms: (name: string, url: string) => Promise<void>;
+  epic: (name: string) => Promise<void>;
+  feature: (name: string) => Promise<void>;
+  story: (name: string) => Promise<void>;
+  suite: (name: string) => Promise<void>;
+  parentSuite: (name: string) => Promise<void>;
+  subSuite: (name: string) => Promise<void>;
+  owner: (name: string) => Promise<void>;
+  severity: (name: string) => Promise<void>;
+  layer: (name: string) => Promise<void>;
+  tag: (name: string) => Promise<void>;
+  step: (name: string, body: () => Promise<void>) => Promise<void>;
+}
+
 interface AllureTestMeta extends vitest.TaskMeta {
   currentTest: MetadataMessage;
   currentStep?: StepMetadata;
+}
+
+declare global {
+  export const allure: AllureVitestApi;
 }
 
 /**
@@ -12,7 +42,7 @@ interface AllureTestMeta extends vitest.TaskMeta {
  * runtime errors when the metadata is not available
  */
 const injectAllureMeta = (context: vitest.TaskContext) => {
-  if ((context.task.meta as AllureTestMeta)?.currentTest) {
+  if ((context?.task?.meta as AllureTestMeta)?.currentTest) {
     return;
   }
 
@@ -33,7 +63,7 @@ export const label = async (context: vitest.TaskContext, name: string, value: st
   (context.task.meta as AllureTestMeta).currentTest.labels.push({ name, value });
 };
 
-export const link = async (context: vitest.TaskContext, type: LinkType, url: string, name?: string) => {
+export const link = async (context: vitest.TaskContext, type: string, url: string, name?: string) => {
   injectAllureMeta(context);
   (context.task.meta as AllureTestMeta).currentTest.links.push({ type, url, name });
 };
@@ -189,10 +219,10 @@ export const step = async (context: vitest.TaskContext, name: string, body: () =
   }
 };
 
-export const bindAllureApi = (task: vitest.Task) => {
+export const bindAllureApi = (task: vitest.Task): AllureVitestApi => {
   return {
     label: (name: string, value: string) => label({ task } as vitest.TaskContext, name, value),
-    link: (type: LinkType, url: string, name?: string) => link({ task } as vitest.TaskContext, type, url, name),
+    link: (type: string, url: string, name?: string) => link({ task } as vitest.TaskContext, type, url, name),
     parameter: (name: string, value: string, options?: ParameterOptions) =>
       parameter({ task } as vitest.TaskContext, name, value, options),
     description: (markdown: string) => description({ task } as vitest.TaskContext, markdown),

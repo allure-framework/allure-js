@@ -4,13 +4,16 @@ import { File, Reporter, Task, Vitest } from "vitest";
 import {
   AllureGroup,
   AllureRuntime,
+  Label,
   LabelName,
   Link,
   MessageAllureWriter,
   MetadataMessage,
   Stage,
   Status,
+  extractMetadataFromString,
 } from "allure-js-commons";
+import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
 
 export interface AllureReporterOptions {
   testMode?: boolean;
@@ -77,6 +80,11 @@ export default class AllureReporter implements Reporter {
   }
 
   handleTask(parent: AllureGroup, task: Task) {
+    // do not report skipped tests
+    if (task.mode === "skip" && !task.result) {
+      return;
+    }
+
     if (task.type === "suite") {
       const group = parent.startGroup(task.name);
 
@@ -91,18 +99,28 @@ export default class AllureReporter implements Reporter {
     }
 
     const { currentTest = {} } = task.meta as { currentTest: MetadataMessage };
+    const skippedByTestPlan = currentTest.labels?.some(({ name }) => name === ALLURE_SKIPPED_BY_TEST_PLAN_LABEL);
+
+    // do not report tests skipped by test plan
+    if (skippedByTestPlan) {
+      return;
+    }
+
+    const titleMetadata = extractMetadataFromString(task.name);
+    const testDisplayName = currentTest.displayName || titleMetadata.cleanTitle;
     const links = currentTest.links ? this.processMetadataLinks(currentTest.links) : [];
-    const test = parent.startTest(task.name, 0);
+    const labels: Label[] = [].concat(currentTest.labels || []).concat(titleMetadata.labels);
+    const test = parent.startTest(testDisplayName);
     const normalizedTestPath = normalize(task.file.filepath.replace(this.rootDir, ""))
       .replace(/^\//, "")
       .split("/")
       .filter((item: string) => item !== basename(task.file.filepath));
 
-    test.name = task.name;
     test.fullName = `${task.file.name}#${task.name}`;
 
     test.applyMetadata({
       ...currentTest,
+      labels,
       links,
     });
     test.addLabel(LabelName.SUITE, parent.name);
@@ -123,19 +141,21 @@ export default class AllureReporter implements Reporter {
         test.detailsMessage = task.result.errors?.[0]?.message || "";
         test.detailsTrace = task.result.errors?.[0]?.stack || "";
         test.status = Status.FAILED;
+        test.stage = Stage.FINISHED;
         break;
       }
       case "pass": {
         test.status = Status.PASSED;
+        test.stage = Stage.FINISHED;
         break;
       }
       case "skip": {
         test.status = Status.SKIPPED;
+        test.stage = Stage.PENDING;
         break;
       }
     }
 
-    test.stage = Stage.FINISHED;
     test.calculateHistoryId();
     test.endTest(task.result?.duration);
   }

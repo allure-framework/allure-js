@@ -34,7 +34,7 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    // add setup file to be able to use Allure API via `this.allure` in your tests
+    // add setup file to be able to use Allure API via `this.allure` in your tests and to get test plan support
     setupFiles: ["allure-vitest/setup"],
     reporters: [
       // do not forget to keep the "default" if you want to see something in the console
@@ -90,3 +90,14 @@ test("sample test", async (context) => {
   await allure.label(context, "foo", "bar");
 });
 ```
+
+## Selective test execution
+
+Allure allow you to execute only a subset of tests. This is useful when you want 
+to run only a specific test or a group of tests.
+
+It works out of the box if you add `allure-vitest/setup` to your `setupFiles` 
+config option.
+
+Allure will read `ALLURE_TESTPLAN_PATH` environment variable and read testplan 
+from the specified file.
