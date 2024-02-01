@@ -79,7 +79,7 @@ export const runJestInlineTest = async (test: string): Promise<AllureResults> =>
   });
 
   return new Promise((resolve) => {
-    testProcess.on("close", async () => {
+    testProcess.on("exit", async () => {
       await rm(testDir, { recursive: true });
 
       return resolve(res);
