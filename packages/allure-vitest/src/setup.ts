@@ -15,8 +15,9 @@ const existsInTestPlan = (ctx: TaskContext, testPlan?: TestPlanV1) => {
 
   return testPlan.tests.some(({ selector }) => {
     const splittedSelector = selector.split("#");
+    const selectorMatched = splittedSelector[0] === testFileName && splittedSelector[1] === testName;
 
-    return splittedSelector[0] === testFileName && splittedSelector[1] === testName;
+    return selectorMatched;
   });
 };
 

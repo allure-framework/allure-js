@@ -11,6 +11,8 @@ it("supports test plan", async () => {
       test("foo", () => {});
 
       test("bar", () => {});
+
+      test("baz @allure.id=2", () => {});
     `,
     undefined,
     async (testDir) => {
@@ -21,7 +23,12 @@ it("supports test plan", async () => {
         JSON.stringify({
           tests: [
             {
+              id: 1,
               selector: "sample.test.ts#foo",
+            },
+            {
+              id: 2,
+              selector: "sample.test.ts#baz @allure.id=2",
             },
           ],
         }),
@@ -31,6 +38,7 @@ it("supports test plan", async () => {
     },
   );
 
-  expect(tests).toHaveLength(1);
-  expect(tests[0].name).toBe("foo");
+  expect(tests).toHaveLength(2);
+  expect(tests).toContainEqual(expect.objectContaining({ name: "foo", fullName: "sample.test.ts#foo" }));
+  expect(tests).toContainEqual(expect.objectContaining({ name: "baz", fullName: "sample.test.ts#baz @allure.id=2" }));
 });

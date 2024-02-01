@@ -1,6 +1,6 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { mkdir, rm, rmdir, writeFile } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "url";
 import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
@@ -96,8 +96,8 @@ export const runVitestInlineTest = async (
   });
 
   return new Promise((resolve, reject) => {
-    testProcess.on("close", async () => {
-      await rmdir(testDir, { recursive: true });
+    testProcess.on("exit", async () => {
+      await rm(testDir, { recursive: true });
 
       return resolve(res);
     });

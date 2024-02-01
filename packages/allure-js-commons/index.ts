@@ -59,7 +59,8 @@ export {
   md5,
   readImageAsBase64,
   serialize,
-  stripAscii
+  stripAscii,
+  extractMetadataFromString
 } from "./src/utils";
 
 export { AllureRuntimeApiInterface } from "./src/framework";

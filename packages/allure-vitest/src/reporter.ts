@@ -4,12 +4,14 @@ import { File, Reporter, Task, Vitest } from "vitest";
 import {
   AllureGroup,
   AllureRuntime,
+  Label,
   LabelName,
   Link,
   MessageAllureWriter,
   MetadataMessage,
   Stage,
   Status,
+  extractMetadataFromString,
 } from "allure-js-commons";
 import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
 
@@ -104,18 +106,21 @@ export default class AllureReporter implements Reporter {
       return;
     }
 
+    const titleMetadata = extractMetadataFromString(task.name);
+    const testDisplayName = currentTest.displayName || titleMetadata.cleanTitle;
     const links = currentTest.links ? this.processMetadataLinks(currentTest.links) : [];
-    const test = parent.startTest(task.name, 0);
+    const labels: Label[] = [].concat(currentTest.labels || []).concat(titleMetadata.labels);
+    const test = parent.startTest(testDisplayName);
     const normalizedTestPath = normalize(task.file.filepath.replace(this.rootDir, ""))
       .replace(/^\//, "")
       .split("/")
       .filter((item: string) => item !== basename(task.file.filepath));
 
-    test.name = task.name;
     test.fullName = `${task.file.name}#${task.name}`;
 
     test.applyMetadata({
       ...currentTest,
+      labels,
       links,
     });
     test.addLabel(LabelName.SUITE, parent.name);
