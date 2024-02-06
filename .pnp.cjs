@@ -2477,6 +2477,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@sinonjs/commons", "npm:3.0.0"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:11.2.2", {\
+          "packageLocation": "./.yarn/cache/@sinonjs-fake-timers-npm-11.2.2-eb695fcf3c-68c29b0e18.zip/node_modules/@sinonjs/fake-timers/",\
+          "packageDependencies": [\
+            ["@sinonjs/fake-timers", "npm:11.2.2"],\
+            ["@sinonjs/commons", "npm:3.0.0"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["@sinonjs/samsam", [\
@@ -3052,10 +3060,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/sinon", [\
-        ["npm:10.0.16", {\
-          "packageLocation": "./.yarn/cache/@types-sinon-npm-10.0.16-70855a8187-1216aac584.zip/node_modules/@types/sinon/",\
+        ["npm:17.0.3", {\
+          "packageLocation": "./.yarn/cache/@types-sinon-npm-17.0.3-20425e7552-c8e9956d9c.zip/node_modules/@types/sinon/",\
           "packageDependencies": [\
-            ["@types/sinon", "npm:10.0.16"],\
+            ["@types/sinon", "npm:17.0.3"],\
             ["@types/sinonjs__fake-timers", "npm:8.1.2"]\
           ],\
           "linkType": "HARD"\
@@ -3876,7 +3884,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/glob", "npm:8.1.0"],\
             ["@types/mocha", "npm:10.0.1"],\
             ["@types/node", "npm:20.6.3"],\
-            ["@types/sinon", "npm:10.0.16"],\
+            ["@types/sinon", "npm:17.0.3"],\
             ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
             ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
             ["allure-js-commons", "workspace:packages/allure-js-commons"],\
@@ -3894,7 +3902,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mocha", "npm:10.2.0"],\
             ["mocha-multi-reporters", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:1.5.1"],\
             ["rimraf", "npm:5.0.1"],\
-            ["sinon", "npm:16.0.0"],\
+            ["sinon", "npm:17.0.1"],\
             ["ts-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"]\
           ],\
@@ -3950,7 +3958,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/glob", "npm:8.1.0"],\
             ["@types/mocha", "npm:10.0.1"],\
             ["@types/node", "npm:20.6.3"],\
-            ["@types/sinon", "npm:10.0.16"],\
+            ["@types/sinon", "npm:17.0.3"],\
             ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
             ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
             ["allure-js-commons", "workspace:packages/allure-js-commons"],\
@@ -3973,7 +3981,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mocha", "npm:10.2.0"],\
             ["mocha-multi-reporters", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:1.5.1"],\
             ["rimraf", "npm:5.0.1"],\
-            ["sinon", "npm:16.0.0"],\
+            ["sinon", "npm:17.0.1"],\
             ["source-map-support", "npm:0.5.21"],\
             ["ts-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"]\
@@ -4021,7 +4029,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/jest", "npm:29.5.11"],\
             ["@types/mocha", "npm:10.0.1"],\
             ["@types/node", "npm:20.6.3"],\
-            ["@types/sinon", "npm:10.0.16"],\
+            ["@types/sinon", "npm:17.0.3"],\
             ["@types/source-map-support", "npm:0.5.7"],\
             ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
             ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
@@ -4043,7 +4051,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mocha", "npm:10.2.0"],\
             ["mocha-multi-reporters", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:1.5.1"],\
             ["rimraf", "npm:5.0.1"],\
-            ["sinon", "npm:16.0.0"],\
+            ["sinon", "npm:17.0.1"],\
             ["source-map-support", "npm:0.5.21"],\
             ["strip-ansi", "npm:5.2.0"],\
             ["ts-jest", "virtual:f22a73b9c1f4f0e2e1c95f149ccb41c96491085e4b2ecd3061e554432306c4df6c2976f3c6ce3a6d62abead3ccc6cf04e88b4aebf1de7356583819351e2346e2#npm:29.1.2"],\
@@ -4087,7 +4095,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/mocha", "npm:10.0.1"],\
             ["@types/node", "npm:20.6.3"],\
-            ["@types/sinon", "npm:10.0.16"],\
+            ["@types/sinon", "npm:17.0.3"],\
             ["@types/source-map-support", "npm:0.5.7"],\
             ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
             ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
@@ -4105,7 +4113,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mocha-multi-reporters", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:1.5.1"],\
             ["properties", "npm:1.2.1"],\
             ["rimraf", "npm:5.0.1"],\
-            ["sinon", "npm:16.0.0"],\
+            ["sinon", "npm:17.0.1"],\
             ["source-map-support", "npm:0.5.21"],\
             ["strip-ansi", "npm:5.2.0"],\
             ["ts-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:10.9.1"],\
@@ -4124,7 +4132,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/mocha", "npm:10.0.1"],\
             ["@types/node", "npm:20.6.3"],\
-            ["@types/sinon", "npm:10.0.16"],\
+            ["@types/sinon", "npm:17.0.3"],\
             ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
             ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
             ["allure-js-commons", "workspace:packages/allure-js-commons"],\
@@ -4141,7 +4149,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mocha", "npm:10.2.0"],\
             ["mocha-multi-reporters", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:1.5.1"],\
             ["rimraf", "npm:5.0.1"],\
-            ["sinon", "npm:16.0.0"],\
+            ["sinon", "npm:17.0.1"],\
             ["source-map-support", "npm:0.5.21"],\
             ["ts-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"]\
@@ -4161,7 +4169,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/eslint", "npm:8.44.2"],\
             ["@types/mocha", "npm:10.0.1"],\
             ["@types/node", "npm:20.6.3"],\
-            ["@types/sinon", "npm:10.0.16"],\
+            ["@types/sinon", "npm:17.0.3"],\
             ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
             ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.7.0"],\
             ["allure-js-commons", "workspace:packages/allure-js-commons"],\
@@ -4178,7 +4186,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mocha", "npm:10.2.0"],\
             ["mocha-multi-reporters", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:1.5.1"],\
             ["rimraf", "npm:5.0.1"],\
-            ["sinon", "npm:16.0.0"],\
+            ["sinon", "npm:17.0.1"],\
             ["source-map-support", "npm:0.5.21"],\
             ["ts-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"]\
@@ -11764,10 +11772,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["just-extend", [\
-        ["npm:4.2.1", {\
-          "packageLocation": "./.yarn/cache/just-extend-npm-4.2.1-ccc4201277-ff9fdede24.zip/node_modules/just-extend/",\
+        ["npm:6.2.0", {\
+          "packageLocation": "./.yarn/cache/just-extend-npm-6.2.0-25e57ed812-022024d6f6.zip/node_modules/just-extend/",\
           "packageDependencies": [\
-            ["just-extend", "npm:4.2.1"]\
+            ["just-extend", "npm:6.2.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -13092,15 +13100,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["nise", [\
-        ["npm:5.1.4", {\
-          "packageLocation": "./.yarn/cache/nise-npm-5.1.4-66667508d6-bc57c10eae.zip/node_modules/nise/",\
+        ["npm:5.1.9", {\
+          "packageLocation": "./.yarn/cache/nise-npm-5.1.9-6af6a9c69b-ab9fd6eabc.zip/node_modules/nise/",\
           "packageDependencies": [\
-            ["nise", "npm:5.1.4"],\
-            ["@sinonjs/commons", "npm:2.0.0"],\
-            ["@sinonjs/fake-timers", "npm:10.3.0"],\
+            ["nise", "npm:5.1.9"],\
+            ["@sinonjs/commons", "npm:3.0.0"],\
+            ["@sinonjs/fake-timers", "npm:11.2.2"],\
             ["@sinonjs/text-encoding", "npm:0.7.2"],\
-            ["just-extend", "npm:4.2.1"],\
-            ["path-to-regexp", "npm:1.8.0"]\
+            ["just-extend", "npm:6.2.0"],\
+            ["path-to-regexp", "npm:6.2.1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -13991,14 +13999,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["path-to-regexp", [\
-        ["npm:1.8.0", {\
-          "packageLocation": "./.yarn/cache/path-to-regexp-npm-1.8.0-a1904f5c44-709f6f083c.zip/node_modules/path-to-regexp/",\
-          "packageDependencies": [\
-            ["path-to-regexp", "npm:1.8.0"],\
-            ["isarray", "npm:0.0.1"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:6.2.1", {\
           "packageLocation": "./.yarn/cache/path-to-regexp-npm-6.2.1-8ebfe03654-f0227af828.zip/node_modules/path-to-regexp/",\
           "packageDependencies": [\
@@ -15729,15 +15729,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["sinon", [\
-        ["npm:16.0.0", {\
-          "packageLocation": "./.yarn/cache/sinon-npm-16.0.0-35cca97c91-fbcad39d16.zip/node_modules/sinon/",\
+        ["npm:17.0.1", {\
+          "packageLocation": "./.yarn/cache/sinon-npm-17.0.1-997c13081d-a807c2997d.zip/node_modules/sinon/",\
           "packageDependencies": [\
-            ["sinon", "npm:16.0.0"],\
+            ["sinon", "npm:17.0.1"],\
             ["@sinonjs/commons", "npm:3.0.0"],\
-            ["@sinonjs/fake-timers", "npm:10.3.0"],\
+            ["@sinonjs/fake-timers", "npm:11.2.2"],\
             ["@sinonjs/samsam", "npm:8.0.0"],\
             ["diff", "npm:5.1.0"],\
-            ["nise", "npm:5.1.4"],\
+            ["nise", "npm:5.1.9"],\
             ["supports-color", "npm:7.2.0"]\
           ],\
           "linkType": "HARD"\
