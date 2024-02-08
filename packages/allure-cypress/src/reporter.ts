@@ -1,6 +1,6 @@
 import Cypress from "cypress";
-import { AllureRuntime, AllureTest } from "allure-js-commons";
-import { type AllureCypressExecutableItem } from "./model";
+import { AllureRuntime, AllureTest, LabelName, MetadataMessage, Stage, getSuitesLabels } from "allure-js-commons";
+import { type StartTestMessage, type EndTestMessage } from "./model";
 
 export const allureCypress = (on: Cypress.PluginEvents, config: Cypress.PluginConfigOptions) => {
   const runtime = new AllureRuntime({
@@ -9,36 +9,47 @@ export const allureCypress = (on: Cypress.PluginEvents, config: Cypress.PluginCo
   let currentTest: AllureTest | undefined;
 
   on("task", {
-    allureStartTest: (testItem: AllureCypressExecutableItem) => {
-      currentTest = new AllureTest(runtime, testItem.start);
+    allureStartTest: (message: StartTestMessage) => {
+      const suiteLabels = getSuitesLabels(message.specPath);
 
-      currentTest.name = testItem.name;
-      currentTest.fullName = testItem.fullName;
-      currentTest.stage = testItem.stage;
-      currentTest.status = testItem.status;
+      currentTest = new AllureTest(runtime, message.start);
+
+      currentTest.name = message.specPath[message.specPath.length - 1];
+      currentTest.fullName = `${message.filename}#${message.specPath.join(" ")}`;
+      currentTest.stage = Stage.RUNNING;
+
+      currentTest.addLabel(LabelName.LANGUAGE, "javascript");
+      currentTest.addLabel(LabelName.FRAMEWORK, "cypress");
+
+      suiteLabels.forEach((label) => {
+        currentTest!.addLabel(label.name, label.value);
+      });
 
       return null;
     },
-    allureEndTest: (testItem: AllureCypressExecutableItem) => {
+    allureEndTest: (message: EndTestMessage) => {
       if (!currentTest) {
-        return;
+        return null;
       }
 
-      currentTest.stage = testItem.stage;
-      currentTest.status = testItem.status;
+      currentTest.stage = message.stage;
+      currentTest.status = message.status;
 
-      if (testItem.statusDetails) {
-        currentTest.statusDetails = testItem.statusDetails;
+      if (message.statusDetails) {
+        currentTest.statusDetails = message.statusDetails;
       }
 
-      currentTest.endTest(testItem.stop);
+      currentTest.endTest(message.stop);
       currentTest = undefined;
 
       return null;
     },
-    // @ts-ignore
-    allureLabel: (payload: { name: string; value: string }) => {
-      currentTest?.addLabel?.(payload.name, payload.value);
+    allureMetadata: (message: MetadataMessage) => {
+      if (!currentTest) {
+        return null;
+      }
+
+      currentTest.applyMetadata(message);
 
       return null;
     },

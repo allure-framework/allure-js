@@ -1,42 +1,7 @@
-import { Stage, Status, StatusDetails } from "allure-js-commons";
-import { type AllureCypressExecutableItem } from "./model";
+import { Stage, Status, MetadataMessage } from "allure-js-commons";
+import { type StartTestMessage, type EndTestMessage } from "./model";
 
-class AllureCypresReporter {
-  testsMessages: AllureCypressExecutableItem[] = [];
-
-  get currentTest() {
-    return this.testsMessages[this.testsMessages.length - 1];
-  }
-
-  startTest(name: string, suitePath: string[], testRelativePath: string) {
-    const testFullName = suitePath.concat(name).join(" ");
-
-    this.testsMessages.push({
-      name,
-      fullName: `${testRelativePath}#${testFullName}`,
-      stage: Stage.RUNNING,
-      status: undefined,
-      statusDetails: undefined,
-      start: Date.now(),
-      stop: undefined,
-    });
-  }
-
-  endTest(status: Status, stage?: Stage, details?: StatusDetails) {
-    const test = this.currentTest;
-
-    test.status = status;
-    test.statusDetails = details;
-    test.stage = stage || Stage.FINISHED;
-    test.stop = Date.now();
-  }
-
-  popCurrentTest() {
-    return this.testsMessages.pop();
-  }
-}
-
-const state = new AllureCypresReporter();
+const messagesQueue: (StartTestMessage | EndTestMessage)[] = [];
 
 const {
   EVENT_TEST_BEGIN,
@@ -68,46 +33,60 @@ const getSuitePath = (test: Mocha.Test): string[] => {
 
 // @ts-ignore
 Cypress.mocha.getRunner()
-  .on(EVENT_SUITE_BEGIN, (suite: Mocha.Suite) => {
-    // console.log("suite begin", { suite, runtime })
-  })
-  .on(EVENT_SUITE_END, (suite: Mocha.Suite) => {
-    // console.log("suite end", { suite, runtime })
-    // cy.now("task", "allureEndTest", "goodbye")
-  })
+  // .on(EVENT_SUITE_BEGIN, (suite: Mocha.Suite) => {
+  //   // console.log("suite begin", { suite, runtime })
+  // })
+  // .on(EVENT_SUITE_END, (suite: Mocha.Suite) => {
+  //   // console.log("suite end", { suite, runtime })
+  //   // cy.now("task", "allureEndTest", "goodbye")
+  // })
   .on(EVENT_TEST_BEGIN, (test: Mocha.Test) => {
-    state.startTest(test.title, getSuitePath(test), Cypress.spec.relative);
-  })
-  .on(EVENT_TEST_PASS, (test: Mocha.Test) => {
-    state.endTest(Status.PASSED);
-  })
-  .on(EVENT_TEST_FAIL, (test: Mocha.Test, err: Error) => {
-    state.endTest(Status.FAILED, undefined, {
-      message: err.message,
-      trace: err.stack,
+    messagesQueue.push({
+      specPath: getSuitePath(test).concat(test.title),
+      filename: Cypress.spec.relative,
+      start: Date.now(),
     });
   })
-  .on(EVENT_TEST_PENDING, (test: Mocha.Test) => {
-    // TODO: as in vitest, we need to report manually skipped tests
-    // state.endTest(Status.SKIPPED, Stage.PENDING);
+  .on(EVENT_TEST_PASS, (test: Mocha.Test) => {
+    messagesQueue.push({
+      stage: Stage.FINISHED,
+      status: Status.PASSED,
+      stop: Date.now(),
+    });
   })
+  .on(EVENT_TEST_FAIL, (test: Mocha.Test, err: Error) => {
+    messagesQueue.push({
+      stage: Stage.FINISHED,
+      status: Status.FAILED,
+      statusDetails: {
+        message: err.message,
+        trace: err.stack,
+      },
+      stop: Date.now(),
+    });
+  })
+  // .on(EVENT_TEST_PENDING, (test: Mocha.Test) => {
+  //   // TODO: as in vitest, we need to report manually skipped tests
+  //   // state.endTest(Status.SKIPPED, Stage.PENDING);
+  // })
 
-Cypress.on("command:start", (attrs: any, command: any) => {
-  console.log("command:start", { attrs, command, spec: Cypress.spec.relative });
-});
-Cypress.on("command:end", (attrs: any, command: any) => {
-  console.log("command:end", { attrs, command, spec: Cypress.spec.relative });
-});
+// TODO: add commands as json attachments
+// Cypress.on("command:start", (attrs: any, command: any) => {
+//   console.log("command:start", { attrs, command, spec: Cypress.spec.relative });
+// });
+// Cypress.on("command:end", (attrs: any, command: any) => {
+//   console.log("command:end", { attrs, command, spec: Cypress.spec.relative });
+// });
 
 // @ts-ignore
-Cypress.Commands.add("allureLabel", (name: string, value: string) => {
-  cy.task("allureLabel", { name, value });
+Cypress.Commands.add("allureMetadataMessage", (message: MetadataMessage) => {
+  cy.task("allureMetadata", message);
 });
 
 beforeEach(() => {
-  cy.task("allureStartTest", state.currentTest);
+  cy.task("allureStartTest", messagesQueue.pop());
 });
 
 afterEach(() => {
-  cy.task("allureEndTest", state.popCurrentTest());
+  cy.task("allureEndTest", messagesQueue.pop());
 });

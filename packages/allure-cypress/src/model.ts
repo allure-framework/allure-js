@@ -1,11 +1,14 @@
-import { MetadataMessage, AllureRuntime, MessageAllureWriter, AllureTest, Stage, Status, StatusDetails } from "allure-js-commons";
+import { Stage, Status, StatusDetails } from "allure-js-commons";
 
-export type AllureCypressExecutableItem = {
-  name: string;
-  fullName: string;
-  stage: Stage;
-  status?: Status;
-  statusDetails?: StatusDetails;
+export type StartTestMessage = {
+  specPath: string[];
+  filename: string;
   start: number;
-  stop?: number;
+};
+
+export type EndTestMessage = {
+  stage: Stage;
+  status: Status;
+  statusDetails?: StatusDetails;
+  stop: number;
 };
