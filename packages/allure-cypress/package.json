@@ -1,9 +1,8 @@
 {
   "name": "allure-cypress",
-  "version": "2.9.2",
+  "version": "2.12.0",
   "description": "Allure Cypress integration",
   "license": "Apache-2.0",
-  "packageManager": "yarn@3.6.3",
   "author": {
     "name": "Qameta Software",
     "email": "allure@qameta.io",
@@ -24,6 +23,20 @@
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./commands": {
+      "require": "./dist/commands.js",
+      "types": "./dist/commands.d.ts"
+    },
+    "./reporter": {
+      "require": "./dist/reporter.js",
+      "types": "./dist/reporter.d.ts"
+    }
+  },
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "tsc",
@@ -32,35 +45,26 @@
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix"
   },
+  "dependencies": {
+    "allure-js-commons": "workspace:*"
+  },
   "devDependencies": {
     "@types/eslint": "^8",
     "@types/glob": "^8.1.0",
-    "@types/jasmine": "^3.3.12",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.6.3",
-    "@types/sinon": "^10.0.16",
-    "@types/source-map-support": "^0.5.7",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
-    "codecov": "^3.8.3",
     "cypress": "^13.6.0",
+    "enquirer": "^2.3.6",
     "eslint": "^8.49.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-jsdoc": "^46.6.0",
+    "eslint-plugin-jsdoc": "^48.0.0",
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "expect": "^29.7.0",
     "glob": "^10.3.5",
-    "mocha": "^10.2.0",
-    "mocha-multi-reporters": "^1.5.1",
     "rimraf": "^5.0.1",
-    "sinon": "^16.0.0",
-    "source-map-support": "^0.5.21",
-    "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
-  },
-  "dependencies": {
-    "allure-js-commons": "workspace:*"
   }
 }
