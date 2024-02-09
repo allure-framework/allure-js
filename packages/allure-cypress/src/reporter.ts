@@ -1,10 +1,16 @@
 import Cypress from "cypress";
-import { AllureRuntime, AllureTest, LabelName, MetadataMessage, Stage, getSuitesLabels } from "allure-js-commons";
+import { AllureRuntime, AllureTest, LabelName, MetadataMessage, Stage, getSuitesLabels, MessageAllureWriter } from "allure-js-commons";
 import { type StartTestMessage, type EndTestMessage } from "./model";
 
-export const allureCypress = (on: Cypress.PluginEvents, config: Cypress.PluginConfigOptions) => {
+export type AllureCypressConfig = {
+  resultsDir?: string;
+  testMode?: boolean;
+};
+
+export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressConfig) => {
   const runtime = new AllureRuntime({
-    resultsDir: "./allure-results",
+    resultsDir: config?.resultsDir || "./allure-results",
+    writer: config?.testMode ? new MessageAllureWriter() : undefined,
   });
   let currentTest: AllureTest | undefined;
 
