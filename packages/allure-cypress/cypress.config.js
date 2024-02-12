@@ -23,13 +23,6 @@ module.exports = {
           const rawGroups = globSync([join(__dirname, "./allure-results/*-container.json")]);
           const attachments = globSync([join(__dirname, "./allure-results/*-attachment.*")]);
           const specFiles = [].concat(rawTests, rawGroups, attachments);
-
-          // console.log({
-          //   rawResults: rawTests,
-          //   rawContainers: rawGroups,
-          //   attachments
-          // })
-
           const tests = rawTests.map((item) => {
             const test = readFileSync(item, "utf8");
 

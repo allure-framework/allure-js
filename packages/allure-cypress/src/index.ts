@@ -1,55 +1,54 @@
 import { LabelName, LinkType, type MetadataMessage, type ParameterOptions } from "./model";
 
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      allureMetadataMessage(metadata: MetadataMessage): Chainable<void>
+    }
+  }
+}
+
 export const label = (name: string, value: string) => {
-  // @ts-ignore
   cy.allureMetadataMessage({
     labels: [{ name, value }],
   } as MetadataMessage);
 };
 export const link = (type: string, url: string, name?: string) => {
-  // @ts-ignore
   cy.allureMetadataMessage({
     links: [{ type, url, name }],
   } as MetadataMessage);
 };
 export const parameter = (name: string, value: string, options?: ParameterOptions) => {
-  // @ts-ignore
   cy.allureMetadataMessage({
     parameters: [{ name, value, ...options }],
   } as MetadataMessage);
 };
 export const description = (markdown: string) => {
-  // @ts-ignore
   cy.allureMetadataMessage({
     description: markdown,
   } as MetadataMessage);
 };
 export const descriptionHtml = (html: string) => {
-  // @ts-ignore
   cy.allureMetadataMessage({
     descriptionHtml: html,
   } as MetadataMessage);
 };
 export const testCaseId = (value: string) => {
-  // @ts-ignore
   cy.allureMetadataMessage({
     testCaseId: value,
   } as MetadataMessage);
 };
 export const historyId = (value: string) => {
-  // @ts-ignore
   cy.allureMetadataMessage({
     historyId: value,
   } as MetadataMessage);
 };
 export const allureId = (value: string) => {
-  // @ts-ignore
   cy.allureMetadataMessage({
     labels: [{ name: LabelName.ALLURE_ID, value }],
   } as MetadataMessage);
 };
 export const displayName = (name: string) => {
-  // @ts-ignore
   cy.allureMetadataMessage({
     displayName: name,
   } as MetadataMessage);
@@ -91,7 +90,6 @@ export const tag = (name: string) => {
   label(LabelName.TAG, name);
 };
 export const attachment = (name: string, content: Buffer | string, type: string) => {
-  // @ts-ignore
   cy.allureMetadataMessage({
     attachments: [{ name, content, type }],
   } as MetadataMessage);

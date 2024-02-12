@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import Cypress from "cypress";
 import { AllureRuntime, AllureTest, LabelName, MetadataMessage, Stage, getSuitesLabels, MessageAllureWriter } from "allure-js-commons";
 import { type StartTestMessage, type EndTestMessage } from "./model";
@@ -59,5 +60,16 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
 
       return null;
     },
+  });
+  on("after:screenshot", (details) => {
+    if (!currentTest) {
+      return;
+    }
+
+    const attachmentName = details.name || "Screenshot";
+    const screenshotBody = readFileSync(details.path);
+    const screenshotName = runtime.writeAttachment(screenshotBody, "image/png");
+
+    currentTest?.addAttachment(attachmentName, "image/png", screenshotName);
   });
 };
