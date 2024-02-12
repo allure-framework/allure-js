@@ -1,4 +1,4 @@
-import { LabelName, LinkType, type MetadataMessage, type ParameterOptions } from "allure-js-commons";
+import { LabelName, LinkType, type MetadataMessage, type ParameterOptions } from "./model";
 
 export const label = (name: string, value: string) => {
   // @ts-ignore

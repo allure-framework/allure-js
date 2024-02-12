@@ -1,5 +1,4 @@
-import { Stage, Status, MetadataMessage } from "allure-js-commons";
-import { type StartTestMessage, type EndTestMessage } from "./model";
+import { Stage, Status, MetadataMessage, type StartTestMessage, type EndTestMessage } from "./model";
 
 const messagesQueue: (StartTestMessage | EndTestMessage)[] = [];
 
