@@ -45,7 +45,7 @@ export const historyId = (value: string) => {
 export const allureId = (value: string) => {
   // @ts-ignore
   cy.allureMetadataMessage({
-    allureId: value,
+    labels: [{ name: LabelName.ALLURE_ID, value }],
   } as MetadataMessage);
 };
 export const displayName = (name: string) => {
