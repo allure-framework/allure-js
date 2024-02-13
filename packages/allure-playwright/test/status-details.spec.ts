@@ -23,7 +23,7 @@ test("should report test status details", async ({ runInlineTest }) => {
         expect(true).toBe(false);
       });
     `,
-    "reporterOptions": JSON.stringify({
+    reporterOptions: JSON.stringify({
       detail: false,
     }),
   });

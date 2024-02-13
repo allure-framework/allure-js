@@ -48,17 +48,14 @@ Cypress.mocha
     });
   });
 
-// @ts-ignore
-Cypress.Commands.add("allureMetadataMessage", (message: MetadataMessage) => {
+Cypress.Commands.add("allureMetadataMessage", (message) => {
   cy.task("allureMetadata", message);
 });
-// @ts-ignore
-Cypress.Commands.add("allureStartStep", (name: string) => {
-  cy.task("allureStartStep", name);
+Cypress.Commands.add("allureStartStep", (message) => {
+  cy.task("allureStartStep", message);
 });
-// @ts-ignore
-Cypress.Commands.add("allureEndStep", () => {
-  cy.task("allureEndStep");
+Cypress.Commands.add("allureEndStep", (message) => {
+  cy.task("allureEndStep", message);
 });
 
 beforeEach(() => {
