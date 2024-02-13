@@ -12,7 +12,9 @@ declare global {
   namespace Cypress {
     interface Chainable {
       allureMetadataMessage(metadata: MetadataMessage): Chainable<void>;
+
       allureStartStep(message: StartStepMessage): Chainable<void>;
+
       allureEndStep(message: EndStepMessage): Chainable<void>;
     }
   }
@@ -30,7 +32,7 @@ export const link = (type: string, url: string, name?: string) => {
 };
 export const parameter = (name: string, value: string, options?: ParameterOptions) => {
   cy.allureMetadataMessage({
-    parameters: [{ name, value, ...options }],
+    parameter: [{ name, value, ...options }],
   } as MetadataMessage);
 };
 export const description = (markdown: string) => {
@@ -63,10 +65,10 @@ export const displayName = (name: string) => {
     displayName: name,
   } as MetadataMessage);
 };
-export const issue = (name: string, url: string) => {
+export const issue = (url: string, name?: string) => {
   link(LinkType.ISSUE, url, name);
 };
-export const tms = (name: string, url: string) => {
+export const tms = (url: string, name?: string) => {
   link(LinkType.TMS, url, name);
 };
 export const epic = (name: string) => {

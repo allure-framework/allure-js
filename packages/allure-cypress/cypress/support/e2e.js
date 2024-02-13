@@ -16,3 +16,6 @@ Cypress.Commands.add("containsLink", { prevSubject: true }, (subject, link) => {
 Cypress.Commands.add("containsAttachment", { prevSubject: true }, (subject, attachment) => {
   cy.wrap(subject.attachments).should("deep.include", attachment)
 })
+Cypress.Commands.add("containsParameter", { prevSubject: true }, (subject, parameter) => {
+  cy.wrap(subject.parameters).should("deep.include", parameter);
+});

@@ -10,7 +10,18 @@ module.exports = {
     viewportWidth: 1240,
     video: false,
     setupNodeEvents: (on, config) => {
-      allureCypress(on, config);
+      allureCypress(on, {
+        links: [
+          {
+            type: "issue",
+            urlTemplate: "https://allurereport.org/issues/%s"
+          },
+          {
+            type: "tms",
+            urlTemplate: "https://allurereport.org/tasks/%s"
+          },
+        ]
+      });
 
       on("task", {
         readLastTestResult: () => {

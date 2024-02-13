@@ -1,4 +1,4 @@
-import { type EndTestMessage, MetadataMessage, Stage, type StartTestMessage, Status } from "./model";
+import { type EndTestMessage, Stage, type StartTestMessage, Status } from "./model";
 
 const messagesQueue: (StartTestMessage | EndTestMessage)[] = [];
 

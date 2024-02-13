@@ -9,13 +9,13 @@ describe("custom", () => {
       cy.get("@tests").its(0).containsLink({
         type: "foo",
         name: "bar",
-        url: "http://allurereport.org",
+        url: "https://allurereport.org",
       });
     });
   });
 
   it("custom", () => {
-    link("foo", "http://allurereport.org", "bar");
+    link("foo", "https://allurereport.org", "bar");
   });
 })
 
@@ -28,13 +28,51 @@ describe("issue", () => {
       cy.get("@tests").its(0).containsLink({
         type: "issue",
         name: "foo",
-        url: "http://allurereport.org"
+        url: "https://allurereport.org"
       });
     });
   });
 
   it("issue", () => {
-    issue("foo", "http://allurereport.org");
+    issue("https://allurereport.org", "foo");
+  });
+})
+
+describe("short issue without name", () => {
+  after(() => {
+    cy.task("readLastTestResult").then((result) => {
+      cy.wrap(result.tests).as("tests");
+
+      cy.get("@tests").should("have.length", 1);
+      cy.get("@tests").its(0).containsLink({
+        type: "issue",
+        name: "ISSUE-1",
+        url: "https://allurereport.org/issues/ISSUE-1"
+      });
+    });
+  });
+
+  it("issue", () => {
+    issue("ISSUE-1");
+  });
+})
+
+describe("short issue with name", () => {
+  after(() => {
+    cy.task("readLastTestResult").then((result) => {
+      cy.wrap(result.tests).as("tests");
+
+      cy.get("@tests").should("have.length", 1);
+      cy.get("@tests").its(0).containsLink({
+        type: "issue",
+        name: "foo",
+        url: "https://allurereport.org/issues/ISSUE-1"
+      });
+    });
+  });
+
+  it("issue", () => {
+    issue("ISSUE-1", "foo");
   });
 })
 
@@ -47,12 +85,50 @@ describe("tms", () => {
       cy.get("@tests").its(0).containsLink({
         type: "tms",
         name: "foo",
-        url: "http://allurereport.org"
+        url: "https://allurereport.org"
       });
     });
   });
 
   it("tms", () => {
-    tms("foo", "http://allurereport.org");
+    tms("https://allurereport.org", "foo");
+  });
+})
+
+describe("short tms without name", () => {
+  after(() => {
+    cy.task("readLastTestResult").then((result) => {
+      cy.wrap(result.tests).as("tests");
+
+      cy.get("@tests").should("have.length", 1);
+      cy.get("@tests").its(0).containsLink({
+        type: "tms",
+        name: "TMS-1",
+        url: "https://allurereport.org/tasks/TMS-1"
+      });
+    });
+  });
+
+  it("tms", () => {
+    tms("TMS-1");
+  });
+})
+
+describe("short tms with name", () => {
+  after(() => {
+    cy.task("readLastTestResult").then((result) => {
+      cy.wrap(result.tests).as("tests");
+
+      cy.get("@tests").should("have.length", 1);
+      cy.get("@tests").its(0).containsLink({
+        type: "tms",
+        name: "foo",
+        url: "https://allurereport.org/tasks/TMS-1"
+      });
+    });
+  });
+
+  it("tms", () => {
+    tms("TMS-1", "foo");
   });
 })

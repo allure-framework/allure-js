@@ -9,10 +9,14 @@ import {
   Stage,
   getSuitesLabels,
 } from "allure-js-commons";
-import { EndStepMessage, type EndTestMessage, StartStepMessage, type StartTestMessage } from "./model";
+import { EndStepMessage, type EndTestMessage, Link, StartStepMessage, type StartTestMessage } from "./model";
 
 export type AllureCypressConfig = {
   resultsDir?: string;
+  links?: {
+    type: string;
+    urlTemplate: string;
+  }[];
 };
 
 export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressConfig) => {
@@ -110,7 +114,34 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
         return null;
       }
 
-      currentTest.applyMetadata(message);
+      if (!config?.links?.length || !message?.links?.length) {
+        currentTest.applyMetadata(message);
+
+        return null;
+      }
+
+      const { links, ...rest } = message;
+      const formattedLinks: Link[] = links?.map((link) => {
+        const matcher = config?.links?.find?.(({ type }) => type === link.type);
+
+        if (!matcher || link.url.startsWith("http")) {
+          return link;
+        }
+
+        const url = matcher.urlTemplate.replace("%s", link.url);
+        const name = link.name || link.url;
+
+        return {
+          ...link,
+          name,
+          url,
+        };
+      });
+
+      currentTest.applyMetadata({
+        ...rest,
+        links: formattedLinks,
+      });
 
       return null;
     },
