@@ -1,12 +1,8 @@
-import { Stage, Status, MetadataMessage, type StartTestMessage, type EndTestMessage } from "./model";
+import { type EndTestMessage, MetadataMessage, Stage, type StartTestMessage, Status } from "./model";
 
 const messagesQueue: (StartTestMessage | EndTestMessage)[] = [];
 
-const {
-  EVENT_TEST_BEGIN,
-  EVENT_TEST_FAIL,
-  EVENT_TEST_PASS,
-} = Mocha.Runner.constants;
+const { EVENT_TEST_BEGIN, EVENT_TEST_FAIL, EVENT_TEST_PASS } = Mocha.Runner.constants;
 
 const getSuitePath = (test: Mocha.Test): string[] => {
   const path = [];
@@ -24,7 +20,8 @@ const getSuitePath = (test: Mocha.Test): string[] => {
 };
 
 // @ts-ignore
-Cypress.mocha.getRunner()
+Cypress.mocha
+  .getRunner()
   .on(EVENT_TEST_BEGIN, (test: Mocha.Test) => {
     messagesQueue.push({
       specPath: getSuitePath(test).concat(test.title),
