@@ -29,36 +29,6 @@ describe("single", () => {
   });
 });
 
-// TODO:
-// describe.skip("failed", () => {
-//   after(() => {
-//     cy.task("readLastTestResult").then((result) => {
-//       cy.wrap(result.tests).as("tests");
-//
-//       cy.get("@tests").should("have.length", 1);
-//       // cy.get("@tests")
-//       //   .its(0)
-//       //   .its("steps")
-//       //   .then((steps) => {
-//       //     cy.wrap(steps).should("have.length", 2);
-//       //     cy.wrap(steps).its(0).its("name").should("eq", "foo");
-//       //     cy.wrap(steps).its(0).its("status").should("eq", "passed");
-//       //   });
-//     });
-//   });
-//
-//   it("step", () => {
-//     step("foo", () => {
-//       step("bar", () => {
-//         step("baz", () => {
-//           cy.wrap(1).should("eq", 2)
-//           // throw new Error("foo")
-//         })
-//       })
-//     });
-//   });
-// });
-
 describe("nested", () => {
   after(() => {
     cy.task("readLastTestResult").then((result) => {
@@ -130,3 +100,44 @@ describe("with screenshot", () => {
     });
   });
 });
+
+// TODO: test specs with failed steps
+// describe("with assertion error", () => {
+//   after(() => {
+//     cy.task("readLastTestResult").then((result) => {
+//       cy.wrap(result.tests).as("tests");
+//
+//       cy.get("@tests").should("have.length", 1);
+//     });
+//   });
+//
+//   it("step @allure.label.keep_failed=1", () => {
+//     step("foo", () => {
+//       step("bar", () => {
+//         step("baz", () => {
+//           cy.wrap(1).should("eq", 2)
+//         })
+//       })
+//     });
+//   });
+// });
+//
+// describe("with unexpected error", () => {
+//   after(() => {
+//     cy.task("readLastTestResult").then((result) => {
+//       cy.wrap(result.tests).as("tests");
+//
+//       cy.get("@tests").should("have.length", 1);
+//     });
+//   });
+//
+//   it("step @allure.label.keep_failed=1", () => {
+//     step("foo", () => {
+//       step("bar", () => {
+//         step("baz", () => {
+//           throw new Error("foo")
+//         })
+//       })
+//     });
+//   });
+// });
