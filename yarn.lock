@@ -3384,6 +3384,7 @@ __metadata:
     esbuild: ^0.20.0
     eslint: ^8.49.0
     eslint-config-prettier: ^9.0.0
+    eslint-plugin-cypress: ^2.15.1
     eslint-plugin-import: ^2.28.1
     eslint-plugin-jsdoc: ^48.0.0
     eslint-plugin-no-null: ^1.0.2
@@ -7361,6 +7362,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-cypress@npm:^2.15.1":
+  version: 2.15.1
+  resolution: "eslint-plugin-cypress@npm:2.15.1"
+  dependencies:
+    globals: ^13.20.0
+  peerDependencies:
+    eslint: ">= 3.2.1"
+  checksum: 3e66fa9a943fff52eaf3758250a63c2a0f8ffd60c50572beaf3688b33a55fbf0060d18ef32bc26abb57aef070517db827c22fd3d607582861d464970f95e550e
+  languageName: node
+  linkType: hard
+
 "eslint-plugin-import@npm:^2.28.1":
   version: 2.29.1
   resolution: "eslint-plugin-import@npm:2.29.1"
@@ -8724,7 +8736,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globals@npm:^13.19.0":
+"globals@npm:^13.19.0, globals@npm:^13.20.0":
   version: 13.24.0
   resolution: "globals@npm:13.24.0"
   dependencies:

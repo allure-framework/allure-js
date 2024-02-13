@@ -1,19 +1,26 @@
-import { readFileSync } from "node:fs";
 import Cypress from "cypress";
-import { AllureRuntime, AllureTest, LabelName, MetadataMessage, Stage, getSuitesLabels, MessageAllureWriter } from "allure-js-commons";
-import { type StartTestMessage, type EndTestMessage } from "./model";
+import { readFileSync } from "node:fs";
+import {
+  AllureRuntime,
+  AllureStep,
+  AllureTest,
+  LabelName,
+  MetadataMessage,
+  Stage,
+  getSuitesLabels,
+} from "allure-js-commons";
+import { EndStepMessage, type EndTestMessage, StartStepMessage, type StartTestMessage } from "./model";
 
 export type AllureCypressConfig = {
   resultsDir?: string;
-  testMode?: boolean;
 };
 
 export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressConfig) => {
   const runtime = new AllureRuntime({
     resultsDir: config?.resultsDir || "./allure-results",
-    writer: config?.testMode ? new MessageAllureWriter() : undefined,
   });
   let currentTest: AllureTest | undefined;
+  const currentSteps: AllureStep[] = [];
 
   on("task", {
     allureStartTest: (message: StartTestMessage) => {
@@ -39,15 +46,62 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
         return null;
       }
 
-      currentTest.stage = message.stage;
-      currentTest.status = message.status;
+      // finish unfinished steps (for example when assertion failed)
+      if (currentSteps.length > 0) {
+        [...currentSteps].reverse().forEach((step, i) => {
+          const actualStepIdx = currentSteps.length - 1 - i;
 
-      if (message.statusDetails) {
-        currentTest.statusDetails = message.statusDetails;
+          step.status = message.status;
+          step.stage = message.stage;
+
+          // status details should be set for the last step to display error correctly
+          if (i === 0) {
+            step.statusDetails = message.statusDetails!;
+          }
+
+          step.endStep();
+
+          // remove actual step
+          currentSteps.splice(actualStepIdx, 1);
+        });
+      } else {
+        currentTest.statusDetails = message.statusDetails!;
       }
 
+      currentTest.stage = message.stage;
+      currentTest.status = message.status;
       currentTest.endTest(message.stop);
       currentTest = undefined;
+
+      return null;
+    },
+    allureStartStep: (message: StartStepMessage) => {
+      if (!currentTest) {
+        return null;
+      }
+
+      const currentStep = currentSteps[currentSteps.length - 1];
+      const step = (currentStep || currentTest).startStep(message.name);
+
+      currentSteps.push(step);
+
+      return null;
+    },
+    allureEndStep: (message: EndStepMessage) => {
+      const currentStep = currentSteps.pop();
+
+      if (!currentStep) {
+        return null;
+      }
+
+      currentStep.status = message.status || Stage.PENDING;
+      currentStep.stage = message.stage || Stage.FINISHED;
+
+      if (message.statusDetails) {
+        currentStep.statusDetails = message.statusDetails;
+      }
+
+      currentStep.endStep();
 
       return null;
     },
@@ -62,7 +116,9 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
     },
   });
   on("after:screenshot", (details) => {
-    if (!currentTest) {
+    const currentStep = currentSteps[currentSteps.length - 1];
+
+    if (!currentTest && !currentStep) {
       return;
     }
 
@@ -70,6 +126,6 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
     const screenshotBody = readFileSync(details.path);
     const screenshotName = runtime.writeAttachment(screenshotBody, "image/png");
 
-    currentTest?.addAttachment(attachmentName, "image/png", screenshotName);
+    (currentStep || currentTest).addAttachment(attachmentName, "image/png", screenshotName);
   });
 };

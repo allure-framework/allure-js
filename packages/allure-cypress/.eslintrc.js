@@ -1,10 +1,11 @@
 module.exports = {
   extends: ["../../.eslintrc.js"],
+  plugins: ["cypress"],
   globals: {
     allure: true,
   },
   env: {
     jest: true,
-    cypress: true,
-  }
-}
+    "cypress/globals": true,
+  },
+};

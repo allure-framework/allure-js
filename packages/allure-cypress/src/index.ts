@@ -1,9 +1,19 @@
-import { LabelName, LinkType, type MetadataMessage, type ParameterOptions } from "./model";
+import {
+  EndStepMessage,
+  LabelName,
+  LinkType,
+  type MetadataMessage,
+  type ParameterOptions,
+  StartStepMessage,
+  Status,
+} from "./model";
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      allureMetadataMessage(metadata: MetadataMessage): Chainable<void>
+      allureMetadataMessage(metadata: MetadataMessage): Chainable<void>;
+      allureStartStep(message: StartStepMessage): Chainable<void>;
+      allureEndStep(message: EndStepMessage): Chainable<void>;
     }
   }
 }
@@ -94,7 +104,26 @@ export const attachment = (name: string, content: Buffer | string, type: string)
     attachments: [{ name, content, type }],
   } as MetadataMessage);
 };
-// TODO: step
-// export const step = (name: string, body: () => Promise<void>) => {
-//   console.log("step", { name, body });
-// };
+export const step = (name: string, body: () => void) => {
+  cy.allureStartStep({ name });
+
+  try {
+    body();
+
+    cy.allureEndStep({
+      status: Status.PASSED,
+    });
+  } catch (err) {
+    // all possible errors here are runtime ones
+    // assertion errors could be handled in `commands.ts` by related mocha event
+    cy.allureEndStep({
+      status: Status.BROKEN,
+      statusDetails: {
+        message: (err as Error).message,
+        trace: (err as Error).stack,
+      },
+    });
+
+    throw err;
+  }
+};

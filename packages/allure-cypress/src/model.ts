@@ -1,3 +1,5 @@
+// these types is a copy-paste from allure-js-commons/model because it isn't compatible with browser
+// TODO: need to make model compatible with any environment
 export type ParameterOptions = Pick<Parameter, "mode" | "excluded">;
 
 export interface Attachment {
@@ -120,6 +122,7 @@ export enum Stage {
   INTERRUPTED = "interrupted",
 }
 
+// keep these types
 export type StartTestMessage = {
   specPath: string[];
   filename: string;
@@ -131,4 +134,14 @@ export type EndTestMessage = {
   status: Status;
   statusDetails?: StatusDetails;
   stop: number;
+};
+
+export type StartStepMessage = {
+  name: string;
+};
+
+export type EndStepMessage = {
+  status: Status;
+  statusDetails?: StatusDetails;
+  stage?: Stage;
 };
