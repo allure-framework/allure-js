@@ -1,7 +1,7 @@
 import { hostname } from "node:os";
 import { basename, normalize } from "node:path";
 import { env, pid } from "node:process";
-import { File, Reporter, Task, Vitest } from "vitest";
+import { File, Reporter, Suite, Task, Vitest } from "vitest";
 import {
   AllureGroup,
   AllureRuntime,
@@ -13,6 +13,7 @@ import {
   Stage,
   Status,
   extractMetadataFromString,
+  getSuitesLabels,
 } from "allure-js-commons";
 import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
 
@@ -54,6 +55,23 @@ export default class AllureReporter implements Reporter {
         url,
       };
     });
+  }
+
+  private getSuitePath(task: Task): string[] {
+    const path = [];
+    let currentSuite: Suite | undefined = task.suite;
+
+    while (currentSuite) {
+      // root suite has no name and shouldn't be included to the path
+      if (!currentSuite.name) {
+        break;
+      }
+
+      path.unshift(currentSuite.name);
+      currentSuite = currentSuite.suite;
+    }
+
+    return path;
   }
 
   onInit(vitest: Vitest) {
@@ -114,30 +132,29 @@ export default class AllureReporter implements Reporter {
     const links = currentTest.links ? this.processMetadataLinks(currentTest.links) : [];
     const labels: Label[] = [].concat(currentTest.labels || []).concat(titleMetadata.labels);
     const test = parent.startTest(testDisplayName);
+    const suitePath = this.getSuitePath(task);
     const normalizedTestPath = normalize(task.file.filepath.replace(this.rootDir, ""))
       .replace(/^\//, "")
       .split("/")
       .filter((item: string) => item !== basename(task.file.filepath));
 
-    test.fullName = `${task.file.name}#${task.name}`;
-
+    test.fullName = `${task.file.name}#${suitePath.concat(task.name).join(" ")}`;
     test.applyMetadata({
       ...currentTest,
       labels,
       links,
     });
-    test.addLabel(LabelName.SUITE, parent.name);
     test.addLabel(LabelName.FRAMEWORK, "vitest");
     test.addLabel(LabelName.LANGUAGE, "javascript");
     test.addLabel(LabelName.THREAD, ALLURE_THREAD_NAME || pid.toString());
     test.addLabel(LabelName.HOST, ALLURE_HOST_NAME || hostname.toString());
 
+    getSuitesLabels(this.getSuitePath(task)).forEach((label) => {
+      test.addLabel(label.name, label.value);
+    });
+
     if (normalizedTestPath.length) {
       test.addLabel(LabelName.PACKAGE, normalizedTestPath.join("."));
-    }
-
-    if (task.suite.suite?.name) {
-      test.addLabel(LabelName.PARENT_SUITE, task.suite.suite.name);
     }
 
     switch (task.result?.state) {
