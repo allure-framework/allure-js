@@ -1,1 +1,3 @@
 test/spec/fixtures/
+*.js
+*.d.ts

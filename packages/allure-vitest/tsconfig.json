@@ -7,9 +7,12 @@
     "module": "NodeNext",
     "declaration": true,
     "rootDir": "./src",
-    "outDir": "./dist"
+    "outDir": "."
   },
   "include": [
-    "./src/**/*",
+    "./src/**/*"
   ],
+  "exclude": [
+    "./test/**/*"
+  ]
 }
