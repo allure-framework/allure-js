@@ -140,3 +140,19 @@ it("my test", () => {
   });
 });
 ```
+
+## Passing metadata from test title
+
+You also can pass allure metadata from test title.
+This is useful when you need to set allureId for the tests with failing before hooks. Just add `@allure.id={idValue}` for the allureId or `@allure.label.{labelName}={labelValue}` for other types of labels.
+
+```ts
+it("test with allureId @allure.id=256", () => {});
+it("tst with severity @allure.label.severity=critical", () => {});
+it("test with epic @allure.label.epic=login", () => {});
+it("test with strangeLabel @allure.label.strangeLabel=strangeValue", () => {});
+```
+
+> **Warning**
+> Note that changing title can cause creating new testcases in history.
+> To fix this please add `@allure.id={yourTestCaseId}` to the test name if you passing allure metadata from test title

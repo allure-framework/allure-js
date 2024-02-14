@@ -7,6 +7,7 @@ import {
   LabelName,
   MetadataMessage,
   Stage,
+  extractMetadataFromString,
   getSuitesLabels,
 } from "allure-js-commons";
 import { EndStepMessage, type EndTestMessage, Link, StartStepMessage, type StartTestMessage } from "./model";
@@ -29,10 +30,12 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
   on("task", {
     allureStartTest: (message: StartTestMessage) => {
       const suiteLabels = getSuitesLabels(message.specPath);
+      const testTitle = message.specPath[message.specPath.length - 1];
+      const titleMetadata = extractMetadataFromString(testTitle);
 
       currentTest = new AllureTest(runtime, message.start);
 
-      currentTest.name = message.specPath[message.specPath.length - 1];
+      currentTest.name = titleMetadata.cleanTitle;
       currentTest.fullName = `${message.filename}#${message.specPath.join(" ")}`;
       currentTest.stage = Stage.RUNNING;
 
@@ -40,6 +43,10 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
       currentTest.addLabel(LabelName.FRAMEWORK, "cypress");
 
       suiteLabels.forEach((label) => {
+        currentTest!.addLabel(label.name, label.value);
+      });
+
+      titleMetadata.labels.forEach((label) => {
         currentTest!.addLabel(label.name, label.value);
       });
 
