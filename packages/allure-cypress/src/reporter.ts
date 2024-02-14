@@ -153,7 +153,7 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
       return null;
     },
   });
-  on("after:screenshot", (details) => {
+  on("after:screenshot", (details, ...rest) => {
     const currentStep = currentSteps[currentSteps.length - 1];
 
     if (!currentTest && !currentStep) {

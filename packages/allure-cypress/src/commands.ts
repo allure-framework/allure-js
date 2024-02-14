@@ -39,7 +39,7 @@ Cypress.mocha
   .on(EVENT_TEST_FAIL, (test: Mocha.Test, err: Error) => {
     messagesQueue.push({
       stage: Stage.FINISHED,
-      status: Status.FAILED,
+      status: err.constructor.name === "AssertionError" ? Status.FAILED : Status.BROKEN,
       statusDetails: {
         message: err.message,
         trace: err.stack,

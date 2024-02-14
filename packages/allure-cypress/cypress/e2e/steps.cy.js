@@ -122,6 +122,26 @@ describe("with screenshot", () => {
 //   });
 // });
 //
+// describe("with cypress error", () => {
+//   after(() => {
+//     cy.task("readLastTestResult").then((result) => {
+//       cy.wrap(result.tests).as("tests");
+//
+//       cy.get("@tests").should("have.length", 1);
+//     });
+//   });
+//
+//   it("step @allure.label.keep_failed=1", () => {
+//     step("foo", () => {
+//       step("bar", () => {
+//         step("baz", () => {
+//           cy.get(".foo")
+//         })
+//       })
+//     });
+//   });
+// });
+//
 // describe("with unexpected error", () => {
 //   after(() => {
 //     cy.task("readLastTestResult").then((result) => {
