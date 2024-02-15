@@ -6,7 +6,7 @@ import { runVitestInlineTest } from "../../utils.js";
 it("supports test plan", async () => {
   const { tests } = await runVitestInlineTest(
     `
-      import { test } from "vitest";
+      import { test, describe } from "vitest";
 
       test("foo", () => {});
 
@@ -15,6 +15,12 @@ it("supports test plan", async () => {
       test("baz @allure.id=2", () => {});
 
       test("beep @allure.id=3", () => {});
+
+      describe("foo", () => {
+        describe("bar", () => {
+          test("boop", () => {});
+        });
+      });
     `,
     undefined,
     async (testDir) => {
@@ -30,6 +36,9 @@ it("supports test plan", async () => {
             {
               id: 3,
             },
+            {
+              selector: "sample.test.ts#foo bar boop",
+            },
           ],
         }),
       );
@@ -38,7 +47,8 @@ it("supports test plan", async () => {
     },
   );
 
-  expect(tests).toHaveLength(2);
+  expect(tests).toHaveLength(3);
   expect(tests).toContainEqual(expect.objectContaining({ name: "baz", fullName: "sample.test.ts#baz @allure.id=2" }));
   expect(tests).toContainEqual(expect.objectContaining({ name: "beep", fullName: "sample.test.ts#beep @allure.id=3" }));
+  expect(tests).toContainEqual(expect.objectContaining({ name: "boop", fullName: "sample.test.ts#foo bar boop" }));
 });

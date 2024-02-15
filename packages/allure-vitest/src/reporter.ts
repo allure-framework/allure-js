@@ -1,7 +1,7 @@
 import { hostname } from "node:os";
-import { basename, normalize } from "node:path";
-import { env, pid } from "node:process";
-import { File, Reporter, Task, Vitest } from "vitest";
+import { basename, normalize, relative } from "node:path";
+import { cwd, env, pid } from "node:process";
+import { File, Reporter, Suite, Task, Vitest } from "vitest";
 import {
   AllureGroup,
   AllureRuntime,
@@ -13,8 +13,10 @@ import {
   Stage,
   Status,
   extractMetadataFromString,
+  getSuitesLabels,
 } from "allure-js-commons";
 import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
+import { getSuitePath, getTestFullName } from "./utils.js";
 
 export interface AllureReporterOptions {
   testMode?: boolean;
@@ -30,7 +32,6 @@ const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = env;
 export default class AllureReporter implements Reporter {
   private allureRuntime: AllureRuntime;
   private options: AllureReporterOptions;
-  private rootDir: string;
 
   constructor(options: AllureReporterOptions) {
     this.options = options;
@@ -57,7 +58,6 @@ export default class AllureReporter implements Reporter {
   }
 
   onInit(vitest: Vitest) {
-    this.rootDir = vitest.runner.root;
     this.allureRuntime = new AllureRuntime({
       resultsDir: this.options.resultsDir ?? "allure-results",
       writer: this.options.testMode ? new MessageAllureWriter() : undefined,
@@ -114,30 +114,29 @@ export default class AllureReporter implements Reporter {
     const links = currentTest.links ? this.processMetadataLinks(currentTest.links) : [];
     const labels: Label[] = [].concat(currentTest.labels || []).concat(titleMetadata.labels);
     const test = parent.startTest(testDisplayName);
-    const normalizedTestPath = normalize(task.file.filepath.replace(this.rootDir, ""))
+    const suitePath = getSuitePath(task);
+    const normalizedTestPath = normalize(relative(cwd(), task.file.filepath))
       .replace(/^\//, "")
       .split("/")
       .filter((item: string) => item !== basename(task.file.filepath));
 
-    test.fullName = `${task.file.name}#${task.name}`;
-
+    test.fullName = getTestFullName(task, cwd());
     test.applyMetadata({
       ...currentTest,
       labels,
       links,
     });
-    test.addLabel(LabelName.SUITE, parent.name);
     test.addLabel(LabelName.FRAMEWORK, "vitest");
     test.addLabel(LabelName.LANGUAGE, "javascript");
     test.addLabel(LabelName.THREAD, ALLURE_THREAD_NAME || pid.toString());
     test.addLabel(LabelName.HOST, ALLURE_HOST_NAME || hostname.toString());
 
+    getSuitesLabels(suitePath).forEach((label) => {
+      test.addLabel(label.name, label.value);
+    });
+
     if (normalizedTestPath.length) {
       test.addLabel(LabelName.PACKAGE, normalizedTestPath.join("."));
-    }
-
-    if (task.suite.suite?.name) {
-      test.addLabel(LabelName.PARENT_SUITE, task.suite.suite.name);
     }
 
     switch (task.result?.state) {
