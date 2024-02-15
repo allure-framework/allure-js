@@ -19,7 +19,8 @@ it("adds check thread and hostname", async () => {
   `);
 
   expect(tests).toHaveLength(1);
+  expect(tests[0].start || 0).toBeLessThan(tests[0].stop || 0);
+
   expect(tests[0].labels).toContainEqual({ name: LabelName.HOST, value: expect.any(String) });
   expect(tests[0].labels).toContainEqual({ name: LabelName.THREAD, value: expect.any(String) });
-  expect(tests[0].start || 0).toBeLessThan(tests[0].stop || 0);
 });
