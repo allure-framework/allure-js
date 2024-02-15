@@ -144,11 +144,11 @@ export class AllureJestApi implements AllureRuntimeApiInterface {
     this.label(LabelName.TAG, tag);
   }
 
-  issue(name: string, url: string): void {
+  issue(url: string, name?: string): void {
     this.link(url, name, LinkType.ISSUE);
   }
 
-  tms(name: string, url: string): void {
+  tms(url: string, name?: string): void {
     this.link(url, name, LinkType.TMS);
   }
 

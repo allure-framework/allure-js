@@ -113,8 +113,10 @@ Then you can assign link using shorter notation:
 
 ```js
 it("basic test", () => {
-  allure.issue("Issue Name", "352");
-  allure.tms("Task Name", "352");
+  allure.issue("352");
+  allure.issue("352", "Issue Name");
+  allure.tms("352");
+  allure.tms("352", "Task Name");
   allure.link("352", "Link name", "custom");
 });
 ```

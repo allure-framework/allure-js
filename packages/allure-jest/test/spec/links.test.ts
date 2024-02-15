@@ -23,8 +23,9 @@ describe("links", () => {
   it("issue", async () => {
     const { tests } = await runJestInlineTest(`
       it("issue", async () => {
-        allure.issue("foo", "http://example.org/issues/1");
-        allure.issue("bar", "2");
+        allure.issue("http://example.org/issues/1", "foo");
+        allure.issue("2", "bar");
+        allure.issue("3");
       })
     `);
 
@@ -43,13 +44,20 @@ describe("links", () => {
         url: "http://example.org/issues/2",
       }),
     );
+    expect(tests[0].links).toContainEqual(
+      expect.objectContaining({
+        type: LinkType.ISSUE,
+        url: "http://example.org/issues/3",
+      }),
+    );
   });
 
   it("tms", async () => {
     const { tests } = await runJestInlineTest(`
       it("tms", async () => {
-        allure.tms("foo", "http://example.org/tasks/1");
-        allure.tms("bar", "2");
+        allure.tms("http://example.org/tasks/1", "foo");
+        allure.tms("2", "bar");
+        allure.tms("3");
       })
     `);
 
@@ -66,6 +74,12 @@ describe("links", () => {
         type: LinkType.TMS,
         name: "bar",
         url: "http://example.org/tasks/2",
+      }),
+    );
+    expect(tests[0].links).toContainEqual(
+      expect.objectContaining({
+        type: LinkType.TMS,
+        url: "http://example.org/tasks/3",
       }),
     );
   });

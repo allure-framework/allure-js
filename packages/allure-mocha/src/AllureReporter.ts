@@ -12,7 +12,6 @@ import {
   Status,
   StatusDetails,
   getSuitesLabels,
-  md5,
 } from "allure-js-commons";
 import { MochaAllure } from "./MochaAllure";
 
