@@ -1,3 +1,4 @@
+import { cwd } from "node:process";
 import { type TaskContext, afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 import { LabelName, TestPlanV1, extractMetadataFromString, parseTestPlan } from "allure-js-commons";
 import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
@@ -10,7 +11,7 @@ const existsInTestPlan = (ctx: TaskContext, testPlan?: TestPlanV1) => {
   }
 
   const { name: testName } = ctx.task;
-  const testFullName = getTestFullName(ctx.task);
+  const testFullName = getTestFullName(ctx.task, cwd());
   const { labels } = extractMetadataFromString(testName);
   const allureIdLabel = labels.find(({ name }) => name === LabelName.ALLURE_ID);
 

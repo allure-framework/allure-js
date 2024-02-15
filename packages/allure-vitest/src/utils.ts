@@ -1,3 +1,4 @@
+import { relative } from "node:path";
 import { Suite, Task } from "vitest";
 
 export const getSuitePath = (task: Task): string[] => {
@@ -17,8 +18,9 @@ export const getSuitePath = (task: Task): string[] => {
   return path;
 };
 
-export const getTestFullName = (task: Task): string => {
+export const getTestFullName = (task: Task, rootDir: string): string => {
   const suitePath = getSuitePath(task);
+  const relativeTestPath = relative(rootDir, task.file.filepath);
 
-  return `${task.file.name}#${suitePath.concat(task.name).join(" ")}`;
+  return `${relativeTestPath}#${suitePath.concat(task.name).join(" ")}`;
 };

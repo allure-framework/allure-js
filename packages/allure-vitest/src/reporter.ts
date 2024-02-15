@@ -1,6 +1,6 @@
 import { hostname } from "node:os";
-import { basename, normalize } from "node:path";
-import { env, pid } from "node:process";
+import { basename, normalize, relative } from "node:path";
+import { cwd, env, pid } from "node:process";
 import { File, Reporter, Suite, Task, Vitest } from "vitest";
 import {
   AllureGroup,
@@ -32,7 +32,6 @@ const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = env;
 export default class AllureReporter implements Reporter {
   private allureRuntime: AllureRuntime;
   private options: AllureReporterOptions;
-  private rootDir: string;
 
   constructor(options: AllureReporterOptions) {
     this.options = options;
@@ -59,7 +58,6 @@ export default class AllureReporter implements Reporter {
   }
 
   onInit(vitest: Vitest) {
-    this.rootDir = vitest.runner.root;
     this.allureRuntime = new AllureRuntime({
       resultsDir: this.options.resultsDir ?? "allure-results",
       writer: this.options.testMode ? new MessageAllureWriter() : undefined,
@@ -117,12 +115,12 @@ export default class AllureReporter implements Reporter {
     const labels: Label[] = [].concat(currentTest.labels || []).concat(titleMetadata.labels);
     const test = parent.startTest(testDisplayName);
     const suitePath = getSuitePath(task);
-    const normalizedTestPath = normalize(task.file.filepath.replace(this.rootDir, ""))
+    const normalizedTestPath = normalize(relative(cwd(), task.file.filepath))
       .replace(/^\//, "")
       .split("/")
       .filter((item: string) => item !== basename(task.file.filepath));
 
-    test.fullName = getTestFullName(task);
+    test.fullName = getTestFullName(task, cwd());
     test.applyMetadata({
       ...currentTest,
       labels,
