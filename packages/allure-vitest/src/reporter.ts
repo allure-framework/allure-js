@@ -159,7 +159,7 @@ export default class AllureReporter implements Reporter {
         break;
       }
     }
-    const endTime = task.result ? (task.result.startTime + task.result.duration): undefined;
+    const endTime = task.result ? task.result.startTime + task.result.duration : undefined;
     test.calculateHistoryId();
     test.endTest(endTime);
   }
