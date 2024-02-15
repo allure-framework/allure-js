@@ -132,7 +132,7 @@ export default class AllureReporter implements Reporter {
     });
     test.addLabel(LabelName.FRAMEWORK, "vitest");
     test.addLabel(LabelName.LANGUAGE, "javascript");
-    test.addLabel(LabelName.HOST, this.hostname.toString());
+    test.addLabel(LabelName.HOST, this.hostname);
 
     const thread_id = ALLURE_THREAD_NAME || (VITEST_POOL_ID && `${this.hostname}-vitest-worker-${VITEST_POOL_ID}`);
     if (thread_id) {
