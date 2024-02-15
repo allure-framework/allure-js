@@ -1,5 +1,6 @@
+import { hostname } from "node:os";
 import { basename, normalize } from "node:path";
-import { pid } from "node:process";
+import { env, pid } from "node:process";
 import { File, Reporter, Task, Vitest } from "vitest";
 import {
   AllureGroup,
@@ -23,6 +24,8 @@ export interface AllureReporterOptions {
     urlTemplate: string;
   }[];
 }
+
+const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = env;
 
 export default class AllureReporter implements Reporter {
   private allureRuntime: AllureRuntime;
@@ -126,7 +129,8 @@ export default class AllureReporter implements Reporter {
     test.addLabel(LabelName.SUITE, parent.name);
     test.addLabel(LabelName.FRAMEWORK, "vitest");
     test.addLabel(LabelName.LANGUAGE, "javascript");
-    test.addLabel(LabelName.THREAD, pid.toString());
+    test.addLabel(LabelName.THREAD, ALLURE_THREAD_NAME || pid.toString());
+    test.addLabel(LabelName.HOST, ALLURE_HOST_NAME || hostname.toString());
 
     if (normalizedTestPath.length) {
       test.addLabel(LabelName.PACKAGE, normalizedTestPath.join("."));
