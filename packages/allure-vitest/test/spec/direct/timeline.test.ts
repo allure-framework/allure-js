@@ -7,10 +7,19 @@ it("adds check thread and hostname", async () => {
     import { test } from "vitest";
     import { attachment } from "allure-vitest";
 
-    test("text attachment", async (t) => {});
+    function sleep(milliseconds) {
+      return new Promise((resolve) => {
+        setTimeout(resolve, milliseconds);
+      });
+    }
+
+    test("text attachment", async (t) => {
+      await sleep(10);
+    });
   `);
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual({ name: LabelName.HOST, value: expect.any(String) });
   expect(tests[0].labels).toContainEqual({ name: LabelName.THREAD, value: expect.any(String) });
+  expect(tests[0].start || 0).toBeLessThan(tests[0].stop || 0);
 });
