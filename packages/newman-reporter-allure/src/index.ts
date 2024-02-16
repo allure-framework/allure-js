@@ -183,10 +183,14 @@ class AllureReporter {
     }
   }
 
-  setDescriptionHtml(html: string) {
-    if (html) {
-      this.currentExecutable.descriptionHtml = html;
-    }
+  setDescription(markdown: string) {
+    this.currentExecutable.description = markdown;
+  }
+
+  setDescriptionHtml(markdown: string) {
+    const htmlDescription = markdown.replace(/[*]/g, "").replace(/\n/g, "<br>");
+
+    this.currentExecutable.descriptionHtml = htmlDescription;
   }
 
   endTest(allureTest: AllureTest, status: Status, details?: StatusDetails) {
@@ -355,20 +359,8 @@ class AllureReporter {
       this.currentExecutable.addAttachment("Request Body", { contentType: ContentType.TEXT }, attachment);
     }
 
-    let testDescription = "";
-
     const rawDescription = args.item.request.description;
-
-    if (rawDescription !== undefined) {
-      if (typeof rawDescription === "string") {
-        testDescription = rawDescription || "";
-      } else {
-        testDescription = rawDescription.content || "";
-      }
-
-      testDescription = testDescription.replace(/[*]/g, "");
-      testDescription = testDescription.replace(/\n/g, "<br>");
-    }
+    const testDescription = (typeof rawDescription === "string" ? rawDescription : rawDescription?.content) || "";
 
     if (requestDataURL) {
       this.currentExecutable.parameter("Request", requestDataURL);
@@ -383,6 +375,7 @@ class AllureReporter {
     }
 
     if (testDescription) {
+      this.setDescription(testDescription);
       this.setDescriptionHtml(testDescription);
     }
 

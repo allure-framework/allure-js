@@ -99,6 +99,7 @@ test("complex test overview", async () => {
     parameters: [],
     name: "Status code is 200",
   });
+  expect(result.description).toBe("testDescription\n\nmultiline\n\n**somethingBold**");
   expect(result.descriptionHtml).toBe("testDescription<br><br>multiline<br><br>somethingBold");
   expect(result.labels).toEqual([
     { name: "parentSuite", value: "ParentName" },
