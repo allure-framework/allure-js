@@ -1,0 +1,12 @@
+undecided:
+  - allure-js
+  - allure-codeceptjs
+  - allure-cucumberjs
+  - allure-decorators
+  - allure-hermione
+  - allure-jasmine
+  - allure-jest
+  - allure-js-commons
+  - allure-mocha
+  - allure-playwright
+  - allure-vitest
