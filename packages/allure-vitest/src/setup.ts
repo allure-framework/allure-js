@@ -40,6 +40,11 @@ beforeEach(async (ctx) => {
     return;
   }
 
+  (ctx.task as any).meta = {
+    ...ctx.task.meta,
+    VITEST_POOL_ID: process.env.VITEST_POOL_ID,
+  };
+
   // @ts-ignore
   global.allure = allureAPI;
 });

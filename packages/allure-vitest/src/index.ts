@@ -31,6 +31,7 @@ export interface AllureVitestApi {
 interface AllureTestMeta extends vitest.TaskMeta {
   currentTest: MetadataMessage;
   currentStep?: StepMetadata;
+  VITEST_POOL_ID?: string;
 }
 
 declare global {
@@ -47,6 +48,7 @@ const injectAllureMeta = (context: vitest.TaskContext) => {
   }
 
   (context.task.meta as AllureTestMeta) = {
+    ...context.task.meta,
     currentTest: {
       displayName: context.task.name || "root-test",
       labels: [],
