@@ -1,6 +1,6 @@
 import { hostname } from "node:os";
 import { basename, normalize, relative } from "node:path";
-import { cwd, env, pid } from "node:process";
+import { cwd, env } from "node:process";
 import { File, Reporter, Suite, Task, Vitest } from "vitest";
 import {
   AllureGroup,
@@ -102,7 +102,10 @@ export default class AllureReporter implements Reporter {
       return;
     }
 
-    const { currentTest = {} } = task.meta as { currentTest: MetadataMessage };
+    const { currentTest = {}, VITEST_POOL_ID } = task.meta as {
+      currentTest: MetadataMessage;
+      VITEST_POOL_ID: string;
+    };
     const skippedByTestPlan = currentTest.labels?.some(({ name }) => name === ALLURE_SKIPPED_BY_TEST_PLAN_LABEL);
 
     // do not report tests skipped by test plan
@@ -129,8 +132,12 @@ export default class AllureReporter implements Reporter {
     });
     test.addLabel(LabelName.FRAMEWORK, "vitest");
     test.addLabel(LabelName.LANGUAGE, "javascript");
-    test.addLabel(LabelName.THREAD, ALLURE_THREAD_NAME || pid.toString());
-    test.addLabel(LabelName.HOST, ALLURE_HOST_NAME || this.hostname.toString());
+    test.addLabel(LabelName.HOST, this.hostname);
+
+    const thread_id = ALLURE_THREAD_NAME || (VITEST_POOL_ID && `${this.hostname}-vitest-worker-${VITEST_POOL_ID}`);
+    if (thread_id) {
+      test.addLabel(LabelName.THREAD, thread_id);
+    }
 
     getSuitesLabels(suitePath).forEach((label) => {
       test.addLabel(label.name, label.value);
