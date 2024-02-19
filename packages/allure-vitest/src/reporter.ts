@@ -173,9 +173,9 @@ export default class AllureReporter implements Reporter {
         Math.max(0, task.result?.duration || 0) +
         Math.max(0, task.file.environmentLoad || 0) +
         Math.max(0, task.file.prepareDuration || 0)
-      : undefined;
+      : 0;
 
     test.calculateHistoryId();
-    test.endTest(actualDuration);
+    test.endTest(task.result.startTime + actualDuration);
   }
 }
