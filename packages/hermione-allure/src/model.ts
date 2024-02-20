@@ -2,6 +2,7 @@ import { MetadataMessage, Stage, Status, StatusDetails } from "allure-js-commons
 import { AllureWriter } from "allure-js-commons/dist/src/writers";
 
 export type AllureReportOptions = {
+  enabled?: boolean;
   resultsDir?: string;
   writer?: AllureWriter;
 };

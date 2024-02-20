@@ -29,6 +29,10 @@ import { getFileSrcPath, getSuitePath } from "./utils";
 const hostname = os.hostname();
 
 const hermioneAllureReporter = (hermione: Hermione, opts?: AllureReportOptions) => {
+  if (opts?.enabled === false) {
+    return;
+  }
+
   const runningTests: Map<string, AllureTest> = new Map();
   const runningSteps: Map<string, AllureStep[]> = new Map();
 

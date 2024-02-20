@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
+import { Stage, Status } from "allure-js-commons";
 import { runHermioneInlineTest } from "../utils";
-import {Stage, Status} from "allure-js-commons";
 
 describe("skipped", () => {
   it("doesn't report skipped tests", async () => {
@@ -31,7 +31,7 @@ describe("skipped", () => {
     `);
 
     expect(tests).length(1);
-    expect(tests[0].stage).eq(Stage.PENDING)
-    expect(tests[0].status).eq(Status.SKIPPED)
+    expect(tests[0].stage).eq(Stage.PENDING);
+    expect(tests[0].status).eq(Status.SKIPPED);
   });
 });

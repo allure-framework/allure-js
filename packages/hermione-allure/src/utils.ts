@@ -1,6 +1,6 @@
+import { Suite, Test } from "hermione";
 import { basename } from "path";
 import { cwd } from "process";
-import { Test, Suite } from "hermione";
 import { MetadataMessage, ParameterOptions } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 
