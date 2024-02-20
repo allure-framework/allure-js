@@ -7,8 +7,8 @@ describe("labels", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("custom", async (ctx) => {
-        await allure(ctx).label("foo", "bar");
+      it("custom", async ({ currentTest }) => {
+        await allure(currentTest).label("foo", "bar");
       });
     `);
 
@@ -20,8 +20,8 @@ describe("labels", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("allureId", async (ctx) => {
-        await allure(ctx).id("42");
+      it("allureId", async ({ currentTest }) => {
+        await allure(currentTest).id("42");
       });
     `);
 
@@ -33,8 +33,8 @@ describe("labels", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("epic", async (ctx) => {
-        await allure(ctx).epic("foo");
+      it("epic", async ({ currentTest }) => {
+        await allure(currentTest).epic("foo");
       });
     `);
 
@@ -46,8 +46,8 @@ describe("labels", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("feature", async (ctx) => {
-        await allure(ctx).feature("foo");
+      it("feature", async ({ currentTest }) => {
+        await allure(currentTest).feature("foo");
       });
     `);
 
@@ -59,8 +59,8 @@ describe("labels", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("story", async (ctx) => {
-        await allure(ctx).story("foo");
+      it("story", async ({ currentTest }) => {
+        await allure(currentTest).story("foo");
       });
     `);
 
@@ -72,8 +72,8 @@ describe("labels", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("suite", async (ctx) => {
-        await allure(ctx).suite("foo");
+      it("suite", async ({ currentTest }) => {
+        await allure(currentTest).suite("foo");
       });
     `);
 
@@ -85,8 +85,8 @@ describe("labels", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("parentSuite", async (ctx) => {
-        await allure(ctx).parentSuite("foo");
+      it("parentSuite", async ({ currentTest }) => {
+        await allure(currentTest).parentSuite("foo");
       });
     `);
 
@@ -98,8 +98,8 @@ describe("labels", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("subSuite", async (ctx) => {
-        await allure(ctx).subSuite("foo");
+      it("subSuite", async ({ currentTest }) => {
+        await allure(currentTest).subSuite("foo");
       });
     `);
 
@@ -111,8 +111,8 @@ describe("labels", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("owner", async (ctx) => {
-        await allure(ctx).owner("foo");
+      it("owner", async ({ currentTest }) => {
+        await allure(currentTest).owner("foo");
       });
     `);
 
@@ -124,8 +124,8 @@ describe("labels", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("severity", async (ctx) => {
-        await allure(ctx).severity("foo");
+      it("severity", async ({ currentTest }) => {
+        await allure(currentTest).severity("foo");
       });
     `);
 
@@ -137,8 +137,8 @@ describe("labels", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("tag", async (ctx) => {
-        await allure(ctx).tag("foo");
+      it("tag", async ({ currentTest }) => {
+        await allure(currentTest).tag("foo");
       });
     `);
 
@@ -150,8 +150,8 @@ describe("labels", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("layer", async (ctx) => {
-        await allure(ctx).layer("foo");
+      it("layer", async ({ currentTest }) => {
+        await allure(currentTest).layer("foo");
       });
     `);
 

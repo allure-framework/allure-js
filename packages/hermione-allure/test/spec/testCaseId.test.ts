@@ -7,8 +7,8 @@ describe("testCaseId", () => {
     const { tests, attachments } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("test case id", async (ctx) => {
-        await allure(ctx).testCaseId("foo");
+      it("test case id", async ({ currentTest }) => {
+        await allure(currentTest).testCaseId("foo");
       });
     `);
 

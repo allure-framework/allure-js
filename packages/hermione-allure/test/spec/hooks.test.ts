@@ -8,12 +8,12 @@ describe("hooks", () => {
       const { allure } = require("hermione-allure/dist/runtime.js");
 
       describe("hooks", () => {
-        beforeEach(async (ctx) => {
-          await allure(ctx).label("hook", "before");
+        beforeEach(async ({ currentTest }) => {
+          await allure(currentTest).label("hook", "before");
         });
 
-        afterEach(async (ctx) => {
-          await allure(ctx).label("hook", "after");
+        afterEach(async ({ currentTest }) => {
+          await allure(currentTest).label("hook", "after");
         });
 
         it("first test", () => {});

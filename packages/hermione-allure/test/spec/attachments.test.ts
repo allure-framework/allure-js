@@ -7,8 +7,8 @@ describe("attachments", () => {
     const { tests, attachments } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("custom", async (ctx) => {
-        await allure(ctx).attachment(JSON.stringify({ foo: "bar" }), "application/json", "foo");
+      it("custom", async ({ currentTest }) => {
+        await allure(currentTest).attachment(JSON.stringify({ foo: "bar" }), "application/json", "foo");
       });
     `);
 

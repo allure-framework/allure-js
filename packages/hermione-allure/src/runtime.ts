@@ -67,22 +67,22 @@ const endStep = async (
   });
 };
 
-export const allure = (context: { currentTest: Test }) => ({
+export const allure = (currentTest: Test) => ({
   description: async (value: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       description: value,
     });
   },
 
   descriptionHtml: async (value: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       descriptionHtml: value,
     });
   },
 
   attachment: async (content: string | Buffer, type: string, name?: string) => {
     const isBuffer = Buffer.isBuffer(content);
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       attachments: [
         {
           name: name || "Attachment",
@@ -95,130 +95,130 @@ export const allure = (context: { currentTest: Test }) => ({
   },
 
   parameter: async (name: string, value: any, options?: ParameterOptions) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       parameter: [{ name, value, ...options }],
     });
   },
 
   link: async (url: string, name?: string, type?: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       links: [{ name, url, type }],
     });
   },
 
   issue: async (url: string, name?: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       links: [{ name, url, type: LinkType.ISSUE }],
     });
   },
 
   tms: async (url: string, name?: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       links: [{ name, url, type: LinkType.TMS }],
     });
   },
 
   label: async (name: string, value: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       labels: [{ name, value }],
     });
   },
 
   id: async (value: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       labels: [{ name: LabelName.ALLURE_ID, value }],
     });
   },
 
   epic: async (value: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       labels: [{ name: LabelName.EPIC, value }],
     });
   },
 
   feature: async (value: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       labels: [{ name: LabelName.FEATURE, value }],
     });
   },
 
   story: async (value: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       labels: [{ name: LabelName.STORY, value }],
     });
   },
 
   suite: async (value: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       labels: [{ name: LabelName.SUITE, value }],
     });
   },
 
   subSuite: async (value: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       labels: [{ name: LabelName.SUB_SUITE, value }],
     });
   },
 
   parentSuite: async (value: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       labels: [{ name: LabelName.PARENT_SUITE, value }],
     });
   },
 
   owner: async (value: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       labels: [{ name: LabelName.OWNER, value }],
     });
   },
 
   severity: async (value: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       labels: [{ name: LabelName.SEVERITY, value }],
     });
   },
 
   tag: async (value: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       labels: [{ name: LabelName.TAG, value }],
     });
   },
 
   layer: async (value: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       labels: [{ name: LabelName.LAYER, value }],
     });
   },
 
   historyId: async (historyId: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       historyId,
     });
   },
 
   testCaseId: async (testCaseId: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       testCaseId,
     });
   },
 
   displayName: async (displayName: string) => {
-    await sendMetadataMessage(context.currentTest, {
+    await sendMetadataMessage(currentTest, {
       displayName,
     });
   },
 
   step: async (name: string, body: () => Promise<any>) => {
-    await startStep(context.currentTest, name);
+    await startStep(currentTest, name);
 
     try {
       await body();
 
-      await endStep(context.currentTest, Status.PASSED);
+      await endStep(currentTest, Status.PASSED);
     } catch (err) {
       const stepStatus = /AssertionError/.test((err as any).constructor.name) ? Status.FAILED : Status.BROKEN;
 
-      await endStep(context.currentTest, stepStatus, {
+      await endStep(currentTest, stepStatus, {
         message: (err as Error).message,
         trace: (err as Error).stack,
       });

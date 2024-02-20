@@ -7,8 +7,8 @@ describe("labels", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("custom", async (ctx) => {
-        await allure(ctx).link("https://example.org", "bar", "foo");
+      it("custom", async ({ currentTest }) => {
+        await allure(currentTest).link("https://example.org", "bar", "foo");
       });
     `);
 
@@ -20,8 +20,8 @@ describe("labels", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("tms", async (ctx) => {
-        await allure(ctx).tms("https://example.org", "foo");
+      it("tms", async ({ currentTest }) => {
+        await allure(currentTest).tms("https://example.org", "foo");
       });
     `);
 
@@ -33,8 +33,8 @@ describe("labels", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("issue", async (ctx) => {
-        await allure(ctx).issue("https://example.org", "foo");
+      it("issue", async ({ currentTest }) => {
+        await allure(currentTest).issue("https://example.org", "foo");
       });
     `);
 

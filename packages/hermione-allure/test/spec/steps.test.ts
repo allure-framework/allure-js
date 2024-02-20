@@ -8,8 +8,8 @@ describe("steps", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("foo", async (ctx) => {
-        await allure(ctx).step("foo", async () => {});
+      it("foo", async ({ currentTest }) => {
+        await allure(currentTest).step("foo", async () => {});
       });
     `);
 
@@ -29,10 +29,10 @@ describe("steps", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("foo", async (ctx) => {
-        await allure(ctx).step("foo", async () => {});
-        await allure(ctx).step("bar", async () => {});
-        await allure(ctx).step("baz", async () => {});
+      it("foo", async ({ currentTest }) => {
+        await allure(currentTest).step("foo", async () => {});
+        await allure(currentTest).step("bar", async () => {});
+        await allure(currentTest).step("baz", async () => {});
       });
     `);
 
@@ -62,10 +62,10 @@ describe("steps", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("foo", async (ctx) => {
-        await allure(ctx).step("foo", async () => {
-          await allure(ctx).step("bar", async () => {
-            await allure(ctx).step("baz", async () => {});
+      it("foo", async ({ currentTest }) => {
+        await allure(currentTest).step("foo", async () => {
+          await allure(currentTest).step("bar", async () => {
+            await allure(currentTest).step("baz", async () => {});
           });
         });
       });
@@ -99,10 +99,10 @@ describe("steps", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("foo", async (ctx) => {
-        await allure(ctx).step("foo", async () => {
-          await allure(ctx).step("bar", async () => {
-            await allure(ctx).step("baz", async () => {
+      it("foo", async ({ currentTest }) => {
+        await allure(currentTest).step("foo", async () => {
+          await allure(currentTest).step("bar", async () => {
+            await allure(currentTest).step("baz", async () => {
               expect(1).toBe(2);
             });
           });
@@ -138,10 +138,10 @@ describe("steps", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("foo", async (ctx) => {
-        await allure(ctx).step("foo", async () => {
-          await allure(ctx).step("bar", async () => {
-            await allure(ctx).step("baz", async () => {
+      it("foo", async ({ currentTest }) => {
+        await allure(currentTest).step("foo", async () => {
+          await allure(currentTest).step("bar", async () => {
+            await allure(currentTest).step("baz", async () => {
               throw new Error("Unexpected error");
             });
           });
@@ -177,9 +177,9 @@ describe("steps", () => {
     const { tests, attachments } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("foo", async (ctx) => {
-        await allure(ctx).step("foo", async () => {
-          await allure(ctx).attachment("foo", "text/plain", "attachment name");
+      it("foo", async ({ currentTest }) => {
+        await allure(currentTest).step("foo", async () => {
+          await allure(currentTest).attachment("foo", "text/plain", "attachment name");
         });
       });
     `);
@@ -201,10 +201,10 @@ describe("steps", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("foo", async (ctx) => {
-        await allure(ctx).step("foo", async () => {
-          await allure(ctx).label("foo", "bar");
-          await allure(ctx).link("http://example.com", "example");
+      it("foo", async ({ currentTest }) => {
+        await allure(currentTest).step("foo", async () => {
+          await allure(currentTest).label("foo", "bar");
+          await allure(currentTest).link("http://example.com", "example");
         });
       });
     `);
@@ -224,9 +224,9 @@ describe("steps", () => {
     const { tests } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("foo", async (ctx) => {
-        await allure(ctx).step("foo", async () => {
-          await allure(ctx).parameter("foo", "bar");
+      it("foo", async ({ currentTest }) => {
+        await allure(currentTest).step("foo", async () => {
+          await allure(currentTest).parameter("foo", "bar");
         });
       });
     `);

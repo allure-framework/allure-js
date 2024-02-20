@@ -7,8 +7,8 @@ describe("description", () => {
     const { tests, attachments } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("description", async (ctx) => {
-        await allure(ctx).description("foo");
+      it("description", async ({ currentTest }) => {
+        await allure(currentTest).description("foo");
       });
     `);
 
@@ -20,8 +20,8 @@ describe("description", () => {
     const { tests, attachments } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("description html", async (ctx) => {
-        await allure(ctx).descriptionHtml("foo");
+      it("description html", async ({ currentTest }) => {
+        await allure(currentTest).descriptionHtml("foo");
       });
     `);
 

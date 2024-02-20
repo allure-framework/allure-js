@@ -7,8 +7,8 @@ describe("parameters", () => {
     const { tests, attachments } = await runHermioneInlineTest(`
       const { allure } = require("hermione-allure/dist/runtime.js");
 
-      it("parameter", async (ctx) => {
-        await allure(ctx).parameter("foo", "bar", {
+      it("parameter", async ({ currentTest }) => {
+        await allure(currentTest).parameter("foo", "bar", {
           excluded: false,
           mode: "hidden",
         });
