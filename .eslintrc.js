@@ -18,7 +18,7 @@ module.exports = {
   parserOptions: {
     project: "tsconfig.json",
     sourceType: "module",
-    warnOnUnsupportedTypeScriptVersion: false
+    warnOnUnsupportedTypeScriptVersion: false,
   },
   plugins: [
     "eslint-plugin-no-null",
@@ -44,8 +44,7 @@ module.exports = {
             message: "Avoid using the `Object` type. Did you mean `object`?",
           },
           Function: {
-            message:
-              "Avoid using the `Function` type. Prefer a specific function type, like `() => void`.",
+            message: "Avoid using the `Function` type. Prefer a specific function type, like `() => void`.",
           },
           Boolean: {
             message: "Avoid using the `Boolean` type. Did you mean `boolean`?",
@@ -142,6 +141,12 @@ module.exports = {
       },
     ],
     "@typescript-eslint/semi": ["error"],
+    "@typescript-eslint/no-shadow": [
+      "error",
+      {
+        hoist: "all",
+      },
+    ],
     "@typescript-eslint/triple-slash-reference": [
       "error",
       {
@@ -209,16 +214,11 @@ module.exports = {
     "no-new-wrappers": "error",
     "no-null/no-null": "off",
     "no-restricted-imports": ["error", "rxjs"],
-    "no-shadow": [
-      "error",
-      {
-        hoist: "all",
-      },
-    ],
+    "no-shadow": "off",
     "no-throw-literal": "error",
     "no-trailing-spaces": "error",
     "no-undef-init": "error",
-    "no-underscore-dangle": ["error", { "allow": ["_currentRetry", "_retriedTest", "_retries"] }],
+    "no-underscore-dangle": ["error", { allow: ["_currentRetry", "_retriedTest", "_retries"] }],
     "no-unsafe-finally": "error",
     "no-unused-labels": "error",
     "no-var": "error",

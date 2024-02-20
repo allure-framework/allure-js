@@ -21,7 +21,7 @@
   - "packages/allure-decorators/**"
 
 "theme:hermione":
-  - "packages/allure-hermione/**"
+  - "packages/hermione-allure/**"
 
 "theme:jasmine":
   - "packages/allure-jasmine/**"
