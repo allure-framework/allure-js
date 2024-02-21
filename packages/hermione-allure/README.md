@@ -28,7 +28,17 @@ Add `hermione-allure` field to `plugins` in your `.hermione.conf.js` file:
 module.exports = {
   plugins: {
 +    "hermione-allure": {
-+      resultsDir: "./allure-results"
++      resultsDir: "./allure-results",
++      links: [
++        {
++          type: "issue",
++          urlTemplate: "https://example.org/issue/%s",
++        },
++        {
++          type: "tms",
++          urlTemplate: "https://example.org/task/%s",
++        },
++      ],
 +    }
   }
 }
@@ -130,7 +140,21 @@ Or using aliases: `issue`, `tms`:
 import { allure } from "hermione-allure/runtime";
 
 it("my test", async ({ currentTest }) => {
-  await allure(currentTest).issue("my_link_name", "http://example.org");
+  await allure(currentTest).issue("http://example.org", "my_link_name");
+  await allure(currentTest).tms("http://example.org", "my_link_name");
+});
+```
+
+If you configured links templates you can use shorter syntax of links as well:
+
+```js
+import { allure } from "hermione-allure/runtime";
+
+it("my test", async ({ currentTest }) => {
+  await allure(currentTest).issue("1");
+  await allure(currentTest).issue("2", "Issue name");
+  await allure(currentTest).tms("1");
+  await allure(currentTest).tms("2", "Task name");
 });
 ```
 

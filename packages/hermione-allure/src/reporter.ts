@@ -8,6 +8,7 @@ import {
   AllureTest,
   ContentType,
   LabelName,
+  Link,
   Stage,
   Status,
   allureReportFolder,
@@ -30,10 +31,12 @@ const hostname = os.hostname();
 export class AllureHermioneReporter {
   hermione: Hermione;
   runtime: AllureRuntime;
+  options: AllureReportOptions;
   runningTests: Map<string, AllureTest> = new Map();
   runningSteps: Map<string, AllureStep[]> = new Map();
 
   constructor(hermione: Hermione, opts?: AllureReportOptions) {
+    this.options = opts || {};
     this.hermione = hermione;
     this.runtime = new AllureRuntime({
       resultsDir: allureReportFolder(opts?.resultsDir),
@@ -51,6 +54,26 @@ export class AllureHermioneReporter {
     this.hermione.on(this.hermione.events.TEST_END, this.onTestEnd.bind(this));
   }
 
+  private processMetadataLinks(links: Link[]): Link[] {
+    return links.map((link) => {
+      // TODO:
+      // @ts-ignore
+      const matcher = this.options.links?.find?.(({ type }) => type === link.type);
+
+      // TODO:
+      if (!matcher || link.url.startsWith("http")) {
+        return link;
+      }
+
+      const url = matcher.urlTemplate.replace("%s", link.url);
+
+      return {
+        ...link,
+        url,
+      };
+    });
+  }
+
   private applyMetadata(message: HermioneMetadataMessage) {
     const currentTest = this.runningTests.get(message.testId);
 
@@ -63,7 +86,7 @@ export class AllureHermioneReporter {
     const currentSteps = this.runningSteps.get(message.testId) || [];
     const currentStep = currentSteps[currentSteps.length - 1];
     const currentExecutable = (currentStep || currentTest) as AllureTest | AllureStep;
-    const { attachments = [], parameter = [], ...metadata } = message.metadata;
+    const { links = [], attachments = [], parameter = [], ...metadata } = message.metadata;
 
     attachments.forEach((attachment) => {
       const attachmentFilename = this.runtime.writeAttachment(attachment.content, attachment.type, attachment.encoding);
@@ -83,7 +106,10 @@ export class AllureHermioneReporter {
       });
     });
 
-    currentTest.applyMetadata(metadata);
+    currentTest.applyMetadata({
+      ...metadata,
+      links: this.processMetadataLinks(links),
+    });
   }
 
   private startAllureTest(test: Test) {
@@ -128,7 +154,7 @@ export class AllureHermioneReporter {
     if (!currentExecutable) {
       // eslint-disable-next-line no-console
       console.error("Can't start step because there isn't any running test or step!");
-      return
+      return;
     }
 
     const currentStep = currentExecutable.startStep(message.name);

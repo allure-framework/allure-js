@@ -5,6 +5,10 @@ export type AllureReportOptions = {
   enabled?: boolean;
   resultsDir?: string;
   writer?: AllureWriter;
+  links?: {
+    type: string;
+    urlTemplate: string;
+  }[];
 };
 
 export enum HermioneRuntimeMessageType {

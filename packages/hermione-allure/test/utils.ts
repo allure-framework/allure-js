@@ -18,6 +18,16 @@ export const runHermioneInlineTest = async (test: string) => {
 
   hermioneAllure(hermione, {
     writer,
+    links: [
+      {
+        type: "issue",
+        urlTemplate: "https://example.org/issue/%s",
+      },
+      {
+        type: "tms",
+        urlTemplate: "https://example.org/task/%s",
+      },
+    ],
   });
 
   try {
