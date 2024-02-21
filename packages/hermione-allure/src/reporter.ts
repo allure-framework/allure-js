@@ -6,6 +6,7 @@ import {
   AllureRuntime,
   AllureStep,
   AllureTest,
+  ContentType,
   LabelName,
   Stage,
   Status,
@@ -125,9 +126,9 @@ export class AllureHermioneReporter {
     const currentExecutable = currentSteps[currentSteps.length - 1] || currentTest;
 
     if (!currentExecutable) {
-      // FIXME: change error message
       // eslint-disable-next-line no-console
-      console.error("Can't assign attachment due test has been finished or hasn't been started");
+      console.error("Can't start step because there isn't any running test or step!");
+      return
     }
 
     const currentStep = currentExecutable.startStep(message.name);
@@ -141,9 +142,8 @@ export class AllureHermioneReporter {
     const currentStep = currentSteps.pop();
 
     if (!currentStep) {
-      // FIXME: change error message
       // eslint-disable-next-line no-console
-      console.error("Can't assign attachment due test has been finished or hasn't been started");
+      console.error("There isn't any running step to end!");
     }
 
     if (message.status !== Status.PASSED) {
@@ -209,19 +209,29 @@ export class AllureHermioneReporter {
       currentTest.status = Status.FAILED;
     }
 
+    // FIXME: temp solution, fix after https://github.com/gemini-testing/hermione/pull/848 will be released
+    // @ts-ignore
+    const { message = "", stack = "", screenshot } = test?.err || {};
+
     currentTest.statusDetails = {
-      // @ts-ignore
-      message: test?.err?.message || "",
-      // @ts-ignore
-      trace: test?.err?.stack || "",
+      message,
+      trace: stack,
     };
 
     // @ts-ignore
-    if (!test?.err?.screenshot) {
+    if (!screenshot) {
       return;
     }
 
-    // TODO: attach screenshot
+    const attachmentFilename = this.runtime.writeAttachment(screenshot.base64, ContentType.PNG, "base64");
+
+    currentTest.addAttachment(
+      "Screenshot",
+      {
+        contentType: ContentType.PNG,
+      },
+      attachmentFilename,
+    );
   }
 
   onTestPending(test: Test) {
@@ -242,8 +252,6 @@ export class AllureHermioneReporter {
       return;
     }
 
-    // console.log({ test });
-
     const currentTest = this.runningTests.get(test.id as string)!;
 
     // don't reassign historyId if it already has been set manually
@@ -251,15 +259,7 @@ export class AllureHermioneReporter {
       currentTest.calculateHistoryId();
     }
 
-    // TODO: we don't need to report every skipped test
-    // the test has been skipped
-    // if (test.pending) {
-    //   currentTest.status = Status.SKIPPED;
-    // }
-
-    // TODO:
-    // test.duration
-
+    // finish only running tests, skipped ones have pending stage which shouldn't be reassigned
     if (currentTest.stage === Stage.RUNNING) {
       currentTest.stage = Stage.FINISHED;
     }
