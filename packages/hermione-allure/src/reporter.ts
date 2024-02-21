@@ -249,7 +249,7 @@ export class AllureHermioneReporter {
       return;
     }
 
-    const attachmentFilename = this.runtime.writeAttachment(screenshot.base64, ContentType.PNG, "base64");
+    const attachmentFilename = this.runtime.writeAttachment(screenshot.base64 as string, ContentType.PNG, "base64");
 
     currentTest.addAttachment(
       "Screenshot",

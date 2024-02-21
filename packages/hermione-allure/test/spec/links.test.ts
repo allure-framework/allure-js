@@ -30,8 +30,16 @@ describe("links", () => {
     expect(tests).length(1);
     expect(tests[0].links).length(3);
     tests[0].links.should.contain.something.like({ name: "foo", url: "https://example.org", type: LinkType.TMS });
-    tests[0].links.should.contain.something.like({ name: "bar", url: "https://example.org/task/1", type: LinkType.TMS });
-    tests[0].links.should.contain.something.like({ name: "baz", url: "https://example.org/task/2", type: LinkType.TMS });
+    tests[0].links.should.contain.something.like({
+      name: "bar",
+      url: "https://example.org/task/1",
+      type: LinkType.TMS,
+    });
+    tests[0].links.should.contain.something.like({
+      name: "baz",
+      url: "https://example.org/task/2",
+      type: LinkType.TMS,
+    });
   });
 
   it("adds `foo` issue link", async () => {
@@ -48,7 +56,15 @@ describe("links", () => {
     expect(tests).length(1);
     expect(tests[0].links).length(3);
     tests[0].links.should.contain.something.like({ name: "foo", url: "https://example.org", type: LinkType.ISSUE });
-    tests[0].links.should.contain.something.like({ name: "bar", url: "https://example.org/issue/1", type: LinkType.ISSUE });
-    tests[0].links.should.contain.something.like({ name: "baz", url: "https://example.org/issue/2", type: LinkType.ISSUE });
+    tests[0].links.should.contain.something.like({
+      name: "bar",
+      url: "https://example.org/issue/1",
+      type: LinkType.ISSUE,
+    });
+    tests[0].links.should.contain.something.like({
+      name: "baz",
+      url: "https://example.org/issue/2",
+      type: LinkType.ISSUE,
+    });
   });
 });

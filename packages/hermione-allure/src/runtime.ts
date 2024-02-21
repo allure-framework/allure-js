@@ -215,7 +215,7 @@ export const allure = (currentTest: Test) => ({
 
       await endStep(currentTest, Status.PASSED);
     } catch (err) {
-      const stepStatus = /AssertionError/.test((err as any).constructor.name) ? Status.FAILED : Status.BROKEN;
+      const stepStatus = /AssertionError/.test((err as object).constructor.name) ? Status.FAILED : Status.BROKEN;
 
       await endStep(currentTest, stepStatus, {
         message: (err as Error).message,
