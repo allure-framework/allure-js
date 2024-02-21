@@ -8,7 +8,6 @@ import {
   Stage,
   Status,
   StatusDetails,
-  StepBodyFunction,
 } from "allure-js-commons";
 import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
 import {

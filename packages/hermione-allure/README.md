@@ -49,7 +49,7 @@ it("my test", async ({ browser, currentTest }) => {
 
   const screenshot = await browser.takeScreenshot();
 
-  await allure(currentTest).attach(screenshot, "image/png");
+  await allure(currentTest).attachment(screenshot, "image/png");
   await allure(currentTest).epic("my_epic");
   await allure(currentTest).parameter("parameter_name", "parameter_value", {
     mode: "hidden",
@@ -150,13 +150,13 @@ it("my test", async ({ currentTest }) => {
 
 ### Attachments
 
-Attach any file as string or buffer using `attach` method:
+Attach any file as string or buffer using `attachment` method:
 
 ```js
 import { allure } from "hermione-allure/runtime";
 
 it("my test", async ({ currentTest }) => {
-  await allure(currentTest).attach(JSON.stringify({ foo: "bar" }), "application/json");
+  await allure(currentTest).attachment(JSON.stringify({ foo: "bar" }), "application/json", "Attachment name");
 });
 ```
 
@@ -168,7 +168,7 @@ import { allure } from "hermione-allure/runtime";
 it("adds screenshots", async ({ browser, currentTest }) => {
   const screenshot = await browser.takeScreenshot();
 
-  await allure(currentTest).attach(screenshot, "image/png");
+  await allure(currentTest).attachment(screenshot, "image/png");
 });
 ```
 
@@ -187,9 +187,31 @@ it("my test", async ({ browser, currentTest }) => {
         await allure(currentTest).label("foo", "bar");
         // attachments and parameters will be added to the step, not the test
         await allure(currentTest).parameter("baz", "qux");
-        await allure(currentTest).attach("attachment content", "text/plain");
+        await allure(currentTest).attachment("attachment content", "text/plain");
       });
     });
   });
+});
+```
+
+### Custom history ID
+
+You can reassign history ID for the test case using `historyId` method:
+
+```js
+import { allure } from "hermione-allure/runtime";
+
+it("my test", async ({ currentTest }) => {
+  await allure(currentTest).historyId("my_history_id");
+});
+```
+
+### Custom test case ID
+
+```js
+import { allure } from "hermione-allure/runtime";
+
+it("my test", async ({ currentTest }) => {
+  await allure(currentTest).testCaseId("my_id");
 });
 ```
