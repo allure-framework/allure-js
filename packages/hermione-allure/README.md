@@ -1,6 +1,6 @@
 # hermione-allure
 
-> Allure integration for `hermione@^5.x.x` and above
+> Allure integration for `hermione@^8.x.x` and above
 
 [<img src="https://allurereport.org/public/img/allure-report.svg" height="85px" alt="Allure Report logo" align="right" />](https://allurereport.org "Allure Report")
 
