@@ -1,11 +1,14 @@
 {
-  "extends": "../../tsconfig.json",
-  "include": ["./src/**/*"],
   "compilerOptions": {
-    "lib": ["ES2017", "DOM"],
-    "types": ["node"],
+    "target": "es2022",
+    "lib": ["es2022", "dom"],
+    "types": ["node", "cypress"],
     "skipLibCheck": true,
     "outDir": "./dist",
-    "rootDir": "./src"
-  }
+    "rootDir": "./src",
+    "declaration": true,
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["./src/**/*"]
 }

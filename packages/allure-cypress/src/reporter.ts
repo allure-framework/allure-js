@@ -43,11 +43,11 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
       currentTest.addLabel(LabelName.FRAMEWORK, "cypress");
 
       suiteLabels.forEach((label) => {
-        currentTest!.addLabel(label.name, label.value);
+        currentTest.addLabel(label.name, label.value);
       });
 
       titleMetadata.labels.forEach((label) => {
-        currentTest!.addLabel(label.name, label.value);
+        currentTest.addLabel(label.name, label.value);
       });
 
       return null;
@@ -105,6 +105,8 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
         return null;
       }
 
+      // FIXME: see `./model.ts` for details
+      // @ts-ignore
       currentStep.status = message.status || Stage.PENDING;
       currentStep.stage = message.stage || Stage.FINISHED;
 
@@ -153,7 +155,7 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
       return null;
     },
   });
-  on("after:screenshot", (details, ...rest) => {
+  on("after:screenshot", (details) => {
     const currentStep = currentSteps[currentSteps.length - 1];
 
     if (!currentTest && !currentStep) {

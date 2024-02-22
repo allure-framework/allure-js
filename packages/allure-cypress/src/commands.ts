@@ -5,7 +5,7 @@ const messagesQueue: (StartTestMessage | EndTestMessage)[] = [];
 const { EVENT_TEST_BEGIN, EVENT_TEST_FAIL, EVENT_TEST_PASS } = Mocha.Runner.constants;
 
 const getSuitePath = (test: Mocha.Test): string[] => {
-  const path = [];
+  const path: string[] = [];
   let currentSuite: Mocha.Suite | undefined = test.parent;
 
   while (currentSuite) {

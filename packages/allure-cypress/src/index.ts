@@ -11,14 +11,16 @@ import {
 declare global {
   namespace Cypress {
     interface Chainable {
-      allureMetadataMessage(metadata: MetadataMessage): Chainable<void>;
+      allureMetadataMessage(metadata: MetadataMessage): Chainable;
 
-      allureStartStep(message: StartStepMessage): Chainable<void>;
+      allureStartStep(message: StartStepMessage): Chainable;
 
-      allureEndStep(message: EndStepMessage): Chainable<void>;
+      allureEndStep(message: EndStepMessage): Chainable;
     }
   }
 }
+
+export type CypressWrappedAttachment = { type: string; data: unknown };
 
 export const label = (name: string, value: string) => {
   cy.allureMetadataMessage({
@@ -101,9 +103,45 @@ export const layer = (name: string) => {
 export const tag = (name: string) => {
   label(LabelName.TAG, name);
 };
-export const attachment = (name: string, content: Buffer | string, type: string) => {
+export const attachment = (name: string, content: unknown, type: string, encoding: string = "utf8") => {
+  const objectAttachment = typeof content === "object";
+
+  // non-object attachment is a string and fully controllable by user
+  if (!objectAttachment) {
+    cy.allureMetadataMessage({
+      attachments: [
+        {
+          name,
+          content,
+          type,
+          encoding,
+        },
+      ],
+    } as MetadataMessage);
+    return;
+  }
+
+  let attachmentContent: string;
+
+  switch ((content as CypressWrappedAttachment).type) {
+    case "Buffer":
+      // convert Uint8Array to base64 string
+      attachmentContent = btoa(String.fromCharCode.apply(null, (content as CypressWrappedAttachment).data) as string);
+      break;
+    default:
+      // don't know is the case possible, but better to add default case processing
+      attachmentContent = (content as CypressWrappedAttachment).data as string;
+  }
+
   cy.allureMetadataMessage({
-    attachments: [{ name, content, type }],
+    attachments: [
+      {
+        content: attachmentContent,
+        encoding: "base64",
+        name,
+        type,
+      },
+    ],
   } as MetadataMessage);
 };
 export const step = (name: string, body: () => void) => {
