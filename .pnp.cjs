@@ -93,11 +93,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-jsdoc", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:48.0.2"],\
             ["eslint-plugin-no-null", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.0.2"],\
             ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
-            ["husky", "npm:9.0.7"],\
             ["lint-staged", "npm:15.2.1"],\
             ["prettier", "npm:3.2.4"],\
             ["prettier-plugin-packagejson", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:2.4.9"],\
             ["rimraf", "npm:5.0.1"],\
+            ["simple-git-hooks", "npm:2.9.0"],\
             ["typescript", "patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"]\
           ],\
           "linkType": "SOFT"\
@@ -4076,11 +4076,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-jsdoc", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:48.0.2"],\
             ["eslint-plugin-no-null", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.0.2"],\
             ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
-            ["husky", "npm:9.0.7"],\
             ["lint-staged", "npm:15.2.1"],\
             ["prettier", "npm:3.2.4"],\
             ["prettier-plugin-packagejson", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:2.4.9"],\
             ["rimraf", "npm:5.0.1"],\
+            ["simple-git-hooks", "npm:2.9.0"],\
             ["typescript", "patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"]\
           ],\
           "linkType": "SOFT"\
@@ -9964,15 +9964,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["husky", [\
-        ["npm:9.0.7", {\
-          "packageLocation": "./.yarn/cache/husky-npm-9.0.7-b26fc41da3-42fc1b869a.zip/node_modules/husky/",\
-          "packageDependencies": [\
-            ["husky", "npm:9.0.7"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["iconv-lite", [\
         ["npm:0.4.24", {\
           "packageLocation": "./.yarn/cache/iconv-lite-npm-0.4.24-c5c4ac6695-bd9f120f5a.zip/node_modules/iconv-lite/",\
@@ -15714,6 +15705,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["decompress-response", "npm:6.0.0"],\
             ["once", "npm:1.4.0"],\
             ["simple-concat", "npm:1.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["simple-git-hooks", [\
+        ["npm:2.9.0", {\
+          "packageLocation": "./.yarn/unplugged/simple-git-hooks-npm-2.9.0-4354a7c11a/node_modules/simple-git-hooks/",\
+          "packageDependencies": [\
+            ["simple-git-hooks", "npm:2.9.0"]\
           ],\
           "linkType": "HARD"\
         }]\
