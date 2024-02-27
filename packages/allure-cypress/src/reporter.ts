@@ -20,6 +20,23 @@ export type AllureCypressConfig = {
   }[];
 };
 
+const formatLink = (link: Link, config?: AllureCypressConfig) => {
+  const matcher = config?.links?.find?.(({ type }) => type === link.type);
+
+  if (!matcher || link.url.startsWith("http")) {
+    return link;
+  }
+
+  const url = matcher.urlTemplate.replace("%s", link.url);
+  const name = link.name || link.url;
+
+  return {
+    ...link,
+    name,
+    url,
+  };
+};
+
 export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressConfig) => {
   const runtime = new AllureRuntime({
     resultsDir: config?.resultsDir || "./allure-results",
@@ -29,13 +46,14 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
 
   on("task", {
     allureStartTest: (message: StartTestMessage) => {
+      const userMetadata = message.metadata;
       const suiteLabels = getSuitesLabels(message.specPath);
       const testTitle = message.specPath[message.specPath.length - 1];
       const titleMetadata = extractMetadataFromString(testTitle);
 
       currentTest = new AllureTest(runtime, message.start);
 
-      currentTest.name = titleMetadata.cleanTitle;
+      currentTest.name = userMetadata.displayName ?? titleMetadata.cleanTitle;
       currentTest.fullName = `${message.filename}#${message.specPath.join(" ")}`;
       currentTest.stage = Stage.RUNNING;
 
@@ -49,6 +67,23 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
       titleMetadata.labels.forEach((label) => {
         currentTest.addLabel(label.name, label.value);
       });
+
+      if (userMetadata.description) {
+        currentTest.description = userMetadata.description;
+      }
+
+      if (userMetadata.descriptionHtml) {
+        currentTest.descriptionHtml = userMetadata.descriptionHtml;
+      }
+
+      for (const { name, value } of userMetadata.labels ?? []) {
+        currentTest.addLabel(name, value);
+      }
+
+      for (const link of userMetadata.links ?? []) {
+        const { url, name, type } = formatLink(link, config);
+        currentTest.addLink(url, name, type);
+      }
 
       return null;
     },
@@ -130,22 +165,7 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
       }
 
       const { links, ...rest } = message;
-      const formattedLinks: Link[] = links?.map((link) => {
-        const matcher = config?.links?.find?.(({ type }) => type === link.type);
-
-        if (!matcher || link.url.startsWith("http")) {
-          return link;
-        }
-
-        const url = matcher.urlTemplate.replace("%s", link.url);
-        const name = link.name || link.url;
-
-        return {
-          ...link,
-          name,
-          url,
-        };
-      });
+      const formattedLinks: Link[] = links?.map((link) => formatLink(link, config));
 
       currentTest.applyMetadata({
         ...rest,

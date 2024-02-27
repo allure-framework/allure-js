@@ -1,3 +1,4 @@
+import { inTest } from "./commands";
 import {
   EndStepMessage,
   LabelName,
@@ -6,6 +7,7 @@ import {
   type ParameterOptions,
   StartStepMessage,
   Status,
+  type TestMetadata,
 } from "./model";
 
 declare global {
@@ -22,31 +24,28 @@ declare global {
 
 export type CypressWrappedAttachment = { type: string; data: unknown };
 
-export const label = (name: string, value: string) => {
-  cy.allureMetadataMessage({
+const dispatchTestMetadata = (metadata: TestMetadata) => {
+  if (inTest()) {
+    cy.allureMetadataMessage(metadata);
+  }
+  return metadata;
+};
+
+export const label = (name: string, value: string) =>
+  dispatchTestMetadata({
     labels: [{ name, value }],
-  } as MetadataMessage);
-};
-export const link = (type: string, url: string, name?: string) => {
-  cy.allureMetadataMessage({
+  });
+export const link = (type: string, url: string, name?: string) =>
+  dispatchTestMetadata({
     links: [{ type, url, name }],
-  } as MetadataMessage);
-};
+  });
 export const parameter = (name: string, value: string, options?: ParameterOptions) => {
   cy.allureMetadataMessage({
     parameter: [{ name, value, ...options }],
   } as MetadataMessage);
 };
-export const description = (markdown: string) => {
-  cy.allureMetadataMessage({
-    description: markdown,
-  } as MetadataMessage);
-};
-export const descriptionHtml = (html: string) => {
-  cy.allureMetadataMessage({
-    descriptionHtml: html,
-  } as MetadataMessage);
-};
+export const description = (markdown: string) => dispatchTestMetadata({ description: markdown });
+export const descriptionHtml = (html: string) => dispatchTestMetadata({ descriptionHtml: html });
 export const testCaseId = (value: string) => {
   cy.allureMetadataMessage({
     testCaseId: value,
@@ -58,50 +57,44 @@ export const historyId = (value: string) => {
   } as MetadataMessage);
 };
 export const allureId = (value: string) => {
-  cy.allureMetadataMessage({
-    labels: [{ name: LabelName.ALLURE_ID, value }],
-  } as MetadataMessage);
+  return label(LabelName.ALLURE_ID, value);
 };
-export const displayName = (name: string) => {
-  cy.allureMetadataMessage({
-    displayName: name,
-  } as MetadataMessage);
-};
+export const displayName = (name: string) => dispatchTestMetadata({ displayName: name });
 export const issue = (url: string, name?: string) => {
-  link(LinkType.ISSUE, url, name);
+  return link(LinkType.ISSUE, url, name);
 };
 export const tms = (url: string, name?: string) => {
-  link(LinkType.TMS, url, name);
+  return link(LinkType.TMS, url, name);
 };
 export const epic = (name: string) => {
-  label(LabelName.EPIC, name);
+  return label(LabelName.EPIC, name);
 };
 export const feature = (name: string) => {
-  label(LabelName.FEATURE, name);
+  return label(LabelName.FEATURE, name);
 };
 export const story = (name: string) => {
-  label(LabelName.STORY, name);
+  return label(LabelName.STORY, name);
 };
 export const suite = (name: string) => {
-  label(LabelName.SUITE, name);
+  return label(LabelName.SUITE, name);
 };
 export const parentSuite = (name: string) => {
-  label(LabelName.PARENT_SUITE, name);
+  return label(LabelName.PARENT_SUITE, name);
 };
 export const subSuite = (name: string) => {
-  label(LabelName.SUB_SUITE, name);
+  return label(LabelName.SUB_SUITE, name);
 };
 export const owner = (name: string) => {
-  label(LabelName.OWNER, name);
+  return label(LabelName.OWNER, name);
 };
 export const severity = (name: string) => {
-  label(LabelName.SEVERITY, name);
+  return label(LabelName.SEVERITY, name);
 };
 export const layer = (name: string) => {
-  label(LabelName.LAYER, name);
+  return label(LabelName.LAYER, name);
 };
 export const tag = (name: string) => {
-  label(LabelName.TAG, name);
+  return label(LabelName.TAG, name);
 };
 export const attachment = (name: string, content: unknown, type: string, encoding: string = "utf8") => {
   const objectAttachment = typeof content === "object";
@@ -166,4 +159,18 @@ export const step = (name: string, body: () => void) => {
 
     throw err;
   }
+};
+
+export const withMeta = <T extends Mocha.Test | Mocha.Suite>(testOrSuite: T, ...metadata: TestMetadata[]): T => {
+  const x: any = testOrSuite;
+  x._allure_meta = [...(x._allure_meta ?? []), ...metadata];
+  return testOrSuite;
+};
+
+export const withMeta2 = <TValue extends Mocha.Test | Mocha.Suite>(...args: [...TestMetadata[], TValue]): TValue => {
+  const testOrSuite = args[args.length - 1] as TValue;
+  const metadata = args.slice(0, -1) as ReadonlyArray<TestMetadata>;
+  const state: any = testOrSuite;
+  state._allure_meta = [...(state._allure_meta ?? []), ...metadata.filter((m) => m)];
+  return testOrSuite;
 };

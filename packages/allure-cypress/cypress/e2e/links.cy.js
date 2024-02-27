@@ -1,4 +1,4 @@
-import { link, issue, tms } from "../../dist";
+import { issue, link, tms, withMeta2 } from "../../dist";
 
 describe("custom", () => {
   after(() => {
@@ -17,7 +17,7 @@ describe("custom", () => {
   it("custom", () => {
     link("foo", "https://allurereport.org", "bar");
   });
-})
+});
 
 describe("issue", () => {
   after(() => {
@@ -28,7 +28,7 @@ describe("issue", () => {
       cy.get("@tests").its(0).containsLink({
         type: "issue",
         name: "foo",
-        url: "https://allurereport.org"
+        url: "https://allurereport.org",
       });
     });
   });
@@ -36,7 +36,7 @@ describe("issue", () => {
   it("issue", () => {
     issue("https://allurereport.org", "foo");
   });
-})
+});
 
 describe("short issue without name", () => {
   after(() => {
@@ -47,7 +47,7 @@ describe("short issue without name", () => {
       cy.get("@tests").its(0).containsLink({
         type: "issue",
         name: "ISSUE-1",
-        url: "https://allurereport.org/issues/ISSUE-1"
+        url: "https://allurereport.org/issues/ISSUE-1",
       });
     });
   });
@@ -55,7 +55,7 @@ describe("short issue without name", () => {
   it("issue", () => {
     issue("ISSUE-1");
   });
-})
+});
 
 describe("short issue with name", () => {
   after(() => {
@@ -66,7 +66,7 @@ describe("short issue with name", () => {
       cy.get("@tests").its(0).containsLink({
         type: "issue",
         name: "foo",
-        url: "https://allurereport.org/issues/ISSUE-1"
+        url: "https://allurereport.org/issues/ISSUE-1",
       });
     });
   });
@@ -74,7 +74,7 @@ describe("short issue with name", () => {
   it("issue", () => {
     issue("ISSUE-1", "foo");
   });
-})
+});
 
 describe("tms", () => {
   after(() => {
@@ -85,7 +85,7 @@ describe("tms", () => {
       cy.get("@tests").its(0).containsLink({
         type: "tms",
         name: "foo",
-        url: "https://allurereport.org"
+        url: "https://allurereport.org",
       });
     });
   });
@@ -93,7 +93,7 @@ describe("tms", () => {
   it("tms", () => {
     tms("https://allurereport.org", "foo");
   });
-})
+});
 
 describe("short tms without name", () => {
   after(() => {
@@ -104,7 +104,7 @@ describe("short tms without name", () => {
       cy.get("@tests").its(0).containsLink({
         type: "tms",
         name: "TMS-1",
-        url: "https://allurereport.org/tasks/TMS-1"
+        url: "https://allurereport.org/tasks/TMS-1",
       });
     });
   });
@@ -112,7 +112,7 @@ describe("short tms without name", () => {
   it("tms", () => {
     tms("TMS-1");
   });
-})
+});
 
 describe("short tms with name", () => {
   after(() => {
@@ -123,7 +123,7 @@ describe("short tms with name", () => {
       cy.get("@tests").its(0).containsLink({
         type: "tms",
         name: "foo",
-        url: "https://allurereport.org/tasks/TMS-1"
+        url: "https://allurereport.org/tasks/TMS-1",
       });
     });
   });
@@ -131,4 +131,53 @@ describe("short tms with name", () => {
   it("tms", () => {
     tms("TMS-1", "foo");
   });
-})
+});
+
+describe("static links", () => {
+  after(() => {
+    cy.task("readLastTestResult").then((result) => {
+      cy.wrap(result.tests).as("tests");
+
+      cy.get("@tests").should("have.length", 1);
+      cy.get("@tests").its("[0].links").should("have.length", 4);
+      cy.get("@tests").its(0).containsLink({
+        name: "LINK-1",
+        url: "https://outer-suite-link",
+        type: "link",
+      });
+      cy.get("@tests").its(0).containsLink({
+        name: "ISSUE-1",
+        url: "https://allurereport.org/issues/1",
+        type: "issue",
+      });
+      cy.get("@tests").its(0).containsLink({
+        name: "TASK-1",
+        url: "https://allurereport.org/tasks/1",
+        type: "tms",
+      });
+      cy.get("@tests").its(0).containsLink({
+        url: "https://test-link",
+        type: "link",
+      });
+    });
+  });
+
+  withMeta2(
+    link("link", "https://outer-suite-link", "LINK-1"),
+    describe("outer", () => {
+      withMeta2(
+        link("issue", "1", "ISSUE-1"),
+        describe("inner", () => {
+          withMeta2(
+            link("tms", "1", "TASK-1"),
+            link("link", "https://test-link"),
+            it("should have four links", () => {
+              console.log(cy);
+              console.log(Cypress);
+            }),
+          );
+        }),
+      );
+    }),
+  );
+});

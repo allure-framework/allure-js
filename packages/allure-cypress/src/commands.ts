@@ -1,4 +1,11 @@
-import { type EndTestMessage, Stage, type StartTestMessage, Status } from "./model";
+import {
+  type EndTestMessage,
+  type MetadataMessage,
+  Stage,
+  type StartTestMessage,
+  Status,
+  type TestMetadata,
+} from "./model";
 
 const messagesQueue: (StartTestMessage | EndTestMessage)[] = [];
 
@@ -19,6 +26,38 @@ const getSuitePath = (test: Mocha.Test): string[] => {
   return path;
 };
 
+const getTestChain = (test: Mocha.Test): [Mocha.Test, ...Mocha.Suite[]] => {
+  const seq: [Mocha.Test, ...Mocha.Suite[]] = [test];
+  let parent = test.parent;
+  while (parent) {
+    seq.push(parent);
+    parent = parent.parent;
+  }
+  return seq;
+};
+
+const metadataReducingFn = (left: MetadataMessage, right: MetadataMessage): MetadataMessage => {
+  const labels = [...(left.labels ?? []), ...(right.labels ?? [])];
+  const links = [...(left.links ?? []), ...(right.links ?? [])];
+  const result = { ...left, ...right };
+  if (labels.length > 0) {
+    result.labels = labels;
+  }
+  if (links.length > 0) {
+    result.links = links;
+  }
+  return result;
+};
+
+const reduceMetadata = (test: Mocha.Test): TestMetadata =>
+  getTestChain(test)
+    .map((testOrSuite: Mocha.Test | Mocha.Suite): TestMetadata => {
+      const state: any = testOrSuite;
+      const metadata: ReadonlyArray<TestMetadata> = state._allure_meta ?? [];
+      return metadata.reduce(metadataReducingFn, {});
+    })
+    .reduceRight(metadataReducingFn, {});
+
 // @ts-ignore
 Cypress.mocha
   .getRunner()
@@ -27,6 +66,7 @@ Cypress.mocha
       specPath: getSuitePath(test).concat(test.title),
       filename: Cypress.spec.relative,
       start: Date.now(),
+      metadata: reduceMetadata(test),
     });
   })
   .on(EVENT_TEST_PASS, (test: Mocha.Test) => {
@@ -58,10 +98,15 @@ Cypress.Commands.add("allureEndStep", (message) => {
   cy.task("allureEndStep", message);
 });
 
+let _inTest = false;
+export const inTest = () => _inTest;
+
 beforeEach(() => {
   cy.task("allureStartTest", messagesQueue.pop());
+  _inTest = true;
 });
 
 afterEach(() => {
+  _inTest = false;
   cy.task("allureEndTest", messagesQueue.pop());
 });

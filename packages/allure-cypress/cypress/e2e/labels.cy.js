@@ -11,6 +11,7 @@ import {
   subSuite,
   suite,
   tag,
+  withMeta,
 } from "../../dist";
 
 describe("custom", () => {
@@ -227,4 +228,46 @@ describe("tag", () => {
   it("tag", () => {
     tag("foo");
   });
+});
+
+describe("static-tags", () => {
+  after(() => {
+    cy.task("readLastTestResult").then((result) => {
+      cy.wrap(result.tests).as("tests");
+
+      cy.get("@tests").should("have.length", 1);
+      cy.get("@tests").its(0).containsLabel({
+        name: "tag",
+        value: "outer-suite",
+      });
+      cy.get("@tests").its(0).containsLabel({
+        name: "tag",
+        value: "inner-suite",
+      });
+      cy.get("@tests").its(0).containsLabel({
+        name: "tag",
+        value: "test-tag-1",
+      });
+      cy.get("@tests").its(0).containsLabel({
+        name: "tag",
+        value: "test-tag-2",
+      });
+    });
+  });
+
+  withMeta(
+    describe("outer", () => {
+      withMeta(
+        describe("inner", () => {
+          withMeta(
+            it("should have four tags", () => {}),
+            tag("test-tag-1"),
+            tag("test-tag-2"),
+          );
+        }),
+        tag("inner-suite"),
+      );
+    }),
+    tag("outer-suite"),
+  );
 });

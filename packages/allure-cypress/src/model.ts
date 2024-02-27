@@ -54,16 +54,19 @@ export interface AttachmentMetadata {
   encoding: BufferEncoding;
 }
 
-export interface MetadataMessage {
-  attachments?: AttachmentMetadata[];
+export interface TestMetadata {
   displayName?: string;
-  testCaseId?: string;
-  historyId?: string;
-  labels?: Label[];
-  links?: Link[];
-  parameter?: Parameter[];
   description?: string;
   descriptionHtml?: string;
+  labels?: Label[];
+  links?: Link[];
+}
+
+export interface MetadataMessage extends TestMetadata {
+  attachments?: AttachmentMetadata[];
+  testCaseId?: string;
+  historyId?: string;
+  parameter?: Parameter[];
   steps?: StepMetadata[];
 }
 
@@ -127,6 +130,7 @@ export type StartTestMessage = {
   specPath: string[];
   filename: string;
   start: number;
+  metadata: TestMetadata;
 };
 
 export type EndTestMessage = {
