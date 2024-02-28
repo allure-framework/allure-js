@@ -67,6 +67,10 @@ export interface MetadataMessage {
   steps?: StepMetadata[];
 }
 
+// export interface TestMetadataMessage {
+//   name: string;
+// }
+
 /* eslint-disable no-shadow */
 export enum LinkType {
   ISSUE = "issue",
@@ -123,25 +127,71 @@ export enum Stage {
 }
 
 // keep these types
-export type StartTestMessage = {
-  specPath: string[];
-  filename: string;
-  start: number;
+export enum MessageType {
+  TEST_STARTED = "TEST_STARTED",
+  TEST_ENDED = "TEST_ENDED",
+  STEP_STARTED = "STEP_STARTED",
+  STEP_ENDED = "STEP_ENDED",
+  METADATA = "METADATA",
+  SCREENSHOT = "SCREENSHOT",
+}
+
+export type TestStartMessage = {
+  type: MessageType.TEST_STARTED;
+  payload: {
+    specPath: string[];
+    filename: string;
+    start: number;
+  };
 };
 
-export type EndTestMessage = {
-  stage: Stage;
-  status: Status;
-  statusDetails?: StatusDetails;
-  stop: number;
+export type TestEndMessage = {
+  type: MessageType.TEST_ENDED;
+  payload: {
+    stage: Stage;
+    status: Status;
+    statusDetails?: StatusDetails;
+    stop: number;
+  };
 };
 
-export type StartStepMessage = {
-  name: string;
+export type StepStartMessage = {
+  type: MessageType.STEP_STARTED;
+  payload: {
+    name: string;
+    start: number;
+  };
 };
 
-export type EndStepMessage = {
-  status: Status;
-  statusDetails?: StatusDetails;
-  stage?: Stage;
+export type StepEndMessage = {
+  type: MessageType.STEP_ENDED;
+  payload: {
+    status: Status;
+    statusDetails?: StatusDetails;
+    stage?: Stage;
+    stop: number;
+  };
 };
+
+export type ScreenshotMessage = {
+  type: MessageType.SCREENSHOT;
+  payload: {
+    path: string;
+    name: string;
+  };
+};
+
+export type MetadataSentMessage = {
+  type: MessageType.METADATA;
+  payload: MetadataMessage;
+};
+
+export type ReporterMessage =
+  | TestStartMessage
+  | TestEndMessage
+  | StepStartMessage
+  | StepEndMessage
+  | MetadataSentMessage
+  | ScreenshotMessage;
+
+export type MessagesQueue = ReporterMessage[];

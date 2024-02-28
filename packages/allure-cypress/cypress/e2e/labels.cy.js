@@ -16,6 +16,7 @@ import {
 describe("custom", () => {
   after(() => {
     cy.task("readLastTestResult").then((result) => {
+      cy.log(result)
       cy.wrap(result.tests).as("tests");
 
       cy.get("@tests").should("have.length", 1);

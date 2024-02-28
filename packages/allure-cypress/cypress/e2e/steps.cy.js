@@ -115,7 +115,7 @@ describe("with screenshot", () => {
 //     step("foo", () => {
 //       step("bar", () => {
 //         step("baz", () => {
-//           cy.wrap(1).should("eq", 2)
+//           cy.wrap(1).sh)
 //         })
 //       })
 //     });

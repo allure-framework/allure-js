@@ -1,21 +1,9 @@
-import {
-  EndStepMessage,
-  LabelName,
-  LinkType,
-  type MetadataMessage,
-  type ParameterOptions,
-  StartStepMessage,
-  Status,
-} from "./model";
+import { LabelName, LinkType, MessageType, type ParameterOptions, ReporterMessage, Status } from "./model";
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      allureMetadataMessage(metadata: MetadataMessage): Chainable;
-
-      allureStartStep(message: StartStepMessage): Chainable;
-
-      allureEndStep(message: EndStepMessage): Chainable;
+      allureReporterMessage(message: ReporterMessage): Chainable;
     }
   }
 }
@@ -23,55 +11,82 @@ declare global {
 export type CypressWrappedAttachment = { type: string; data: unknown };
 
 export const label = (name: string, value: string) => {
-  cy.allureMetadataMessage({
-    labels: [{ name, value }],
-  } as MetadataMessage);
+  cy.allureReporterMessage({
+    type: MessageType.METADATA,
+    payload: {
+      labels: [{ name, value }],
+    },
+  });
 };
-export const link = (type: string, url: string, name?: string) => {
-  cy.allureMetadataMessage({
-    links: [{ type, url, name }],
-  } as MetadataMessage);
+export const link = (url: string, name?: string, type?: string) => {
+  cy.allureReporterMessage({
+    type: MessageType.METADATA,
+    payload: {
+      links: [{ type, url, name }],
+    },
+  });
 };
 export const parameter = (name: string, value: string, options?: ParameterOptions) => {
-  cy.allureMetadataMessage({
-    parameter: [{ name, value, ...options }],
-  } as MetadataMessage);
+  cy.allureReporterMessage({
+    type: MessageType.METADATA,
+    payload: {
+      parameter: [{ name, value, ...options }],
+    },
+  });
 };
 export const description = (markdown: string) => {
-  cy.allureMetadataMessage({
-    description: markdown,
-  } as MetadataMessage);
+  cy.allureReporterMessage({
+    type: MessageType.METADATA,
+    payload: {
+      description: markdown,
+    },
+  });
 };
 export const descriptionHtml = (html: string) => {
-  cy.allureMetadataMessage({
-    descriptionHtml: html,
-  } as MetadataMessage);
+  cy.allureReporterMessage({
+    type: MessageType.METADATA,
+    payload: {
+      descriptionHtml: html,
+    },
+  });
 };
 export const testCaseId = (value: string) => {
-  cy.allureMetadataMessage({
-    testCaseId: value,
-  } as MetadataMessage);
+  cy.allureReporterMessage({
+    type: MessageType.METADATA,
+    payload: {
+      testCaseId: value,
+    },
+  });
 };
 export const historyId = (value: string) => {
-  cy.allureMetadataMessage({
-    historyId: value,
-  } as MetadataMessage);
+  cy.allureReporterMessage({
+    type: MessageType.METADATA,
+    payload: {
+      historyId: value,
+    },
+  });
 };
 export const allureId = (value: string) => {
-  cy.allureMetadataMessage({
-    labels: [{ name: LabelName.ALLURE_ID, value }],
-  } as MetadataMessage);
+  cy.allureReporterMessage({
+    type: MessageType.METADATA,
+    payload: {
+      labels: [{ name: LabelName.ALLURE_ID, value }],
+    },
+  });
 };
 export const displayName = (name: string) => {
-  cy.allureMetadataMessage({
-    displayName: name,
-  } as MetadataMessage);
+  cy.allureReporterMessage({
+    type: MessageType.METADATA,
+    payload: {
+      displayName: name,
+    },
+  });
 };
 export const issue = (url: string, name?: string) => {
-  link(LinkType.ISSUE, url, name);
+  link(url, name, LinkType.ISSUE);
 };
 export const tms = (url: string, name?: string) => {
-  link(LinkType.TMS, url, name);
+  link(url, name, LinkType.TMS);
 };
 export const epic = (name: string) => {
   label(LabelName.EPIC, name);
@@ -108,16 +123,19 @@ export const attachment = (name: string, content: unknown, type: string, encodin
 
   // non-object attachment is a string and fully controllable by user
   if (!objectAttachment) {
-    cy.allureMetadataMessage({
-      attachments: [
-        {
-          name,
-          content,
-          type,
-          encoding,
-        },
-      ],
-    } as MetadataMessage);
+    cy.allureReporterMessage({
+      type: MessageType.METADATA,
+      payload: {
+        attachments: [
+          {
+            content: content as string,
+            encoding: encoding as BufferEncoding,
+            name,
+            type,
+          },
+        ],
+      },
+    });
     return;
   }
 
@@ -133,34 +151,45 @@ export const attachment = (name: string, content: unknown, type: string, encodin
       attachmentContent = (content as CypressWrappedAttachment).data as string;
   }
 
-  cy.allureMetadataMessage({
-    attachments: [
-      {
-        content: attachmentContent,
-        encoding: "base64",
-        name,
-        type,
-      },
-    ],
-  } as MetadataMessage);
+  cy.allureReporterMessage({
+    type: MessageType.METADATA,
+    payload: {
+      attachments: [
+        {
+          content: attachmentContent,
+          encoding: "base64",
+          name,
+          type,
+        },
+      ],
+    },
+  });
 };
 export const step = (name: string, body: () => void) => {
-  cy.allureStartStep({ name });
+  cy.allureReporterMessage({
+    type: MessageType.STEP_STARTED,
+    payload: { name, start: Date.now() },
+  });
 
   try {
     body();
 
-    cy.allureEndStep({
-      status: Status.PASSED,
+    cy.allureReporterMessage({
+      type: MessageType.STEP_ENDED,
+      payload: { status: Status.PASSED, stop: Date.now() },
     });
   } catch (err) {
     // all possible errors here are runtime ones
     // assertion errors could be handled in `commands.ts` by related mocha event
-    cy.allureEndStep({
-      status: Status.BROKEN,
-      statusDetails: {
-        message: (err as Error).message,
-        trace: (err as Error).stack,
+    cy.allureReporterMessage({
+      type: MessageType.STEP_ENDED,
+      payload: {
+        status: Status.BROKEN,
+        statusDetails: {
+          message: (err as Error).message,
+          trace: (err as Error).stack,
+        },
+        stop: Date.now(),
       },
     });
 

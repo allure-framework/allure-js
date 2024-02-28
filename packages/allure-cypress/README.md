@@ -14,13 +14,13 @@
 
 ## Installation
 
-Use your favorite node package manager to install required packages:
+Use your favorite node package manager to install the required packages:
 
 ```shell
 npm add -D allure-cypress
 ```
 
-Add following lines to your `cypress.config.js` file to setup the reporter:
+Add the following lines to your `cypress.config.js` file to setup the reporter:
 
 ```diff
 const { allureCypress } = require("allure-cypress/reporter");
@@ -39,8 +39,8 @@ module.exports = {
 };
 ```
 
-Don't forget to add Allure cypres commands to your `cypress/support/e2e.js` file to finish 
-installation:
+Don't forget to add the Allure Cypress commands to your `cypress/support/e2e.js` file to finish 
+the installation:
 
 ```diff
 + import "allure-cypress/commands";

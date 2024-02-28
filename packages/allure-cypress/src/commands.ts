@@ -1,8 +1,8 @@
-import { type EndTestMessage, Stage, type StartTestMessage, Status } from "./model";
+import { MessageType, type MessagesQueue, type ReporterMessage, Stage, Status } from "./model";
 
-const messagesQueue: (StartTestMessage | EndTestMessage)[] = [];
+let messagesQueue: MessagesQueue = [];
 
-const { EVENT_TEST_BEGIN, EVENT_TEST_FAIL, EVENT_TEST_PASS } = Mocha.Runner.constants;
+const { EVENT_TEST_BEGIN, EVENT_TEST_FAIL, EVENT_TEST_PASS, EVENT_TEST_END } = Mocha.Runner.constants;
 
 const getSuitePath = (test: Mocha.Test): string[] => {
   const path: string[] = [];
@@ -24,44 +24,58 @@ Cypress.mocha
   .getRunner()
   .on(EVENT_TEST_BEGIN, (test: Mocha.Test) => {
     messagesQueue.push({
-      specPath: getSuitePath(test).concat(test.title),
-      filename: Cypress.spec.relative,
-      start: Date.now(),
+      type: MessageType.TEST_STARTED,
+      payload: {
+        specPath: getSuitePath(test).concat(test.title),
+        filename: Cypress.spec.relative,
+        start: Date.now(),
+      },
     });
   })
   .on(EVENT_TEST_PASS, (test: Mocha.Test) => {
     messagesQueue.push({
-      stage: Stage.FINISHED,
-      status: Status.PASSED,
-      stop: Date.now(),
+      type: MessageType.TEST_ENDED,
+      payload: {
+        stage: Stage.FINISHED,
+        status: Status.PASSED,
+        stop: Date.now(),
+      },
     });
+
+    cy.task("allureReportTest", messagesQueue);
+
+    messagesQueue = [];
   })
   .on(EVENT_TEST_FAIL, (test: Mocha.Test, err: Error) => {
     messagesQueue.push({
-      stage: Stage.FINISHED,
-      status: err.constructor.name === "AssertionError" ? Status.FAILED : Status.BROKEN,
-      statusDetails: {
-        message: err.message,
-        trace: err.stack,
+      type: MessageType.TEST_ENDED,
+      payload: {
+        stage: Stage.FINISHED,
+        status: err.constructor.name === "AssertionError" ? Status.FAILED : Status.BROKEN,
+        statusDetails: {
+          message: err.message,
+          trace: err.stack,
+        },
+        stop: Date.now(),
       },
-      stop: Date.now(),
     });
+
+    cy.task("allureReportTest", messagesQueue);
+
+    messagesQueue = [];
   });
 
-Cypress.Commands.add("allureMetadataMessage", (message) => {
-  cy.task("allureMetadata", message);
+Cypress.Commands.add("allureReporterMessage", (message: ReporterMessage) => {
+  messagesQueue.push(message);
 });
-Cypress.Commands.add("allureStartStep", (message) => {
-  cy.task("allureStartStep", message);
-});
-Cypress.Commands.add("allureEndStep", (message) => {
-  cy.task("allureEndStep", message);
-});
-
-beforeEach(() => {
-  cy.task("allureStartTest", messagesQueue.pop());
-});
-
-afterEach(() => {
-  cy.task("allureEndTest", messagesQueue.pop());
+Cypress.Screenshot.defaults({
+  onAfterScreenshot: (_, details) => {
+    messagesQueue.push({
+      type: MessageType.SCREENSHOT,
+      payload: {
+        path: details.path,
+        name: details.name || "Screenshot",
+      },
+    });
+  },
 });
