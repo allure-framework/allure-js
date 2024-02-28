@@ -7,15 +7,15 @@ describe("custom", () => {
 
       cy.get("@tests").should("have.length", 1);
       cy.get("@tests").its(0).containsLink({
-        type: "foo",
-        name: "bar",
+        name: "foo",
+        type: "bar",
         url: "https://allurereport.org",
       });
     });
   });
 
   it("custom", () => {
-    link("foo", "https://allurereport.org", "bar");
+    link("https://allurereport.org", "foo", "bar");
   });
 })
 
