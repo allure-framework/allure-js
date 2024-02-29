@@ -180,11 +180,7 @@ export type MetadataSentMessage = {
   payload: MetadataMessage;
 };
 
-export type ReporterMessage =
-  | StepStartMessage
-  | StepEndMessage
-  | MetadataSentMessage
-  | ScreenshotMessage;
+export type ReporterMessage = StepStartMessage | StepEndMessage | MetadataSentMessage | ScreenshotMessage;
 
 export type ReportFinalMessage = {
   startMessage: TestStartMessage;
