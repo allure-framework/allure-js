@@ -120,7 +120,6 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
       currentTest.statusDetails = endMessage.statusDetails;
 
       currentTest.calculateHistoryId();
-
       currentTest.endTest(endMessage.stop);
 
       return null;

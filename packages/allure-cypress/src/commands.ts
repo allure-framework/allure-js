@@ -42,10 +42,6 @@ Cypress.mocha
       status: Status.PASSED,
       stop: Date.now(),
     };
-
-    cy.task("allureReportTest", reportMessage);
-
-    reportMessage = createFinalMesage();
   })
   .on(EVENT_TEST_FAIL, (test: Mocha.Test, err: Error) => {
     reportMessage.endMessage = {
@@ -57,10 +53,6 @@ Cypress.mocha
       },
       stop: Date.now(),
     };
-
-    cy.task("allureReportTest", reportMessage);
-
-    reportMessage = createFinalMesage();
   });
 
 Cypress.Commands.add("allureReporterMessage", (message: ReporterMessage) => {
@@ -76,4 +68,10 @@ Cypress.Screenshot.defaults({
       },
     });
   },
+});
+
+afterEach(() => {
+  cy.task("allureReportTest", reportMessage);
+
+  reportMessage = createFinalMesage();
 });
