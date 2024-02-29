@@ -1,7 +1,7 @@
 import Cypress from "cypress";
 import { readFileSync } from "node:fs";
 import { AllureRuntime, AllureStep, AllureTest, extractMetadataFromString, getSuitesLabels } from "allure-js-commons";
-import { LabelName, Link, MessageType, MessagesQueue, Stage, TestEndMessage, TestStartMessage } from "./model";
+import { LabelName, Link, MessageType, ReportFinalMessage, Stage, TestStartMessage } from "./model";
 
 export type AllureCypressConfig = {
   resultsDir?: string;
@@ -11,14 +11,14 @@ export type AllureCypressConfig = {
   }[];
 };
 
-const startAllureTest = (runtime: AllureRuntime, { payload }: TestStartMessage) => {
-  const suiteLabels = getSuitesLabels(payload.specPath.slice(0, -1));
-  const testTitle = payload.specPath[payload.specPath.length - 1];
+const startAllureTest = (runtime: AllureRuntime, message: TestStartMessage) => {
+  const suiteLabels = getSuitesLabels(message.specPath.slice(0, -1));
+  const testTitle = message.specPath[message.specPath.length - 1];
   const titleMetadata = extractMetadataFromString(testTitle);
-  const currentTest = new AllureTest(runtime, payload.start);
+  const currentTest = new AllureTest(runtime, message.start);
 
   currentTest.name = titleMetadata.cleanTitle;
-  currentTest.fullName = `${payload.filename}#${payload.specPath.join(" ")}`;
+  currentTest.fullName = `${message.filename}#${message.specPath.join(" ")}`;
   currentTest.stage = Stage.RUNNING;
 
   currentTest.addLabel(LabelName.LANGUAGE, "javascript");
@@ -42,19 +42,10 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
   const currentSteps: AllureStep[] = [];
 
   on("task", {
-    allureReportTest: (queue: MessagesQueue) => {
-      const testStartMessage: TestStartMessage = queue.find(
-        (message) => message.type === MessageType.TEST_STARTED,
-      ) as TestStartMessage;
-      const testEndMessage: TestEndMessage = queue.find(
-        (message) => message.type === MessageType.TEST_ENDED,
-      ) as TestEndMessage;
-      const restMessages = queue.filter(
-        (message) => ![MessageType.TEST_STARTED, MessageType.TEST_ENDED].includes(message.type),
-      );
-      const currentTest = startAllureTest(runtime, testStartMessage);
+    allureReportTest: ({ startMessage, endMessage, messages }: ReportFinalMessage) => {
+      const currentTest = startAllureTest(runtime, startMessage);
 
-      restMessages.forEach(({ type, payload }) => {
+      messages.forEach(({ type, payload }) => {
         if (type === MessageType.STEP_STARTED) {
           const currentStep = currentSteps[currentSteps.length - 1];
           const newStep = (currentStep || currentTest).startStep(payload.name, payload.start);
@@ -124,13 +115,13 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
         }
       });
 
-      currentTest.stage = testEndMessage.payload.stage;
-      currentTest.status = testEndMessage.payload.status;
-      currentTest.statusDetails = testEndMessage.payload.statusDetails;
+      currentTest.stage = endMessage.stage;
+      currentTest.status = endMessage.status;
+      currentTest.statusDetails = endMessage.statusDetails;
 
       currentTest.calculateHistoryId();
 
-      currentTest.endTest(testEndMessage.payload.stop);
+      currentTest.endTest(endMessage.stop);
 
       return null;
     },

@@ -137,22 +137,16 @@ export enum MessageType {
 }
 
 export type TestStartMessage = {
-  type: MessageType.TEST_STARTED;
-  payload: {
-    specPath: string[];
-    filename: string;
-    start: number;
-  };
+  specPath: string[];
+  filename: string;
+  start: number;
 };
 
 export type TestEndMessage = {
-  type: MessageType.TEST_ENDED;
-  payload: {
-    stage: Stage;
-    status: Status;
-    statusDetails?: StatusDetails;
-    stop: number;
-  };
+  stage: Stage;
+  status: Status;
+  statusDetails?: StatusDetails;
+  stop: number;
 };
 
 export type StepStartMessage = {
@@ -187,11 +181,13 @@ export type MetadataSentMessage = {
 };
 
 export type ReporterMessage =
-  | TestStartMessage
-  | TestEndMessage
   | StepStartMessage
   | StepEndMessage
   | MetadataSentMessage
   | ScreenshotMessage;
 
-export type MessagesQueue = ReporterMessage[];
+export type ReportFinalMessage = {
+  startMessage: TestStartMessage;
+  endMessage: TestEndMessage;
+  messages: ReporterMessage[];
+};
