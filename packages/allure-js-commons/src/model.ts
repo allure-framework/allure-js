@@ -2,6 +2,11 @@ export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+jso
 export const ALLURE_IMAGEDIFF_CONTENT_TYPE = "application/vnd.allure.image.diff";
 export const ALLURE_SKIPPED_BY_TEST_PLAN_LABEL = "allure-skipped-by-test-plan";
 
+export interface Crypto {
+  uuid: () => string;
+  md5: (str: string) => string;
+}
+
 export interface AttachmentMetadata {
   name: string;
   type: string;
@@ -78,6 +83,7 @@ export interface ExecutableItem {
 }
 
 export type FixtureResult = ExecutableItem;
+
 export type StepResult = ExecutableItem;
 
 export interface TestResult extends ExecutableItem {
@@ -200,4 +206,12 @@ export interface ImageDiffAttachment {
   actual: string | undefined; // data:image;base64,
   diff: string | undefined; // data:image;base64,
   name: string;
+}
+
+export interface AllureResults {
+  tests: TestResult[];
+  groups: TestResultContainer[];
+  attachments: Record<string, Buffer | string>;
+  envInfo?: Record<string, string | undefined>;
+  categories?: Category[];
 }

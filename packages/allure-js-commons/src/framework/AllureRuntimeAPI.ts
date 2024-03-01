@@ -1,13 +1,56 @@
+import { AllureExecutable } from "./AllureExecutable";
 import { AllureRuntime } from "./AllureRuntime";
 import { AllureTest } from "./AllureTest";
-import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
-import { AllureRuntimeApiInterface } from "./framework";
-import { AttachmentOptions, Category, ContentType, LabelName, LinkType, ParameterOptions, Status } from "./model";
+import { AttachmentOptions, Category, ContentType, LabelName, LinkType, ParameterOptions, Status } from "../model";
 
-// FIXME: step and attachment should be the same for each reporter implementation
+// TODO: Allure abstract class contains all these methods, so don't need to duplicate anything
+export interface AllureRuntimeApiInterface {
+  label(name: string, value: string): void;
+
+  parameter(name: string, value: any, options?: ParameterOptions): void;
+
+  link(url: string, name?: string, type?: string): void;
+
+  attachment(content: string | Buffer, type: string): void;
+
+  epic(epic: string): void;
+
+  feature(feature: string): void;
+
+  story(story: string): void;
+
+  suite(name: string): void;
+
+  parentSuite(name: string): void;
+
+  subSuite(name: string): void;
+
+  owner(owner: string): void;
+
+  severity(severity: string): void;
+
+  layer(layer: string): void;
+
+  id(allureId: string): void;
+
+  tag(tag: string): void;
+
+  issue(name: string, url: string): void;
+
+  tms(name: string, url: string): void;
+
+  description(markdown: string): void;
+
+  descriptionHtml(html: string): void;
+
+  testCaseId(id: string): void;
+
+  historyId(id: string): void;
+}
+
 export abstract class Allure implements Omit<AllureRuntimeApiInterface, "step" | "attachment"> {
   protected abstract get currentTest(): AllureTest; // test only
-  protected abstract get currentExecutable(): ExecutableItemWrapper; // step or test
+  protected abstract get currentExecutable(): AllureExecutable; // step or test
 
   protected constructor(protected runtime: AllureRuntime) {}
 
@@ -112,5 +155,6 @@ export abstract class Allure implements Omit<AllureRuntimeApiInterface, "step" |
 
 export interface StepInterface {
   parameter(name: string, value: string): void;
+
   name(name: string): void;
 }

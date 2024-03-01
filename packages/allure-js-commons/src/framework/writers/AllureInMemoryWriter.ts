@@ -1,16 +1,7 @@
-import { PathLike, readFileSync } from "fs";
-import { Category, TestResult, TestResultContainer } from "../model";
-import { AllureWriter } from "./AllureWriter";
+import { AllureResults, Category, TestResult, TestResultContainer } from "../../model";
+import { AllureWriter } from "../AllureWriter";
 
-export interface AllureResults {
-  tests: TestResult[];
-  groups: TestResultContainer[];
-  attachments: Record<string, Buffer | string>;
-  envInfo?: Record<string, string | undefined>;
-  categories?: Category[];
-}
-
-export class InMemoryAllureWriter implements AllureWriter, AllureResults {
+export class AllureInMemoryAllureWriter implements AllureWriter, AllureResults {
   public groups: TestResultContainer[] = [];
   public tests: TestResult[] = [];
   public attachments: Record<string, Buffer | string> = {};
@@ -29,8 +20,10 @@ export class InMemoryAllureWriter implements AllureWriter, AllureResults {
     this.attachments[name] = content;
   }
 
-  public writeAttachmentFromPath(from: PathLike, toFileName: string): void {
-    this.attachments[toFileName] = readFileSync(from);
+  public writeAttachmentFromPath(from: string, toFileName: string): void {
+    throw new Error(
+      "Can't write attachment from path because generic writer doesn't implement this logic! Use AllureInMemoryWriter for node.js.",
+    );
   }
 
   public writeCategoriesDefinitions(categories: Category[]): void {

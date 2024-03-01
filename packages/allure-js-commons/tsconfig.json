@@ -3,9 +3,12 @@
   "include": [
     "./src/**/*",
     "index.ts",
+    "node.ts",
+    "browser.ts",
     "internal.ts",
   ],
   "compilerOptions": {
+    "lib": ["dom", "es2017"],
     "types": [
       "node"
     ],

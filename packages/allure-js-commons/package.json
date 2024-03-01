@@ -20,6 +20,16 @@
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
+    "./node": {
+      "import": "./dist/node.js",
+      "require": "./dist/node.js",
+      "types": "./dist/node.d.ts"
+    },
+    "./browser": {
+      "import": "./dist/browser.js",
+      "require": "./dist/browser.js",
+      "types": "./dist/browser.d.ts"
+    },
     "./internal": {
       "import": "./dist/internal.js",
       "require": "./dist/internal.js",
@@ -39,12 +49,14 @@
     "test": "ts-node --project test/tsconfig.json test/runner.ts"
   },
   "dependencies": {
+    "md5": "^2.3.0",
     "properties": "^1.2.1",
     "strip-ansi": "^5.2.0"
   },
   "devDependencies": {
     "@types/chai": "^4.3.6",
     "@types/eslint": "^8",
+    "@types/md5": "^2.3.5",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.6.3",
     "@types/sinon": "^17.0.0",

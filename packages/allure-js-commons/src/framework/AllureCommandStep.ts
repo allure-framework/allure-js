@@ -11,7 +11,7 @@ import {
   Stage,
   Status,
   StepMetadata,
-} from "./model";
+} from "../model";
 
 export type StepBodyFunction<T = any> = (
   this: AllureCommandStepExecutable,

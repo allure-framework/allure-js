@@ -1,5 +1,5 @@
-import { stepResult } from "./constructors";
-import { isPromise } from "./isPromise";
+import { stepResult } from "./AllureResults";
+import { isPromise } from "../utils";
 import {
   AttachmentOptions,
   ContentType,
@@ -11,10 +11,11 @@ import {
   StatusDetails,
   StepResult,
   TestResult,
-} from "./model";
-import { isAllStepsEnded, isAnyStepFailed, serialize } from "./utils";
+} from "../model";
+import { serialize } from "../utils";
+import { isAllStepsEnded, isAnyStepFailed } from "./utils";
 
-export class ExecutableItemWrapper {
+export class AllureExecutable {
   constructor(private readonly info: FixtureResult | TestResult) {}
 
   get wrappedItem(): FixtureResult | TestResult {
@@ -86,10 +87,13 @@ export class ExecutableItemWrapper {
 
   public startStep(name: string, start?: number): AllureStep {
     const result = stepResult();
+
     this.info.steps.push(result);
 
     const allureStep = new AllureStep(result, start);
+
     allureStep.name = name;
+
     return allureStep;
   }
 
@@ -139,13 +143,14 @@ export class ExecutableItemWrapper {
 }
 
 // This class is here because of circular dependency with ExecutableItemWrapper
-export class AllureStep extends ExecutableItemWrapper {
+export class AllureStep extends AllureExecutable {
   constructor(
     // eslint-disable-next-line @typescript-eslint/no-shadow
     private readonly stepResult: StepResult,
     start: number = Date.now(),
   ) {
     super(stepResult);
+
     this.stepResult.start = start;
   }
 

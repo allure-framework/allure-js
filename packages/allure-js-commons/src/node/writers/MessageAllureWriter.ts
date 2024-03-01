@@ -1,7 +1,7 @@
 import { PathLike, readFileSync } from "fs";
 import { stringify } from "properties";
-import { Category, TestResult, TestResultContainer } from "../model";
-import { AllureWriter } from "./AllureWriter";
+import { Category, TestResult, TestResultContainer } from "../../model";
+import { AllureWriter } from "../../framework/AllureWriter";
 
 type EventType = "result" | "container" | "attachment" | "misc";
 type Event = {

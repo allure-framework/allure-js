@@ -2942,6 +2942,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@types/md5", [\
+        ["npm:2.3.5", {\
+          "packageLocation": "./.yarn/cache/@types-md5-npm-2.3.5-bd5c825c57-a86baf0521.zip/node_modules/@types/md5/",\
+          "packageDependencies": [\
+            ["@types/md5", "npm:2.3.5"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@types/minimatch", [\
         ["npm:5.1.2", {\
           "packageLocation": "./.yarn/cache/@types-minimatch-npm-5.1.2-aab9c394d3-0391a28286.zip/node_modules/@types/minimatch/",\
@@ -4080,6 +4089,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["allure-js-commons", "workspace:packages/allure-js-commons"],\
             ["@types/chai", "npm:4.3.6"],\
             ["@types/eslint", "npm:8.44.2"],\
+            ["@types/md5", "npm:2.3.5"],\
             ["@types/mocha", "npm:10.0.1"],\
             ["@types/node", "npm:20.6.3"],\
             ["@types/sinon", "npm:17.0.3"],\
@@ -4096,6 +4106,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
             ["expect", "npm:29.7.0"],\
             ["glob", "npm:10.3.5"],\
+            ["md5", "npm:2.3.0"],\
             ["mocha", "npm:10.2.0"],\
             ["mocha-multi-reporters", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:1.5.1"],\
             ["properties", "npm:1.2.1"],\
@@ -5716,6 +5727,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["charenc", [\
+        ["npm:0.0.2", {\
+          "packageLocation": "./.yarn/cache/charenc-npm-0.0.2-aca0c2f207-81dcadbe57.zip/node_modules/charenc/",\
+          "packageDependencies": [\
+            ["charenc", "npm:0.0.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["charset", [\
         ["npm:1.0.1", {\
           "packageLocation": "./.yarn/cache/charset-npm-1.0.1-56ffb0a667-adf747e7bc.zip/node_modules/charset/",\
@@ -6623,6 +6643,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["path-key", "npm:3.1.1"],\
             ["shebang-command", "npm:2.0.0"],\
             ["which", "npm:2.0.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["crypt", [\
+        ["npm:0.0.2", {\
+          "packageLocation": "./.yarn/cache/crypt-npm-0.0.2-033627d94f-baf4c7bbe0.zip/node_modules/crypt/",\
+          "packageDependencies": [\
+            ["crypt", "npm:0.0.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -12287,6 +12316,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/marky-npm-1.2.5-007e6cc885-823b946677.zip/node_modules/marky/",\
           "packageDependencies": [\
             ["marky", "npm:1.2.5"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["md5", [\
+        ["npm:2.3.0", {\
+          "packageLocation": "./.yarn/cache/md5-npm-2.3.0-86c49d3915-a63cacf401.zip/node_modules/md5/",\
+          "packageDependencies": [\
+            ["md5", "npm:2.3.0"],\
+            ["charenc", "npm:0.0.2"],\
+            ["crypt", "npm:0.0.2"],\
+            ["is-buffer", "npm:1.1.6"]\
           ],\
           "linkType": "HARD"\
         }]\

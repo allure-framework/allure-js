@@ -1,11 +1,10 @@
-import { AllureCommandStepExecutable } from "./AllureCommandStep";
+import { ExecutableItem, LinkType, MetadataMessage, TestResult } from "../model";
+import { AllureExecutable } from "./AllureExecutable";
+import { testResult } from "./AllureResults";
 import { AllureRuntime } from "./AllureRuntime";
-import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
-import { testResult } from "./constructors";
-import { ExecutableItem, LinkType, MetadataMessage, TestResult } from "./model";
-import { getLabelsFromEnv, md5 } from "./utils";
+// import { getLabelsFromEnv } from "./utils";
 
-export class AllureTest extends ExecutableItemWrapper {
+export class AllureTest extends AllureExecutable {
   private readonly testResult: TestResult;
   private historyIdSetManually = false;
 
@@ -13,14 +12,17 @@ export class AllureTest extends ExecutableItemWrapper {
     private readonly runtime: AllureRuntime,
     start: number = Date.now(),
   ) {
-    super(testResult());
+    const result = testResult(runtime.crypto.uuid(), runtime.crypto.uuid());
 
-    const globalLabels = getLabelsFromEnv();
+    super(result);
+
+    // TODO:
+    // const globalLabels = getLabelsFromEnv();
 
     this.testResult = this.wrappedItem as TestResult;
     this.testResult.start = start;
 
-    globalLabels.forEach((label) => this.addLabel(label.name, label.value));
+    // globalLabels.forEach((label) => this.addLabel(label.name, label.value));
   }
 
   endTest(stop: number = Date.now()): void {
@@ -74,7 +76,7 @@ export class AllureTest extends ExecutableItemWrapper {
     const tcId = this.testResult.testCaseId
       ? this.testResult.testCaseId
       : this.testResult.fullName
-        ? md5(this.testResult.fullName)
+        ? this.runtime.crypto.md5(this.testResult.fullName)
         : null;
 
     if (!tcId) {
@@ -86,7 +88,7 @@ export class AllureTest extends ExecutableItemWrapper {
       .sort((a, b) => a.name?.localeCompare(b?.name) || a.value?.localeCompare(b?.value))
       .map((p) => `${p.name ?? "null"}:${p.value ?? "null"}`)
       .join(",");
-    const paramsHash = md5(paramsString);
+    const paramsHash = this.runtime.crypto.md5(paramsString);
 
     this.historyId = `${tcId}:${paramsHash}`;
   }
@@ -113,72 +115,73 @@ export class AllureTest extends ExecutableItemWrapper {
    * will be added to the test
    */
   applyMetadata(metadata: Partial<MetadataMessage>, stepApplyFn?: (step: ExecutableItem) => void) {
-    const {
-      attachments = [],
-      labels = [],
-      links = [],
-      parameter = [],
-      steps = [],
-      description,
-      descriptionHtml,
-      displayName,
-      historyId,
-      testCaseId,
-    } = metadata;
-
-    labels.forEach((label) => {
-      this.addLabel(label.name, label.value);
-    });
-    links.forEach((link) => {
-      this.addLink(link.url, link.name, link.type);
-    });
-    parameter.forEach((param) => {
-      this.parameter(param.name, param.value, {
-        excluded: param.excluded,
-        mode: param.mode,
-      });
-    });
-    attachments.forEach((attachment) => {
-      const attachmentFilename = this.runtime.writeAttachment(attachment.content, attachment.type, attachment.encoding);
-
-      this.addAttachment(
-        attachment.name,
-        {
-          contentType: attachment.type,
-        },
-        attachmentFilename,
-      );
-    });
-
-    if (description) {
-      this.description = description;
-    }
-
-    if (descriptionHtml) {
-      this.descriptionHtml = descriptionHtml;
-    }
-
-    if (displayName) {
-      this.name = displayName;
-    }
-
-    if (testCaseId) {
-      this.testCaseId = testCaseId;
-    }
-
-    if (historyId) {
-      this.historyId = historyId;
-    }
-
-    steps.forEach((stepMetadata) => {
-      const step = AllureCommandStepExecutable.toExecutableItem(this.runtime, stepMetadata);
-
-      if (stepApplyFn) {
-        stepApplyFn(step);
-        return;
-      }
-
-      this.addStep(step);
-    });
+    // TODO:
+    // const {
+    //   attachments = [],
+    //   labels = [],
+    //   links = [],
+    //   parameter = [],
+    //   steps = [],
+    //   description,
+    //   descriptionHtml,
+    //   displayName,
+    //   historyId,
+    //   testCaseId,
+    // } = metadata;
+    //
+    // labels.forEach((label) => {
+    //   this.addLabel(label.name, label.value);
+    // });
+    // links.forEach((link) => {
+    //   this.addLink(link.url, link.name, link.type);
+    // });
+    // parameter.forEach((param) => {
+    //   this.parameter(param.name, param.value, {
+    //     excluded: param.excluded,
+    //     mode: param.mode,
+    //   });
+    // });
+    // attachments.forEach((attachment) => {
+    //   const attachmentFilename = this.runtime.writeAttachment(attachment.content, attachment.type, attachment.encoding);
+    //
+    //   this.addAttachment(
+    //     attachment.name,
+    //     {
+    //       contentType: attachment.type,
+    //     },
+    //     attachmentFilename,
+    //   );
+    // });
+    //
+    // if (description) {
+    //   this.description = description;
+    // }
+    //
+    // if (descriptionHtml) {
+    //   this.descriptionHtml = descriptionHtml;
+    // }
+    //
+    // if (displayName) {
+    //   this.name = displayName;
+    // }
+    //
+    // if (testCaseId) {
+    //   this.testCaseId = testCaseId;
+    // }
+    //
+    // if (historyId) {
+    //   this.historyId = historyId;
+    // }
+    //
+    // steps.forEach((stepMetadata) => {
+    //   const step = AllureCommandStepExecutable.toExecutableItem(this.runtime, stepMetadata);
+    //
+    //   if (stepApplyFn) {
+    //     stepApplyFn(step);
+    //     return;
+    //   }
+    //
+    //   this.addStep(step);
+    // });
   }
 }

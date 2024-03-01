@@ -1,16 +1,17 @@
 import { PathLike, copyFileSync, existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 import { stringify } from "properties";
-import { AllureConfig } from "../AllureConfig";
-import { Category, TestResult, TestResultContainer } from "../model";
-import { AllureWriter } from "./AllureWriter";
+import { AllureConfig } from "../../framework/AllureConfig";
+import { AllureWriter } from "../../framework/AllureWriter";
+import { Category, TestResult, TestResultContainer } from "../../model";
 
 const writeJson = (path: string, data: unknown): void => {
-  writeFileSync(path, JSON.stringify(data), { encoding: "utf-8" });
+  writeFileSync(path, JSON.stringify(data), "utf8");
 };
 
 export class FileSystemAllureWriter implements AllureWriter {
-  constructor(private config: AllureConfig) {
+  constructor(private config: AllureConfig & { resultsDir: string }) {
+    // TODO: create results dir every time we write something
     if (!existsSync(this.config.resultsDir)) {
       mkdirSync(this.config.resultsDir, {
         recursive: true,
@@ -20,7 +21,7 @@ export class FileSystemAllureWriter implements AllureWriter {
 
   writeAttachment(name: string, content: Buffer | string, encoding: BufferEncoding = "utf-8"): void {
     const path = this.buildPath(name);
-    writeFileSync(path, content, { encoding });
+    writeFileSync(path, content, encoding);
   }
 
   writeAttachmentFromPath(from: PathLike, distFileName: string): void {

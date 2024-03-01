@@ -1,9 +1,10 @@
-import { randomUUID } from "crypto";
-import { FixtureResult, Stage, Status, StepResult, TestResult, TestResultContainer } from "./model";
+import { FixtureResult, Stage, Status, StepResult, TestResult, TestResultContainer } from "../model";
 
-export const testResultContainer = (): TestResultContainer => {
+export type UUIDGenerator = () => string;
+
+export const testResultContainer = (uuid: string): TestResultContainer => {
   return {
-    uuid: randomUUID(),
+    uuid,
     children: [],
     befores: [],
     afters: [],
@@ -32,10 +33,10 @@ export const stepResult = (): StepResult => {
   };
 };
 
-export const testResult = (): TestResult => {
+export const testResult = (uuid: string, historyUuid: string): TestResult => {
   return {
-    uuid: randomUUID(),
-    historyId: randomUUID(),
+    uuid,
+    historyId: historyUuid,
     status: undefined,
     statusDetails: {},
     stage: Stage.PENDING,
