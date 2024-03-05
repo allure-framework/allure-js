@@ -1,4 +1,4 @@
-import { LabelName, LinkType, MessageType, type ParameterOptions, ReporterMessage, Status } from "./model";
+import { LabelName, LinkType, MessageType, type ParameterOptions, ReporterMessage, Stage, Status } from "./model";
 
 declare global {
   namespace Cypress {
@@ -11,7 +11,7 @@ declare global {
 export type CypressWrappedAttachment = { type: string; data: unknown };
 
 export const label = (name: string, value: string) => {
-  cy.allureReporterMessage({
+  cy.now("allureReporterMessage", {
     type: MessageType.METADATA,
     payload: {
       labels: [{ name, value }],
@@ -19,7 +19,7 @@ export const label = (name: string, value: string) => {
   });
 };
 export const link = (url: string, name?: string, type?: string) => {
-  cy.allureReporterMessage({
+  cy.now("allureReporterMessage", {
     type: MessageType.METADATA,
     payload: {
       links: [{ type, url, name }],
@@ -27,7 +27,7 @@ export const link = (url: string, name?: string, type?: string) => {
   });
 };
 export const parameter = (name: string, value: string, options?: ParameterOptions) => {
-  cy.allureReporterMessage({
+  cy.now("allureReporterMessage", {
     type: MessageType.METADATA,
     payload: {
       parameter: [{ name, value, ...options }],
@@ -35,7 +35,7 @@ export const parameter = (name: string, value: string, options?: ParameterOption
   });
 };
 export const description = (markdown: string) => {
-  cy.allureReporterMessage({
+  cy.now("allureReporterMessage", {
     type: MessageType.METADATA,
     payload: {
       description: markdown,
@@ -43,7 +43,7 @@ export const description = (markdown: string) => {
   });
 };
 export const descriptionHtml = (html: string) => {
-  cy.allureReporterMessage({
+  cy.now("allureReporterMessage", {
     type: MessageType.METADATA,
     payload: {
       descriptionHtml: html,
@@ -51,7 +51,7 @@ export const descriptionHtml = (html: string) => {
   });
 };
 export const testCaseId = (value: string) => {
-  cy.allureReporterMessage({
+  cy.now("allureReporterMessage", {
     type: MessageType.METADATA,
     payload: {
       testCaseId: value,
@@ -59,7 +59,7 @@ export const testCaseId = (value: string) => {
   });
 };
 export const historyId = (value: string) => {
-  cy.allureReporterMessage({
+  cy.now("allureReporterMessage", {
     type: MessageType.METADATA,
     payload: {
       historyId: value,
@@ -67,7 +67,7 @@ export const historyId = (value: string) => {
   });
 };
 export const allureId = (value: string) => {
-  cy.allureReporterMessage({
+  cy.now("allureReporterMessage", {
     type: MessageType.METADATA,
     payload: {
       labels: [{ name: LabelName.ALLURE_ID, value }],
@@ -75,7 +75,7 @@ export const allureId = (value: string) => {
   });
 };
 export const displayName = (name: string) => {
-  cy.allureReporterMessage({
+  cy.now("allureReporterMessage", {
     type: MessageType.METADATA,
     payload: {
       displayName: name,
@@ -123,7 +123,7 @@ export const attachment = (name: string, content: unknown, type: string, encodin
 
   // non-object attachment is a string and fully controllable by user
   if (!objectAttachment) {
-    cy.allureReporterMessage({
+    cy.now("allureReporterMessage", {
       type: MessageType.METADATA,
       payload: {
         attachments: [
@@ -151,7 +151,7 @@ export const attachment = (name: string, content: unknown, type: string, encodin
       attachmentContent = (content as CypressWrappedAttachment).data as string;
   }
 
-  cy.allureReporterMessage({
+  cy.now("allureReporterMessage", {
     type: MessageType.METADATA,
     payload: {
       attachments: [
@@ -166,33 +166,23 @@ export const attachment = (name: string, content: unknown, type: string, encodin
   });
 };
 export const step = (name: string, body: () => void) => {
-  cy.allureReporterMessage({
-    type: MessageType.STEP_STARTED,
-    payload: { name, start: Date.now() },
-  });
+  cy.wrap(null)
+    .then(() => {
+      cy.now("allureReporterMessage", {
+        type: MessageType.STEP_STARTED,
+        payload: { name, start: Date.now() },
+      });
 
-  try {
-    body();
-
-    cy.allureReporterMessage({
-      type: MessageType.STEP_ENDED,
-      payload: { status: Status.PASSED, stop: Date.now() },
-    });
-  } catch (err) {
-    // all possible errors here are runtime ones
-    // assertion errors could be handled in `commands.ts` by related mocha event
-    cy.allureReporterMessage({
-      type: MessageType.STEP_ENDED,
-      payload: {
-        status: Status.BROKEN,
-        statusDetails: {
-          message: (err as Error).message,
-          trace: (err as Error).stack,
+      body();
+    })
+    .then(() => {
+      cy.now("allureReporterMessage", {
+        type: MessageType.STEP_ENDED,
+        payload: {
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          stop: Date.now(),
         },
-        stop: Date.now(),
-      },
+      });
     });
-
-    throw err;
-  }
 };
