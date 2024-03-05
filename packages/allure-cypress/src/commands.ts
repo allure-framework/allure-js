@@ -154,7 +154,6 @@ Cypress.on("fail", (err, runnable) => {
         },
       },
     });
-
   });
 
   Cypress.env("allure", { reportMessage });
