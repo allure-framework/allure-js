@@ -84,7 +84,7 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
               mode,
             });
           });
-          attachments.forEach((attachment) => {
+          attachments?.forEach((attachment) => {
             const attachmentName = runtime.writeAttachment(attachment.content, attachment.type, attachment.encoding);
 
             (currentStep || currentTest).addAttachment(attachment.name, attachment.type, attachmentName);

@@ -24,6 +24,11 @@ module.exports = {
       });
 
       on("task", {
+        readFile: ({ path, encoding }) => {
+          const file = readFileSync(path, encoding);
+
+          return file
+        },
         readLastTestResult: () => {
           const result = {
             tests: [],

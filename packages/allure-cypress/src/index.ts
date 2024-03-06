@@ -1,14 +1,30 @@
-import {
-  LabelName,
-  LinkType,
-  MessageType,
-  type ParameterOptions,
-  Stage,
-  Status,
-} from "./model";
+import { LabelName, LinkType, MessageType, type ParameterOptions, Stage, Status } from "./model";
 import { pushReportMessage } from "./utils";
 
 export type CypressWrappedAttachment = { type: string; data: unknown };
+
+export const uint8ArrayToBase64 = (data: unknown) => {
+  // @ts-ignore
+  const u8arrayLike = Array.isArray(data) || data.buffer;
+
+  if (!u8arrayLike) {
+    return data as string;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  return btoa(String.fromCharCode.apply(null, data));
+};
+
+export const normalizeAttachmentContentEncoding = (data: unknown, encoding: BufferEncoding): BufferEncoding => {
+  // @ts-ignore
+  const u8arrayLike = Array.isArray(data) || data.buffer;
+
+  if (u8arrayLike) {
+    return "base64";
+  }
+
+  return encoding;
+};
 
 export const label = (name: string, value: string) => {
   pushReportMessage({
@@ -118,38 +134,16 @@ export const layer = (name: string) => {
 export const tag = (name: string) => {
   label(LabelName.TAG, name);
 };
-export const attachment = (name: string, content: unknown, type: string, encoding: BufferEncoding = "utf8") => {
-  const objectAttachment = typeof content === "object";
-
-  // non-object attachment is a string and fully controllable by user
-  if (!objectAttachment) {
-    pushReportMessage({
-      type: MessageType.METADATA,
-      payload: {
-        attachments: [
-          {
-            content: content as string,
-            encoding: encoding as BufferEncoding,
-            name,
-            type,
-          },
-        ],
-      },
-    });
-    return;
-  }
-
-  let attachmentContent: string;
-
-  switch ((content as CypressWrappedAttachment).type) {
-    case "Buffer":
-      // convert Uint8Array to base64 string
-      attachmentContent = btoa(String.fromCharCode.apply(null, (content as CypressWrappedAttachment).data) as string);
-      break;
-    default:
-      // don't know is the case possible, but better to add default case processing
-      attachmentContent = (content as CypressWrappedAttachment).data as string;
-  }
+export const attachment = (
+  name: string,
+  content: unknown,
+  type: string = "text/plain",
+  encoding: BufferEncoding = "utf8",
+) => {
+  // @ts-ignore
+  const attachmentRawContent: string | Uint8Array = content?.type === "Buffer" ? content.data : content;
+  const actualEncoding = normalizeAttachmentContentEncoding(attachmentRawContent, encoding);
+  const attachmentContent = uint8ArrayToBase64(attachmentRawContent);
 
   pushReportMessage({
     type: MessageType.METADATA,
@@ -157,7 +151,7 @@ export const attachment = (name: string, content: unknown, type: string, encodin
       attachments: [
         {
           content: attachmentContent,
-          encoding: "base64",
+          encoding: actualEncoding,
           name,
           type,
         },
