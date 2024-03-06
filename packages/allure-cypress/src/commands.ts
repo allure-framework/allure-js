@@ -1,4 +1,4 @@
-import { MessageType, type ReportFinalMessage, type ReporterMessage, Stage, Status } from "./model";
+import { MessageType, type ReportFinalMessage, Stage, Status } from "./model";
 
 const createFinalMesage = () =>
   ({
@@ -85,8 +85,6 @@ Cypress.mocha
   })
   .on(EVENT_TEST_FAIL, (test: Mocha.Test, err: Error) => {
     const reportMessage: ReportFinalMessage = Cypress.env("allure").reportMessage;
-    const grouppedStepsMessage = getStepsMessagesPair(reportMessage);
-    const unfinishedStepsMessages = grouppedStepsMessage.filter((step) => step.length === 1);
 
     reportMessage.endMessage = {
       stage: Stage.FINISHED,
@@ -101,13 +99,6 @@ Cypress.mocha
     Cypress.env("allure", { reportMessage });
   });
 
-Cypress.Commands.add("allureReporterMessage", (message: ReporterMessage) => {
-  const reportMessage: ReportFinalMessage = Cypress.env("allure").reportMessage;
-
-  reportMessage.messages.push(message);
-
-  Cypress.env("allure", { reportMessage });
-});
 Cypress.Screenshot.defaults({
   onAfterScreenshot: (_, details) => {
     const reportMessage: ReportFinalMessage = Cypress.env("allure").reportMessage;
@@ -123,7 +114,7 @@ Cypress.Screenshot.defaults({
     Cypress.env("allure", { reportMessage });
   },
 });
-Cypress.on("fail", (err, runnable) => {
+Cypress.on("fail", (err) => {
   const reportMessage: ReportFinalMessage = Cypress.env("allure").reportMessage;
   const hasSteps = reportMessage.messages.some((message) => message.type === MessageType.STEP_STARTED);
 
@@ -141,7 +132,7 @@ Cypress.on("fail", (err, runnable) => {
 
   const failedStepsStatus = err.constructor.name === "AssertionError" ? Status.FAILED : Status.BROKEN;
 
-  unfinishedStepsMessages.forEach((_, i) => {
+  unfinishedStepsMessages.forEach(() => {
     reportMessage.messages.push({
       type: MessageType.STEP_ENDED,
       payload: {
@@ -164,5 +155,5 @@ Cypress.on("fail", (err, runnable) => {
 afterEach(() => {
   const reportMessage = Cypress.env("allure").reportMessage;
 
-  cy.task("allureReportTest", reportMessage);
+  cy.task("allureReportTest", reportMessage, { log: false });
 });

@@ -67,10 +67,6 @@ export interface MetadataMessage {
   steps?: StepMetadata[];
 }
 
-// export interface TestMetadataMessage {
-//   name: string;
-// }
-
 /* eslint-disable no-shadow */
 export enum LinkType {
   ISSUE = "issue",

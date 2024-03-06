@@ -75,14 +75,19 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
         }
 
         if (type === MessageType.METADATA) {
-          const { parameter, links, ...metadata } = payload;
+          const { parameter, links, attachments, ...metadata } = payload;
           const currentStep = currentSteps[currentSteps.length - 1];
 
           parameter?.forEach(({ name, value, excluded, mode }) => {
-            (currentStep || currentTest).parameter(name, value, {
+            currentTest.parameter(name, value, {
               excluded,
               mode,
             });
+          });
+          attachments.forEach((attachment) => {
+            const attachmentName = runtime.writeAttachment(attachment.content, attachment.type, attachment.encoding);
+
+            (currentStep || currentTest).addAttachment(attachment.name, attachment.type, attachmentName);
           });
 
           if (!config?.links?.length || !links?.length) {
