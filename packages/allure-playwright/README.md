@@ -129,7 +129,7 @@ The report looks like:
 
 To hide steps with `Before / After hooks` and API calls `page / expect / browser` set the option `detail: false`
 
-#### Suit title
+#### Suite title
 
 By default, the reporter uses the test file path as the suite name.
 

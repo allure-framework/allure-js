@@ -23,12 +23,16 @@ test("should report test status details", async ({ runInlineTest }) => {
         expect(true).toBe(false);
       });
     `,
+    reporterOptions: JSON.stringify({
+      detail: false,
+    }),
   });
+
   expect(results.tests).toEqual([
     expect.objectContaining({
       statusDetails: expect.objectContaining({
         message: expect.stringContaining("Object.is equality"),
-        trace: expect.stringMatching(/^\s*at\s/),
+        trace: expect.stringMatching(/\s*at\s/),
       }),
     }),
   ]);

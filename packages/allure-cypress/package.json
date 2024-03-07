@@ -1,0 +1,81 @@
+{
+  "name": "allure-cypress",
+  "version": "2.13.0",
+  "description": "Allure Cypress integration",
+  "keywords": [
+    "cypress",
+    "typescript",
+    "allure"
+  ],
+  "homepage": "https://github.com/allure-framework/allure-js#readme",
+  "bugs": {
+    "url": "https://github.com/allure-framework/allure-js/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/allure-framework/allure-js.git",
+    "directory": "packages/allure-cypress"
+  },
+  "license": "Apache-2.0",
+  "author": "Qameta Software <allure@qameta.io> (https://qameta.io/)",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./commands": {
+      "require": "./dist/commands.js",
+      "types": "./dist/commands.d.ts"
+    },
+    "./reporter": {
+      "require": "./dist/reporter.js",
+      "types": "./dist/reporter.d.ts"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "directories": {
+    "test": "test"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rimraf ./dist ./out",
+    "compile": "ts-node ./esbuild.ts && tsc --emitDeclarationOnly",
+    "coverage": "codecov",
+    "lint": "eslint ./src --ext .ts",
+    "lint:fix": "eslint ./src --ext .ts --fix",
+    "test": "cypress run"
+  },
+  "dependencies": {
+    "allure-js-commons": "workspace:*"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/eslint": "^8",
+    "@types/glob": "^8.1.0",
+    "@types/jest": "^29.5.12",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^20.6.3",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "allure-jest": "workspace:*",
+    "cypress": "^13.6.0",
+    "enquirer": "^2.3.6",
+    "esbuild": "^0.20.0",
+    "eslint": "^8.49.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-cypress": "^2.15.1",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-jsdoc": "^48.0.0",
+    "eslint-plugin-no-null": "^1.0.2",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "glob": "^10.3.5",
+    "jest": "^29.7.0",
+    "rimraf": "^5.0.1",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.2.2"
+  }
+}

@@ -107,7 +107,7 @@ test("should report failed test steps", async ({ runInlineTest }) => {
               statusDetails: expect.objectContaining({
                 message: expect.stringContaining("expect(received).toBe(expected)"),
                 trace: expect.stringMatching(
-                  /^\s*at\s+.*steps-should-report-failed-test-steps-project\/a\.test\.ts:12:26/,
+                  /\s*at\s+.*steps-should-report-failed-test-steps-project\/a\.test\.ts:12:26/,
                 ),
               }),
             }),

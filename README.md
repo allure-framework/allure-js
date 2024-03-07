@@ -51,6 +51,12 @@
 
 [Read more](/packages/allure-playwright/README.md)
 
+### Cypress
+
+![npm](https://img.shields.io/npm/dm/allure-cypress.svg) ![npm](https://img.shields.io/npm/v/allure-cypress.svg)
+
+[Read more](/packages/allure-cypress/README.md)
+
 ### Newman
 
 ![npm](https://img.shields.io/npm/dm/newman-reporter-allure.svg) ![npm](https://img.shields.io/npm/v/newman-reporter-allure.svg)
