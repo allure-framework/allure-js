@@ -167,15 +167,7 @@ export default class AllureReporter implements Reporter {
       }
     }
 
-    const actualDuration = task.result
-      ? Math.max(0, task.file.collectDuration || 0) +
-        Math.max(0, task.file.setupDuration || 0) +
-        Math.max(0, task.result?.duration || 0) +
-        Math.max(0, task.file.environmentLoad || 0) +
-        Math.max(0, task.file.prepareDuration || 0)
-      : 0;
-
     test.calculateHistoryId();
-    test.endTest(task.result.startTime + actualDuration);
+    test.endTest(task.result.startTime + task.result?.duration || 0);
   }
 }
