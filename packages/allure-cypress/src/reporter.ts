@@ -75,10 +75,10 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
         }
 
         if (type === MessageType.METADATA) {
-          const { parameter, links, attachments, ...metadata } = payload;
+          const { parameter = [], links = [], attachments, ...metadata } = payload;
           const currentStep = currentSteps[currentSteps.length - 1];
 
-          parameter?.forEach(({ name, value, excluded, mode }) => {
+          parameter.forEach(({ name, value, excluded, mode }) => {
             currentTest.parameter(name, value, {
               excluded,
               mode,
@@ -90,12 +90,15 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
             (currentStep || currentTest).addAttachment(attachment.name, attachment.type, attachmentName);
           });
 
-          if (!config?.links?.length || !links?.length) {
-            currentTest.applyMetadata(metadata);
+          if (!config?.links?.length) {
+            currentTest.applyMetadata({
+              ...metadata,
+              links,
+            });
             return;
           }
 
-          const formattedLinks: Link[] = links?.map((link) => {
+          const formattedLinks: Link[] = links.map((link) => {
             const matcher = config?.links?.find?.((item) => item.type === link.type);
 
             if (!matcher || link.url.startsWith("http")) {
