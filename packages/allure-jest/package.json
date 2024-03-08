@@ -1,6 +1,6 @@
 {
   "name": "allure-jest",
-  "version": "2.14.0",
+  "version": "2.14.1",
   "description": "Allure Jest integration",
   "keywords": [
     "jest",
