@@ -39,12 +39,14 @@
     "test": "ts-node --project test/tsconfig.json test/runner.ts"
   },
   "dependencies": {
+    "md5": "^2.3.0",
     "properties": "^1.2.1",
     "strip-ansi": "^5.2.0"
   },
   "devDependencies": {
     "@types/chai": "^4.3.6",
     "@types/eslint": "^8",
+    "@types/md5": "^2",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.6.3",
     "@types/sinon": "^17.0.0",

@@ -1,5 +1,5 @@
-import { randomUUID } from "crypto";
 import { FixtureResult, Stage, Status, StepResult, TestResult, TestResultContainer } from "./model";
+import { randomUUID } from "./utils";
 
 export const testResultContainer = (): TestResultContainer => {
   return {

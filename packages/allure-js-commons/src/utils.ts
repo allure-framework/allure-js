@@ -1,10 +1,19 @@
-import { createHash } from "crypto";
 import { readFile } from "fs/promises";
+import md5lib from "md5";
 import path from "path";
 import { env } from "process";
 import { ExecutableItem, Label, LabelName, Status } from "./model";
 
-export const md5 = (data: string) => createHash("md5").update(data).digest("hex");
+export const randomUUID = () => {
+  if (globalThis?.crypto?.randomUUID) {
+    return globalThis.crypto.randomUUID();
+  }
+
+  // eslint-disable-next-line
+  return require("node:crypto").randomUUID();
+};
+
+export const md5 = (data: string) => md5lib(data);
 
 export const getLabelsFromEnv = (): Label[] => {
   const envKeys = Object.keys(env);
@@ -143,7 +152,12 @@ export const serialize = (val: unknown): string => {
   return (val as any).toString();
 };
 
-export const extractMetadataFromString = (title: string): { labels: Label[]; cleanTitle: string } => {
+export const extractMetadataFromString = (
+  title: string,
+): {
+  labels: Label[];
+  cleanTitle: string;
+} => {
   const labels = [] as Label[];
 
   title.split(" ").forEach((val) => {

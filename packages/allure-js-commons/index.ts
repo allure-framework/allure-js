@@ -56,6 +56,7 @@ export {
   getStatusFromError,
   getSuitesLabels,
   isAnyStepFailed,
+  randomUUID,
   md5,
   readImageAsBase64,
   serialize,
