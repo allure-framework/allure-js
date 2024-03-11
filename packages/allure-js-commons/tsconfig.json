@@ -6,6 +6,7 @@
     "internal.ts",
   ],
   "compilerOptions": {
+    "lib": ["dom", "esnext"],
     "types": [
       "node"
     ],

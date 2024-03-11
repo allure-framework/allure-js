@@ -1,23 +1,19 @@
-export { AllureRuntime } from "./src/AllureRuntime";
+export { AllureRuntime } from "./src/current/AllureRuntime";
 export {
   typeToExtension,
   InMemoryAllureWriter,
   FileSystemAllureWriter,
   MessageAllureWriter,
-  AllureResults
-} from "./src/writers";
-export { AllureConfig } from "./src/AllureConfig";
-export { AllureGroup } from "./src/AllureGroup";
-export { ExecutableItemWrapper } from "./src/ExecutableItemWrapper";
-export { AllureTest } from "./src/AllureTest";
-export { AllureStep } from "./src/ExecutableItemWrapper";
-export { isPromise } from "./src/isPromise";
-export { Allure, StepInterface } from "./src/Allure";
-export {
-  StepBodyFunction,
-  AllureCommandStep,
-  AllureCommandStepExecutable
-} from "./src/AllureCommandStep";
+  AllureResults,
+} from "./src/current/writers";
+export { AllureConfig } from "./src/current/AllureConfig";
+export { AllureGroup } from "./src/current/AllureGroup";
+export { ExecutableItemWrapper } from "./src/current/ExecutableItemWrapper";
+export { AllureTest } from "./src/current/AllureTest";
+export { AllureStep } from "./src/current/ExecutableItemWrapper";
+export { isPromise } from "./src/current/isPromise";
+export { Allure, StepInterface } from "./src/current/Allure";
+export { StepBodyFunction, AllureCommandStep, AllureCommandStepExecutable } from "./src/current/AllureCommandStep";
 export {
   AttachmentOptions,
   MetadataMessage,
@@ -42,8 +38,8 @@ export {
   ParameterOptions,
   StepMetadata,
   AttachmentMetadata,
-  ImageDiffAttachment
-} from "./src/model";
+  ImageDiffAttachment,
+} from "./src/current/model";
 
 export {
   allureIdRegexp,
@@ -60,9 +56,9 @@ export {
   readImageAsBase64,
   serialize,
   stripAscii,
-  extractMetadataFromString
-} from "./src/utils";
+  extractMetadataFromString,
+} from "./src/current/utils";
 
-export { AllureRuntimeApiInterface } from "./src/framework";
+export { AllureRuntimeApiInterface } from "./src/current/framework";
 
-export { TestPlanV1, parseTestPlan } from "./src/testplan";
+export { TestPlanV1, parseTestPlan } from "./src/current/testplan";
