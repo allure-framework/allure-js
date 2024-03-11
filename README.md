@@ -27,13 +27,13 @@
 
 [Read more](/packages/allure-vitest/README.md)
 
-### Jest (`jest@>=27.x.x`)
+### Jest
 
 ![npm](https://img.shields.io/npm/dm/allure-jest.svg) ![npm](https://img.shields.io/npm/v/allure-jest.svg)
 
 [Read more](/packages/allure-jest/README.md)
 
-### Jasmine and Jest (`jest@<27.x.x`)
+### Jasmine
 
 ![npm](https://img.shields.io/npm/dm/allure-jasmine.svg) ![npm](https://img.shields.io/npm/v/allure-jasmine.svg)
 
