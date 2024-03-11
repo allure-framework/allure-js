@@ -17,18 +17,28 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "require": "./dist/index.js",
+      "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
     },
     "./internal": {
       "import": "./dist/internal.js",
-      "require": "./dist/internal.js",
+      "require": "./dist/internal.cjs",
       "types": "./dist/internal.d.ts"
     },
     "./new": {
-      "import": "./dist/src/new/index.js",
-      "require": "./dist/src/new/index.js",
-      "types": "./dist/src/new/index.d.ts"
+      "import": "./dist/src/new/framework.js",
+      "require": "./dist/src/new/framework.cjs",
+      "types": "./dist/src/new/framework.d.ts"
+    },
+    "./new/browser": {
+      "import": "./dist/src/new/browser/index.js",
+      "require": "./dist/src/new/browser/index.cjs",
+      "types": "./dist/src/new/browser/index.d.ts"
+    },
+    "./new/node": {
+      "import": "./dist/src/new/node/index.js",
+      "require": "./dist/src/new/node/index.cjs",
+      "types": "./dist/src/new/node/index.d.ts"
     }
   },
   "main": "./dist/index.js",
@@ -38,7 +48,7 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "compile": "tsc",
+    "compile": "rollup -c",
     "lint": "eslint ./src ./index.ts --ext .ts",
     "lint:fix": "eslint ./src ./index.ts --ext .ts --fix",
     "test": "ts-node --project test/tsconfig.json test/runner.ts"
@@ -68,11 +78,12 @@
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "expect": "^29.5.0",
-    "glob": "^10.3.5",
+    "glob": "^10.3.10",
     "mocha": "^10.2.0",
     "mocha-multi-reporters": "^1.5.1",
     "rimraf": "^5.0.1",
     "rollup": "^4.12.1",
+    "rollup-plugin-dts": "^6.1.0",
     "sinon": "^17.0.0",
     "source-map-support": "^0.5.21",
     "ts-node": "^10.9.1",

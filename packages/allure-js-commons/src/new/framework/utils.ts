@@ -1,14 +1,4 @@
-import { createHash, randomUUID } from "crypto";
-import { Crypto, ExecutableItem, Status } from "../model";
-
-export const crypto: Crypto = {
-  uuid: () => {
-    return randomUUID();
-  },
-  md5: (str: string) => {
-    return createHash("md5").update(str).digest("hex");
-  },
-};
+import { ExecutableItem, Status } from "../model";
 
 export const isAnyStepFailed = (item: ExecutableItem): boolean => {
   const isFailed = item.status === Status.FAILED;

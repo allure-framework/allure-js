@@ -4588,6 +4588,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["properties", "npm:1.2.1"],\
             ["rimraf", "npm:5.0.5"],\
             ["rollup", "npm:4.12.1"],\
+            ["rollup-plugin-dts", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:6.1.0"],\
             ["sinon", "npm:17.0.1"],\
             ["source-map-support", "npm:0.5.21"],\
             ["strip-ansi", "npm:5.2.0"],\
@@ -13565,6 +13566,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@jridgewell/sourcemap-codec", "npm:1.4.15"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:0.30.8", {\
+          "packageLocation": "./.yarn/cache/magic-string-npm-0.30.8-0378572eee-79922f4500.zip/node_modules/magic-string/",\
+          "packageDependencies": [\
+            ["magic-string", "npm:0.30.8"],\
+            ["@jridgewell/sourcemap-codec", "npm:1.4.15"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["make-dir", [\
@@ -16867,6 +16876,34 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@rollup/rollup-win32-x64-msvc", "npm:4.12.1"],\
             ["@types/estree", "npm:1.0.5"],\
             ["fsevents", "patch:fsevents@npm%3A2.3.3#~builtin<compat/fsevents>::version=2.3.3&hash=df0bf1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["rollup-plugin-dts", [\
+        ["npm:6.1.0", {\
+          "packageLocation": "./.yarn/cache/rollup-plugin-dts-npm-6.1.0-6d41e665a7-a90f8e975e.zip/node_modules/rollup-plugin-dts/",\
+          "packageDependencies": [\
+            ["rollup-plugin-dts", "npm:6.1.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:6.1.0", {\
+          "packageLocation": "./.yarn/__virtual__/rollup-plugin-dts-virtual-116e4bfe06/0/cache/rollup-plugin-dts-npm-6.1.0-6d41e665a7-a90f8e975e.zip/node_modules/rollup-plugin-dts/",\
+          "packageDependencies": [\
+            ["rollup-plugin-dts", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:6.1.0"],\
+            ["@babel/code-frame", "npm:7.23.5"],\
+            ["@types/rollup", null],\
+            ["@types/typescript", null],\
+            ["magic-string", "npm:0.30.8"],\
+            ["rollup", "npm:4.12.1"],\
+            ["typescript", "patch:typescript@npm%3A5.3.3#~builtin<compat/typescript>::version=5.3.3&hash=e012d7"]\
+          ],\
+          "packagePeers": [\
+            "@types/rollup",\
+            "@types/typescript",\
+            "rollup",\
+            "typescript"\
           ],\
           "linkType": "HARD"\
         }]\
