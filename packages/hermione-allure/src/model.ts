@@ -1,5 +1,4 @@
-import { MetadataMessage, Stage, Status, StatusDetails } from "allure-js-commons";
-import { AllureWriter } from "allure-js-commons/dist/src/writers";
+import { AllureWriter, MetadataMessage, Stage, Status, StatusDetails } from "allure-js-commons";
 
 export type AllureReportOptions = {
   enabled?: boolean;
