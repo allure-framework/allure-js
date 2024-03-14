@@ -1,4 +1,4 @@
-import { displayName } from "../../dist";
+import { displayName } from "allure-cypress";
 
 after(() => {
   cy.task("readLastTestResult").then((result) => {

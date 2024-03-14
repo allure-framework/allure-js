@@ -1,24 +1,25 @@
 import { ExecutableItem, LinkType, MetadataMessage, TestResult } from "../model";
+import { AllureCommandStepExecutable } from "./AllureCommandStep";
 import { AllureExecutable } from "./AllureExecutable";
 import { testResult } from "./AllureResults";
 import { AllureRuntime } from "./AllureRuntime";
+
 // import { getLabelsFromEnv } from "./utils";
 
 export class AllureTest extends AllureExecutable {
   private readonly testResult: TestResult;
   private historyIdSetManually = false;
+  runtime: AllureRuntime;
 
-  constructor(
-    private readonly runtime: AllureRuntime,
-    start: number = Date.now(),
-  ) {
+  constructor(runtime: AllureRuntime, start: number = Date.now()) {
     const result = testResult(runtime.crypto.uuid(), runtime.crypto.uuid());
 
     super(result);
 
-    // TODO:
+    // TODO: create AllureTest for node or collect labels from env in runtime
     // const globalLabels = getLabelsFromEnv();
 
+    this.runtime = runtime;
     this.testResult = this.wrappedItem as TestResult;
     this.testResult.start = start;
 
@@ -115,73 +116,72 @@ export class AllureTest extends AllureExecutable {
    * will be added to the test
    */
   applyMetadata(metadata: Partial<MetadataMessage>, stepApplyFn?: (step: ExecutableItem) => void) {
-    // TODO:
-    // const {
-    //   attachments = [],
-    //   labels = [],
-    //   links = [],
-    //   parameter = [],
-    //   steps = [],
-    //   description,
-    //   descriptionHtml,
-    //   displayName,
-    //   historyId,
-    //   testCaseId,
-    // } = metadata;
-    //
-    // labels.forEach((label) => {
-    //   this.addLabel(label.name, label.value);
-    // });
-    // links.forEach((link) => {
-    //   this.addLink(link.url, link.name, link.type);
-    // });
-    // parameter.forEach((param) => {
-    //   this.parameter(param.name, param.value, {
-    //     excluded: param.excluded,
-    //     mode: param.mode,
-    //   });
-    // });
-    // attachments.forEach((attachment) => {
-    //   const attachmentFilename = this.runtime.writeAttachment(attachment.content, attachment.type, attachment.encoding);
-    //
-    //   this.addAttachment(
-    //     attachment.name,
-    //     {
-    //       contentType: attachment.type,
-    //     },
-    //     attachmentFilename,
-    //   );
-    // });
-    //
-    // if (description) {
-    //   this.description = description;
-    // }
-    //
-    // if (descriptionHtml) {
-    //   this.descriptionHtml = descriptionHtml;
-    // }
-    //
-    // if (displayName) {
-    //   this.name = displayName;
-    // }
-    //
-    // if (testCaseId) {
-    //   this.testCaseId = testCaseId;
-    // }
-    //
-    // if (historyId) {
-    //   this.historyId = historyId;
-    // }
-    //
-    // steps.forEach((stepMetadata) => {
-    //   const step = AllureCommandStepExecutable.toExecutableItem(this.runtime, stepMetadata);
-    //
-    //   if (stepApplyFn) {
-    //     stepApplyFn(step);
-    //     return;
-    //   }
-    //
-    //   this.addStep(step);
-    // });
+    const {
+      attachments = [],
+      labels = [],
+      links = [],
+      parameter = [],
+      steps = [],
+      description,
+      descriptionHtml,
+      displayName,
+      historyId,
+      testCaseId,
+    } = metadata;
+
+    labels.forEach((label) => {
+      this.addLabel(label.name, label.value);
+    });
+    links.forEach((link) => {
+      this.addLink(link.url, link.name, link.type);
+    });
+    parameter.forEach((param) => {
+      this.parameter(param.name, param.value, {
+        excluded: param.excluded,
+        mode: param.mode,
+      });
+    });
+    attachments.forEach((attachment) => {
+      const attachmentFilename = this.runtime.writeAttachment(attachment.content, attachment.type, attachment.encoding);
+
+      this.addAttachment(
+        attachment.name,
+        {
+          contentType: attachment.type,
+        },
+        attachmentFilename,
+      );
+    });
+
+    if (description) {
+      this.description = description;
+    }
+
+    if (descriptionHtml) {
+      this.descriptionHtml = descriptionHtml;
+    }
+
+    if (displayName) {
+      this.name = displayName;
+    }
+
+    if (testCaseId) {
+      this.testCaseId = testCaseId;
+    }
+
+    if (historyId) {
+      this.historyId = historyId;
+    }
+
+    steps.forEach((stepMetadata) => {
+      const step = AllureCommandStepExecutable.toExecutableItem(this.runtime, stepMetadata);
+
+      if (stepApplyFn) {
+        stepApplyFn(step);
+        return;
+      }
+
+      this.addStep(step);
+    });
   }
 }

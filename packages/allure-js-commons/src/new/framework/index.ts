@@ -1,10 +1,20 @@
-export * from "./AllureCommandStep";
-export * from "./AllureConfig";
-export * from "./AllureExecutable";
-export * from "./AllureGroup";
-export * from "./AllureRuntime";
-export * from "./AllureRuntimeAPI";
-export * from "./AllureTest";
-export * from "./AllureWriter";
-export * from "./utils";
-export * from "./writers";
+export { AllureCommandStep, AllureCommandStepExecutable } from "./AllureCommandStep";
+export { AllureConfig } from "./AllureConfig";
+export { AllureExecutable, AllureStep } from "./AllureExecutable";
+export { AllureGroup } from "./AllureGroup";
+export { AllureRuntime } from "./AllureRuntime";
+export { Allure, AllureRuntimeApiInterface, StepInterface } from "./AllureRuntimeAPI";
+export { AllureTest } from "./AllureTest";
+export { AllureWriter } from "./AllureWriter";
+export {
+  isAllStepsEnded,
+  isAnyStepFailed,
+  getSuitesLabels,
+  getStatusFromError,
+  allureIdRegexpGlobal,
+  allureIdRegexp,
+  allureLabelRegexp,
+  allureLabelRegexpGlobal,
+  extractMetadataFromString
+} from "./utils";
+export { AllureInMemoryAllureWriter } from "./writers";

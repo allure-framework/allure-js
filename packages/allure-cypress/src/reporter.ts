@@ -1,7 +1,16 @@
 import Cypress from "cypress";
 import { readFileSync } from "node:fs";
-import { AllureRuntime, AllureStep, AllureTest, extractMetadataFromString, getSuitesLabels } from "allure-js-commons";
-import { LabelName, Link, MessageType, ReportFinalMessage, Stage, TestStartMessage } from "./model";
+import {
+  AllureStep,
+  AllureTest,
+  LabelName,
+  Link,
+  Stage,
+  extractMetadataFromString,
+  getSuitesLabels,
+} from "allure-js-commons/new";
+import { AllureNodeRuntime, FileSystemAllureWriter } from "allure-js-commons/new/node";
+import { MessageType, ReportFinalMessage, TestStartMessage } from "./model";
 
 export type AllureCypressConfig = {
   resultsDir?: string;
@@ -11,7 +20,7 @@ export type AllureCypressConfig = {
   }[];
 };
 
-const startAllureTest = (runtime: AllureRuntime, message: TestStartMessage) => {
+const startAllureTest = (runtime: AllureNodeRuntime, message: TestStartMessage) => {
   const suiteLabels = getSuitesLabels(message.specPath.slice(0, -1));
   const testTitle = message.specPath[message.specPath.length - 1];
   const titleMetadata = extractMetadataFromString(testTitle);
@@ -36,8 +45,10 @@ const startAllureTest = (runtime: AllureRuntime, message: TestStartMessage) => {
 };
 
 export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressConfig) => {
-  const runtime = new AllureRuntime({
-    resultsDir: config?.resultsDir || "./allure-results",
+  const runtime = new AllureNodeRuntime({
+    writer: new FileSystemAllureWriter({
+      resultsDir: config?.resultsDir || "./allure-results",
+    }),
   });
   const currentSteps: AllureStep[] = [];
 
@@ -55,11 +66,11 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
         }
 
         if (type === MessageType.STEP_ENDED) {
-          const currentStep = currentSteps.pop();
+          const currentStep = currentSteps.pop()!;
 
           currentStep.status = payload.status;
-          currentStep.statusDetails = payload.statusDetails;
-          currentStep.stage = payload.stage;
+          currentStep.statusDetails = payload.statusDetails!;
+          currentStep.stage = payload.stage!;
           currentStep.endStep(payload.stop);
           return;
         }
@@ -125,7 +136,7 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
 
       currentTest.stage = endMessage.stage;
       currentTest.status = endMessage.status;
-      currentTest.statusDetails = endMessage.statusDetails;
+      currentTest.statusDetails = endMessage.statusDetails!;
 
       currentTest.calculateHistoryId();
       currentTest.endTest(endMessage.stop);

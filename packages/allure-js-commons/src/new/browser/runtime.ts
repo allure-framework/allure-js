@@ -1,8 +1,8 @@
-import { AllureConfig } from "../framework/AllureConfig";
-import { AllureRuntime } from "../framework/AllureRuntime";
 import md5 from "md5";
+import { AllureConfig } from "../framework/AllureConfig";
+import { AllureBaseRuntime, AllureRuntime } from "../framework/AllureRuntime";
 
-export class AllureBrowserRuntime extends AllureRuntime {
+export class AllureBrowserRuntime extends AllureBaseRuntime implements AllureRuntime {
   constructor(config: AllureConfig) {
     super(config, {
       uuid: () => globalThis.crypto.randomUUID(),

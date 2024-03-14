@@ -1,5 +1,4 @@
 import stripAnsi from "strip-ansi";
-import { AllureRuntime } from "./AllureRuntime";
 import {
   AttachmentMetadata,
   ContentType,
@@ -12,6 +11,7 @@ import {
   Status,
   StepMetadata,
 } from "../model";
+import { AllureRuntime } from "./AllureRuntime";
 
 export type StepBodyFunction<T = any> = (
   this: AllureCommandStepExecutable,

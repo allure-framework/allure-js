@@ -1,2 +1,29 @@
-export * from "./model";
+export {
+  Crypto,
+  AttachmentMetadata,
+  StepMetadata,
+  MetadataMessage,
+  Attachment,
+  AttachmentOptions,
+  Label,
+  Link,
+  Parameter,
+  ParameterOptions,
+  StatusDetails,
+  ExecutableItem,
+  FixtureResult,
+  StepResult,
+  TestResult,
+  TestResultContainer,
+  Category,
+  ExecutorInfo,
+  Status,
+  Stage,
+  LabelName,
+  Severity,
+  ContentType,
+  LinkType,
+  ImageDiffAttachment,
+  AllureResults
+} from "./model";
 export * from "./framework";

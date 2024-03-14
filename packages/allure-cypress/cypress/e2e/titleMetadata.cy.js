@@ -1,4 +1,4 @@
-import { label } from "../../dist";
+import { label } from "allure-cypress";
 
 after(() => {
   cy.task("readLastTestResult").then((result) => {

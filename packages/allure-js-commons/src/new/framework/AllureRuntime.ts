@@ -1,11 +1,34 @@
-// import { AllureConfig } from "./AllureConfig";
-// import { AllureGroup } from "./AllureGroup";
 import { AttachmentOptions, Category, ContentType, Crypto, TestResult, TestResultContainer } from "../model";
 import { typeToExtension } from "../utils";
 import { AllureConfig } from "./AllureConfig";
+import { AllureGroup } from "./AllureGroup";
 import { AllureWriter } from "./AllureWriter";
 
-export abstract class AllureRuntime {
+export interface AllureRuntime {
+  writer: AllureWriter;
+
+  crypto: Crypto;
+
+  startGroup(name?: string): AllureGroup;
+
+  buildAttachmentFileName(options: ContentType | string | AttachmentOptions): string;
+
+  writeResult(result: TestResult): void;
+
+  writeGroup(result: TestResultContainer): void;
+
+  writeAttachment(
+    content: Buffer | string,
+    options: ContentType | string | AttachmentOptions,
+    encoding?: BufferEncoding,
+  ): string;
+
+  writeEnvironmentInfo(info?: Record<string, string>): void;
+
+  writeCategoriesDefinitions(categories: Category[]): void;
+}
+
+export abstract class AllureBaseRuntime implements AllureRuntime {
   writer: AllureWriter;
 
   crypto: Crypto;
@@ -18,11 +41,13 @@ export abstract class AllureRuntime {
     this.crypto = crypto;
   }
 
-  // startGroup(name?: string): AllureGroup {
-  //   const allureContainer = new AllureGroup(this);
-  //   allureContainer.name = name || "Unnamed";
-  //   return allureContainer;
-  // }
+  startGroup(name?: string): AllureGroup {
+    const allureContainer = new AllureGroup(this);
+
+    allureContainer.name = name || "Unnamed";
+
+    return allureContainer;
+  }
 
   buildAttachmentFileName(options: ContentType | string | AttachmentOptions): string {
     if (typeof options === "string") {

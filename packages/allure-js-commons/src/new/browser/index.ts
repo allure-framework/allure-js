@@ -1,1 +1,1 @@
-export * from "./runtime";
+export { AllureBrowserRuntime } from "./runtime";

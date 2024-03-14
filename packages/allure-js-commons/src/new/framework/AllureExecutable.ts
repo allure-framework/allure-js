@@ -1,5 +1,3 @@
-import { stepResult } from "./AllureResults";
-import { isPromise } from "../utils";
 import {
   AttachmentOptions,
   ContentType,
@@ -12,7 +10,9 @@ import {
   StepResult,
   TestResult,
 } from "../model";
+import { isPromise } from "../utils";
 import { serialize } from "../utils";
+import { stepResult } from "./AllureResults";
 import { isAllStepsEnded, isAnyStepFailed } from "./utils";
 
 export class AllureExecutable {

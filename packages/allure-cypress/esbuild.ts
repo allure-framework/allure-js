@@ -13,11 +13,27 @@ import { glob } from "glob";
       platform: "node",
       sourcemap: true,
       entryPoints: [file],
+      outfile: join(__dirname, "dist", basename(file).replace(/\.ts$/, ".cjs")),
+    });
+    await esbuild.build({
+      bundle: true,
+      format: "esm",
+      platform: "node",
+      sourcemap: true,
+      entryPoints: [file],
       outfile: join(__dirname, "dist", basename(file).replace(/\.ts$/, ".js")),
     });
   }
 
   for (const file of browserFiles) {
+    await esbuild.build({
+      bundle: true,
+      format: "cjs",
+      platform: "browser",
+      sourcemap: true,
+      entryPoints: [file],
+      outfile: join(__dirname, "dist", basename(file).replace(/\.ts$/, ".cjs")),
+    });
     await esbuild.build({
       bundle: true,
       format: "cjs",

@@ -4,7 +4,7 @@ export {
   InMemoryAllureWriter,
   FileSystemAllureWriter,
   MessageAllureWriter,
-  AllureResults,
+  AllureResults
 } from "./src/current/writers";
 export { AllureConfig } from "./src/current/AllureConfig";
 export { AllureGroup } from "./src/current/AllureGroup";
@@ -38,7 +38,7 @@ export {
   ParameterOptions,
   StepMetadata,
   AttachmentMetadata,
-  ImageDiffAttachment,
+  ImageDiffAttachment
 } from "./src/current/model";
 
 export {
@@ -56,7 +56,7 @@ export {
   readImageAsBase64,
   serialize,
   stripAscii,
-  extractMetadataFromString,
+  extractMetadataFromString
 } from "./src/current/utils";
 
 export { AllureRuntimeApiInterface } from "./src/current/framework";

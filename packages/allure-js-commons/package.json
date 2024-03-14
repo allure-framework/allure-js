@@ -16,39 +16,42 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
+      "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
     },
     "./internal": {
-      "import": "./dist/internal.js",
+      "import": "./dist/internal.mjs",
       "require": "./dist/internal.cjs",
       "types": "./dist/internal.d.ts"
     },
     "./new": {
-      "import": "./dist/src/new/framework.js",
-      "require": "./dist/src/new/framework.cjs",
-      "types": "./dist/src/new/framework.d.ts"
+      "import": "./dist/src/new/index.mjs",
+      "require": "./dist/src/new/index.cjs",
+      "types": "./dist/src/new/index.d.ts"
     },
     "./new/browser": {
-      "import": "./dist/src/new/browser/index.js",
+      "import": "./dist/src/new/browser/index.mjs",
       "require": "./dist/src/new/browser/index.cjs",
       "types": "./dist/src/new/browser/index.d.ts"
     },
     "./new/node": {
-      "import": "./dist/src/new/node/index.js",
+      "import": "./dist/src/new/node/index.mjs",
       "require": "./dist/src/new/node/index.cjs",
       "types": "./dist/src/new/node/index.d.ts"
     }
   },
   "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "compile": "rollup -c",
+    "compile": "run-p 'compile:*'",
+    "compile:lib": "rollup -c",
+    "compile:types": "tsc --project ./tsconfig.json",
     "lint": "eslint ./src ./index.ts --ext .ts",
     "lint:fix": "eslint ./src ./index.ts --ext .ts --fix",
     "test": "ts-node --project test/tsconfig.json test/runner.ts"
@@ -59,6 +62,8 @@
     "strip-ansi": "^5.2.0"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/chai": "^4.3.6",
     "@types/eslint": "^8",
@@ -71,6 +76,7 @@
     "@typescript-eslint/parser": "^6.7.0",
     "allure-mocha": "workspace:*",
     "chai": "^4.3.8",
+    "esbuild": "^0.20.1",
     "eslint": "^8.49.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.28.1",
@@ -81,9 +87,9 @@
     "glob": "^10.3.10",
     "mocha": "^10.2.0",
     "mocha-multi-reporters": "^1.5.1",
+    "npm-run-all": "^4.1.5",
     "rimraf": "^5.0.1",
-    "rollup": "^4.12.1",
-    "rollup-plugin-dts": "^6.1.0",
+    "rollup": "^4.13.0",
     "sinon": "^17.0.0",
     "source-map-support": "^0.5.21",
     "ts-node": "^10.9.1",

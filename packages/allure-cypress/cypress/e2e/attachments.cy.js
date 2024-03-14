@@ -1,4 +1,4 @@
-import { attachment } from "../../dist"
+import { attachment } from "allure-cypress"
 
 describe("primitive data", () => {
   describe("text", () => {

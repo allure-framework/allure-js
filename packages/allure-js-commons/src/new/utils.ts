@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { AttachmentOptions } from "./model";
 
 const EXTENSIONS_BY_TYPE: Record<string, string> = {

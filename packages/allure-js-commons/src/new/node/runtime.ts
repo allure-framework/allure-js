@@ -1,10 +1,10 @@
 import { createHash, randomUUID } from "crypto";
 import { AllureConfig } from "../framework/AllureConfig";
-import { AllureRuntime } from "../framework/AllureRuntime";
+import { AllureBaseRuntime, AllureRuntime } from "../framework/AllureRuntime";
 import { AttachmentOptions, ContentType } from "../model";
 
-export class AllureNodeRuntime extends AllureRuntime {
-  constructor(config: AllureConfig & { resultsDir: string }) {
+export class AllureNodeRuntime extends AllureBaseRuntime implements AllureRuntime {
+  constructor(config: AllureConfig) {
     super(config, {
       uuid: () => {
         return randomUUID();

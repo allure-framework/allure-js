@@ -17,7 +17,7 @@ import { TestInfo, test as base } from "@playwright/test";
 import { fork } from "child_process";
 import { mkdir, writeFile } from "fs/promises";
 import { dirname, join } from "path";
-import { parse } from "properties";
+import properties from "properties";
 import type { AllureResults } from "allure-js-commons";
 import { allure } from "allure-playwright";
 
@@ -112,7 +112,7 @@ const runPlaywrightTest = async (baseDir: string, params: any, env: Env): Promis
       }
       case "misc": {
         if (event.path === "environment.properties") {
-          results.envInfo = parse(Buffer.from(event.data, "base64").toString());
+          results.envInfo = properties.parse(Buffer.from(event.data, "base64").toString());
         } else if (event.path === "categories.json") {
           results.categories = JSON.parse(Buffer.from(event.data, "base64").toString());
         }

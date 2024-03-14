@@ -1,7 +1,6 @@
 import { PathLike, copyFileSync, existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
-import { stringify } from "properties";
-import { AllureConfig } from "../../framework/AllureConfig";
+import properties from "properties";
 import { AllureWriter } from "../../framework/AllureWriter";
 import { Category, TestResult, TestResultContainer } from "../../model";
 
@@ -10,7 +9,7 @@ const writeJson = (path: string, data: unknown): void => {
 };
 
 export class FileSystemAllureWriter implements AllureWriter {
-  constructor(private config: AllureConfig & { resultsDir: string }) {
+  constructor(private config: { resultsDir: string }) {
     // TODO: create results dir every time we write something
     if (!existsSync(this.config.resultsDir)) {
       mkdirSync(this.config.resultsDir, {
@@ -30,7 +29,7 @@ export class FileSystemAllureWriter implements AllureWriter {
   }
 
   writeEnvironmentInfo(info?: Record<string, string | undefined>): void {
-    const text = stringify(info, { unicode: true }).toString();
+    const text = properties.stringify(info, { unicode: true }).toString();
     const path = this.buildPath("environment.properties");
 
     writeFileSync(path, text);

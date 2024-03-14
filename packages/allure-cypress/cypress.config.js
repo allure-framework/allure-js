@@ -1,7 +1,7 @@
 const { readFileSync, rmSync, existsSync } = require("node:fs");
 const { join, relative } = require("node:path");
 const { globSync } = require("glob");
-const { allureCypress } = require("./dist/reporter");
+const { allureCypress } = require("allure-cypress/reporter");
 
 module.exports = {
   experimentalInteractiveRunEvents: true,

@@ -1,4 +1,4 @@
-import { description, descriptionHtml } from "../../dist";
+import { description, descriptionHtml } from "allure-cypress";
 
 after(() => {
   cy.task("readLastTestResult").then((result) => {

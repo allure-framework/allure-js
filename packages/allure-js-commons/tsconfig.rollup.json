@@ -6,14 +6,11 @@
     "internal.ts",
   ],
   "compilerOptions": {
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "module": "ESNext",
+    "declaration": false,
     "target": "ES2015",
     "lib": ["dom", "esnext"],
     "types": [
       "node"
     ],
-    "outDir": "./dist"
   }
 }

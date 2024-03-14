@@ -1,4 +1,4 @@
-import { testCaseId } from "../../dist";
+import { testCaseId } from "allure-cypress";
 
 after(() => {
   cy.task("readLastTestResult").then((result) => {

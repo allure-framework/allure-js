@@ -1,4 +1,4 @@
-import { link, issue, tms } from "../../dist";
+import { link, issue, tms } from "allure-cypress";
 
 describe("custom", () => {
   after(() => {
