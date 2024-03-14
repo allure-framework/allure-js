@@ -6,14 +6,15 @@
     "internal.ts",
   ],
   "compilerOptions": {
+    "target": "es5",
+    "module": "esnext",
     "declaration": true,
-    "emitDeclarationOnly": true,
-    "module": "CommonJS",
-    "target": "ES2015",
-    "lib": ["dom", "esnext"],
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "lib": ["es5", "esnext"],
     "types": [
       "node"
     ],
-    "outDir": "./dist"
+    "outDir": "dist/mjs"
   }
 }

@@ -16,42 +16,36 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/mjs/index.js",
+      "require": "./dist/cjs/index.js"
     },
     "./internal": {
-      "import": "./dist/internal.mjs",
-      "require": "./dist/internal.cjs",
-      "types": "./dist/internal.d.ts"
+      "import": "./dist/mjs/internal.js",
+      "require": "./dist/cjs/internal.js"
     },
     "./new": {
-      "import": "./dist/src/new/index.mjs",
-      "require": "./dist/src/new/index.cjs",
-      "types": "./dist/src/new/index.d.ts"
+      "import": "./dist/mjs/src/new/index.js",
+      "require": "./dist/cjs/src/new/index.js"
     },
     "./new/browser": {
-      "import": "./dist/src/new/browser/index.mjs",
-      "require": "./dist/src/new/browser/index.cjs",
-      "types": "./dist/src/new/browser/index.d.ts"
+      "import": "./dist/mjs/src/new/browser/index.js",
+      "require": "./dist/cjs/src/new/browser/index.js"
     },
     "./new/node": {
-      "import": "./dist/src/new/node/index.mjs",
-      "require": "./dist/src/new/node/index.cjs",
-      "types": "./dist/src/new/node/index.d.ts"
+      "import": "./dist/mjs/src/new/node/index.js",
+      "require": "./dist/cjs/src/new/node/index.js"
     }
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/mjs/index.js",
   "files": [
     "dist"
   ],
   "scripts": {
     "clean": "rimraf ./dist",
     "compile": "run-p 'compile:*'",
-    "compile:lib": "rollup -c",
-    "compile:types": "tsc --project ./tsconfig.json",
+    "compile:mjs": "tsc --project ./tsconfig.json",
+    "compile:cjs": "tsc --project ./tsconfig-cjs.json",
     "lint": "eslint ./src ./index.ts --ext .ts",
     "lint:fix": "eslint ./src ./index.ts --ext .ts --fix",
     "test": "ts-node --project test/tsconfig.json test/runner.ts"
