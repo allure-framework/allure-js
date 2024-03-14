@@ -1,6 +1,6 @@
 import { PathLike, copyFileSync, existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
-import { stringify } from "properties";
+import properties from "properties";
 import { AllureConfig } from "../AllureConfig";
 import { Category, TestResult, TestResultContainer } from "../model";
 import { AllureWriter } from "./AllureWriter";
@@ -29,7 +29,7 @@ export class FileSystemAllureWriter implements AllureWriter {
   }
 
   writeEnvironmentInfo(info?: Record<string, string | undefined>): void {
-    const text = stringify(info, { unicode: true }).toString();
+    const text = properties.stringify(info, { unicode: true }).toString();
     const path = this.buildPath("environment.properties");
 
     writeFileSync(path, text);

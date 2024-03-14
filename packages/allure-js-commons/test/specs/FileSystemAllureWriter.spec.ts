@@ -4,7 +4,7 @@ import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } fro
 import * as os from "os";
 import path from "path";
 import { env } from "process";
-import { AllureConfig, AllureRuntime, ContentType, InMemoryAllureWriter } from "../../dist";
+import { AllureConfig, AllureRuntime, ContentType, InMemoryAllureWriter } from "allure-js-commons";
 
 describe("FileSystemAllureWriter", () => {
   it("should save attachment from path", () => {

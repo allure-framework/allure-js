@@ -64,7 +64,6 @@ const createBrowserEntry = (inputFile) => {
         resolvePlugin(),
         commonjsPlugin(),
       ],
-      // external,
     }),
     defineConfig({
       input: inputFile,

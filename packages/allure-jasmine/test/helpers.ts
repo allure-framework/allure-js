@@ -1,5 +1,5 @@
 import { Allure, InMemoryAllureWriter } from "allure-js-commons";
-import { AllureWriter } from "allure-js-commons/dist/src/writers";
+import { AllureWriter } from "allure-js-commons";
 import { JasmineAllureReporter } from "../src/JasmineAllureReporter";
 
 import Env = jasmine.Env;

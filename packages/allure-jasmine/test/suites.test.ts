@@ -1,5 +1,5 @@
 import { Allure, LabelName } from "allure-js-commons";
-import { AllureWriter } from "allure-js-commons/dist/src/writers";
+import { AllureWriter } from "allure-js-commons";
 import { JasmineTestEnv, runTest } from "./helpers";
 import { matchers } from "./matchers";
 
