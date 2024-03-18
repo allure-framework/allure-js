@@ -10,7 +10,7 @@ const dirname = fileURLToPath(new URL(".", import.meta.url));
 
 const createNodeEntry = (inputFile) => {
   const outputFileBase = inputFile.replace(/^src/, "dist");
-  const external = ["node:fs", "allure-js-commons/new", "allure-js-commons/new/node"];
+  const external = ["node:fs"];
 
   return [
     defineConfig({
@@ -25,6 +25,8 @@ const createNodeEntry = (inputFile) => {
         typescriptPlugin({
           tsconfig: "./tsconfig.rollup.json",
         }),
+        resolvePlugin(),
+        commonjsPlugin(),
       ],
       external,
     }),
@@ -40,6 +42,8 @@ const createNodeEntry = (inputFile) => {
         typescriptPlugin({
           tsconfig: "./tsconfig.rollup.json",
         }),
+        resolvePlugin(),
+        commonjsPlugin(),
       ],
       external,
     }),

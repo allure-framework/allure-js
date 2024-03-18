@@ -16,42 +16,36 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
     },
     "./internal": {
-      "import": "./dist/internal.mjs",
-      "require": "./dist/internal.cjs",
-      "types": "./dist/internal.d.ts"
+      "import": "./dist/esm/internal.js",
+      "require": "./dist/cjs/internal.js"
     },
     "./new": {
-      "import": "./dist/src/new/index.mjs",
-      "require": "./dist/src/new/index.cjs",
-      "types": "./dist/src/new/index.d.ts"
+      "import": "./dist/esm/src/new/index.js",
+      "require": "./dist/cjs/src/new/index.js"
     },
     "./new/browser": {
-      "import": "./dist/src/new/browser/index.mjs",
-      "require": "./dist/src/new/browser/index.cjs",
-      "types": "./dist/src/new/browser/index.d.ts"
+      "import": "./dist/esm/src/new/browser/index.js",
+      "require": "./dist/cjs/src/new/browser/index.js"
     },
     "./new/node": {
-      "import": "./dist/src/new/node/index.mjs",
-      "require": "./dist/src/new/node/index.cjs",
-      "types": "./dist/src/new/node/index.d.ts"
+      "import": "./dist/esm/src/new/node/index.js",
+      "require": "./dist/cjs/src/new/node/index.js"
     }
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
   "files": [
     "dist"
   ],
   "scripts": {
     "clean": "rimraf ./dist",
     "compile": "run-p 'compile:*'",
-    "compile:lib": "rollup -c",
-    "compile:types": "tsc --project ./tsconfig.json",
+    "compile:esm": "tsc --project ./tsconfig.esm.json",
+    "compile:cjs": "tsc --project ./tsconfig.cjs.json",
     "lint": "eslint ./src ./index.ts --ext .ts",
     "lint:fix": "eslint ./src ./index.ts --ext .ts --fix",
     "test": "ts-node --project test/tsconfig.json test/runner.ts"
@@ -62,9 +56,6 @@
     "strip-ansi": "^5.2.0"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-typescript": "^11.1.6",
     "@types/chai": "^4.3.6",
     "@types/eslint": "^8",
     "@types/md5": "^2",
@@ -89,7 +80,6 @@
     "mocha-multi-reporters": "^1.5.1",
     "npm-run-all": "^4.1.5",
     "rimraf": "^5.0.1",
-    "rollup": "^4.13.0",
     "sinon": "^17.0.0",
     "source-map-support": "^0.5.21",
     "ts-node": "^10.9.1",

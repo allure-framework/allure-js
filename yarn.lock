@@ -3571,9 +3571,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-js-commons@workspace:packages/allure-js-commons"
   dependencies:
-    "@rollup/plugin-commonjs": ^25.0.7
-    "@rollup/plugin-node-resolve": ^15.2.3
-    "@rollup/plugin-typescript": ^11.1.6
     "@types/chai": ^4.3.6
     "@types/eslint": ^8
     "@types/md5": ^2
@@ -3600,7 +3597,6 @@ __metadata:
     npm-run-all: ^4.1.5
     properties: ^1.2.1
     rimraf: ^5.0.1
-    rollup: ^4.13.0
     sinon: ^17.0.0
     source-map-support: ^0.5.21
     strip-ansi: ^5.2.0
