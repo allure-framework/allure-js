@@ -1,5 +1,5 @@
-export { AllureNodeRuntime } from "./runtime";
-export { TestPlanV1, parseTestPlan } from "./testplan";
+export { AllureNodeRuntime } from "./runtime.js";
+export { TestPlanV1, parseTestPlan } from "./testplan.js";
 export {
   getLabelsFromEnv,
   escapeRegExp,
@@ -8,5 +8,5 @@ export {
   stripAscii,
   allureReportFolder,
   defaultReportFolder
-} from "./utils";
-export { AllureInMemoryWriter, FileSystemAllureWriter, MessageAllureWriter } from "./writers";
+} from "./utils.js";
+export { AllureInMemoryWriter, FileSystemAllureWriter, MessageAllureWriter } from "./writers/index.js";

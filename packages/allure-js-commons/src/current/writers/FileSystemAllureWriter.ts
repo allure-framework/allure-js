@@ -1,9 +1,9 @@
 import { PathLike, copyFileSync, existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 import properties from "properties";
-import { AllureConfig } from "../AllureConfig";
-import { Category, TestResult, TestResultContainer } from "../model";
-import { AllureWriter } from "./AllureWriter";
+import { AllureConfig } from "../AllureConfig.js";
+import { Category, TestResult, TestResultContainer } from "../model.js";
+import { AllureWriter } from "./AllureWriter.js";
 
 const writeJson = (path: string, data: unknown): void => {
   writeFileSync(path, JSON.stringify(data), { encoding: "utf-8" });

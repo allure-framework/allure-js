@@ -1,9 +1,9 @@
-import { AllureCommandStepExecutable } from "./AllureCommandStep";
-import { AllureRuntime } from "./AllureRuntime";
-import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
-import { testResult } from "./constructors";
-import { ExecutableItem, LinkType, MetadataMessage, TestResult } from "./model";
-import { getLabelsFromEnv, md5 } from "./utils";
+import { AllureCommandStepExecutable } from "./AllureCommandStep.js";
+import { AllureRuntime } from "./AllureRuntime.js";
+import { ExecutableItemWrapper } from "./ExecutableItemWrapper.js";
+import { testResult } from "./constructors.js";
+import { ExecutableItem, LinkType, MetadataMessage, TestResult } from "./model.js";
+import { getLabelsFromEnv, md5 } from "./utils.js";
 
 export class AllureTest extends ExecutableItemWrapper {
   private readonly testResult: TestResult;

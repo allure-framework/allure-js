@@ -2,4 +2,4 @@ export {
   ALLURE_SKIPPED_BY_TEST_PLAN_LABEL,
   ALLURE_METADATA_CONTENT_TYPE,
   ALLURE_IMAGEDIFF_CONTENT_TYPE,
-} from "./src/current/model";
+} from "./src/current/model.js";

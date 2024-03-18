@@ -1,5 +1,5 @@
-import { TestResult } from "./model";
-import { AllureWriter } from "./writers";
+import { TestResult } from "./model.js";
+import { AllureWriter } from "./writers/index.js";
 
 export interface AllureConfig {
   readonly resultsDir: string;

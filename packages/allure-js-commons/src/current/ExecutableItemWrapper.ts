@@ -1,5 +1,5 @@
-import { stepResult } from "./constructors";
-import { isPromise } from "./isPromise";
+import { stepResult } from "./constructors.js";
+import { isPromise } from "./isPromise.js";
 import {
   AttachmentOptions,
   ContentType,
@@ -11,8 +11,8 @@ import {
   StatusDetails,
   StepResult,
   TestResult,
-} from "./model";
-import { isAllStepsEnded, isAnyStepFailed, serialize } from "./utils";
+} from "./model.js";
+import { isAllStepsEnded, isAnyStepFailed, serialize } from "./utils.js";
 
 export class ExecutableItemWrapper {
   constructor(private readonly info: FixtureResult | TestResult) {}

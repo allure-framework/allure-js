@@ -2,7 +2,7 @@ import { createHash } from "crypto";
 import { readFile } from "fs/promises";
 import path from "path";
 import { env } from "process";
-import { ExecutableItem, Label, LabelName, Status } from "./model";
+import { ExecutableItem, Label, LabelName, Status } from "./model.js";
 
 export const md5 = (data: string) => createHash("md5").update(data).digest("hex");
 

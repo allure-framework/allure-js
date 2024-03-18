@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from "crypto";
-import { AllureConfig } from "../framework/AllureConfig";
-import { AllureBaseRuntime, AllureRuntime } from "../framework/AllureRuntime";
-import { AttachmentOptions, ContentType } from "../model";
+import { AllureConfig } from "../framework/AllureConfig.js";
+import { AllureBaseRuntime, AllureRuntime } from "../framework/AllureRuntime.js";
+import { AttachmentOptions, ContentType } from "../model.js";
 
 export class AllureNodeRuntime extends AllureBaseRuntime implements AllureRuntime {
   constructor(config: AllureConfig) {

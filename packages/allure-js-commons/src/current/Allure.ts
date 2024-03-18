@@ -1,8 +1,8 @@
-import { AllureRuntime } from "./AllureRuntime";
-import { AllureTest } from "./AllureTest";
-import { ExecutableItemWrapper } from "./ExecutableItemWrapper";
-import { AllureRuntimeApiInterface } from "./framework";
-import { AttachmentOptions, Category, ContentType, LabelName, LinkType, ParameterOptions, Status } from "./model";
+import { AllureRuntime } from "./AllureRuntime.js";
+import { AllureTest } from "./AllureTest.js";
+import { ExecutableItemWrapper } from "./ExecutableItemWrapper.js";
+import { AllureRuntimeApiInterface } from "./framework/index.js";
+import { AttachmentOptions, Category, ContentType, LabelName, LinkType, ParameterOptions, Status } from "./model.js";
 
 // FIXME: step and attachment should be the same for each reporter implementation
 export abstract class Allure implements Omit<AllureRuntimeApiInterface, "step" | "attachment"> {

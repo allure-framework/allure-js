@@ -1,5 +1,5 @@
-import { StepBodyFunction } from "../AllureCommandStep";
-import { ParameterOptions } from "../model";
+import { StepBodyFunction } from "../AllureCommandStep.js";
+import { ParameterOptions } from "../model.js";
 
 export interface AllureRuntimeApiInterface {
   label(name: string, value: string): void;

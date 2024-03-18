@@ -1,9 +1,9 @@
 import { randomUUID } from "crypto";
 import { PathLike } from "fs";
-import { AllureConfig } from "./AllureConfig";
-import { AllureGroup } from "./AllureGroup";
-import { AttachmentOptions, Category, ContentType, TestResult, TestResultContainer } from "./model";
-import { AllureWriter, FileSystemAllureWriter, typeToExtension } from "./writers";
+import { AllureConfig } from "./AllureConfig.js";
+import { AllureGroup } from "./AllureGroup.js";
+import { AttachmentOptions, Category, ContentType, TestResult, TestResultContainer } from "./model.js";
+import { AllureWriter, FileSystemAllureWriter, typeToExtension } from "./writers/index.js";
 
 const buildAttachmentFileName = (options: ContentType | string | AttachmentOptions): string => {
   if (typeof options === "string") {

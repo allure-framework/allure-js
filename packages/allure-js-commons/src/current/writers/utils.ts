@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { AttachmentOptions } from "../model";
+import { AttachmentOptions } from "../model.js";
 
 const extensionsByType: Record<string, string> = {
   "application/andrew-inset": ".ez",

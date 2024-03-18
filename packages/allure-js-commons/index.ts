@@ -1,4 +1,4 @@
-export { AllureRuntime } from "./src/current/AllureRuntime";
+export { AllureRuntime } from "./src/current/AllureRuntime.js";
 export {
   typeToExtension,
   InMemoryAllureWriter,
@@ -6,15 +6,15 @@ export {
   MessageAllureWriter,
   AllureWriter,
   AllureResults
-} from "./src/current/writers";
-export { AllureConfig } from "./src/current/AllureConfig";
-export { AllureGroup } from "./src/current/AllureGroup";
-export { ExecutableItemWrapper } from "./src/current/ExecutableItemWrapper";
-export { AllureTest } from "./src/current/AllureTest";
-export { AllureStep } from "./src/current/ExecutableItemWrapper";
-export { isPromise } from "./src/current/isPromise";
-export { Allure, StepInterface } from "./src/current/Allure";
-export { StepBodyFunction, AllureCommandStep, AllureCommandStepExecutable } from "./src/current/AllureCommandStep";
+} from "./src/current/writers/index.js";
+export { AllureConfig } from "./src/current/AllureConfig.js";
+export { AllureGroup } from "./src/current/AllureGroup.js";
+export { ExecutableItemWrapper } from "./src/current/ExecutableItemWrapper.js";
+export { AllureTest } from "./src/current/AllureTest.js";
+export { AllureStep } from "./src/current/ExecutableItemWrapper.js";
+export { isPromise } from "./src/current/isPromise.js";
+export { Allure, StepInterface } from "./src/current/Allure.js";
+export { StepBodyFunction, AllureCommandStep, AllureCommandStepExecutable } from "./src/current/AllureCommandStep.js";
 export {
   AttachmentOptions,
   MetadataMessage,
@@ -40,7 +40,7 @@ export {
   StepMetadata,
   AttachmentMetadata,
   ImageDiffAttachment
-} from "./src/current/model";
+} from "./src/current/model.js";
 
 export {
   allureIdRegexp,
@@ -58,8 +58,8 @@ export {
   serialize,
   stripAscii,
   extractMetadataFromString
-} from "./src/current/utils";
+} from "./src/current/utils.js";
 
-export { AllureRuntimeApiInterface } from "./src/current/framework";
+export { AllureRuntimeApiInterface } from "./src/current/framework/index.js";
 
-export { TestPlanV1, parseTestPlan } from "./src/current/testplan";
+export { TestPlanV1, parseTestPlan } from "./src/current/testplan.js";

@@ -26,4 +26,4 @@ export {
   ImageDiffAttachment,
   AllureResults
 } from "./model";
-export * from "./framework";
+export * from "./framework/index.js";

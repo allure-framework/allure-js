@@ -7,7 +7,7 @@
     "module": "NodeNext",
     "declaration": true,
     "rootDir": "./src",
-    "outDir": "."
+    "outDir": "./dist"
   },
   "include": [
     "./src/**/*"

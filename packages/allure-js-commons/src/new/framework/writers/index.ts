@@ -1,1 +1,1 @@
-export { AllureInMemoryAllureWriter } from "./AllureInMemoryWriter";
+export { AllureInMemoryAllureWriter } from "./AllureInMemoryWriter.js";

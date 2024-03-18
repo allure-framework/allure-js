@@ -46,6 +46,7 @@
     "compile": "run-p 'compile:*'",
     "compile:esm": "tsc --project ./tsconfig.esm.json",
     "compile:cjs": "tsc --project ./tsconfig.cjs.json",
+    "compile:fixup": "ts-node --project ./tsconfig.cjs.json ./scripts/fixup.ts",
     "lint": "eslint ./src ./index.ts --ext .ts",
     "lint:fix": "eslint ./src ./index.ts --ext .ts --fix",
     "test": "ts-node --project test/tsconfig.json test/runner.ts"
@@ -67,7 +68,6 @@
     "@typescript-eslint/parser": "^6.7.0",
     "allure-mocha": "workspace:*",
     "chai": "^4.3.8",
-    "esbuild": "^0.20.1",
     "eslint": "^8.49.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.28.1",

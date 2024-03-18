@@ -1,16 +1,16 @@
 import typescriptPlugin from "@rollup/plugin-typescript";
 import commonjsPlugin from "@rollup/plugin-commonjs";
 import resolvePlugin from "@rollup/plugin-node-resolve";
-import { glob } from "glob";
-import { join, relative } from "node:path";
-import { fileURLToPath } from "node:url";
-import { defineConfig } from "rollup";
+import {glob} from "glob";
+import {join, relative} from "node:path";
+import {fileURLToPath} from "node:url";
+import {defineConfig} from "rollup";
 
 const dirname = fileURLToPath(new URL(".", import.meta.url));
 
 const createNodeEntry = (inputFile) => {
   const outputFileBase = inputFile.replace(/^src/, "dist");
-  const external = ["node:fs"];
+  const external = ["node:fs", "allure-js-commons/new", "allure-js-commons/new/node"];
 
   return [
     defineConfig({
@@ -25,8 +25,6 @@ const createNodeEntry = (inputFile) => {
         typescriptPlugin({
           tsconfig: "./tsconfig.rollup.json",
         }),
-        resolvePlugin(),
-        commonjsPlugin(),
       ],
       external,
     }),
@@ -42,8 +40,6 @@ const createNodeEntry = (inputFile) => {
         typescriptPlugin({
           tsconfig: "./tsconfig.rollup.json",
         }),
-        resolvePlugin(),
-        commonjsPlugin(),
       ],
       external,
     }),

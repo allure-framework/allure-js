@@ -1,3 +1,3 @@
-export { FileSystemAllureWriter } from "./FileSystemAllureWriter";
-export { AllureInMemoryWriter } from "./InMemoryAllureWriter";
-export { MessageAllureWriter } from "./MessageAllureWriter";
+export { FileSystemAllureWriter } from "./FileSystemAllureWriter.js";
+export { AllureInMemoryWriter } from "./InMemoryAllureWriter.js";
+export { MessageAllureWriter } from "./MessageAllureWriter.js";

@@ -1,6 +1,6 @@
 import { PathLike, readFileSync } from "fs";
-import { Category, TestResult, TestResultContainer } from "../model";
-import { AllureWriter } from "./AllureWriter";
+import { Category, TestResult, TestResultContainer } from "../model.js";
+import { AllureWriter } from "./AllureWriter.js";
 
 export interface AllureResults {
   tests: TestResult[];

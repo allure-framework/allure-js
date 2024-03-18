@@ -1,1 +1,1 @@
-export { AllureBrowserRuntime } from "./runtime";
+export { AllureBrowserRuntime } from "./runtime.js";

@@ -1,11 +1,11 @@
-export { AllureCommandStep, AllureCommandStepExecutable } from "./AllureCommandStep";
-export { AllureConfig } from "./AllureConfig";
-export { AllureExecutable, AllureStep } from "./AllureExecutable";
-export { AllureGroup } from "./AllureGroup";
-export { AllureRuntime } from "./AllureRuntime";
-export { Allure, AllureRuntimeApiInterface, StepInterface } from "./AllureRuntimeAPI";
-export { AllureTest } from "./AllureTest";
-export { AllureWriter } from "./AllureWriter";
+export { AllureCommandStep, AllureCommandStepExecutable } from "./AllureCommandStep.js";
+export { AllureConfig } from "./AllureConfig.js";
+export { AllureExecutable, AllureStep } from "./AllureExecutable.js";
+export { AllureGroup } from "./AllureGroup.js";
+export { AllureRuntime } from "./AllureRuntime.js";
+export { Allure, AllureRuntimeApiInterface, StepInterface } from "./AllureRuntimeAPI.js";
+export { AllureTest } from "./AllureTest.js";
+export { AllureWriter } from "./AllureWriter.js";
 export {
   isAllStepsEnded,
   isAnyStepFailed,
@@ -16,5 +16,5 @@ export {
   allureLabelRegexp,
   allureLabelRegexpGlobal,
   extractMetadataFromString
-} from "./utils";
-export { AllureInMemoryAllureWriter } from "./writers";
+} from "./utils.js";
+export { AllureInMemoryAllureWriter } from "./writers/index.js";
