@@ -7,6 +7,6 @@ export {
   // TODO: replace with `strip-ansi` package (is already used for jest integration)
   stripAscii,
   allureReportFolder,
-  defaultReportFolder
+  defaultReportFolder,
 } from "./utils.js";
 export { AllureInMemoryWriter, FileSystemAllureWriter, MessageAllureWriter } from "./writers/index.js";

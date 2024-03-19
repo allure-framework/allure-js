@@ -15,6 +15,6 @@ export {
   allureIdRegexp,
   allureLabelRegexp,
   allureLabelRegexpGlobal,
-  extractMetadataFromString
+  extractMetadataFromString,
 } from "./utils.js";
 export { AllureInMemoryAllureWriter } from "./writers/index.js";

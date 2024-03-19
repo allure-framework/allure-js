@@ -24,6 +24,6 @@ export {
   ContentType,
   LinkType,
   ImageDiffAttachment,
-  AllureResults
+  AllureResults,
 } from "./model";
 export * from "./framework/index.js";

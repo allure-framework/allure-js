@@ -11,6 +11,8 @@
     "types": [
       "node"
     ],
-    "outDir": "./dist/cjs"
+    "target": "es2015",
+    "outDir": "./dist/cjs",
+    "module": "commonjs",
   }
 }
