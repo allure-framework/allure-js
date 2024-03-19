@@ -22,17 +22,14 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./index.js",
-      "types": "./index.d.ts"
+      "import": "./dist/index.js"
     },
     "./reporter": {
-      "import": "./reporter.js",
-      "types": "./reporter.d.ts"
+      "import": "./dist/reporter.js"
     },
     "./setup": {
-      "require": "./setup.js",
-      "import": "./setup.js",
-      "types": "./setup.d.ts"
+      "require": "./dist/setup.js",
+      "import": "./dist/setup.js"
     }
   },
   "files": [

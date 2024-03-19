@@ -1,4 +1,4 @@
-import { step } from "../../dist";
+import { step } from "allure-cypress";
 
 describe("single", () => {
   after(() => {

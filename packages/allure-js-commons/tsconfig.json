@@ -6,9 +6,13 @@
     "internal.ts",
   ],
   "compilerOptions": {
+    "declaration": true,
+    "lib": ["dom", "esnext"],
     "types": [
       "node"
     ],
-    "outDir": "./dist"
+    "target": "es2015",
+    "outDir": "./dist/cjs",
+    "module": "commonjs",
   }
 }

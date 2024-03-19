@@ -1,4 +1,5 @@
-import { LabelName, LinkType, MessageType, type ParameterOptions, Stage, Status } from "./model";
+import { LabelName, LinkType, ParameterOptions, Stage, Status } from "allure-js-commons/new";
+import { MessageType } from "./model";
 import { pushReportMessage } from "./utils";
 
 export type CypressWrappedAttachment = { type: string; data: unknown };
@@ -12,7 +13,7 @@ export const uint8ArrayToBase64 = (data: unknown) => {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  return btoa(String.fromCharCode.apply(null, data));
+  return btoa(String.fromCharCode.apply(null, data as number[]));
 };
 
 export const normalizeAttachmentContentEncoding = (data: unknown, encoding: BufferEncoding): BufferEncoding => {

@@ -1,4 +1,4 @@
-import { parameter } from "../../dist";
+import { parameter } from "allure-cypress";
 
 after(() => {
   cy.task("readLastTestResult").then((result) => {

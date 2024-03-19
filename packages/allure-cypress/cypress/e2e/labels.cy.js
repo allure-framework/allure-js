@@ -11,7 +11,7 @@ import {
   subSuite,
   suite,
   tag,
-} from "../../dist";
+} from "allure-cypress";
 
 describe("custom", () => {
   after(() => {

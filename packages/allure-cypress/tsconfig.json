@@ -1,14 +1,21 @@
 {
+  "extends": "../../tsconfig.json",
+  "include": [
+    "./src/**/*",
+    "index.ts",
+    "internal.ts",
+  ],
   "compilerOptions": {
-    "target": "es2022",
-    "lib": ["es2023", "dom"],
-    "types": ["node", "cypress"],
     "skipLibCheck": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
     "declaration": true,
-    "moduleResolution": "Node",
-    "allowSyntheticDefaultImports": true
-  },
-  "include": ["./src/**/*"]
+    "emitDeclarationOnly": true,
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": ["dom", "esnext"],
+    "types": [
+      "node"
+    ],
+    "outDir": "./dist"
+  }
 }

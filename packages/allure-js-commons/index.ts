@@ -1,23 +1,20 @@
-export { AllureRuntime } from "./src/AllureRuntime";
+export { AllureRuntime } from "./src/current/AllureRuntime.js";
 export {
   typeToExtension,
   InMemoryAllureWriter,
   FileSystemAllureWriter,
   MessageAllureWriter,
+  AllureWriter,
   AllureResults
-} from "./src/writers";
-export { AllureConfig } from "./src/AllureConfig";
-export { AllureGroup } from "./src/AllureGroup";
-export { ExecutableItemWrapper } from "./src/ExecutableItemWrapper";
-export { AllureTest } from "./src/AllureTest";
-export { AllureStep } from "./src/ExecutableItemWrapper";
-export { isPromise } from "./src/isPromise";
-export { Allure, StepInterface } from "./src/Allure";
-export {
-  StepBodyFunction,
-  AllureCommandStep,
-  AllureCommandStepExecutable
-} from "./src/AllureCommandStep";
+} from "./src/current/writers/index.js";
+export { AllureConfig } from "./src/current/AllureConfig.js";
+export { AllureGroup } from "./src/current/AllureGroup.js";
+export { ExecutableItemWrapper } from "./src/current/ExecutableItemWrapper.js";
+export { AllureTest } from "./src/current/AllureTest.js";
+export { AllureStep } from "./src/current/ExecutableItemWrapper.js";
+export { isPromise } from "./src/current/isPromise.js";
+export { Allure, StepInterface } from "./src/current/Allure.js";
+export { StepBodyFunction, AllureCommandStep, AllureCommandStepExecutable } from "./src/current/AllureCommandStep.js";
 export {
   AttachmentOptions,
   MetadataMessage,
@@ -43,7 +40,7 @@ export {
   StepMetadata,
   AttachmentMetadata,
   ImageDiffAttachment
-} from "./src/model";
+} from "./src/current/model.js";
 
 export {
   allureIdRegexp,
@@ -61,8 +58,8 @@ export {
   serialize,
   stripAscii,
   extractMetadataFromString
-} from "./src/utils";
+} from "./src/current/utils.js";
 
-export { AllureRuntimeApiInterface } from "./src/framework";
+export { AllureRuntimeApiInterface } from "./src/current/framework/index.js";
 
-export { TestPlanV1, parseTestPlan } from "./src/testplan";
+export { TestPlanV1, parseTestPlan } from "./src/current/testplan.js";

@@ -1,4 +1,4 @@
-import "../../dist/commands";
+import "allure-cypress/commands";
 
 Cypress.Commands.add("matches", { prevSubject: true }, (subject, object) => {
   cy.wrap(subject).then((subject) => {

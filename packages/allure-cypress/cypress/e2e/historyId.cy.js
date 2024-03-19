@@ -1,4 +1,4 @@
-import { historyId } from "../../dist";
+import { historyId } from "allure-cypress";
 
 after(() => {
   cy.task("readLastTestResult").then((result) => {

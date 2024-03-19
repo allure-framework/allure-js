@@ -1,6 +1,8 @@
-import { MessageType, type ReportFinalMessage, Stage, Status } from "./model";
+import { Stage, Status } from "allure-js-commons/new";
+import { MessageType, type ReportFinalMessage, type ReporterMessage } from "./model";
 
 const createFinalMesage = () =>
+  // @ts-ignore
   ({
     startMessage: undefined,
     endMessage: undefined,
@@ -44,7 +46,7 @@ const getStepsMessagesPair = (reportMessage: ReportFinalMessage) =>
     acc[unfinishedStepIdx].push(message);
 
     return acc;
-  }, []);
+  }, [] as ReporterMessage[][]);
 
 // @ts-ignore
 Cypress.mocha
