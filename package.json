@@ -7,10 +7,10 @@
   ],
   "scripts": {
     "build": "yarn run clean && yarn run compile",
-    "clean": "yarn workspaces foreach -vpt run clean",
-    "compile": "yarn workspaces foreach -vpt run compile",
-    "lint": "yarn workspaces foreach -vpt run lint",
-    "lint:fix": "yarn workspaces foreach -vpt run lint:fix",
+    "clean": "yarn workspaces foreach -Avpt run clean",
+    "compile": "yarn workspaces foreach -Avpt run compile",
+    "lint": "yarn workspaces foreach -Avpt run lint",
+    "lint:fix": "yarn workspaces foreach -Avpt run lint:fix",
     "prepare": "husky install",
     "prettier:check": "prettier --check './packages/*/{src,test,features}/**/*.{js,ts}' '**/package.json' .prettierrc.js",
     "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}' '**/package.json' .prettierrc.js",
@@ -48,5 +48,5 @@
     "rimraf": "^5.0.1",
     "typescript": "^5.2.2"
   },
-  "packageManager": "yarn@3.8.0"
+  "packageManager": "yarn@4.1.1"
 }
