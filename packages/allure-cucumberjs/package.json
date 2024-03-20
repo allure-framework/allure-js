@@ -34,7 +34,7 @@
     "@cucumber/gherkin-streams": "^5.0.1",
     "@cucumber/gherkin-utils": "^8.0.5",
     "@cucumber/message-streams": "^4.0.1",
-    "@cucumber/messages": "^22.0.0",
+    "@cucumber/messages": "^24.0.0",
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {

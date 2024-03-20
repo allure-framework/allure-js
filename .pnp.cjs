@@ -1141,8 +1141,8 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@cucumber/gherkin-streams", "virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:5.0.1"],\
           ["@cucumber/gherkin", "npm:27.0.0"],\
-          ["@cucumber/message-streams", "virtual:28b885dbc4635784db5cb300f6c52b5b64f854af7b82c34e7867d7829b7f1a4c0b7b0d3182e8353394e6d687b874a600ccdba9f72cd18f7ddee2e6b8eb8dfee4#npm:4.0.1"],\
-          ["@cucumber/messages", "npm:22.0.0"],\
+          ["@cucumber/message-streams", "virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:4.0.1"],\
+          ["@cucumber/messages", "npm:24.0.1"],\
           ["@types/cucumber__gherkin", null],\
           ["@types/cucumber__message-streams", null],\
           ["@types/cucumber__messages", null],\
@@ -1221,6 +1221,19 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@cucumber/message-streams", "virtual:28b885dbc4635784db5cb300f6c52b5b64f854af7b82c34e7867d7829b7f1a4c0b7b0d3182e8353394e6d687b874a600ccdba9f72cd18f7ddee2e6b8eb8dfee4#npm:4.0.1"],\
           ["@cucumber/messages", "npm:22.0.0"],\
+          ["@types/cucumber__messages", null]\
+        ],\
+        "packagePeers": [\
+          "@cucumber/messages",\
+          "@types/cucumber__messages"\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:4.0.1", {\
+        "packageLocation": "./.yarn/__virtual__/@cucumber-message-streams-virtual-ea2347b139/0/cache/@cucumber-message-streams-npm-4.0.1-0c98ff65d5-74080dafde.zip/node_modules/@cucumber/message-streams/",\
+        "packageDependencies": [\
+          ["@cucumber/message-streams", "virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:4.0.1"],\
+          ["@cucumber/messages", "npm:24.0.1"],\
           ["@types/cucumber__messages", null]\
         ],\
         "packagePeers": [\
@@ -4256,8 +4269,8 @@ const RAW_RUNTIME_STATE =
           ["@cucumber/gherkin", "npm:27.0.0"],\
           ["@cucumber/gherkin-streams", "virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:5.0.1"],\
           ["@cucumber/gherkin-utils", "npm:8.0.6"],\
-          ["@cucumber/message-streams", "virtual:28b885dbc4635784db5cb300f6c52b5b64f854af7b82c34e7867d7829b7f1a4c0b7b0d3182e8353394e6d687b874a600ccdba9f72cd18f7ddee2e6b8eb8dfee4#npm:4.0.1"],\
-          ["@cucumber/messages", "npm:22.0.0"],\
+          ["@cucumber/message-streams", "virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:4.0.1"],\
+          ["@cucumber/messages", "npm:24.0.1"],\
           ["@types/chai", "npm:4.3.12"],\
           ["@types/chai-like", "npm:1.1.3"],\
           ["@types/chai-things", "npm:0.0.36"],\
