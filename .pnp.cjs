@@ -14069,17 +14069,17 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["msw", [\
-      ["npm:1.3.2", {\
-        "packageLocation": "./.yarn/unplugged/msw-virtual-16b94f2106/node_modules/msw/",\
+      ["npm:1.3.3", {\
+        "packageLocation": "./.yarn/unplugged/msw-virtual-681b2c64ed/node_modules/msw/",\
         "packageDependencies": [\
-          ["msw", "npm:1.3.2"]\
+          ["msw", "npm:1.3.3"]\
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.2", {\
-        "packageLocation": "./.yarn/unplugged/msw-virtual-16b94f2106/node_modules/msw/",\
+      ["virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.3", {\
+        "packageLocation": "./.yarn/unplugged/msw-virtual-681b2c64ed/node_modules/msw/",\
         "packageDependencies": [\
-          ["msw", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.2"],\
+          ["msw", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.3"],\
           ["@mswjs/cookies", "npm:0.2.2"],\
           ["@mswjs/interceptors", "npm:0.17.10"],\
           ["@open-draft/until", "npm:1.0.3"],\
@@ -14305,7 +14305,7 @@ const RAW_RUNTIME_STATE =
           ["glob", "npm:10.3.10"],\
           ["mocha", "npm:10.3.0"],\
           ["mocha-multi-reporters", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:1.5.1"],\
-          ["msw", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.2"],\
+          ["msw", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.3"],\
           ["newman", "npm:5.3.2"],\
           ["postman-collection", "npm:4.3.0"],\
           ["rimraf", "npm:5.0.5"],\
