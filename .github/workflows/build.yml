@@ -34,6 +34,10 @@ jobs:
       - name: yarn install
         run: |
           yarn install --immutable --immutable-cache
+      # required to have types info, otherwise eslint will complain about any type
+      - name: yarn compile
+        run: |
+          yarn compile
       - name: yarn lint
         run: |
           yarn lint
