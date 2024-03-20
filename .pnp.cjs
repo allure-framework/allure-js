@@ -3263,18 +3263,18 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["npm:20.11.16", {\
-        "packageLocation": "./.yarn/cache/@types-node-npm-20.11.16-d9bc65d4bc-751f50ec5c.zip/node_modules/@types/node/",\
-        "packageDependencies": [\
-          ["@types/node", "npm:20.11.16"],\
-          ["undici-types", "npm:5.26.5"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:20.11.20", {\
         "packageLocation": "./.yarn/cache/@types-node-npm-20.11.20-0036cdf1c0-ff449bdc94.zip/node_modules/@types/node/",\
         "packageDependencies": [\
           ["@types/node", "npm:20.11.20"],\
+          ["undici-types", "npm:5.26.5"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:20.11.30", {\
+        "packageLocation": "./.yarn/cache/@types-node-npm-20.11.30-b20dd3f11f-78515bc768.zip/node_modules/@types/node/",\
+        "packageDependencies": [\
+          ["@types/node", "npm:20.11.30"],\
           ["undici-types", "npm:5.26.5"]\
         ],\
         "linkType": "HARD"\
@@ -14287,7 +14287,7 @@ const RAW_RUNTIME_STATE =
           ["@types/eslint", "npm:8.56.3"],\
           ["@types/mocha", "npm:10.0.6"],\
           ["@types/newman", "npm:5.3.6"],\
-          ["@types/node", "npm:20.11.16"],\
+          ["@types/node", "npm:20.11.30"],\
           ["@types/postman-collection", "npm:3.5.10"],\
           ["@types/source-map-support", "npm:0.5.10"],\
           ["@types/yargs", "npm:17.0.32"],\
@@ -18669,7 +18669,7 @@ const RAW_RUNTIME_STATE =
           ["@tsconfig/node12", "npm:1.0.11"],\
           ["@tsconfig/node14", "npm:1.0.3"],\
           ["@tsconfig/node16", "npm:1.0.4"],\
-          ["@types/node", "npm:20.11.16"],\
+          ["@types/node", "npm:20.11.30"],\
           ["@types/swc__core", null],\
           ["@types/swc__wasm", null],\
           ["@types/typescript", null],\
