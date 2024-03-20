@@ -7,14 +7,14 @@
   ],
   "scripts": {
     "build": "yarn run clean && yarn run compile",
-    "clean": "yarn workspaces foreach -Avpt run clean",
-    "compile": "yarn workspaces foreach -Avpt run compile",
-    "lint": "yarn workspaces foreach -Avpt run lint",
-    "lint:fix": "yarn workspaces foreach -Avpt run lint:fix",
+    "clean": "yarn workspaces foreach -Avvpt run clean",
+    "compile": "yarn workspaces foreach -Avvpt run compile",
+    "lint": "yarn workspaces foreach -Avvpt run lint",
+    "lint:fix": "yarn workspaces foreach -Avvpt run lint:fix",
     "prepare": "husky install",
-    "prettier:check": "prettier --check './packages/*/{src,test,features}/**/*.{js,ts}' '**/package.json' .prettierrc.js",
-    "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}' '**/package.json' .prettierrc.js",
-    "test": "yarn workspaces foreach -Avpt run test"
+    "prettier:check": "prettier --check './packages/*/{src,test,features}/**/*.{js,ts}' 'package.json' 'packages/**/package.json' .prettierrc.js",
+    "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}' 'package.json' 'packages/**/package.json' .prettierrc.js",
+    "test": "yarn workspaces foreach -Avvpt run test"
   },
   "lint-staged": {
     "packages/*/{src,test,features}/**/*.{js,ts,tsx}": [

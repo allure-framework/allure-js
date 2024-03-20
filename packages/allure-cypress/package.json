@@ -50,7 +50,7 @@
     "compile:lib": "rollup -c",
     "compile:types": "tsc --project ./tsconfig.json",
     "coverage": "codecov",
-    "lint": "eslint ./src --ext .ts",
+    "lint": "eslint ./src --ext .ts --debug",
     "lint:fix": "eslint ./src --ext .ts --fix",
     "test": "cypress run"
   },
