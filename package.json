@@ -14,7 +14,7 @@
     "prepare": "husky install",
     "prettier:check": "prettier --check './packages/*/{src,test,features}/**/*.{js,ts}' '**/package.json' .prettierrc.js",
     "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{js,ts}' '**/package.json' .prettierrc.js",
-    "test": "yarn workspaces foreach -vpt run test"
+    "test": "yarn workspaces foreach -Avpt run test"
   },
   "lint-staged": {
     "packages/*/{src,test,features}/**/*.{js,ts,tsx}": [
