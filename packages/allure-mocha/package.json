@@ -1,6 +1,6 @@
 {
   "name": "allure-mocha",
-  "version": "2.14.1",
+  "version": "2.15.0",
   "description": "Allure Mocha integration",
   "keywords": [
     "mocha",

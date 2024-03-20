@@ -1,6 +1,6 @@
 {
   "name": "allure-codeceptjs",
-  "version": "2.14.1",
+  "version": "2.15.0",
   "description": "Allure codeceptjs integration",
   "keywords": [
     "codeceptjs",
