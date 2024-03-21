@@ -3,7 +3,11 @@
   "include": [
     "./src/**/*",
     "index.ts",
-    "internal.ts",
+    "internal.ts"
+  ],
+  "exclude": [
+    "src/**/__old__/*",
+    "./scripts"
   ],
   "compilerOptions": {
     "declaration": true,
