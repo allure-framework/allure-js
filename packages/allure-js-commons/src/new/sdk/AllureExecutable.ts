@@ -1,7 +1,7 @@
 import {
   AttachmentOptions,
   ContentType,
-  ExecutableItem,
+  AllureResult,
   FixtureResult,
   ParameterOptions,
   Stage,
@@ -9,11 +9,9 @@ import {
   StatusDetails,
   StepResult,
   TestResult,
-} from "../model";
-import { isPromise } from "../utils";
-import { serialize } from "../utils";
-import { stepResult } from "./AllureResults";
-import { isAllStepsEnded, isAnyStepFailed } from "./utils";
+} from "../model.js";
+import { isAllStepsEnded, isAnyStepFailed, isPromise, serialize } from "../utils.js";
+import { stepResult } from "./AllureResults.js";
 
 export class AllureExecutable {
   constructor(private readonly info: FixtureResult | TestResult) {}
@@ -137,7 +135,7 @@ export class AllureExecutable {
     };
   }
 
-  public addStep(step: ExecutableItem): void {
+  public addStep(step: AllureResult): void {
     this.info.steps.push(step);
   }
 }

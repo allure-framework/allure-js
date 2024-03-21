@@ -1,8 +1,8 @@
-import { AttachmentOptions, Category, ContentType, Crypto, TestResult, TestResultContainer } from "../model";
-import { typeToExtension } from "../utils";
-import { AllureConfig } from "./AllureConfig";
-import { AllureGroup } from "./AllureGroup";
-import { AllureWriter } from "./AllureWriter";
+import { AttachmentOptions, Category, ContentType, Crypto, TestResult, TestResultContainer } from "../model.js";
+import { typeToExtension } from "../utils.js";
+import { AllureConfig } from "./AllureConfig.js";
+import { AllureGroup } from "./AllureGroup.js";
+import { AllureWriter } from "./AllureWriter.js";
 
 export interface AllureRuntime {
   writer: AllureWriter;

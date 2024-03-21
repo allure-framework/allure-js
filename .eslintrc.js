@@ -24,8 +24,9 @@ module.exports = {
     "eslint-plugin-no-null",
     "eslint-plugin-prefer-arrow",
     "eslint-plugin-import",
+    "eslint-plugin-node",
     "eslint-plugin-jsdoc",
-    "@typescript-eslint",
+    "@typescript-eslint"
   ],
   rules: {
     "@typescript-eslint/ban-ts-comment": "off",
@@ -245,5 +246,6 @@ module.exports = {
     ],
     "use-isnan": "error",
     "valid-typeof": "off",
+    "node/file-extension-in-import": ["error", "always"],
   },
 };
