@@ -182,11 +182,11 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
     this.link(url, name, LinkType.TMS);
   }
 
-  attach(content: string | Buffer, type: string): void {
+  attach(content: string | Buffer, type: string, name: string = "attachment"): void {
     const isBuffer = Buffer.isBuffer(content);
 
     this.attachments.push({
-      name: "attachment",
+      name,
       content: isBuffer ? content.toString("base64") : content,
       encoding: isBuffer ? "base64" : "utf8",
       type,
@@ -238,7 +238,7 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
             status: Status.PASSED,
             statusDetails: {},
             attachments: this.attachments,
-            parameters: [],
+            parameters: this.metadata.parameter || [], // when in stepFn，like this.parameter('xx', 'xxx')，emit parameters data to display，
             steps,
             description,
           },
@@ -261,7 +261,7 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
               trace: stripAnsi((e.stack || "") as string),
             },
             attachments: this.attachments,
-            parameters: [],
+            parameters: this.metadata.parameter || [], // when in stepFn，like this.parameter('xx', 'xxx')，emit parameters data to display，
             steps,
             description,
           },
