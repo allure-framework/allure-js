@@ -1,7 +1,7 @@
 import { PathLike, readFileSync } from "fs";
 import properties from "properties";
-import { AllureWriter } from "../../framework/AllureWriter.js";
-import { Category, TestResult, TestResultContainer } from "../../model.js";
+import { AllureWriter } from "../../AllureWriter.js";
+import { Category, TestResult, TestResultContainer } from "../../../model.js";
 
 type EventType = "result" | "container" | "attachment" | "misc";
 type Event = {

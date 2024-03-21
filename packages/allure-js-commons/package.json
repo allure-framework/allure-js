@@ -34,6 +34,14 @@
     "./new/node": {
       "import": "./dist/esm/src/new/node/index.js",
       "require": "./dist/cjs/src/new/node/index.js"
+    },
+    "./new/sdk/node": {
+      "import": "./dist/esm/src/new/sdk/node/index.js",
+      "require": "./dist/cjs/src/new/sdk/node/index.js"
+    },
+    "./new/sdk/browser": {
+      "import": "./dist/esm/src/new/sdk/browser/index.js",
+      "require": "./dist/cjs/src/new/sdk/browser/index.js"
     }
   },
   "main": "./dist/cjs/index.js",
