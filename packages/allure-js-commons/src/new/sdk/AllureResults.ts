@@ -1,4 +1,4 @@
-import { FixtureResult, Stage, Status, StepResult, TestResult, TestResultContainer } from "../model";
+import { FixtureResult, Stage, Status, StepResult, TestResult, TestResultContainer } from "../model.js";
 
 export type UUIDGenerator = () => string;
 

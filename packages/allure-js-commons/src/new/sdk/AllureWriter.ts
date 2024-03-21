@@ -1,4 +1,4 @@
-import { Category, TestResult, TestResultContainer } from "../model";
+import { Category, TestResult, TestResultContainer } from "../model.js";
 
 export interface AllureWriter {
   writeResult(result: TestResult): void;

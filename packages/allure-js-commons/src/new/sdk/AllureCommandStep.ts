@@ -2,7 +2,7 @@ import stripAnsi from "strip-ansi";
 import {
   AttachmentMetadata,
   ContentType,
-  ExecutableItem,
+  AllureResult,
   LabelName,
   LinkType,
   MetadataMessage,
@@ -10,8 +10,8 @@ import {
   Stage,
   Status,
   StepMetadata,
-} from "../model";
-import { AllureRuntime } from "./AllureRuntime";
+} from "../model.js";
+import { AllureRuntime } from "./AllureRuntime.js";
 
 export type StepBodyFunction<T = any> = (
   this: AllureCommandStepExecutable,
@@ -73,8 +73,8 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
    * Recursively writes attachments from the given step and all it's children
    * Mutates given step object!
    */
-  static toExecutableItem(runtime: AllureRuntime, stepMetadata: StepMetadata): ExecutableItem {
-    const executable: ExecutableItem = {
+  static toExecutableItem(runtime: AllureRuntime, stepMetadata: StepMetadata): AllureResult {
+    const executable: AllureResult = {
       ...stepMetadata,
       attachments: [],
       steps: [],

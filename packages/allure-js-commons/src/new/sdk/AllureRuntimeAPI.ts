@@ -1,7 +1,7 @@
-import { AttachmentOptions, Category, ContentType, LabelName, LinkType, ParameterOptions, Status } from "../model";
-import { AllureExecutable } from "./AllureExecutable";
-import { AllureRuntime } from "./AllureRuntime";
-import { AllureTest } from "./AllureTest";
+import { AttachmentOptions, Category, ContentType, LabelName, LinkType, ParameterOptions, Status } from "../model.js";
+import { AllureExecutable } from "./AllureExecutable.js";
+import { AllureRuntime } from "./AllureRuntime.js";
+import { AllureTest } from "./AllureTest.js";
 
 // TODO: Allure abstract class contains all these methods, so don't need to duplicate anything
 export interface AllureRuntimeApiInterface {

@@ -14,7 +14,7 @@ export interface AttachmentMetadata {
   encoding: BufferEncoding;
 }
 
-export interface StepMetadata extends Omit<ExecutableItem, "attachments" | "steps"> {
+export interface StepMetadata extends Omit<AllureResult, "attachments" | "steps"> {
   steps: StepMetadata[];
   attachments: AttachmentMetadata[];
 }
@@ -68,7 +68,7 @@ export interface StatusDetails {
   trace?: string;
 }
 
-export interface ExecutableItem {
+export interface AllureResult {
   name?: string;
   status?: Status;
   statusDetails: StatusDetails;
@@ -82,11 +82,11 @@ export interface ExecutableItem {
   stop?: number;
 }
 
-export type FixtureResult = ExecutableItem;
+export type FixtureResult = AllureResult;
 
-export type StepResult = ExecutableItem;
+export type StepResult = AllureResult;
 
-export interface TestResult extends ExecutableItem {
+export interface TestResult extends AllureResult {
   uuid: string;
   historyId: string;
   fullName?: string;
@@ -215,3 +215,6 @@ export interface AllureResults {
   envInfo?: Record<string, string | undefined>;
   categories?: Category[];
 }
+
+// TODO: new
+export interface AllureLifecycleMessage {}

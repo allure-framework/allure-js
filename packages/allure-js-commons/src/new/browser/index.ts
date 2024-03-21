@@ -1,1 +1,1 @@
-export { AllureBrowserRuntime } from "./runtime.js";
+// browser runtime API here
