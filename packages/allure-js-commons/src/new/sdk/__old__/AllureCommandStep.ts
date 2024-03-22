@@ -2,7 +2,7 @@ import stripAnsi from "strip-ansi";
 import {
   AttachmentMetadata,
   ContentType,
-  AllureResult,
+  Executable,
   LabelName,
   LinkType,
   MetadataMessage,
@@ -73,8 +73,8 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
    * Recursively writes attachments from the given step and all it's children
    * Mutates given step object!
    */
-  static toExecutableItem(runtime: AllureRuntime, stepMetadata: StepMetadata): AllureResult {
-    const executable: AllureResult = {
+  static toExecutableItem(runtime: AllureRuntime, stepMetadata: StepMetadata): Executable {
+    const executable: Executable = {
       ...stepMetadata,
       attachments: [],
       steps: [],

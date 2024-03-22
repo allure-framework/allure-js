@@ -1,7 +1,7 @@
 import {
   AttachmentOptions,
   ContentType,
-  AllureResult,
+  Executable,
   FixtureResult,
   ParameterOptions,
   Stage,
@@ -135,7 +135,7 @@ export class AllureExecutable {
     };
   }
 
-  public addStep(step: AllureResult): void {
+  public addStep(step: Executable): void {
     this.info.steps.push(step);
   }
 }

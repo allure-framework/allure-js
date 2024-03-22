@@ -1,11 +1,11 @@
 import { AttachmentOptions, Category, ContentType, Crypto, TestResult, TestResultContainer } from "../model.js";
 import { typeToExtension } from "../utils.js";
-import { AllureConfig } from "./AllureConfig.js";
+import { Config } from "./Config";
 import { AllureGroup } from "./AllureGroup.js";
-import { AllureWriter } from "./AllureWriter.js";
+import { Writer } from "./Writer";
 
 export interface AllureRuntime {
-  writer: AllureWriter;
+  writer: Writer;
 
   crypto: Crypto;
 
@@ -29,12 +29,12 @@ export interface AllureRuntime {
 }
 
 export abstract class AllureBaseRuntime implements AllureRuntime {
-  writer: AllureWriter;
+  writer: Writer;
 
   crypto: Crypto;
 
   constructor(
-    private config: AllureConfig,
+    private config: Config,
     crypto: Crypto,
   ) {
     this.writer = config.writer;

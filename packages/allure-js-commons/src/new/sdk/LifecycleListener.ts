@@ -1,4 +1,4 @@
-import { TestResult } from "../../model.js";
+import { TestResult } from "../model.js";
 
 export interface LifecycleListener {
   beforeTestResultStart: (result: Partial<TestResult>) => Promise<void>;
@@ -21,7 +21,7 @@ export class Notifier implements LifecycleListener {
     this.listeners = [...listeners];
   }
 
-  callListeners = async (listenerName: keyof LifecycleListener, result: Partial<TestResult>) => {
+  private callListeners = async (listenerName: keyof LifecycleListener, result: Partial<TestResult>) => {
     for (const listener of this.listeners) {
       try {
         await listener?.[listenerName]?.(result);

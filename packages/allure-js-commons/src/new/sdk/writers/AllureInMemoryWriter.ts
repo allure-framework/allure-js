@@ -1,7 +1,7 @@
 import { AllureResults, Category, TestResult, TestResultContainer } from "../../model.js";
-import { AllureWriter } from "../AllureWriter.js";
+import { Writer } from "../Writer";
 
-export class AllureInMemoryAllureWriter implements AllureWriter, AllureResults {
+export class AllureInMemoryAllureWriter implements Writer, AllureResults {
   public groups: TestResultContainer[] = [];
   public tests: TestResult[] = [];
   public attachments: Record<string, Buffer | string> = {};

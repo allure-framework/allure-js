@@ -1,14 +1,14 @@
 import { PathLike, copyFileSync, existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 import properties from "properties";
-import { AllureWriter } from "../../AllureWriter.js";
+import { Writer } from "../../Writer";
 import { Category, TestResult, TestResultContainer } from "../../../model.js";
 
 const writeJson = (path: string, data: unknown): void => {
   writeFileSync(path, JSON.stringify(data), "utf8");
 };
 
-export class FileSystemAllureWriter implements AllureWriter {
+export class FileSystemAllureWriter implements Writer {
   constructor(private config: { resultsDir: string }) {
     // TODO: create results dir every time we write something
     if (!existsSync(this.config.resultsDir)) {

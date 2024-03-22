@@ -1,9 +1,7 @@
-import { AllureLifecycleMessage, Crypto, TestResult } from "../../model.js";
-import { AllureWriter } from "../AllureWriter.js";
-import { TestHolder } from "../TestHolder.js";
+import { AllureLifecycleMessage } from "../model.js";
+import { TestHolder } from "./TestHolder.js";
 
-
-export interface AllureTestRuntime {
+export interface TestRuntime {
   currentTestHolder: TestHolder;
 
   sendMessage(message: AllureLifecycleMessage): Promise<void>;
@@ -11,15 +9,15 @@ export interface AllureTestRuntime {
   sendMessageSync(message: AllureLifecycleMessage): void;
 }
 
-export class AllureStaticTestRuntime implements AllureTestRuntime {
-  currentTestHolder: TestHolder = new TestHolder();
-
-  async sendMessage(message: AllureLifecycleMessage): Promise<void> {
-  }
-
-  sendMessageSync(message: AllureLifecycleMessage) {
-  }
-}
+// export class AllureStaticTestRuntime implements TestRuntime {
+//   currentTestHolder: TestHolder = new TestHolder();
+//
+//   async sendMessage(message: AllureLifecycleMessage): Promise<void> {
+//   }
+//
+//   sendMessageSync(message: AllureLifecycleMessage) {
+//   }
+// }
 
 /**
  * Client-side code!

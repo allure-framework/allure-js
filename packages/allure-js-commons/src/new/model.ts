@@ -14,7 +14,7 @@ export interface AttachmentMetadata {
   encoding: BufferEncoding;
 }
 
-export interface StepMetadata extends Omit<AllureResult, "attachments" | "steps"> {
+export interface StepMetadata extends Omit<Executable, "attachments" | "steps"> {
   steps: StepMetadata[];
   attachments: AttachmentMetadata[];
 }
@@ -33,6 +33,13 @@ export interface MetadataMessage {
 }
 
 export interface Attachment {
+  name: string;
+  type: string;
+  source: string;
+}
+
+// TODO
+export interface AllureResultAttachment {
   name: string;
   type: string;
   source: string;
@@ -68,7 +75,8 @@ export interface StatusDetails {
   trace?: string;
 }
 
-export interface AllureResult {
+// don't use the interface as is, use Results types instead
+export interface Executable {
   name?: string;
   status?: Status;
   statusDetails: StatusDetails;
@@ -82,11 +90,11 @@ export interface AllureResult {
   stop?: number;
 }
 
-export type FixtureResult = AllureResult;
+export type FixtureResult = Executable;
 
-export type StepResult = AllureResult;
+export type StepResult = Executable;
 
-export interface TestResult extends AllureResult {
+export interface TestResult extends Executable {
   uuid: string;
   historyId: string;
   fullName?: string;
@@ -94,6 +102,9 @@ export interface TestResult extends AllureResult {
   labels: Label[];
   links: Link[];
 }
+
+// TODO:
+export type StepOrTest = StepResult | TestResult;
 
 export interface TestResultContainer {
   uuid: string;

@@ -1,10 +1,11 @@
-import { Crypto, TestResult } from "../../model.js";
-import { AllureWriter } from "../AllureWriter.js";
+import { Crypto, TestResult } from "../model.js";
+import { createTestResult, setTestResultHistoryId } from "./utils.js";
+import { Writer } from "./Writer.js";
 import { LifecycleListener, Notifier } from "./LifecycleListener.js";
 import { LifecycleState } from "./LifecycleState.js";
 
-export class AllureReporterRuntime {
-  private writer: AllureWriter;
+export class ReporterRuntime {
+  private writer: Writer;
   private notifier: Notifier;
   private crypto: Crypto;
   private state = new LifecycleState();
@@ -14,7 +15,7 @@ export class AllureReporterRuntime {
     listeners = [],
     crypto,
   }: {
-    writer: AllureWriter;
+    writer: Writer;
     listeners?: LifecycleListener[];
     crypto: Crypto;
   }) {
@@ -60,7 +61,10 @@ export class AllureReporterRuntime {
     }
 
     await this.notifier.beforeTestResultStop(targetResult);
+    setTestResultHistoryId(this.crypto, targetResult as TestResult);
   };
 
-  write = async () => {};
+  write = async (uuid: string) => {
+    // TODO: iterate through all the test results and their dependencies (attachments, steps, etc.) and pass the data to the writer
+  };
 }

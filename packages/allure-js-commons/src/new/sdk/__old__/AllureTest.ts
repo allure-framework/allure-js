@@ -1,4 +1,4 @@
-import { AllureResult, LinkType, MetadataMessage, TestResult } from "../model.js";
+import { Executable, LinkType, MetadataMessage, TestResult } from "../model.js";
 import { AllureCommandStepExecutable } from "./AllureCommandStep.js";
 import { AllureExecutable } from "./AllureExecutable.js";
 import { testResult } from "./AllureResults.js";
@@ -115,7 +115,7 @@ export class AllureTest extends AllureExecutable {
    * @param stepApplyFn Function that processes metadata. By default, all the steps
    * will be added to the test
    */
-  applyMetadata(metadata: Partial<MetadataMessage>, stepApplyFn?: (step: AllureResult) => void) {
+  applyMetadata(metadata: Partial<MetadataMessage>, stepApplyFn?: (step: Executable) => void) {
     const {
       attachments = [],
       labels = [],
