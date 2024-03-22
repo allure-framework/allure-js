@@ -1,7 +1,10 @@
-import { TestResult, TestResultContainer } from "../../model.js";
+import { StepResult, TestResult, TestResultContainer } from "../model.js";
 
+// TODO: handle all kinds of results
 export class LifecycleState {
   testResults = new Map<string, Partial<TestResult>>();
+
+  stepResults = new Map<string, Partial<StepResult>>();
 
   testContainers = new Map<string, Partial<TestResultContainer>>();
 

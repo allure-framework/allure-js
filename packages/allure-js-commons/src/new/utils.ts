@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { AttachmentOptions, AllureResult, Label, LabelName, Status } from "./model.js";
+import { AttachmentOptions, Executable, Label, LabelName, Status } from "./model.js";
 
 const EXTENSIONS_BY_TYPE: Record<string, string> = {
   "application/andrew-inset": ".ez",
@@ -930,7 +930,7 @@ export const allureLabelRegexp = /@?allure.label.(?<name>[^\s]+?)[:=](?<value>[^
 
 export const allureLabelRegexpGlobal = new RegExp(allureLabelRegexp, "g");
 
-export const isAnyStepFailed = (item: AllureResult): boolean => {
+export const isAnyStepFailed = (item: Executable): boolean => {
   const isFailed = item.status === Status.FAILED;
 
   if (isFailed || item.steps.length === 0) {
@@ -940,7 +940,7 @@ export const isAnyStepFailed = (item: AllureResult): boolean => {
   return !!item.steps.find((step) => isAnyStepFailed(step));
 };
 
-export const isAllStepsEnded = (item: AllureResult): boolean => {
+export const isAllStepsEnded = (item: Executable): boolean => {
   return item.steps.every((val) => val.stop && isAllStepsEnded(val));
 };
 

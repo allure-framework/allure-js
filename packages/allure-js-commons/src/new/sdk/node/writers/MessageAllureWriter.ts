@@ -1,6 +1,6 @@
 import { PathLike, readFileSync } from "fs";
 import properties from "properties";
-import { AllureWriter } from "../../AllureWriter.js";
+import { Writer } from "../../Writer";
 import { Category, TestResult, TestResultContainer } from "../../../model.js";
 
 type EventType = "result" | "container" | "attachment" | "misc";
@@ -22,7 +22,7 @@ const writeJson = (path: string, type: EventType, data: any): void => {
   sendData(path, type, Buffer.from(JSON.stringify(data)));
 };
 
-export class MessageAllureWriter implements AllureWriter {
+export class MessageAllureWriter implements Writer {
   writeAttachment(name: string, content: Buffer | string, encoding: BufferEncoding = "utf-8"): void {
     sendData(name, "attachment", typeof content === "string" ? Buffer.from(content, encoding) : content);
   }

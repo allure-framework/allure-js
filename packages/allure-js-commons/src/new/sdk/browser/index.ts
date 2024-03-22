@@ -1,1 +1,1 @@
-export { AllureTestRuntime, AllureStaticTestRuntime } from "./AllureTestRuntime.js";
+export { AllureBrowserReporterRuntime } from "./ReporterRuntime.js";

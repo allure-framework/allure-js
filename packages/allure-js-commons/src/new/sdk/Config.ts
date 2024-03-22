@@ -1,8 +1,8 @@
 import { TestResult } from "../model.js";
-import { AllureWriter } from "./AllureWriter.js";
+import { Writer } from "./Writer.js";
 
-export interface AllureConfig {
-  readonly writer: AllureWriter;
+export interface Config {
+  readonly writer: Writer;
   // TODO: handle lifecycle hooks here
   readonly testMapper?: (test: TestResult) => TestResult | null;
   readonly links?: {

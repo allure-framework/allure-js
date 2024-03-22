@@ -16,6 +16,7 @@ import {
   getSuitesLabels,
 } from "allure-js-commons";
 import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
+import {} from "allure-js-commons/new/sdk/node";
 import { getSuitePath, getTestFullName } from "./utils.js";
 
 export interface AllureReporterOptions {
