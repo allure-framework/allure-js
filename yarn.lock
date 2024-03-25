@@ -2382,12 +2382,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:20.11.16":
-  version: 20.11.16
-  resolution: "@types/node@npm:20.11.16"
+"@types/node@npm:20.11.30":
+  version: 20.11.30
+  resolution: "@types/node@npm:20.11.30"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10/751f50ec5c9332b11515e82fe37c71479ac4449b711280aa3c7910edf67b1e3f5ac00041512add543f9a892096a68356406998bf02a2c809a73d176c44c28414
+  checksum: 10/78515bc768d2b878e2e06a1c20eb4f5840072b79b8d28ff3dd0a7feaaf48fd3a2ac03cfa5bc7564da82db5906b43e9ba0e5df9f43d870b7aae2942306e208815
   languageName: node
   linkType: hard
 
@@ -12095,7 +12095,7 @@ __metadata:
     "@types/eslint": "npm:^8"
     "@types/mocha": "npm:^10.0.1"
     "@types/newman": "npm:^5.3.3"
-    "@types/node": "npm:20.11.16"
+    "@types/node": "npm:20.11.30"
     "@types/postman-collection": "npm:^3.5.7"
     "@types/source-map-support": "npm:^0.5.7"
     "@types/yargs": "npm:^17.0.24"
