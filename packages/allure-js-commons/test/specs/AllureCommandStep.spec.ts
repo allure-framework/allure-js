@@ -299,18 +299,21 @@ describe("AllureCommandStep.run()", () => {
       );
     });
 
-    it("adds attachment only for related step", async () => {
+    it("adds attachment only for related step，support custom attachment name", async () => {
       await currentStep.run(
         async (s1) => {
           await s1.step("my nested step name", async (s2) => {
             await s2.step("my nested nested step name", (s3) => {
               s3.attach(fixtures.attachment, ContentType.JSON);
+              s3.attach(fixtures.attachment, ContentType.JSON, "customAttachmentName");
             });
           });
         },
         async ({ steps }) => {
-          expect(steps![0].steps[0].steps[0].attachments.length).eq(1);
+          expect(steps![0].steps[0].steps[0].attachments.length).eq(2);
           expect(steps![0].steps[0].steps[0].attachments[0].content).eq(fixtures.attachment);
+          expect(steps![0].steps[0].steps[0].attachments[0].name).eq("attachment");
+          expect(steps![0].steps[0].steps[0].attachments[1].name).eq("customAttachmentName");
         },
       );
     });
@@ -563,6 +566,22 @@ describe("AllureCommandStep.start()", () => {
 
       expect(steps![0].steps[0].steps[0].attachments.length).eq(1);
       expect(steps![0].steps[0].steps[0].attachments[0].content).eq(fixtures.attachment);
+    });
+
+    it("adds parameter only for related step", async () => {
+      const s3ParameterKey = "s3_parameter";
+      const s3ParameterVal = "s3_parameter_value";
+      const { steps } = await currentStep.start(async (s1) => {
+        await s1.step("my nested step name", async (s2) => {
+          await s2.step("my nested nested step name", (s3) => {
+            s3.parameter(s3ParameterKey, s3ParameterVal);
+          });
+        });
+      });
+
+      expect(steps![0].steps[0].steps[0].parameters.length).eq(1);
+      expect(steps![0].steps[0].steps[0].parameters[0].name).eq(s3ParameterKey);
+      expect(steps![0].steps[0].steps[0].parameters[0].value).eq(JSON.stringify(s3ParameterVal));
     });
   });
 });
