@@ -6477,10 +6477,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["chromedriver", [\
-      ["npm:121.0.0", {\
-        "packageLocation": "./.yarn/unplugged/chromedriver-npm-121.0.0-a5d90b1b4a/node_modules/chromedriver/",\
+      ["npm:121.0.2", {\
+        "packageLocation": "./.yarn/unplugged/chromedriver-npm-121.0.2-2edc423e73/node_modules/chromedriver/",\
         "packageDependencies": [\
-          ["chromedriver", "npm:121.0.0"],\
+          ["chromedriver", "npm:121.0.2"],\
           ["@testim/chrome-version", "npm:1.1.4"],\
           ["axios", "npm:1.6.7"],\
           ["compare-versions", "npm:6.1.0"],\
@@ -10678,7 +10678,7 @@ const RAW_RUNTIME_STATE =
           ["chai", "npm:4.4.1"],\
           ["chai-like", "virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:1.1.1"],\
           ["chai-things", "npm:0.2.0"],\
-          ["chromedriver", "npm:121.0.0"],\
+          ["chromedriver", "npm:121.0.2"],\
           ["codecov", "npm:3.8.2"],\
           ["download-chromium", "npm:3.0.0"],\
           ["eslint", "npm:8.57.0"],\
