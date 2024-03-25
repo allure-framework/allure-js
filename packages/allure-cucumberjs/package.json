@@ -29,7 +29,7 @@
     "test": "ts-node --project ./test/tsconfig.json ./test/runner.ts"
   },
   "dependencies": {
-    "@cucumber/cucumber": "^9.5.1",
+    "@cucumber/cucumber": "^10.0.0",
     "@cucumber/gherkin": "^27.0.0",
     "@cucumber/gherkin-streams": "^5.0.1",
     "@cucumber/gherkin-utils": "^8.0.5",
