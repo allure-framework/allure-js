@@ -671,7 +671,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cucumber/messages@npm:22.0.0, @cucumber/messages@npm:>=19.1.4 <=22, @cucumber/messages@npm:^22.0.0":
+"@cucumber/messages@npm:22.0.0, @cucumber/messages@npm:>=19.1.4 <=22":
   version: 22.0.0
   resolution: "@cucumber/messages@npm:22.0.0"
   dependencies:
@@ -3233,7 +3233,7 @@ __metadata:
     "@cucumber/gherkin-streams": "npm:^5.0.1"
     "@cucumber/gherkin-utils": "npm:^8.0.5"
     "@cucumber/message-streams": "npm:^4.0.1"
-    "@cucumber/messages": "npm:^22.0.0"
+    "@cucumber/messages": "npm:^24.0.0"
     "@types/chai": "npm:^4.3.6"
     "@types/chai-like": "npm:^1.1.1"
     "@types/chai-things": "npm:^0.0.36"
