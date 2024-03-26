@@ -1,5 +1,9 @@
-export class TestHolder {
-  currentTest?: string;
-  // TODO: do we need to hold step here?
-  // currentStep?: string;
+export class TestHolder<T = unknown, K = unknown> {
+  currentTest?: T;
+
+  currentSteps: K[] = [];
+
+  get currentStep() {
+    return this.currentSteps?.[this.currentSteps.length - 1];
+  }
 }

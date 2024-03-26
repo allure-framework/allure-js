@@ -25,8 +25,8 @@ it("handles single lambda step with attachment", async () => {
     import { test } from "vitest";
 
     test("steps", async () => {
-      await allure.step("step", () => {
-        allure.attachment("foo.txt", Buffer.from("bar"), "text/plain");
+      await allure.step("step", async () => {
+        await allure.attachment("foo.txt", Buffer.from("bar"), "text/plain");
       });
     });
   `);
@@ -40,6 +40,28 @@ it("handles single lambda step with attachment", async () => {
   expect(attachment.name).toBe("foo.txt");
   expect(attachment.type).toBe("text/plain");
   expect(Buffer.from(attachments[attachment.source] as string, "base64").toString("utf8")).toBe("bar");
+});
+
+it("handles single lambda step with parameter", async () => {
+  const { tests } = await runVitestInlineTest(`
+    import { test } from "vitest";
+
+    test("steps", async () => {
+      await allure.step("step", async () => {
+        await allure.parameter("foo", "bar");
+      });
+    });
+  `);
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toHaveLength(1);
+  expect(tests[0].steps[0].parameters).toHaveLength(1);
+
+  const [parameter] = tests[0].steps[0].parameters;
+
+  expect(parameter.name).toBe("foo");
+  expect(parameter.value).toBe("bar");
+  // TODO: check parameter options
 });
 
 it("handles nested lambda steps", async () => {

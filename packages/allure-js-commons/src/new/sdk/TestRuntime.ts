@@ -1,23 +1,17 @@
 import { AllureLifecycleMessage } from "../model.js";
+import { Crypto } from "./Crypto.js";
 import { TestHolder } from "./TestHolder.js";
 
-export interface TestRuntime {
-  currentTestHolder: TestHolder;
+export interface TestRuntime<T = unknown> {
+  currentTestHolder?: TestHolder<T>;
 
-  sendMessage(message: AllureLifecycleMessage): Promise<void>;
+  // TODO:
+  // currentStepsHolder?: TestHolder<T>;
 
-  sendMessageSync(message: AllureLifecycleMessage): void;
+  sendMessage?: (message: AllureLifecycleMessage) => Promise<void>;
+
+  sendMessageSync?: (message: AllureLifecycleMessage) => void;
 }
-
-// export class AllureStaticTestRuntime implements TestRuntime {
-//   currentTestHolder: TestHolder = new TestHolder();
-//
-//   async sendMessage(message: AllureLifecycleMessage): Promise<void> {
-//   }
-//
-//   sendMessageSync(message: AllureLifecycleMessage) {
-//   }
-// }
 
 /**
  * Client-side code!
