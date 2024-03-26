@@ -1018,3 +1018,6 @@ export const extractMetadataFromString = (
 
   return { labels, cleanTitle };
 };
+
+// seems the implementation covers all our needs
+export const deepClone = <T,>(obj: T): T => JSON.parse(JSON.stringify(obj));

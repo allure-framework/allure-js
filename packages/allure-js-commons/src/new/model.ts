@@ -2,11 +2,6 @@ export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+jso
 export const ALLURE_IMAGEDIFF_CONTENT_TYPE = "application/vnd.allure.image.diff";
 export const ALLURE_SKIPPED_BY_TEST_PLAN_LABEL = "allure-skipped-by-test-plan";
 
-export interface Crypto {
-  uuid: () => string;
-  md5: (str: string) => string;
-}
-
 export interface AttachmentMetadata {
   name: string;
   type: string;
@@ -103,9 +98,6 @@ export interface TestResult extends Executable {
   links: Link[];
 }
 
-// TODO:
-export type StepOrTest = StepResult | TestResult;
-
 export interface TestResultContainer {
   uuid: string;
   name?: string;
@@ -113,6 +105,8 @@ export interface TestResultContainer {
   befores: FixtureResult[];
   afters: FixtureResult[];
 }
+
+export type StepOrTestResult = StepResult | TestResult;
 
 export interface Category {
   name?: string;

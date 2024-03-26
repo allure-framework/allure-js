@@ -1,4 +1,5 @@
 import { TestResult } from "../model.js";
+import { LifecycleListener } from "./LifecycleListener.js";
 import { Writer } from "./Writer.js";
 
 export interface Config {
@@ -9,4 +10,5 @@ export interface Config {
     type: string;
     urlTemplate: string;
   }[];
+  readonly listeners?: LifecycleListener[];
 }

@@ -1,46 +1,92 @@
-import { StepResult, TestResult, TestResultContainer } from "../model.js";
+import { FixtureResult, StepResult, TestResult, TestResultContainer } from "../model.js";
 
-// TODO: handle all kinds of results
 export class LifecycleState {
   testResults = new Map<string, Partial<TestResult>>();
 
   stepResults = new Map<string, Partial<StepResult>>();
 
+  fixturesResults = new Map<string, Partial<FixtureResult>>();
+
   testContainers = new Map<string, Partial<TestResultContainer>>();
 
-  addTestResult = (uuid: string, result: Partial<TestResult>) => {
+  setTestResult = (uuid: string, result: Partial<TestResult>) => {
     this.testResults.set(uuid, result);
   };
 
-  addTestContainer = (uuid: string, container: Partial<TestResultContainer>) => {
-    this.addTestContainer(uuid, container);
+  setStepResult = (uuid: string, result: Partial<StepResult>) => {
+    this.stepResults.set(uuid, result);
   };
 
-  updateTestResult = async (uuid: string, updateFunction: (result: Partial<TestResult>) => void | Promise<void>) => {
-    const result = this.testResults.get(uuid);
+  setFixtureResult = (uuid: string, result: Partial<FixtureResult>) => {
+    this.fixturesResults.set(uuid, result);
+  };
 
-    if (!result) {
+  setTestContainer = (uuid: string, container: Partial<TestResultContainer>) => {
+    this.testContainers.set(uuid, container);
+  };
+
+  updateTestResult = (uuid: string, result: Partial<TestResult>) => {
+    const currentResult = this.testResults.get(uuid);
+
+    if (!currentResult) {
       return;
     }
 
-    await updateFunction(result);
+    this.testResults.set(uuid, {
+      ...currentResult,
+      ...result,
+    });
   };
 
-  updateContainerResult = async (
-    uuid: string,
-    updateFunction: (result: Partial<TestResultContainer>) => void | Promise<void>,
-  ) => {
-    const result = this.testContainers.get(uuid);
+  updateStepResult = (uuid: string, result: Partial<StepResult>) => {
+    const currentResult = this.stepResults.get(uuid);
 
-    if (!result) {
+    if (!currentResult) {
       return;
     }
 
-    await updateFunction(result);
+    this.testResults.set(uuid, {
+      ...currentResult,
+      ...result,
+    });
+  };
+
+  updateFixtureResult = (uuid: string, result: Partial<FixtureResult>) => {
+    const currentResult = this.fixturesResults.get(uuid);
+
+    if (!currentResult) {
+      return;
+    }
+
+    this.testResults.set(uuid, {
+      ...currentResult,
+      ...result,
+    });
+  };
+
+  updateTestContainer = (uuid: string, container: Partial<TestResultContainer>) => {
+    const currentContainer = this.testContainers.get(uuid);
+
+    if (!currentContainer) {
+      return;
+    }
+
+    this.testResults.set(uuid, {
+      ...currentContainer,
+      ...container,
+    });
   };
 
   deleteTestResult = (uuid: string) => {
     this.testResults.delete(uuid);
+  };
+
+  deleteStepResult = (uuid: string) => {
+    this.stepResults.delete(uuid);
+  };
+
+  deleteFixtureResult = (uuid: string) => {
+    this.fixturesResults.delete(uuid);
   };
 
   deleteTestContainer = (uuid: string) => {

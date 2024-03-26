@@ -1,16 +1,9 @@
-import {
-  Crypto,
-  FixtureResult,
-  Stage,
-  Status,
-  StepResult,
-  TestResult,
-  TestResultContainer,
-} from "../model.js";
+import { FixtureResult, Stage, Status, StepResult, TestResult, TestResultContainer } from "../model.js";
+import { Crypto } from "./Crypto.js";
 
-export const createTestResultContainer = (crypto: Crypto): TestResultContainer => {
+export const createTestResultContainer = (uuid: string): TestResultContainer => {
   return {
-    uuid: crypto.uuid(),
+    uuid,
     children: [],
     befores: [],
     afters: [],
@@ -39,9 +32,10 @@ export const createStepResult = (): StepResult => {
   };
 };
 
-export const createTestResult = (crypto: Crypto, historyUuid?: string): TestResult => {
+export const createTestResult = (uuid: string, historyUuid?: string): TestResult => {
   return {
-    uuid: crypto.uuid(),
+    uuid,
+    name: "",
     historyId: historyUuid || "",
     status: undefined,
     statusDetails: {},
