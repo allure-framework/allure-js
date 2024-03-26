@@ -2,11 +2,6 @@ export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+jso
 export const ALLURE_IMAGEDIFF_CONTENT_TYPE = "application/vnd.allure.image.diff";
 export const ALLURE_SKIPPED_BY_TEST_PLAN_LABEL = "allure-skipped-by-test-plan";
 
-export interface Crypto {
-  uuid: () => string;
-  md5: (str: string) => string;
-}
-
 export interface AttachmentMetadata {
   name: string;
   type: string;
@@ -14,7 +9,7 @@ export interface AttachmentMetadata {
   encoding: BufferEncoding;
 }
 
-export interface StepMetadata extends Omit<ExecutableItem, "attachments" | "steps"> {
+export interface StepMetadata extends Omit<Executable, "attachments" | "steps"> {
   steps: StepMetadata[];
   attachments: AttachmentMetadata[];
 }
@@ -33,6 +28,13 @@ export interface MetadataMessage {
 }
 
 export interface Attachment {
+  name: string;
+  type: string;
+  source: string;
+}
+
+// TODO
+export interface AllureResultAttachment {
   name: string;
   type: string;
   source: string;
@@ -68,7 +70,8 @@ export interface StatusDetails {
   trace?: string;
 }
 
-export interface ExecutableItem {
+// don't use the interface as is, use Results types instead
+export interface Executable {
   name?: string;
   status?: Status;
   statusDetails: StatusDetails;
@@ -82,11 +85,11 @@ export interface ExecutableItem {
   stop?: number;
 }
 
-export type FixtureResult = ExecutableItem;
+export type FixtureResult = Executable;
 
-export type StepResult = ExecutableItem;
+export type StepResult = Executable;
 
-export interface TestResult extends ExecutableItem {
+export interface TestResult extends Executable {
   uuid: string;
   historyId: string;
   fullName?: string;
@@ -102,6 +105,8 @@ export interface TestResultContainer {
   befores: FixtureResult[];
   afters: FixtureResult[];
 }
+
+export type StepOrTestResult = StepResult | TestResult;
 
 export interface Category {
   name?: string;
@@ -215,3 +220,6 @@ export interface AllureResults {
   envInfo?: Record<string, string | undefined>;
   categories?: Category[];
 }
+
+// TODO: new
+export interface AllureLifecycleMessage {}
