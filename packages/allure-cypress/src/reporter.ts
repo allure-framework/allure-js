@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import {
   AllureStep,
   AllureTest,
+  ContentType,
   LabelName,
   Link,
   Stage,
@@ -50,13 +51,42 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
       resultsDir: config?.resultsDir || "./allure-results",
     }),
   });
+  const currentTestsByAbsolutePath = new Map<string, [AllureTest, number][]>();
+  // need to keep the variable here because we recieve end-message and finish the current test separately
   const currentSteps: AllureStep[] = [];
 
+  on("after:spec", (spec, results) => {
+    const currentTests = currentTestsByAbsolutePath.get(spec.absolute);
+
+    if (!currentTests?.length) {
+      return;
+    }
+
+    let videoName: string;
+
+    if (results.video) {
+      const videoBody = readFileSync(results.video);
+      videoName = runtime.writeAttachment(videoBody, ContentType.MP4);
+    }
+
+    currentTests.forEach(([test, stop]) => {
+      if (videoName) {
+        test.addAttachment("Video", ContentType.MP4, videoName);
+      }
+
+      test.endTest(stop);
+    });
+  });
   on("task", {
-    allureReportTest: ({ startMessage, endMessage, messages }: ReportFinalMessage) => {
+    allureReportTest: ({ testFileAbsolutePath, startMessage, endMessage, messages }: ReportFinalMessage) => {
+      const currentTests = currentTestsByAbsolutePath.get(testFileAbsolutePath) || [];
       const currentTest = startAllureTest(runtime, startMessage);
 
       messages.forEach(({ type, payload }) => {
+        if (!currentTest) {
+          return;
+        }
+
         if (type === MessageType.STEP_STARTED) {
           const currentStep = currentSteps[currentSteps.length - 1];
           const newStep = (currentStep || currentTest).startStep(payload.name, payload.start);
@@ -79,9 +109,9 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
           const currentStep = currentSteps[currentSteps.length - 1];
           const attachmentName = payload.name;
           const screenshotBody = readFileSync(payload.path);
-          const screenshotName = runtime.writeAttachment(screenshotBody, "image/png");
+          const screenshotName = runtime.writeAttachment(screenshotBody, ContentType.PNG);
 
-          (currentStep || currentTest).addAttachment(attachmentName, "image/png", screenshotName);
+          (currentStep || currentTest).addAttachment(attachmentName, ContentType.PNG, screenshotName);
           return;
         }
 
@@ -137,9 +167,8 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
       currentTest.stage = endMessage.stage;
       currentTest.status = endMessage.status;
       currentTest.statusDetails = endMessage.statusDetails!;
-
       currentTest.calculateHistoryId();
-      currentTest.endTest(endMessage.stop);
+      currentTestsByAbsolutePath.set(testFileAbsolutePath, currentTests.concat([[currentTest, endMessage.stop]]));
 
       return null;
     },
