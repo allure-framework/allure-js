@@ -8,7 +8,7 @@ module.exports = {
   e2e: {
     baseUrl: "https://allurereport.org",
     viewportWidth: 1240,
-    video: false,
+    video: true,
     setupNodeEvents: (on, config) => {
       allureCypress(on, {
         links: [
