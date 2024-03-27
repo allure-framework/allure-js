@@ -1,12 +1,13 @@
 import { Stage, Status } from "allure-js-commons/new";
 import { MessageType, type ReportFinalMessage, type ReporterMessage } from "./model";
 
-const createFinalMesage = () =>
+const createFinalMesage = (testFileAbsolutePath: string) =>
   // @ts-ignore
   ({
     startMessage: undefined,
     endMessage: undefined,
     messages: [],
+    testFileAbsolutePath,
   }) as ReportFinalMessage;
 
 const { EVENT_TEST_BEGIN, EVENT_TEST_FAIL, EVENT_TEST_PASS } = Mocha.Runner.constants;
@@ -52,7 +53,7 @@ const getStepsMessagesPair = (reportMessage: ReportFinalMessage) =>
 Cypress.mocha
   .getRunner()
   .on(EVENT_TEST_BEGIN, (test: Mocha.Test) => {
-    const reportMessage = createFinalMesage();
+    const reportMessage = createFinalMesage(Cypress.spec.absolute);
 
     reportMessage.startMessage = {
       specPath: getSuitePath(test).concat(test.title),
@@ -156,6 +157,8 @@ Cypress.on("fail", (err) => {
 
 afterEach(() => {
   const reportMessage = Cypress.env("allure").reportMessage;
+
+  reportMessage.isInteractive = Cypress.config("isInteractive");
 
   cy.task("allureReportTest", reportMessage, { log: false });
 });

@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import {
   AllureStep,
   AllureTest,
+  ContentType,
   LabelName,
   Link,
   Stage,
@@ -20,128 +21,189 @@ export type AllureCypressConfig = {
   }[];
 };
 
-const startAllureTest = (runtime: AllureNodeRuntime, message: TestStartMessage) => {
-  const suiteLabels = getSuitesLabels(message.specPath.slice(0, -1));
-  const testTitle = message.specPath[message.specPath.length - 1];
-  const titleMetadata = extractMetadataFromString(testTitle);
-  const currentTest = new AllureTest(runtime, message.start);
+export class AllureCypress {
+  runtime: AllureNodeRuntime;
+  currentTestsByAbsolutePath = new Map<string, [AllureTest, number][]>();
+  // need to keep the variable here because we recieve end-message and finish the current test separately
+  currentSteps: AllureStep[] = [];
 
-  currentTest.name = titleMetadata.cleanTitle;
-  currentTest.fullName = `${message.filename}#${message.specPath.join(" ")}`;
-  currentTest.stage = Stage.RUNNING;
+  constructor(private config?: AllureCypressConfig) {
+    this.runtime = new AllureNodeRuntime({
+      writer: new FileSystemAllureWriter({
+        resultsDir: config?.resultsDir || "./allure-results",
+      }),
+    });
+  }
 
-  currentTest.addLabel(LabelName.LANGUAGE, "javascript");
-  currentTest.addLabel(LabelName.FRAMEWORK, "cypress");
+  private startAllureTest(message: TestStartMessage) {
+    const suiteLabels = getSuitesLabels(message.specPath.slice(0, -1));
+    const testTitle = message.specPath[message.specPath.length - 1];
+    const titleMetadata = extractMetadataFromString(testTitle);
+    const currentTest = new AllureTest(this.runtime, message.start);
 
-  suiteLabels.forEach((label) => {
-    currentTest.addLabel(label.name, label.value);
-  });
+    currentTest.name = titleMetadata.cleanTitle;
+    currentTest.fullName = `${message.filename}#${message.specPath.join(" ")}`;
+    currentTest.stage = Stage.RUNNING;
 
-  titleMetadata.labels.forEach((label) => {
-    currentTest.addLabel(label.name, label.value);
-  });
+    currentTest.addLabel(LabelName.LANGUAGE, "javascript");
+    currentTest.addLabel(LabelName.FRAMEWORK, "cypress");
 
-  return currentTest;
-};
+    suiteLabels.forEach((label) => {
+      currentTest.addLabel(label.name, label.value);
+    });
 
-export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressConfig) => {
-  const runtime = new AllureNodeRuntime({
-    writer: new FileSystemAllureWriter({
-      resultsDir: config?.resultsDir || "./allure-results",
-    }),
-  });
-  const currentSteps: AllureStep[] = [];
+    titleMetadata.labels.forEach((label) => {
+      currentTest.addLabel(label.name, label.value);
+    });
 
-  on("task", {
-    allureReportTest: ({ startMessage, endMessage, messages }: ReportFinalMessage) => {
-      const currentTest = startAllureTest(runtime, startMessage);
+    return currentTest;
+  }
 
-      messages.forEach(({ type, payload }) => {
-        if (type === MessageType.STEP_STARTED) {
-          const currentStep = currentSteps[currentSteps.length - 1];
-          const newStep = (currentStep || currentTest).startStep(payload.name, payload.start);
+  endSpec(spec: Cypress.Spec, results: CypressCommandLine.RunResult) {
+    const currentTests = this.currentTestsByAbsolutePath.get(spec.absolute);
 
-          currentSteps.push(newStep);
-          return;
-        }
+    if (!currentTests?.length) {
+      return;
+    }
 
-        if (type === MessageType.STEP_ENDED) {
-          const currentStep = currentSteps.pop()!;
+    const videoName = results.video ? this.runtime.writeAttachmentFromPath(results.video, ContentType.MP4) : undefined;
 
-          currentStep.status = payload.status;
-          currentStep.statusDetails = payload.statusDetails!;
-          currentStep.stage = payload.stage!;
-          currentStep.endStep(payload.stop);
-          return;
-        }
+    currentTests.forEach(([test, stop]) => {
+      if (videoName) {
+        test.addAttachment("Video", ContentType.MP4, videoName);
+      }
 
-        if (type === MessageType.SCREENSHOT) {
-          const currentStep = currentSteps[currentSteps.length - 1];
-          const attachmentName = payload.name;
-          const screenshotBody = readFileSync(payload.path);
-          const screenshotName = runtime.writeAttachment(screenshotBody, "image/png");
+      test.endTest(stop);
+    });
 
-          (currentStep || currentTest).addAttachment(attachmentName, "image/png", screenshotName);
-          return;
-        }
+    this.currentTestsByAbsolutePath.delete(spec.absolute);
+  }
 
-        if (type === MessageType.METADATA) {
-          const { parameter = [], links = [], attachments, ...metadata } = payload;
-          const currentStep = currentSteps[currentSteps.length - 1];
+  attachToCypress(on: Cypress.PluginEvents) {
+    on("task", {
+      allureReportTest: ({
+        isInteractive,
+        testFileAbsolutePath,
+        startMessage,
+        endMessage,
+        messages,
+      }: ReportFinalMessage) => {
+        const currentTests = this.currentTestsByAbsolutePath.get(testFileAbsolutePath) || [];
+        const currentTest = this.startAllureTest(startMessage);
 
-          parameter.forEach(({ name, value, excluded, mode }) => {
-            currentTest.parameter(name, value, {
-              excluded,
-              mode,
-            });
-          });
-          attachments?.forEach((attachment) => {
-            const attachmentName = runtime.writeAttachment(attachment.content, attachment.type, attachment.encoding);
-
-            (currentStep || currentTest).addAttachment(attachment.name, attachment.type, attachmentName);
-          });
-
-          if (!config?.links?.length) {
-            currentTest.applyMetadata({
-              ...metadata,
-              links,
-            });
+        messages.forEach(({ type, payload }) => {
+          if (!currentTest) {
             return;
           }
 
-          const formattedLinks: Link[] = links.map((link) => {
-            const matcher = config?.links?.find?.((item) => item.type === link.type);
+          if (type === MessageType.STEP_STARTED) {
+            const currentStep = this.currentSteps[this.currentSteps.length - 1];
+            const newStep = (currentStep || currentTest).startStep(payload.name, payload.start);
 
-            if (!matcher || link.url.startsWith("http")) {
-              return link;
+            this.currentSteps.push(newStep);
+            return;
+          }
+
+          if (type === MessageType.STEP_ENDED) {
+            const currentStep = this.currentSteps.pop()!;
+
+            currentStep.status = payload.status;
+            currentStep.statusDetails = payload.statusDetails!;
+            currentStep.stage = payload.stage!;
+            currentStep.endStep(payload.stop);
+            return;
+          }
+
+          if (type === MessageType.SCREENSHOT) {
+            const currentStep = this.currentSteps[this.currentSteps.length - 1];
+            const attachmentName = payload.name;
+            const screenshotBody = readFileSync(payload.path);
+            const screenshotName = this.runtime.writeAttachment(screenshotBody, ContentType.PNG);
+
+            (currentStep || currentTest).addAttachment(attachmentName, ContentType.PNG, screenshotName);
+            return;
+          }
+
+          if (type === MessageType.METADATA) {
+            const { parameter = [], links = [], attachments, ...metadata } = payload;
+            const currentStep = this.currentSteps[this.currentSteps.length - 1];
+
+            parameter.forEach(({ name, value, excluded, mode }) => {
+              currentTest.parameter(name, value, {
+                excluded,
+                mode,
+              });
+            });
+            attachments?.forEach((attachment) => {
+              const attachmentName = this.runtime.writeAttachment(
+                attachment.content,
+                attachment.type,
+                attachment.encoding,
+              );
+
+              (currentStep || currentTest).addAttachment(attachment.name, attachment.type, attachmentName);
+            });
+
+            if (!this.config?.links?.length) {
+              currentTest.applyMetadata({
+                ...metadata,
+                links,
+              });
+              return;
             }
 
-            const url = matcher.urlTemplate.replace("%s", link.url);
-            const name = link.name || link.url;
+            const formattedLinks: Link[] = links.map((link) => {
+              const matcher = this.config?.links?.find?.((item) => item.type === link.type);
 
-            return {
-              ...link,
-              name,
-              url,
-            };
-          });
+              if (!matcher || link.url.startsWith("http")) {
+                return link;
+              }
 
-          currentTest.applyMetadata({
-            ...metadata,
-            links: formattedLinks,
-          });
-          return;
+              const url = matcher.urlTemplate.replace("%s", link.url);
+              const name = link.name || link.url;
+
+              return {
+                ...link,
+                name,
+                url,
+              };
+            });
+
+            currentTest.applyMetadata({
+              ...metadata,
+              links: formattedLinks,
+            });
+            return;
+          }
+        });
+
+        currentTest.stage = endMessage.stage;
+        currentTest.status = endMessage.status;
+        currentTest.statusDetails = endMessage.statusDetails!;
+        currentTest.calculateHistoryId();
+        this.currentTestsByAbsolutePath.set(
+          testFileAbsolutePath,
+          currentTests.concat([[currentTest, endMessage.stop]]),
+        );
+
+        if (isInteractive) {
+          this.endSpec({ absolute: testFileAbsolutePath } as Cypress.Spec, {} as CypressCommandLine.RunResult);
         }
-      });
 
-      currentTest.stage = endMessage.stage;
-      currentTest.status = endMessage.status;
-      currentTest.statusDetails = endMessage.statusDetails!;
+        return null;
+      },
+    });
+  }
+}
 
-      currentTest.calculateHistoryId();
-      currentTest.endTest(endMessage.stop);
+export const allureCypress = (on: Cypress.PluginEvents, allureConfig?: AllureCypressConfig) => {
+  const allureCypressReporter = new AllureCypress(allureConfig);
 
-      return null;
-    },
+  allureCypressReporter.attachToCypress(on);
+
+  on("after:spec", (spec, result) => {
+    allureCypressReporter.endSpec(spec, result);
   });
+
+  return allureCypressReporter;
 };
