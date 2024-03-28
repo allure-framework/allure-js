@@ -56,6 +56,7 @@ export type MetadataSentMessage = {
 export type ReporterMessage = StepStartMessage | StepEndMessage | MetadataSentMessage | ScreenshotMessage;
 
 export type ReportFinalMessage = {
+  testFileAbsolutePath: string;
   startMessage: TestStartMessage;
   endMessage: TestEndMessage;
   messages: ReporterMessage[];
