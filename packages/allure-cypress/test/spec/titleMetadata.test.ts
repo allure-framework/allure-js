@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { LabelName } from "allure-js-commons"
+import { LabelName } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils";
 
 it("title metadata", async () => {
@@ -12,16 +12,22 @@ it("title metadata", async () => {
   `);
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].labels).toContainEqual(expect.objectContaining({
-    name: LabelName.ALLURE_ID,
-    value: "1"
-  }))
-  expect(tests[0].labels).toContainEqual(expect.objectContaining({
-    name: "foo",
-    value: "2"
-  }))
-  expect(tests[0].labels).toContainEqual(expect.objectContaining({
-    name: "bar",
-    value: "3"
-  }))
+  expect(tests[0].labels).toContainEqual(
+    expect.objectContaining({
+      name: LabelName.ALLURE_ID,
+      value: "1",
+    }),
+  );
+  expect(tests[0].labels).toContainEqual(
+    expect.objectContaining({
+      name: "foo",
+      value: "2",
+    }),
+  );
+  expect(tests[0].labels).toContainEqual(
+    expect.objectContaining({
+      name: "bar",
+      value: "3",
+    }),
+  );
 });

@@ -11,5 +11,5 @@ it("displayName", async () => {
   `);
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].name).toBe("foo")
+  expect(tests[0].name).toBe("foo");
 });
