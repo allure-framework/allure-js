@@ -11,5 +11,5 @@ it("testCaseId", async () => {
   `);
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].testCaseId).toBe("foo")
+  expect(tests[0].testCaseId).toBe("foo");
 });

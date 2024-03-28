@@ -11,7 +11,7 @@ it("description", async () => {
   `);
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].description).toBe("foo")
+  expect(tests[0].description).toBe("foo");
 });
 
 it("descriptionHtml", async () => {
@@ -24,5 +24,5 @@ it("descriptionHtml", async () => {
   `);
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].descriptionHtml).toBe("foo")
+  expect(tests[0].descriptionHtml).toBe("foo");
 });

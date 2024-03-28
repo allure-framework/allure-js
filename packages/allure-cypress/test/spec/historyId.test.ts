@@ -11,5 +11,5 @@ it("historyId", async () => {
   `);
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].historyId).toBe("foo")
+  expect(tests[0].historyId).toBe("foo");
 });

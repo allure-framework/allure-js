@@ -21,5 +21,5 @@ it("parameters", async () => {
     value: "bar",
     mode: "hidden",
     excluded: false,
-  })
+  });
 });

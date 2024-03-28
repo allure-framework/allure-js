@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { Status, ContentType } from "allure-js-commons";
+import { ContentType, Status } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils";
 
 it("single step", async () => {
@@ -85,11 +85,11 @@ it("step with parameters", async () => {
   `);
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].parameters).toHaveLength(0)
+  expect(tests[0].parameters).toHaveLength(0);
   expect(tests[0].steps).toHaveLength(1);
   expect(tests[0].steps).toContainEqual(expect.objectContaining({ name: "foo" }));
   expect(tests[0].steps[0].parameters).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
-})
+});
 
 it("step with attachments", async () => {
   const { tests, attachments } = await runCypressInlineTest(`
@@ -111,7 +111,7 @@ it("step with attachments", async () => {
 
   expect(attachment.name).toBe("foo.txt");
   expect(attachments[attachment.source] as string).toBe("bar");
-})
+});
 
 it("step with screenshot", async () => {
   const { tests, attachments } = await runCypressInlineTest(`
@@ -134,7 +134,7 @@ it("step with screenshot", async () => {
   expect(attachment.name).toBe("foo");
   expect(attachment.type).toBe(ContentType.PNG);
   expect(attachments).toHaveProperty(attachment.source);
-})
+});
 
 it("step with cypress assertion error", async () => {
   const { tests } = await runCypressInlineTest(`
@@ -148,10 +148,10 @@ it("step with cypress assertion error", async () => {
   `);
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].status).toBe(Status.FAILED)
+  expect(tests[0].status).toBe(Status.FAILED);
   expect(tests[0].steps).toHaveLength(1);
   expect(tests[0].steps).toContainEqual(expect.objectContaining({ name: "foo", status: Status.FAILED }));
-})
+});
 
 it("step with unexpected error", async () => {
   const { tests } = await runCypressInlineTest(`
@@ -165,7 +165,7 @@ it("step with unexpected error", async () => {
   `);
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].status).toBe(Status.BROKEN)
+  expect(tests[0].status).toBe(Status.BROKEN);
   expect(tests[0].steps).toHaveLength(1);
   expect(tests[0].steps).toContainEqual(expect.objectContaining({ name: "foo", status: Status.BROKEN }));
-})
+});
