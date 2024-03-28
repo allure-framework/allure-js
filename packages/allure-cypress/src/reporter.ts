@@ -120,7 +120,7 @@ export const allureCypress = (on: Cypress.PluginEvents, config?: AllureCypressCo
           const currentStep = currentSteps[currentSteps.length - 1];
 
           parameter.forEach(({ name, value, excluded, mode }) => {
-            currentTest.parameter(name, value, {
+            (currentStep || currentTest).parameter(name, value, {
               excluded,
               mode,
             });
