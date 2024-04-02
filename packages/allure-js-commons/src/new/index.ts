@@ -1,4 +1,7 @@
 export {
+  ContentType,
+  ParameterOptions,
+  Parameter,
   LabelName,
   Label,
   Link,
@@ -12,3 +15,11 @@ export {
   Status,
   StatusDetails,
 } from "./model.js";
+export {
+  extractMetadataFromString,
+  getStatusFromError,
+  getSuitesLabels,
+  typeToExtension,
+  isAllStepsEnded,
+  isAnyStepFailed,
+} from "./utils.js";

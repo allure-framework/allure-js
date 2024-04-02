@@ -2,16 +2,15 @@
 import { cwd } from "node:process";
 import { type TaskContext, afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 import {
+  Stage,
+  Status,
   ContentType,
   LabelName,
   LinkType,
   ParameterOptions,
-  TestPlanV1,
   extractMetadataFromString,
-  parseTestPlan,
-} from "allure-js-commons";
-import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
-import { Stage, Status } from "allure-js-commons/new";
+} from "allure-js-commons/new";
+import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/new/internal";
 import {
   MessagesHolder,
   RuntimeMessage,
@@ -21,7 +20,7 @@ import {
   TestRuntime,
   createTestResult,
 } from "allure-js-commons/new/sdk";
-import { AllureNodeCrypto } from "allure-js-commons/new/sdk/node";
+import { AllureNodeCrypto, TestPlanV1, parseTestPlan } from "allure-js-commons/new/sdk/node";
 import { getTestFullName } from "./utils.js";
 
 declare global {
@@ -76,7 +75,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
   }
 }
 
-export const label = async (name: string, value: string) => {
+export const label = async (name: LabelName | string, value: string) => {
   global.allureTestRuntime.sendMessage({
     type: "metadata",
     data: {
@@ -85,7 +84,7 @@ export const label = async (name: string, value: string) => {
   });
 };
 
-export const link = async (type: string, url: string, name?: string) => {
+export const link = async (type: LinkType | string, url: string, name?: string) => {
   global.allureTestRuntime.sendMessage({
     type: "metadata",
     data: {
@@ -205,8 +204,9 @@ export const attachment = async (name: string, content: Buffer | string, type: C
     type: "raw_attachment",
     data: {
       name,
-      content: content instanceof Buffer ? content.toString("base64") : content,
+      content: Buffer.from(content).toString("base64"),
       contentType: type,
+      encoding: "base64",
     },
   });
 };
@@ -281,6 +281,20 @@ beforeEach(async (ctx) => {
     VITEST_POOL_ID: process.env.VITEST_POOL_ID,
   };
 
+  if (!existsInTestPlan(ctx, global.allureTestPlan as TestPlanV1)) {
+    // @ts-ignore
+    ctx.task.meta.allureRuntimeMessages = [
+      {
+        type: "metadata",
+        data: {
+          labels: [{ name: ALLURE_SKIPPED_BY_TEST_PLAN_LABEL, value: "true" }],
+        },
+      },
+    ];
+    ctx.skip();
+    return;
+  }
+
   global.allure = {
     label,
     link,
@@ -307,19 +321,11 @@ beforeEach(async (ctx) => {
     step,
   };
   global.allureTestRuntime = new AllureVitestTestRuntime(ctx);
-
-  if (!existsInTestPlan(ctx, global.allureTestPlan as TestPlanV1)) {
-    await label(ALLURE_SKIPPED_BY_TEST_PLAN_LABEL as string, "true");
-    // @ts-ignore
-    ctx.task.meta.allureRuntimeMessages = global.allureTestRuntime.messagesHolder.messages.splice(0);
-    ctx.skip();
-    return;
-  }
 });
 
 afterEach((ctx) => {
   // @ts-ignore
-  ctx.task.meta.allureRuntimeMessages = global.allureTestRuntime.messagesHolder.messages.splice(0);
+  ctx.task.meta.allureRuntimeMessages = global.allureTestRuntime.messagesHolder.messages;
 
   global.allureTestRuntime = undefined;
 });

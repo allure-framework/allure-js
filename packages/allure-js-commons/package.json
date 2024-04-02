@@ -27,6 +27,10 @@
       "import": "./dist/esm/src/new/index.js",
       "require": "./dist/cjs/src/new/index.js"
     },
+    "./new/internal": {
+      "import": "./dist/esm/src/new/internal.js",
+      "require": "./dist/cjs/src/new/internal.js"
+    },
     "./new/browser": {
       "import": "./dist/esm/src/new/browser/index.js",
       "require": "./dist/cjs/src/new/browser/index.js"
