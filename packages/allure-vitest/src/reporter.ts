@@ -60,10 +60,24 @@ export default class AllureVitestReporter implements Reporter {
       return;
     }
 
-    const { allureRuntimeMessages, VITEST_POOL_ID } = task.meta as {
+    const { allureRuntimeMessages = [], VITEST_POOL_ID } = task.meta as {
       allureRuntimeMessages: RuntimeMessage[];
       VITEST_POOL_ID: string;
     };
+    // TODO: maybe make part of core utils?
+    const skippedByTestPlan = allureRuntimeMessages.some((message) => {
+      if (message.type === "metadata") {
+        return (message.data?.labels || []).some(({ name }) => name === ALLURE_SKIPPED_BY_TEST_PLAN_LABEL);
+      }
+
+      return false;
+    });
+
+    // do not report tests skipped by test plan
+    if (skippedByTestPlan) {
+      return;
+    }
+
     const suitePath = getSuitePath(task);
     const normalizedTestPath = normalize(relative(cwd(), task.file.filepath))
       .replace(/^\//, "")
@@ -138,15 +152,5 @@ export default class AllureVitestReporter implements Reporter {
     });
     await this.allureReporterRuntime.stop(testUUID, task.result.startTime + task.result?.duration || 0);
     await this.allureReporterRuntime.write(testUUID);
-
-    // const skippedByTestPlan = currentTest.labels?.some(({ name }) => name === ALLURE_SKIPPED_BY_TEST_PLAN_LABEL);
-    //
-    // // do not report tests skipped by test plan
-    // if (skippedByTestPlan) {
-    //   return;
-    // }
-    //
-    // TODO: format links before the result writing
-    // const links = currentTest.links ? this.processMetadataLinks(currentTest.links) : [];
   }
 }

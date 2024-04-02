@@ -1,6 +1,16 @@
 /* eslint @typescript-eslint/require-await: off */
-import { type TaskContext, afterEach, beforeEach } from "vitest";
-import { ContentType, LabelName, LinkType, ParameterOptions } from "allure-js-commons";
+import { cwd } from "node:process";
+import { type TaskContext, afterAll, afterEach, beforeAll, beforeEach } from "vitest";
+import {
+  ContentType,
+  LabelName,
+  LinkType,
+  ParameterOptions,
+  TestPlanV1,
+  extractMetadataFromString,
+  parseTestPlan,
+} from "allure-js-commons";
+import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
 import { Stage, Status } from "allure-js-commons/new";
 import {
   MessagesHolder,
@@ -12,6 +22,7 @@ import {
   createTestResult,
 } from "allure-js-commons/new/sdk";
 import { AllureNodeCrypto } from "allure-js-commons/new/sdk/node";
+import { getTestFullName } from "./utils.js";
 
 declare global {
   // eslint-disable-next-line no-var
@@ -238,50 +249,37 @@ export const step = async (name: string, body: () => Promise<void>) => {
   }
 };
 
-// TODO:
-// const existsInTestPlan = (ctx: TaskContext, testPlan?: TestPlanV1) => {
-//   if (!testPlan) {
-//     return true;
-//   }
-//
-//   const { name: testName } = ctx.task;
-//   const testFullName = getTestFullName(ctx.task, cwd());
-//   const { labels } = extractMetadataFromString(testName);
-//   const allureIdLabel = labels.find(({ name }) => name === LabelName.ALLURE_ID);
-//
-//   return testPlan.tests.some(({ id, selector = "" }) => {
-//     const idMatched = id ? String(id) === allureIdLabel?.value : false;
-//     const selectorMatched = selector === testFullName;
-//
-//     return idMatched || selectorMatched;
-//   });
-// };
+const existsInTestPlan = (ctx: TaskContext, testPlan?: TestPlanV1) => {
+  if (!testPlan) {
+    return true;
+  }
 
-// TODO:
-// beforeAll(() => {
-//   global.allureTestPlan = parseTestPlan();
-// });
-//
-// afterAll(() => {
-//   global.allureTestPlan = undefined;
-// });
+  const { name: testName } = ctx.task;
+  const testFullName = getTestFullName(ctx.task, cwd());
+  const { labels } = extractMetadataFromString(testName);
+  const allureIdLabel = labels.find(({ name }) => name === LabelName.ALLURE_ID);
+
+  return testPlan.tests.some(({ id, selector = "" }) => {
+    const idMatched = id ? String(id) === allureIdLabel?.value : false;
+    const selectorMatched = selector === testFullName;
+
+    return idMatched || selectorMatched;
+  });
+};
+
+beforeAll(() => {
+  global.allureTestPlan = parseTestPlan();
+});
+
+afterAll(() => {
+  global.allureTestPlan = undefined;
+});
 
 beforeEach(async (ctx) => {
-  // const allureAPI = bindAllureApi(ctx.task);
-  // TODO: testplan
-  // if (!existsInTestPlan(ctx, global.allureTestPlan as TestPlanV1)) {
-  //   await allureAPI.label(ALLURE_SKIPPED_BY_TEST_PLAN_LABEL as string, "true");
-  //   ctx.skip();
-  //   return;
-  // }
-  //
-  // (ctx.task as any).meta = {
-  //   ...ctx.task.meta,
-  //   VITEST_POOL_ID: process.env.VITEST_POOL_ID,
-  // };
-  //
-  // // @ts-ignore
-  // global.allure = allureAPI;
+  (ctx.task as any).meta = {
+    ...ctx.task.meta,
+    VITEST_POOL_ID: process.env.VITEST_POOL_ID,
+  };
 
   global.allure = {
     label,
@@ -309,6 +307,14 @@ beforeEach(async (ctx) => {
     step,
   };
   global.allureTestRuntime = new AllureVitestTestRuntime(ctx);
+
+  if (!existsInTestPlan(ctx, global.allureTestPlan as TestPlanV1)) {
+    await label(ALLURE_SKIPPED_BY_TEST_PLAN_LABEL as string, "true");
+    // @ts-ignore
+    ctx.task.meta.allureRuntimeMessages = global.allureTestRuntime.messagesHolder.messages.splice(0);
+    ctx.skip();
+    return;
+  }
 });
 
 afterEach((ctx) => {
