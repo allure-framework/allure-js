@@ -1,52 +1,96 @@
 import { FixtureResult, StepResult, TestResult, TestResultContainer } from "../model.js";
+import { Stack } from "../utils.js";
+import { createFixtureResult, createStepResult, createTestResult, createTestResultContainer } from "./utils.js";
 
 export class LifecycleState {
-  testResults = new Map<string, Partial<TestResult>>();
+  testResults = new Map<string, TestResult>();
 
-  stepResults = new Map<string, Partial<StepResult>>();
+  testResultsSteps = new Map<string, Stack<StepResult>>();
 
-  fixturesResults = new Map<string, Partial<FixtureResult>>();
+  fixturesResults = new Map<string, FixtureResult>();
 
-  testContainers = new Map<string, Partial<TestResultContainer>>();
+  testContainers = new Map<string, TestResultContainer>();
 
+  // test results
   setTestResult = (uuid: string, result: Partial<TestResult>) => {
-    this.testResults.set(uuid, result);
-  };
-
-  setStepResult = (uuid: string, result: Partial<StepResult>) => {
-    this.stepResults.set(uuid, result);
-  };
-
-  setFixtureResult = (uuid: string, result: Partial<FixtureResult>) => {
-    this.fixturesResults.set(uuid, result);
-  };
-
-  setTestContainer = (uuid: string, container: Partial<TestResultContainer>) => {
-    this.testContainers.set(uuid, container);
+    this.testResults.set(uuid, {
+      ...createTestResult(uuid),
+      ...result,
+    });
   };
 
   updateTestResult = (uuid: string, result: Partial<TestResult>) => {
+    console.log("update test result", uuid, result);
+
     const currentResult = this.testResults.get(uuid);
 
     if (!currentResult) {
       return;
     }
 
-    this.testResults.set(uuid, {
-      ...currentResult,
+    const { name, labels = [], links = [], parameters = [], attachments = [], ...rest } = result;
+    const updatedResult = { ...currentResult, ...rest };
+
+    if (name) {
+      updatedResult.name = name;
+    }
+
+    updatedResult.labels.push(...labels);
+    updatedResult.links.push(...links);
+    updatedResult.parameters.push(...parameters);
+    updatedResult.attachments.push(...attachments);
+
+    this.testResults.set(uuid, updatedResult);
+  };
+
+  deleteTestResult = (uuid: string) => {
+    this.testResults.delete(uuid);
+  };
+
+  // steps
+  setStepResult = (uuid: string, result: Partial<StepResult>) => {
+    if (!this.testResultsSteps.has(uuid)) {
+      this.testResultsSteps.set(uuid, new Stack());
+    }
+
+    this.testResultsSteps.get(uuid)!.push({
+      ...createStepResult(),
       ...result,
     });
   };
 
-  updateStepResult = (uuid: string, result: Partial<StepResult>) => {
-    const currentResult = this.stepResults.get(uuid);
+  updateCurrentStep = (uuid: string, result: Partial<StepResult>) => {
+    const currentStep = this.getLastStep(uuid);
 
-    if (!currentResult) {
+    if (!currentStep) {
       return;
     }
 
-    this.testResults.set(uuid, {
-      ...currentResult,
+    const { attachments = [], parameters = [], steps = [], ...rest } = result;
+
+    currentStep.attachments.push(...attachments);
+    currentStep.parameters.push(...parameters);
+    currentStep.steps.push(...steps);
+
+    Object.assign(currentStep, rest);
+  };
+
+  popStep = (uuid: string) => {
+    return this.testResultsSteps.get(uuid)?.pop();
+  };
+
+  getLastStep = (uuid: string) => {
+    return this.testResultsSteps.get(uuid)?.last;
+  };
+
+  getFirstStep = (uuid: string) => {
+    return this.testResultsSteps.get(uuid)?.first;
+  };
+
+  // fixtures
+  setFixtureResult = (uuid: string, result: Partial<FixtureResult>) => {
+    this.fixturesResults.set(uuid, {
+      ...createFixtureResult(),
       ...result,
     });
   };
@@ -58,9 +102,18 @@ export class LifecycleState {
       return;
     }
 
-    this.testResults.set(uuid, {
-      ...currentResult,
-      ...result,
+    Object.assign(currentResult, result);
+  };
+
+  deleteFixtureResult = (uuid: string) => {
+    this.fixturesResults.delete(uuid);
+  };
+
+  // test containers
+  setTestContainer = (uuid: string, container: Partial<TestResultContainer>) => {
+    this.testContainers.set(uuid, {
+      ...createTestResultContainer(uuid),
+      ...container,
     });
   };
 
@@ -71,22 +124,7 @@ export class LifecycleState {
       return;
     }
 
-    this.testResults.set(uuid, {
-      ...currentContainer,
-      ...container,
-    });
-  };
-
-  deleteTestResult = (uuid: string) => {
-    this.testResults.delete(uuid);
-  };
-
-  deleteStepResult = (uuid: string) => {
-    this.stepResults.delete(uuid);
-  };
-
-  deleteFixtureResult = (uuid: string) => {
-    this.fixturesResults.delete(uuid);
+    Object.assign(currentContainer, container);
   };
 
   deleteTestContainer = (uuid: string) => {

@@ -33,6 +33,14 @@ export interface Attachment {
   source: string;
 }
 
+export interface RawAttachment {
+  name: string;
+  content: Buffer | string;
+  contentType: ContentType;
+  // TODO: do we need explicit encoding here?
+  encoding?: string;
+}
+
 // TODO
 export interface AllureResultAttachment {
   name: string;

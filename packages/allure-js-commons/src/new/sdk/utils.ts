@@ -1,4 +1,14 @@
-import { FixtureResult, Stage, Status, StepResult, TestResult, TestResultContainer } from "../model.js";
+import {
+  AttachmentOptions,
+  ContentType,
+  FixtureResult,
+  Stage,
+  Status,
+  StepResult,
+  TestResult,
+  TestResultContainer,
+} from "../model.js";
+import { typeToExtension } from "../utils.js";
 import { Crypto } from "./Crypto.js";
 
 export const createTestResultContainer = (uuid: string): TestResultContainer => {
@@ -46,6 +56,16 @@ export const createTestResult = (uuid: string, historyUuid?: string): TestResult
     labels: [],
     links: [],
   };
+};
+
+export const writeAttachment = (uuid: string, options: ContentType | string | AttachmentOptions): string => {
+  if (typeof options === "string") {
+    options = { contentType: options };
+  }
+
+  const extension = typeToExtension(options);
+
+  return `${uuid}-attachment${extension}`;
 };
 
 export const setTestResultHistoryId = (crypto: Crypto, result: TestResult) => {

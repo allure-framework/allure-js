@@ -1,14 +1,14 @@
-import { LifecycleListener } from "../LifecycleListener.js";
+import { Config } from "../Config.js";
 import { ReporterRuntime } from "../ReporterRuntime.js";
-import { Writer } from "../Writer.js";
 import { AllureNodeCrypto } from "./Crypto.js";
 
 export class AllureNodeReporterRuntime extends ReporterRuntime {
-  constructor({ writer, listeners }: { writer: Writer; listeners?: LifecycleListener[] }) {
+  constructor({ writer, listeners, links }: Config) {
     super({
       writer,
       listeners,
       crypto: new AllureNodeCrypto(),
+      links,
     });
   }
 }

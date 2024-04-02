@@ -1020,4 +1020,24 @@ export const extractMetadataFromString = (
 };
 
 // seems the implementation covers all our needs
-export const deepClone = <T,>(obj: T): T => JSON.parse(JSON.stringify(obj));
+export const deepClone = <T>(obj: T): T => JSON.parse(JSON.stringify(obj));
+
+export class Stack<T> {
+  entries: T[] = [];
+
+  get first() {
+    return this.entries[this.entries.length - 1];
+  }
+
+  get last() {
+    return this.entries[0];
+  }
+
+  push(entry: T) {
+    this.entries.unshift(entry);
+  }
+
+  pop(): T | undefined {
+    return this.entries.shift();
+  }
+}

@@ -2,15 +2,12 @@ import { hostname } from "node:os";
 import { basename, normalize, relative } from "node:path";
 import { cwd, env } from "node:process";
 import { File, Reporter, Task } from "vitest";
-import {
-  MessageAllureWriter,
-  extractMetadataFromString,
-  getSuitesLabels,
-} from "allure-js-commons";
+import { extractMetadataFromString, getSuitesLabels } from "allure-js-commons";
 import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
-import { Stage, Status, LabelName, TestResult } from "allure-js-commons/new";
+import { LabelName, Stage, Status, TestResult } from "allure-js-commons/new";
 import { Config } from "allure-js-commons/new/sdk";
-import { AllureNodeReporterRuntime } from "allure-js-commons/new/sdk/node";
+import { RuntimeMessage } from "allure-js-commons/new/sdk";
+import { AllureNodeReporterRuntime, FileSystemAllureWriter, MessageAllureWriter } from "allure-js-commons/new/sdk/node";
 import { getSuitePath, getTestFullName } from "./utils.js";
 
 export interface AllureVitestReporterConfig extends Config {
@@ -33,7 +30,11 @@ export default class AllureVitestReporter implements Reporter {
 
     this.allureReporterRuntime = new AllureNodeReporterRuntime({
       ...config,
-      writer: testMode ? new MessageAllureWriter() : undefined,
+      writer: testMode
+        ? new MessageAllureWriter()
+        : new FileSystemAllureWriter({
+            resultsDir: config.resultsDir,
+          }),
       listeners,
     });
   }
@@ -54,13 +55,13 @@ export default class AllureVitestReporter implements Reporter {
 
     if (task.type === "suite") {
       for (const innerTask of task.tasks) {
-        this.handleTask(innerTask);
+        await this.handleTask(innerTask);
       }
       return;
     }
 
-    const { allureTestResult, VITEST_POOL_ID } = task.meta as {
-      allureTestResult: TestResult;
+    const { allureRuntimeMessages, VITEST_POOL_ID } = task.meta as {
+      allureRuntimeMessages: RuntimeMessage[];
       VITEST_POOL_ID: string;
     };
     const suitePath = getSuitePath(task);
@@ -69,21 +70,19 @@ export default class AllureVitestReporter implements Reporter {
       .split("/")
       .filter((item: string) => item !== basename(task.file.filepath));
     const titleMetadata = extractMetadataFromString(task.name);
-    const testDisplayName = allureTestResult.name || titleMetadata.cleanTitle;
+    const testDisplayName = titleMetadata.cleanTitle || task.name;
     const testFullname = getTestFullName(task, cwd());
-
     const testUUID = await this.allureReporterRuntime.start(
       {
-        ...allureTestResult,
         name: testDisplayName,
       },
       task.result.startTime,
     );
-    await this.allureReporterRuntime.update(testUUID, (result) => {
+
+    await this.allureReporterRuntime.update(testUUID, async (result) => {
       const threadId = ALLURE_THREAD_NAME || (VITEST_POOL_ID && `${this.hostname}-vitest-worker-${VITEST_POOL_ID}`);
 
       result.fullName = testFullname;
-
       result.labels.push({
         name: LabelName.FRAMEWORK,
         value: "vitest",
@@ -96,13 +95,8 @@ export default class AllureVitestReporter implements Reporter {
         name: LabelName.HOST,
         value: this.hostname,
       });
-
-      titleMetadata.labels.forEach((label) => {
-        result.labels.push(label);
-      });
-      getSuitesLabels(suitePath).forEach((label) => {
-        result.labels.push(label);
-      });
+      result.labels.push(...titleMetadata.labels);
+      result.labels.push(...getSuitesLabels(suitePath));
 
       if (threadId) {
         result.labels.push({
@@ -117,6 +111,8 @@ export default class AllureVitestReporter implements Reporter {
           value: normalizedTestPath.join("."),
         });
       }
+
+      await this.allureReporterRuntime.applyRuntimeMessages(testUUID, allureRuntimeMessages);
 
       switch (task.result?.state) {
         case "fail": {
@@ -152,8 +148,5 @@ export default class AllureVitestReporter implements Reporter {
     //
     // TODO: format links before the result writing
     // const links = currentTest.links ? this.processMetadataLinks(currentTest.links) : [];
-    //
-    // test.calculateHistoryId();
-    // test.endTest(task.result.startTime + task.result?.duration || 0);
   }
 }

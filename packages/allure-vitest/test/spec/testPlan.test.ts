@@ -1,7 +1,7 @@
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { runVitestInlineTest } from "../../utils.js";
+import { runVitestInlineTest } from "../utils.js";
 
 it("supports test plan", async () => {
   const { tests } = await runVitestInlineTest(

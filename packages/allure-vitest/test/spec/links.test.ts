@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { LinkType } from "allure-js-commons";
-import { runVitestInlineTest } from "../../utils.js";
+import { runVitestInlineTest } from "../utils.js";
 
 describe("links", () => {
   it("link", async () => {

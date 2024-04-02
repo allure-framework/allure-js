@@ -1,16 +1,13 @@
 import { AllureLifecycleMessage } from "../model.js";
-import { Crypto } from "./Crypto.js";
 import { TestHolder } from "./TestHolder.js";
+import { MessagesHolder } from "./MessageHolder.js";
 
 export interface TestRuntime<T = unknown> {
   currentTestHolder?: TestHolder<T>;
 
-  // TODO:
-  // currentStepsHolder?: TestHolder<T>;
+  messagesHolder?: MessagesHolder;
 
-  sendMessage?: (message: AllureLifecycleMessage) => Promise<void>;
-
-  sendMessageSync?: (message: AllureLifecycleMessage) => void;
+  sendMessage: (message: AllureLifecycleMessage) => void | Promise<void>;
 }
 
 /**

@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
-import { runVitestInlineTest } from "../../utils.js";
+import { runVitestInlineTest } from "../utils.js";
 
 it("handles single lambda step", async () => {
   const { tests } = await runVitestInlineTest(`

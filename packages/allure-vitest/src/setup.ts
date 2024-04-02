@@ -1,18 +1,17 @@
-import * as console from "node:console";
+/* eslint @typescript-eslint/require-await: off */
 import { type TaskContext, afterEach, beforeEach } from "vitest";
-import { LabelName, LinkType, ParameterOptions } from "allure-js-commons";
-import { Attachment, Stage, Status, StatusDetails } from "allure-js-commons/new";
+import { ContentType, LabelName, LinkType, ParameterOptions } from "allure-js-commons";
+import { Stage, Status } from "allure-js-commons/new";
 import {
+  MessagesHolder,
+  RuntimeMessage,
   StepResult,
   TestHolder,
   TestResult,
   TestRuntime,
-  createStepResult,
   createTestResult,
 } from "allure-js-commons/new/sdk";
 import { AllureNodeCrypto } from "allure-js-commons/new/sdk/node";
-
-// import { label, link } from "./index.js";
 
 declare global {
   // eslint-disable-next-line no-var
@@ -49,6 +48,8 @@ declare global {
 export class AllureVitestTestRuntime implements TestRuntime {
   currentTestHolder = new TestHolder<TestResult, StepResult>();
 
+  messagesHolder = new MessagesHolder();
+
   crypto = new AllureNodeCrypto();
 
   constructor(context: TaskContext) {
@@ -59,229 +60,185 @@ export class AllureVitestTestRuntime implements TestRuntime {
     this.currentTestHolder.currentTest = testResult;
   }
 
-  // TODO:
-  addAttachment() {
-    // (this.currentTestHolder.currentStep || this.currentTestHolder.currentTest).attachments.push(payload);
-  }
-
-  startStep(name: string) {
-    this.currentTestHolder.currentSteps.push({
-      ...createStepResult(),
-      name,
-    });
-  }
-
-  endStep(status: Status, details?: StatusDetails, stage?: Stage, stop?: number) {
-    const currentStep = this.currentTestHolder.currentSteps.pop();
-
-    currentStep.status = status;
-    currentStep.statusDetails = details;
-    currentStep.stage = stage || Stage.FINISHED;
-    currentStep.stop = stop || Date.now();
-
-    // there is no steps
-    if (!this.currentTestHolder.currentStep) {
-      this.currentTestHolder.currentTest.steps.push(currentStep);
-      return;
-    }
-
-    this.currentTestHolder.currentStep.steps.push(currentStep);
-  }
-
-  sendMessageSync(message: Partial<TestResult>) {
-    const { labels, links, parameters, attachments, steps } = message;
-
-    if (labels) {
-      this.currentTestHolder.currentTest.labels.push(...labels);
-    }
-
-    if (links) {
-      this.currentTestHolder.currentTest.links.push(...links);
-    }
-
-    if (parameters) {
-      this.currentTestHolder.currentTest.parameters.push(...parameters);
-    }
-
-    if (attachments) {
-      this.currentTestHolder.currentTest.attachments.push(...attachments);
-    }
-
-    // TODO: we need data structure to transfer test result compatible data between runtimes
-    // console.log("sendMessageSync", message, this.currentTestHolder.currentTest);
+  sendMessage(message: RuntimeMessage) {
+    this.messagesHolder.push(message);
   }
 }
 
 export const label = async (name: string, value: string) => {
-  global.allureTestRuntime.sendMessageSync({
-    labels: [{ name, value }],
+  global.allureTestRuntime.sendMessage({
+    type: "metadata",
+    data: {
+      labels: [{ name, value }],
+    },
   });
 };
 
 export const link = async (type: string, url: string, name?: string) => {
-  global.allureTestRuntime.sendMessageSync({
-    links: [{ type, url, name }],
+  global.allureTestRuntime.sendMessage({
+    type: "metadata",
+    data: {
+      links: [{ type, url, name }],
+    },
   });
 };
 
 export const epic = async (value: string) => {
-  await label(LabelName.EPIC, value);
+  label(LabelName.EPIC, value);
 };
 
 export const feature = async (value: string) => {
-  await label(LabelName.FEATURE, value);
+  label(LabelName.FEATURE, value);
 };
 
 export const story = async (value: string) => {
-  await label(LabelName.STORY, value);
+  label(LabelName.STORY, value);
 };
 
 export const suite = async (value: string) => {
-  await label(LabelName.SUITE, value);
+  label(LabelName.SUITE, value);
 };
 
 export const parentSuite = async (value: string) => {
-  await label(LabelName.PARENT_SUITE, value);
+  label(LabelName.PARENT_SUITE, value);
 };
 
 export const subSuite = async (value: string) => {
-  await label(LabelName.SUB_SUITE, value);
+  label(LabelName.SUB_SUITE, value);
 };
 
 export const owner = async (value: string) => {
-  await label(LabelName.OWNER, value);
+  label(LabelName.OWNER, value);
 };
 
 export const severity = async (value: string) => {
-  await label(LabelName.SEVERITY, value);
+  label(LabelName.SEVERITY, value);
 };
 
 export const layer = async (value: string) => {
-  await label(LabelName.LAYER, value);
+  label(LabelName.LAYER, value);
 };
 
 export const tag = async (value: string) => {
-  await label(LabelName.TAG, value);
+  label(LabelName.TAG, value);
 };
 
 export const allureId = async (value: string) => {
-  await label(LabelName.ALLURE_ID, value);
+  label(LabelName.ALLURE_ID, value);
 };
 
 export const issue = async (name: string, url: string) => {
-  await link(LinkType.ISSUE, url, name);
+  link(LinkType.ISSUE, url, name);
 };
 
 export const tms = async (name: string, url: string) => {
-  await link(LinkType.TMS, url, name);
+  link(LinkType.TMS, url, name);
 };
 
 export const parameter = async (name: string, value: string, options?: ParameterOptions) => {
-  global.allureTestRuntime.sendMessageSync({
-    parameters: [{ name, value, ...options }],
+  global.allureTestRuntime.sendMessage({
+    type: "metadata",
+    data: {
+      parameters: [{ name, value, ...options }],
+    },
   });
 };
 
 export const description = async (markdown: string) => {
-  global.allureTestRuntime.sendMessageSync({
-    description: markdown,
+  global.allureTestRuntime.sendMessage({
+    type: "metadata",
+    data: {
+      description: markdown,
+    },
   });
 };
 
 export const descriptionHtml = async (html: string) => {
-  global.allureTestRuntime.sendMessageSync({
-    descriptionHtml: html,
+  global.allureTestRuntime.sendMessage({
+    type: "metadata",
+    data: {
+      descriptionHtml: html,
+    },
   });
 };
 
 export const displayName = async (name: string) => {
-  global.allureTestRuntime.sendMessageSync({
-    name,
+  global.allureTestRuntime.sendMessage({
+    type: "metadata",
+    data: {
+      displayName: name,
+    },
   });
 };
 
 export const historyId = async (value: string) => {
-  global.allureTestRuntime.sendMessageSync({
-    historyId: value,
+  global.allureTestRuntime.sendMessage({
+    type: "metadata",
+    data: {
+      historyId: value,
+    },
   });
 };
 
 export const testCaseId = async (value: string) => {
-  global.allureTestRuntime.sendMessageSync({
-    testCaseId: value,
+  global.allureTestRuntime.sendMessage({
+    type: "metadata",
+    data: {
+      testCaseId: value,
+    },
   });
 };
 
-export const attachment = async (name: string, content: Buffer | string, type: string) => {
-  // TODO:
-  console.log("attachment: ", { name, content });
-  // injectAllureMeta(context);
-  //
-  // const { currentTest, currentStep } = context.task.meta as AllureTestMeta;
-  // const isBuffer = Buffer.isBuffer(content);
-
-  // global.allureTestRuntime.addAttachment({
-  //     name: name || "Attachment",
-  //     content: isBuffer ? content.toString("base64") : content,
-  //     encoding: isBuffer ? "base64" : "utf8",
-  //     type,
-  // })
-  //
-  // (currentStep || currentTest).attachments.push({
-  //   name: name || "Attachment",
-  //   content: isBuffer ? content.toString("base64") : content,
-  //   encoding: isBuffer ? "base64" : "utf8",
-  //   type,
-  // });
+export const attachment = async (name: string, content: Buffer | string, type: ContentType) => {
+  global.allureTestRuntime.sendMessage({
+    type: "raw_attachment",
+    data: {
+      name,
+      content: content instanceof Buffer ? content.toString("base64") : content,
+      contentType: type,
+    },
+  });
 };
 
 export const step = async (name: string, body: () => Promise<void>) => {
-  global.allureTestRuntime.startStep(name);
+  global.allureTestRuntime.sendMessage({
+    type: "step_start",
+    data: {
+      name,
+      start: Date.now(),
+    },
+  });
 
   try {
     await body();
 
-    global.allureTestRuntime.endStep(Status.PASSED);
+    global.allureTestRuntime.sendMessage({
+      type: "step_stop",
+      data: {
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+        stop: Date.now(),
+      },
+    });
   } catch (err) {
-    global.allureTestRuntime.endStep(Status.FAILED, { message: err.message, trace: err.stack });
+    global.allureTestRuntime.sendMessage({
+      type: "step_stop",
+      data: {
+        status: Status.FAILED,
+        stage: Stage.FINISHED,
+        stop: Date.now(),
+        statusDetails: {
+          message: err.message,
+          trace: err.stack,
+        },
+      },
+    });
 
     throw err;
   }
-
-  // TODO:
-  // console.log("step: ", { name });
-  // injectAllureMeta(context);
-  //
-  // const { currentTest, currentStep } = context.task.meta as AllureTestMeta;
-  // const prevStep = currentStep;
-  // const nextStep: Partial<StepMetadata> = {
-  //   name,
-  //   steps: [],
-  //   attachments: [],
-  // };
-  //
-  // (currentStep || currentTest).steps.push(nextStep as StepMetadata);
-  // (context.task.meta as AllureTestMeta).currentStep = nextStep as StepMetadata;
-  //
-  // try {
-  //   await body();
-  //
-  //   nextStep.status = Status.PASSED;
-  // } catch (error) {
-  //   nextStep.status = Status.FAILED;
-  //
-  //   if (error instanceof Error) {
-  //     nextStep.statusDetails = { message: error.message, trace: error.stack };
-  //   }
-  //   throw error;
-  // } finally {
-  //   nextStep.stop = Date.now();
-  //   nextStep.stage = Stage.FINISHED;
-  //
-  //   (context.task.meta as AllureTestMeta).currentStep = prevStep;
-  // }
 };
 
+// TODO:
 // const existsInTestPlan = (ctx: TaskContext, testPlan?: TestPlanV1) => {
 //   if (!testPlan) {
 //     return true;
@@ -356,7 +313,7 @@ beforeEach(async (ctx) => {
 
 afterEach((ctx) => {
   // @ts-ignore
-  ctx.task.meta.allureTestResult = global.allureTestRuntime.currentTestHolder.currentTest;
+  ctx.task.meta.allureRuntimeMessages = global.allureTestRuntime.messagesHolder.messages.splice(0);
 
   global.allureTestRuntime = undefined;
 });
