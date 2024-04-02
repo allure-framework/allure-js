@@ -220,6 +220,3 @@ export interface AllureResults {
   envInfo?: Record<string, string | undefined>;
   categories?: Category[];
 }
-
-// TODO: new
-export interface AllureLifecycleMessage {}
