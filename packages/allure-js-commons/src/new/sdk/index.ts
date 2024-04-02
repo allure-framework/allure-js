@@ -9,8 +9,6 @@ export {
   createStepResult,
   createTestResultContainer,
 } from "./utils.js";
-// TODO: do we need re-export these entities or just keep them into `new/model.js`?
-export { ContentType, TestResult, FixtureResult, StepResult, TestResultContainer } from "../model.js";
 export {
   RuntimeRawAttachmentMessage,
   RuntimeMetadataMessage,
@@ -18,3 +16,4 @@ export {
   RuntimeStopStepMessage,
   RuntimeMessage,
 } from "./model.js";
+export * from "../index.js";
