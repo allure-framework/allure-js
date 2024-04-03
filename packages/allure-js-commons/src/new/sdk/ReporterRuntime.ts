@@ -1,4 +1,4 @@
-import { Attachment, RawAttachment, Executable, Link, Stage, StepResult, TestResult } from "../model.js";
+import { Attachment, Executable, Link, RawAttachment, Stage, StepResult, TestResult } from "../model.js";
 import { deepClone, typeToExtension } from "../utils.js";
 import { Config, LinkConfig } from "./Config.js";
 import { Crypto } from "./Crypto.js";
@@ -90,7 +90,11 @@ export class ReporterRuntime {
     const attachmentExtension = typeToExtension({ contentType: attachment.contentType });
     const attachmentFilename = `${attachmentUuid}-attachment${attachmentExtension}`;
 
-    this.writer.writeAttachment(attachmentFilename, attachment.content, attachment.encoding as BufferEncoding || "base64");
+    this.writer.writeAttachment(
+      attachmentFilename,
+      attachment.content,
+      (attachment.encoding as BufferEncoding) || "base64",
+    );
 
     const currentResult = this.state.testResults.get(uuid)!;
     const currentStep = this.state.getLastStep(uuid);
@@ -139,7 +143,15 @@ export class ReporterRuntime {
     });
   };
 
-  applyRuntimeMessages = async (uuid: string, messages: RuntimeMessage[] = []) => {
+  applyRuntimeMessages = async (
+    uuid: string,
+    messages: RuntimeMessage[] = [],
+    customMessageHandler?: (
+      message: unknown,
+      targetResult: TestResult,
+      currentStep?: StepResult,
+    ) => void | Promise<void>,
+  ) => {
     const targetResult = this.state.testResults.get(uuid);
 
     if (!targetResult) {
@@ -210,6 +222,12 @@ export class ReporterRuntime {
         this.writeAttachment(uuid, data);
         continue;
       }
+
+      if (!customMessageHandler) {
+        continue;
+      }
+
+      await customMessageHandler(message, targetResult, this.state.getLastStep(uuid));
     }
   };
 }

@@ -1,5 +1,6 @@
 import { RuntimeMessage } from "./model.js";
 
+// should it be just stack? do we need additional abstraction for this?
 export class MessagesHolder {
   messages: RuntimeMessage[] = [];
 

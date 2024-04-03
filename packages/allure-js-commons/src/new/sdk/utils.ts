@@ -10,6 +10,7 @@ import {
 } from "../model.js";
 import { typeToExtension } from "../utils.js";
 import { Crypto } from "./Crypto.js";
+import { RuntimeMessage } from "./model.js";
 
 export const createTestResultContainer = (uuid: string): TestResultContainer => {
   return {
@@ -90,4 +91,37 @@ export const setTestResultHistoryId = (crypto: Crypto, result: TestResult) => {
     ...result,
     historyId: `${tcId}:${paramsHash}`,
   };
+};
+
+export const hasStepMessage = (messages: RuntimeMessage[]) => {
+  return messages.some((message) => message.type === "step_start" || message.type === "step_stop");
+};
+
+export const getStepsMessagesPair = (messages: RuntimeMessage[]) =>
+  messages.reduce((acc, message) => {
+    if (message.type !== "step_start" && message.type !== "step_stop") {
+      return acc;
+    }
+
+    if (message.type === "step_start") {
+      acc.push([message]);
+
+      return acc;
+    }
+
+    const unfinishedStepIdx = acc.findLastIndex((step) => step.length === 1);
+
+    if (unfinishedStepIdx === -1) {
+      return acc;
+    }
+
+    acc[unfinishedStepIdx].push(message);
+
+    return acc;
+  }, [] as RuntimeMessage[][]);
+
+export const getUnfinishedStepsMessages = (messages: RuntimeMessage[]) => {
+  const grouppedStepsMessage = getStepsMessagesPair(messages);
+
+  return grouppedStepsMessage.filter((step) => step.length === 1);
 };

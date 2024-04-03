@@ -36,7 +36,7 @@ export interface Attachment {
 export interface RawAttachment {
   name: string;
   content: Buffer | string;
-  contentType: ContentType;
+  contentType: ContentType | string;
   encoding?: string;
 }
 

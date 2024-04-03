@@ -20,8 +20,6 @@ export class LifecycleState {
   };
 
   updateTestResult = (uuid: string, result: Partial<TestResult>) => {
-    console.log("update test result", uuid, result);
-
     const currentResult = this.testResults.get(uuid);
 
     if (!currentResult) {

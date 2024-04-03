@@ -8,6 +8,9 @@ export {
   createFixtureResult,
   createStepResult,
   createTestResultContainer,
+  getStepsMessagesPair,
+  getUnfinishedStepsMessages,
+  hasStepMessage,
 } from "./utils.js";
 export {
   RuntimeRawAttachmentMessage,

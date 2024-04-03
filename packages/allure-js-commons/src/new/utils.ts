@@ -1040,4 +1040,12 @@ export class Stack<T> {
   pop(): T | undefined {
     return this.entries.shift();
   }
+
+  clone(): T[] {
+    return deepClone(this.entries);
+  }
+
+  toArray(): T[] {
+    return this.clone().toReversed();
+  }
 }

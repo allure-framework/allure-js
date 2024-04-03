@@ -1,6 +1,5 @@
 import { LabelName, LinkType, ParameterOptions, Stage, Status } from "allure-js-commons/new";
-import { MessageType } from "./model";
-import { pushReportMessage } from "./utils";
+import { pushReportMessage } from "./utils.js";
 
 export type CypressWrappedAttachment = { type: string; data: unknown };
 
@@ -29,72 +28,72 @@ export const normalizeAttachmentContentEncoding = (data: unknown, encoding: Buff
 
 export const label = (name: string, value: string) => {
   pushReportMessage({
-    type: MessageType.METADATA,
-    payload: {
+    type: "metadata",
+    data: {
       labels: [{ name, value }],
     },
   });
 };
 export const link = (url: string, name?: string, type?: string) => {
   pushReportMessage({
-    type: MessageType.METADATA,
-    payload: {
+    type: "metadata",
+    data: {
       links: [{ type, url, name }],
     },
   });
 };
 export const parameter = (name: string, value: string, options?: ParameterOptions) => {
   pushReportMessage({
-    type: MessageType.METADATA,
-    payload: {
-      parameter: [{ name, value, ...options }],
+    type: "metadata",
+    data: {
+      parameters: [{ name, value, ...options }],
     },
   });
 };
 export const description = (markdown: string) => {
   pushReportMessage({
-    type: MessageType.METADATA,
-    payload: {
+    type: "metadata",
+    data: {
       description: markdown,
     },
   });
 };
 export const descriptionHtml = (html: string) => {
   pushReportMessage({
-    type: MessageType.METADATA,
-    payload: {
+    type: "metadata",
+    data: {
       descriptionHtml: html,
     },
   });
 };
 export const testCaseId = (value: string) => {
   pushReportMessage({
-    type: MessageType.METADATA,
-    payload: {
+    type: "metadata",
+    data: {
       testCaseId: value,
     },
   });
 };
 export const historyId = (value: string) => {
   pushReportMessage({
-    type: MessageType.METADATA,
-    payload: {
+    type: "metadata",
+    data: {
       historyId: value,
     },
   });
 };
 export const allureId = (value: string) => {
   pushReportMessage({
-    type: MessageType.METADATA,
-    payload: {
+    type: "metadata",
+    data: {
       labels: [{ name: LabelName.ALLURE_ID, value }],
     },
   });
 };
 export const displayName = (name: string) => {
   pushReportMessage({
-    type: MessageType.METADATA,
-    payload: {
+    type: "metadata",
+    data: {
       displayName: name,
     },
   });
@@ -147,16 +146,12 @@ export const attachment = (
   const attachmentContent = uint8ArrayToBase64(attachmentRawContent);
 
   pushReportMessage({
-    type: MessageType.METADATA,
-    payload: {
-      attachments: [
-        {
-          content: attachmentContent,
-          encoding: actualEncoding,
-          name,
-          type,
-        },
-      ],
+    type: "raw_attachment",
+    data: {
+      content: attachmentContent,
+      encoding: actualEncoding,
+      contentType: type,
+      name,
     },
   });
 };
@@ -164,16 +159,16 @@ export const step = (name: string, body: () => void) => {
   cy.wrap(null, { log: false })
     .then(() => {
       pushReportMessage({
-        type: MessageType.STEP_STARTED,
-        payload: { name, start: Date.now() },
+        type: "step_start",
+        data: { name, start: Date.now() },
       });
 
       body();
     })
     .then(() => {
       pushReportMessage({
-        type: MessageType.STEP_ENDED,
-        payload: {
+        type: "step_stop",
+        data: {
           status: Status.PASSED,
           stage: Stage.FINISHED,
           stop: Date.now(),

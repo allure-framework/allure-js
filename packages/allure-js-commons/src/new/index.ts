@@ -22,4 +22,5 @@ export {
   typeToExtension,
   isAllStepsEnded,
   isAnyStepFailed,
+  Stack,
 } from "./utils.js";

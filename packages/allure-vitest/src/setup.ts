@@ -3,7 +3,6 @@ import { cwd } from "node:process";
 import { type TaskContext, afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/new/internal";
 import {
-  AllureNodeCrypto,
   ContentType,
   LabelName,
   LinkType,
@@ -12,12 +11,8 @@ import {
   RuntimeMessage,
   Stage,
   Status,
-  StepResult,
-  TestHolder,
   TestPlanV1,
-  TestResult,
   TestRuntime,
-  createTestResult,
   extractMetadataFromString,
   parseTestPlan,
 } from "allure-js-commons/new/sdk/node";
@@ -56,19 +51,7 @@ declare global {
 }
 
 export class AllureVitestTestRuntime implements TestRuntime {
-  currentTestHolder = new TestHolder<TestResult, StepResult>();
-
   messagesHolder = new MessagesHolder();
-
-  crypto = new AllureNodeCrypto();
-
-  constructor(context: TaskContext) {
-    const testResult = createTestResult(this.crypto.uuid());
-
-    testResult.name = context.task.name;
-
-    this.currentTestHolder.currentTest = testResult;
-  }
 
   sendMessage(message: RuntimeMessage) {
     this.messagesHolder.push(message);
@@ -320,7 +303,7 @@ beforeEach(async (ctx) => {
     attachment,
     step,
   };
-  global.allureTestRuntime = new AllureVitestTestRuntime(ctx);
+  global.allureTestRuntime = new AllureVitestTestRuntime();
 });
 
 afterEach((ctx) => {

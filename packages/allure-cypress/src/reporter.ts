@@ -1,17 +1,18 @@
 import Cypress from "cypress";
 import { readFileSync } from "node:fs";
 import {
-  AllureStep,
-  AllureTest,
+  AllureNodeReporterRuntime,
+  Config,
+  FileSystemAllureWriter,
   ContentType,
   LabelName,
+  RuntimeMessage,
   Link,
   Stage,
   extractMetadataFromString,
   getSuitesLabels,
-} from "allure-js-commons/new";
-import { AllureNodeRuntime, FileSystemAllureWriter } from "allure-js-commons/new/node";
-import { MessageType, ReportFinalMessage, TestStartMessage } from "./model";
+} from "allure-js-commons/new/sdk/node";
+import { CypressRuntimeMessage, CypressTestEndRuntimeMessage, CypressTestStartRuntimeMessage } from "./model.js";
 
 export type AllureCypressConfig = {
   resultsDir?: string;
@@ -20,6 +21,79 @@ export type AllureCypressConfig = {
     urlTemplate: string;
   }[];
 };
+
+// export const allureCypress = (on: Cypress.PluginEvents, config: Omit<Config, "writer">) => {
+//   const { resultsDir = "./allure-results", ...rest } = config;
+//   const runtime = new AllureNodeReporterRuntime({
+//     writer: new FileSystemAllureWriter({ resultsDir }),
+//     ...rest,
+//   });
+//
+//   on("task", {
+//     allureReportTest: async (messages: CypressRuntimeMessage[]) => {
+//       const startMessage = messages[0] as CypressTestStartRuntimeMessage;
+//       const endMessage = messages[messages.length - 1] as CypressTestEndRuntimeMessage;
+//
+//       if (startMessage.type !== "cypress_start" || endMessage.type !== "cypress_end") {
+//         // TODO:
+//         throw new Error("ksdfjlskdjflksdfj");
+//       }
+//
+//       const suiteLabels = getSuitesLabels(startMessage.data.specPath.slice(0, -1));
+//       const testTitle = startMessage.data.specPath[startMessage.data.specPath.length - 1];
+//       const titleMetadata = extractMetadataFromString(testTitle);
+//       const testUuid = await runtime.start({
+//         name: titleMetadata.cleanTitle || testTitle,
+//         start: startMessage.data.start,
+//         fullName: `${startMessage.data.filename}#${startMessage.data.specPath.join(" ")}`,
+//         stage: Stage.RUNNING,
+//       });
+//
+//       await runtime.update(testUuid, async (result) => {
+//         result.labels!.push({
+//           name: LabelName.LANGUAGE,
+//           value: "javascript",
+//         });
+//         result.labels!.push({
+//           name: LabelName.FRAMEWORK,
+//           value: "cypress",
+//         });
+//         result.labels!.push(...suiteLabels);
+//         result.labels!.push(...titleMetadata.labels);
+//
+//         console.log("metadata messages", messages.slice(1, messages.length - 1));
+//
+//         await runtime.applyRuntimeMessages(
+//           testUuid,
+//           messages.slice(1, messages.length - 1) as RuntimeMessage[],
+//           (message) => {
+//             const { type, data } = message as CypressRuntimeMessage;
+//
+//             if (type === "cypress_screenshot") {
+//               const attachmentName = data.name;
+//               const screenshotBody = readFileSync(data.path);
+//
+//               runtime.writeAttachment(testUuid, {
+//                 name: attachmentName,
+//                 content: screenshotBody,
+//                 contentType: ContentType.PNG,
+//               });
+//             }
+//           },
+//         );
+//       });
+//       await runtime.update(testUuid, async (result) => {
+//         result.stage = endMessage.data.stage;
+//         result.status = endMessage.data.status;
+//         result.statusDetails = endMessage.data.statusDetails;
+//       });
+//       await runtime.stop(testUuid, endMessage.data.stop);
+//       await runtime.write(testUuid);
+//
+//       return null;
+//     },
+//   });
+// };
 
 export class AllureCypress {
   runtime: AllureNodeRuntime;
@@ -82,12 +156,12 @@ export class AllureCypress {
   attachToCypress(on: Cypress.PluginEvents) {
     on("task", {
       allureReportTest: ({
-        isInteractive,
-        testFileAbsolutePath,
-        startMessage,
-        endMessage,
-        messages,
-      }: ReportFinalMessage) => {
+                           isInteractive,
+                           testFileAbsolutePath,
+                           startMessage,
+                           endMessage,
+                           messages,
+                         }: ReportFinalMessage) => {
         const currentTests = this.currentTestsByAbsolutePath.get(testFileAbsolutePath) || [];
         const currentTest = this.startAllureTest(startMessage);
 
