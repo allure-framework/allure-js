@@ -1,5 +1,5 @@
 import { AllureResults, Category, TestResult, TestResultContainer } from "../../model.js";
-import { Writer } from "../Writer";
+import { Writer } from "../Writer.js";
 
 export class AllureInMemoryAllureWriter implements Writer, AllureResults {
   public groups: TestResultContainer[] = [];

@@ -1,8 +1,8 @@
 import { PathLike, copyFileSync, existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 import properties from "properties";
-import { Writer } from "../../Writer";
 import { Category, TestResult, TestResultContainer } from "../../../model.js";
+import { Writer } from "../../Writer.js";
 
 const writeJson = (path: string, data: unknown): void => {
   writeFileSync(path, JSON.stringify(data), "utf8");

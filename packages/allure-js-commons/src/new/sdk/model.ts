@@ -1,4 +1,14 @@
-import { Attachment, RawAttachment, ContentType, Label, Link, Parameter, Stage, Status, StatusDetails } from "../model.js";
+import {
+  Attachment,
+  ContentType,
+  Label,
+  Link,
+  Parameter,
+  RawAttachment,
+  Stage,
+  Status,
+  StatusDetails,
+} from "../model.js";
 
 export interface RuntimeMetadataMessage {
   type: "metadata";

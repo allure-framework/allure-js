@@ -138,11 +138,14 @@ export default class AllureVitestReporter implements Reporter {
 
       switch (task.result?.state) {
         case "fail": {
+          const [error] = task.result.errors || [];
+          const status = error?.name === "AssertionError" ? Status.FAILED : Status.BROKEN;
+
           result.statusDetails = {
-            message: task.result.errors?.[0]?.message || "",
-            trace: task.result.errors?.[0]?.stack || "",
+            message: error?.message || "",
+            trace: error?.stack || "",
           };
-          result.status = Status.FAILED;
+          result.status = status;
           result.stage = Stage.FINISHED;
           break;
         }

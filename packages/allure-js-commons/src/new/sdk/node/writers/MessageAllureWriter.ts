@@ -1,7 +1,7 @@
 import { PathLike, readFileSync } from "fs";
 import properties from "properties";
-import { Writer } from "../../Writer";
 import { Category, TestResult, TestResultContainer } from "../../../model.js";
+import { Writer } from "../../Writer.js";
 
 type EventType = "result" | "container" | "attachment" | "misc";
 type Event = {

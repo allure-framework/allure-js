@@ -1,12 +1,12 @@
-import { Attachment, Executable, Link, RawAttachment, Stage, StepResult, TestResult } from "../model.js";
+import { Link, RawAttachment, StepResult, TestResult } from "../model.js";
 import { deepClone, typeToExtension } from "../utils.js";
 import { Config, LinkConfig } from "./Config.js";
 import { Crypto } from "./Crypto.js";
-import { LifecycleListener, Notifier } from "./LifecycleListener.js";
+import { Notifier } from "./LifecycleListener.js";
 import { LifecycleState } from "./LifecycleState.js";
 import { Writer } from "./Writer.js";
 import { RuntimeMessage, RuntimeMetadataMessage, RuntimeRawAttachmentMessage } from "./model.js";
-import { createStepResult, createTestResult, setTestResultHistoryId } from "./utils.js";
+import { createTestResult, setTestResultHistoryId } from "./utils.js";
 
 export class ReporterRuntime {
   private writer: Writer;
@@ -73,7 +73,7 @@ export class ReporterRuntime {
     await this.notifier.afterTestResultStop(targetResult);
   };
 
-  write = async (uuid: string) => {
+  write = (uuid: string) => {
     const targetResult = this.state.testResults.get(uuid);
 
     if (!targetResult) {
@@ -104,19 +104,6 @@ export class ReporterRuntime {
       source: attachmentFilename,
       type: attachment.contentType,
     });
-  };
-
-  private applyMetadataRuntimeMessage = (uuid: string, message: RuntimeMetadataMessage) => {
-    // TODO:
-    // const { labels, links, parameters, attachments, description, descriptionHtml, displayName, historyId, testCaseId } =
-    //   message.data;
-    // const testResult = this.state.testResults.get(uuid);
-  };
-
-  private applyRawAttachmentRuntimeMessage = async (uuid: string, message: RuntimeRawAttachmentMessage) => {
-    const { content, contentType, name } = message.data;
-
-    // TODO: write attachment here
   };
 
   private formatLinks = (links: Link[]) => {
