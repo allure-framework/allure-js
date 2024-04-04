@@ -29,8 +29,12 @@ module.exports = {
   // ...
   e2e: {
 +    setupNodeEvents: (on, config) => {
-+      allureCypress(on, {
++      const reporter = allureCypress(on, {
 +        resultsDir: "./allure-results",
++      });
++
++      on("after:spec", (spec, result) => {
++        reporter.endSpec(spec, result);
 +      });
 +
 +      return config;
@@ -85,7 +89,7 @@ module.exports = {
   // ...
   e2e: {
     setupNodeEvents: (on, config) => {
-      allureCypress(on, {
+      const reporter = allureCypress(on, {
 +        links: [
 +          {
 +            type: "issue",
@@ -101,6 +105,10 @@ module.exports = {
 +          },
 +        ],
 +      });
+
+      on("after:spec", (spec, result) => {
+        reporter.endSpec(spec, result);
+      });
 
       return config;
     },

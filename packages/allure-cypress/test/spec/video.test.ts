@@ -16,13 +16,12 @@ it("attaches same video to each spec in a test", async () => {
       const { allureCypress } = require("allure-cypress/reporter");
 
       module.exports = {
-        experimentalInteractiveRunEvents: true,
         e2e: {
           baseUrl: "https://allurereport.org",
           viewportWidth: 1240,
           video: true,
           setupNodeEvents: (on, config) => {
-            allureCypress(on, {
+            const reporter = allureCypress(on, {
               links: [
                 {
                   type: "issue",
@@ -33,6 +32,10 @@ it("attaches same video to each spec in a test", async () => {
                   urlTemplate: "https://allurereport.org/tasks/%s"
                 },
               ]
+            });
+
+            on("after:spec", (spec, result) => {
+              reporter.endSpec(spec, result);
             });
 
             return config;

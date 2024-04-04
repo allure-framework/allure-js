@@ -26,12 +26,11 @@ export const runCypressInlineTest = async (
     const { allureCypress } = require("allure-cypress/reporter");
 
     module.exports = {
-      experimentalInteractiveRunEvents: true,
       e2e: {
         baseUrl: "https://allurereport.org",
         viewportWidth: 1240,
         setupNodeEvents: (on, config) => {
-          allureCypress(on, {
+          const reporter = allureCypress(on, config, {
             links: [
               {
                 type: "issue",
@@ -42,6 +41,10 @@ export const runCypressInlineTest = async (
                 urlTemplate: "https://allurereport.org/tasks/%s"
               },
             ]
+          });
+
+          on("after:spec", (spec, result) => {
+            reporter.endSpec(spec, result);
           });
 
           return config;
@@ -85,6 +88,8 @@ export const runCypressInlineTest = async (
     testProcess.on("exit", async () => {
       const testResultsDir = join(testDir, "allure-results");
       const resultFiles = await readdir(testResultsDir);
+
+      console.log("results", resultFiles);
 
       for (const resultFile of resultFiles) {
         if (/-attachment\.\S+$/.test(resultFile)) {
