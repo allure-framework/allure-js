@@ -75,6 +75,8 @@ export class AllureCypress {
 
       test.endTest(stop);
     });
+
+    this.currentTestsByAbsolutePath.delete(spec.absolute);
   }
 
   attachToCypress(on: Cypress.PluginEvents) {
