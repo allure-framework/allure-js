@@ -77,7 +77,7 @@ export class AllureCypress {
     });
   }
 
-  attachToCypress(on: Cypress.PluginEvents, config?: Cypress.Config) {
+  attachToCypress(on: Cypress.PluginEvents) {
     on("task", {
       allureReportTest: ({ testFileAbsolutePath, startMessage, endMessage, messages }: ReportFinalMessage) => {
         const currentTests = this.currentTestsByAbsolutePath.get(testFileAbsolutePath) || [];
@@ -184,14 +184,10 @@ export class AllureCypress {
   }
 }
 
-export const allureCypress = (
-  on: Cypress.PluginEvents,
-  cypressConfig: Cypress.Config,
-  allureConfig?: AllureCypressConfig,
-) => {
+export const allureCypress = (on: Cypress.PluginEvents, allureConfig?: AllureCypressConfig) => {
   const allureCypressReporter = new AllureCypress(allureConfig);
 
-  allureCypressReporter.attachToCypress(on, cypressConfig);
+  allureCypressReporter.attachToCypress(on);
 
   on("after:spec", (spec, result) => {
     allureCypressReporter.endSpec(spec, result);
