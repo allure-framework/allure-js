@@ -30,7 +30,7 @@ export const runCypressInlineTest = async (
         baseUrl: "https://allurereport.org",
         viewportWidth: 1240,
         setupNodeEvents: (on, config) => {
-          const reporter = allureCypress(on, config, {
+          const reporter = allureCypress(on, {
             links: [
               {
                 type: "issue",
