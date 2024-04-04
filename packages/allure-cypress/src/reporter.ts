@@ -21,7 +21,7 @@ export type AllureCypressConfig = {
   }[];
 };
 
-class AllureCypress {
+export class AllureCypress {
   runtime: AllureNodeRuntime;
   currentTestsByAbsolutePath = new Map<string, [AllureTest, number][]>();
   // need to keep the variable here because we recieve end-message and finish the current test separately
@@ -192,6 +192,10 @@ export const allureCypress = (
   const allureCypressReporter = new AllureCypress(allureConfig);
 
   allureCypressReporter.attachToCypress(on, cypressConfig);
+
+  on("after:spec", (spec, result) => {
+    allureCypressReporter.endSpec(spec, result);
+  });
 
   return allureCypressReporter;
 };

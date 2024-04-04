@@ -89,8 +89,6 @@ export const runCypressInlineTest = async (
       const testResultsDir = join(testDir, "allure-results");
       const resultFiles = await readdir(testResultsDir);
 
-      console.log("results", resultFiles);
-
       for (const resultFile of resultFiles) {
         if (/-attachment\.\S+$/.test(resultFile)) {
           res.attachments[resultFile] = await readFile(join(testResultsDir, resultFile), "utf8");
