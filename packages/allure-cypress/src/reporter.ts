@@ -79,7 +79,13 @@ export class AllureCypress {
 
   attachToCypress(on: Cypress.PluginEvents) {
     on("task", {
-      allureReportTest: ({ testFileAbsolutePath, startMessage, endMessage, messages }: ReportFinalMessage) => {
+      allureReportTest: ({
+        isInteractive,
+        testFileAbsolutePath,
+        startMessage,
+        endMessage,
+        messages,
+      }: ReportFinalMessage) => {
         const currentTests = this.currentTestsByAbsolutePath.get(testFileAbsolutePath) || [];
         const currentTest = this.startAllureTest(startMessage);
 
@@ -177,6 +183,10 @@ export class AllureCypress {
           testFileAbsolutePath,
           currentTests.concat([[currentTest, endMessage.stop]]),
         );
+
+        if (isInteractive) {
+          this.endSpec({ absolute: testFileAbsolutePath } as Cypress.Spec, {} as CypressCommandLine.RunResult);
+        }
 
         return null;
       },

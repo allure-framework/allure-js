@@ -57,6 +57,7 @@ export type ReporterMessage = StepStartMessage | StepEndMessage | MetadataSentMe
 
 export type ReportFinalMessage = {
   testFileAbsolutePath: string;
+  isInteractive: boolean;
   startMessage: TestStartMessage;
   endMessage: TestEndMessage;
   messages: ReporterMessage[];

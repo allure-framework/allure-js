@@ -158,5 +158,7 @@ Cypress.on("fail", (err) => {
 afterEach(() => {
   const reportMessage = Cypress.env("allure").reportMessage;
 
+  reportMessage.isInteractive = Cypress.config("isInteractive");
+
   cy.task("allureReportTest", reportMessage, { log: false });
 });
