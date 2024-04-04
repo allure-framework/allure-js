@@ -121,7 +121,7 @@ export class AllureCypress {
             const currentStep = this.currentSteps[this.currentSteps.length - 1];
 
             parameter.forEach(({ name, value, excluded, mode }) => {
-              (currentStep || currentTest).parameter(name, value, {
+              currentTest.parameter(name, value, {
                 excluded,
                 mode,
               });

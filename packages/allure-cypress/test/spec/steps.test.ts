@@ -73,24 +73,6 @@ it("nested steps", async () => {
   expect(tests[0].steps[0].steps[0].steps).toContainEqual(expect.objectContaining({ name: "baz" }));
 });
 
-it("step with parameters", async () => {
-  const { tests } = await runCypressInlineTest(`
-    import { parameter, step } from "allure-cypress";
-
-    it("step", () => {
-      step("foo", () => {
-        parameter("foo", "bar");
-      });
-    });
-  `);
-
-  expect(tests).toHaveLength(1);
-  expect(tests[0].parameters).toHaveLength(0);
-  expect(tests[0].steps).toHaveLength(1);
-  expect(tests[0].steps).toContainEqual(expect.objectContaining({ name: "foo" }));
-  expect(tests[0].steps[0].parameters).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
-});
-
 it("step with attachments", async () => {
   const { tests, attachments } = await runCypressInlineTest(`
     import { attachment, step } from "allure-cypress";
