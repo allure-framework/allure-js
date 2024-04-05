@@ -27,7 +27,7 @@ export class LifecycleState {
     }
 
     const { name, labels = [], links = [], parameters = [], attachments = [], ...rest } = result;
-    const updatedResult = { ...currentResult, ...rest };
+    const updatedResult = { ...currentResult };
 
     if (name) {
       updatedResult.name = name;
@@ -35,8 +35,10 @@ export class LifecycleState {
 
     updatedResult.labels.push(...labels);
     updatedResult.links.push(...links);
-    updatedResult.parameters.push(...parameters);
     updatedResult.attachments.push(...attachments);
+    updatedResult.parameters.push(...parameters);
+
+    Object.assign(updatedResult, rest);
 
     this.testResults.set(uuid, updatedResult);
   };
@@ -64,10 +66,9 @@ export class LifecycleState {
       return;
     }
 
-    const { attachments = [], parameters = [], steps = [], ...rest } = result;
+    const { attachments = [], steps = [], ...rest } = result;
 
     currentStep.attachments.push(...attachments);
-    currentStep.parameters.push(...parameters);
     currentStep.steps.push(...steps);
 
     Object.assign(currentStep, rest);

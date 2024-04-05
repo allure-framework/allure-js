@@ -69,15 +69,15 @@ export const writeAttachment = (uuid: string, options: ContentType | string | At
   return `${uuid}-attachment${extension}`;
 };
 
-export const setTestResultHistoryId = (crypto: Crypto, result: TestResult) => {
+export const getTestResultHistoryId = (crypto: Crypto, result: TestResult) => {
   if (result.historyId) {
-    return result;
+    return result.historyId;
   }
 
   const tcId = result.testCaseId ? result.testCaseId : result.fullName ? crypto.md5(result.fullName) : null;
 
   if (!tcId) {
-    return;
+    return "";
   }
 
   const paramsString = result.parameters
@@ -87,10 +87,7 @@ export const setTestResultHistoryId = (crypto: Crypto, result: TestResult) => {
     .join(",");
   const paramsHash = crypto.md5(paramsString);
 
-  return {
-    ...result,
-    historyId: `${tcId}:${paramsHash}`,
-  };
+  return `${tcId}:${paramsHash}`;
 };
 
 export const hasStepMessage = (messages: RuntimeMessage[]) => {

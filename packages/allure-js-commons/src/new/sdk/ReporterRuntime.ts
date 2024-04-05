@@ -6,7 +6,7 @@ import { Notifier } from "./LifecycleListener.js";
 import { LifecycleState } from "./LifecycleState.js";
 import { Writer } from "./Writer.js";
 import { RuntimeMessage, RuntimeMetadataMessage, RuntimeRawAttachmentMessage } from "./model.js";
-import { createTestResult, setTestResultHistoryId } from "./utils.js";
+import { createTestResult, getTestResultHistoryId } from "./utils.js";
 
 export class ReporterRuntime {
   private writer: Writer;
@@ -31,12 +31,8 @@ export class ReporterRuntime {
     };
 
     await this.notifier.beforeTestResultStart(stateObject);
-
     this.state.setTestResult(uuid, stateObject);
-
-    const testResult = this.state.testResults.get(uuid)!;
-
-    await this.notifier.afterTestResultStart(testResult);
+    await this.notifier.afterTestResultStart(this.state.testResults.get(uuid)!);
 
     return uuid;
   };
@@ -67,7 +63,7 @@ export class ReporterRuntime {
 
     await this.notifier.beforeTestResultStop(targetResult);
 
-    setTestResultHistoryId(this.crypto, targetResult);
+    targetResult.historyId = getTestResultHistoryId(this.crypto, targetResult);
     targetResult.stop = stop || Date.now();
 
     await this.notifier.afterTestResultStop(targetResult);
