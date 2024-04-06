@@ -1,6 +1,6 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "url";
 import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
@@ -58,7 +58,7 @@ export const runVitestInlineTest = async (
     await beforeTestCb(testDir);
   }
 
-  const modulePath = require.resolve("vitest/dist/cli-wrapper.js");
+  const modulePath = require.resolve("vitest/vitest.mjs");
   const args = ["run", "--config", configFilePath, "--dir", testDir];
   const testProcess = fork(modulePath, args, {
     env: {
@@ -96,10 +96,6 @@ export const runVitestInlineTest = async (
   });
 
   return new Promise((resolve, reject) => {
-    testProcess.on("exit", async () => {
-      await rm(testDir, { recursive: true });
-
-      return resolve(res);
-    });
+    testProcess.on("exit", () => resolve(res));
   });
 };

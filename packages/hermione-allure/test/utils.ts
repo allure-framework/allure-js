@@ -36,7 +36,7 @@ export const runHermioneInlineTest = async (test: string) => {
     // eslint-disable-next-line no-console
     console.error(err);
   } finally {
-    await rm(testDir, { recursive: true });
+    // await rm(testDir, { recursive: true });
   }
 
   return {

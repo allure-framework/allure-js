@@ -1,6 +1,6 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
 
@@ -79,10 +79,6 @@ export const runJestInlineTest = async (test: string): Promise<AllureResults> =>
   });
 
   return new Promise((resolve) => {
-    testProcess.on("exit", async () => {
-      await rm(testDir, { recursive: true });
-
-      return resolve(res);
-    });
+    testProcess.on("exit", () => resolve(res));
   });
 };

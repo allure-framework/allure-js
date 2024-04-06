@@ -26,7 +26,6 @@ export class AllureCypress {
   currentTestsByAbsolutePath = new Map<string, [AllureTest, number][]>();
   // need to keep the variable here because we recieve end-message and finish the current test separately
   currentSteps: AllureStep[] = [];
-
   constructor(private config?: AllureCypressConfig) {
     this.runtime = new AllureNodeRuntime({
       writer: new FileSystemAllureWriter({
