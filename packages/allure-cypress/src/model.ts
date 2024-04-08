@@ -3,6 +3,8 @@ import { RuntimeMessage, Stage, Status, StatusDetails } from "allure-js-commons/
 export type CypressTestStartRuntimeMessage = {
   type: "cypress_start";
   data: {
+    isInteractive: boolean;
+    absolutePath: string;
     specPath: string[];
     filename: string;
     start: number;

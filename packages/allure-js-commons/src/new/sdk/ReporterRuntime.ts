@@ -1,4 +1,4 @@
-import { Link, RawAttachment, StepResult, TestResult } from "../model.js";
+import { AttachmentOptions, Link, RawAttachment, StepResult, TestResult } from "../model.js";
 import { deepClone, typeToExtension } from "../utils.js";
 import { Config, LinkConfig } from "./Config.js";
 import { Crypto } from "./Crypto.js";
@@ -9,11 +9,11 @@ import { RuntimeMessage, RuntimeMetadataMessage, RuntimeRawAttachmentMessage } f
 import { createTestResult, getTestResultHistoryId } from "./utils.js";
 
 export class ReporterRuntime {
-  private writer: Writer;
   private notifier: Notifier;
   private crypto: Crypto;
   private links: LinkConfig[] = [];
-  private state = new LifecycleState();
+  state = new LifecycleState();
+  writer: Writer;
 
   constructor({ writer, listeners = [], crypto, links = [] }: Config & { crypto: Crypto }) {
     this.writer = writer;
@@ -81,10 +81,15 @@ export class ReporterRuntime {
     this.writer.writeResult(targetResult);
   };
 
-  writeAttachment = (uuid: string, attachment: RawAttachment) => {
+  buildAttachmentFileName = (options: AttachmentOptions): string => {
     const attachmentUuid = this.crypto.uuid();
-    const attachmentExtension = typeToExtension({ contentType: attachment.contentType });
-    const attachmentFilename = `${attachmentUuid}-attachment${attachmentExtension}`;
+    const attachmentExtension = options.fileExtension || typeToExtension({ contentType: options.contentType });
+
+    return `${attachmentUuid}-attachment${attachmentExtension}`;
+  };
+
+  writeAttachment = (uuid: string, attachment: RawAttachment) => {
+    const attachmentFilename = this.buildAttachmentFileName(attachment);
 
     this.writer.writeAttachment(
       attachmentFilename,

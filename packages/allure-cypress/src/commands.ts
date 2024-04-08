@@ -44,6 +44,8 @@ Cypress.mocha
     testRuntime.sendMessage({
       type: "cypress_start",
       data: {
+        isInteractive: Cypress.config("isInteractive"),
+        absolutePath: Cypress.spec.absolute,
         specPath: getSuitePath(test).concat(test.title),
         filename: Cypress.spec.relative,
         start: Date.now(),

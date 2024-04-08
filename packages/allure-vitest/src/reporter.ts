@@ -162,6 +162,6 @@ export default class AllureVitestReporter implements Reporter {
       }
     });
     await this.allureReporterRuntime.stop(testUUID, task.result.startTime + task.result?.duration || 0);
-    await this.allureReporterRuntime.write(testUUID);
+    this.allureReporterRuntime.write(testUUID);
   }
 }

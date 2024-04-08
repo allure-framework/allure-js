@@ -33,16 +33,15 @@ export interface Attachment {
   source: string;
 }
 
-export interface RawAttachment {
-  name: string;
-  content: Buffer | string;
-  contentType: ContentType | string;
-  encoding?: string;
-}
-
 export interface AttachmentOptions {
   contentType: ContentType | string;
+  encoding?: string;
   fileExtension?: string;
+}
+
+export interface RawAttachment extends AttachmentOptions {
+  name: string;
+  content: Buffer | string;
 }
 
 export interface Label {
