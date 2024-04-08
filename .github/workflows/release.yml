@@ -34,10 +34,6 @@ jobs:
         run: |
           yarn install --immutable --immutable-cache --check-cache
 
-      - name: "Set release version"
-        run: |
-          yarn workspaces foreach version ${{ github.event.inputs.releaseVersion }}
-
       - name: "Commit release version and create tag"
         run: |
           git add -A
