@@ -1,16 +1,139 @@
 import {
+  ContentType,
+  LabelName,
+  LinkType,
+  ParameterOptions,
   RuntimeMessage,
   Stage,
   Status,
   TestRuntime,
+  getGlobalTestRuntime,
   getUnfinishedStepsMessages,
   hasStepMessage,
   setGlobalTestRuntime,
-  getGlobalTestRuntime,
 } from "allure-js-commons/new/sdk/browser";
 import { CypressRuntimeMessage } from "./model.js";
+import { normalizeAttachmentContentEncoding, uint8ArrayToBase64 } from "./utils.js";
 
 export class AllureCypressTestRuntime implements TestRuntime {
+  label(name: LabelName | string, value: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        labels: [{ name, value }],
+      },
+    });
+  }
+
+  link(url: string, type?: LinkType | string, name?: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        links: [{ type, url, name }],
+      },
+    });
+  }
+
+  parameter(name: string, value: string, options?: ParameterOptions) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        parameters: [
+          {
+            name,
+            value,
+            ...options,
+          },
+        ],
+      },
+    });
+  }
+
+  description(markdown: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        description: markdown,
+      },
+    });
+  }
+
+  descriptionHtml(html: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        descriptionHtml: html,
+      },
+    });
+  }
+
+  displayName(name: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        displayName: name,
+      },
+    });
+  }
+
+  historyId(value: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        historyId: value,
+      },
+    });
+  }
+
+  testCaseId(value: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        testCaseId: value,
+      },
+    });
+  }
+
+  attachment(name: string, content: Buffer | string, type: string | ContentType) {
+    // @ts-ignore
+    const attachmentRawContent: string | Uint8Array = content?.type === "Buffer" ? content.data : content;
+    const encoding = content instanceof Buffer ? "base64" : "utf-8";
+    const actualEncoding = normalizeAttachmentContentEncoding(attachmentRawContent, encoding);
+    const attachmentContent = uint8ArrayToBase64(attachmentRawContent);
+
+    this.sendMessage({
+      type: "raw_attachment",
+      data: {
+        content: attachmentContent,
+        encoding: actualEncoding,
+        contentType: type,
+        name,
+      },
+    });
+  }
+
+  step(name: string, body: () => void | Promise<void>) {
+    cy.wrap(null, { log: false })
+      .then(() => {
+        this.sendMessage({
+          type: "step_start",
+          data: { name, start: Date.now() },
+        });
+
+        body();
+      })
+      .then(() => {
+        this.sendMessage({
+          type: "step_stop",
+          data: {
+            status: Status.PASSED,
+            stage: Stage.FINISHED,
+            stop: Date.now(),
+          },
+        });
+      });
+  }
+
   sendMessage(message: CypressRuntimeMessage) {
     const messages = Cypress.env("allureRuntimeMessages") || [];
 

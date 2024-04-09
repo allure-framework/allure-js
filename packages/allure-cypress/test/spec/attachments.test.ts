@@ -4,13 +4,13 @@ import { expect, test } from "vitest";
 import { runCypressInlineTest } from "../utils";
 
 test("text", async () => {
-  const { tests, attachments } = await runCypressInlineTest(`
+ const { tests, attachments } = await runCypressInlineTest(`
     import { attachment } from "allure-cypress";
 
     it("text attachment", () => {
       attachment("foo.txt", "bar", "text/plain");
     });
-  `);
+  `)
 
   expect(tests).toHaveLength(1);
   expect(tests[0].attachments).toHaveLength(1);

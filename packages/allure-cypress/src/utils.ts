@@ -1,8 +1,22 @@
-import { getGlobalTestRuntime } from "allure-js-commons/new/sdk/browser";
-import { CypressRuntimeMessage } from "./model.js";
+export const uint8ArrayToBase64 = (data: unknown) => {
+  // @ts-ignore
+  const u8arrayLike = Array.isArray(data) || data.buffer;
 
-export const pushReportMessage = (message: CypressRuntimeMessage) => {
-  const testRuntime = getGlobalTestRuntime();
+  if (!u8arrayLike) {
+    return data as string;
+  }
 
-  testRuntime.sendMessage(message);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  return btoa(String.fromCharCode.apply(null, data as number[]));
+};
+
+export const normalizeAttachmentContentEncoding = (data: unknown, encoding: BufferEncoding): BufferEncoding => {
+  // @ts-ignore
+  const u8arrayLike = Array.isArray(data) || data.buffer;
+
+  if (u8arrayLike) {
+    return "base64";
+  }
+
+  return encoding;
 };

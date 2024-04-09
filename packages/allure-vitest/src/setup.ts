@@ -131,7 +131,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
     });
   }
 
-  async attachment(name: string, content: Buffer | string, type: ContentType) {
+  async attachment(name: string, content: Buffer | string, type: string | ContentType) {
     this.sendMessage({
       type: "raw_attachment",
       data: {

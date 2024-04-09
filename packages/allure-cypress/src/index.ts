@@ -1,108 +1,90 @@
-import { LabelName, LinkType, ParameterOptions, Stage, Status } from "allure-js-commons/new";
-import { pushReportMessage } from "./utils.js";
-
-export type CypressWrappedAttachment = { type: string; data: unknown };
-
-export const uint8ArrayToBase64 = (data: unknown) => {
-  // @ts-ignore
-  const u8arrayLike = Array.isArray(data) || data.buffer;
-
-  if (!u8arrayLike) {
-    return data as string;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  return btoa(String.fromCharCode.apply(null, data as number[]));
-};
-
-export const normalizeAttachmentContentEncoding = (data: unknown, encoding: BufferEncoding): BufferEncoding => {
-  // @ts-ignore
-  const u8arrayLike = Array.isArray(data) || data.buffer;
-
-  if (u8arrayLike) {
-    return "base64";
-  }
-
-  return encoding;
-};
+import {
+  LabelName,
+  LinkType,
+  ParameterOptions,
+  getGlobalTestRuntime,
+} from "allure-js-commons/new/sdk/browser";
 
 export const label = (name: string, value: string) => {
-  pushReportMessage({
-    type: "metadata",
-    data: {
-      labels: [{ name, value }],
-    },
-  });
+  const testRuntime = getGlobalTestRuntime();
+
+  if (!testRuntime) {
+    throw new Error("Allure test runtime is not initialized");
+  }
+
+  testRuntime.label(name, value);
 };
-export const link = (url: string, name?: string, type?: string) => {
-  pushReportMessage({
-    type: "metadata",
-    data: {
-      links: [{ type, url, name }],
-    },
-  });
+export const link = (url: string, type?: string, name?: string) => {
+  const testRuntime = getGlobalTestRuntime();
+
+  if (!testRuntime) {
+    throw new Error("Allure test runtime is not initialized");
+  }
+
+  testRuntime.link(url, type, name);
 };
 export const parameter = (name: string, value: string, options?: ParameterOptions) => {
-  pushReportMessage({
-    type: "metadata",
-    data: {
-      parameters: [{ name, value, ...options }],
-    },
-  });
+  const testRuntime = getGlobalTestRuntime();
+
+  if (!testRuntime) {
+    throw new Error("Allure test runtime is not initialized");
+  }
+
+  testRuntime.parameter(name, value, options);
 };
 export const description = (markdown: string) => {
-  pushReportMessage({
-    type: "metadata",
-    data: {
-      description: markdown,
-    },
-  });
+  const testRuntime = getGlobalTestRuntime();
+
+  if (!testRuntime) {
+    throw new Error("Allure test runtime is not initialized");
+  }
+
+  testRuntime.description(markdown);
 };
 export const descriptionHtml = (html: string) => {
-  pushReportMessage({
-    type: "metadata",
-    data: {
-      descriptionHtml: html,
-    },
-  });
+  const testRuntime = getGlobalTestRuntime();
+
+  if (!testRuntime) {
+    throw new Error("Allure test runtime is not initialized");
+  }
+
+  testRuntime.descriptionHtml(html);
 };
 export const testCaseId = (value: string) => {
-  pushReportMessage({
-    type: "metadata",
-    data: {
-      testCaseId: value,
-    },
-  });
+  const testRuntime = getGlobalTestRuntime();
+
+  if (!testRuntime) {
+    throw new Error("Allure test runtime is not initialized");
+  }
+
+  testRuntime.testCaseId(value);
 };
 export const historyId = (value: string) => {
-  pushReportMessage({
-    type: "metadata",
-    data: {
-      historyId: value,
-    },
-  });
-};
-export const allureId = (value: string) => {
-  pushReportMessage({
-    type: "metadata",
-    data: {
-      labels: [{ name: LabelName.ALLURE_ID, value }],
-    },
-  });
+  const testRuntime = getGlobalTestRuntime();
+
+  if (!testRuntime) {
+    throw new Error("Allure test runtime is not initialized");
+  }
+
+  testRuntime.historyId(value);
 };
 export const displayName = (name: string) => {
-  pushReportMessage({
-    type: "metadata",
-    data: {
-      displayName: name,
-    },
-  });
+  const testRuntime = getGlobalTestRuntime();
+
+  if (!testRuntime) {
+    throw new Error("Allure test runtime is not initialized");
+  }
+
+  testRuntime.displayName(name);
+};
+export const allureId = (value: string) => {
+  label(LabelName.ALLURE_ID, value);
 };
 export const issue = (url: string, name?: string) => {
-  link(url, name, LinkType.ISSUE);
+  link(url, LinkType.ISSUE, name);
 };
 export const tms = (url: string, name?: string) => {
-  link(url, name, LinkType.TMS);
+  link(url, LinkType.TMS, name);
 };
 export const epic = (name: string) => {
   label(LabelName.EPIC, name);
@@ -138,41 +120,22 @@ export const attachment = (
   name: string,
   content: unknown,
   type: string = "text/plain",
-  encoding: BufferEncoding = "utf8",
 ) => {
   // @ts-ignore
-  const attachmentRawContent: string | Uint8Array = content?.type === "Buffer" ? content.data : content;
-  const actualEncoding = normalizeAttachmentContentEncoding(attachmentRawContent, encoding);
-  const attachmentContent = uint8ArrayToBase64(attachmentRawContent);
+  const testRuntime = getGlobalTestRuntime();
 
-  pushReportMessage({
-    type: "raw_attachment",
-    data: {
-      content: attachmentContent,
-      encoding: actualEncoding,
-      contentType: type,
-      name,
-    },
-  });
+  if (!testRuntime) {
+    throw new Error("Allure test runtime is not initialized");
+  }
+
+  testRuntime.attachment(name, content, type);
 };
 export const step = (name: string, body: () => void) => {
-  cy.wrap(null, { log: false })
-    .then(() => {
-      pushReportMessage({
-        type: "step_start",
-        data: { name, start: Date.now() },
-      });
+  const testRuntime = getGlobalTestRuntime();
 
-      body();
-    })
-    .then(() => {
-      pushReportMessage({
-        type: "step_stop",
-        data: {
-          status: Status.PASSED,
-          stage: Stage.FINISHED,
-          stop: Date.now(),
-        },
-      });
-    });
+  if (!testRuntime) {
+    throw new Error("Allure test runtime is not initialized");
+  }
+
+  testRuntime.step(name, body);
 };
