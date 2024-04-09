@@ -20,11 +20,12 @@ import {
 } from "allure-js-commons/new/sdk/node";
 import { getTestFullName } from "./utils.js";
 
+// TODO: should be in `allure-js-commons`
 declare global {
   // eslint-disable-next-line no-var
   var allure: {
     label: (name: string, value: string) => Promise<void>;
-    link: (type: string, url: string, name?: string) => Promise<void>;
+    link: (url: string, type?: string, name?: string) => Promise<void>;
     parameter: (name: string, value: string, options?: ParameterOptions) => Promise<void>;
     description: (markdown: string) => Promise<void>;
     descriptionHtml: (html: string) => Promise<void>;
@@ -52,6 +53,134 @@ declare global {
 export class AllureVitestTestRuntime implements TestRuntime {
   messagesHolder = new MessagesHolder();
 
+  async label(name: LabelName | string, value: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        labels: [{ name, value }],
+      },
+    });
+  }
+
+  async link(url: string, type?: LinkType | string, name?: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        links: [{ type, url, name }],
+      },
+    });
+  }
+
+  async parameter(name: string, value: string, options?: ParameterOptions) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        parameters: [
+          {
+            name,
+            value,
+            ...options,
+          },
+        ],
+      },
+    });
+  }
+
+  async description(markdown: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        description: markdown,
+      },
+    });
+  }
+
+  async descriptionHtml(html: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        descriptionHtml: html,
+      },
+    });
+  }
+
+  async displayName(name: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        displayName: name,
+      },
+    });
+  }
+
+  async historyId(value: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        historyId: value,
+      },
+    });
+  }
+
+  async testCaseId(value: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        testCaseId: value,
+      },
+    });
+  }
+
+  async attachment(name: string, content: Buffer | string, type: ContentType) {
+    this.sendMessage({
+      type: "raw_attachment",
+      data: {
+        name,
+        content: Buffer.from(content).toString("base64"),
+        contentType: type,
+        encoding: "base64",
+      },
+    });
+  }
+
+  async step(name: string, body: () => void | Promise<void>) {
+    this.sendMessage({
+      type: "step_start",
+      data: {
+        name,
+        start: Date.now(),
+      },
+    });
+
+    try {
+      await body();
+
+      this.sendMessage({
+        type: "step_stop",
+        data: {
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          stop: Date.now(),
+        },
+      });
+    } catch (err) {
+      this.sendMessage({
+        type: "step_stop",
+        data: {
+          status: Status.FAILED,
+          stage: Stage.FINISHED,
+          stop: Date.now(),
+          statusDetails: {
+            message: err.message,
+            trace: err.stack,
+          },
+        },
+      });
+
+      throw err;
+    }
+  }
+
   sendMessage(message: RuntimeMessage) {
     this.messagesHolder.push(message);
   }
@@ -64,79 +193,69 @@ export const label = async (name: LabelName | string, value: string) => {
     throw new Error("Allure test runtime is not initialized!");
   }
 
-  allureTestRuntime.sendMessage({
-    type: "metadata",
-    data: {
-      labels: [{ name, value }],
-    },
-  });
+  await allureTestRuntime.label(name, value);
 };
 
-export const link = async (type: LinkType | string, url: string, name?: string) => {
+export const link = async (url: string, type?: LinkType | string, name?: string) => {
   const allureTestRuntime = getGlobalTestRuntime();
 
   if (!allureTestRuntime) {
     throw new Error("Allure test runtime is not initialized!");
   }
 
-  allureTestRuntime.sendMessage({
-    type: "metadata",
-    data: {
-      links: [{ type, url, name }],
-    },
-  });
+  await allureTestRuntime.link(url, type, name);
 };
 
 export const epic = async (value: string) => {
-  label(LabelName.EPIC, value);
+  await label(LabelName.EPIC, value);
 };
 
 export const feature = async (value: string) => {
-  label(LabelName.FEATURE, value);
+  await label(LabelName.FEATURE, value);
 };
 
 export const story = async (value: string) => {
-  label(LabelName.STORY, value);
+  await label(LabelName.STORY, value);
 };
 
 export const suite = async (value: string) => {
-  label(LabelName.SUITE, value);
+  await label(LabelName.SUITE, value);
 };
 
 export const parentSuite = async (value: string) => {
-  label(LabelName.PARENT_SUITE, value);
+  await label(LabelName.PARENT_SUITE, value);
 };
 
 export const subSuite = async (value: string) => {
-  label(LabelName.SUB_SUITE, value);
+  await label(LabelName.SUB_SUITE, value);
 };
 
 export const owner = async (value: string) => {
-  label(LabelName.OWNER, value);
+  await label(LabelName.OWNER, value);
 };
 
 export const severity = async (value: string) => {
-  label(LabelName.SEVERITY, value);
+  await label(LabelName.SEVERITY, value);
 };
 
 export const layer = async (value: string) => {
-  label(LabelName.LAYER, value);
+  await label(LabelName.LAYER, value);
 };
 
 export const tag = async (value: string) => {
-  label(LabelName.TAG, value);
+  await label(LabelName.TAG, value);
 };
 
 export const allureId = async (value: string) => {
-  label(LabelName.ALLURE_ID, value);
+  await label(LabelName.ALLURE_ID, value);
 };
 
-export const issue = async (name: string, url: string) => {
-  link(LinkType.ISSUE, url, name);
+export const issue = async (url: string, name: string) => {
+  await link(url, LinkType.ISSUE, name);
 };
 
-export const tms = async (name: string, url: string) => {
-  link(LinkType.TMS, url, name);
+export const tms = async (url: string, name: string) => {
+  await link(url, LinkType.TMS, name);
 };
 
 export const parameter = async (name: string, value: string, options?: ParameterOptions) => {
@@ -146,12 +265,7 @@ export const parameter = async (name: string, value: string, options?: Parameter
     throw new Error("Allure test runtime is not initialized!");
   }
 
-  allureTestRuntime.sendMessage({
-    type: "metadata",
-    data: {
-      parameters: [{ name, value, ...options }],
-    },
-  });
+  await allureTestRuntime.parameter(name, value, options);
 };
 
 export const description = async (markdown: string) => {
@@ -161,12 +275,7 @@ export const description = async (markdown: string) => {
     throw new Error("Allure test runtime is not initialized!");
   }
 
-  allureTestRuntime.sendMessage({
-    type: "metadata",
-    data: {
-      description: markdown,
-    },
-  });
+  await allureTestRuntime.description(markdown);
 };
 
 export const descriptionHtml = async (html: string) => {
@@ -176,12 +285,7 @@ export const descriptionHtml = async (html: string) => {
     throw new Error("Allure test runtime is not initialized!");
   }
 
-  allureTestRuntime.sendMessage({
-    type: "metadata",
-    data: {
-      descriptionHtml: html,
-    },
-  });
+  await allureTestRuntime.descriptionHtml(html);
 };
 
 export const displayName = async (name: string) => {
@@ -191,12 +295,7 @@ export const displayName = async (name: string) => {
     throw new Error("Allure test runtime is not initialized!");
   }
 
-  allureTestRuntime.sendMessage({
-    type: "metadata",
-    data: {
-      displayName: name,
-    },
-  });
+  await allureTestRuntime.displayName(name);
 };
 
 export const historyId = async (value: string) => {
@@ -206,12 +305,7 @@ export const historyId = async (value: string) => {
     throw new Error("Allure test runtime is not initialized!");
   }
 
-  allureTestRuntime.sendMessage({
-    type: "metadata",
-    data: {
-      historyId: value,
-    },
-  });
+  await allureTestRuntime.historyId(value);
 };
 
 export const testCaseId = async (value: string) => {
@@ -221,12 +315,7 @@ export const testCaseId = async (value: string) => {
     throw new Error("Allure test runtime is not initialized!");
   }
 
-  allureTestRuntime.sendMessage({
-    type: "metadata",
-    data: {
-      testCaseId: value,
-    },
-  });
+  await allureTestRuntime.testCaseId(value);
 };
 
 export const attachment = async (name: string, content: Buffer | string, type: ContentType) => {
@@ -236,15 +325,7 @@ export const attachment = async (name: string, content: Buffer | string, type: C
     throw new Error("Allure test runtime is not initialized!");
   }
 
-  allureTestRuntime.sendMessage({
-    type: "raw_attachment",
-    data: {
-      name,
-      content: Buffer.from(content).toString("base64"),
-      contentType: type,
-      encoding: "base64",
-    },
-  });
+  allureTestRuntime.attachment(name, content, type);
 };
 
 export const step = async (name: string, body: () => Promise<void>) => {
@@ -254,41 +335,7 @@ export const step = async (name: string, body: () => Promise<void>) => {
     throw new Error("Allure test runtime is not initialized!");
   }
 
-  allureTestRuntime.sendMessage({
-    type: "step_start",
-    data: {
-      name,
-      start: Date.now(),
-    },
-  });
-
-  try {
-    await body();
-
-    allureTestRuntime.sendMessage({
-      type: "step_stop",
-      data: {
-        status: Status.PASSED,
-        stage: Stage.FINISHED,
-        stop: Date.now(),
-      },
-    });
-  } catch (err) {
-    allureTestRuntime.sendMessage({
-      type: "step_stop",
-      data: {
-        status: Status.FAILED,
-        stage: Stage.FINISHED,
-        stop: Date.now(),
-        statusDetails: {
-          message: err.message,
-          trace: err.stack,
-        },
-      },
-    });
-
-    throw err;
-  }
+  await allureTestRuntime.step(name, body);
 };
 
 const existsInTestPlan = (ctx: TaskContext, testPlan?: TestPlanV1) => {
