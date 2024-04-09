@@ -14,7 +14,9 @@ import {
   TestPlanV1,
   TestRuntime,
   extractMetadataFromString,
+  getGlobalTestRuntime,
   parseTestPlan,
+  setGlobalTestRuntime,
 } from "allure-js-commons/new/sdk/node";
 import { getTestFullName } from "./utils.js";
 
@@ -45,9 +47,6 @@ declare global {
     tag: (name: string) => Promise<void>;
     step: (name: string, body: () => Promise<void>) => Promise<void>;
   };
-
-  // eslint-disable-next-line no-var
-  var allureTestRuntime: AllureVitestTestRuntime;
 }
 
 export class AllureVitestTestRuntime implements TestRuntime {
@@ -59,7 +58,13 @@ export class AllureVitestTestRuntime implements TestRuntime {
 }
 
 export const label = async (name: LabelName | string, value: string) => {
-  global.allureTestRuntime.sendMessage({
+  const allureTestRuntime = getGlobalTestRuntime();
+
+  if (!allureTestRuntime) {
+    throw new Error("Allure test runtime is not initialized!");
+  }
+
+  allureTestRuntime.sendMessage({
     type: "metadata",
     data: {
       labels: [{ name, value }],
@@ -68,7 +73,13 @@ export const label = async (name: LabelName | string, value: string) => {
 };
 
 export const link = async (type: LinkType | string, url: string, name?: string) => {
-  global.allureTestRuntime.sendMessage({
+  const allureTestRuntime = getGlobalTestRuntime();
+
+  if (!allureTestRuntime) {
+    throw new Error("Allure test runtime is not initialized!");
+  }
+
+  allureTestRuntime.sendMessage({
     type: "metadata",
     data: {
       links: [{ type, url, name }],
@@ -129,7 +140,13 @@ export const tms = async (name: string, url: string) => {
 };
 
 export const parameter = async (name: string, value: string, options?: ParameterOptions) => {
-  global.allureTestRuntime.sendMessage({
+  const allureTestRuntime = getGlobalTestRuntime();
+
+  if (!allureTestRuntime) {
+    throw new Error("Allure test runtime is not initialized!");
+  }
+
+  allureTestRuntime.sendMessage({
     type: "metadata",
     data: {
       parameters: [{ name, value, ...options }],
@@ -138,7 +155,13 @@ export const parameter = async (name: string, value: string, options?: Parameter
 };
 
 export const description = async (markdown: string) => {
-  global.allureTestRuntime.sendMessage({
+  const allureTestRuntime = getGlobalTestRuntime();
+
+  if (!allureTestRuntime) {
+    throw new Error("Allure test runtime is not initialized!");
+  }
+
+  allureTestRuntime.sendMessage({
     type: "metadata",
     data: {
       description: markdown,
@@ -147,7 +170,13 @@ export const description = async (markdown: string) => {
 };
 
 export const descriptionHtml = async (html: string) => {
-  global.allureTestRuntime.sendMessage({
+  const allureTestRuntime = getGlobalTestRuntime();
+
+  if (!allureTestRuntime) {
+    throw new Error("Allure test runtime is not initialized!");
+  }
+
+  allureTestRuntime.sendMessage({
     type: "metadata",
     data: {
       descriptionHtml: html,
@@ -156,7 +185,13 @@ export const descriptionHtml = async (html: string) => {
 };
 
 export const displayName = async (name: string) => {
-  global.allureTestRuntime.sendMessage({
+  const allureTestRuntime = getGlobalTestRuntime();
+
+  if (!allureTestRuntime) {
+    throw new Error("Allure test runtime is not initialized!");
+  }
+
+  allureTestRuntime.sendMessage({
     type: "metadata",
     data: {
       displayName: name,
@@ -165,7 +200,13 @@ export const displayName = async (name: string) => {
 };
 
 export const historyId = async (value: string) => {
-  global.allureTestRuntime.sendMessage({
+  const allureTestRuntime = getGlobalTestRuntime();
+
+  if (!allureTestRuntime) {
+    throw new Error("Allure test runtime is not initialized!");
+  }
+
+  allureTestRuntime.sendMessage({
     type: "metadata",
     data: {
       historyId: value,
@@ -174,7 +215,13 @@ export const historyId = async (value: string) => {
 };
 
 export const testCaseId = async (value: string) => {
-  global.allureTestRuntime.sendMessage({
+  const allureTestRuntime = getGlobalTestRuntime();
+
+  if (!allureTestRuntime) {
+    throw new Error("Allure test runtime is not initialized!");
+  }
+
+  allureTestRuntime.sendMessage({
     type: "metadata",
     data: {
       testCaseId: value,
@@ -183,7 +230,13 @@ export const testCaseId = async (value: string) => {
 };
 
 export const attachment = async (name: string, content: Buffer | string, type: ContentType) => {
-  global.allureTestRuntime.sendMessage({
+  const allureTestRuntime = getGlobalTestRuntime();
+
+  if (!allureTestRuntime) {
+    throw new Error("Allure test runtime is not initialized!");
+  }
+
+  allureTestRuntime.sendMessage({
     type: "raw_attachment",
     data: {
       name,
@@ -195,7 +248,13 @@ export const attachment = async (name: string, content: Buffer | string, type: C
 };
 
 export const step = async (name: string, body: () => Promise<void>) => {
-  global.allureTestRuntime.sendMessage({
+  const allureTestRuntime = getGlobalTestRuntime();
+
+  if (!allureTestRuntime) {
+    throw new Error("Allure test runtime is not initialized!");
+  }
+
+  allureTestRuntime.sendMessage({
     type: "step_start",
     data: {
       name,
@@ -206,7 +265,7 @@ export const step = async (name: string, body: () => Promise<void>) => {
   try {
     await body();
 
-    global.allureTestRuntime.sendMessage({
+    allureTestRuntime.sendMessage({
       type: "step_stop",
       data: {
         status: Status.PASSED,
@@ -215,7 +274,7 @@ export const step = async (name: string, body: () => Promise<void>) => {
       },
     });
   } catch (err) {
-    global.allureTestRuntime.sendMessage({
+    allureTestRuntime.sendMessage({
       type: "step_stop",
       data: {
         status: Status.FAILED,
@@ -303,12 +362,12 @@ beforeEach(async (ctx) => {
     attachment,
     step,
   };
-  global.allureTestRuntime = new AllureVitestTestRuntime();
+  setGlobalTestRuntime(new AllureVitestTestRuntime());
 });
 
 afterEach((ctx) => {
   // @ts-ignore
-  ctx.task.meta.allureRuntimeMessages = global.allureTestRuntime.messagesHolder.messages;
+  ctx.task.meta.allureRuntimeMessages = getGlobalTestRuntime().messagesHolder.messages;
 
-  global.allureTestRuntime = undefined;
+  setGlobalTestRuntime(undefined);
 });

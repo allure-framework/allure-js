@@ -1,5 +1,5 @@
 export { Config } from "./Config.js";
-export { TestRuntime } from "./TestRuntime.js";
+export { TestRuntime, TestRuntimeGlobalGetter, TestRuntimeGlobalSetter } from "./TestRuntime.js";
 export { TestHolder } from "./TestHolder.js";
 export { MessagesHolder } from "./MessageHolder.js";
 export {
