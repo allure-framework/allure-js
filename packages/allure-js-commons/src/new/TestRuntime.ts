@@ -1,5 +1,4 @@
-import { ContentType, LabelName, LinkType, ParameterOptions } from "../model.js";
-import { RuntimeMessage } from "./model.js";
+import { RuntimeMessage, ContentType, LabelName, LinkType, ParameterOptions } from "./model.js";
 
 export interface TestRuntime<T = unknown> {
   label: (name: LabelName, value: string) => void | Promise<void>;
@@ -26,6 +25,14 @@ export interface TestRuntime<T = unknown> {
 }
 
 // TODO: maybe we don't need these types because we gonna store TestRuntime in globalThis all the time
-export type TestRuntimeGlobalGetter = () => TestRuntime | undefined;
+// export type TestRuntimeGlobalGetter = () => TestRuntime | undefined;
+//
+// export type TestRuntimeGlobalSetter = (runtime: TestRuntime | undefined) => void;
 
-export type TestRuntimeGlobalSetter = (runtime: TestRuntime | undefined) => void;
+export const setGlobalTestRuntime = (runtime: TestRuntime) => {
+  (globalThis as any).allureTestRuntime = () => runtime;
+};
+
+export const getGlobalTestRuntime = () => {
+  return (globalThis as any).allureTestRuntime();
+};

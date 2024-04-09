@@ -4,9 +4,10 @@ import { runVitestInlineTest } from "../utils.js";
 it("sets test display name", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
+    import { displayName } from "allure-js-commons/new";
 
     test("display name", async () => {
-      await allure.displayName("foo");
+      await displayName("foo");
     });
   `);
 

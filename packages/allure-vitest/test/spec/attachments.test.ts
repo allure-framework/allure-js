@@ -4,9 +4,10 @@ import { runVitestInlineTest } from "../utils.js";
 it("adds attachments", async () => {
   const { tests, attachments } = await runVitestInlineTest(`
     import { test } from "vitest";
+    import { attachment } from "allure-js-commons/new";
 
     test("text attachment", async () => {
-      await allure.attachment("foo.txt", Buffer.from("bar"), "text/plain");
+      await attachment("foo.txt", Buffer.from("bar"), "text/plain");
     });
   `);
 

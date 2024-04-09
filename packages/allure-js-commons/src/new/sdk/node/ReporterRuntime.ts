@@ -1,4 +1,4 @@
-import { AttachmentOptions, ContentType } from "../../model.js";
+import { AttachmentOptions } from "../../model.js";
 import { Config } from "../Config.js";
 import { ReporterRuntime } from "../ReporterRuntime.js";
 import { AllureNodeCrypto } from "./Crypto.js";

@@ -1,11 +1,10 @@
-import { AttachmentOptions, Link, RawAttachment, StepResult, TestResult } from "../model.js";
+import { AttachmentOptions, Link, RawAttachment, RuntimeMessage, StepResult, TestResult } from "../model.js";
 import { deepClone, typeToExtension } from "../utils.js";
 import { Config, LinkConfig } from "./Config.js";
 import { Crypto } from "./Crypto.js";
 import { Notifier } from "./LifecycleListener.js";
 import { LifecycleState } from "./LifecycleState.js";
 import { Writer } from "./Writer.js";
-import { RuntimeMessage, RuntimeMetadataMessage, RuntimeRawAttachmentMessage } from "./model.js";
 import { createTestResult, getTestResultHistoryId } from "./utils.js";
 
 export class ReporterRuntime {

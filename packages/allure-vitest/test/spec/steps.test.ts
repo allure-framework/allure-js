@@ -5,9 +5,10 @@ import { runVitestInlineTest } from "../utils.js";
 it("handles single lambda step", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
+    import { step } from "allure-js-commons/new";
 
     test("steps", async () => {
-      await allure.step("step", () => {});
+      await step("step", () => {});
     });
   `);
 
@@ -23,10 +24,11 @@ it("handles single lambda step", async () => {
 it("handles single lambda step with attachment", async () => {
   const { tests, attachments } = await runVitestInlineTest(`
     import { test } from "vitest";
+    import { step, attachment } from "allure-js-commons/new";
 
     test("steps", async () => {
-      await allure.step("step", async () => {
-        await allure.attachment("foo.txt", Buffer.from("bar"), "text/plain");
+      await step("step", async () => {
+        await attachment("foo.txt", Buffer.from("bar"), "text/plain");
       });
     });
   `);
@@ -45,11 +47,12 @@ it("handles single lambda step with attachment", async () => {
 it("handles nested lambda steps", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
+    import { step } from "allure-js-commons/new";
 
     test("steps", async () => {
-      await allure.step("step 1", async () => {
-        await allure.step("step 2", async () => {
-          await allure.step("step 3", () => {
+      await step("step 1", async () => {
+        await step("step 2", async () => {
+          await step("step 3", () => {
           });
         });
       });

@@ -2,6 +2,7 @@ import {
   AttachmentOptions,
   ContentType,
   FixtureResult,
+  RuntimeMessage,
   Stage,
   Status,
   StepResult,
@@ -10,7 +11,6 @@ import {
 } from "../model.js";
 import { typeToExtension } from "../utils.js";
 import { Crypto } from "./Crypto.js";
-import { RuntimeMessage } from "./model.js";
 
 export const createTestResultContainer = (uuid: string): TestResultContainer => {
   return {

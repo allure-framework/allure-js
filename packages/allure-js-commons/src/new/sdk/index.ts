@@ -1,5 +1,5 @@
 export { Config } from "./Config.js";
-export { TestRuntime, TestRuntimeGlobalGetter, TestRuntimeGlobalSetter } from "./TestRuntime.js";
+export { TestRuntime, setGlobalTestRuntime, getGlobalTestRuntime } from "../TestRuntime.js";
 export { TestHolder } from "./TestHolder.js";
 export { MessagesHolder } from "./MessageHolder.js";
 export {
@@ -18,5 +18,5 @@ export {
   RuntimeStartStepMessage,
   RuntimeStopStepMessage,
   RuntimeMessage,
-} from "./model.js";
+} from "../model.js";
 export * from "../index.js";

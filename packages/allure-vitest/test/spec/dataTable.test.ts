@@ -4,13 +4,14 @@ import { runVitestInlineTest } from "../utils.js";
 it("handles data table", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test, expect } from "vitest";
+    import { label } from "allure-js-commons/new";
 
     test.each([
       [1, 1, 2],
       [1, 2, 3],
       [2, 1, 3],
     ])("%i + %i = %i", async (a, b, expected) => {
-      await allure.label("foo", "bar");
+      await label("foo", "bar");
     })
   `);
 
