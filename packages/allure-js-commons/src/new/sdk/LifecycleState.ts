@@ -45,6 +45,7 @@ export class LifecycleState {
 
   deleteTestResult = (uuid: string) => {
     this.testResults.delete(uuid);
+    this.testResultsSteps.delete(uuid);
   };
 
   // steps

@@ -78,6 +78,7 @@ export class ReporterRuntime {
     }
 
     this.writer.writeResult(targetResult);
+    this.state.deleteTestResult(uuid);
   };
 
   buildAttachmentFileName = (options: AttachmentOptions): string => {

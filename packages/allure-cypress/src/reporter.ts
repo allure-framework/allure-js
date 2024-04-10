@@ -100,17 +100,13 @@ export class AllureCypress {
           result.statusDetails = endMessage.data.statusDetails;
         });
 
-        if (startMessage.data.isInteractive) {
-          await this.endSpec(
-            {
-              absolute: startMessage.data.absolutePath,
-            } as Cypress.Spec,
-            {} as CypressCommandLine.RunResult,
-          );
-        }
+        await this.runtime.stop(testUuid, Date.now());
 
-        this.runtime.stop(testUuid, Date.now());
-        this.pushTestUuid(startMessage.data.absolutePath, testUuid);
+        if (startMessage.data.isInteractive) {
+          this.runtime.write(testUuid);
+        } else {
+          this.pushTestUuid(startMessage.data.absolutePath, testUuid);
+        }
 
         return null;
       },
@@ -119,6 +115,7 @@ export class AllureCypress {
 
   async endSpec(spec: Cypress.Spec, cypressResult: CypressCommandLine.RunResult) {
     const testUuids = this.testsUuidsByCypressAbsolutePath.get(spec.absolute);
+    this.testsUuidsByCypressAbsolutePath.delete(spec.absolute);
 
     if (!testUuids) {
       return;
@@ -144,10 +141,6 @@ export class AllureCypress {
 
       this.runtime.write(uuid);
     }
-
-    testUuids.forEach((uuid) => {
-      this.runtime.write(uuid);
-    });
   }
 }
 
