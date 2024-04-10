@@ -6,11 +6,16 @@ import type { AllureResults, TestResult, TestResultContainer } from "allure-js-c
 
 export type TestResultsByFullName = Record<string, TestResult>;
 
-export const runJestInlineTest = async (test: string): Promise<AllureResults> => {
-  const res: AllureResults = {
+type AllureResultsExtended = AllureResults & {
+  processError: string;
+};
+
+export const runJestInlineTest = async (test: string): Promise<AllureResultsExtended> => {
+  const res: AllureResultsExtended = {
     tests: [],
     groups: [],
     attachments: {},
+    processError: "",
   };
   const testDir = join(__dirname, "fixtures", randomUUID());
   const configFilePath = join(testDir, "jest.config.js");
@@ -50,7 +55,6 @@ export const runJestInlineTest = async (test: string): Promise<AllureResults> =>
     cwd: testDir,
     stdio: "pipe",
   });
-  let processError = "";
 
   testProcess.on("message", (message: string) => {
     const event: { path: string; type: string; data: string } = JSON.parse(message);
@@ -75,7 +79,7 @@ export const runJestInlineTest = async (test: string): Promise<AllureResults> =>
   });
   testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
     process.stderr.write(String(chunk));
-    processError += chunk;
+    res.processError += chunk;
   });
 
   return new Promise((resolve) => {

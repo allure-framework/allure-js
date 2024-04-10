@@ -91,6 +91,13 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
 
     handleTestEvent = (event: Circus.Event, state: Circus.State) => {
       switch (event.name) {
+        case "test_retry":
+          this.handleTestAdd({
+            testName: event.test.name,
+            concurrent: event.test.concurrent,
+            state,
+          });
+          break;
         case "add_test":
           this.handleTestAdd({
             testName: event.testName,
