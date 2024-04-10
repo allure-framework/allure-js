@@ -50,7 +50,7 @@ export class AllureCypress {
 
         if (startMessage.type !== "cypress_start" || endMessage.type !== "cypress_end") {
           // TODO:
-          throw new Error("ksdfjlskdjflksdfj");
+          throw new Error("INTERNAL ERROR: Invalid message sequence");
         }
 
         const suiteLabels = getSuitesLabels(startMessage.data.specPath.slice(0, -1));
