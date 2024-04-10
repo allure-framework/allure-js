@@ -2,8 +2,8 @@ import { expect, it } from "vitest";
 import { runCypressInlineTest } from "../utils";
 
 it("testCaseId", async () => {
-  const { tests } = await runCypressInlineTest(`
-    import { testCaseId } from "allure-cypress";
+  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
+    import { testCaseId } from "${allureCommonsModulePath}";
 
     it("sample", () => {
       testCaseId("foo");

@@ -3,8 +3,8 @@ import { ContentType, Status } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils";
 
 it("single step", async () => {
-  const { tests } = await runCypressInlineTest(`
-    import { label, step } from "allure-cypress";
+  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
+    import { label, step } from "${allureCommonsModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -20,8 +20,8 @@ it("single step", async () => {
 });
 
 it("multiple steps", async () => {
-  const { tests } = await runCypressInlineTest(`
-    import { label, step } from "allure-cypress";
+  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
+    import { label, step } from "${allureCommonsModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -49,8 +49,8 @@ it("multiple steps", async () => {
 });
 
 it("nested steps", async () => {
-  const { tests } = await runCypressInlineTest(`
-    import { label, step } from "allure-cypress";
+  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
+    import { label, step } from "${allureCommonsModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -74,8 +74,8 @@ it("nested steps", async () => {
 });
 
 it("step with attachments", async () => {
-  const { tests, attachments } = await runCypressInlineTest(`
-    import { attachment, step } from "allure-cypress";
+  const { tests, attachments } = await runCypressInlineTest((allureCommonsModulePath) => `
+    import { attachment, step } from "${allureCommonsModulePath}";
 
     it("text attachment", () => {
       step("foo", () => {
@@ -96,8 +96,8 @@ it("step with attachments", async () => {
 });
 
 it("step with screenshot", async () => {
-  const { tests, attachments } = await runCypressInlineTest(`
-    import { step } from "allure-cypress";
+  const { tests, attachments } = await runCypressInlineTest((allureCommonsModulePath) => `
+    import { step } from "${allureCommonsModulePath}";
 
     it("manual", () => {
       step("foo", () => {
@@ -119,8 +119,8 @@ it("step with screenshot", async () => {
 });
 
 it("step with cypress assertion error", async () => {
-  const { tests } = await runCypressInlineTest(`
-    import { step } from "allure-cypress";
+  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
+    import { step } from "${allureCommonsModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -136,8 +136,8 @@ it("step with cypress assertion error", async () => {
 });
 
 it("step with unexpected error", async () => {
-  const { tests } = await runCypressInlineTest(`
-    import { step } from "allure-cypress";
+  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
+    import { step } from "${allureCommonsModulePath}";
 
     it("step", () => {
       step("foo", () => {

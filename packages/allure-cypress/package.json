@@ -24,11 +24,6 @@
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
     },
-    "./commands": {
-      "import": "./dist/commands.mjs",
-      "require": "./dist/commands.cjs",
-      "types": "./dist/commands.d.ts"
-    },
     "./reporter": {
       "import": "./dist/reporter.mjs",
       "require": "./dist/reporter.cjs",

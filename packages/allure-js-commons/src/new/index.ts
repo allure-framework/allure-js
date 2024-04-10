@@ -1,4 +1,5 @@
 export {
+  AllureResults,
   ContentType,
   ParameterOptions,
   Parameter,

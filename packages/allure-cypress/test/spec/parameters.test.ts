@@ -3,8 +3,8 @@ import { runCypressInlineTest } from "../utils";
 
 it("parameters", async () => {
   const { tests } = await runCypressInlineTest(
-    `
-    import { parameter } from "allure-cypress";
+    (allureCommonsModulePath) => `
+    import { parameter } from "${allureCommonsModulePath}";
 
     it("adds parameter", () => {
       parameter("foo", "bar", {

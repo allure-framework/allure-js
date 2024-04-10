@@ -1,141 +1,276 @@
 import {
+  ContentType,
   LabelName,
   LinkType,
   ParameterOptions,
+  RuntimeMessage,
+  Stage,
+  Status,
+  TestRuntime,
   getGlobalTestRuntime,
+  getUnfinishedStepsMessages,
+  hasStepMessage,
+  setGlobalTestRuntime,
 } from "allure-js-commons/new/sdk/browser";
+import { CypressRuntimeMessage } from "./model.js";
+import { normalizeAttachmentContentEncoding, uint8ArrayToBase64 } from "./utils.js";
 
-export const label = (name: string, value: string) => {
-  const testRuntime = getGlobalTestRuntime();
-
-  if (!testRuntime) {
-    throw new Error("Allure test runtime is not initialized");
+export class AllureCypressTestRuntime implements TestRuntime {
+  label(name: LabelName | string, value: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        labels: [{ name, value }],
+      },
+    });
   }
 
-  testRuntime.label(name, value);
-};
-export const link = (url: string, type?: string, name?: string) => {
-  const testRuntime = getGlobalTestRuntime();
-
-  if (!testRuntime) {
-    throw new Error("Allure test runtime is not initialized");
+  link(url: string, type?: LinkType | string, name?: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        links: [{ type, url, name }],
+      },
+    });
   }
 
-  testRuntime.link(url, type, name);
-};
-export const parameter = (name: string, value: string, options?: ParameterOptions) => {
-  const testRuntime = getGlobalTestRuntime();
-
-  if (!testRuntime) {
-    throw new Error("Allure test runtime is not initialized");
+  parameter(name: string, value: string, options?: ParameterOptions) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        parameters: [
+          {
+            name,
+            value,
+            ...options,
+          },
+        ],
+      },
+    });
   }
 
-  testRuntime.parameter(name, value, options);
-};
-export const description = (markdown: string) => {
-  const testRuntime = getGlobalTestRuntime();
-
-  if (!testRuntime) {
-    throw new Error("Allure test runtime is not initialized");
+  description(markdown: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        description: markdown,
+      },
+    });
   }
 
-  testRuntime.description(markdown);
-};
-export const descriptionHtml = (html: string) => {
-  const testRuntime = getGlobalTestRuntime();
-
-  if (!testRuntime) {
-    throw new Error("Allure test runtime is not initialized");
+  descriptionHtml(html: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        descriptionHtml: html,
+      },
+    });
   }
 
-  testRuntime.descriptionHtml(html);
-};
-export const testCaseId = (value: string) => {
-  const testRuntime = getGlobalTestRuntime();
-
-  if (!testRuntime) {
-    throw new Error("Allure test runtime is not initialized");
+  displayName(name: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        displayName: name,
+      },
+    });
   }
 
-  testRuntime.testCaseId(value);
-};
-export const historyId = (value: string) => {
-  const testRuntime = getGlobalTestRuntime();
-
-  if (!testRuntime) {
-    throw new Error("Allure test runtime is not initialized");
+  historyId(value: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        historyId: value,
+      },
+    });
   }
 
-  testRuntime.historyId(value);
-};
-export const displayName = (name: string) => {
-  const testRuntime = getGlobalTestRuntime();
-
-  if (!testRuntime) {
-    throw new Error("Allure test runtime is not initialized");
+  testCaseId(value: string) {
+    this.sendMessage({
+      type: "metadata",
+      data: {
+        testCaseId: value,
+      },
+    });
   }
 
-  testRuntime.displayName(name);
-};
-export const allureId = (value: string) => {
-  label(LabelName.ALLURE_ID, value);
-};
-export const issue = (url: string, name?: string) => {
-  link(url, LinkType.ISSUE, name);
-};
-export const tms = (url: string, name?: string) => {
-  link(url, LinkType.TMS, name);
-};
-export const epic = (name: string) => {
-  label(LabelName.EPIC, name);
-};
-export const feature = (name: string) => {
-  label(LabelName.FEATURE, name);
-};
-export const story = (name: string) => {
-  label(LabelName.STORY, name);
-};
-export const suite = (name: string) => {
-  label(LabelName.SUITE, name);
-};
-export const parentSuite = (name: string) => {
-  label(LabelName.PARENT_SUITE, name);
-};
-export const subSuite = (name: string) => {
-  label(LabelName.SUB_SUITE, name);
-};
-export const owner = (name: string) => {
-  label(LabelName.OWNER, name);
-};
-export const severity = (name: string) => {
-  label(LabelName.SEVERITY, name);
-};
-export const layer = (name: string) => {
-  label(LabelName.LAYER, name);
-};
-export const tag = (name: string) => {
-  label(LabelName.TAG, name);
-};
-export const attachment = (
-  name: string,
-  content: unknown,
-  type: string = "text/plain",
-) => {
-  // @ts-ignore
-  const testRuntime = getGlobalTestRuntime();
+  attachment(name: string, content: Buffer | string, type: string | ContentType) {
+    // @ts-ignore
+    const attachmentRawContent: string | Uint8Array = content?.type === "Buffer" ? content.data : content;
+    const encoding = content instanceof Buffer ? "base64" : "utf-8";
+    const actualEncoding = normalizeAttachmentContentEncoding(attachmentRawContent, encoding);
+    const attachmentContent = uint8ArrayToBase64(attachmentRawContent);
 
-  if (!testRuntime) {
-    throw new Error("Allure test runtime is not initialized");
+    this.sendMessage({
+      type: "raw_attachment",
+      data: {
+        content: attachmentContent,
+        encoding: actualEncoding,
+        contentType: type,
+        name,
+      },
+    });
   }
 
-  testRuntime.attachment(name, content, type);
-};
-export const step = (name: string, body: () => void) => {
-  const testRuntime = getGlobalTestRuntime();
+  step(name: string, body: () => void | Promise<void>) {
+    cy.wrap(null, { log: false })
+      .then(() => {
+        this.sendMessage({
+          type: "step_start",
+          data: { name, start: Date.now() },
+        });
 
-  if (!testRuntime) {
-    throw new Error("Allure test runtime is not initialized");
+        body();
+      })
+      .then(() => {
+        this.sendMessage({
+          type: "step_stop",
+          data: {
+            status: Status.PASSED,
+            stage: Stage.FINISHED,
+            stop: Date.now(),
+          },
+        });
+      });
   }
 
-  testRuntime.step(name, body);
+  sendMessage(message: CypressRuntimeMessage) {
+    const messages = Cypress.env("allureRuntimeMessages") || [];
+
+    Cypress.env("allureRuntimeMessages", messages.concat(message));
+  }
+}
+
+const { EVENT_TEST_BEGIN, EVENT_TEST_FAIL, EVENT_TEST_PASS } = Mocha.Runner.constants;
+
+const getSuitePath = (test: Mocha.Test): string[] => {
+  const path: string[] = [];
+  let currentSuite: Mocha.Suite | undefined = test.parent;
+
+  while (currentSuite) {
+    if (currentSuite.title) {
+      path.unshift(currentSuite.title);
+    }
+
+    currentSuite = currentSuite.parent;
+  }
+
+  return path;
 };
+
+// @ts-ignore
+Cypress.mocha
+  .getRunner()
+  .on(EVENT_TEST_BEGIN, (test: Mocha.Test) => {
+    const testRuntime = new AllureCypressTestRuntime();
+
+    Cypress.env("allureRuntimeMessages", []);
+
+    testRuntime.sendMessage({
+      type: "cypress_start",
+      data: {
+        isInteractive: Cypress.config("isInteractive"),
+        absolutePath: Cypress.spec.absolute,
+        specPath: getSuitePath(test).concat(test.title),
+        filename: Cypress.spec.relative,
+        start: Date.now(),
+      },
+    });
+
+    setGlobalTestRuntime(testRuntime);
+  })
+  .on(EVENT_TEST_PASS, () => {
+    const testRuntime = getGlobalTestRuntime();
+    const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
+    const unfinishedStepsMessages = getUnfinishedStepsMessages(runtimeMessages as RuntimeMessage[]);
+
+    unfinishedStepsMessages.forEach(() => {
+      testRuntime.sendMessage({
+        type: "step_stop",
+        data: {
+          stage: Stage.FINISHED,
+          status: Status.PASSED,
+          stop: Date.now(),
+        },
+      });
+    });
+    testRuntime.sendMessage({
+      type: "cypress_end",
+      data: {
+        stage: Stage.FINISHED,
+        status: Status.PASSED,
+        stop: Date.now(),
+      },
+    });
+  })
+  .on(EVENT_TEST_FAIL, (test: Mocha.Test, err: Error) => {
+    const testRuntime = getGlobalTestRuntime();
+
+    testRuntime.sendMessage({
+      type: "cypress_end",
+      data: {
+        stage: Stage.FINISHED,
+        status: err.constructor.name === "AssertionError" ? Status.FAILED : Status.BROKEN,
+        statusDetails: {
+          message: err.message,
+          trace: err.stack,
+        },
+        stop: Date.now(),
+      },
+    });
+  });
+
+Cypress.Screenshot.defaults({
+  onAfterScreenshot: (_, details) => {
+    const testRuntime = getGlobalTestRuntime();
+
+    testRuntime.sendMessage({
+      type: "cypress_screenshot",
+      data: {
+        path: details.path,
+        name: details.name || "Screenshot",
+      },
+    });
+  },
+});
+Cypress.on("fail", (err) => {
+  const testRuntime = getGlobalTestRuntime();
+  const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
+  const hasSteps = hasStepMessage(runtimeMessages as RuntimeMessage[]);
+
+  // if there is no steps, don't handle the error
+  if (!hasSteps) {
+    throw err;
+  }
+
+  const unfinishedStepsMessages = getUnfinishedStepsMessages(runtimeMessages as RuntimeMessage[]);
+
+  if (unfinishedStepsMessages.length === 0) {
+    throw err;
+  }
+
+  const failedStepsStatus = err.constructor.name === "AssertionError" ? Status.FAILED : Status.BROKEN;
+
+  unfinishedStepsMessages.forEach(() => {
+    testRuntime.sendMessage({
+      type: "step_stop",
+      data: {
+        stage: Stage.FINISHED,
+        status: failedStepsStatus,
+        stop: Date.now(),
+        statusDetails: {
+          message: err.message,
+          trace: err.stack,
+        },
+      },
+    });
+  });
+
+  throw err;
+});
+
+afterEach(() => {
+  const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
+
+  cy.task("allureReportTest", runtimeMessages, { log: false });
+});

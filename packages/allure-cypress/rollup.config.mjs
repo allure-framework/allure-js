@@ -10,7 +10,7 @@ const dirname = fileURLToPath(new URL(".", import.meta.url));
 
 const createNodeEntry = (inputFile) => {
   const outputFileBase = inputFile.replace(/^src/, "dist");
-  const external = ["node:fs", "allure-js-commons/new", "allure-js-commons/new/node"];
+  const external = ["node:fs", "allure-js-commons/new/sdk/node"];
 
   return [
     defineConfig({
@@ -88,7 +88,6 @@ const createBrowserEntry = (inputFile) => {
 export default () => {
   return [
     createBrowserEntry("src/index.ts"),
-    createBrowserEntry("src/commands.ts"),
     createNodeEntry("src/reporter.ts"),
   ].flat();
 };

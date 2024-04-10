@@ -3,7 +3,7 @@ import { Stage, Status } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils";
 
 it("passed test", async () => {
-  const { tests } = await runCypressInlineTest(`
+  const { tests } = await runCypressInlineTest(() => `
     it("passed", () => {
       cy.wrap(1).should("eq", 1);
     });
@@ -15,7 +15,7 @@ it("passed test", async () => {
 });
 
 it("failed test", async () => {
-  const { tests } = await runCypressInlineTest(`
+  const { tests } = await runCypressInlineTest(() => `
     it("failed", () => {
       cy.wrap(1).should("eq", 2);
     });
@@ -27,7 +27,7 @@ it("failed test", async () => {
 });
 
 it("broken test", async () => {
-  const { tests } = await runCypressInlineTest(`
+  const { tests } = await runCypressInlineTest(() => `
     it("broken", () => {
       throw new Error("broken");
     });

@@ -4,8 +4,8 @@ import { runCypressInlineTest } from "../utils";
 
 it("adds all the possible links", async () => {
   const { tests } = await runCypressInlineTest(
-    `
-    import { link, issue, tms } from "allure-cypress";
+    (allureCommonsModulePath) => `
+    import { link, issue, tms } from "${allureCommonsModulePath}";
 
     it("links", () => {
       link("https://allurereport.org", "foo", "bar");

@@ -3,8 +3,8 @@ import { LabelName } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils";
 
 it("title metadata", async () => {
-  const { tests } = await runCypressInlineTest(`
-    import { label } from "allure-cypress";
+  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
+    import { label } from "${allureCommonsModulePath}";
 
     it("foo @allure.id=1 @allure.label.foo=2", () => {
       label("bar", "3");

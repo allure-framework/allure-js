@@ -3,7 +3,7 @@ import { LabelName } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils";
 
 it("adds all the possible labels", async () => {
-  const { tests } = await runCypressInlineTest(`
+  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
     import {
       label,
       allureId,
@@ -17,7 +17,7 @@ it("adds all the possible labels", async () => {
       severity,
       story,
       tag,
-    } from "allure-cypress";
+    } from "${allureCommonsModulePath}";
 
     it("labels", () => {
       label("foo", "bar");

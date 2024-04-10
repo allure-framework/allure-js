@@ -4,9 +4,7 @@ import { runCypressInlineTest } from "../utils";
 
 it("attaches same video to each spec in a test", async () => {
   const { tests, attachments } = await runCypressInlineTest(
-    `
-      import { historyId } from "allure-cypress";
-
+    () => `
       it("foo", () => {});
 
       it("bar", () => {});

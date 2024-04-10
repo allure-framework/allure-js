@@ -2,10 +2,10 @@ import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
-import type { AllureResults } from "allure-js-commons";
+import type { AllureResults } from "allure-js-commons/new";
 
 export const runCypressInlineTest = async (
-  test: string,
+  test: (allureCommonsModulePath: string) => string,
   externalConfigFactory?: (tempDir: string) => string,
   beforeTestCb?: (tempDir: string) => Promise<void>,
 ): Promise<AllureResults> => {
@@ -53,14 +53,15 @@ export const runCypressInlineTest = async (
     };
   `;
   const supportContent = `
-    import "allure-cypress/commands";
+    import "allure-cypress";
   `;
+  const allureJsCommonsPath = require.resolve("allure-js-commons/new");
 
   await mkdir(cypressTestsDir, { recursive: true });
   await mkdir(cypressSupportDir, { recursive: true });
   await writeFile(configFilePath, configContent, "utf8");
   await writeFile(supportFilePath, supportContent, "utf8");
-  await writeFile(testFilePath, test, "utf8");
+  await writeFile(testFilePath, test(allureJsCommonsPath), "utf8");
 
   if (beforeTestCb) {
     await beforeTestCb(testDir);
