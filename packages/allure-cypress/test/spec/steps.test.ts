@@ -151,3 +151,33 @@ it("step with unexpected error", async () => {
   expect(tests[0].steps).toHaveLength(1);
   expect(tests[0].steps).toContainEqual(expect.objectContaining({ name: "foo", status: Status.BROKEN }));
 });
+
+it("step runtime api", async () => {
+  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
+    import { step } from "${allureCommonsModulePath}";
+
+    it("step", () => {
+      step("${allureCommonsModulePath}", (ctx) => {
+        ctx.displayName("bar");
+        ctx.parameter("p1", "v1");
+        ctx.parameter("p2", "v2", "default");
+        ctx.parameter("p3", "v3", "masked");
+        ctx.parameter("p4", "v4", "hidden");
+      });
+    });
+  `);
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].status).toEqual("passed");
+  expect(tests[0].steps).toHaveLength(1);
+  const actualStep = tests[0].steps[0];
+  expect(actualStep.status).toEqual("passed");
+  expect(actualStep.name).toEqual("bar");
+  expect(actualStep.parameters).toHaveLength(4);
+  expect(actualStep.parameters).toEqual([
+    { name: "p1", value: "v1" },
+    { name: "p2", value: "v2", mode: "default" },
+    { name: "p3", value: "v3", mode: "masked" },
+    { name: "p4", value: "v4", mode: "hidden" },
+  ]);
+});

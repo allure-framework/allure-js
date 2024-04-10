@@ -7,6 +7,7 @@ import {
   LabelName,
   LinkType,
   MessagesHolder,
+  ParameterMode,
   ParameterOptions,
   RuntimeMessage,
   Stage,
@@ -149,6 +150,22 @@ export class AllureVitestTestRuntime implements TestRuntime {
 
       throw err;
     }
+  }
+
+  async stepDisplayName(name: string) {
+    this.sendMessage({
+      type: "step_metadata",
+      data: {name},
+    });
+  }
+
+  async stepParameter(name: string, value: string, mode?: ParameterMode) {
+    this.sendMessage({
+      type: "step_metadata",
+      data: {
+        parameters: [{name, value, mode}],
+      },
+    });
   }
 
   sendMessage(message: RuntimeMessage) {

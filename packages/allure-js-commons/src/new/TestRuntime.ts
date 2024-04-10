@@ -1,4 +1,4 @@
-import { RuntimeMessage, ContentType, LabelName, LinkType, ParameterOptions } from "./model.js";
+import { RuntimeMessage, ContentType, LabelName, LinkType, ParameterMode, ParameterOptions } from "./model.js";
 
 export interface TestRuntime<T = unknown> {
   label: (name: LabelName, value: string) => void | Promise<void>;
@@ -20,6 +20,10 @@ export interface TestRuntime<T = unknown> {
   attachment: (name: string, content: Buffer | string, type: ContentType | string) => void | Promise<void>;
 
   step: (name: string, body: () => void | Promise<void>) => void | Promise<void>;
+
+  stepDisplayName: (name: string) => void | Promise<void>;
+
+  stepParameter: (name: string, value: string, mode?: ParameterMode) => void | Promise<void>;
 
   sendMessage: (message: RuntimeMessage) => void | Promise<void>;
 }

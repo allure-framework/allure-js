@@ -66,10 +66,11 @@ export class LifecycleState {
       return;
     }
 
-    const { attachments = [], steps = [], ...rest } = result;
+    const { attachments = [], steps = [], parameters = [], ...rest } = result;
 
     currentStep.attachments.push(...attachments);
     currentStep.steps.push(...steps);
+    currentStep.parameters.push(...parameters);
 
     Object.assign(currentStep, rest);
   };

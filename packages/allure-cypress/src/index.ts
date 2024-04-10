@@ -2,6 +2,7 @@ import {
   ContentType,
   LabelName,
   LinkType,
+  ParameterMode,
   ParameterOptions,
   RuntimeMessage,
   Stage,
@@ -132,6 +133,22 @@ export class AllureCypressTestRuntime implements TestRuntime {
           },
         });
       });
+  }
+
+  stepDisplayName(name: string) {
+    this.sendMessage({
+      type: "step_metadata",
+      data: {name},
+    });
+  }
+
+  stepParameter(name: string, value: string, mode?: ParameterMode) {
+    this.sendMessage({
+      type: "step_metadata",
+      data: {
+        parameters: [{name, value, mode}]
+      },
+    });
   }
 
   sendMessage(message: CypressRuntimeMessage) {

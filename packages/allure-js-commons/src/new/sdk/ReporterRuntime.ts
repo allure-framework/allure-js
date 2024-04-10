@@ -151,7 +151,7 @@ export class ReporterRuntime {
       const { type, data } = message;
 
       if (type === "metadata") {
-        const { links = [], parameters, attachments, displayName, ...rest } = data;
+        const { links = [], attachments, displayName, ...rest } = data;
         const formattedLinks = this.formatLinks(links);
 
         if (this.state.getLastStep(uuid)) {
@@ -162,7 +162,6 @@ export class ReporterRuntime {
           });
           this.state.updateCurrentStep(uuid, {
             attachments,
-            parameters,
           });
           continue;
         }
@@ -171,7 +170,6 @@ export class ReporterRuntime {
           name: displayName,
           links: formattedLinks,
           attachments,
-          parameters,
           ...rest,
         });
         continue;
@@ -179,6 +177,11 @@ export class ReporterRuntime {
 
       if (type === "step_start") {
         this.state.setStepResult(uuid, data);
+        continue;
+      }
+
+      if (type === "step_metadata") {
+        this.state.updateCurrentStep(uuid, data);
         continue;
       }
 

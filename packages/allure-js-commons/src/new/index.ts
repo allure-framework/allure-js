@@ -1,6 +1,7 @@
 export {
   AllureResults,
   ContentType,
+  ParameterMode,
   ParameterOptions,
   Parameter,
   LabelName,

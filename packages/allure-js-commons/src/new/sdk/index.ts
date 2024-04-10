@@ -16,6 +16,7 @@ export {
   RuntimeRawAttachmentMessage,
   RuntimeMetadataMessage,
   RuntimeStartStepMessage,
+  RuntimeStepMetadataMessage,
   RuntimeStopStepMessage,
   RuntimeMessage,
 } from "../model.js";

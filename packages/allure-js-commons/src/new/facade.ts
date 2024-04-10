@@ -1,5 +1,5 @@
 import { getGlobalTestRuntime } from "./TestRuntime.js";
-import { ContentType, LabelName, LinkType, ParameterOptions } from "./model.js";
+import { ContentType, LabelName, LinkType, ParameterMode, ParameterOptions } from "./model.js";
 
 export const label = (name: LabelName, value: string) => {
   const runtime = getGlobalTestRuntime();
@@ -55,10 +55,28 @@ export const attachment = (name: string, content: Buffer | string, type: Content
   return runtime.attachment(name, content, type);
 };
 
-export const step = (name: string, body: () => void | Promise<void>) => {
+export type StepContext = {
+  displayName: (name: string) => void | Promise<void>;
+  parameter: (name: string, value: string, mode?: ParameterMode) => void | Promise<void>;
+};
+
+const stepContext: StepContext = {
+  displayName: (name) => {
+    const runtime = getGlobalTestRuntime();
+
+    return runtime.stepDisplayName(name);
+  },
+  parameter: (name, value, mode?) => {
+    const runtime = getGlobalTestRuntime();
+
+    return runtime.stepParameter(name, value, mode);
+  }
+};
+
+export const step = (name: string, body: (context: StepContext) => void | Promise<void>) => {
   const runtime = getGlobalTestRuntime();
 
-  return runtime.step(name, body);
+  return runtime.step(name, () => body(stepContext));
 };
 
 export const issue = (url: string, name: string) => {

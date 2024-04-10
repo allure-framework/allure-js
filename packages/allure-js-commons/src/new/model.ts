@@ -55,11 +55,13 @@ export interface Link {
   type?: LinkType | string;
 }
 
+export type ParameterMode = "hidden" | "masked" | "default";
+
 export interface Parameter {
   name: string;
   value: string;
   excluded?: boolean;
-  mode?: "hidden" | "masked" | "default";
+  mode?: ParameterMode;
 }
 
 export type ParameterOptions = Pick<Parameter, "mode" | "excluded">;
@@ -243,6 +245,14 @@ export interface RuntimeStartStepMessage {
   };
 }
 
+export interface RuntimeStepMetadataMessage {
+  type: "step_metadata";
+  data: {
+      name?: string;
+      parameters?: Parameter[];
+  };
+}
+
 export interface RuntimeStopStepMessage {
   type: "step_stop";
   data: {
@@ -262,5 +272,6 @@ export interface RuntimeRawAttachmentMessage {
 export type RuntimeMessage =
   | RuntimeMetadataMessage
   | RuntimeStartStepMessage
+  | RuntimeStepMetadataMessage
   | RuntimeStopStepMessage
   | RuntimeRawAttachmentMessage;
