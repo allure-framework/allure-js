@@ -1,4 +1,4 @@
-import { RuntimeMessage, ContentType, LabelName, LinkType, ParameterMode, ParameterOptions } from "./model.js";
+import { ContentType, LabelName, LinkType, ParameterMode, ParameterOptions, RuntimeMessage } from "./model.js";
 
 export interface TestRuntime<T = unknown> {
   label: (name: LabelName, value: string) => void | Promise<void>;

@@ -3,7 +3,8 @@ import { ContentType, Status } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils";
 
 it("single step", async () => {
-  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
+  const { tests } = await runCypressInlineTest(
+    (allureCommonsModulePath) => `
     import { label, step } from "${allureCommonsModulePath}";
 
     it("step", () => {
@@ -11,7 +12,8 @@ it("single step", async () => {
         label("foo", "bar");
       });
     });
-  `);
+  `,
+  );
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
@@ -20,7 +22,8 @@ it("single step", async () => {
 });
 
 it("multiple steps", async () => {
-  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
+  const { tests } = await runCypressInlineTest(
+    (allureCommonsModulePath) => `
     import { label, step } from "${allureCommonsModulePath}";
 
     it("step", () => {
@@ -36,7 +39,8 @@ it("multiple steps", async () => {
         label("baz", "3");
       });
     });
-  `);
+  `,
+  );
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "1" }));
@@ -49,7 +53,8 @@ it("multiple steps", async () => {
 });
 
 it("nested steps", async () => {
-  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
+  const { tests } = await runCypressInlineTest(
+    (allureCommonsModulePath) => `
     import { label, step } from "${allureCommonsModulePath}";
 
     it("step", () => {
@@ -61,7 +66,8 @@ it("nested steps", async () => {
         });
       });
     });
-  `);
+  `,
+  );
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
@@ -74,7 +80,8 @@ it("nested steps", async () => {
 });
 
 it("step with attachments", async () => {
-  const { tests, attachments } = await runCypressInlineTest((allureCommonsModulePath) => `
+  const { tests, attachments } = await runCypressInlineTest(
+    (allureCommonsModulePath) => `
     import { attachment, step } from "${allureCommonsModulePath}";
 
     it("text attachment", () => {
@@ -82,7 +89,8 @@ it("step with attachments", async () => {
         attachment("foo.txt", "bar", "text/plain");
       })
     });
-  `);
+  `,
+  );
 
   expect(tests).toHaveLength(1);
   expect(tests[0].attachments).toHaveLength(0);
@@ -96,7 +104,8 @@ it("step with attachments", async () => {
 });
 
 it("step with screenshot", async () => {
-  const { tests, attachments } = await runCypressInlineTest((allureCommonsModulePath) => `
+  const { tests, attachments } = await runCypressInlineTest(
+    (allureCommonsModulePath) => `
     import { step } from "${allureCommonsModulePath}";
 
     it("manual", () => {
@@ -104,7 +113,8 @@ it("step with screenshot", async () => {
         cy.screenshot("foo");
       });
     });
-  `);
+  `,
+  );
 
   expect(tests).toHaveLength(1);
   expect(tests[0].attachments).toHaveLength(0);
@@ -119,7 +129,8 @@ it("step with screenshot", async () => {
 });
 
 it("step with cypress assertion error", async () => {
-  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
+  const { tests } = await runCypressInlineTest(
+    (allureCommonsModulePath) => `
     import { step } from "${allureCommonsModulePath}";
 
     it("step", () => {
@@ -127,7 +138,8 @@ it("step with cypress assertion error", async () => {
         cy.wrap(1).should("eq", 2);
       });
     });
-  `);
+  `,
+  );
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe(Status.FAILED);
@@ -136,7 +148,8 @@ it("step with cypress assertion error", async () => {
 });
 
 it("step with unexpected error", async () => {
-  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
+  const { tests } = await runCypressInlineTest(
+    (allureCommonsModulePath) => `
     import { step } from "${allureCommonsModulePath}";
 
     it("step", () => {
@@ -144,7 +157,8 @@ it("step with unexpected error", async () => {
         throw new Error("foo");
       });
     });
-  `);
+  `,
+  );
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe(Status.BROKEN);
@@ -153,7 +167,8 @@ it("step with unexpected error", async () => {
 });
 
 it("step runtime api", async () => {
-  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
+  const { tests } = await runCypressInlineTest(
+    (allureCommonsModulePath) => `
     import { step } from "${allureCommonsModulePath}";
 
     it("step", () => {
@@ -165,7 +180,8 @@ it("step runtime api", async () => {
         ctx.parameter("p4", "v4", "hidden");
       });
     });
-  `);
+  `,
+  );
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toEqual("passed");

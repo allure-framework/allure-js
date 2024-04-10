@@ -70,7 +70,7 @@ const stepContext: StepContext = {
     const runtime = getGlobalTestRuntime();
 
     return runtime.stepParameter(name, value, mode);
-  }
+  },
 };
 
 export const step = (name: string, body: (context: StepContext) => void | Promise<void>) => {

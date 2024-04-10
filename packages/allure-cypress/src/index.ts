@@ -138,7 +138,7 @@ export class AllureCypressTestRuntime implements TestRuntime {
   stepDisplayName(name: string) {
     this.sendMessage({
       type: "step_metadata",
-      data: {name},
+      data: { name },
     });
   }
 
@@ -146,7 +146,7 @@ export class AllureCypressTestRuntime implements TestRuntime {
     this.sendMessage({
       type: "step_metadata",
       data: {
-        parameters: [{name, value, mode}]
+        parameters: [{ name, value, mode }],
       },
     });
   }

@@ -155,7 +155,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
   async stepDisplayName(name: string) {
     this.sendMessage({
       type: "step_metadata",
-      data: {name},
+      data: { name },
     });
   }
 
@@ -163,7 +163,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
     this.sendMessage({
       type: "step_metadata",
       data: {
-        parameters: [{name, value, mode}],
+        parameters: [{ name, value, mode }],
       },
     });
   }

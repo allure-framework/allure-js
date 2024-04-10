@@ -248,8 +248,8 @@ export interface RuntimeStartStepMessage {
 export interface RuntimeStepMetadataMessage {
   type: "step_metadata";
   data: {
-      name?: string;
-      parameters?: Parameter[];
+    name?: string;
+    parameters?: Parameter[];
   };
 }
 
