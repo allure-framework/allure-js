@@ -7,7 +7,7 @@ import {
   RuntimeMessage,
   Stage,
   Status,
-  TestRuntime,
+  SyncTestRuntime,
   getGlobalTestRuntime,
   getUnfinishedStepsMessages,
   hasStepMessage,
@@ -16,7 +16,7 @@ import {
 import { CypressRuntimeMessage } from "./model.js";
 import { normalizeAttachmentContentEncoding, uint8ArrayToBase64 } from "./utils.js";
 
-export class AllureCypressTestRuntime implements TestRuntime {
+export class AllureCypressTestRuntime implements SyncTestRuntime {
   label(name: LabelName | string, value: string) {
     this.sendMessage({
       type: "metadata",
@@ -197,7 +197,7 @@ Cypress.mocha
     setGlobalTestRuntime(testRuntime);
   })
   .on(EVENT_TEST_PASS, () => {
-    const testRuntime = getGlobalTestRuntime();
+    const testRuntime = getGlobalTestRuntime<AllureCypressTestRuntime>();
     const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
     const unfinishedStepsMessages = getUnfinishedStepsMessages(runtimeMessages as RuntimeMessage[]);
 
@@ -221,7 +221,7 @@ Cypress.mocha
     });
   })
   .on(EVENT_TEST_FAIL, (test: Mocha.Test, err: Error) => {
-    const testRuntime = getGlobalTestRuntime();
+    const testRuntime = getGlobalTestRuntime<AllureCypressTestRuntime>();
 
     testRuntime.sendMessage({
       type: "cypress_end",
@@ -239,7 +239,7 @@ Cypress.mocha
 
 Cypress.Screenshot.defaults({
   onAfterScreenshot: (_, details) => {
-    const testRuntime = getGlobalTestRuntime();
+    const testRuntime = getGlobalTestRuntime<AllureCypressTestRuntime>();
 
     testRuntime.sendMessage({
       type: "cypress_screenshot",
@@ -251,7 +251,7 @@ Cypress.Screenshot.defaults({
   },
 });
 Cypress.on("fail", (err) => {
-  const testRuntime = getGlobalTestRuntime();
+  const testRuntime = getGlobalTestRuntime<AllureCypressTestRuntime>();
   const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
   const hasSteps = hasStepMessage(runtimeMessages as RuntimeMessage[]);
 

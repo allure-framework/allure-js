@@ -4,7 +4,7 @@ import { runVitestInlineTest } from "../utils.js";
 it("sets test history id", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
-    import { historyId } from "allure-js-commons/new";
+    import { historyId } from "allure-js-commons/new/async";
 
     test("history id", async () => {
       await historyId("foo");

@@ -224,7 +224,7 @@ beforeEach(async (ctx) => {
 
 afterEach((ctx) => {
   // @ts-ignore
-  ctx.task.meta.allureRuntimeMessages = getGlobalTestRuntime().messagesHolder.messages;
+  ctx.task.meta.allureRuntimeMessages = getGlobalTestRuntime<AllureVitestTestRuntime>().messagesHolder.messages;
 
   setGlobalTestRuntime(undefined);
 });
