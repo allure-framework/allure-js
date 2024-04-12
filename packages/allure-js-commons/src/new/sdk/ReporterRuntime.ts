@@ -1,4 +1,17 @@
-import { AttachmentOptions, Link, RawAttachment, RuntimeMessage, StepResult, TestResult } from "../model.js";
+import {
+  AttachmentOptions,
+  Link,
+  Messages,
+  RawAttachment,
+  RuntimeMessage,
+  RuntimeMetadataMessage,
+  RuntimeRawAttachmentMessage,
+  RuntimeStartStepMessage,
+  RuntimeStepMetadataMessage,
+  RuntimeStopStepMessage,
+  StepResult,
+  TestResult,
+} from "../model.js";
 import { deepClone, typeToExtension } from "../utils.js";
 import { Config, LinkConfig } from "./Config.js";
 import { Crypto } from "./Crypto.js";
@@ -131,11 +144,11 @@ export class ReporterRuntime {
     });
   };
 
-  applyRuntimeMessages = async (
+  applyRuntimeMessages = async <T>(
     uuid: string,
-    messages: RuntimeMessage[] = [],
+    messages: Messages<T>[] = [],
     customMessageHandler?: (
-      message: unknown,
+      message: Exclude<Messages<T>, RuntimeMessage>,
       targetResult: TestResult,
       currentStep?: StepResult,
     ) => void | Promise<void>,
@@ -149,10 +162,10 @@ export class ReporterRuntime {
     }
 
     for (const message of messages) {
-      const { type, data } = message;
+      const type = message.type;
 
       if (type === "metadata") {
-        const { links = [], attachments, displayName, ...rest } = data;
+        const { links = [], attachments, displayName, ...rest } = (message as RuntimeMetadataMessage).data;
         const formattedLinks = this.formatLinks(links);
 
         if (this.state.getLastStep(uuid)) {
@@ -177,12 +190,12 @@ export class ReporterRuntime {
       }
 
       if (type === "step_start") {
-        this.state.setStepResult(uuid, data);
+        this.state.setStepResult(uuid, (message as RuntimeStartStepMessage).data);
         continue;
       }
 
       if (type === "step_metadata") {
-        this.state.updateCurrentStep(uuid, data);
+        this.state.updateCurrentStep(uuid, (message as RuntimeStepMetadataMessage).data);
         continue;
       }
 
@@ -195,7 +208,7 @@ export class ReporterRuntime {
         }
 
         // TODO: rename to updateLastStep or rename getLastStep to getCurrentStep
-        this.state.updateCurrentStep(uuid, data);
+        this.state.updateCurrentStep(uuid, (message as RuntimeStopStepMessage).data);
 
         const currentStep = this.state.popStep(uuid)!;
         const prevStep = this.state.getLastStep(uuid);
@@ -210,7 +223,7 @@ export class ReporterRuntime {
       }
 
       if (type === "raw_attachment") {
-        this.writeAttachment(uuid, data);
+        this.writeAttachment(uuid, (message as RuntimeRawAttachmentMessage).data);
         continue;
       }
 
@@ -218,7 +231,11 @@ export class ReporterRuntime {
         continue;
       }
 
-      await customMessageHandler(message, targetResult, this.state.getLastStep(uuid));
+      await customMessageHandler(
+        message as Exclude<Messages<T>, RuntimeMessage>,
+        targetResult,
+        this.state.getLastStep(uuid),
+      );
     }
   };
 }

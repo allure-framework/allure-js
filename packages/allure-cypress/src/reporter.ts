@@ -75,24 +75,22 @@ export class AllureCypress {
           result.labels!.push(...suiteLabels);
           result.labels!.push(...titleMetadata.labels);
 
-          await this.runtime.applyRuntimeMessages(
-            testUuid,
-            messages.slice(1, messages.length - 1) as RuntimeMessage[],
-            (message) => {
-              const { type, data } = message as CypressRuntimeMessage;
+          await this.runtime.applyRuntimeMessages(testUuid, messages.slice(1, messages.length - 1), (message) => {
+            const type = message.type;
 
-              if (type === "cypress_screenshot") {
-                const attachmentName = data.name;
-                const screenshotBody = readFileSync(data.path);
+            if (type === "cypress_screenshot") {
+              const { name, path } = message.data;
+              // False positive by eslint (path is string)
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              const screenshotBody = readFileSync(path);
 
-                this.runtime.writeAttachment(testUuid, {
-                  name: attachmentName,
-                  content: screenshotBody,
-                  contentType: ContentType.PNG,
-                });
-              }
-            },
-          );
+              this.runtime.writeAttachment(testUuid, {
+                name,
+                content: screenshotBody,
+                contentType: ContentType.PNG,
+              });
+            }
+          });
         });
         await this.runtime.update(testUuid, (result) => {
           result.stage = endMessage.data.stage;
@@ -105,6 +103,8 @@ export class AllureCypress {
         if (startMessage.data.isInteractive) {
           this.runtime.write(testUuid);
         } else {
+          // False positive by eslint (testUuid is string)
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           this.pushTestUuid(startMessage.data.absolutePath, testUuid);
         }
 

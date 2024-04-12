@@ -222,8 +222,13 @@ export interface AllureResults {
   categories?: Category[];
 }
 
-export interface RuntimeMetadataMessage {
-  type: "metadata";
+type RuntimeMessageBase<T extends string> = {
+  type: T;
+};
+
+type MessageTypes<T> = T extends RuntimeMessageBase<infer K> ? K : never;
+
+export type RuntimeMetadataMessage = RuntimeMessageBase<"metadata"> & {
   data: {
     labels?: Label[];
     links?: Link[];
@@ -235,39 +240,35 @@ export interface RuntimeMetadataMessage {
     historyId?: string;
     displayName?: string;
   };
-}
+};
 
-export interface RuntimeStartStepMessage {
-  type: "step_start";
+export type RuntimeStartStepMessage = RuntimeMessageBase<"step_start"> & {
   data: {
     name: string;
     start: number;
   };
-}
+};
 
-export interface RuntimeStepMetadataMessage {
-  type: "step_metadata";
+export type RuntimeStepMetadataMessage = RuntimeMessageBase<"step_metadata"> & {
   data: {
     name?: string;
     parameters?: Parameter[];
   };
-}
+};
 
-export interface RuntimeStopStepMessage {
-  type: "step_stop";
+export type RuntimeStopStepMessage = RuntimeMessageBase<"step_stop"> & {
   data: {
     stop: number;
     status: Status;
     stage: Stage;
     statusDetails?: StatusDetails;
   };
-}
+};
 
 // use to send whole attachment to ReporterRuntime and write it on the node side
-export interface RuntimeRawAttachmentMessage {
-  type: "raw_attachment";
+export type RuntimeRawAttachmentMessage = RuntimeMessageBase<"raw_attachment"> & {
   data: RawAttachment;
-}
+};
 
 export type RuntimeMessage =
   | RuntimeMetadataMessage
@@ -275,3 +276,8 @@ export type RuntimeMessage =
   | RuntimeStepMetadataMessage
   | RuntimeStopStepMessage
   | RuntimeRawAttachmentMessage;
+
+// Could be used by adapters to define additional message types
+export type ExtensionMessage<T extends string> = T extends MessageTypes<RuntimeMessage> ? never : RuntimeMessageBase<T>;
+
+export type Messages<T> = T extends RuntimeMessage | ExtensionMessage<infer _> ? T : never;

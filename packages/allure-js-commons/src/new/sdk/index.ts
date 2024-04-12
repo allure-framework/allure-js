@@ -19,5 +19,6 @@ export {
   RuntimeStepMetadataMessage,
   RuntimeStopStepMessage,
   RuntimeMessage,
+  ExtensionMessage,
 } from "../model.js";
 export * from "../index.js";
