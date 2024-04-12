@@ -1,5 +1,6 @@
 import { expect, it } from "vitest";
 import { ContentType, Status } from "allure-js-commons";
+// eslint-disable-next-line node/file-extension-in-import
 import { runCypressInlineTest } from "../utils";
 
 it("single step", async () => {
@@ -125,6 +126,7 @@ it("step with screenshot", async () => {
 
   expect(attachment.name).toBe("foo");
   expect(attachment.type).toBe(ContentType.PNG);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   expect(attachments).toHaveProperty(attachment.source);
 });
 
@@ -196,4 +198,32 @@ it("step runtime api", async () => {
     { name: "p3", value: "v3", mode: "masked" },
     { name: "p4", value: "v4", mode: "hidden" },
   ]);
+});
+
+it("promise-step", async () => {
+  const { tests } = await runCypressInlineTest(
+    (allureCommonsModulePath) => `
+    import { step, label } from "${allureCommonsModulePath}";
+
+    it("step", () => {
+      let value = "unset";
+      step("${allureCommonsModulePath}", () => {
+        return new Cypress.Promise(
+          (r) => setTimeout(() => {
+            value = "set";
+            r();
+          }, 0)
+        );
+      }).then(() => label("result", value));
+    });
+  `,
+  );
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].status).toEqual("passed");
+  expect(tests[0].steps).toHaveLength(1);
+  const actualStep = tests[0].steps[0];
+  expect(actualStep.status).toEqual("passed");
+  expect(tests[0].labels).toHaveLength(3);
+  expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "result", value: "set" }));
 });

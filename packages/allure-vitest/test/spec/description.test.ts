@@ -4,7 +4,7 @@ import { runVitestInlineTest } from "../utils.js";
 it("sets description", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
-    import { description } from "allure-js-commons/new/async";
+    import { description } from "allure-js-commons/new";
 
     test("description", async () => {
       await description("foo");
@@ -18,7 +18,7 @@ it("sets description", async () => {
 it("sets html description", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
-    import { descriptionHtml } from "allure-js-commons/new/async";
+    import { descriptionHtml } from "allure-js-commons/new";
 
     test("description html", async () => {
       await descriptionHtml("foo");

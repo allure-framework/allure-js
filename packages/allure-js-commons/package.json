@@ -24,12 +24,8 @@
       "require": "./dist/cjs/internal.js"
     },
     "./new": {
-      "import": "./dist/esm/src/new/sync.js",
-      "require": "./dist/cjs/src/new/sync.js"
-    },
-    "./new/async": {
-      "import": "./dist/esm/src/new/async.js",
-      "require": "./dist/cjs/src/new/async.js"
+      "import": "./dist/esm/src/new/index.js",
+      "require": "./dist/cjs/src/new/index.js"
     },
     "./new/internal": {
       "import": "./dist/esm/src/new/internal.js",

@@ -7,7 +7,7 @@ import {
   RuntimeMessage,
   Stage,
   Status,
-  SyncTestRuntime,
+  TestRuntime,
   getGlobalTestRuntime,
   getUnfinishedStepsMessages,
   hasStepMessage,
@@ -16,9 +16,9 @@ import {
 import { CypressRuntimeMessage } from "./model.js";
 import { normalizeAttachmentContentEncoding, uint8ArrayToBase64 } from "./utils.js";
 
-export class AllureCypressTestRuntime implements SyncTestRuntime {
+export class AllureCypressTestRuntime implements TestRuntime {
   label(name: LabelName | string, value: string) {
-    this.sendMessage({
+    return this.sendMessageAsync({
       type: "metadata",
       data: {
         labels: [{ name, value }],
@@ -27,7 +27,7 @@ export class AllureCypressTestRuntime implements SyncTestRuntime {
   }
 
   link(url: string, type?: LinkType | string, name?: string) {
-    this.sendMessage({
+    return this.sendMessageAsync({
       type: "metadata",
       data: {
         links: [{ type, url, name }],
@@ -36,7 +36,7 @@ export class AllureCypressTestRuntime implements SyncTestRuntime {
   }
 
   parameter(name: string, value: string, options?: ParameterOptions) {
-    this.sendMessage({
+    return this.sendMessageAsync({
       type: "metadata",
       data: {
         parameters: [
@@ -51,7 +51,7 @@ export class AllureCypressTestRuntime implements SyncTestRuntime {
   }
 
   description(markdown: string) {
-    this.sendMessage({
+    return this.sendMessageAsync({
       type: "metadata",
       data: {
         description: markdown,
@@ -60,7 +60,7 @@ export class AllureCypressTestRuntime implements SyncTestRuntime {
   }
 
   descriptionHtml(html: string) {
-    this.sendMessage({
+    return this.sendMessageAsync({
       type: "metadata",
       data: {
         descriptionHtml: html,
@@ -69,7 +69,7 @@ export class AllureCypressTestRuntime implements SyncTestRuntime {
   }
 
   displayName(name: string) {
-    this.sendMessage({
+    return this.sendMessageAsync({
       type: "metadata",
       data: {
         displayName: name,
@@ -78,7 +78,7 @@ export class AllureCypressTestRuntime implements SyncTestRuntime {
   }
 
   historyId(value: string) {
-    this.sendMessage({
+    return this.sendMessageAsync({
       type: "metadata",
       data: {
         historyId: value,
@@ -87,7 +87,7 @@ export class AllureCypressTestRuntime implements SyncTestRuntime {
   }
 
   testCaseId(value: string) {
-    this.sendMessage({
+    return this.sendMessageAsync({
       type: "metadata",
       data: {
         testCaseId: value,
@@ -102,7 +102,7 @@ export class AllureCypressTestRuntime implements SyncTestRuntime {
     const actualEncoding = normalizeAttachmentContentEncoding(attachmentRawContent, encoding);
     const attachmentContent = uint8ArrayToBase64(attachmentRawContent);
 
-    this.sendMessage({
+    return this.sendMessageAsync({
       type: "raw_attachment",
       data: {
         content: attachmentContent,
@@ -113,18 +113,19 @@ export class AllureCypressTestRuntime implements SyncTestRuntime {
     });
   }
 
-  step(name: string, body: () => void | Promise<void>) {
-    cy.wrap(null, { log: false })
+  step(name: string, body: () => void | PromiseLike<void>) {
+    return cy
+      .wrap(null, { log: false })
       .then(() => {
         this.sendMessage({
           type: "step_start",
           data: { name, start: Date.now() },
         });
 
-        body();
+        return body() || Cypress.Promise.resolve();
       })
       .then(() => {
-        this.sendMessage({
+        return this.sendMessageAsync({
           type: "step_stop",
           data: {
             status: Status.PASSED,
@@ -136,14 +137,14 @@ export class AllureCypressTestRuntime implements SyncTestRuntime {
   }
 
   stepDisplayName(name: string) {
-    this.sendMessage({
+    return this.sendMessageAsync({
       type: "step_metadata",
       data: { name },
     });
   }
 
   stepParameter(name: string, value: string, mode?: ParameterMode) {
-    this.sendMessage({
+    return this.sendMessageAsync({
       type: "step_metadata",
       data: {
         parameters: [{ name, value, mode }],
@@ -155,6 +156,11 @@ export class AllureCypressTestRuntime implements SyncTestRuntime {
     const messages = Cypress.env("allureRuntimeMessages") || [];
 
     Cypress.env("allureRuntimeMessages", messages.concat(message));
+  }
+
+  sendMessageAsync(message: CypressRuntimeMessage): PromiseLike<void> {
+    this.sendMessage(message);
+    return Cypress.Promise.resolve();
   }
 }
 
@@ -197,7 +203,7 @@ Cypress.mocha
     setGlobalTestRuntime(testRuntime);
   })
   .on(EVENT_TEST_PASS, () => {
-    const testRuntime = getGlobalTestRuntime<AllureCypressTestRuntime>();
+    const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
     const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
     const unfinishedStepsMessages = getUnfinishedStepsMessages(runtimeMessages as RuntimeMessage[]);
 
@@ -221,7 +227,7 @@ Cypress.mocha
     });
   })
   .on(EVENT_TEST_FAIL, (test: Mocha.Test, err: Error) => {
-    const testRuntime = getGlobalTestRuntime<AllureCypressTestRuntime>();
+    const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
 
     testRuntime.sendMessage({
       type: "cypress_end",
@@ -239,7 +245,7 @@ Cypress.mocha
 
 Cypress.Screenshot.defaults({
   onAfterScreenshot: (_, details) => {
-    const testRuntime = getGlobalTestRuntime<AllureCypressTestRuntime>();
+    const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
 
     testRuntime.sendMessage({
       type: "cypress_screenshot",
@@ -251,7 +257,7 @@ Cypress.Screenshot.defaults({
   },
 });
 Cypress.on("fail", (err) => {
-  const testRuntime = getGlobalTestRuntime<AllureCypressTestRuntime>();
+  const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
   const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
   const hasSteps = hasStepMessage(runtimeMessages as RuntimeMessage[]);
 

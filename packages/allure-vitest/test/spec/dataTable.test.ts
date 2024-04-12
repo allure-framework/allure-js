@@ -4,7 +4,7 @@ import { runVitestInlineTest } from "../utils.js";
 it("handles data table", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test, expect } from "vitest";
-    import { label } from "allure-js-commons/new/async";
+    import { label } from "allure-js-commons/new";
 
     test.each([
       [1, 1, 2],

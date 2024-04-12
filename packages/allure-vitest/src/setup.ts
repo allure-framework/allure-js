@@ -114,7 +114,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
     });
   }
 
-  async step(name: string, body: () => void | Promise<void>) {
+  async step(name: string, body: () => void | PromiseLike<void>) {
     this.sendMessage({
       type: "step_start",
       data: {

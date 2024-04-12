@@ -6,7 +6,7 @@ describe("labels", () => {
   it("label", async () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
-      import { label } from "allure-js-commons/new/async";
+      import { label } from "allure-js-commons/new";
 
       test("label", async () => {
         await label("foo", "bar");
@@ -20,7 +20,7 @@ describe("labels", () => {
   it("epic", async () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
-      import { epic } from "allure-js-commons/new/async";
+      import { epic } from "allure-js-commons/new";
 
       test("epic", async () => {
         await epic("foo");
@@ -34,7 +34,7 @@ describe("labels", () => {
   it("feature", async () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
-      import { feature } from "allure-js-commons/new/async";
+      import { feature } from "allure-js-commons/new";
 
       test("feature", async () => {
         await feature("foo");
@@ -48,7 +48,7 @@ describe("labels", () => {
   it("story", async () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
-      import { story } from "allure-js-commons/new/async";
+      import { story } from "allure-js-commons/new";
 
       test("story", async () => {
         await story("foo");
@@ -62,7 +62,7 @@ describe("labels", () => {
   it("suite", async () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
-      import { suite } from "allure-js-commons/new/async";
+      import { suite } from "allure-js-commons/new";
 
       test("suite", async () => {
         await suite("foo");
@@ -76,7 +76,7 @@ describe("labels", () => {
   it("parentSuite", async () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
-      import { parentSuite } from "allure-js-commons/new/async";
+      import { parentSuite } from "allure-js-commons/new";
 
       test("parentSuite", async () => {
         await parentSuite("foo");
@@ -90,7 +90,7 @@ describe("labels", () => {
   it("subSuite", async () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
-      import { subSuite } from "allure-js-commons/new/async";
+      import { subSuite } from "allure-js-commons/new";
 
       test("subSuite", async () => {
         await subSuite("foo");
@@ -104,7 +104,7 @@ describe("labels", () => {
   it("owner", async () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
-      import { owner } from "allure-js-commons/new/async";
+      import { owner } from "allure-js-commons/new";
 
       test("owner", async () => {
         await owner("foo");
@@ -118,7 +118,7 @@ describe("labels", () => {
   it("severity", async () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
-      import { severity } from "allure-js-commons/new/async";
+      import { severity } from "allure-js-commons/new";
 
       test("severity", async () => {
         await severity("foo");
@@ -132,7 +132,7 @@ describe("labels", () => {
   it("layer", async () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
-      import { layer } from "allure-js-commons/new/async";
+      import { layer } from "allure-js-commons/new";
 
       test("layer", async () => {
         await layer("foo");
@@ -146,7 +146,7 @@ describe("labels", () => {
   it("id", async () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
-      import { allureId } from "allure-js-commons/new/async";
+      import { allureId } from "allure-js-commons/new";
 
       test("allureId", async () => {
         await allureId("foo");
@@ -160,7 +160,7 @@ describe("labels", () => {
   it("tag", async () => {
     const { tests } = await runVitestInlineTest(`
       import { test } from "vitest";
-      import { tag } from "allure-js-commons/new/async";
+      import { tag } from "allure-js-commons/new";
 
       test("tag", async () => {
         await tag("foo");

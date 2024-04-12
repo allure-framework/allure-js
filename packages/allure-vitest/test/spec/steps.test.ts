@@ -5,7 +5,7 @@ import { runVitestInlineTest } from "../utils.js";
 it("handles single lambda step", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
-    import { step } from "allure-js-commons/new/async";
+    import { step } from "allure-js-commons/new";
 
     test("steps", async () => {
       await step("step", () => {});
@@ -24,7 +24,7 @@ it("handles single lambda step", async () => {
 it("handles single lambda step with attachment", async () => {
   const { tests, attachments } = await runVitestInlineTest(`
     import { test } from "vitest";
-    import { step, attachment } from "allure-js-commons/new/async";
+    import { step, attachment } from "allure-js-commons/new";
 
     test("steps", async () => {
       await step("step", async () => {
@@ -47,7 +47,7 @@ it("handles single lambda step with attachment", async () => {
 it("handles nested lambda steps", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
-    import { step } from "allure-js-commons/new/async";
+    import { step } from "allure-js-commons/new";
 
     test("steps", async () => {
       await step("step 1", async () => {
@@ -83,7 +83,7 @@ it("handles nested lambda steps", async () => {
 it("handles step renaming", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
-    import { step } from "allure-js-commons/new/async";
+    import { step } from "allure-js-commons/new";
 
     test("steps", async () => {
       await step("foo", async (ctx) => {
@@ -100,7 +100,7 @@ it("handles step renaming", async () => {
 it("supports step parameters", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
-    import { step } from "allure-js-commons/new/async";
+    import { step } from "allure-js-commons/new";
 
     test("steps", async () => {
       await step("foo", async (ctx) => {
