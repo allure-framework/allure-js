@@ -2,7 +2,7 @@ import { expect, it } from "vitest";
 import { LabelName } from "allure-js-commons/new/sdk";
 import { runCucumberInlineTest } from "../utils";
 
-it("handles label", async () => {
+it("handles runtime labels", async () => {
   const { tests } = await runCucumberInlineTest(["labels"], ["labels"]);
 
   expect(tests).toHaveLength(3);

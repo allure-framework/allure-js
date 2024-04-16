@@ -1,22 +1,26 @@
-// import { expect } from "chai";
-// import { before, describe, it } from "mocha";
-// import { LaunchSummary, runCucumberTests } from "../utils";
-//
-// describe("step arguments", () => {
-//   let summary: LaunchSummary;
-//
-//   before(async () => {
-//     summary = await runCucumberTests(["stepArguments"]);
-//   });
-//
-//   it("should set steps", () => {
-//     const result = summary.results["plus operator"];
-//
-//     expect(result.steps.map((step) => step.name)).eql([
-//       "Given a is 5",
-//       "And b is 10",
-//       "When I plus a and b",
-//       "Then the result is 15",
-//     ]);
-//   });
-// });
+import { expect, it } from "vitest";
+import { runCucumberInlineTest } from "../utils";
+
+it("reports steps with their arguments", async () => {
+  const { tests } = await runCucumberInlineTest(["stepArguments"], ["stepArguments"]);
+
+  expect(tests).toHaveLength(1);
+  expect(tests).toContainEqual(
+    expect.objectContaining({
+      steps: expect.arrayContaining([
+        expect.objectContaining({
+          name: "Given a is 5",
+        }),
+        expect.objectContaining({
+          name: "And b is 10",
+        }),
+        expect.objectContaining({
+          name: "When I plus a and b",
+        }),
+        expect.objectContaining({
+          name: "Then the result is 15",
+        }),
+      ]),
+    }),
+  );
+});

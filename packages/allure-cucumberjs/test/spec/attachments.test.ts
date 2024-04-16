@@ -1,31 +1,39 @@
-// import { expect } from "chai";
-// import { describe, it } from "mocha";
-// import { LaunchSummary, runCucumberTests } from "../utils";
-//
-// describe("attachments", () => {
-//   let summary: LaunchSummary;
-//
-//   before(async () => {
-//     summary = await runCucumberTests(["attachments"]);
-//   });
-//
-//   it("adds text attachments", () => {
-//     const result = summary.results["add text attachment"];
-//     const [stepAttachment] = result.steps[0].attachments;
-//     const attachment = summary.attachments[stepAttachment.source];
-//
-//     expect(stepAttachment.name).eq("attachment");
-//     expect(stepAttachment.type).eq("text/plain");
-//     expect(attachment.content).eq("some text");
-//   });
-//
-//   it("adds image attachments", () => {
-//     const result = summary.results["add image attachment"];
-//     const [stepAttachment] = result.steps[0].attachments;
-//     const attachment = summary.attachments[stepAttachment.source];
-//
-//     expect(stepAttachment.name).eq("attachment");
-//     expect(stepAttachment.type).eq("image/png");
-//     expect(attachment.content.length).not.eq(0);
-//   });
-// });
+import { expect, it } from "vitest";
+import { runCucumberInlineTest } from "../utils";
+
+it("handles runtime attachments", async () => {
+  const { tests, attachments } = await runCucumberInlineTest(["attachments"], ["attachments"]);
+
+  expect(tests).toHaveLength(2);
+  expect(tests).toContainEqual(
+    expect.objectContaining({
+      steps: expect.arrayContaining([
+        expect.objectContaining({
+          name: "Given add a text",
+          attachments: expect.arrayContaining([
+            expect.objectContaining({
+              name: "Text attachment",
+              type: "text/plain",
+            }),
+          ]),
+        }),
+      ]),
+    }),
+  );
+  expect(tests).toContainEqual(
+    expect.objectContaining({
+      steps: expect.arrayContaining([
+        expect.objectContaining({
+          name: "Given add an image",
+          attachments: expect.arrayContaining([
+            expect.objectContaining({
+              name: "Image attachment",
+              type: "image/png",
+            }),
+          ]),
+        }),
+      ]),
+    }),
+  );
+  expect(Object.keys(attachments)).toHaveLength(2);
+});

@@ -26,11 +26,6 @@ export interface TestRuntime {
   stepParameter: (name: string, value: string, mode?: ParameterMode) => PromiseLike<void>;
 }
 
-// TODO: maybe we don't need these types because we gonna store TestRuntime in globalThis all the time
-// export type TestRuntimeGlobalGetter = () => TestRuntime | undefined;
-//
-// export type TestRuntimeGlobalSetter = (runtime: TestRuntime | undefined) => void;
-
 export const setGlobalTestRuntime = (runtime: TestRuntime) => {
   (globalThis as any).allureTestRuntime = () => runtime;
 };

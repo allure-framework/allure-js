@@ -172,30 +172,28 @@ export default class AllureCucumberReporter extends Formatter {
   }
 
   private parseTagsLinks(tags: readonly Tag[]): Link[] {
-    // const tagKeyRe = /^@\S+=/;
+    const tagKeyRe = /^@\S+=/;
     const links: Link[] = [];
 
     if (this.linksConfigs.length === 0) {
       return links;
     }
 
-    return links;
+    this.linksConfigs.forEach((matcher) => {
+      const matchedTags = tags.filter((tag) => matcher.pattern.some((pattern) => pattern.test(tag.name)));
+      const matchedLinks = matchedTags.map((tag) => {
+        const tagValue = tag.name.replace(tagKeyRe, "");
 
-    // this.linksMatchers.forEach((matcher) => {
-    //   const matchedTags = tags.filter((tag) => matcher.pattern.some((pattern) => pattern.test(tag.name)));
-    //   const matchedLinks = matchedTags.map((tag) => {
-    //     const tagValue = tag.name.replace(tagKeyRe, "");
-    //
-    //     return {
-    //       url: matcher.urlTemplate.replace(/%s$/, tagValue) || tagValue,
-    //       type: matcher.type,
-    //     };
-    //   });
-    //
-    //   links.push(...matchedLinks);
-    // });
-    //
-    // return links;
+        return {
+          url: matcher.urlTemplate.replace(/%s$/, tagValue) || tagValue,
+          type: matcher.type,
+        };
+      });
+
+      links.push(...matchedLinks);
+    });
+
+    return links;
   }
 
   private parseStatus(stepResult: TestStepResult): Status | undefined {
@@ -262,6 +260,7 @@ export default class AllureCucumberReporter extends Formatter {
       name: pickle.name,
       description: (scenario?.description || doc?.feature?.description || "").trim(),
       labels: [],
+      links: [],
       testCaseId: this.runtime.crypto.md5(fullName),
       fullName,
     };
@@ -306,6 +305,7 @@ export default class AllureCucumberReporter extends Formatter {
     const scenarioLinks = this.parseTagsLinks(scenario?.tags || []);
 
     result.labels!.push(...featureLabels, ...scenarioLabels, ...pickleLabels);
+    result.links!.push(...featureLinks, ...scenarioLinks);
 
     const testUuid = this.runtime.start(result, Date.now());
 

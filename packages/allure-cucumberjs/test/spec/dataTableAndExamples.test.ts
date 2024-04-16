@@ -1,31 +1,30 @@
-// import { expect } from "chai";
-// import { before, describe, it } from "mocha";
-// import { LaunchSummary, runCucumberTests } from "../utils";
-//
-// describe("dataTableAndExamples", () => {
-//   let summary: LaunchSummary;
-//
-//   before(async () => {
-//     summary = await runCucumberTests(["dataTableAndExamples"]);
-//   });
-//
-//   it("adds example as csv attachment to the test", () => {
-//     const result = summary.results["scenario with positive examples"];
-//     const [testAttachment] = result.attachments;
-//     const attachment = summary.attachments[testAttachment.source];
-//
-//     expect(testAttachment.name).eq("Examples");
-//     expect(testAttachment.type).eq("text/csv");
-//     expect(attachment.content).eq("b,result\n3,4\n");
-//   });
-//
-//   it("adds data table as csv attachment to the related step", () => {
-//     const result = summary.results["scenario with positive examples"];
-//     const [stepAttachment] = result.steps[0].attachments;
-//     const attachment = summary.attachments[stepAttachment.source];
-//
-//     expect(stepAttachment.name).eq("Data table");
-//     expect(stepAttachment.type).eq("text/csv");
-//     expect(attachment.content).eq("a\n1\n");
-//   });
-// });
+import { expect, it } from "vitest";
+import { ContentType } from "allure-js-commons/new/sdk";
+import { runCucumberInlineTest } from "../utils";
+
+it("handles both data table and examples for one feature", async () => {
+  const { tests, attachments } = await runCucumberInlineTest(["dataTableAndExamples"], ["dataTableAndExamples"]);
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].attachments).toHaveLength(1);
+  expect(tests[0].attachments[0]).toMatchObject({
+    name: "Examples",
+    type: ContentType.CSV,
+    source: expect.any(String),
+  });
+  expect(tests[0].steps).toHaveLength(3);
+  expect(tests[0].steps).toContainEqual(
+    expect.objectContaining({
+      name: "Given a table",
+      attachments: expect.arrayContaining([
+        expect.objectContaining({
+          name: "Data table",
+          type: ContentType.CSV,
+          source: expect.any(String),
+        }),
+      ]),
+    }),
+  );
+  expect(attachments).toHaveProperty(tests[0].attachments[0].source);
+  expect(attachments).toHaveProperty(tests[0].steps[0].attachments[0].source);
+});

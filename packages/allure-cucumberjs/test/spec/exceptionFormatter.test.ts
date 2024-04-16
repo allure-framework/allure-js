@@ -12,3 +12,5 @@
 //     expect(result.statusDetails.message).contains("Formatted error: error message");
 //   });
 // });
+// TODO: do we need to implement exception formatter for another integrations?
+throw new Error("Test not implemented");

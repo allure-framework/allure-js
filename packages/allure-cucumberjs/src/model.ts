@@ -1,4 +1,4 @@
-import { Config, LabelName } from "allure-js-commons/new/sdk/node";
+import { Config, LabelName, LinkType } from "allure-js-commons/new/sdk/node";
 
 export type LabelConfig = {
   pattern: RegExp[];
@@ -8,7 +8,7 @@ export type LabelConfig = {
 export type LinkConfig = {
   pattern: RegExp[];
   urlTemplate: string;
-  type: LinkConfig | string;
+  type: LinkType | string;
 };
 
 export interface AllureCucumberReporterConfig extends Omit<Config, "writer" | "links"> {

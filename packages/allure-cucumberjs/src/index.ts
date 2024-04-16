@@ -10,6 +10,7 @@ import {
   Stage,
   Status,
   TestRuntime,
+  getStatusFromError,
   setGlobalTestRuntime,
 } from "allure-js-commons/new/sdk/node";
 
@@ -127,10 +128,12 @@ export class AllureCucumberTestRuntime extends World implements TestRuntime {
         },
       });
     } catch (err) {
+      const status = getStatusFromError(err as Error);
+
       await this.sendMessage({
         type: "step_stop",
         data: {
-          status: Status.FAILED,
+          status,
           stage: Stage.FINISHED,
           stop: Date.now(),
           statusDetails: {
