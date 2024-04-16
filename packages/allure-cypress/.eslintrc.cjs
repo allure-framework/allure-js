@@ -1,13 +1,10 @@
 module.exports = {
   extends: ["../../.eslintrc.cjs"],
-  plugins: ["cypress", "node"],
+  plugins: ["cypress"],
   globals: {
     allure: true,
   },
   env: {
     "cypress/globals": true,
-  },
-  rules: {
-    "node/file-extension-in-import": ["error", "always"],
   }
 };

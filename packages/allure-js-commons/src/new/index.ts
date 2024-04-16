@@ -34,12 +34,14 @@ export {
   Link,
   LinkType,
   TestResult,
+  TestOrStepResult,
   StepResult,
   FixtureResult,
   TestResultContainer,
   Attachment,
   Stage,
   Status,
+  StatusByPriority,
   StatusDetails,
 } from "./model.js";
 export {

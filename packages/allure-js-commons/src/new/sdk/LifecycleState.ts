@@ -26,7 +26,7 @@ export class LifecycleState {
       return;
     }
 
-    const { name, labels = [], links = [], parameters = [], attachments = [], ...rest } = result;
+    const { name, labels = [], links = [], parameters = [], attachments = [], steps = [], ...rest } = result;
     const updatedResult = { ...currentResult };
 
     if (name) {
@@ -37,6 +37,7 @@ export class LifecycleState {
     updatedResult.links.push(...links);
     updatedResult.attachments.push(...attachments);
     updatedResult.parameters.push(...parameters);
+    updatedResult.steps.push(...steps);
 
     Object.assign(updatedResult, rest);
 
@@ -61,7 +62,7 @@ export class LifecycleState {
   };
 
   updateCurrentStep = (uuid: string, result: Partial<StepResult>) => {
-    const currentStep = this.getLastStep(uuid);
+    const currentStep = this.getCurrentStep(uuid);
 
     if (!currentStep) {
       return;
@@ -80,7 +81,7 @@ export class LifecycleState {
     return this.testResultsSteps.get(uuid)?.pop();
   };
 
-  getLastStep = (uuid: string) => {
+  getCurrentStep = (uuid: string) => {
     return this.testResultsSteps.get(uuid)?.last;
   };
 

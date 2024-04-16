@@ -4,6 +4,8 @@ import { ContentType, LabelName, LinkType, ParameterMode, ParameterOptions } fro
 export const label = (name: LabelName, value: string) => {
   const runtime = getGlobalTestRuntime();
 
+  debugger
+
   return runtime.label(name, value);
 };
 

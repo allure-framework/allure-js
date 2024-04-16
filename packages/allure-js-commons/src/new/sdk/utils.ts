@@ -5,7 +5,9 @@ import {
   RuntimeMessage,
   Stage,
   Status,
+  StatusByPriority,
   StepResult,
+  TestOrStepResult,
   TestResult,
   TestResultContainer,
 } from "../model.js";
@@ -121,4 +123,43 @@ export const getUnfinishedStepsMessages = (messages: RuntimeMessage[]) => {
   const grouppedStepsMessage = getStepsMessagesPair(messages);
 
   return grouppedStepsMessage.filter((step) => step.length === 1);
+};
+
+export const getWorstStepResultStatusPriority = (steps: StepResult[], priority?: number): number | undefined => {
+  let worstStatusPriority = priority;
+
+  steps.forEach((step) => {
+    if (step.steps?.length) {
+      worstStatusPriority = getWorstStepResultStatusPriority(step.steps, worstStatusPriority);
+    }
+
+    const stepStatusPriority = step.status ? StatusByPriority.indexOf(step.status) : undefined;
+
+    if (stepStatusPriority === undefined) {
+      return;
+    }
+
+    if (worstStatusPriority === undefined) {
+      worstStatusPriority = stepStatusPriority;
+      return;
+    }
+
+    if (stepStatusPriority >= worstStatusPriority) {
+      return;
+    }
+
+    worstStatusPriority = stepStatusPriority;
+  });
+
+  return worstStatusPriority;
+};
+
+export const getWorstStepResultStatus = (steps: StepResult[]): Status | undefined => {
+  const worstStatusPriority = getWorstStepResultStatusPriority(steps);
+
+  if (worstStatusPriority === undefined) {
+    return undefined;
+  }
+
+  return StatusByPriority[worstStatusPriority];
 };

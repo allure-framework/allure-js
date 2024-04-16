@@ -6,5 +6,5 @@ Feature: simple
   Scenario: failed
     Given a failed step
 
-  Scenario: parameterized
-    Given a step with browser parameter
+  Scenario: broken
+    Given a broken step

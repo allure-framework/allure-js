@@ -6,5 +6,8 @@ module.exports = {
   },
   rules: {
     "node/file-extension-in-import": ["error", "always"],
-  }
+  },
+  parserOptions: {
+    project: "tsconfig.test.json",
+  },
 };

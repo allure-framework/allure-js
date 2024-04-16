@@ -11,8 +11,6 @@ module.exports = {
     "../../.eslintrc.cjs",
   ],
   parserOptions: {
-    project: "./tsconfig.json",
-    sourceType: "module",
-    warnOnUnsupportedTypeScriptVersion: false,
+    project: "./tsconfig.test.json",
   },
 };

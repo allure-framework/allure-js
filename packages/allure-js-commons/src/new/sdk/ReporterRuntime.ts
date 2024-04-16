@@ -18,7 +18,7 @@ import { Crypto } from "./Crypto.js";
 import { Notifier } from "./LifecycleListener.js";
 import { LifecycleState } from "./LifecycleState.js";
 import { Writer } from "./Writer.js";
-import { createTestResult, getTestResultHistoryId } from "./utils.js";
+import { createStepResult, createTestResult, getTestResultHistoryId } from "./utils.js";
 
 export class ReporterRuntime {
   private notifier: Notifier;
@@ -34,7 +34,7 @@ export class ReporterRuntime {
     this.links = links;
   }
 
-  start = async (result: Partial<TestResult>, start?: number) => {
+  start = (result: Partial<TestResult>, start?: number) => {
     const uuid = this.crypto.uuid();
     const stateObject: TestResult = {
       ...createTestResult(uuid),
@@ -42,43 +42,119 @@ export class ReporterRuntime {
       start: start || Date.now(),
     };
 
-    await this.notifier.beforeTestResultStart(stateObject);
+    this.notifier.beforeTestResultStart(stateObject);
     this.state.setTestResult(uuid, stateObject);
-    await this.notifier.afterTestResultStart(this.state.testResults.get(uuid)!);
+    this.notifier.afterTestResultStart(this.state.testResults.get(uuid)!);
 
     return uuid;
   };
 
-  update = async (uuid: string, updateFunc: (result: Partial<TestResult>) => void | Promise<void>) => {
+  /**
+   * Updates test result by uuid
+   * @example
+   * ```ts
+   * runtime.update(uuid, (result) => {
+   *   // change the result directly, you don't need to return anything
+   *   result.name = "foo";
+   * });
+   * ```
+   * @param uuid - test result uuid
+   * @param updateFunc - function that updates test result; result passes as a single argument and should be mutated to apply changes
+   */
+  update = (uuid: string, updateFunc: (result: TestResult) => void) => {
     const targetResult = this.state.testResults.get(uuid);
 
     if (!targetResult) {
       // eslint-disable-next-line no-console
-      console.error("There is no test result to update!");
+      console.error(`No test (${uuid}) to update!`);
       return;
     }
 
-    // TODO: validate that the result link is the same for all the notifier hooks
-    await this.notifier.beforeTestResultUpdate(targetResult);
-    await updateFunc(targetResult);
-    await this.notifier.afterTestResultUpdate(targetResult);
+    this.notifier.beforeTestResultUpdate(targetResult);
+    updateFunc(targetResult);
+    this.notifier.afterTestResultUpdate(targetResult);
   };
 
-  stop = async (uuid: string, stop?: number) => {
+  stop = (uuid: string, stop?: number) => {
     const targetResult = this.state.testResults.get(uuid);
 
     if (!targetResult) {
       // eslint-disable-next-line no-console
-      console.error(`No test ${uuid}`);
+      console.error(`No test (${uuid}) to stop!`);
       return;
     }
 
-    await this.notifier.beforeTestResultStop(targetResult);
+    this.notifier.beforeTestResultStop(targetResult);
 
     targetResult.historyId = getTestResultHistoryId(this.crypto, targetResult);
     targetResult.stop = stop || Date.now();
 
-    await this.notifier.afterTestResultStop(targetResult);
+    this.notifier.afterTestResultStop(targetResult);
+  };
+
+  startStep = (uuid: string, result: Partial<StepResult>) => {
+    if (!this.state.testResults.has(uuid)) {
+      // eslint-disable-next-line no-console
+      console.error(`No test (${uuid}) to start step!`);
+      return;
+    }
+
+    this.state.setStepResult(uuid, {
+      ...createStepResult(),
+      ...result,
+    });
+  };
+
+  updateStep = (uuid: string, updateFunc: (stepResult: StepResult) => void) => {
+    if (!this.state.testResults.has(uuid)) {
+      // eslint-disable-next-line no-console
+      console.error(`No test (${uuid}) to update step!`);
+      return;
+    }
+
+    const currentStep = this.state.getCurrentStep(uuid)!;
+
+    if (!currentStep) {
+      // eslint-disable-next-line no-console
+      console.error(`No step ${uuid}`);
+      return;
+    }
+
+    updateFunc(currentStep);
+  };
+
+  stopStep = (uuid: string, stop: number = Date.now()) => {
+    if (!this.state.testResults.has(uuid)) {
+      // eslint-disable-next-line no-console
+      console.error(`No test (${uuid}) to stop step!`);
+      return;
+    }
+
+    if (!this.state.getCurrentStep(uuid)) {
+      // eslint-disable-next-line no-console
+      console.error(`No step ${uuid}`);
+      return;
+    }
+
+    const currentStep = this.state.popStep(uuid)!;
+    const prevStep = this.state.getCurrentStep(uuid);
+
+    if (prevStep) {
+      this.updateStep(uuid, (step) => {
+        step.steps.push({
+          ...currentStep,
+          stop,
+        });
+      });
+      return;
+    }
+
+    this.update(uuid, (result) => {
+      result.steps.push({
+        ...currentStep,
+        stop,
+      });
+    });
   };
 
   write = (uuid: string) => {
@@ -86,7 +162,7 @@ export class ReporterRuntime {
 
     if (!targetResult) {
       // eslint-disable-next-line no-console
-      console.error(`No test ${uuid}`);
+      console.error(`No test (${uuid}) to write!`);
       return;
     }
 
@@ -110,13 +186,21 @@ export class ReporterRuntime {
       (attachment.encoding as BufferEncoding) || "base64",
     );
 
-    const currentResult = this.state.testResults.get(uuid)!;
-    const currentStep = this.state.getLastStep(uuid);
-
-    (currentStep || currentResult).attachments.push({
+    const rawAttachment = {
       name: attachment.name,
       source: attachmentFilename,
       type: attachment.contentType,
+    };
+
+    if (this.state.getCurrentStep(uuid)) {
+      this.updateStep(uuid, (step) => {
+        step.attachments.push(rawAttachment);
+      });
+      return;
+    }
+
+    this.update(uuid, (result) => {
+      result.attachments.push(rawAttachment);
     });
   };
 
@@ -144,7 +228,7 @@ export class ReporterRuntime {
     });
   };
 
-  applyRuntimeMessages = async <T>(
+  applyRuntimeMessages = <T>(
     uuid: string,
     messages: Messages<T>[] = [],
     customMessageHandler?: (
@@ -157,7 +241,7 @@ export class ReporterRuntime {
 
     if (!targetResult) {
       // eslint-disable-next-line no-console
-      console.error(`No test ${uuid}`);
+      console.error(`No test (${uuid}) to apply runtime messages to!`);
       return;
     }
 
@@ -168,7 +252,7 @@ export class ReporterRuntime {
         const { links = [], attachments, displayName, ...rest } = (message as RuntimeMetadataMessage).data;
         const formattedLinks = this.formatLinks(links);
 
-        if (this.state.getLastStep(uuid)) {
+        if (this.state.getCurrentStep(uuid)) {
           this.state.updateTestResult(uuid, {
             name: displayName,
             links: formattedLinks,
@@ -201,17 +285,16 @@ export class ReporterRuntime {
 
       if (type === "step_stop") {
         // TODO: move this add/remove steps logic to lifecycle state
-        if (!this.state.getLastStep(uuid)) {
+        if (!this.state.getCurrentStep(uuid)) {
           // eslint-disable-next-line no-console
           console.error("No step to stop");
           continue;
         }
 
-        // TODO: rename to updateLastStep or rename getLastStep to getCurrentStep
         this.state.updateCurrentStep(uuid, (message as RuntimeStopStepMessage).data);
 
         const currentStep = this.state.popStep(uuid)!;
-        const prevStep = this.state.getLastStep(uuid);
+        const prevStep = this.state.getCurrentStep(uuid);
 
         if (prevStep) {
           prevStep.steps.push(currentStep);
@@ -231,10 +314,10 @@ export class ReporterRuntime {
         continue;
       }
 
-      await customMessageHandler(
+      customMessageHandler(
         message as Exclude<Messages<T>, RuntimeMessage>,
         targetResult,
-        this.state.getLastStep(uuid),
+        this.state.getCurrentStep(uuid),
       );
     }
   };

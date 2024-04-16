@@ -1,6 +1,7 @@
 export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
 export const ALLURE_IMAGEDIFF_CONTENT_TYPE = "application/vnd.allure.image.diff";
 export const ALLURE_SKIPPED_BY_TEST_PLAN_LABEL = "allure-skipped-by-test-plan";
+export const ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE = "application/vnd.allure.message+json";
 
 export interface AttachmentMetadata {
   name: string;
@@ -107,7 +108,7 @@ export interface TestResultContainer {
   afters: FixtureResult[];
 }
 
-export type StepOrTestResult = StepResult | TestResult;
+export type TestOrStepResult = StepResult | TestResult;
 
 export interface Category {
   name?: string;
@@ -137,6 +138,8 @@ export enum Status {
   PASSED = "passed",
   SKIPPED = "skipped",
 }
+
+export const StatusByPriority = [Status.FAILED, Status.BROKEN, Status.PASSED, Status.SKIPPED];
 
 /* eslint-disable no-shadow */
 export enum Stage {

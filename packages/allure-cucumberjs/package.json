@@ -17,27 +17,41 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist/src/**/*",
-    "dist/index.*"
+    "dist"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./reporter": {
+      "import": "./dist/reporter.mjs",
+      "require": "./dist/reporter.cjs"
+    }
+  },
   "scripts": {
     "clean": "rimraf ./dist ./out",
-    "compile": "tsc",
+    "compile": "run-p 'compile:*'",
+    "compile:lib": "rollup -c",
+    "compile:types": "tsc --project ./tsconfig.json",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "eslint ./src ./index.ts --ext .ts",
     "lint:fix": "eslint --fix ./src ./index.ts --ext .ts",
-    "test": "ts-node --project ./test/tsconfig.json ./test/runner.ts"
+    "test": "vitest run"
   },
   "dependencies": {
-    "@cucumber/cucumber": "^9.5.1",
-    "@cucumber/gherkin": "^27.0.0",
+    "@cucumber/cucumber": "^10.4.0",
+    "@cucumber/gherkin": "^28.0.0",
     "@cucumber/gherkin-streams": "^5.0.1",
-    "@cucumber/gherkin-utils": "^8.0.5",
+    "@cucumber/gherkin-utils": "^9.0.0",
     "@cucumber/message-streams": "^4.0.1",
-    "@cucumber/messages": "^22.0.0",
+    "@cucumber/messages": "^24.1.0",
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
     "@types/chai": "^4.3.6",
     "@types/chai-like": "^1.1.1",
     "@types/chai-things": "^0.0.36",
@@ -49,6 +63,7 @@
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
     "allure-mocha": "workspace:packages/allure-mocha",
+    "allure-vitest": "workspace:^",
     "chai": "^4.3.8",
     "chai-like": "^1.1.1",
     "chai-things": "^0.2.0",
@@ -59,12 +74,16 @@
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "glob": "^10.3.5",
+    "glob": "^10.3.12",
     "mocha": "^10.2.0",
     "mocha-multi-reporters": "^1.5.1",
+    "npm-run-all2": "^6.1.2",
     "rimraf": "^5.0.1",
+    "rollup": "^4.14.1",
     "sinon": "^17.0.0",
     "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "tslib": "^2.6.2",
+    "typescript": "^5.2.2",
+    "vitest": "^1.4.0"
   }
 }

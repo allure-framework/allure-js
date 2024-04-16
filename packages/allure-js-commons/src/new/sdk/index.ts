@@ -10,6 +10,7 @@ export {
   createTestResultContainer,
   getStepsMessagesPair,
   getUnfinishedStepsMessages,
+  getWorstStepResultStatus,
   hasStepMessage,
 } from "./utils.js";
 export {
