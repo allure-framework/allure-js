@@ -24,6 +24,16 @@ export const runCucumberInlineTest = async (features: string[], stepsDefs: strin
         format: ["summary", "./reporter.js"],
         formatOptions: {
           testMode: true,
+          labels: [
+            {
+              pattern: [/@feature:(.*)/],
+              name: "feature",
+            },
+            {
+              pattern: [/@severity:(.*)/],
+              name: "severity",
+            },
+          ],
         }
       }
     }

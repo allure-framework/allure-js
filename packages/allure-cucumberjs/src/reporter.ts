@@ -1,27 +1,25 @@
 import { Formatter, IFormatterOptions } from "@cucumber/cucumber";
-// import { IFormatterOptions } from "@cucumber/cucumber/lib/formatter";
-// import TestCaseHookDefinition from "@cucumber/cucumber/lib/models/test_case_hook_definition";
 import * as messages from "@cucumber/messages";
-import { Envelope, TestStep, TestStepResult, TestStepResultStatus } from "@cucumber/messages";
+import { PickleTag, Tag, TestStepResult, TestStepResultStatus } from "@cucumber/messages";
 import os from "node:os";
 import process from "node:process";
-import { TestResult } from "allure-js-commons";
+import { ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/new/internal";
 import {
   AllureNodeReporterRuntime,
   Config,
   ContentType,
   FileSystemAllureWriter,
+  Label,
   LabelName,
+  Link,
   MessageAllureWriter,
   Stage,
   Status,
+  TestResult,
   createStepResult,
   getWorstStepResultStatus,
 } from "allure-js-commons/new/sdk/node";
-
-export interface AllureCucumberReporterConfig extends Omit<Config, "writer"> {
-  testMode?: boolean;
-}
+import { AllureCucumberReporterConfig, LabelConfig, LinkConfig } from "./model";
 
 const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env;
 
@@ -35,6 +33,8 @@ export default class AllureCucumberReporter extends Formatter {
   // private readonly linksMatchers: LinkMatcher[];
   // private readonly allureSteps: Map<string, AllureStep> = new Map();
 
+  private linksConfigs: LinkConfig[] = [];
+  private labelsConfigs: LabelConfig[] = [];
   private runtime: AllureNodeReporterRuntime;
 
   private readonly documentMap: Map<string, messages.GherkinDocument> = new Map();
@@ -56,6 +56,8 @@ export default class AllureCucumberReporter extends Formatter {
     const {
       resultsDir = "./allure-results",
       testMode,
+      links,
+      labels,
       ...rest
     } = options.parsedArgvOptions as AllureCucumberReporterConfig;
 
@@ -65,12 +67,14 @@ export default class AllureCucumberReporter extends Formatter {
         : new FileSystemAllureWriter({
             resultsDir,
           }),
+      links: links as Config["links"] | undefined,
+      ...rest,
     });
+    this.linksConfigs = links || [];
+    this.labelsConfigs = labels || [];
 
     options.eventBroadcaster.on("envelope", this.parseEnvelope.bind(this));
 
-    // this.labelsMatchers = config.labels || [];
-    // this.linksMatchers = config.links || [];
     // this.exceptionFormatter = (message): string | undefined => {
     //   if (!message || !config.exceptionFormatter) {
     //     return message;
@@ -94,11 +98,11 @@ export default class AllureCucumberReporter extends Formatter {
     // this.afterHooks = options.supportCodeLibrary.afterTestCaseHookDefinitions;
   }
 
-  // private get tagsIgnorePatterns(): RegExp[] {
-  //   const { linksMatchers, labelsMatchers } = this;
-  //
-  //   return [...linksMatchers, ...labelsMatchers].flatMap(({ pattern }) => pattern);
-  // }
+  private get tagsIgnorePatterns(): RegExp[] {
+    const { labelsConfigs, linksConfigs } = this;
+
+    return [...labelsConfigs, ...linksConfigs].flatMap(({ pattern }) => pattern);
+  }
 
   private parseEnvelope(envelope: messages.Envelope) {
     switch (true) {
@@ -129,6 +133,84 @@ export default class AllureCucumberReporter extends Formatter {
       case !!envelope.testStepFinished:
         this.onTestStepFinished(envelope.testStepFinished);
         break;
+    }
+  }
+
+  private parseTagsLabels(tags: readonly Tag[]): Label[] {
+    const labels: Label[] = [];
+
+    if (this.labelsConfigs.length === 0) {
+      return labels;
+    }
+
+    this.labelsConfigs.forEach((matcher) => {
+      const matchedTags = tags.filter((tag) => matcher.pattern.some((pattern) => pattern.test(tag.name)));
+      const matchedLabels = matchedTags.map((tag) => {
+        const tagValue = tag.name.replace(/^@\S+:/, "");
+
+        return {
+          name: matcher.name,
+          value: tagValue,
+        };
+      });
+
+      labels.push(...matchedLabels);
+    });
+
+    return labels;
+  }
+
+  private parsePickleTags(tags: readonly PickleTag[]): Label[] {
+    const labels: Label[] = [];
+
+    return tags
+      .filter((tag) => !this.tagsIgnorePatterns.some((pattern) => pattern.test(tag.name)))
+      .map((tag) => ({
+        name: LabelName.TAG,
+        value: tag.name,
+      }));
+  }
+
+  private parseTagsLinks(tags: readonly Tag[]): Link[] {
+    // const tagKeyRe = /^@\S+=/;
+    const links: Link[] = [];
+
+    if (this.linksConfigs.length === 0) {
+      return links;
+    }
+
+    return links;
+
+    // this.linksMatchers.forEach((matcher) => {
+    //   const matchedTags = tags.filter((tag) => matcher.pattern.some((pattern) => pattern.test(tag.name)));
+    //   const matchedLinks = matchedTags.map((tag) => {
+    //     const tagValue = tag.name.replace(tagKeyRe, "");
+    //
+    //     return {
+    //       url: matcher.urlTemplate.replace(/%s$/, tagValue) || tagValue,
+    //       type: matcher.type,
+    //     };
+    //   });
+    //
+    //   links.push(...matchedLinks);
+    // });
+    //
+    // return links;
+  }
+
+  private parseStatus(stepResult: TestStepResult): Status | undefined {
+    const containsAssertionError = /assertion/i.test(stepResult?.exception?.type || "");
+
+    switch (stepResult.status) {
+      case TestStepResultStatus.FAILED:
+        return containsAssertionError ? Status.FAILED : Status.BROKEN;
+      case TestStepResultStatus.PASSED:
+        return Status.PASSED;
+      case TestStepResultStatus.SKIPPED:
+      case TestStepResultStatus.PENDING:
+        return Status.SKIPPED;
+      default:
+        return undefined;
     }
   }
 
@@ -175,10 +257,13 @@ export default class AllureCucumberReporter extends Formatter {
     const doc = this.documentMap.get(pickle.uri)!;
     const [scenarioId] = pickle.astNodeIds;
     const scenario = this.scenarioMap.get(scenarioId);
+    const fullName = `${pickle.uri}#${pickle.name}`;
     const result: Partial<TestResult> = {
       name: pickle.name,
       description: (scenario?.description || doc?.feature?.description || "").trim(),
       labels: [],
+      testCaseId: this.runtime.crypto.md5(fullName),
+      fullName,
     };
 
     result.labels!.push(
@@ -214,10 +299,21 @@ export default class AllureCucumberReporter extends Formatter {
       });
     }
 
+    const pickleLabels = this.parsePickleTags(pickle.tags || []);
+    const featureLabels = this.parseTagsLabels(doc?.feature?.tags || []);
+    const featureLinks = this.parseTagsLinks(doc?.feature?.tags || []);
+    const scenarioLabels = this.parseTagsLabels(scenario?.tags || []);
+    const scenarioLinks = this.parseTagsLinks(scenario?.tags || []);
+
+    result.labels!.push(...featureLabels, ...scenarioLabels, ...pickleLabels);
+
     const testUuid = this.runtime.start(result, Date.now());
 
     this.testCaseStartedMap.set(data.id, data);
     this.allureResultsUuids.set(data.id, testUuid);
+
+    // featureLinks.forEach((link) => currentTest.addLink(link.url, link.name, link.type));
+    // scenarioLinks.forEach((link) => currentTest.addLink(link.url, link.name, link.type));
 
     if (!scenario?.examples) {
       return;
@@ -239,46 +335,9 @@ export default class AllureCucumberReporter extends Formatter {
         name: "Examples",
         content: csvDataTable,
         contentType: ContentType.CSV,
-        encoding: "utf8"
+        encoding: "utf8",
       });
     });
-
-    // console.log(pickle.tags, scenario?.examples);
-
-    // if (scenario.examples)
-
-    // debugger;
-
-    // const featureLabels = this.parseTagsLabels(doc?.feature?.tags || []);
-    // const featureLinks = this.parseTagsLinks(doc?.feature?.tags || []);
-    // const scenarioLabels = this.parseTagsLabels(scenario?.tags || []);
-    // const scenarioLinks = this.parseTagsLinks(scenario?.tags || []);
-    // const currentTest = new AllureTest(this.allureRuntime, Date.now());
-    // const thread = data.workerId || ALLURE_THREAD_NAME || process.pid.toString();
-    // const fullName = `${pickle.uri}#${pickle.name}`;
-    // // sometimes description starts with "Description:", but it's not actually required
-    // const testCaseId = md5(fullName);
-    //
-    // this.testCaseStartedMap.set(data.id, data);
-    // this.testCaseTestStepsResults.set(data.id, []);
-    // this.currentTestsMap.set(data.id, currentTest);
-    //
-    // currentTest.fullName = fullName;
-    // currentTest.testCaseId = testCaseId;
-    //
-    // featureLabels.forEach((label) => currentTest.addLabel(label.name, label.value));
-    // featureLinks.forEach((link) => currentTest.addLink(link.url, link.name, link.type));
-    // scenarioLabels.forEach((label) => currentTest.addLabel(label.name, label.value));
-    // scenarioLinks.forEach((link) => currentTest.addLink(link.url, link.name, link.type));
-    //
-    // if (pickle.tags?.length) {
-    //   const filteredTags = pickle.tags.filter(
-    //     (tag) => !this.tagsIgnorePatterns.some((pattern) => pattern.test(tag.name)),
-    //   );
-    //
-    //   filteredTags.forEach((tag) => currentTest.addLabel(LabelName.TAG, tag.name));
-    // }
-    //
   }
 
   private onTestCaseFinished(data: messages.TestCaseFinished) {
@@ -342,7 +401,7 @@ export default class AllureCucumberReporter extends Formatter {
       name: "Data table",
       content: csvDataTable,
       contentType: ContentType.CSV,
-      encoding: "utf8"
+      encoding: "utf8",
     });
   }
 
@@ -355,7 +414,7 @@ export default class AllureCucumberReporter extends Formatter {
     }
 
     this.runtime.updateStep(testUuid, (step) => {
-      const status = this.convertStatus(data.testStepResult);
+      const status = this.parseStatus(data.testStepResult);
 
       step.status = status;
       step.stage = status !== Status.SKIPPED ? Stage.FINISHED : Stage.PENDING;
@@ -382,15 +441,24 @@ export default class AllureCucumberReporter extends Formatter {
     this.hookMap.set(data.id, data);
   }
 
-  private onAttachment(data: messages.Attachment): void {
-    if (!data.testCaseStartedId) {
+  private onAttachment(message: messages.Attachment): void {
+    if (!message.testCaseStartedId) {
       return;
     }
 
-    const testUuid = this.allureResultsUuids.get(data.testCaseStartedId)!;
-    const currentStep = this.runtime.state.getCurrentStep(testUuid);
+    const testUuid = this.allureResultsUuids.get(message.testCaseStartedId)!;
 
-    console.log("attachment", { testUuid, data });
+    if (message.mediaType === ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE) {
+      const parsedMessage = JSON.parse(message.body);
+
+      this.runtime.applyRuntimeMessages(testUuid, Array.isArray(parsedMessage) ? parsedMessage : [parsedMessage]);
+      return;
+    }
+
+    // const currentStep = this.runtime.state.getCurrentStep(testUuid);
+
+    // this.runtime.applyRuntimeMessages(testUuid, data);
+    console.log("attachment", { testUuid, data: message });
     // const currentTest = this.currentTestsMap.get(data?.testCaseStartedId || "");
     //
     // if (!currentTest) {
@@ -438,20 +506,4 @@ export default class AllureCucumberReporter extends Formatter {
   //     payload.test.addStep(step);
   //   });
   // }
-
-  private convertStatus = (stepResult: TestStepResult): Status | undefined => {
-    const containsAssertionError = /assertion/i.test(stepResult?.exception?.type || "");
-
-    switch (stepResult.status) {
-      case TestStepResultStatus.FAILED:
-        return containsAssertionError ? Status.FAILED : Status.BROKEN;
-      case TestStepResultStatus.PASSED:
-        return Status.PASSED;
-      case TestStepResultStatus.SKIPPED:
-      case TestStepResultStatus.PENDING:
-        return Status.SKIPPED;
-      default:
-        return undefined;
-    }
-  };
 }

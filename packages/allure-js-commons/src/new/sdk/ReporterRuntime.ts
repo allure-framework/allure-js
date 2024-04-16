@@ -22,10 +22,10 @@ import { createStepResult, createTestResult, getTestResultHistoryId } from "./ut
 
 export class ReporterRuntime {
   private notifier: Notifier;
-  private crypto: Crypto;
   private links: LinkConfig[] = [];
   state = new LifecycleState();
   writer: Writer;
+  crypto: Crypto;
 
   constructor({ writer, listeners = [], crypto, links = [] }: Config & { crypto: Crypto }) {
     this.writer = writer;
