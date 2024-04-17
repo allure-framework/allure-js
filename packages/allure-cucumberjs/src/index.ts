@@ -159,6 +159,8 @@ export class AllureCucumberTestRuntime extends World implements TestRuntime {
 }
 
 Before(function () {
+  // TODO: we can implement testplan logic there
+
   setGlobalTestRuntime(
     new AllureCucumberTestRuntime({
       attach: this.attach,

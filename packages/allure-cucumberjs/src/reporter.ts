@@ -1,4 +1,4 @@
-import { Formatter, IFormatterOptions } from "@cucumber/cucumber";
+import { Formatter, IFormatterOptions, TestCaseHookDefinition } from "@cucumber/cucumber";
 import * as messages from "@cucumber/messages";
 import { PickleTag, Tag, TestStepResult, TestStepResultStatus } from "@cucumber/messages";
 import os from "node:os";
@@ -24,14 +24,8 @@ import { AllureCucumberReporterConfig, LabelConfig, LinkConfig } from "./model";
 const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env;
 
 export default class AllureCucumberReporter extends Formatter {
-  // private readonly currentTestsMap: Map<string, AllureTest> = new Map();
-  // private readonly hostname: string = ALLURE_HOST_NAME || os.hostname();
-  // private readonly afterHooks: TestCaseHookDefinition[];
-  // private readonly beforeHooks: TestCaseHookDefinition[];
-  // private readonly exceptionFormatter: (message?: string) => string | undefined;
-  // private readonly labelsMatchers: LabelMatcher[];
-  // private readonly linksMatchers: LinkMatcher[];
-  // private readonly allureSteps: Map<string, AllureStep> = new Map();
+  private readonly afterHooks: TestCaseHookDefinition[];
+  private readonly beforeHooks: TestCaseHookDefinition[];
 
   private linksConfigs: LinkConfig[] = [];
   private labelsConfigs: LabelConfig[] = [];
@@ -75,22 +69,8 @@ export default class AllureCucumberReporter extends Formatter {
 
     options.eventBroadcaster.on("envelope", this.parseEnvelope.bind(this));
 
-    // this.exceptionFormatter = (message): string | undefined => {
-    //   if (!message || !config.exceptionFormatter) {
-    //     return message;
-    //   }
-    //
-    //   try {
-    //     return config.exceptionFormatter(message);
-    //   } catch (e) {
-    //     // eslint-disable-next-line no-console,@typescript-eslint/restrict-template-expressions
-    //     console.warn(`Error in exceptionFormatter: ${e}`);
-    //
-    //     return message;
-    //   }
-    // };
-    // this.beforeHooks = options.supportCodeLibrary.beforeTestCaseHookDefinitions;
-    // this.afterHooks = options.supportCodeLibrary.afterTestCaseHookDefinitions;
+    this.beforeHooks = options.supportCodeLibrary.beforeTestCaseHookDefinitions;
+    this.afterHooks = options.supportCodeLibrary.afterTestCaseHookDefinitions;
   }
 
   private get tagsIgnorePatterns(): RegExp[] {
@@ -357,6 +337,7 @@ export default class AllureCucumberReporter extends Formatter {
     const testUuid = this.allureResultsUuids.get(data.testCaseStartedId)!;
     const step = this.testStepMap.get(data.testStepId)!;
 
+    // TODO: support hooks reporting
     if (!step.pickleStepId) {
       return;
     }
@@ -401,6 +382,7 @@ export default class AllureCucumberReporter extends Formatter {
     const testUuid = this.allureResultsUuids.get(data.testCaseStartedId)!;
     const currentStep = this.runtime.state.getCurrentStep(testUuid);
 
+    // TODO: support hooks reporting
     if (!currentStep) {
       return;
     }
