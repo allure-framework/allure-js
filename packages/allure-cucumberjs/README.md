@@ -12,7 +12,7 @@
 
 ---
 
-## Basic usage
+## Installation
 
 Install the required packages using your favorite package manager:
 
@@ -25,57 +25,21 @@ yarn add -D allure-js-commons allure-cucumberjs
 pnpm add -D allure-js-commons allure-cucumberjs
 ```
 
-Create the reporter file:
+Create `reporter.js` with following content:
 
 ```js
 // reporter.js
-import { AllureRuntime } from "allure-js-commons";
-import { CucumberJSAllureFormatter } from "allure-cucumberjs";
+const AllureCucumberReporter = require("allure-cucumberjs/reporter");
 
-export default class extends CucumberJSAllureFormatter {
-  constructor(options) {
-    super(options, new AllureRuntime({ resultsDir: "./allure-results" }), {
-      labels: [
-        {
-          pattern: [/@feature:(.*)/],
-          name: "epic",
-        },
-        {
-          pattern: [/@severity:(.*)/],
-          name: "severity",
-        },
-      ],
-      links: [
-        {
-          pattern: [/@issue=(.*)/],
-          type: "issue",
-          urlTemplate: "http://localhost:8080/issue/%s",
-        },
-        {
-          pattern: [/@tms=(.*)/],
-          type: "tms",
-          urlTemplate: "http://localhost:8080/tms/%s",
-        },
-      ],
-    });
-  }
-}
+export default AllureCucumberReporter;
 ```
 
-Then let know `cucumber-js` about the reporter via CLI parameter:
+Then add following lines to the CucumberJS configuration file:
 
-```shell
-cucumber-js --format ./path/to/reporter.js
-```
-
-Or via configuration file:
-
-```js
+```diff
 // config.js
-module.exports = {
-  default: {
-    format: "./path/to/reporter.js",
-  },
+export default {
++  format: "./path/to/reporter.js",
 };
 ```
 
@@ -85,108 +49,39 @@ And then run CLI with `config` parameter:
 cucumber-js --config ./config.js
 ```
 
-If you want to retain default formatter add some dummy file as output:
+## Reporter options
 
-```shell
-cucumber-js --format ./path/to/reporter.js:./dummy.txt
-```
+Some reporter settings can be set by following options:
+
+| Option     | Description                                                                                     | Default            |
+| ---------- |-------------------------------------------------------------------------------------------------| ------------------ |
+| resultsDir | Path to results folder                                                                          | `./allure-results` |
+| links      | Links templates to make runtime methods calls simpler and process Cucumber tags as Allure links | `undefined`        |
+| labels     | Labels templates to process Cucumber tags as Allure labels                                      | `undefined`       |
 
 ## Using Allure API
 
-You're able to call Allure API methods injected to the `World` object by the reporter.
-By default, the feature is available out of the box for single thread mode.
+To start using Allure Runtime API you need to add the following import into your `./feature/support/world.js` file:
 
-Example:
+```js
+import "allure-cucumberjs";
+```
+
+Then, you can call Allure Runtime API methods directly in your step definitions:
 
 ```js
 import { Given } from "@cucumber/cucumber";
+import { label, attachment, step } from "allure-js-commons";
 
-Given(/my step/, async function () {
-  await this.step("step can have anonymous body function", async function () {
-    await this.label("label_name", "label_value");
-    await this.attach(JSON.stringify({ foo: "bar " }), "application/json");
+Given(/my step/, async () => {
+  await step("step can have anonymous body function", async () => {
+    await label("label_name", "label_value");
+    await attachment(JSON.stringify({ foo: "bar " }), "application/json");
   });
 
-  await this.step("by the way, body function can be arrow one", async (step) => {
-    await step.label("label_name", "label_value");
-    await step.attach(JSON.stringify({ foo: "bar " }), "application/json");
-  });
-});
-```
-
-If you want to keep the functoinality in `parallel` mode, set `CucumberAllureWorld` as
-world constructor:
-
-```diff
-- import { Given } from "@cucumber/cucumber"
-+ import { Given, setWorldConstructor } from "@cucumber/cucumber"
-+ import { CucumberAllureWorld } from "allure-cucumberjs"
-
-+ setWorldConstructor(CucumberAllureWorld)
-
-Given(/my step/, async function () {
-  await this.step("step can have anonymous body function", async function () {
-    await this.label("label_name", "label_value")
-    await this.attach(JSON.stringify({ foo: "bar "}), "application/json")
-  })
-
-  await this.step("by the way, body function can be arrow one", async (step) => {
-    await step.label("label_name", "label_value")
-    await step.attach(JSON.stringify({ foo: "bar "}), "application/json")
-  })
-})
-```
-
-Follow the same approach when you need to use your own `World` implementation. Just extend it from
-`CucumberAllureWorld`:
-
-```diff
-- import { Given } from "@cucumber/cucumber"
-+ import { Given, setWorldConstructor } from "@cucumber/cucumber"
-+ import { CucumberAllureWorld } from "allure-cucumberjs"
-
-+ class MyWorld extends CucumberAllureWorld {
-+   hello() {
-+     console.log('say hello!')
-+   }
-+ }
-
-+ setWorldConstructor(MyWorld)
-
-Given(/my step/, async function () {
-+  this.hello()
-
-  await this.step("step can have anonymous body function", async function () {
-    await this.label("label_name", "label_value")
-    await this.attach(JSON.stringify({ foo: "bar "}), "application/json")
-  })
-
-  await this.step("by the way, body function can be arrow one", async (step) => {
-    await step.label("label_name", "label_value")
-    await step.attach(JSON.stringify({ foo: "bar "}), "application/json")
-  })
-})
-```
-
-## TypeScript
-
-To properly type your cucumber tests you need to declare `CustomWorld` type and use it.
-
-```ts
-import { Given } from "@cucumber/cucumber";
-import { CucumberAllureWorld } from "allure-cucumberjs";
-
-if (process.env.PARALLEL) {
-  setWorldConstructor(CucumberAllureWorld);
-}
-
-type CustomWorld = {
-  someCustomOptions: string;
-} & CucumberAllureWorld;
-
-Given("A cat fact is recieved", async function (this: CustomWorld) {
-  await this.step("example name", async () => {
-    await this.label("test label", "value");
+  await step("by the way, body function can be arrow one", async () => {
+    await label("label_name", "label_value");
+    await attachment(JSON.stringify({ foo: "bar " }), "application/json");
   });
 });
 ```
@@ -195,10 +90,11 @@ Given("A cat fact is recieved", async function (this: CustomWorld) {
 
 ```ts
 import { Given } from "@cucumber/cucumber";
+import { step, parameter } from "allure-js-commons";
 
-Given(/my step/, async function () {
-  await this.step("step can have anonymous body function", async function () {
-    await this.parameter("parameterName", "parameterValue");
+Given(/my step/, async () => {
+  await step("step can have anonymous body function", async () => {
+    await parameter("parameterName", "parameterValue");
   });
 });
 ```
@@ -211,10 +107,11 @@ Also addParameter takes an third optional parameter with the hidden and excluded
 
 ```ts
 import { Given } from "@cucumber/cucumber";
+import { step, parameter } from "allure-js-commons";
 
-Given(/my step/, async function () {
-  await this.step("step can have anonymous body function", async function () {
-    await this.parameter("parameterName", "parameterValue", { mode: "hidden", excluded: true });
+Given(/my step/, async () => {
+  await step("step can have anonymous body function", async () => {
+    await parameter("parameterName", "parameterValue", { mode: "hidden", excluded: true });
   });
 });
 ```
@@ -224,11 +121,15 @@ Given(/my step/, async function () {
 For cross-browser testing simply add a parameter using Allure API with the browser name to the `World` instance inside your scenario, i.e.:
 
 ```js
-await this.parameter('Browser', 'firefox')
+import { parameter } from "allure-js-commons";
+
+await parameter('Browser', 'firefox')
 ```
 
 For better presentation, you can also group suites by browser names, i.e.:
 
 ```js
-await this.parentSuite('Firefox')
+import { parentSuite } from "allure-js-commons";
+
+await parentSuite('Firefox')
 ```
