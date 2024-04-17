@@ -4,7 +4,7 @@ import { runCucumberInlineTest } from "../utils";
 it("handles runtime attachments", async () => {
   const { tests, attachments } = await runCucumberInlineTest(["attachments"], ["attachments"]);
 
-  expect(tests).toHaveLength(2);
+  expect(tests).toHaveLength(4);
   expect(tests).toContainEqual(
     expect.objectContaining({
       steps: expect.arrayContaining([
@@ -35,5 +35,35 @@ it("handles runtime attachments", async () => {
       ]),
     }),
   );
-  expect(Object.keys(attachments)).toHaveLength(2);
+  expect(tests).toContainEqual(
+    expect.objectContaining({
+      steps: expect.arrayContaining([
+        expect.objectContaining({
+          name: "Given add a cucumber text attachment",
+          attachments: expect.arrayContaining([
+            expect.objectContaining({
+              name: "Attachment",
+              type: "text/plain",
+            }),
+          ]),
+        }),
+      ]),
+    }),
+  );
+  expect(tests).toContainEqual(
+    expect.objectContaining({
+      steps: expect.arrayContaining([
+        expect.objectContaining({
+          name: "Given add a cucumber binary text attachment",
+          attachments: expect.arrayContaining([
+            expect.objectContaining({
+              name: "Attachment",
+              type: "text/plain",
+            }),
+          ]),
+        }),
+      ]),
+    }),
+  );
+  expect(Object.keys(attachments)).toHaveLength(4);
 });

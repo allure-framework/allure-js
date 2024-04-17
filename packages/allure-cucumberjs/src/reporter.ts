@@ -89,11 +89,6 @@ export default class AllureCucumberReporter extends Formatter {
     //     return message;
     //   }
     // };
-    // if (options.supportCodeLibrary.World === World) {
-    //   // eslint-disable-next-line
-    //   // @ts-ignore
-    //   options.supportCodeLibrary.World = CucumberAllureWorld;
-    // }
     // this.beforeHooks = options.supportCodeLibrary.beforeTestCaseHookDefinitions;
     // this.afterHooks = options.supportCodeLibrary.afterTestCaseHookDefinitions;
   }
@@ -312,9 +307,6 @@ export default class AllureCucumberReporter extends Formatter {
     this.testCaseStartedMap.set(data.id, data);
     this.allureResultsUuids.set(data.id, testUuid);
 
-    // featureLinks.forEach((link) => currentTest.addLink(link.url, link.name, link.type));
-    // scenarioLinks.forEach((link) => currentTest.addLink(link.url, link.name, link.type));
-
     if (!scenario?.examples) {
       return;
     }
@@ -455,55 +447,14 @@ export default class AllureCucumberReporter extends Formatter {
       return;
     }
 
-    // const currentStep = this.runtime.state.getCurrentStep(testUuid);
+    // only pass through valid encodings
+    const encoding = Buffer.isEncoding(message.contentEncoding) ? message.contentEncoding : "utf8";
 
-    // this.runtime.applyRuntimeMessages(testUuid, data);
-    console.log("attachment", { testUuid, data: message });
-    // const currentTest = this.currentTestsMap.get(data?.testCaseStartedId || "");
-    //
-    // if (!currentTest) {
-    //   return;
-    // }
-    //
-    // const currentStep = this.allureSteps.get(data?.testStepId || "");
-    //
-    // if (!data) {
-    //   // eslint-disable-next-line no-console
-    //   console.error("onAttachment", "attachment can't be empty");
-    //   return;
-    // }
-    //
-    // const { fileName = "attachment", body, mediaType, contentEncoding } = data;
-    //
-    // if (mediaType === ALLURE_METADATA_CONTENT_TYPE) {
-    //   this.handleAllureAttachment({
-    //     test: currentTest,
-    //     step: currentStep,
-    //     metadata: JSON.parse(body) as MetadataMessage,
-    //   });
-    //   return;
-    // }
-    //
-    // const encoding = Buffer.isEncoding(contentEncoding) ? contentEncoding : undefined; // only pass through valid encodings
-    // const attachmentFilename = this.allureRuntime.writeAttachment(body, mediaType, encoding);
-    //
-    // (currentStep ?? currentTest).addAttachment(
-    //   fileName,
-    //   {
-    //     contentType: mediaType,
-    //   },
-    //   attachmentFilename,
-    // );
+    this.runtime.writeAttachment(testUuid, {
+      name: "Attachment",
+      content: message.body,
+      contentType: message.mediaType,
+      encoding,
+    });
   }
-
-  // private handleAllureAttachment(payload: { test: AllureTest; step?: AllureStep; metadata: MetadataMessage }) {
-  //   payload.test.applyMetadata(payload.metadata, (step) => {
-  //     if (payload.step) {
-  //       payload.step.addStep(step);
-  //       return;
-  //     }
-  //
-  //     payload.test.addStep(step);
-  //   });
-  // }
 }

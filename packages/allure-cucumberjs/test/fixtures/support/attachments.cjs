@@ -11,3 +11,11 @@ Given("add an image", async () => {
 
   await attachment("Image attachment", base64Image, "image/png");
 });
+
+Given("add a cucumber text attachment", function () {
+  this.attach("some text", "text/plain");
+})
+
+Given("add a cucumber binary text attachment", function () {
+  this.attach(Buffer.from("some text"), "text/plain");
+})
