@@ -46,6 +46,7 @@ export {
 } from "./model.js";
 export {
   extractMetadataFromString,
+  escapeRegExp,
   getStatusFromError,
   getSuitesLabels,
   typeToExtension,

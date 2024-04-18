@@ -1,6 +1,7 @@
 import commonjsPlugin from "@rollup/plugin-commonjs";
 import resolvePlugin from "@rollup/plugin-node-resolve";
 import typescriptPlugin from "@rollup/plugin-typescript";
+import { globSync } from "glob";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "rollup";
@@ -10,13 +11,15 @@ const dirname = fileURLToPath(new URL(".", import.meta.url));
 const createNodeEntry = (inputFile) => {
   const outputFileBase = inputFile.replace(/^src/, "dist");
   const external = [
-    "@cucumber/cucumber",
-    "@cucumber/messages",
     "node:os",
     "node:fs",
     "node:process",
+    "node:path",
+    "strip-ansi",
+    "allure-js-commons/new",
     "allure-js-commons/new/sdk/node",
     "allure-js-commons/new/internal",
+    "@playwright/test",
   ];
 
   return [
@@ -54,5 +57,7 @@ const createNodeEntry = (inputFile) => {
 };
 
 export default () => {
-  return [createNodeEntry("src/reporter.ts"), createNodeEntry("src/index.ts")].flat();
+  const entries = globSync("src/*.ts", { cwd: dirname });
+
+  return entries.map(createNodeEntry).flat();
 };

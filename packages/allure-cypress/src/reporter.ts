@@ -131,8 +131,8 @@ export class AllureCypress {
         continue;
       }
 
-      await this.runtime.update(uuid, (result) => {
-        result.attachments!.push({
+      this.runtime.update(uuid, (result) => {
+        result.attachments.push({
           source: videoSourcePath,
           name: "Video",
           type: ContentType.MP4,

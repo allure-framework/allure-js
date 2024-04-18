@@ -1,3 +1,4 @@
+import { readFile } from "fs/promises";
 import {
   AttachmentOptions,
   ContentType,
@@ -162,4 +163,14 @@ export const getWorstStepResultStatus = (steps: StepResult[]): Status | undefine
   }
 
   return StatusByPriority[worstStatusPriority];
+};
+
+export const readImageAsBase64 = async (filePath: string): Promise<string | undefined> => {
+  try {
+    const file = await readFile(filePath, { encoding: "base64" });
+
+    return file ? `data:image/png;base64,${file}` : undefined;
+  } catch (e) {
+    return undefined;
+  }
 };

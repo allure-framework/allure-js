@@ -1049,3 +1049,10 @@ export class Stack<T> {
     return this.clone().toReversed();
   }
 }
+
+const reRegExpChar = /[\\^$.*+?()[\]{}|]/g,
+  reHasRegExpChar = RegExp(reRegExpChar.source);
+
+export const escapeRegExp = (value: string): string => {
+  return reHasRegExpChar.test(value) ? value.replace(reRegExpChar, "\\$&") : value;
+};

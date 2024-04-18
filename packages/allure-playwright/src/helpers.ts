@@ -1,149 +1,161 @@
 import test from "@playwright/test";
-import { randomUUID } from "crypto";
+import { ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/new/internal";
 import {
-  AttachmentOptions,
   ContentType,
-  Label,
   LabelName,
-  Link,
   LinkType,
-  MetadataMessage,
   ParameterOptions,
-} from "allure-js-commons";
-import { ALLURE_METADATA_CONTENT_TYPE } from "allure-js-commons/internal";
+  RuntimeMessage,
+  Stage,
+  Status,
+  TestRuntime,
+  getStatusFromError,
+  setGlobalTestRuntime,
+} from "allure-js-commons/new/sdk/node";
 
-export class allure {
-  static async logStep(name: string): Promise<void> {
-    await this.step(name, async () => {});
-  }
-
-  static step<T>(name: string, body: () => Promise<T>): Promise<T> {
-    return test.step(name, body);
-  }
-
-  static async attachment(
-    name: string,
-    content: Buffer | string,
-    options: ContentType | string | Pick<AttachmentOptions, "contentType">,
-  ) {
-    const stepName = `allureattach_${randomUUID()}_${name}`;
-
-    const contentType = typeof options === "string" ? options : options.contentType;
-    await this.step(stepName, async () => {
-      await test.info().attach(stepName, {
-        body: content,
-        contentType,
-      });
+export class AllurePlaywrightTestRuntime implements TestRuntime {
+  async label(name: LabelName | string, value: string) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        labels: [{ name, value }],
+      },
     });
   }
 
-  static async addMetadataAttachment(metadata: MetadataMessage) {
-    await test.info().attach("allure-metadata.json", {
-      contentType: ALLURE_METADATA_CONTENT_TYPE,
-      body: Buffer.from(JSON.stringify(metadata), "utf8"),
+  async link(url: string, type?: LinkType | string, name?: string) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        links: [{ type, url, name }],
+      },
     });
   }
 
-  static async label(label: string, value: string) {
-    await this.addMetadataAttachment({
-      labels: [{ name: label, value }],
+  async parameter(name: string, value: string, options?: ParameterOptions) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        parameters: [
+          {
+            name,
+            value,
+            ...options,
+          },
+        ],
+      },
     });
   }
 
-  static labels(...values: Label[]) {
-    values.forEach(({ name, value }) => this.label(name, value));
-  }
-
-  static async description(value: string) {
-    await this.addMetadataAttachment({
-      description: value,
+  async description(markdown: string) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        description: markdown,
+      },
     });
   }
 
-  static async link(url: string, name?: string, type?: string) {
-    await this.addMetadataAttachment({
-      links: [{ url, name, type }],
+  async descriptionHtml(html: string) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        descriptionHtml: html,
+      },
     });
   }
 
-  static links(...values: Link[]) {
-    values.forEach(({ url, name, type }) => this.link(url, name, type));
+  async displayName(name: string) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        displayName: name,
+      },
+    });
   }
 
-  static async id(id: string) {
-    await this.label(LabelName.ALLURE_ID, id);
+  async historyId(value: string) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        historyId: value,
+      },
+    });
   }
 
-  static async epic(epic: string) {
-    await this.label(LabelName.EPIC, epic);
+  async testCaseId(value: string) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        testCaseId: value,
+      },
+    });
   }
 
-  static async feature(epic: string) {
-    await this.label(LabelName.FEATURE, epic);
+  async attachment(name: string, content: Buffer | string, type: string | ContentType) {
+    await this.sendMessage({
+      type: "raw_attachment",
+      data: {
+        name,
+        content: Buffer.from(content).toString("base64"),
+        contentType: type,
+        encoding: "base64",
+      },
+    });
   }
 
-  static async story(story: string) {
-    await this.label(LabelName.STORY, story);
-  }
+  async step(name: string, body: () => void | PromiseLike<void>) {
+    await this.sendMessage({
+      type: "step_start",
+      data: {
+        name,
+        start: Date.now(),
+      },
+    });
 
-  static async suite(name: string) {
-    await this.label(LabelName.SUITE, name);
-  }
+    try {
+      await body();
 
-  static async parentSuite(name: string) {
-    await this.label(LabelName.PARENT_SUITE, name);
-  }
-
-  static async layer(layerName: string) {
-    await this.label(LabelName.LAYER, layerName);
-  }
-
-  static async subSuite(name: string) {
-    await this.label(LabelName.SUB_SUITE, name);
-  }
-
-  static async owner(owner: string) {
-    await this.label(LabelName.OWNER, owner);
-  }
-
-  static async severity(severity: string) {
-    await this.label(LabelName.SEVERITY, severity);
-  }
-
-  static async tag(tag: string) {
-    await this.label(LabelName.TAG, tag);
-  }
-
-  static async tags(...values: string[]) {
-    await Promise.allSettled(values.map(async (value) => await this.tag(value)));
-  }
-
-  static async issue(name: string, url: string) {
-    await this.link(url, name, LinkType.ISSUE);
-  }
-
-  static async tms(name: string, url: string) {
-    await this.link(url, name, LinkType.TMS);
-  }
-
-  static async parameter(name: string, value: any, options?: ParameterOptions) {
-    await this.addMetadataAttachment({
-      parameter: [
-        {
-          name,
-          value,
-          ...options,
+      await this.sendMessage({
+        type: "step_stop",
+        data: {
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          stop: Date.now(),
         },
-      ],
-    });
+      });
+    } catch (err) {
+      const status = getStatusFromError(err as Error);
+
+      await this.sendMessage({
+        type: "step_stop",
+        data: {
+          status,
+          stage: Stage.FINISHED,
+          stop: Date.now(),
+          statusDetails: {
+            message: (err as Error).message,
+            trace: (err as Error).stack,
+          },
+        },
+      });
+
+      throw err;
+    }
   }
 
-  /**
-   * @deprecated use parameter instead
-   */
-  static async addParameter(name: string, value: string, options?: ParameterOptions) {
-    await this.parameter(name, value, options);
+  async stepDisplayName(name: string) {}
+
+  async stepParameter(name: string, value: string) {}
+
+  async sendMessage(message: RuntimeMessage) {
+    await test.info().attach("allure-metadata.json", {
+      contentType: ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
+      body: Buffer.from(JSON.stringify(message), "utf8"),
+    });
   }
 }
 
-export { LabelName } from "allure-js-commons";
+setGlobalTestRuntime(new AllurePlaywrightTestRuntime());
+
+export * from "allure-js-commons/new";

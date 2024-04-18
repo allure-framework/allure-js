@@ -13,11 +13,26 @@ export class AllureNodeReporterRuntime extends ReporterRuntime {
     });
   }
 
-  writeAttachmentFromPath = (attachmentPath: string, options: AttachmentOptions): string => {
+  writeAttachmentFromPath = (uuid: string, attachmentName: string, attachmentPath: string, options: AttachmentOptions) => {
     const attachmentFilename = this.buildAttachmentFileName(options);
 
     this.writer.writeAttachmentFromPath(attachmentPath, attachmentFilename);
 
-    return attachmentFilename;
+    const rawAttachment = {
+      name: attachmentName,
+      source: attachmentFilename,
+      type: options.contentType,
+    };
+
+    if (this.state.getCurrentStep(uuid)) {
+      this.updateStep(uuid, (step) => {
+        step.attachments.push(rawAttachment);
+      });
+      return;
+    }
+
+    this.update(uuid, (result) => {
+      result.attachments.push(rawAttachment);
+    });
   };
 }

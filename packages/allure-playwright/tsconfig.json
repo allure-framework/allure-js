@@ -1,15 +1,25 @@
 {
   "extends": "../../tsconfig.json",
   "include": [
-    "./src/**/*",
+    "./src/**/*"
   ],
   "exclude": [
-    "./test/**/*",
+    "./test/**/*"
   ],
   "compilerOptions": {
-    "types": [],
-    "lib": ["esnext", "dom", "DOM.Iterable"],
-    "rootDir": "./src",
+    "skipLibCheck": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "types": [
+      "node"
+    ],
     "outDir": "./dist"
   }
 }

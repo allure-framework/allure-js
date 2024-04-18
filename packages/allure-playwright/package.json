@@ -18,23 +18,41 @@
     "email": "allure@qameta.io",
     "url": "https://qameta.io/"
   },
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./helpers": {
+      "import": "./dist/helpers.mjs",
+      "require": "./dist/helpers.cjs"
+    },
+    "./testplan": {
+      "import": "./dist/testplan.mjs",
+      "require": "./dist/testplan.cjs"
+    }
+  },
   "scripts": {
     "allure-report": "allure serve ./out/allure-results",
     "clean": "rimraf ./dist ./out",
-    "compile": "tsc",
+    "compile": "run-p 'compile:*'",
+    "compile:lib": "rollup -c",
+    "compile:types": "tsc --project ./tsconfig.json",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix",
     "pretest": "run compile",
-    "test": "playwright test -c test"
+    "test": "vitest run"
   },
   "dependencies": {
-    "allure-js-commons": "workspace:*"
+    "allure-js-commons": "workspace:*",
+    "strip-ansi": "^5.2.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.34.1",
@@ -53,10 +71,12 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "glob": "^10.3.12",
+    "npm-run-all2": "^6.1.2",
     "properties": "^1.2.1",
     "rimraf": "^5.0.1",
     "rollup": "^4.14.3",
     "tslib": "^2.6.2",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vitest": "^1.5.0"
   }
 }

@@ -1,4 +1,4 @@
-import { escapeRegExp, parseTestPlan } from "allure-js-commons";
+import { escapeRegExp, parseTestPlan } from "allure-js-commons/new/sdk/node";
 
 export const testPlanFilter = () => {
   const testPlan = parseTestPlan();
