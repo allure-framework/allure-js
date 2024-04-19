@@ -1,6 +1,8 @@
 import {
   ContentType,
+  Label,
   LabelName,
+  Link,
   LinkType,
   ParameterMode,
   ParameterOptions,
@@ -26,11 +28,29 @@ export class AllureCypressTestRuntime implements TestRuntime {
     });
   }
 
+  labels(...labels: Label[]) {
+    return this.sendMessageAsync({
+      type: "metadata",
+      data: {
+        labels,
+      },
+    });
+  }
+
   link(url: string, type?: LinkType | string, name?: string) {
     return this.sendMessageAsync({
       type: "metadata",
       data: {
         links: [{ type, url, name }],
+      },
+    });
+  }
+
+  links(...links: Link[]) {
+    return this.sendMessageAsync({
+      type: "metadata",
+      data: {
+        links,
       },
     });
   }

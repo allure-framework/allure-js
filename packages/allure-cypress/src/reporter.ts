@@ -44,7 +44,7 @@ export class AllureCypress {
 
   attachToCypress(on: Cypress.PluginEvents) {
     on("task", {
-      allureReportTest: async (messages: CypressRuntimeMessage[]) => {
+      allureReportTest: (messages: CypressRuntimeMessage[]) => {
         const startMessage = messages[0] as CypressTestStartRuntimeMessage;
         const endMessage = messages[messages.length - 1] as CypressTestEndRuntimeMessage;
 
@@ -56,26 +56,26 @@ export class AllureCypress {
         const suiteLabels = getSuitesLabels(startMessage.data.specPath.slice(0, -1));
         const testTitle = startMessage.data.specPath[startMessage.data.specPath.length - 1];
         const titleMetadata = extractMetadataFromString(testTitle);
-        const testUuid = await this.runtime.start({
+        const testUuid = this.runtime.start({
           name: titleMetadata.cleanTitle || testTitle,
           start: startMessage.data.start,
           fullName: `${startMessage.data.filename}#${startMessage.data.specPath.join(" ")}`,
           stage: Stage.RUNNING,
         });
 
-        await this.runtime.update(testUuid, async (result) => {
-          result.labels!.push({
+        this.runtime.update(testUuid, (result) => {
+          result.labels.push({
             name: LabelName.LANGUAGE,
             value: "javascript",
           });
-          result.labels!.push({
+          result.labels.push({
             name: LabelName.FRAMEWORK,
             value: "cypress",
           });
-          result.labels!.push(...suiteLabels);
-          result.labels!.push(...titleMetadata.labels);
+          result.labels.push(...suiteLabels);
+          result.labels.push(...titleMetadata.labels);
 
-          await this.runtime.applyRuntimeMessages(testUuid, messages.slice(1, messages.length - 1), (message) => {
+          this.runtime.applyRuntimeMessages(testUuid, messages.slice(1, messages.length - 1), (message) => {
             const type = message.type;
 
             if (type === "cypress_screenshot") {
@@ -92,13 +92,18 @@ export class AllureCypress {
             }
           });
         });
-        await this.runtime.update(testUuid, (result) => {
+        this.runtime.update(testUuid, (result) => {
           result.stage = endMessage.data.stage;
           result.status = endMessage.data.status;
+
+          if (!endMessage.data.statusDetails) {
+            return;
+          }
+
           result.statusDetails = endMessage.data.statusDetails;
         });
 
-        await this.runtime.stop(testUuid, Date.now());
+        this.runtime.stop(testUuid, Date.now());
 
         if (startMessage.data.isInteractive) {
           this.runtime.write(testUuid);
@@ -113,7 +118,7 @@ export class AllureCypress {
     });
   }
 
-  async endSpec(spec: Cypress.Spec, cypressResult: CypressCommandLine.RunResult) {
+  endSpec(spec: Cypress.Spec, cypressResult: CypressCommandLine.RunResult) {
     const testUuids = this.testsUuidsByCypressAbsolutePath.get(spec.absolute);
     this.testsUuidsByCypressAbsolutePath.delete(spec.absolute);
 
@@ -121,23 +126,27 @@ export class AllureCypress {
       return;
     }
 
-    const videoSourcePath = cypressResult.video
-      ? this.runtime.writeAttachmentFromPath(cypressResult.video, { contentType: ContentType.MP4 })
-      : undefined;
+    let videoSource: string | undefined;
 
     for (const uuid of testUuids) {
-      if (!videoSourcePath) {
+      if (!cypressResult.video) {
         this.runtime.write(uuid);
         continue;
       }
 
-      this.runtime.update(uuid, (result) => {
-        result.attachments.push({
-          source: videoSourcePath,
-          name: "Video",
-          type: ContentType.MP4,
+      if (!videoSource) {
+        videoSource = this.runtime.writeAttachmentFromPath(uuid, "Video", cypressResult.video, {
+          contentType: ContentType.MP4,
         });
-      });
+      } else {
+        this.runtime.update(uuid, (result) => {
+          result.attachments.push({
+            name: "Video",
+            source: videoSource!,
+            type: ContentType.MP4,
+          });
+        });
+      }
 
       this.runtime.write(uuid);
     }
@@ -149,8 +158,8 @@ export const allureCypress = (on: Cypress.PluginEvents, allureConfig?: AllureCyp
 
   allureCypressReporter.attachToCypress(on);
 
-  on("after:spec", async (spec, result) => {
-    await allureCypressReporter.endSpec(spec, result);
+  on("after:spec", (spec, result) => {
+    allureCypressReporter.endSpec(spec, result);
   });
 
   return allureCypressReporter;

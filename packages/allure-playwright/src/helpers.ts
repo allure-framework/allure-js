@@ -2,7 +2,9 @@ import test from "@playwright/test";
 import { ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/new/internal";
 import {
   ContentType,
+  Label,
   LabelName,
+  Link,
   LinkType,
   ParameterOptions,
   RuntimeMessage,
@@ -23,11 +25,29 @@ export class AllurePlaywrightTestRuntime implements TestRuntime {
     });
   }
 
+  async labels(...labels: Label[]) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        labels,
+      },
+    });
+  }
+
   async link(url: string, type?: LinkType | string, name?: string) {
     await this.sendMessage({
       type: "metadata",
       data: {
         links: [{ type, url, name }],
+      },
+    });
+  }
+
+  async links(...links: Link[]) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        links,
       },
     });
   }

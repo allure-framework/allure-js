@@ -4,7 +4,9 @@ import { type TaskContext, afterAll, afterEach, beforeAll, beforeEach } from "vi
 import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/new/internal";
 import {
   ContentType,
+  Label,
   LabelName,
+  Link,
   LinkType,
   MessagesHolder,
   ParameterMode,
@@ -33,8 +35,17 @@ export class AllureVitestTestRuntime implements TestRuntime {
     });
   }
 
-  async link(url: string, type?: LinkType | string, name?: string) {
+  async labels(...labels: Label[]) {
     this.sendMessage({
+      type: "metadata",
+      data: {
+        labels,
+      },
+    });
+  }
+
+  async link(url: string, type?: LinkType | string, name?: string) {
+    await this.sendMessage({
       type: "metadata",
       data: {
         links: [{ type, url, name }],
@@ -42,8 +53,17 @@ export class AllureVitestTestRuntime implements TestRuntime {
     });
   }
 
+  async links(...links: Link[]) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        links,
+      },
+    });
+  }
+
   async parameter(name: string, value: string, options?: ParameterOptions) {
-    this.sendMessage({
+    await this.sendMessage({
       type: "metadata",
       data: {
         parameters: [
@@ -58,7 +78,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
   }
 
   async description(markdown: string) {
-    this.sendMessage({
+    await this.sendMessage({
       type: "metadata",
       data: {
         description: markdown,
@@ -67,7 +87,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
   }
 
   async descriptionHtml(html: string) {
-    this.sendMessage({
+    await this.sendMessage({
       type: "metadata",
       data: {
         descriptionHtml: html,
@@ -76,7 +96,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
   }
 
   async displayName(name: string) {
-    this.sendMessage({
+    await this.sendMessage({
       type: "metadata",
       data: {
         displayName: name,
@@ -85,7 +105,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
   }
 
   async historyId(value: string) {
-    this.sendMessage({
+    await this.sendMessage({
       type: "metadata",
       data: {
         historyId: value,
@@ -94,7 +114,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
   }
 
   async testCaseId(value: string) {
-    this.sendMessage({
+    await this.sendMessage({
       type: "metadata",
       data: {
         testCaseId: value,
@@ -103,7 +123,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
   }
 
   async attachment(name: string, content: Buffer | string, type: string | ContentType) {
-    this.sendMessage({
+    await this.sendMessage({
       type: "raw_attachment",
       data: {
         name,
@@ -115,7 +135,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
   }
 
   async step(name: string, body: () => void | PromiseLike<void>) {
-    this.sendMessage({
+    await this.sendMessage({
       type: "step_start",
       data: {
         name,
@@ -126,7 +146,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
     try {
       await body();
 
-      this.sendMessage({
+      await this.sendMessage({
         type: "step_stop",
         data: {
           status: Status.PASSED,
@@ -135,7 +155,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
         },
       });
     } catch (err) {
-      this.sendMessage({
+      await this.sendMessage({
         type: "step_stop",
         data: {
           status: Status.FAILED,
@@ -153,14 +173,14 @@ export class AllureVitestTestRuntime implements TestRuntime {
   }
 
   async stepDisplayName(name: string) {
-    this.sendMessage({
+    await this.sendMessage({
       type: "step_metadata",
       data: { name },
     });
   }
 
   async stepParameter(name: string, value: string, mode?: ParameterMode) {
-    this.sendMessage({
+    await this.sendMessage({
       type: "step_metadata",
       data: {
         parameters: [{ name, value, mode }],
@@ -168,7 +188,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
     });
   }
 
-  sendMessage(message: RuntimeMessage) {
+  async sendMessage(message: RuntimeMessage) {
     this.messagesHolder.push(message);
   }
 }

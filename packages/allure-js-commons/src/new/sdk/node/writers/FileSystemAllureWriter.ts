@@ -25,6 +25,7 @@ export class FileSystemAllureWriter implements Writer {
 
   writeAttachmentFromPath(from: PathLike, distFileName: string): void {
     const to = this.buildPath(distFileName);
+
     copyFileSync(from, to);
   }
 

@@ -1,9 +1,13 @@
-import { ContentType, LabelName, LinkType, ParameterMode, ParameterOptions, RuntimeMessage } from "./model.js";
+import { ContentType, Label, LabelName, Link, LinkType, ParameterMode, ParameterOptions } from "./model.js";
 
 export interface TestRuntime {
   label: (name: LabelName, value: string) => PromiseLike<void>;
 
+  labels: (...labels: Label[]) => PromiseLike<void>;
+
   link: (url: string, type?: LinkType | string, name?: string) => PromiseLike<void>;
+
+  links: (...links: Link[]) => PromiseLike<void>;
 
   parameter: (name: string, value: string, options?: ParameterOptions) => PromiseLike<void>;
 

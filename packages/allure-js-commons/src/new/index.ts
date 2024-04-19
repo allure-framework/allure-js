@@ -1,6 +1,8 @@
 export {
   label,
+  labels,
   link,
+  links,
   parameter,
   description,
   descriptionHtml,

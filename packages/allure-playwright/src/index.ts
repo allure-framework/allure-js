@@ -74,6 +74,7 @@ class AllureReporter implements Reporter {
     this.config = config;
     this.suite = suite;
     this.allureRuntime = new AllureNodeReporterRuntime({
+      ...this.options,
       writer,
     });
   }

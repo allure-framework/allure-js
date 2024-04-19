@@ -1,5 +1,5 @@
 import { getGlobalTestRuntime } from "./TestRuntime.js";
-import { ContentType, LabelName, LinkType, ParameterMode, ParameterOptions } from "./model.js";
+import { ContentType, Label, LabelName, Link, LinkType, ParameterMode, ParameterOptions } from "./model.js";
 
 export const label = (name: LabelName, value: string) => {
   const runtime = getGlobalTestRuntime();
@@ -7,10 +7,22 @@ export const label = (name: LabelName, value: string) => {
   return runtime.label(name, value);
 };
 
+export const labels = (...lablesList: Label[]) => {
+  const runtime = getGlobalTestRuntime();
+
+  return runtime.labels(...lablesList);
+};
+
 export const link = (url: string, type?: LinkType | string, name?: string) => {
   const runtime = getGlobalTestRuntime();
 
   return runtime.link(url, type, name);
+};
+
+export const links = (...linksList: Link[]) => {
+  const runtime = getGlobalTestRuntime();
+
+  return runtime.links(...linksList);
 };
 
 export const parameter = (name: string, value: string, options?: ParameterOptions) => {

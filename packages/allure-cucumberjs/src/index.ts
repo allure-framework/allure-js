@@ -2,7 +2,9 @@ import { Before, World } from "@cucumber/cucumber";
 import { ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/new/internal";
 import {
   ContentType,
+  Label,
   LabelName,
+  Link,
   LinkType,
   MessagesHolder,
   ParameterOptions,
@@ -26,11 +28,29 @@ export class AllureCucumberTestRuntime extends World implements TestRuntime {
     });
   }
 
+  async labels(...labels: Label[]) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        labels,
+      },
+    });
+  }
+
   async link(url: string, type?: LinkType | string, name?: string) {
     await this.sendMessage({
       type: "metadata",
       data: {
         links: [{ type, url, name }],
+      },
+    });
+  }
+
+  async links(...links: Link[]) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        links,
       },
     });
   }
