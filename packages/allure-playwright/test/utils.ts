@@ -4,9 +4,9 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join, resolve as resolvePath } from "node:path";
 import { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/new/sdk/node";
-import type { AllurePlaywrightReporterConfig } from "allure-playwright";
+import type { AllurePlaywrightReporterConfig } from "allure-playwright/reporter";
 
-export const runPlaywrightInlineTest = async (test: string, config?: AllurePlaywrightReporterConfig): Promise<AllureResults> => {
+export const runPlaywrightInlineTest = async (test: string, config?: AllurePlaywrightReporterConfig, cliArgs: string[] = []): Promise<AllureResults> => {
   const res: AllureResults = {
     tests: [],
     groups: [],
@@ -27,7 +27,7 @@ export const runPlaywrightInlineTest = async (test: string, config?: AllurePlayw
      module.exports = {
        reporter: [
          [
-           require.resolve("allure-playwright"),
+           require.resolve("allure-playwright/reporter"),
            ${stringifiedConfig},
          ],
          ["dot"],
@@ -46,7 +46,7 @@ export const runPlaywrightInlineTest = async (test: string, config?: AllurePlayw
 
   const modulePath = require.resolve("@playwright/test/cli");
   // const modulePath = resolvePath(moduleRootPath, "../bin/cypress");
-  const args = ["test", "-c", "./playwright.config.js", "./sample.test.js"];
+  const args = ["test", "-c", "./playwright.config.js", "./sample.test.js", ...cliArgs];
   const testProcess = fork(modulePath, args, {
     env: {
       ...process.env,
@@ -73,6 +73,7 @@ export const runPlaywrightInlineTest = async (test: string, config?: AllurePlayw
         res.tests.push(data as TestResult);
         break;
       case "attachment":
+        console.log("attachment", event.data)
         res.attachments[event.path] = event.data;
         break;
       default:

@@ -168,3 +168,9 @@ export const tag = (name: string) => {
 
   return runtime.label(LabelName.TAG, name);
 };
+
+export const tags = (...tagsList: string[]) => {
+  const runtime = getGlobalTestRuntime();
+
+  return runtime.labels(...tagsList.map((tag) => ({ name: LabelName.TAG, value: tag })));
+};

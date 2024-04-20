@@ -10,6 +10,7 @@ async function checkContainsOnlyOneLabel(testResult: TestResult, labelName: Labe
   });
 }
 
+// TODO: do we need to support labels override
 test("should override suite label", async ({ runInlineTest }) => {
   const results = await runInlineTest({
     "a.test.ts": /* ts */ `

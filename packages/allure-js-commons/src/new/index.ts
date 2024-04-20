@@ -24,6 +24,7 @@ export {
   severity,
   layer,
   tag,
+  tags,
 } from "./facade.js";
 export {
   AllureResults,

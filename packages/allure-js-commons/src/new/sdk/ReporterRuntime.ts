@@ -92,7 +92,7 @@ export class ReporterRuntime {
     this.notifier.afterTestResultStop(targetResult);
   };
 
-  startStep = (uuid: string, result: Partial<StepResult>) => {
+  startStep = (uuid: string, result: Partial<StepResult>, start?: number) => {
     if (!this.state.testResults.has(uuid)) {
       // eslint-disable-next-line no-console
       console.error(`No test (${uuid}) to start step!`);
@@ -101,6 +101,7 @@ export class ReporterRuntime {
 
     this.state.setStepResult(uuid, {
       ...createStepResult(),
+      start: start || Date.now(),
       ...result,
     });
   };

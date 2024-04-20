@@ -29,9 +29,9 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
-    "./helpers": {
-      "import": "./dist/helpers.mjs",
-      "require": "./dist/helpers.cjs"
+    "./reporter": {
+      "import": "./dist/reporter.mjs",
+      "require": "./dist/reporter.cjs"
     },
     "./testplan": {
       "import": "./dist/testplan.mjs",
@@ -60,6 +60,7 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/eslint": "^8",
+    "@types/md5": "^2",
     "@types/node": "^20.6.3",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
@@ -71,6 +72,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "glob": "^10.3.12",
+    "md5": "^2.3.0",
     "npm-run-all2": "^6.1.2",
     "properties": "^1.2.1",
     "rimraf": "^5.0.1",

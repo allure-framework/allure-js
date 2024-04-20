@@ -1,25 +1,25 @@
-import { expect, test } from "./fixtures";
+import { expect, it } from "vitest";
+import { runPlaywrightInlineTest } from "../utils";
 
-test("should have parameter", async ({ runInlineTest }) => {
-  const results = await runInlineTest(
-    {
-      "par.test.ts": /* ts */ `
+it("sets parameters", async () => {
+  const { tests } = await runPlaywrightInlineTest(
+    `
        import { test, expect } from '@playwright/test';
-       import { allure } from '../../dist/index'
+       import { parameter } from "allure-playwright";
+
        test('should add epic label', async ({}) => {
-        allure.parameter("param1", "paramValue1");
-        allure.parameter("param2", "paramValue2", {excluded:true});
-        allure.parameter("param3", "paramValue3", {mode:"masked", excluded:true});
-        allure.parameter("param4", "paramValue4", {mode:"hidden"});
+        await parameter("param1", "paramValue1");
+        await parameter("param2", "paramValue2", {excluded:true});
+        await parameter("param3", "paramValue3", {mode:"masked", excluded:true});
+        await parameter("param4", "paramValue4", {mode:"hidden"});
        });
      `,
-    },
-    {
-      "--repeat-each": "2",
-    },
+    undefined,
+    ["--repeat-each", "2"],
   );
 
-  expect(results.tests).toEqual(
+  expect(tests).toHaveLength(2);
+  expect(tests).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
         parameters: [

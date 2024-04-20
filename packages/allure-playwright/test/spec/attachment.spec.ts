@@ -1,31 +1,20 @@
-/**
- * Copyright (c) Microsoft Corporation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 import { readFileSync } from "fs";
-import { expect, test } from "./fixtures";
+import { expect, it } from "vitest";
+import { ContentType } from "allure-js-commons/new/sdk/node";
+import { runPlaywrightInlineTest } from "../utils";
 
-test("should not throw on missing attachment", async ({ runInlineTest }) => {
-  const results = await runInlineTest({
-    "a.test.ts": /* ts */ `
+it("doesn't not throw on missing attachment", async () => {
+  const { tests, attachments } = await runPlaywrightInlineTest(
+    `
       import test from '@playwright/test';
+
       test('should add attachment', async ({}, testInfo) => {
         testInfo.attachments.push({
           name: 'file-attachment',
           path: 'does-not-exist.txt',
           contentType: 'text/plain'
         });
+
         testInfo.attachments.push({
           name: 'buffer-attachment',
           body: Buffer.from('foo'),
@@ -33,32 +22,198 @@ test("should not throw on missing attachment", async ({ runInlineTest }) => {
         });
       });
     `,
-  });
-  expect(results.tests[0].attachments).toEqual([
-    expect.objectContaining({ name: "buffer-attachment", type: "text/plain" }),
-  ]);
+  );
 
-  expect(results.attachments[results.tests[0].attachments[0].source]).toEqual(Buffer.from("foo").toString("base64"));
+  expect(tests[0].attachments).toEqual([
+    expect.objectContaining({
+      name: "buffer-attachment",
+      type: "text/plain",
+    }),
+  ]);
+  expect(attachments[tests[0].attachments[0].source]).toEqual(Buffer.from("foo").toString("base64"));
 });
 
-test("should add snapshots correctly and provide a screenshot diff", async ({ runInlineTest, attachment }) => {
-  const result = await runInlineTest({
-    "a.test.ts": /* ts */ `
+// TODO: write files, not one test, like it was before
+// it("adds snapshots correctly and provide a screenshot diff", async () => {
+//   const result = await runPlaywrightInlineTest(
+//     `
+//       import test from '@playwright/test';
+//
+//       test('should add attachment', async ({ page }, testInfo) => {
+//         testInfo.snapshotSuffix = '';
+//
+//         test.expect(await page.screenshot()).toMatchSnapshot("foo.png");
+//       });
+//     `,
+//     // "a.test.ts-snapshots/foo-project.png": readFileSync(attachment("attachment-1-not-expected.png")),
+//   );
+//   expect(result.tests[0].attachments).toEqual(
+//     expect.arrayContaining([
+//       {
+//         name: "foo",
+//         type: "application/vnd.allure.image.diff",
+//         source: expect.stringMatching(/.*\.imagediff/),
+//       },
+//     ]),
+//   );
+// });
+
+it("should add attachments into steps", async () => {
+  const { tests, attachments } = await runPlaywrightInlineTest(
+    `
       import test from '@playwright/test';
-      test('should add attachment', async ({ page }, testInfo) => {
-        testInfo.snapshotSuffix = '';
-        test.expect(await page.screenshot()).toMatchSnapshot("foo.png");
+      import { step, attachment } from 'allure-playwright';
+
+      test('should add attachment', async ({}, testInfo) => {
+        await step('outer step 1', async () => {
+          await step('inner step 1.1', async () => {
+            await attachment('some', 'some-data', 'text/plain');
+          });
+          await step('inner step 1.2', async () => {
+          });
+        });
+        await step('outer step 2', async () => {
+          await step('inner step 2.1', async () => {
+          });
+          await step('inner step 2.2', async () => {
+            await attachment('some', 'other-data', 'text/plain');
+          });
+        });
       });
     `,
-    "a.test.ts-snapshots/foo-project.png": readFileSync(attachment("attachment-1-not-expected.png")),
-  });
-  expect(result.tests[0].attachments).toEqual(
-    expect.arrayContaining([
-      {
-        name: "foo",
-        type: "application/vnd.allure.image.diff",
-        source: expect.stringMatching(/.*\.imagediff/),
-      },
-    ]),
+    { detail: false },
   );
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0]).toEqual(
+    expect.objectContaining({
+      attachments: [],
+      steps: expect.arrayContaining([
+        expect.objectContaining({
+          name: "outer step 1",
+          steps: expect.arrayContaining([
+            expect.objectContaining({
+              name: "inner step 1.1",
+              attachments: expect.arrayContaining([
+                expect.objectContaining({
+                  name: "some",
+                  type: ContentType.TEXT,
+                }),
+              ]),
+            }),
+            expect.objectContaining({
+              name: "inner step 1.2",
+              attachments: [],
+            }),
+          ]),
+        }),
+        expect.objectContaining({
+          name: "outer step 2",
+          steps: expect.arrayContaining([
+            expect.objectContaining({
+              name: "inner step 2.1",
+              attachments: [],
+            }),
+            expect.objectContaining({
+              name: "inner step 2.2",
+              attachments: expect.arrayContaining([
+                expect.objectContaining({
+                  name: "some",
+                  type: ContentType.TEXT,
+                }),
+              ]),
+            }),
+          ]),
+        }),
+      ]),
+    }),
+  );
+
+  const [attachment1] = tests[0].steps[0].steps[0].attachments;
+  const [attachment2] = tests[0].steps[1].steps[1].attachments;
+
+  expect(attachments).toHaveProperty(attachment1.source);
+  expect(attachments).toHaveProperty(attachment2.source);
+  expect(Buffer.from(attachments[attachment1.source], "base64").toString()).toEqual("some-data");
+  expect(Buffer.from(attachments[attachment2.source], "base64").toString()).toEqual("other-data");
+});
+
+it("doesn't not report detail steps for attachments", async () => {
+  const { tests, attachments } = await runPlaywrightInlineTest(
+    `
+      import test from '@playwright/test';
+      import { step, attachment } from 'allure-playwright';
+
+      test('should add attachment', async ({}, testInfo) => {
+        await step('outer step 1', async () => {
+          await step('inner step 1.1', async () => {
+            await attachment('some', 'some-data', 'text/plain');
+          });
+          await step('inner step 1.2', async () => {
+          });
+        });
+        await step('outer step 2', async () => {
+          await step('inner step 2.1', async () => {
+          });
+          await step('inner step 2.2', async () => {
+            await attachment('some', 'other-data', 'text/plain');
+          });
+        });
+      });
+    `,
+    { detail: true },
+  );
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0]).toEqual(
+    expect.objectContaining({
+      attachments: [],
+      steps: expect.arrayContaining([
+        expect.objectContaining({
+          name: "outer step 1",
+          steps: expect.arrayContaining([
+            expect.objectContaining({
+              name: "inner step 1.1",
+              attachments: expect.arrayContaining([
+                expect.objectContaining({
+                  name: "some",
+                  type: ContentType.TEXT,
+                }),
+              ]),
+            }),
+            expect.objectContaining({
+              name: "inner step 1.2",
+              attachments: [],
+            }),
+          ]),
+        }),
+        expect.objectContaining({
+          name: "outer step 2",
+          steps: expect.arrayContaining([
+            expect.objectContaining({
+              name: "inner step 2.1",
+              attachments: [],
+            }),
+            expect.objectContaining({
+              name: "inner step 2.2",
+              attachments: expect.arrayContaining([
+                expect.objectContaining({
+                  name: "some",
+                  type: ContentType.TEXT,
+                }),
+              ]),
+            }),
+          ]),
+        }),
+      ]),
+    }),
+  );
+
+  const [attachment1] = tests[0].steps[2].steps[0].attachments;
+  const [attachment2] = tests[0].steps[3].steps[1].attachments;
+
+  expect(attachments).toHaveProperty(attachment1.source);
+  expect(attachments).toHaveProperty(attachment2.source);
+  expect(Buffer.from(attachments[attachment1.source], "base64").toString()).toEqual("some-data");
+  expect(Buffer.from(attachments[attachment2.source], "base64").toString()).toEqual("other-data");
 });

@@ -1,39 +1,41 @@
-import { expect, test } from "./fixtures";
+import { expect, it } from "vitest";
+import { ContentType, LabelName } from "allure-js-commons/new/sdk/node";
+import { runPlaywrightInlineTest } from "../utils";
 
-test("should have metadata from title", async ({ runInlineTest }) => {
-  const results = await runInlineTest({
-    "a.test.ts": /* ts */ `
+it("has metadata from title", async () => {
+  const { tests } = await runPlaywrightInlineTest(
+    `
       import { test } from '@playwright/test';
-      import { allure } from '../../dist/index'
+
       test('some strange name to test @allure.id=228 @allure.label.tag=slow @allure.label.labelName=labelValue', async ({}, testInfo) => {
       });
       `,
-  });
+  );
 
-  expect(results.tests).toEqual([
+  expect(tests).toHaveLength(1);
+  expect(tests).toEqual([
     expect.objectContaining({
+      name: "some strange name to test",
       labels: expect.arrayContaining([
-        { name: "ALLURE_ID", value: "228" },
-        { name: "tag", value: "slow" },
+        { name: LabelName.ALLURE_ID, value: "228" },
+        { name: LabelName.TAG, value: "slow" },
         { name: "labelName", value: "labelValue" },
       ]),
     }),
   ]);
-
-  expect(results.tests[0].name).toBe("some strange name to test");
 });
 
-test("multiline name", async ({ runInlineTest }) => {
-  const results = await runInlineTest({
-    "a.test.ts": /* ts */ `
+it("supports multiline name", async () => {
+  const results = await runPlaywrightInlineTest(
+    `
       import { test } from '@playwright/test';
-      import { allure } from '../../dist/index'
+
       test(
         \`some strange name to test @allure.label.l1=v1
 something else in name @allure.label.l2=v2 @allure.label.l3=v3 some word\`, async ({}, testInfo) => {
       });
       `,
-  });
+  );
 
   expect(results.tests).toEqual([
     expect.objectContaining({

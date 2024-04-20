@@ -1,8 +1,9 @@
-import { expect, test } from "./fixtures";
+import { expect, it } from "vitest";
+import { runPlaywrightInlineTest } from "../utils";
 
-test("should handle before hooks", async ({ runInlineTest }) => {
-  const results = await runInlineTest({
-    "a.test.ts": /* ts */ `
+it("handles before hooks", async () => {
+  const { tests } = await runPlaywrightInlineTest(
+    `
        import test from '@playwright/test';
 
        test.beforeAll(async () => {});
@@ -11,31 +12,28 @@ test("should handle before hooks", async ({ runInlineTest }) => {
 
        test("should contain hooks", async () => {});
      `,
-  });
-
-  const [beforeHooks] = results.tests[0].steps;
-
-  expect(beforeHooks).toEqual(
-    expect.objectContaining({
-      steps: [
-        expect.objectContaining({
-          name: "beforeAll hook",
-          stop: expect.any(Number),
-          start: expect.any(Number),
-        }),
-        expect.objectContaining({
-          name: "beforeEach hook",
-          stop: expect.any(Number),
-          start: expect.any(Number),
-        }),
-      ],
-    }),
   );
+  const [beforeHooks] = tests[0].steps;
+
+  expect(beforeHooks).toMatchObject({
+    steps: expect.arrayContaining([
+      expect.objectContaining({
+        name: "beforeAll hook",
+        stop: expect.any(Number),
+        start: expect.any(Number),
+      }),
+      expect.objectContaining({
+        name: "beforeEach hook",
+        stop: expect.any(Number),
+        start: expect.any(Number),
+      }),
+    ]),
+  });
 });
 
-test("should handle after hooks", async ({ runInlineTest }) => {
-  const results = await runInlineTest({
-    "a.test.ts": /* ts */ `
+it("handles after hooks", async () => {
+  const results = await runPlaywrightInlineTest(
+    `
        import test from '@playwright/test';
 
        test.afterAll(async () => {});
@@ -44,11 +42,11 @@ test("should handle after hooks", async ({ runInlineTest }) => {
 
        test("should contain hooks", async () => {});
      `,
-  });
+  );
 
   const [, afterHooks] = results.tests[0].steps;
 
-  expect(afterHooks).toEqual(
+  expect(afterHooks).toMatchObject(
     expect.objectContaining({
       steps: [
         expect.objectContaining({

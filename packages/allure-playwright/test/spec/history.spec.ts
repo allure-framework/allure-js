@@ -1,25 +1,27 @@
-import { md5 } from "allure-js-commons";
-import { expect, test } from "./fixtures";
+import md5 from "md5";
+import { expect, it } from "vitest";
+import { runPlaywrightInlineTest } from "../utils";
 
-test("historical data should be fine", async ({ runInlineTest }) => {
-  const results = await runInlineTest({
-    "a.test.ts": /* ts */ `
+it("historical data should be fine", async () => {
+  const { tests } = await runPlaywrightInlineTest(
+    `
       import { test } from '@playwright/test';
-      import { allure } from '../../dist/index'
+
       test.describe('nested', () => {
-        test('test', async ({}, testInfo) => {
-        });
+        test('test', async ({}, testInfo) => {});
       });
       `,
-  });
-  const fullName = "a.test.ts#nested test";
+  );
+  const fullName = "sample.test.js#nested test";
 
-  expect(results.tests).toEqual([
-    expect.objectContaining({
-      name: "test",
-      fullName: fullName,
-      testCaseId: md5(fullName),
-      historyId: md5(fullName) + ":" + md5("Project:project"),
-    }),
-  ]);
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "test",
+        fullName: fullName,
+        testCaseId: md5(fullName),
+        historyId: md5(fullName) + ":" + md5("Project:project"),
+      }),
+    ]),
+  );
 });

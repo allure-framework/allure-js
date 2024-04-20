@@ -1,27 +1,28 @@
-import { expect, test } from "./fixtures";
+import { expect, it } from "vitest";
+import { Status } from "allure-js-commons";
+import { runPlaywrightInlineTest } from "../utils";
 
-test("should report programmatically skipped results", async ({ runInlineTest }) => {
-  const results = await runInlineTest({
-    "a.test.ts": /* ts */ `
+it("reports programmatically skipped results", async () => {
+  const { tests } = await runPlaywrightInlineTest(
+    `
       import test from '@playwright/test';
+
       test.skip('should be skipped 1', async () => {});
-    `,
-    "b.test.ts": /* ts */ `
-      import test from '@playwright/test';
+
       test('should not be skipped', async () => {});
     `,
-  });
+  );
 
-  expect(results.tests).toEqual(
+  expect(tests).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
-        fullName: "a.test.ts#should be skipped 1",
-        status: "skipped",
+        fullName: "sample.test.js#should be skipped 1",
+        status: Status.SKIPPED,
       }),
       expect.objectContaining({
-        fullName: "b.test.ts#should not be skipped",
-        status: "passed",
+        fullName: "sample.test.js#should not be skipped",
+        status: Status.PASSED,
       }),
-    ]),
+    ])
   );
 });
