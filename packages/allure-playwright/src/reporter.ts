@@ -1,12 +1,5 @@
-import { FullConfig, TestStatus } from "@playwright/test";
-import {
-  TestResult as PlaywrightTestResult,
-  Reporter,
-  Suite,
-  TestCase,
-  TestError,
-  TestStep,
-} from "@playwright/test/reporter";
+import { FullConfig } from "@playwright/test";
+import { TestResult as PlaywrightTestResult, Reporter, Suite, TestCase, TestStep } from "@playwright/test/reporter";
 import { existsSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -16,7 +9,6 @@ import { ContentType, ImageDiffAttachment } from "allure-js-commons";
 import { ALLURE_IMAGEDIFF_CONTENT_TYPE, ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/new/internal";
 import {
   AllureNodeReporterRuntime,
-  Config,
   FileSystemAllureWriter,
   Label,
   LabelName,
@@ -24,7 +16,6 @@ import {
   RuntimeMessage,
   Stage,
   Status,
-  StatusDetails,
   TestResult,
   extractMetadataFromString,
   readImageAsBase64,
@@ -44,10 +35,6 @@ class AllureReporter implements Reporter {
   options: AllurePlaywrightReporterConfig;
 
   private allureRuntime: AllureNodeReporterRuntime | undefined;
-  // private allureGroupCache = new Map<Suite, AllureGroup>();
-  // private allureTestCache = new Map<TestCase, AllureTest>();
-  // private allureStepCache = new Map<TestStep, AllureStep>();
-  // private allureAttachmentSteps = new Map<string, AllureStep>();
   private hostname: string = process.env.ALLURE_HOST_NAME || os.hostname();
   private globalStartTime = new Date();
   private processedDiffs: string[] = [];
@@ -127,8 +114,6 @@ class AllureReporter implements Reporter {
       },
       step.startTime.getTime(),
     );
-
-    // console.log("step started", step.title);
   }
 
   onStepEnd(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
@@ -141,13 +126,12 @@ class AllureReporter implements Reporter {
       return;
     }
 
-    // console.log("step stopped", step.title, step);
-
     const testUuid = this.allureResultsUuids.get(test.id)!;
 
     this.allureRuntime!.updateStep(testUuid, (stepResult) => {
       // TODO: step can be broken
       stepResult.status = step.error ? Status.FAILED : Status.PASSED;
+      stepResult.stage = Stage.FINISHED;
 
       if (step.error) {
         stepResult.statusDetails = getStatusDetails(step.error);
@@ -226,13 +210,17 @@ class AllureReporter implements Reporter {
         {} as Record<string, Label[]>,
       );
       const newLabels = Object.keys(mappedLabels).flatMap((labelName) => {
-        const labelsGroup = mappedLabels[labelName]
+        const labelsGroup = mappedLabels[labelName];
 
-        if (labelName === LabelName.SUITE || labelName === LabelName.PARENT_SUITE || labelName === LabelName.SUB_SUITE) {
+        if (
+          labelName === LabelName.SUITE ||
+          labelName === LabelName.PARENT_SUITE ||
+          labelName === LabelName.SUB_SUITE
+        ) {
           return labelsGroup.slice(-1);
         }
 
-        return labelsGroup
+        return labelsGroup;
       });
 
       testResult.labels = newLabels;
@@ -243,7 +231,7 @@ class AllureReporter implements Reporter {
   }
 
   addSkippedResults() {
-    console.log("addSkippedResults", this.suite.allTests());
+    console.log("addSkippedResults", this.suite.allTests(), this.allureRuntime!.state.testResults);
 
     // const unprocessedCases = this.suite.allTests().filter((testCase) => !this.allureTestCache.has(testCase));
     //
@@ -273,8 +261,7 @@ class AllureReporter implements Reporter {
   }
 
   onEnd(): void {
-    // TODO:
-    // this.addSkippedResults();
+    this.addSkippedResults();
 
     if (this.options.environmentInfo) {
       this.allureRuntime?.writeEnvironmentInfo(this.options?.environmentInfo);

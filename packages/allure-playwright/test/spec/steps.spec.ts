@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { Status } from "allure-js-commons/new/sdk/node";
+import { Status, Stage } from "allure-js-commons/new/sdk/node";
 import { runPlaywrightInlineTest } from "../utils";
 
 it("reports test steps", async () => {
@@ -49,21 +49,24 @@ it("reports test steps", async () => {
     expect.objectContaining({
       name: "should pass",
       status: Status.PASSED,
+      stage: Stage.FINISHED,
       steps: [
         expect.objectContaining({
           name: "outer step 1",
           status: Status.PASSED,
+          stage: Stage.FINISHED,
           steps: [
-            expect.objectContaining({ name: "inner step 1.1", status: Status.PASSED }),
-            expect.objectContaining({ name: "inner step 1.2", status: Status.PASSED }),
+            expect.objectContaining({ name: "inner step 1.1", status: Status.PASSED, stage: Stage.FINISHED }),
+            expect.objectContaining({ name: "inner step 1.2", status: Status.PASSED, stage: Stage.FINISHED }),
           ],
         }),
         expect.objectContaining({
           name: "outer step 2",
           status: Status.PASSED,
+          stage: Stage.FINISHED,
           steps: [
-            expect.objectContaining({ name: "inner step 2.1", status: Status.PASSED }),
-            expect.objectContaining({ name: "inner step 2.2", status: Status.PASSED }),
+            expect.objectContaining({ name: "inner step 2.1", status: Status.PASSED, stage: Stage.FINISHED }),
+            expect.objectContaining({ name: "inner step 2.2", status: Status.PASSED, stage: Stage.FINISHED }),
           ],
         }),
       ],
@@ -119,22 +122,26 @@ it("reports failed test steps", async () => {
     expect.objectContaining({
       name: "should pass",
       status: Status.FAILED,
+      stage: Stage.FINISHED,
       steps: [
         expect.objectContaining({
           name: "outer step 1",
           status: Status.PASSED,
+          stage: Stage.FINISHED,
           steps: [
-            expect.objectContaining({ name: "inner step 1.1", status: Status.PASSED }),
-            expect.objectContaining({ name: "inner step 1.2", status: Status.PASSED }),
+            expect.objectContaining({ name: "inner step 1.1", status: Status.PASSED, stage: Stage.FINISHED }),
+            expect.objectContaining({ name: "inner step 1.2", status: Status.PASSED, stage: Stage.FINISHED }),
           ],
         }),
         expect.objectContaining({
           name: "outer step 2",
           status: Status.FAILED,
+          stage: Stage.FINISHED,
           steps: [
             expect.objectContaining({
               name: "inner step 2.1",
               status: Status.FAILED,
+              stage: Stage.FINISHED,
               statusDetails: expect.objectContaining({
                 message: expect.stringContaining("expect(received).toBe(expected)"),
                 trace: expect.any(String),
