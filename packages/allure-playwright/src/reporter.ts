@@ -25,7 +25,6 @@ import { getStatusDetails, hasLabel, statusToAllureStats } from "./utils.js";
 
 // TODO: move to utils.ts
 const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
-const stepAttachRegexp = /^allureattach_(\w{8}-\w{4}-\w{4}-\w{4}-\w{12})_/i;
 // 12 (allureattach) + 1 (_) + 36 (uuid v4) + 1 (_)
 const stepAttachPrefixLength = 50;
 
@@ -38,7 +37,7 @@ class AllureReporter implements Reporter {
   private hostname: string = process.env.ALLURE_HOST_NAME || os.hostname();
   private globalStartTime = new Date();
   private processedDiffs: string[] = [];
-
+  private readonly startedTestCasesTitlesCache: string[] = [];
   private readonly allureResultsUuids: Map<string, string> = new Map();
 
   constructor(config: AllurePlaywrightReporterConfig) {
@@ -93,6 +92,7 @@ class AllureReporter implements Reporter {
     const testUuid = this.allureRuntime!.start(result);
 
     this.allureResultsUuids.set(test.id, testUuid as string);
+    this.startedTestCasesTitlesCache.push(titleMetadata.cleanTitle);
   }
 
   onStepBegin(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
@@ -230,38 +230,33 @@ class AllureReporter implements Reporter {
     this.allureRuntime!.write(testUuid);
   }
 
-  addSkippedResults() {
-    console.log("addSkippedResults", this.suite.allTests(), this.allureRuntime!.state.testResults);
+  async addSkippedResults() {
+    const unprocessedCases = this.suite.allTests().filter(({ title }) => {
+      const titleMetadata = extractMetadataFromString(title);
 
-    // const unprocessedCases = this.suite.allTests().filter((testCase) => !this.allureTestCache.has(testCase));
-    //
-    // unprocessedCases.forEach((testCase) => {
-    //   this.onTestBegin(testCase);
-    //   const allureTest = this.allureTestCache.get(testCase);
-    //   if (allureTest) {
-    //     allureTest.addLabel(LabelName.ALLURE_ID, "-1");
-    //     allureTest.detailsMessage =
-    //       "This test was skipped due to test setup error. Check you setup scripts to fix the issue.";
-    //   }
-    //
-    //   this.onTestEnd(testCase, {
-    //     status: Status.SKIPPED,
-    //     attachments: [],
-    //     duration: 0,
-    //     errors: [],
-    //     parallelIndex: 0,
-    //     workerIndex: 0,
-    //     retry: 0,
-    //     steps: [],
-    //     stderr: [],
-    //     stdout: [],
-    //     startTime: this.globalStartTime,
-    //   });
-    // });
+      return !this.startedTestCasesTitlesCache.includes(titleMetadata.cleanTitle);
+    });
+
+    for (const testCase of unprocessedCases) {
+      this.onTestBegin(testCase);
+      await this.onTestEnd(testCase, {
+        status: Status.SKIPPED,
+        attachments: [],
+        duration: 0,
+        errors: [],
+        parallelIndex: 0,
+        workerIndex: 0,
+        retry: 0,
+        steps: [],
+        stderr: [],
+        stdout: [],
+        startTime: this.globalStartTime,
+      });
+    }
   }
 
-  onEnd(): void {
-    this.addSkippedResults();
+  async onEnd() {
+    await this.addSkippedResults();
 
     if (this.options.environmentInfo) {
       this.allureRuntime?.writeEnvironmentInfo(this.options?.environmentInfo);
