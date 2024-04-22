@@ -3,8 +3,8 @@ import { Status } from "allure-js-commons";
 import { runPlaywrightInlineTest } from "../utils";
 
 it("reports test status", async () => {
-  const { tests } = await runPlaywrightInlineTest(
-    `
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": `
       import { test, expect } from '@playwright/test';
       test('should pass', async ({}) => {
       });
@@ -26,7 +26,8 @@ it("reports test status", async () => {
         expect(true).toBe(false);
       });
     `,
-  );
+  });
+
   expect(tests).toEqual(
     expect.arrayContaining([
       expect.objectContaining({ name: "should pass", status: Status.PASSED }),

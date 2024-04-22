@@ -1,42 +1,59 @@
-/* eslint-disable quote-props */
-import { Status } from "allure-js-commons";
-import { expect, test } from "./fixtures";
+import { expect, it } from "vitest";
+import { Status } from "allure-js-commons/new/sdk/node";
+import { runPlaywrightInlineTest } from "../utils";
 
-test("should have categories", async ({ runInlineTest }) => {
-  const results = await runInlineTest({
-    "a.test.ts": /* ts */ `
+it("has categories", async () => {
+  const { categories } = await runPlaywrightInlineTest({
+    "a.test.ts": `
        import { test, expect } from '@playwright/test';
-       import { allure, LabelName,Status } from '../../dist/index'
-       test('should add epic label', async ({}, testInfo) => {
+
+       test('does nothing', async ({}, testInfo) => {
        });
      `,
-    reporterOptions: JSON.stringify({
-      categories: [
-        {
-          name: "Sad tests",
-          messageRegex: ".*Sad.*",
-          matchedStatuses: [Status.FAILED],
-        },
-        {
-          name: "Infrastructure problems",
-          messageRegex: ".*RuntimeException.*",
-          matchedStatuses: [Status.BROKEN],
-        },
-        {
-          name: "Outdated tests",
-          messageRegex: ".*FileNotFound.*",
-          matchedStatuses: [Status.BROKEN],
-        },
-        {
-          name: "Regression",
-          messageRegex: ".*\\sException:.*",
-          matchedStatuses: [Status.BROKEN],
-        },
-      ],
-    }),
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright/reporter"),
+             {
+               resultsDir: "./allure-results",
+               testMode: true,
+               categories: [
+                 {
+                   name: "Sad tests",
+                   messageRegex: ".*Sad.*",
+                   matchedStatuses: ["${Status.FAILED}"],
+                 },
+                 {
+                   name: "Infrastructure problems",
+                   messageRegex: ".*RuntimeException.*",
+                   matchedStatuses: ["${Status.BROKEN}"],
+                 },
+                 {
+                   name: "Outdated tests",
+                   messageRegex: ".*FileNotFound.*",
+                   matchedStatuses: ["${Status.BROKEN}"],
+                 },
+                 {
+                   name: "Regression",
+                   messageRegex: "${String.raw`.*\\sException:.*`}",
+                   matchedStatuses: ["${Status.BROKEN}"],
+                 },
+               ],
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
   });
 
-  expect(results.categories).toEqual([
+  expect(categories).toEqual([
     {
       name: "Sad tests",
       messageRegex: ".*Sad.*",

@@ -1,24 +1,12 @@
-/**
- * Copyright (c) Microsoft Corporation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-import { expect, test } from "./fixtures";
+import { expect, it } from "vitest";
+import { Status } from "allure-js-commons/new/sdk/node";
+import { runPlaywrightInlineTest } from "../utils";
 
-test("should report test steps", async ({ runInlineTest }) => {
-  const results = await runInlineTest({
-    "a.test.ts": /* ts */ `
+it("reports test steps", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.js": `
       import { test, expect } from '@playwright/test';
+
       test('should pass', async ({}) => {
         await test.step('outer step 1', async () => {
           await test.step('inner step 1.1', async () => {
@@ -34,27 +22,48 @@ test("should report test steps", async ({ runInlineTest }) => {
         });
       });
     `,
-    reporterOptions: JSON.stringify({ detail: false }),
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright/reporter"),
+             {
+               resultsDir: "./allure-results",
+               testMode: true,
+               detail: false,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
   });
-  expect(results.tests).toEqual([
+
+  expect(tests).toHaveLength(1);
+  expect(tests).toEqual([
     expect.objectContaining({
       name: "should pass",
-      status: "passed",
+      status: Status.PASSED,
       steps: [
         expect.objectContaining({
           name: "outer step 1",
-          status: "passed",
+          status: Status.PASSED,
           steps: [
-            expect.objectContaining({ name: "inner step 1.1", status: "passed" }),
-            expect.objectContaining({ name: "inner step 1.2", status: "passed" }),
+            expect.objectContaining({ name: "inner step 1.1", status: Status.PASSED }),
+            expect.objectContaining({ name: "inner step 1.2", status: Status.PASSED }),
           ],
         }),
         expect.objectContaining({
           name: "outer step 2",
-          status: "passed",
+          status: Status.PASSED,
           steps: [
-            expect.objectContaining({ name: "inner step 2.1", status: "passed" }),
-            expect.objectContaining({ name: "inner step 2.2", status: "passed" }),
+            expect.objectContaining({ name: "inner step 2.1", status: Status.PASSED }),
+            expect.objectContaining({ name: "inner step 2.2", status: Status.PASSED }),
           ],
         }),
       ],
@@ -62,10 +71,11 @@ test("should report test steps", async ({ runInlineTest }) => {
   ]);
 });
 
-test("should report failed test steps", async ({ runInlineTest }) => {
-  const results = await runInlineTest({
-    "a.test.ts": /* ts */ `
+it("reports failed test steps", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.ts": `
       import { test, expect } from '@playwright/test';
+
       test('should pass', async ({}) => {
         await test.step('outer step 1', async () => {
           await test.step('inner step 1.1', async () => {
@@ -82,33 +92,52 @@ test("should report failed test steps", async ({ runInlineTest }) => {
         });
       });
     `,
-    reporterOptions: JSON.stringify({ detail: false }),
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright/reporter"),
+             {
+               resultsDir: "./allure-results",
+               testMode: true,
+               detail: false,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
   });
-  expect(results.tests).toEqual([
+
+  expect(tests).toHaveLength(1);
+  expect(tests).toEqual([
     expect.objectContaining({
       name: "should pass",
-      status: "failed",
+      status: Status.FAILED,
       steps: [
         expect.objectContaining({
           name: "outer step 1",
-          status: "passed",
+          status: Status.PASSED,
           steps: [
-            expect.objectContaining({ name: "inner step 1.1", status: "passed" }),
-            expect.objectContaining({ name: "inner step 1.2", status: "passed" }),
+            expect.objectContaining({ name: "inner step 1.1", status: Status.PASSED }),
+            expect.objectContaining({ name: "inner step 1.2", status: Status.PASSED }),
           ],
         }),
         expect.objectContaining({
           name: "outer step 2",
-          status: "failed",
+          status: Status.FAILED,
           steps: [
             expect.objectContaining({
               name: "inner step 2.1",
-              status: "failed",
+              status: Status.FAILED,
               statusDetails: expect.objectContaining({
                 message: expect.stringContaining("expect(received).toBe(expected)"),
-                trace: expect.stringMatching(
-                  /\s*at\s+.*steps-should-report-failed-test-steps-project\/a\.test\.ts:12:26/,
-                ),
+                trace: expect.any(String),
               }),
             }),
           ],

@@ -1,7 +1,8 @@
-import { TestPlanV1 } from "allure-js-commons";
-import { expect, test } from "./fixtures";
+import { expect, it } from "vitest";
+import { TestPlanV1 } from "allure-js-commons/new/sdk/node";
+import { runPlaywrightInlineTest } from "../utils";
 
-test("should respect testplan", async ({ runInlineTest }) => {
+it("respects testplan", async () => {
   const exampleTestPlan: TestPlanV1 = {
     version: "1.0",
     tests: [
@@ -29,58 +30,59 @@ test("should respect testplan", async ({ runInlineTest }) => {
     ],
   };
   const testPlanFilename = "example-testplan.json";
-  const results = await runInlineTest(
+  const results = await runPlaywrightInlineTest(
     {
       [testPlanFilename]: JSON.stringify(exampleTestPlan),
       "a.test.ts": /* ts */ `
-       import { test, expect } from '@playwright/test';
-       test('should not execute', async ({}, testInfo) => {
-        expect(1).toBe(1);
-       });
-     `,
+        import { test, expect } from '@playwright/test';
+        test('should not execute', async ({}, testInfo) => {
+         expect(1).toBe(1);
+        });
+      `,
       "b.test.ts": /* ts */ `
-       import { test, expect } from '@playwright/test';
-       test('should execute', async ({}, testInfo) => {
-        expect(1).toBe(1);
-       });
-     `,
-      "nested/super strange nested/super strange name.test.ts": /* ts */ `
-       import { test, expect } from '@playwright/test';
-       test.describe('also nested', () => {
+        import { test, expect } from '@playwright/test';
         test('should execute', async ({}, testInfo) => {
+         expect(1).toBe(1);
+        });
+      `,
+      "nested/super strange nested/super strange name.test.ts": /* ts */ `
+        import { test, expect } from '@playwright/test';
+        test.describe('also nested', () => {
+         test('should execute', async ({}, testInfo) => {
+        });
        });
-      });
-     `,
+      `,
       ".+.test.ts": /* ts */ `
-       import { test, expect } from '@playwright/test';
-       test('+.', async ({}, testInfo) => {
-        expect(1).toBe(1);
-       });
-     `,
+        import { test, expect } from '@playwright/test';
+        test('+.', async ({}, testInfo) => {
+         expect(1).toBe(1);
+        });
+      `,
       "aga.test.ts": /* ts */ `
-       import { test, expect } from '@playwright/test';
-       test('a', async ({}, testInfo) => {
-        expect(1).toBe(1);
-       });
-       test('aa', async ({}, testInfo) => {
-        expect(1).toBe(1);
-       });
-       test('selected name @allure.id=5', async ({}, testInfo) => {
-        expect(1).toBe(1);
-       });
-     `,
+        import { test, expect } from '@playwright/test';
+        test('a', async ({}, testInfo) => {
+         expect(1).toBe(1);
+        });
+        test('aa', async ({}, testInfo) => {
+         expect(1).toBe(1);
+        });
+        test('selected name @allure.id=5', async ({}, testInfo) => {
+         expect(1).toBe(1);
+        });
+      `,
       "notaga.test.ts": /* ts */ `
-       import { test, expect } from '@playwright/test';
-       test('a', async ({}, testInfo) => {
-        expect(1).toBe(1);
-       });
-     `,
+        import { test, expect } from '@playwright/test';
+        test('a', async ({}, testInfo) => {
+         expect(1).toBe(1);
+        });
+      `,
     },
-    {},
+    [],
     {
       ALLURE_TESTPLAN_PATH: testPlanFilename,
     },
   );
+
   expect(results.tests.map((value) => value.fullName)).toEqual(
     expect.arrayContaining([
       "b.test.ts#should execute",

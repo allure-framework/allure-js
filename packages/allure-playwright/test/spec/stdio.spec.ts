@@ -3,8 +3,8 @@ import { ContentType } from "allure-js-commons/new/sdk/node";
 import { runPlaywrightInlineTest } from "../utils";
 
 it("reports stdout", async () => {
-  const { tests, attachments } = await runPlaywrightInlineTest(
-    `
+  const { tests, attachments } = await runPlaywrightInlineTest({
+    "sample.test.js": `
       import test from '@playwright/test';
 
       test("Demo test", async () => {
@@ -22,7 +22,7 @@ it("reports stdout", async () => {
         });
       });
     `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].attachments).toHaveLength(2);

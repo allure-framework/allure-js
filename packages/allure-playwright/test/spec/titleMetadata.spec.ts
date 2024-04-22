@@ -1,16 +1,16 @@
 import { expect, it } from "vitest";
-import { ContentType, LabelName } from "allure-js-commons/new/sdk/node";
+import { LabelName } from "allure-js-commons/new/sdk/node";
 import { runPlaywrightInlineTest } from "../utils";
 
 it("has metadata from title", async () => {
-  const { tests } = await runPlaywrightInlineTest(
-    `
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": `
       import { test } from '@playwright/test';
 
       test('some strange name to test @allure.id=228 @allure.label.tag=slow @allure.label.labelName=labelValue', async ({}, testInfo) => {
       });
-      `,
-  );
+    `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests).toEqual([
@@ -26,16 +26,16 @@ it("has metadata from title", async () => {
 });
 
 it("supports multiline name", async () => {
-  const results = await runPlaywrightInlineTest(
-    `
+  const results = await runPlaywrightInlineTest({
+    "sample.test.js": `
       import { test } from '@playwright/test';
 
       test(
         \`some strange name to test @allure.label.l1=v1
 something else in name @allure.label.l2=v2 @allure.label.l3=v3 some word\`, async ({}, testInfo) => {
       });
-      `,
-  );
+    `,
+  });
 
   expect(results.tests).toEqual([
     expect.objectContaining({

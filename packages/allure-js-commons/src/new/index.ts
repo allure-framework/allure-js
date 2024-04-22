@@ -28,6 +28,7 @@ export {
 } from "./facade.js";
 export {
   AllureResults,
+  Category,
   ContentType,
   ParameterMode,
   ParameterOptions,

@@ -1,5 +1,6 @@
 import {
   AttachmentOptions,
+  Category,
   Link,
   Messages,
   RawAttachment,
@@ -203,6 +204,26 @@ export class ReporterRuntime {
     this.update(uuid, (result) => {
       result.attachments.push(rawAttachment);
     });
+  };
+
+  writeEnvironmentInfo = (environmentInfo: Record<string, string>) => {
+    this.writer.writeEnvironmentInfo(environmentInfo);
+  };
+
+  writeCategoriesDefinitions = (categories: Category[]) => {
+    const serializedCategories = categories.map((c) => {
+      if (c.messageRegex instanceof RegExp) {
+        c.messageRegex = c.messageRegex.source;
+      }
+
+      if (c.traceRegex instanceof RegExp) {
+        c.traceRegex = c.traceRegex.source;
+      }
+
+      return c;
+    });
+
+    this.writer.writeCategoriesDefinitions(serializedCategories);
   };
 
   private formatLinks = (links: Link[]) => {

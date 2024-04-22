@@ -28,7 +28,9 @@ const detailSteps = {
 };
 
 it("default options should include detail and suiteTitle", async () => {
-  const { tests } = await runPlaywrightInlineTest(testFile, {});
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": testFile,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0]).toEqual(
@@ -40,9 +42,29 @@ it("default options should include detail and suiteTitle", async () => {
 });
 
 it("detail and suiteTitle true", async () => {
-  const { tests } = await runPlaywrightInlineTest(testFile, {
-    detail: true,
-    suiteTitle: true,
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": testFile,
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright/reporter"),
+             {
+               resultsDir: "./allure-results",
+               testMode: true,
+               detail: true,
+               suiteTitle: true,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
   });
 
   expect(tests).toHaveLength(1);
@@ -55,9 +77,29 @@ it("detail and suiteTitle true", async () => {
 });
 
 it("detail and suiteTitle false", async () => {
-  const { tests } = await runPlaywrightInlineTest(testFile, {
-    detail: false,
-    suiteTitle: false,
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": testFile,
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright/reporter"),
+             {
+               resultsDir: "./allure-results",
+               testMode: true,
+               detail: false,
+               suiteTitle: false,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
   });
 
   expect(tests).toHaveLength(1);

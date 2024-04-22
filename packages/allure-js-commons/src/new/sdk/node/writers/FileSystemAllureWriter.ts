@@ -20,6 +20,7 @@ export class FileSystemAllureWriter implements Writer {
 
   writeAttachment(name: string, content: Buffer | string, encoding: BufferEncoding = "utf-8"): void {
     const path = this.buildPath(name);
+
     writeFileSync(path, content, encoding);
   }
 
@@ -38,6 +39,7 @@ export class FileSystemAllureWriter implements Writer {
 
   writeCategoriesDefinitions(categories: Category[]): void {
     const path = this.buildPath("categories.json");
+
     writeJson(path, categories);
   }
 

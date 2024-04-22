@@ -3,40 +3,42 @@ import { LabelName } from "allure-js-commons";
 import { runPlaywrightInlineTest } from "../utils";
 
 it("sets runtime labels", async () => {
-  const { tests } = await runPlaywrightInlineTest(`
-    import { test, expect } from "@playwright/test";
-    import {
-      label,
-      labels,
-      feature,
-      allureId,
-      epic,
-      layer,
-      owner,
-      parentSuite,
-      suite,
-      subSuite,
-      severity,
-      story,
-      tag,
-    } from "allure-playwright";
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": `
+      import { test, expect } from "@playwright/test";
+      import {
+        label,
+        labels,
+        feature,
+        allureId,
+        epic,
+        layer,
+        owner,
+        parentSuite,
+        suite,
+        subSuite,
+        severity,
+        story,
+        tag,
+      } from "allure-playwright";
 
-    test("should add epic label", async ({}, testInfo) => {
-      await label("foo", "bar");
-      await allureId("foo");
-      await epic("foo");
-      await feature("foo");
-      await layer("foo");
-      await owner("foo");
-      await parentSuite("foo");
-      await subSuite("foo");
-      await suite("foo");
-      await severity("foo");
-      await story("foo");
-      await tag("foo");
-      await labels({ name: "test", value: "testValue" }, { name: "test2", value: "testValue2" });
-    });
-  `);
+      test("should add epic label", async ({}, testInfo) => {
+        await label("foo", "bar");
+        await allureId("foo");
+        await epic("foo");
+        await feature("foo");
+        await layer("foo");
+        await owner("foo");
+        await parentSuite("foo");
+        await subSuite("foo");
+        await suite("foo");
+        await severity("foo");
+        await story("foo");
+        await tag("foo");
+        await labels({ name: "test", value: "testValue" }, { name: "test2", value: "testValue2" });
+      });
+    `
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual({ name: "foo", value: "bar" });
@@ -56,18 +58,35 @@ it("sets runtime labels", async () => {
 });
 
 it("reports a single suite structure", async () => {
-  const { tests } = await runPlaywrightInlineTest(
-    `
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": `
       import test from '@playwright/test';
 
       test.describe('suite', () => {
         test('should work', async ({}) => {});
       });
     `,
-    {
-      suiteTitle: true,
-    },
-  );
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright/reporter"),
+             {
+               resultsDir: "./allure-results",
+               testMode: true,
+               suiteTitle: true,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toEqual(
@@ -97,8 +116,8 @@ it("reports a single suite structure", async () => {
 });
 
 it("reports a multiple nested suites structure", async () => {
-  const { tests } = await runPlaywrightInlineTest(
-    `
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": `
       import test from '@playwright/test';
 
       test.describe('parent suite 2', () => {
@@ -109,10 +128,27 @@ it("reports a multiple nested suites structure", async () => {
         });
       });
     `,
-    {
-      suiteTitle: true,
-    },
-  );
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright/reporter"),
+             {
+               resultsDir: "./allure-results",
+               testMode: true,
+               suiteTitle: true,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toEqual(

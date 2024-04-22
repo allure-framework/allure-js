@@ -3,15 +3,15 @@ import { expect, it } from "vitest";
 import { runPlaywrightInlineTest } from "../utils";
 
 it("historical data should be fine", async () => {
-  const { tests } = await runPlaywrightInlineTest(
-    `
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": `
       import { test } from '@playwright/test';
 
       test.describe('nested', () => {
         test('test', async ({}, testInfo) => {});
       });
       `,
-  );
+  });
   const fullName = "sample.test.js#nested test";
 
   expect(tests).toEqual(

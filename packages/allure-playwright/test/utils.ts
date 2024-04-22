@@ -2,54 +2,64 @@ import { TestInfo, test as base } from "@playwright/test";
 import { fork } from "child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
-import { join, resolve as resolvePath } from "node:path";
+import { dirname, join, resolve as resolvePath } from "node:path";
+import { parse } from "properties"
 import { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/new/sdk/node";
-import type { AllurePlaywrightReporterConfig } from "allure-playwright/reporter";
 
-export const runPlaywrightInlineTest = async (test: string, config?: AllurePlaywrightReporterConfig, cliArgs: string[] = []): Promise<AllureResults> => {
+
+const parseJsonResult = <T,>(data: string) => {
+  return JSON.parse(Buffer.from(data, "base64").toString("utf8"))
+}
+
+export const runPlaywrightInlineTest = async (
+  files: Record<string, string | Buffer>,
+  cliArgs: string[] = [],
+  env?: Record<string, string>,
+): Promise<AllureResults> => {
   const res: AllureResults = {
     tests: [],
     groups: [],
     attachments: {},
   };
-  const reporterBaseConfig = {
-    resultsDir: "./allure-results",
-    testMode: true,
-  };
-  const stringifiedConfig = JSON.stringify({
-    ...reporterBaseConfig,
-    ...config,
-  })
-  const testDir = join(__dirname, "fixtures", randomUUID());
-  const configFilePath = join(testDir, "playwright.config.js");
-  const testFilePath = join(testDir, "sample.test.js");
-  const configContent = `
-     module.exports = {
-       reporter: [
-         [
-           require.resolve("allure-playwright/reporter"),
-           ${stringifiedConfig},
+  const testFiles = {
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright/reporter"),
+             {
+               resultsDir: "./allure-results",
+               testMode: true,
+             },
+           ],
+           ["dot"],
          ],
-         ["dot"],
-       ],
-       projects: [
-         {
-           name: "project",
-         },
-       ],
-     };
-  `
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
+    ...files,
+  };
+  const testDir = join(__dirname, "fixtures", randomUUID());
 
   await mkdir(testDir, { recursive: true });
-  await writeFile(testFilePath, test, "utf8");
-  await writeFile(configFilePath, configContent, "utf8");
+
+  for (const file of Object.keys(testFiles)) {
+    const filePath = join(testDir, file);
+
+    await mkdir(dirname(filePath), { recursive: true });
+    await writeFile(filePath, testFiles[file as keyof typeof testFiles], "utf8");
+  }
 
   const modulePath = require.resolve("@playwright/test/cli");
-  // const modulePath = resolvePath(moduleRootPath, "../bin/cypress");
-  const args = ["test", "-c", "./playwright.config.js", "./sample.test.js", ...cliArgs];
+  const args = ["test", "-c", "./playwright.config.js", testDir, ...cliArgs];
   const testProcess = fork(modulePath, args, {
     env: {
       ...process.env,
+      ...env,
     },
     cwd: testDir,
     stdio: "pipe",
@@ -63,18 +73,20 @@ export const runPlaywrightInlineTest = async (test: string, config?: AllurePlayw
   });
   testProcess.on("message", (message: string) => {
     const event: { path: string; type: string; data: string } = JSON.parse(message);
-    const data = event.type !== "attachment" ? JSON.parse(Buffer.from(event.data, "base64").toString()) : event.data;
 
     switch (event.type) {
       case "container":
-        res.groups.push(data as TestResultContainer);
+        res.groups.push(parseJsonResult<TestResultContainer>(event.data));
         break;
       case "result":
-        res.tests.push(data as TestResult);
+        res.tests.push(parseJsonResult<TestResult>(event.data));
         break;
       case "attachment":
-        console.log("attachment", event.data)
         res.attachments[event.path] = event.data;
+        break;
+      case "misc":
+        res.envInfo = event.path === "environment.properties" ? parse(Buffer.from(event.data, "base64").toString()) : undefined;
+        res.categories = event.path === "categories.json" ? parseJsonResult(event.data) : undefined;
         break;
       default:
         break;

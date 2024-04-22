@@ -2,8 +2,8 @@ import { expect, it } from "vitest";
 import { runPlaywrightInlineTest } from "../utils";
 
 it("handles before hooks", async () => {
-  const { tests } = await runPlaywrightInlineTest(
-    `
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": `
        import test from '@playwright/test';
 
        test.beforeAll(async () => {});
@@ -12,7 +12,7 @@ it("handles before hooks", async () => {
 
        test("should contain hooks", async () => {});
      `,
-  );
+  });
   const [beforeHooks] = tests[0].steps;
 
   expect(beforeHooks).toMatchObject({
@@ -32,8 +32,8 @@ it("handles before hooks", async () => {
 });
 
 it("handles after hooks", async () => {
-  const results = await runPlaywrightInlineTest(
-    `
+  const results = await runPlaywrightInlineTest({
+    "sample.test.js": `
        import test from '@playwright/test';
 
        test.afterAll(async () => {});
@@ -42,8 +42,7 @@ it("handles after hooks", async () => {
 
        test("should contain hooks", async () => {});
      `,
-  );
-
+  });
   const [, afterHooks] = results.tests[0].steps;
 
   expect(afterHooks).toMatchObject(

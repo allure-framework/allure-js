@@ -3,7 +3,8 @@ import { runPlaywrightInlineTest } from "../utils";
 
 it("sets parameters", async () => {
   const { tests } = await runPlaywrightInlineTest(
-    `
+    {
+      "sample.test.js": `
        import { test, expect } from '@playwright/test';
        import { parameter } from "allure-playwright";
 
@@ -14,7 +15,7 @@ it("sets parameters", async () => {
         await parameter("param4", "paramValue4", {mode:"hidden"});
        });
      `,
-    undefined,
+    },
     ["--repeat-each", "2"],
   );
 

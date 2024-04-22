@@ -1,23 +1,40 @@
-/* eslint-disable quote-props */
-import { expect, test } from "./fixtures";
+import { expect, it } from "vitest";
+import { runPlaywrightInlineTest } from "../utils";
 
-test("should have envInfo", async ({ runInlineTest }) => {
-  const allureResults = await runInlineTest({
-    "a.test.ts": /* ts */ `
+it("has environment info", async () => {
+  const { envInfo } = await runPlaywrightInlineTest({
+    "a.test.ts": `
        import { test, expect } from '@playwright/test';
-       import { allure, LabelName,Status } from '../../dist/index'
-       test('should add epic label', async ({}, testInfo) => {
+
+       test('does nothing', async ({}, testInfo) => {
        });
      `,
-    reporterOptions: JSON.stringify({
-      environmentInfo: {
-        envVar1: "envVar1Value",
-        envVar2: "envVar2Value",
-      },
-    }),
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright/reporter"),
+             {
+               resultsDir: "./allure-results",
+               testMode: true,
+               environmentInfo: {
+                 envVar1: "envVar1Value",
+                 envVar2: "envVar2Value",
+               },
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
   });
 
-  expect(allureResults.envInfo).toEqual({
+  expect(envInfo).toEqual({
     envVar1: "envVar1Value",
     envVar2: "envVar2Value",
   });

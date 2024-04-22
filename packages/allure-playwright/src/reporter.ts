@@ -18,6 +18,7 @@ import {
   AllureNodeReporterRuntime,
   Config,
   FileSystemAllureWriter,
+  Label,
   LabelName,
   MessageAllureWriter,
   RuntimeMessage,
@@ -28,7 +29,7 @@ import {
   extractMetadataFromString,
   readImageAsBase64,
 } from "allure-js-commons/new/sdk/node";
-import { AllurePlaywrightReporterConfig } from "./model.js"
+import { AllurePlaywrightReporterConfig } from "./model.js";
 import { getStatusDetails, hasLabel, statusToAllureStats } from "./utils.js";
 
 // TODO: move to utils.ts
@@ -119,11 +120,15 @@ class AllureReporter implements Reporter {
 
     const testUuid = this.allureResultsUuids.get(test.id)!;
 
-    this.allureRuntime!.startStep(testUuid, {
-      name: step.title.substring(0, stepAttachPrefixLength),
-    }, step.startTime.getTime());
+    this.allureRuntime!.startStep(
+      testUuid,
+      {
+        name: step.title.substring(0, stepAttachPrefixLength),
+      },
+      step.startTime.getTime(),
+    );
 
-    console.log("step started", step.title);
+    // console.log("step started", step.title);
   }
 
   onStepEnd(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
@@ -136,7 +141,7 @@ class AllureReporter implements Reporter {
       return;
     }
 
-    console.log("step stopped", step.title, step);
+    // console.log("step stopped", step.title, step);
 
     const testUuid = this.allureResultsUuids.get(test.id)!;
 
@@ -190,10 +195,6 @@ class AllureReporter implements Reporter {
     }
 
     if (result.stdout.length > 0) {
-      // const a = result.stdout.map(line => stripAnsi(line as string))
-
-      console.log(result.stdout)
-
       this.allureRuntime!.writeAttachment(testUuid, {
         name: "stdout",
         contentType: ContentType.TEXT,
@@ -208,6 +209,34 @@ class AllureReporter implements Reporter {
         content: Buffer.from(stripAnsi(result.stderr.join("")), "utf8"),
       });
     }
+
+    // FIXME: temp logic for labels override, we need it here to keep the reporter compatible with v2 API
+    // in next iterations we need to implement the logic for every javascript integration
+    this.allureRuntime!.update(testUuid, (testResult) => {
+      const mappedLabels = testResult.labels.reduce(
+        (acc, label) => {
+          if (!acc[label.name]) {
+            acc[label.name] = [];
+          }
+
+          acc[label.name].push(label);
+
+          return acc;
+        },
+        {} as Record<string, Label[]>,
+      );
+      const newLabels = Object.keys(mappedLabels).flatMap((labelName) => {
+        const labelsGroup = mappedLabels[labelName]
+
+        if (labelName === LabelName.SUITE || labelName === LabelName.PARENT_SUITE || labelName === LabelName.SUB_SUITE) {
+          return labelsGroup.slice(-1);
+        }
+
+        return labelsGroup
+      });
+
+      testResult.labels = newLabels;
+    });
 
     this.allureRuntime!.stop(testUuid);
     this.allureRuntime!.write(testUuid);
@@ -246,13 +275,14 @@ class AllureReporter implements Reporter {
   onEnd(): void {
     // TODO:
     // this.addSkippedResults();
-    // TODO:
-    // if (this.options.environmentInfo) {
-    //   this.allureRuntime?.writeEnvironmentInfo(this.options?.environmentInfo);
-    // }
-    // if (this.options.categories) {
-    //   this.allureRuntime?.writeCategoriesDefinitions(this.options.categories);
-    // }
+
+    if (this.options.environmentInfo) {
+      this.allureRuntime?.writeEnvironmentInfo(this.options?.environmentInfo);
+    }
+
+    if (this.options.categories) {
+      this.allureRuntime?.writeCategoriesDefinitions(this.options.categories);
+    }
   }
 
   printsToStdio(): boolean {
@@ -285,7 +315,7 @@ class AllureReporter implements Reporter {
 
       // TODO: make possible to pass single message and list of them
       this.allureRuntime!.applyRuntimeMessages(testUuid, [message]);
-      return
+      return;
     }
 
     if (attachment.body) {
@@ -326,7 +356,7 @@ class AllureReporter implements Reporter {
         name: diffName,
       } as ImageDiffAttachment),
       contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE,
-      fileExtension: "imagediff",
+      fileExtension: ".imagediff",
     });
 
     this.processedDiffs.push(pathWithoutEnd);

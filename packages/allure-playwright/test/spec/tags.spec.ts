@@ -3,8 +3,8 @@ import { LabelName } from "allure-js-commons/new/sdk/node";
 import { runPlaywrightInlineTest } from "../utils";
 
 it("sets multiply tags", async () => {
-  const results = await runPlaywrightInlineTest(
-    `
+  const results = await runPlaywrightInlineTest({
+    "sample.test.js": `
       import { test } from '@playwright/test';
       import { tag, tags } from 'allure-playwright';
 
@@ -15,7 +15,7 @@ it("sets multiply tags", async () => {
           await tags(...['some', 'other', 'tags']);
       });
       `,
-  );
+  });
 
   expect(results.tests).toEqual([
     expect.objectContaining({

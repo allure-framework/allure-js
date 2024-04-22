@@ -1,11 +1,12 @@
-import { readFileSync } from "fs";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { expect, it } from "vitest";
 import { ContentType } from "allure-js-commons/new/sdk/node";
 import { runPlaywrightInlineTest } from "../utils";
 
 it("doesn't not throw on missing attachment", async () => {
-  const { tests, attachments } = await runPlaywrightInlineTest(
-    `
+  const { tests, attachments } = await runPlaywrightInlineTest({
+    "sample.test.js": `
       import test from '@playwright/test';
 
       test('should add attachment', async ({}, testInfo) => {
@@ -22,7 +23,7 @@ it("doesn't not throw on missing attachment", async () => {
         });
       });
     `,
-  );
+  });
 
   expect(tests[0].attachments).toEqual([
     expect.objectContaining({
@@ -33,34 +34,33 @@ it("doesn't not throw on missing attachment", async () => {
   expect(attachments[tests[0].attachments[0].source]).toEqual(Buffer.from("foo").toString("base64"));
 });
 
-// TODO: write files, not one test, like it was before
-// it("adds snapshots correctly and provide a screenshot diff", async () => {
-//   const result = await runPlaywrightInlineTest(
-//     `
-//       import test from '@playwright/test';
-//
-//       test('should add attachment', async ({ page }, testInfo) => {
-//         testInfo.snapshotSuffix = '';
-//
-//         test.expect(await page.screenshot()).toMatchSnapshot("foo.png");
-//       });
-//     `,
-//     // "a.test.ts-snapshots/foo-project.png": readFileSync(attachment("attachment-1-not-expected.png")),
-//   );
-//   expect(result.tests[0].attachments).toEqual(
-//     expect.arrayContaining([
-//       {
-//         name: "foo",
-//         type: "application/vnd.allure.image.diff",
-//         source: expect.stringMatching(/.*\.imagediff/),
-//       },
-//     ]),
-//   );
-// });
+it("adds snapshots correctly and provide a screenshot diff", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": `
+      import test from '@playwright/test';
+
+      test('should add attachment', async ({ page }, testInfo) => {
+        testInfo.snapshotSuffix = '';
+
+        test.expect(await page.screenshot()).toMatchSnapshot("foo.png");
+      });
+    `,
+    "sample.test.js-snapshots/foo-project.png": readFileSync(
+      resolve(__dirname, "../assets/attachment-1-not-expected.png"),
+    ),
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].attachments).toContainEqual({
+    name: "foo",
+    type: "application/vnd.allure.image.diff",
+    source: expect.stringMatching(/.*\.imagediff/),
+  });
+});
 
 it("should add attachments into steps", async () => {
-  const { tests, attachments } = await runPlaywrightInlineTest(
-    `
+  const { tests, attachments } = await runPlaywrightInlineTest({
+    "sample.test.js": `
       import test from '@playwright/test';
       import { step, attachment } from 'allure-playwright';
 
@@ -81,8 +81,27 @@ it("should add attachments into steps", async () => {
         });
       });
     `,
-    { detail: false },
-  );
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright/reporter"),
+             {
+               resultsDir: "./allure-results",
+               testMode: true,
+               detail: false,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0]).toEqual(
@@ -139,8 +158,8 @@ it("should add attachments into steps", async () => {
 });
 
 it("doesn't not report detail steps for attachments", async () => {
-  const { tests, attachments } = await runPlaywrightInlineTest(
-    `
+  const { tests, attachments } = await runPlaywrightInlineTest({
+    "sample.test.js": `
       import test from '@playwright/test';
       import { step, attachment } from 'allure-playwright';
 
@@ -161,8 +180,27 @@ it("doesn't not report detail steps for attachments", async () => {
         });
       });
     `,
-    { detail: true },
-  );
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright/reporter"),
+             {
+               resultsDir: "./allure-results",
+               testMode: true,
+               detail: true,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0]).toEqual(
