@@ -5,22 +5,28 @@ import { runPlaywrightInlineTest } from "../utils";
 it("reports test status", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import { test, expect } from '@playwright/test';
+      import { test, expect } from 'allure-playwright';
+
       test('should pass', async ({}) => {
       });
+
       test('should fail', async ({}) => {
         expect(true).toBe(false);
       });
+
       test('should break', async ({}) => {
         test.setTimeout(1);
         await new Promise(() => {});
       });
+
       test('should skip', async ({}) => {
         test.skip(true);
       });
+
       test('should fixme', async ({}) => {
         test.fixme(true);
       });
+
       test('should expect fail', async ({}) => {
         test.fail(true);
         expect(true).toBe(false);

@@ -5,7 +5,7 @@ import { runPlaywrightInlineTest } from "../utils";
 it("reports stdout", async () => {
   const { tests, attachments } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import test from '@playwright/test';
+      import test from 'allure-playwright';
 
       test("Demo test", async () => {
         console.log("Test log");

@@ -4,7 +4,7 @@ import { runPlaywrightInlineTest } from "../utils";
 it("has environment info", async () => {
   const { envInfo } = await runPlaywrightInlineTest({
     "a.test.ts": `
-       import { test, expect } from '@playwright/test';
+       import { test, expect } from 'allure-playwright';
 
        test('does nothing', async ({}, testInfo) => {
        });

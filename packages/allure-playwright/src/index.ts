@@ -15,7 +15,7 @@ import {
   setGlobalTestRuntime,
 } from "allure-js-commons/new/sdk/node";
 
-export class AllurePlaywrightTestRuntime implements TestRuntime {
+class AllurePlaywrightTestRuntime implements TestRuntime {
   async label(name: LabelName | string, value: string) {
     await this.sendMessage({
       type: "metadata",
@@ -176,6 +176,10 @@ export class AllurePlaywrightTestRuntime implements TestRuntime {
   }
 }
 
-setGlobalTestRuntime(new AllurePlaywrightTestRuntime());
+test.beforeEach(() => {
+  setGlobalTestRuntime(new AllurePlaywrightTestRuntime());
+})
 
-export * from "allure-js-commons/new";
+export * from "@playwright/test";
+
+export default test;

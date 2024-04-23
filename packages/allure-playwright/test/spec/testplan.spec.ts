@@ -34,32 +34,32 @@ it("respects testplan", async () => {
     {
       [testPlanFilename]: JSON.stringify(exampleTestPlan),
       "a.test.ts": /* ts */ `
-        import { test, expect } from '@playwright/test';
+        import { test, expect } from 'allure-playwright';
         test('should not execute', async ({}, testInfo) => {
          expect(1).toBe(1);
         });
       `,
       "b.test.ts": /* ts */ `
-        import { test, expect } from '@playwright/test';
+        import { test, expect } from 'allure-playwright';
         test('should execute', async ({}, testInfo) => {
          expect(1).toBe(1);
         });
       `,
       "nested/super strange nested/super strange name.test.ts": /* ts */ `
-        import { test, expect } from '@playwright/test';
+        import { test, expect } from 'allure-playwright';
         test.describe('also nested', () => {
          test('should execute', async ({}, testInfo) => {
         });
        });
       `,
       ".+.test.ts": /* ts */ `
-        import { test, expect } from '@playwright/test';
+        import { test, expect } from 'allure-playwright';
         test('+.', async ({}, testInfo) => {
          expect(1).toBe(1);
         });
       `,
       "aga.test.ts": /* ts */ `
-        import { test, expect } from '@playwright/test';
+        import { test, expect } from 'allure-playwright';
         test('a', async ({}, testInfo) => {
          expect(1).toBe(1);
         });
@@ -71,7 +71,7 @@ it("respects testplan", async () => {
         });
       `,
       "notaga.test.ts": /* ts */ `
-        import { test, expect } from '@playwright/test';
+        import { test, expect } from 'allure-playwright';
         test('a', async ({}, testInfo) => {
          expect(1).toBe(1);
         });

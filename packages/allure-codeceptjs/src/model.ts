@@ -23,5 +23,7 @@ export interface CodeceptStep {
 }
 
 export type CodeceptSuite = Mocha.SuiteRunnable;
+
 export type CodeceptHook = Mocha.Hook;
+
 export type CodeceptTest = Mocha.Runnable;

@@ -5,7 +5,7 @@ import { runPlaywrightInlineTest } from "../utils";
 it("sets runtime labels", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import { test, expect } from "@playwright/test";
+      import { test, expect } from "allure-playwright";
       import {
         label,
         labels,
@@ -20,7 +20,7 @@ it("sets runtime labels", async () => {
         severity,
         story,
         tag,
-      } from "allure-playwright";
+      } from "allure-js-commons/new";
 
       test("should add epic label", async ({}, testInfo) => {
         await label("foo", "bar");
@@ -60,7 +60,7 @@ it("sets runtime labels", async () => {
 it("reports a single suite structure", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import test from '@playwright/test';
+      import test from 'allure-playwright';
 
       test.describe('suite', () => {
         test('should work', async ({}) => {});
@@ -118,7 +118,7 @@ it("reports a single suite structure", async () => {
 it("reports a multiple nested suites structure", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import test from '@playwright/test';
+      import test from 'allure-playwright';
 
       test.describe('parent suite 2', () => {
         test.describe('suite 2', () => {

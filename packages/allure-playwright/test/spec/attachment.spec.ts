@@ -7,7 +7,7 @@ import { runPlaywrightInlineTest } from "../utils";
 it("doesn't not throw on missing attachment", async () => {
   const { tests, attachments } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import test from '@playwright/test';
+      import test from 'allure-playwright';
 
       test('should add attachment', async ({}, testInfo) => {
         testInfo.attachments.push({
@@ -37,7 +37,7 @@ it("doesn't not throw on missing attachment", async () => {
 it("adds snapshots correctly and provide a screenshot diff", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import test from '@playwright/test';
+      import test from 'allure-playwright';
 
       test('should add attachment', async ({ page }, testInfo) => {
         testInfo.snapshotSuffix = '';
@@ -61,8 +61,8 @@ it("adds snapshots correctly and provide a screenshot diff", async () => {
 it("should add attachments into steps", async () => {
   const { tests, attachments } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import test from '@playwright/test';
-      import { step, attachment } from 'allure-playwright';
+      import test from 'allure-playwright';
+      import { step, attachment } from 'allure-js-commons/new';
 
       test('should add attachment', async ({}, testInfo) => {
         await step('outer step 1', async () => {
@@ -160,8 +160,8 @@ it("should add attachments into steps", async () => {
 it("doesn't not report detail steps for attachments", async () => {
   const { tests, attachments } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import test from '@playwright/test';
-      import { step, attachment } from 'allure-playwright';
+      import test from 'allure-playwright';
+      import { step, attachment } from 'allure-js-commons/new';
 
       test('should add attachment', async ({}, testInfo) => {
         await step('outer step 1', async () => {

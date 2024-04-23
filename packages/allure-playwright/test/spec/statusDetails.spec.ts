@@ -4,7 +4,8 @@ import { runPlaywrightInlineTest } from "../utils";
 it("reports test status details", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import { test, expect } from '@playwright/test';
+      import { test, expect } from 'allure-playwright';
+
       test('should fail', async ({}) => {
         expect(true).toBe(false);
       });

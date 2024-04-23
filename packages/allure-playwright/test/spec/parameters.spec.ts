@@ -5,8 +5,8 @@ it("sets parameters", async () => {
   const { tests } = await runPlaywrightInlineTest(
     {
       "sample.test.js": `
-       import { test, expect } from '@playwright/test';
-       import { parameter } from "allure-playwright";
+       import { test, expect } from 'allure-playwright';
+       import { parameter } from "allure-js-commons/new";
 
        test('should add epic label', async ({}) => {
         await parameter("param1", "paramValue1");
