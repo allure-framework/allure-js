@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": [
+    "./src/**/*"
+  ],
+  "compilerOptions": {
+    "declaration": false,
+    "target": "ES2015",
+    "lib": ["dom", "esnext"],
+    "moduleResolution": "bundler",
+    "types": [
+      "node",
+      "mocha"
+    ],
+  }
+}

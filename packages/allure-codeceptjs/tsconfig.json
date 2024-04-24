@@ -1,16 +1,26 @@
 {
   "extends": "../../tsconfig.json",
   "include": [
-    "./src/**/*",
-    "types.d.ts"
+    "./src/**/*"
   ],
   "exclude": [
-    "./test/**/*",
+    "./test/**/*"
   ],
   "compilerOptions": {
-    "types": ["codeceptjs"],
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "types": [
+      "node",
+      "mocha"
+    ],
+    "outDir": "./dist"
   }
 }

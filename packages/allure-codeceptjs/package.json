@@ -13,25 +13,37 @@
     "directory": "packages/allure-codeceptjs"
   },
   "license": "Apache-2.0",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
   "scripts": {
     "clean": "rimraf ./dist ./out ./test-results",
-    "compile": "tsc",
+    "compile": "run-p 'compile:*'",
+    "compile:lib": "rollup -c",
+    "compile:types": "tsc --project ./tsconfig.json",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix",
-    "test": "ALLURE_POST_PROCESSOR_FOR_TEST=true ts-node --project test/tsconfig.json test/runner.ts"
+    "test": "vitest run"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
     "@codeceptjs/configure": "^0.10.0",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
     "@types/eslint": "^8",
-    "@types/mocha": "^10.0.1",
+    "@types/mocha": "^10.0.6",
     "@types/node": "^20.6.3",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
@@ -45,11 +57,15 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "expect": "^29.7.0",
-    "glob": "^10.3.5",
-    "mocha": "^10.2.0",
+    "glob": "^10.3.12",
+    "mocha": "^10.4.0",
     "mocha-multi-reporters": "^1.5.1",
+    "npm-run-all2": "^6.1.2",
     "rimraf": "^5.0.1",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "rollup": "^4.16.3",
+    "ts-node": "^10.9.2",
+    "tslib": "^2.6.2",
+    "typescript": "^5.2.2",
+    "vitest": "^1.5.0"
   }
 }

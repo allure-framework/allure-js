@@ -1,5 +1,5 @@
-const { setHeadlessWhen, setCommonPlugins } = require("@codeceptjs/configure");
-const path = require("path");
+const path = require("node:path");
+const { setCommonPlugins } = require("@codeceptjs/configure");
 
 setCommonPlugins();
 
@@ -9,6 +9,7 @@ module.exports.config = {
   plugins: {
     allure: {
       require: require.resolve("allure-codeceptjs"),
+      testMode: true,
       enabled: true,
     },
   },

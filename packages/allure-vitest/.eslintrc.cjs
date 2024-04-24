@@ -8,6 +8,7 @@ module.exports = {
     "node/file-extension-in-import": ["error", "always"],
   },
   parserOptions: {
+    tsconfigRootDir: __dirname,
     project: "tsconfig.test.json",
   },
 };
