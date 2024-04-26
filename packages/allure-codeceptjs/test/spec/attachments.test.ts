@@ -1,30 +1,58 @@
-import { expect } from "expect";
-import { it } from "mocha";
-import { runTests } from "./utils/run-tests";
+import { expect, it } from "vitest";
+import { runCodeceptJSInlineTest } from "../utils";
 
-it("simple scenarios", async () => {
-  const res = await runTests(
-    {
-      files: {
-        "login.test.js": /* js */ `
-        Feature("login-feature");
-        Scenario("login-scenario1", async () => {
-          const allure = codeceptjs.container.plugins("allure");
-          allure.addAttachment("data.txt", "some data", "text/plain");
+it("handles attachments in tests", async () => {
+  const { tests, attachments } = await runCodeceptJSInlineTest({
+    "login.test.js": `
+      const { attachment } = require("allure-js-commons/new");
+
+      Feature("sample-feature");
+      Scenario("sample-scenario", async () => {
+        await attachment("data.txt", "some data", "text/plain");
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].attachments).toHaveLength(1);
+
+  const [attachment] = tests[0].attachments;
+
+  expect(attachment).toEqual({
+    name: "data.txt",
+    type: "text/plain",
+    source: expect.any(String),
+  });
+  expect(attachments).toHaveProperty(attachment.source);
+  expect(Buffer.from(attachments[attachment.source], "base64").toString("utf8")).toEqual("some data");
+});
+
+it("handles attachments in runtime steps", async () => {
+  const { tests, attachments } = await runCodeceptJSInlineTest({
+    "login.test.js": `
+      const { step, attachment } = require("allure-js-commons/new");
+
+      Feature("sample-feature");
+      Scenario("sample-scenario", async () => {
+        await step("step1", async () => {
+          await attachment("data.txt", "some data", "text/plain");
         });
-      `,
-      },
-    },
-    "attachments.test.ts",
-  );
-  const attachments = res.tests[0]!.attachments;
+      });
+    `,
+  });
 
-  expect(attachments).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining({
-        name: "data.txt",
-        type: "text/plain",
-      }),
-    ]),
-  );
+  expect(tests).toHaveLength(1);
+  expect(tests[0].attachments).toHaveLength(0);
+  expect(tests[0].steps).toHaveLength(1);
+  expect(tests[0].steps[0].attachments).toHaveLength(1);
+
+  const [attachment] = tests[0].steps[0].attachments;
+
+  expect(attachment).toEqual({
+    name: "data.txt",
+    type: "text/plain",
+    source: expect.any(String),
+  });
+  expect(attachments).toHaveProperty(attachment.source);
+  expect(Buffer.from(attachments[attachment.source], "base64").toString("utf8")).toEqual("some data");
 });

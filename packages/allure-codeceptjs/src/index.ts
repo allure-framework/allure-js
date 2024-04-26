@@ -1,15 +1,6 @@
 import { event } from "codeceptjs";
 import path from "node:path";
-import process from "node:process";
-import {
-  AllureGroup,
-  AllureRuntime,
-  AllureStep,
-  AllureTest,
-  allureReportFolder,
-  md5,
-  stripAscii,
-} from "allure-js-commons";
+import stripAnsi from "strip-ansi";
 import {
   AllureNodeReporterRuntime,
   ContentType,
@@ -37,12 +28,6 @@ interface ReporterOptions {
 
 class AllureCodeceptJSReporter {
   allureRuntime?: AllureNodeReporterRuntime;
-  allureGroupCache = new Map<CodeceptSuite, AllureGroup>();
-  allureTestCache = new Map<CodeceptTest, AllureTest>();
-  allureWriter = process.env.ALLURE_POST_PROCESSOR_FOR_TEST ? new MessageAllureWriter() : undefined;
-  allureStepCache = new Map<AllureTest, Map<CodeceptStep, AllureStep>>();
-
-  allureTestsUuids = new Map<string, string>();
   currentAllureResultUuid?: string;
 
   currentTest: CodeceptTest | null = null;
@@ -50,8 +35,6 @@ class AllureCodeceptJSReporter {
   config!: AllureCodeceptJSConfig;
 
   constructor(config: AllureCodeceptJSConfig) {
-    console.log({ config });
-
     this.registerEvents();
     this.config = config || {};
     this.allureRuntime = new AllureNodeReporterRuntime({
@@ -64,99 +47,41 @@ class AllureCodeceptJSReporter {
     });
   }
 
-  registerEvents() {
-    // Suite
-    // TODO: guess, we don't need handle suites because we have all the required data right in the tests
-    // event.dispatcher.addListener(event.suite.before, this.suiteStarted.bind(this));
-    // event.dispatcher.addListener(event.suite.after, this.suiteFinished.bind(this));
-    event.dispatcher.addListener(event.hook.started, this.hookStarted.bind(this));
-    event.dispatcher.addListener(event.hook.passed, this.hookPassed.bind(this));
-    // Test
-    event.dispatcher.addListener(event.test.started, this.testStarted.bind(this));
-    event.dispatcher.addListener(event.test.skipped, this.testSkipped.bind(this));
-    event.dispatcher.addListener(event.test.passed, this.testPassed.bind(this));
-    event.dispatcher.addListener(event.test.failed, this.testFailed.bind(this));
-    event.dispatcher.addListener(event.test.after, this.testAfter.bind(this));
-    // Step
-    event.dispatcher.addListener(event.step.started, this.stepStarted.bind(this));
-    event.dispatcher.addListener(event.step.passed, this.stepPassed.bind(this));
-    event.dispatcher.addListener(event.step.failed, this.stepFailed.bind(this));
-    event.dispatcher.addListener(event.step.finished, this.stepFinished.bind(this));
-    event.dispatcher.addListener(event.step.comment, this.stepComment.bind(this));
+  private closeCurrentAllureTest(test: CodeceptTest) {
+    if (!this.currentAllureResultUuid) {
+      return;
+    }
+
+    this.allureRuntime!.update(this.currentAllureResultUuid, (result) => {
+      result.stage = Stage.FINISHED;
+
+      // @ts-ignore
+      if (!test._retries) {
+        return;
+      }
+
+      // @ts-ignore
+      result.parameters!.push({ name: "Repetition", value: `${test.retryNum + 1}` });
+    });
+
+    this.allureRuntime!.stop(this.currentAllureResultUuid);
+    this.allureRuntime!.write(this.currentAllureResultUuid);
+    this.currentAllureResultUuid = undefined;
   }
 
-  hookStarted(hook: CodeceptHook) {
-    console.log("hook started", hook.ctx?.currentTest);
-    // this.currentTest = hook.ctx?.currentTest || null;
-  }
-
-  hookPassed(hook: CodeceptHook) {
-    // this.currentTest = null;
-  }
-
-  // TODO: probably we need to create tests here because we can't handle skipped ones in another way
-  suiteStarted(suite: CodeceptSuite) {
-    console.log("suite started", suite);
-    // suite.tests.forEach((test) => {
-    //   this.createTest(test);
-    // });
-  }
-
-  allureTestByCodeceptTest(test: CodeceptTest) {
-    // let allureTest = this.allureTestCache.get(test);
-    //
-    // if (!allureTest) {
-    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    //   allureTest = this.allureTestCache.get((test as any).ctx?.currentTest);
-    // }
-    //
-    // if (!allureTest) {
-    //   this.debug();
-    //
-    //   return;
-    // }
-    //
-    // return allureTest;
-  }
-
-  allureStepByCodeceptStep(step: CodeceptStep, allureTest: AllureTest) {
-    // const steps = this.allureStepCache.get(allureTest);
-    // const allureStep = steps?.get(step);
-    //
-    // if (!allureStep) {
-    //   this.debug();
-    //
-    //   return;
-    // }
-    // return allureStep;
-  }
-
-  allureSuiteByCodeceptSuite(suite: CodeceptSuite) {
-    // const group = this.allureGroupCache.get(suite);
-    // if (!group) {
-    //   this.debug();
-    //   return;
-    // }
-    //
-    // return group;
-  }
-
-  suiteFinished(suite: CodeceptSuite) {
-    // const group = this.allureSuiteByCodeceptSuite(suite);
-    // group?.endGroup();
-  }
-
-  testStarted(test: CodeceptTest & { uid: string; tags: string[] }) {
+  private startAllureTest(test: CodeceptTest) {
     const relativeFile = path.relative(codecept_dir, test.file!).split(path.sep).join("/");
     const fullName = `${relativeFile}#${test.title}`;
+    // @ts-ignore
     const { labels } = extractMeta(test);
-    const uuid = this.allureRuntime!.start({
+
+    this.currentAllureResultUuid = this.allureRuntime!.start({
       name: test.title,
       fullName,
       testCaseId: this.allureRuntime!.crypto.md5(fullName),
     });
 
-    this.allureRuntime!.update(uuid, (result) => {
+    this.allureRuntime!.update(this.currentAllureResultUuid, (result) => {
       result.labels.push(...labels);
       result.labels.push({ name: LabelName.LANGUAGE, value: "javascript" });
       result.labels.push({ name: LabelName.FRAMEWORK, value: "codeceptjs" });
@@ -168,35 +93,92 @@ class AllureCodeceptJSReporter {
         });
       }
     });
-
-    console.log("test started", test.title, this.currentAllureResultUuid, test);
-
-    this.allureTestsUuids.set(test.uid, uuid as string);
-    this.currentAllureResultUuid = uuid as string;
   }
 
-  testFailed(test: CodeceptTest & { uid: string }, err: CodeceptError) {
-    console.log("test failed", this.currentAllureResultUuid);
+  private closeCurrentAllureStep() {
+    if (!this.currentAllureResultUuid) {
+      return;
+    }
 
-    const testUuid = this.allureTestsUuids.get(test.uid);
-
-    this.allureRuntime!.update(testUuid!, (result) => {
-      result.status = Status.FAILED;
+    this.allureRuntime!.updateStep(this.currentAllureResultUuid, (result) => {
       result.stage = Stage.FINISHED;
-      // TODO: strip ansi here
-      result.statusDetails = { message: err.message };
+    });
+    this.allureRuntime!.stopStep(this.currentAllureResultUuid);
+  }
+
+  registerEvents() {
+    // Hooks
+    event.dispatcher.addListener(event.hook.started, this.hookStarted.bind(this));
+    event.dispatcher.addListener(event.hook.passed, this.hookPassed.bind(this));
+    // Test
+    event.dispatcher.addListener(event.test.started, this.testStarted.bind(this));
+    event.dispatcher.addListener(event.test.skipped, this.testSkipped.bind(this));
+    event.dispatcher.addListener(event.test.passed, this.testPassed.bind(this));
+    event.dispatcher.addListener(event.test.failed, this.testFailed.bind(this));
+    // Step
+    event.dispatcher.addListener(event.step.started, this.stepStarted.bind(this));
+    event.dispatcher.addListener(event.step.passed, this.stepPassed.bind(this));
+    event.dispatcher.addListener(event.step.failed, this.stepFailed.bind(this));
+    event.dispatcher.addListener(event.step.comment, this.stepComment.bind(this));
+  }
+
+  hookStarted(hook: CodeceptHook) {
+    const currentTest = hook?.ctx?.currentTest;
+
+    if (!currentTest) {
+      return;
+    }
+
+    // @ts-ignore
+    this.startAllureTest(currentTest);
+    // TODO: group before hooks into fixture
+    this.allureRuntime!.startStep(this.currentAllureResultUuid!, {
+      name: "before hook",
     });
   }
 
-  testPassed(test: CodeceptTest & { uid: string }) {
-    console.log("test passed", this.currentAllureResultUuid);
+  hookPassed() {
+    if (!this.currentAllureResultUuid) {
+      return;
+    }
 
-    // const testUuid = this.allureTestsUuids.get(test.uid);
-
-    this.allureRuntime!.update(this.currentAllureResultUuid!, (result) => {
+    this.allureRuntime!.updateStep(this.currentAllureResultUuid, (result) => {
       result.status = Status.PASSED;
       result.stage = Stage.FINISHED;
     });
+    this.allureRuntime!.stopStep(this.currentAllureResultUuid);
+  }
+
+  testStarted(test: CodeceptTest & { tags: string[] }) {
+    // test has been already started
+    if (this.currentAllureResultUuid) {
+      return;
+    }
+
+    this.startAllureTest(test);
+  }
+
+  testFailed(test: CodeceptTest, err: CodeceptError) {
+    if (!this.currentAllureResultUuid) {
+      return;
+    }
+
+    this.allureRuntime!.update(this.currentAllureResultUuid, (result) => {
+      result.status = Status.FAILED;
+      result.statusDetails = { message: stripAnsi(err.message) };
+    });
+    this.closeCurrentAllureTest(test);
+  }
+
+  testPassed(test: CodeceptTest) {
+    if (!this.currentAllureResultUuid) {
+      return;
+    }
+
+    this.allureRuntime!.update(this.currentAllureResultUuid, (result) => {
+      result.status = Status.PASSED;
+    });
+    this.closeCurrentAllureTest(test);
   }
 
   testSkipped(
@@ -209,158 +191,48 @@ class AllureCodeceptJSReporter {
       };
     },
   ) {
-    console.log("test skipped", this.currentAllureResultUuid);
-    // const allureTest = this.allureTestByCodeceptTest(test);
-    // if (allureTest) {
-    //   allureTest.stage = Stage.FINISHED;
-    //   allureTest.status = Status.SKIPPED;
-    //   if (test.opts.skipInfo) {
-    //     allureTest.statusDetails = { message: test.opts.skipInfo.message };
-    //   }
-    //   allureTest.endTest();
-    // }
-  }
+    if (!this.currentAllureResultUuid) {
+      return;
+    }
 
-  testAfter(test: CodeceptTest & { uid: string }) {
+    this.allureRuntime!.update(this.currentAllureResultUuid, (result) => {
+      result.status = Status.SKIPPED;
 
-    // // @ts-ignore
-    // const currentRetry = test._currentRetry;
-    // if (currentRetry !== 0) {
-    //   // @ts-ignore
-    //   test = test._retriedTest;
-    // }
-    // const allureTest = this.allureTestByCodeceptTest(test);
-    // allureTest?.endTest();
-    // this.currentTest = null;
-    // // @ts-ignore
-    // if (test.state === "failed" && test._retries !== 0 && currentRetry !== test._retries) {
-    //   this.createTest(test);
-    // }
-
-    this.allureRuntime!.stop(this.currentAllureResultUuid!);
-    this.allureRuntime!.write(this.currentAllureResultUuid!);
-    this.currentAllureResultUuid = undefined;
-  }
-
-  getStepParents(step: CodeceptStep) {
-    // const parents: CodeceptStep[] = [];
-    // let innerStep = step;
-    // while (innerStep.metaStep) {
-    //   parents.unshift(innerStep.metaStep);
-    //   innerStep = innerStep.metaStep;
-    // }
-    // return parents;
+      if (test.opts.skipInfo) {
+        result.statusDetails = { message: test.opts.skipInfo.message };
+      }
+    });
+    this.closeCurrentAllureTest(test);
   }
 
   stepStarted(step: CodeceptStep) {
-    // this.validateStep(step);
-    //
-    // const parents = [...this.getStepParents(step), step];
-    // const allureTest = this.currentAllureTest;
-    // if (!allureTest) {
-    //   return;
-    // }
-    //
-    // const steps = this.allureStepCache.get(allureTest);
-    //
-    // let lastParent = (parents.length > 0 && steps?.get(parents[0])) || undefined;
-    //
-    // parents.forEach((parentStep) => {
-    //   const allureStep = !lastParent
-    //     ? allureTest.startStep(parentStep.toString())
-    //     : steps?.get(parentStep) || lastParent.startStep(parentStep.toString());
-    //
-    //   steps?.set(parentStep, allureStep);
-    //   lastParent = allureStep;
-    // });
-  }
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  lastStepParent: CodeceptStep | undefined;
-
-  validateStep(step: CodeceptStep) {
-    // const lastParent = [...this.getStepParents(step), step][0];
-    //
-    // if (lastParent !== this.lastStepParent) {
-    //   this.allureStepCache.set(this.currentAllureTest!, new Map());
-    // }
-    //
-    // this.lastStepParent = lastParent;
+    this.allureRuntime!.startStep(this.currentAllureResultUuid!, {
+      name: `${step.actor} ${step.name}`,
+    });
   }
 
   stepFailed(step: CodeceptStep) {
-    // const allureStep = this.allureStepByCodeceptStep(step, this.currentAllureTest!);
-    // if (allureStep) {
-    //   allureStep.status = Status.FAILED;
-    //   allureStep.endStep();
-    // }
+    this.allureRuntime!.updateStep(this.currentAllureResultUuid!, (result) => {
+      result.status = Status.FAILED;
+    });
+    this.closeCurrentAllureStep();
   }
 
-  stepComment(step: CodeceptStep) {
-    // const allureStep = this.currentAllureTest?.startStep(step.toString());
-    // if (allureStep) {
-    //   allureStep.status = Status.PASSED;
-    //   allureStep.endStep();
-    // }
+  stepComment() {
+    this.allureRuntime!.updateStep(this.currentAllureResultUuid!, (result) => {
+      result.status = Status.PASSED;
+    });
+    this.closeCurrentAllureStep();
   }
 
-  stepPassed(step: CodeceptStep) {
-    // const allureStep = this.allureStepByCodeceptStep(step, this.currentAllureTest!);
-    //
-    // if (allureStep) {
-    //   allureStep.status = Status.PASSED;
-    //   allureStep.endStep();
-    // }
+  stepPassed() {
+    this.allureRuntime!.updateStep(this.currentAllureResultUuid!, (result) => {
+      result.status = Status.PASSED;
+    });
+    this.closeCurrentAllureStep();
   }
 
-  stepFinished(step: CodeceptStep) {
-    // const parentStep = this.getStepParents(step)[0] || step;
-    // const allureStep = this.allureStepByCodeceptStep(parentStep, this.currentAllureTest!);
-    //
-    // if (allureStep) {
-    //   allureStep.status = allureStep.isAnyStepFailed ? Status.FAILED : Status.PASSED;
-    //   allureStep.endStep();
-    // }
-  }
-
-  ensureAllureGroupCreated(suite: CodeceptSuite) {
-    // let group = this.allureGroupCache.get(suite);
-    // if (!group) {
-    //   const parent = suite.parent ? this.ensureAllureGroupCreated(suite.parent) : this.getAllureRuntime();
-    //
-    //   group = parent.startGroup(suite.fullTitle());
-    //   this.allureGroupCache.set(suite, group);
-    // }
-    // return group;
-  }
-
-  getAllureRuntime() {
-    // if (!this.allureRuntime) {
-    //   throw new Error("Unexpected state: `allureRuntime` is not initialized");
-    // }
-    // return this.allureRuntime;
-  }
-
-  debug(msg?: string) {
-    // const error = new Error(msg || "Something went wrong");
-    // codeceptjs.output.log(`${error.message} ${error.stack || ""}`);
-  }
-
-  // get currentAllureTest() {
-  //   // if (!this.currentTest) {
-  //   //   this.debug();
-  //   //   return;
-  //   // }
-  //   // return this.allureTestByCodeceptTest(this.currentTest);
-  // }
-
-  addAttachment(name: string, buffer: Buffer | string, type: string) {
-    // const runtime = this.getAllureRuntime();
-    // const fileName = runtime.writeAttachment(buffer, { contentType: type });
-    //
-    // this.currentAllureTest?.addAttachment(name, type, fileName);
-  }
-
+  // TODO:
   addScreenDiff(name: string, expectedImg: string, actualImg: string, diffImg: string) {
     // const screenDiff = {
     //   name,

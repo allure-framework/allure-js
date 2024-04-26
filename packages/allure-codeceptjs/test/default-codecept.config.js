@@ -13,4 +13,9 @@ module.exports.config = {
       enabled: true,
     },
   },
+  helpers: {
+    CustomHelper: {
+      require: "./helper.js",
+    },
+  },
 };

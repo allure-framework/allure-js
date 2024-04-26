@@ -2,9 +2,7 @@ import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { dirname, extname, resolve as resolvePath } from "node:path";
-// TODO:
-// import { parse } from "properties";
+import { dirname, resolve as resolvePath } from "node:path";
 import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/new/sdk/node";
 
 const parseJsonResult = <T>(data: string) => {
@@ -21,7 +19,31 @@ export const runCodeceptJSInlineTest = async (
     attachments: {},
   };
   const testFiles = {
-    "codecept.config.js": await readFile(resolvePath(__dirname, "./default-codecept.config.js"), "utf-8"),
+    // "codecept.config.js": await readFile(resolvePath(__dirname, "./default-codecept.config.js"), "utf-8"),
+    "codecept.conf.js": `
+      const path = require("node:path");
+      const { setCommonPlugins } = require("@codeceptjs/configure");
+
+      setCommonPlugins();
+
+      module.exports.config = {
+        tests: "./**/*.test.js",
+        output: path.resolve(__dirname, "./output"),
+        plugins: {
+          allure: {
+            require: require.resolve("allure-codeceptjs"),
+            testMode: true,
+            enabled: true,
+          },
+        },
+        helpers: {
+          CustomHelper: {
+            require: "./helper.js",
+          },
+        },
+      };
+    `,
+    "helper.js": await readFile(resolvePath(__dirname, "./helper.js"), "utf-8"),
     ...files,
   };
   const testDir = join(__dirname, "fixtures", randomUUID());
