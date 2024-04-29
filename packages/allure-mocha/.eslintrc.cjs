@@ -8,4 +8,7 @@ module.exports = {
     es6: true,
   },
   extends: ["../../.eslintrc.cjs"],
+  parserOptions: {
+    project: "./tsconfig.test.json",
+  },
 };

@@ -1,3 +1,3 @@
 import { MochaAllureReporter } from "./MochaAllureReporter";
 
-export = MochaAllureReporter;
+export default MochaAllureReporter;
