@@ -1,4 +1,5 @@
 export * from "../index.js";
+export * from "./utils.js";
 export { AllureNodeReporterRuntime } from "./ReporterRuntime.js";
 export { MessageAllureWriter, FileSystemAllureWriter, AllureInMemoryWriter } from "./writers/index.js";
 export { AllureNodeCrypto } from "./Crypto.js";
