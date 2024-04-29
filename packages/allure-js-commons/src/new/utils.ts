@@ -959,7 +959,7 @@ export const getStatusFromError = (error: Error): Status => {
   }
 };
 
-export const getSuitesLabels = (suites: string[]): Label[] => {
+export const getSuiteLabels = (suites: readonly string[]): Label[] => {
   if (suites.length === 0) {
     return [];
   }
@@ -989,6 +989,20 @@ export const getSuitesLabels = (suites: string[]): Label[] => {
   }
 
   return labels;
+};
+
+export const getSuitesLabels = getSuiteLabels;
+
+const suiteLabelNames: readonly string[] = [
+  LabelName.PARENT_SUITE,
+  LabelName.SUITE,
+  LabelName.SUB_SUITE,
+];
+
+export const ensureSuiteLabels = (test: Partial<TestResult>, defaultSuites: readonly string[]) => {
+  if (!test.labels?.find((l) => suiteLabelNames.includes(l.name))) {
+    test.labels = [...(test.labels ?? []), ...getSuiteLabels(defaultSuites)];
+  }
 };
 
 export const extractMetadataFromString = (
