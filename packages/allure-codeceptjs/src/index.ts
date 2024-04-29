@@ -17,6 +17,7 @@ import {
   Status,
   TestRuntime,
   setGlobalTestRuntime,
+  extractMetadataFromString,
 } from "allure-js-commons/new/sdk/node";
 import { extractMeta } from "./helpers";
 import { CodeceptError, CodeceptHook, CodeceptStep, CodeceptSuite, CodeceptTest } from "./model";
@@ -56,7 +57,7 @@ class AllureCodeceptJSReporter {
       result.stage = Stage.FINISHED;
 
       // @ts-ignore
-      if (!test._retries) {
+      if (test._retries <= 0) {
         return;
       }
 
@@ -72,17 +73,19 @@ class AllureCodeceptJSReporter {
   private startAllureTest(test: CodeceptTest) {
     const relativeFile = path.relative(codecept_dir, test.file!).split(path.sep).join("/");
     const fullName = `${relativeFile}#${test.title}`;
+    const titleMetadata = extractMetadataFromString(test.title);
     // @ts-ignore
     const { labels } = extractMeta(test);
 
     this.currentAllureResultUuid = this.allureRuntime!.start({
-      name: test.title,
+      name: titleMetadata.cleanTitle,
       fullName,
       testCaseId: this.allureRuntime!.crypto.md5(fullName),
     });
 
     this.allureRuntime!.update(this.currentAllureResultUuid, (result) => {
       result.labels.push(...labels);
+      result.labels.push(...titleMetadata.labels);
       result.labels.push({ name: LabelName.LANGUAGE, value: "javascript" });
       result.labels.push({ name: LabelName.FRAMEWORK, value: "codeceptjs" });
 

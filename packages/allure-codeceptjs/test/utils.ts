@@ -19,31 +19,8 @@ export const runCodeceptJSInlineTest = async (
     attachments: {},
   };
   const testFiles = {
-    // "codecept.config.js": await readFile(resolvePath(__dirname, "./default-codecept.config.js"), "utf-8"),
-    "codecept.conf.js": `
-      const path = require("node:path");
-      const { setCommonPlugins } = require("@codeceptjs/configure");
-
-      setCommonPlugins();
-
-      module.exports.config = {
-        tests: "./**/*.test.js",
-        output: path.resolve(__dirname, "./output"),
-        plugins: {
-          allure: {
-            require: require.resolve("allure-codeceptjs"),
-            testMode: true,
-            enabled: true,
-          },
-        },
-        helpers: {
-          CustomHelper: {
-            require: "./helper.js",
-          },
-        },
-      };
-    `,
-    "helper.js": await readFile(resolvePath(__dirname, "./helper.js"), "utf-8"),
+    "codecept.conf.js": await readFile(resolvePath(__dirname, "./assets/codecept.conf.js"), "utf-8"),
+    "helper.js": await readFile(resolvePath(__dirname, "./assets/helper.js"), "utf-8"),
     ...files,
   };
   const testDir = join(__dirname, "fixtures", randomUUID());

@@ -32,7 +32,7 @@
     "compile:types": "tsc --project ./tsconfig.json",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix",
-    "test": "vitest run"
+    "test": "vitest run test/spec"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*",
