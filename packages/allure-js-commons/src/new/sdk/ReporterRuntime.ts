@@ -19,7 +19,12 @@ import { Crypto } from "./Crypto.js";
 import { Notifier } from "./LifecycleListener.js";
 import { LifecycleState } from "./LifecycleState.js";
 import { Writer } from "./Writer.js";
-import { createStepResult, createTestResult, getTestResultHistoryId } from "./utils.js";
+import {
+  createStepResult,
+  createTestResult,
+  getTestResultHistoryId,
+  getTestResultTestCaseId,
+} from "./utils.js";
 
 export class ReporterRuntime {
   private notifier: Notifier;
@@ -86,8 +91,8 @@ export class ReporterRuntime {
     }
 
     this.notifier.beforeTestResultStop(targetResult);
-
-    targetResult.historyId = getTestResultHistoryId(this.crypto, targetResult);
+    targetResult.testCaseId ??= getTestResultTestCaseId(this.crypto, targetResult);
+    targetResult.historyId ??= getTestResultHistoryId(this.crypto, targetResult);
     targetResult.stop = stop || Date.now();
 
     this.notifier.afterTestResultStop(targetResult);

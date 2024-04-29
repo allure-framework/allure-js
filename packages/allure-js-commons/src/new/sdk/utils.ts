@@ -50,7 +50,7 @@ export const createTestResult = (uuid: string, historyUuid?: string): TestResult
   return {
     uuid,
     name: "",
-    historyId: historyUuid || "",
+    historyId: historyUuid,
     status: undefined,
     statusDetails: {},
     stage: Stage.PENDING,
@@ -77,7 +77,7 @@ export const getTestResultHistoryId = (crypto: Crypto, result: TestResult) => {
     return result.historyId;
   }
 
-  const tcId = result.testCaseId ? result.testCaseId : result.fullName ? crypto.md5(result.fullName) : null;
+  const tcId = result.testCaseId ?? (result.fullName ? crypto.md5(result.fullName) : null);
 
   if (!tcId) {
     return "";
@@ -91,6 +91,10 @@ export const getTestResultHistoryId = (crypto: Crypto, result: TestResult) => {
   const paramsHash = crypto.md5(paramsString);
 
   return `${tcId}:${paramsHash}`;
+};
+
+export const getTestResultTestCaseId = (crypto: Crypto, result: TestResult) => {
+  return result.fullName ? crypto.md5(result.fullName) : undefined;
 };
 
 export const hasStepMessage = (messages: RuntimeMessage[]) => {

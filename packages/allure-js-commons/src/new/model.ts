@@ -93,7 +93,7 @@ export type StepResult = Executable;
 
 export interface TestResult extends Executable {
   uuid: string;
-  historyId: string;
+  historyId?: string;
   fullName?: string;
   testCaseId?: string;
   labels: Label[];
