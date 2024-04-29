@@ -55,3 +55,15 @@ export const getPackageLabelFromPath = (filepath: string): Label => ({
     .join(".")
 });
 
+export const getGlobalLabels = () => {
+  const ENV_NAME_PREFIX = "ALLURE_LABEL_";
+  let globalLabels: Label[];
+  const initGlobalLabels: () => Label[] = () =>
+    Object.keys(env).filter(
+      (varname) => varname.startsWith(ENV_NAME_PREFIX)
+    ).map((varname) => ({
+      name: varname.substring(ENV_NAME_PREFIX.length),
+      value: env[varname] ?? "",
+    })).filter((l) => l.name && l.value);
+  return globalLabels ??= initGlobalLabels();
+};

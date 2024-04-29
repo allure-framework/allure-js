@@ -41,12 +41,8 @@ export class ReporterRuntime {
   }
 
   start = (result: Partial<TestResult>, start?: number) => {
-    const uuid = this.crypto.uuid();
-    const stateObject: TestResult = {
-      ...createTestResult(uuid),
-      ...deepClone(result),
-      start: start || Date.now(),
-    };
+    const stateObject = this.createTestResult(result, start);
+    const uuid = stateObject.uuid;
 
     this.notifier.beforeTestResultStart(stateObject);
     this.state.setTestResult(uuid, stateObject);
@@ -229,6 +225,15 @@ export class ReporterRuntime {
     });
 
     this.writer.writeCategoriesDefinitions(serializedCategories);
+  };
+
+  protected createTestResult(result: Partial<TestResult>, start?: number): TestResult {
+    const uuid = this.crypto.uuid();
+    return {
+      ...createTestResult(uuid),
+      ...deepClone(result),
+      start: start || Date.now(),
+    };
   };
 
   private formatLinks = (links: Link[]) => {

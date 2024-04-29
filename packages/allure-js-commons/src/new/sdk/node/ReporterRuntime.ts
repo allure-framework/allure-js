@@ -1,7 +1,8 @@
-import { AttachmentOptions } from "../../model.js";
+import { AttachmentOptions, TestResult } from "../../model.js";
 import { Config } from "../Config.js";
 import { ReporterRuntime } from "../ReporterRuntime.js";
 import { AllureNodeCrypto } from "./Crypto.js";
+import { getGlobalLabels } from "./utils.js";
 
 export class AllureNodeReporterRuntime extends ReporterRuntime {
   constructor({ writer, listeners, links }: Config) {
@@ -41,4 +42,14 @@ export class AllureNodeReporterRuntime extends ReporterRuntime {
 
     return attachmentFilename;
   };
+
+  protected override createTestResult(result: Partial<TestResult>, start?: number | undefined): TestResult {
+    return super.createTestResult(
+      {
+        ...result,
+        labels: (result.labels ?? []).concat(getGlobalLabels())
+      },
+      start
+    );
+  }
 }

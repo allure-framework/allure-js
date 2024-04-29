@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { AttachmentOptions, Executable, Label, LabelName, Status } from "./model.js";
+import { TestResult, AttachmentOptions, Executable, Label, LabelName, Status } from "./model.js";
 
 const EXTENSIONS_BY_TYPE: Record<string, string> = {
   "application/andrew-inset": ".ez",
