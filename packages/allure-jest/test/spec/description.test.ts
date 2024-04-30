@@ -1,26 +1,28 @@
 import { describe, expect, it } from "@jest/globals";
 import { runJestInlineTest } from "../utils";
 
-describe("description", () => {
-  it("description", async () => {
-    const { tests } = await runJestInlineTest(`
+it("sets description", async () => {
+  const { tests } = await runJestInlineTest(`
+      const { description } = require("allure-js-commons/new");
+
       it("description", async () => {
-        await allure.description("foo");
+        await description("foo");
       })
     `);
 
-    expect(tests).toHaveLength(1);
-    expect(tests[0].description).toBe("foo");
-  });
+  expect(tests).toHaveLength(1);
+  expect(tests[0].description).toBe("foo");
+});
 
-  it("descriptionHtml", async () => {
-    const { tests } = await runJestInlineTest(`
+it("sets html description", async () => {
+  const { tests } = await runJestInlineTest(`
+      const { descriptionHtml } = require("allure-js-commons/new");
+
       it("descriptionHtml", async () => {
-        await allure.descriptionHtml("foo");
+        await descriptionHtml("foo");
       })
     `);
 
-    expect(tests).toHaveLength(1);
-    expect(tests[0].descriptionHtml).toBe("foo");
-  });
+  expect(tests).toHaveLength(1);
+  expect(tests[0].descriptionHtml).toBe("foo");
 });

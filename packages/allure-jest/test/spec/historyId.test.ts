@@ -4,8 +4,10 @@ import { runJestInlineTest } from "../utils";
 describe("historyId", () => {
   it("historyId", async () => {
     const { tests } = await runJestInlineTest(`
+      const { historyId } = require("allure-js-commons/new");
+
       it("historyId", async () => {
-        await allure.historyId("foo");
+        await historyId("foo");
       })
     `);
 

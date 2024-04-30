@@ -22,6 +22,7 @@ import {
   Status,
   TestRuntime,
   getSuitesLabels,
+  getStatusFromError,
 } from "allure-js-commons/new/sdk/node";
 import { AllureJestConfig } from "./model.js";
 import { getTestId, getTestPath } from "./utils.js";
@@ -178,7 +179,7 @@ class AllureJestTestRuntime implements TestRuntime {
       await this.sendMessage({
         type: "step_stop",
         data: {
-          status: Status.FAILED,
+          status: getStatusFromError(err as Error),
           stage: Stage.FINISHED,
           stop: Date.now(),
           statusDetails: {
@@ -415,10 +416,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const hasMultipleErrors = Array.isArray(error);
       const errorMessage = (hasMultipleErrors ? error[0]?.message : error.message) as string;
       const errorTrace = (hasMultipleErrors ? error[0]?.stack : error.stack) as string;
+      const status = getStatusFromError(hasMultipleErrors ? error[0] : error);
 
       this.runtime.update(testUuid, (result) => {
         result.stage = Stage.FINISHED;
-        result.status = Status.FAILED;
+        result.status = status;
         result.statusDetails = {
           message: stripAnsi(errorMessage || ""),
           trace: stripAnsi(errorTrace || ""),
