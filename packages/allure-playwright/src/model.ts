@@ -1,4 +1,4 @@
-import { Config, Category } from "allure-js-commons/new/sdk/node";
+import { Category, Config } from "allure-js-commons/new/sdk/node";
 
 export interface AllurePlaywrightReporterConfig extends Omit<Config, "writer"> {
   detail?: boolean;

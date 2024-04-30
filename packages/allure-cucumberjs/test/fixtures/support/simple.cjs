@@ -1,5 +1,5 @@
 const { Given } = require("@cucumber/cucumber");
-const { equal } = require("node:assert")
+const { equal } = require("node:assert");
 
 Given("a passed step", async () => {
   equal(1, 1);

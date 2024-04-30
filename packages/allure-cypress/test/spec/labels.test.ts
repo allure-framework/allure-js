@@ -3,7 +3,8 @@ import { LabelName } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils";
 
 it("adds all the possible labels", async () => {
-  const { tests } = await runCypressInlineTest((allureCommonsModulePath) => `
+  const { tests } = await runCypressInlineTest(
+    (allureCommonsModulePath) => `
     import {
       label,
       allureId,
@@ -33,7 +34,8 @@ it("adds all the possible labels", async () => {
       story("foo");
       tag("foo");
     });
-  `);
+  `,
+  );
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));

@@ -37,7 +37,7 @@ it("sets runtime labels", async () => {
         await tag("foo");
         await labels({ name: "test", value: "testValue" }, { name: "test2", value: "testValue2" });
       });
-    `
+    `,
   });
 
   expect(tests).toHaveLength(1);
@@ -85,7 +85,7 @@ it("reports a single suite structure", async () => {
            },
          ],
        };
-    `
+    `,
   });
 
   expect(tests).toHaveLength(1);
@@ -147,7 +147,7 @@ it("reports a multiple nested suites structure", async () => {
            },
          ],
        };
-    `
+    `,
   });
 
   expect(tests).toHaveLength(1);

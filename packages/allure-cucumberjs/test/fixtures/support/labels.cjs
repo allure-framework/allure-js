@@ -14,8 +14,7 @@ const {
   tag,
 } = require("allure-js-commons/new");
 
-Given("a step", () => {
-});
+Given("a step", () => {});
 
 Given("a step with all the possible labels", async () => {
   await label("foo", "bar");

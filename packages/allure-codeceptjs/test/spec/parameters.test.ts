@@ -2,9 +2,8 @@ import { expect, it } from "vitest";
 import { runCodeceptJSInlineTest } from "../utils";
 
 it("sets parameters", async () => {
-  const { tests } = await runCodeceptJSInlineTest(
-    {
-      "sample.test.js": `
+  const { tests } = await runCodeceptJSInlineTest({
+    "sample.test.js": `
        const { parameter } = require("allure-js-commons/new");
 
       Feature("login-feature");
@@ -15,8 +14,7 @@ it("sets parameters", async () => {
         await parameter("param4", "paramValue4", {mode:"hidden"});
        });
      `,
-    },
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests).toEqual(

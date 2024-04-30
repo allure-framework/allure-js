@@ -5,177 +5,53 @@ import { runJestInlineTest } from "../utils";
 describe("labels", () => {
   it("label", async () => {
     const { tests } = await runJestInlineTest(`
+      const {
+        label,
+        labels,
+        feature,
+        allureId,
+        epic,
+        layer,
+        owner,
+        parentSuite,
+        suite,
+        subSuite,
+        severity,
+        story,
+        tag,
+      } = require("allure-js-commons/new");
+
       it("label", async () => {
-        await allure.label("foo", "bar");
+        await label("foo", "bar");
+        await allureId("foo");
+        await epic("foo");
+        await feature("foo");
+        await layer("foo");
+        await owner("foo");
+        await parentSuite("foo");
+        await subSuite("foo");
+        await suite("foo");
+        await severity("foo");
+        await story("foo");
+        await tag("foo");
+        await labels({ name: "test", value: "testValue" }, { name: "test2", value: "testValue2" });
       })
     `);
 
     expect(tests).toHaveLength(1);
-    expect(tests[0].labels).toContainEqual(
-      expect.objectContaining({
-        name: "foo",
-        value: "bar",
-      }),
-    );
-  });
-
-  it("allureId", async () => {
-    const { tests } = await runJestInlineTest(`
-      it("allureId", async () => {
-        await allure.id("foo");
-      })
-    `);
-
-    expect(tests).toHaveLength(1);
-    expect(tests[0].labels).toContainEqual(
-      expect.objectContaining({
-        name: LabelName.ALLURE_ID,
-        value: "foo",
-      }),
-    );
-  });
-
-  it("epic", async () => {
-    const { tests } = await runJestInlineTest(`
-      it("epic", async () => {
-        await allure.epic("foo");
-      })
-    `);
-
-    expect(tests).toHaveLength(1);
-    expect(tests[0].labels).toContainEqual(
-      expect.objectContaining({
-        name: LabelName.EPIC,
-        value: "foo",
-      }),
-    );
-  });
-
-  it("owner", async () => {
-    const { tests } = await runJestInlineTest(`
-      it("owner", async () => {
-        await allure.owner("foo");
-      })
-    `);
-
-    expect(tests).toHaveLength(1);
-    expect(tests[0].labels).toContainEqual(
-      expect.objectContaining({
-        name: LabelName.OWNER,
-        value: "foo",
-      }),
-    );
-  });
-
-  it("parentSuite", async () => {
-    const { tests } = await runJestInlineTest(`
-      it("parentSuite", async () => {
-        await allure.parentSuite("foo");
-      })
-    `);
-
-    expect(tests).toHaveLength(1);
-    expect(tests[0].labels).toContainEqual(
-      expect.objectContaining({
-        name: LabelName.PARENT_SUITE,
-        value: "foo",
-      }),
-    );
-  });
-
-  it("subSuite", async () => {
-    const { tests } = await runJestInlineTest(`
-      it("subSuite", async () => {
-        await allure.subSuite("foo");
-      })
-    `);
-
-    expect(tests).toHaveLength(1);
-    expect(tests[0].labels).toContainEqual(
-      expect.objectContaining({
-        name: LabelName.SUB_SUITE,
-        value: "foo",
-      }),
-    );
-  });
-
-  it("suite", async () => {
-    const { tests } = await runJestInlineTest(`
-      it("suite", async () => {
-        await allure.suite("foo");
-      })
-    `);
-
-    expect(tests).toHaveLength(1);
-    expect(tests[0].labels).toContainEqual(
-      expect.objectContaining({
-        name: LabelName.SUITE,
-        value: "foo",
-      }),
-    );
-  });
-
-  it("severity", async () => {
-    const { tests } = await runJestInlineTest(`
-      it("severity", async () => {
-        await allure.severity("foo");
-      })
-    `);
-
-    expect(tests).toHaveLength(1);
-    expect(tests[0].labels).toContainEqual(
-      expect.objectContaining({
-        name: LabelName.SEVERITY,
-        value: "foo",
-      }),
-    );
-  });
-
-  it("story", async () => {
-    const { tests } = await runJestInlineTest(`
-      it("story", async () => {
-        await allure.story("foo");
-      })
-    `);
-
-    expect(tests).toHaveLength(1);
-    expect(tests[0].labels).toContainEqual(
-      expect.objectContaining({
-        name: LabelName.STORY,
-        value: "foo",
-      }),
-    );
-  });
-
-  it("tag", async () => {
-    const { tests } = await runJestInlineTest(`
-      it("tag", async () => {
-        await allure.tag("foo");
-      })
-    `);
-
-    expect(tests).toHaveLength(1);
-    expect(tests[0].labels).toContainEqual(
-      expect.objectContaining({
-        name: LabelName.TAG,
-        value: "foo",
-      }),
-    );
-  });
-
-  it("feature", async () => {
-    const { tests } = await runJestInlineTest(`
-      it("feature", async () => {
-        await allure.feature("foo");
-      })
-    `);
-
-    expect(tests).toHaveLength(1);
-    expect(tests[0].labels).toContainEqual(
-      expect.objectContaining({
-        name: LabelName.FEATURE,
-        value: "foo",
-      }),
-    );
+    expect(tests[0].labels).toContainEqual({ name: "foo", value: "bar" });
+    expect(tests[0].labels).toContainEqual({ name: LabelName.ALLURE_ID, value: "foo" });
+    expect(tests[0].labels).toContainEqual({ name: LabelName.EPIC, value: "foo" });
+    expect(tests[0].labels).toContainEqual({ name: LabelName.FEATURE, value: "foo" });
+    expect(tests[0].labels).toContainEqual({ name: LabelName.LAYER, value: "foo" });
+    expect(tests[0].labels).toContainEqual({ name: LabelName.OWNER, value: "foo" });
+    expect(tests[0].labels).toContainEqual({ name: LabelName.PARENT_SUITE, value: "foo" });
+    expect(tests[0].labels).toContainEqual({ name: LabelName.SUB_SUITE, value: "foo" });
+    expect(tests[0].labels).toContainEqual({ name: LabelName.SUITE, value: "foo" });
+    expect(tests[0].labels).toContainEqual({ name: LabelName.SEVERITY, value: "foo" });
+    expect(tests[0].labels).toContainEqual({ name: LabelName.STORY, value: "foo" });
+    expect(tests[0].labels).toContainEqual({ name: LabelName.TAG, value: "foo" });
+    expect(tests[0].labels).toContainEqual({ name: "test", value: "testValue" });
+    expect(tests[0].labels).toContainEqual({ name: "test2", value: "testValue2" });
   });
 });

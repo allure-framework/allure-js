@@ -3,12 +3,12 @@ import { fork } from "child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve as resolvePath } from "node:path";
-import { parse } from "properties"
+import { parse } from "properties";
 import { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/new/sdk/node";
 
-const parseJsonResult = <T,>(data: string) => {
-  return JSON.parse(Buffer.from(data, "base64").toString("utf8"))
-}
+const parseJsonResult = <T>(data: string) => {
+  return JSON.parse(Buffer.from(data, "base64").toString("utf8"));
+};
 
 export const runPlaywrightInlineTest = async (
   files: Record<string, string | Buffer>,
@@ -84,7 +84,8 @@ export const runPlaywrightInlineTest = async (
         res.attachments[event.path] = event.data;
         break;
       case "misc":
-        res.envInfo = event.path === "environment.properties" ? parse(Buffer.from(event.data, "base64").toString()) : undefined;
+        res.envInfo =
+          event.path === "environment.properties" ? parse(Buffer.from(event.data, "base64").toString()) : undefined;
         res.categories = event.path === "categories.json" ? parseJsonResult(event.data) : undefined;
         break;
       default:

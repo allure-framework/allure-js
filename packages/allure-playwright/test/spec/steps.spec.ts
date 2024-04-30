@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { Status, Stage } from "allure-js-commons/new/sdk/node";
+import { Stage, Status } from "allure-js-commons/new/sdk/node";
 import { runPlaywrightInlineTest } from "../utils";
 
 it("reports test steps", async () => {

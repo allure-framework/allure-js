@@ -1,22 +1,20 @@
-import { it, expect } from "vitest";
-import { Status, Stage } from "allure-js-commons/new/sdk/node"
+import { expect, it } from "vitest";
+import { Stage, Status } from "allure-js-commons/new/sdk/node";
 import { runCodeceptJSInlineTest } from "../utils";
 
 it("simple scenarios", async () => {
-  const { tests } = await runCodeceptJSInlineTest(
-    {
-        "nested/login.test.js": `
+  const { tests } = await runCodeceptJSInlineTest({
+    "nested/login.test.js": `
         Feature("login-feature");
         Scenario("login-scenario1", async () => {});
         Scenario("login-scenario2", async () => {});
       `,
-        "logout.test.js": `
+    "logout.test.js": `
         Feature("logout-feature");
         Scenario("logout-scenario1", async () => {});
         Scenario("logout-scenario2", async () => {});
       `,
-    },
-  );
+  });
 
   expect(tests).toHaveLength(4);
   expect(tests).toEqual(

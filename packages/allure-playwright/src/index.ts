@@ -178,7 +178,7 @@ class AllurePlaywrightTestRuntime implements TestRuntime {
 
 test.beforeEach(() => {
   setGlobalTestRuntime(new AllurePlaywrightTestRuntime());
-})
+});
 
 export * from "@playwright/test";
 

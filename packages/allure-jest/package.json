@@ -21,24 +21,23 @@
     "url": "https://qameta.io/"
   },
   "exports": {
-    ".": {
-      "require": "./dist/index.js"
-    },
     "./node": {
-      "require": "./dist/node.js"
+      "import": "./dist/node.mjs",
+      "require": "./dist/node.cjs"
     },
     "./jsdom": {
-      "require": "./dist/jsdom.js"
+      "import": "./dist/jsdom.mjs",
+      "require": "./dist/jsdom.cjs"
     }
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
     "clean": "rimraf ./dist ./out",
-    "compile": "tsc",
+    "compile": "run-p 'compile:*'",
+    "compile:lib": "rollup -c",
+    "compile:types": "tsc --project ./tsconfig.json",
     "coverage": "codecov",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix",
@@ -57,6 +56,9 @@
     "@jest/environment": "^29.6.4",
     "@jest/globals": "^29.7.0",
     "@jest/types": "^29.6.1",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
     "@types/eslint": "^8",
     "@types/glob": "^8.1.0",
     "@types/jasmine": "^3.3.12",
@@ -76,16 +78,19 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "expect": "^29.7.0",
-    "glob": "^10.3.5",
+    "glob": "^10.3.12",
     "jest": "^29.7.0",
     "jest-cli": "^29.6.2",
     "mocha": "^10.2.0",
     "mocha-multi-reporters": "^1.5.1",
+    "npm-run-all2": "^6.1.2",
     "rimraf": "^5.0.1",
+    "rollup": "^4.17.1",
     "sinon": "^17.0.0",
     "source-map-support": "^0.5.21",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.1",
+    "tslib": "^2.6.2",
     "typescript": "^5.2.2"
   }
 }

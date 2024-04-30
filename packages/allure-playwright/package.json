@@ -18,12 +18,6 @@
     "email": "allure@qameta.io",
     "url": "https://qameta.io/"
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
@@ -38,6 +32,12 @@
       "require": "./dist/testplan.cjs"
     }
   },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "allure-report": "allure serve ./out/allure-results",
     "clean": "rimraf ./dist ./out",

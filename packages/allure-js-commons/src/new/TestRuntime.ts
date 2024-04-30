@@ -1,5 +1,7 @@
 import { ContentType, Label, LabelName, Link, LinkType, ParameterMode, ParameterOptions } from "./model.js";
 
+export const ALLURE_TEST_RUNTIME_KEY = "allureTestRuntime";
+
 export interface TestRuntime {
   label: (name: LabelName, value: string) => PromiseLike<void>;
 
@@ -31,9 +33,9 @@ export interface TestRuntime {
 }
 
 export const setGlobalTestRuntime = (runtime: TestRuntime) => {
-  (globalThis as any).allureTestRuntime = () => runtime;
+  (globalThis as any)[ALLURE_TEST_RUNTIME_KEY] = () => runtime;
 };
 
 export const getGlobalTestRuntime = () => {
-  return (globalThis as any).allureTestRuntime() as TestRuntime;
+  return (globalThis as any)[ALLURE_TEST_RUNTIME_KEY]() as TestRuntime;
 };

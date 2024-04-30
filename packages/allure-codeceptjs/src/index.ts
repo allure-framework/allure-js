@@ -16,8 +16,8 @@ import {
   Stage,
   Status,
   TestRuntime,
-  setGlobalTestRuntime,
   extractMetadataFromString,
+  setGlobalTestRuntime,
 } from "allure-js-commons/new/sdk/node";
 import { extractMeta } from "./helpers";
 import { CodeceptError, CodeceptHook, CodeceptStep, CodeceptSuite, CodeceptTest } from "./model";

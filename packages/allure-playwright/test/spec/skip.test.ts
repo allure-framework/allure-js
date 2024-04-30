@@ -23,6 +23,6 @@ it("reports programmatically skipped results", async () => {
         fullName: "sample.test.js#should not be skipped",
         status: Status.PASSED,
       }),
-    ])
+    ]),
   );
 });

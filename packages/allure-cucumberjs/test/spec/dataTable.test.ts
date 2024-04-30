@@ -22,5 +22,7 @@ it("handles data tables", async () => {
   const [attachment] = tests[0].steps[0].attachments;
 
   expect(attachments).toHaveProperty(attachment.source);
-  expect(Buffer.from(attachments[attachment.source] as string, "base64").toString("utf8")).toEqual("a,b,result\n1,3,4\n2,4,6\n");
+  expect(Buffer.from(attachments[attachment.source] as string, "base64").toString("utf8")).toEqual(
+    "a,b,result\n1,3,4\n2,4,6\n",
+  );
 });

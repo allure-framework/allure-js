@@ -1,4 +1,4 @@
-import NodeEnvironment from "jest-environment-node";
-import createJestEnvironment from "./AllureJest";
+import { TestEnvironment } from "jest-environment-node";
+import createJestEnvironment from "./index.js";
 
-export default createJestEnvironment(NodeEnvironment);
+export default createJestEnvironment(TestEnvironment);
