@@ -250,7 +250,6 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
 
       // @ts-ignore
       new AllureJestTestRuntime(this as AllureJestEnvironment, this.global);
-      // setGlobalTestRuntime(new AllureJestTestRuntime(this as AllureJestEnvironment, this.global));
     }
 
     setup() {

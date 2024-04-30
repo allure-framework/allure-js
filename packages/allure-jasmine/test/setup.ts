@@ -1,7 +1,7 @@
 import { Status, TestResult } from "allure-js-commons";
-import { JasmineAllureReporter } from "../src/JasmineAllureReporter";
+import { Index } from "../src";
 
-const reporter = new JasmineAllureReporter({
+const reporter = new Index({
   resultsDir: "./out/allure-results",
   testMapper: (result: TestResult) => {
     if (result.status == Status.SKIPPED) {
