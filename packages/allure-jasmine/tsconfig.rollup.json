@@ -11,7 +11,8 @@
     "lib": ["dom", "esnext"],
     "moduleResolution": "bundler",
     "types": [
-      "node"
+      "node",
+      "jasmine"
     ],
   }
 }

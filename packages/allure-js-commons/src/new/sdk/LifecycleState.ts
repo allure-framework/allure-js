@@ -1,4 +1,4 @@
-import { FixtureResult, StepResult, TestResult, TestResultContainer } from "../model.js";
+import { FixtureResult, Stage, StepResult, TestResult, TestResultContainer } from "../model.js";
 import { Stack } from "../utils.js";
 import { createFixtureResult, createStepResult, createTestResult, createTestResultContainer } from "./utils.js";
 
@@ -68,7 +68,22 @@ export class LifecycleState {
       return;
     }
 
-    const { attachments = [], steps = [], parameters = [], ...rest } = result;
+    const { status, stage, statusDetails, attachments = [], steps = [], parameters = [], ...rest } = result;
+
+    // don't override status if it's already set
+    if (!currentStep.status) {
+      currentStep.status = status;
+    }
+
+    // don't override stage if it's already set
+    if (currentStep.stage !== Stage.PENDING && stage) {
+      currentStep.stage = stage;
+    }
+
+    // don't override status details if it's already set
+    if (!currentStep.statusDetails && statusDetails) {
+      currentStep.statusDetails = statusDetails;
+    }
 
     currentStep.attachments.push(...attachments);
     currentStep.steps.push(...steps);

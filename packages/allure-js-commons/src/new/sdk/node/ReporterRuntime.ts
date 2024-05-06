@@ -5,12 +5,14 @@ import { AllureNodeCrypto } from "./Crypto.js";
 import { getGlobalLabels } from "./utils.js";
 
 export class AllureNodeReporterRuntime extends ReporterRuntime {
-  constructor({ writer, listeners, links }: Config) {
+  constructor({ writer, listeners, links, environmentInfo, categories }: Config) {
     super({
       writer,
       listeners,
       crypto: new AllureNodeCrypto(),
       links,
+      environmentInfo,
+      categories,
     });
   }
 

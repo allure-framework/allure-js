@@ -3,6 +3,8 @@ export const ALLURE_IMAGEDIFF_CONTENT_TYPE = "application/vnd.allure.image.diff"
 export const ALLURE_SKIPPED_BY_TEST_PLAN_LABEL = "allure-skipped-by-test-plan";
 export const ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE = "application/vnd.allure.message+json";
 
+export type EnvironmentInfo = Record<string, string | undefined>;
+
 export interface AttachmentMetadata {
   name: string;
   type: string;
@@ -221,7 +223,7 @@ export interface AllureResults {
   tests: TestResult[];
   groups: TestResultContainer[];
   attachments: Record<string, Buffer | string>;
-  envInfo?: Record<string, string | undefined>;
+  envInfo?: EnvironmentInfo;
   categories?: Category[];
 }
 

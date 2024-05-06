@@ -1,4 +1,4 @@
-import { TestResult } from "../model.js";
+import { Category, EnvironmentInfo, TestResult } from "../model.js";
 import { LifecycleListener } from "./LifecycleListener.js";
 import { Writer } from "./Writer.js";
 
@@ -14,4 +14,6 @@ export interface Config {
   readonly testMapper?: (test: TestResult) => TestResult | null;
   readonly links?: LinkConfig[];
   readonly listeners?: LifecycleListener[];
+  readonly environmentInfo?: EnvironmentInfo;
+  readonly categories?: Category[];
 }

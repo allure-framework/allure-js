@@ -1,6 +1,7 @@
 import {
   AttachmentOptions,
   Category,
+  EnvironmentInfo,
   Link,
   Messages,
   RawAttachment,
@@ -19,12 +20,7 @@ import { Crypto } from "./Crypto.js";
 import { Notifier } from "./LifecycleListener.js";
 import { LifecycleState } from "./LifecycleState.js";
 import { Writer } from "./Writer.js";
-import {
-  createStepResult,
-  createTestResult,
-  getTestResultHistoryId,
-  getTestResultTestCaseId,
-} from "./utils.js";
+import { createStepResult, createTestResult, getTestResultHistoryId, getTestResultTestCaseId } from "./utils.js";
 
 export class ReporterRuntime {
   private notifier: Notifier;
@@ -32,12 +28,25 @@ export class ReporterRuntime {
   state = new LifecycleState();
   writer: Writer;
   crypto: Crypto;
+  categories?: Category[];
+  environmentInfo?: EnvironmentInfo;
 
-  constructor({ writer, listeners = [], crypto, links = [] }: Config & { crypto: Crypto }) {
+  constructor({
+    writer,
+    listeners = [],
+    crypto,
+    links = [],
+    environmentInfo,
+    categories,
+  }: Config & {
+    crypto: Crypto;
+  }) {
     this.writer = writer;
     this.notifier = new Notifier({ listeners });
     this.crypto = crypto;
     this.links = links;
+    this.categories = categories;
+    this.environmentInfo = environmentInfo;
   }
 
   start = (result: Partial<TestResult>, start?: number) => {
@@ -207,12 +216,20 @@ export class ReporterRuntime {
     });
   };
 
-  writeEnvironmentInfo = (environmentInfo: Record<string, string>) => {
-    this.writer.writeEnvironmentInfo(environmentInfo);
+  writeEnvironmentInfo = () => {
+    if (!this.environmentInfo) {
+      return;
+    }
+
+    this.writer.writeEnvironmentInfo(this.environmentInfo);
   };
 
-  writeCategoriesDefinitions = (categories: Category[]) => {
-    const serializedCategories = categories.map((c) => {
+  writeCategoriesDefinitions = () => {
+    if (!this.categories) {
+      return;
+    }
+
+    const serializedCategories = this.categories.map((c) => {
       if (c.messageRegex instanceof RegExp) {
         c.messageRegex = c.messageRegex.source;
       }
@@ -234,7 +251,7 @@ export class ReporterRuntime {
       ...deepClone(result),
       start: start || Date.now(),
     };
-  };
+  }
 
   private formatLinks = (links: Link[]) => {
     if (!this.links.length) {

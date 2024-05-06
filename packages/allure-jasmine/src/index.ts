@@ -1,7 +1,6 @@
 import { cwd } from "node:process";
 import {
   AllureNodeReporterRuntime,
-  Attachment,
   ContentType,
   FileSystemAllureWriter,
   Label,
@@ -9,7 +8,6 @@ import {
   Link,
   LinkType,
   MessageAllureWriter,
-  Parameter,
   ParameterMode,
   ParameterOptions,
   RuntimeMessage,
@@ -25,15 +23,6 @@ import { AllureJasmineConfig } from "./model.js";
 // eslint-disable-next-line no-undef
 import FailedExpectation = jasmine.FailedExpectation;
 
-interface JasmineSpecResult extends jasmine.SpecResult {
-  parentSuiteId?: string;
-  filename: string;
-}
-
-interface JasmineSuiteResult extends jasmine.SuiteResult {
-  filename: string;
-}
-
 const findAnyError = (expectations?: FailedExpectation[]): FailedExpectation | null => {
   expectations = expectations || [];
   if (expectations.length > 0) {
@@ -42,24 +31,9 @@ const findAnyError = (expectations?: FailedExpectation[]): FailedExpectation | n
   return null;
 };
 
-const findMessageAboutThrow = (expectations?: FailedExpectation[]): FailedExpectation | null => {
-  for (const e of expectations || []) {
-    if (e.matcherName === "") {
-      return e;
-    }
-  }
-  return null;
+const findMessageAboutThrow = (expectations?: FailedExpectation[]) => {
+  return expectations?.find((e) => e.matcherName === "");
 };
-
-/* eslint-disable no-shadow */
-enum SpecStatus {
-  PASSED = "passed",
-  FAILED = "failed",
-  BROKEN = "broken",
-  PENDING = "pending",
-  DISABLED = "disabled",
-  EXCLUDED = "excluded",
-}
 
 type JasmineBeforeAfterFn = (action: (done: DoneFn) => void, timeout?: number) => void;
 
@@ -198,12 +172,15 @@ class AllureJasmineTestRuntime implements TestRuntime {
       await this.sendMessage({
         type: "step_stop",
         data: {
-          status: getStatusFromError(err as Error),
+          // @ts-ignore
+          status: getStatusFromError(err),
           stage: Stage.FINISHED,
           stop: Date.now(),
           statusDetails: {
-            message: (err as Error).message,
-            trace: (err as Error).stack,
+            // @ts-ignore
+            message: err.message,
+            // @ts-ignore
+            trace: err.stack,
           },
         },
       });
@@ -229,28 +206,22 @@ class AllureJasmineTestRuntime implements TestRuntime {
   }
 
   async sendMessage(message: RuntimeMessage) {
-    this.allureJasmineReporter.handleAllureRuntimeMessages([message]);
+    this.allureJasmineReporter.handleAllureRuntimeMessages(message);
 
     await Promise.resolve();
   }
 }
 
 export default class AllureJasmineReporter implements jasmine.CustomReporter {
-  // private groupStack: AllureGroup[] = [];
-  // private labelStack: Label[][] = [[]];
-  // private runningTest: AllureTest | null = null;
-  // private stepStack: AllureStep[] = [];
-  // private runningExecutable: ExecutableItemWrapper | null = null;
-  private jasmineSuites: Map<string, jasmine.SuiteResult> = new Map();
   private readonly allureRuntime: AllureNodeReporterRuntime;
   private currentAllureTestUuid?: string;
+  private jasmineSuitesStack: jasmine.SuiteResult[] = [];
 
   constructor(config: AllureJasmineConfig) {
     const { testMode, resultsDir = "./allure-results", ...restConfig } = config || {};
 
-    // console.log("cwd", cwd());
-
     this.allureRuntime = new AllureNodeReporterRuntime({
+      ...restConfig,
       writer: testMode
         ? new MessageAllureWriter()
         : new FileSystemAllureWriter({
@@ -262,22 +233,11 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
     setGlobalTestRuntime(testRuntime);
 
-    // TODO:
-    // this.installHooks();
+    this.installHooks();
   }
 
-  private getSpecPath(spec: JasmineSpecResult) {
-    const path: string[] = [];
-    let currentSuiteId = spec.parentSuiteId;
-
-    while (currentSuiteId) {
-      const currentSuite = this.jasmineSuites.get(currentSuiteId);
-
-      // @ts-ignore
-      currentSuiteId = currentSuite?.parentSuiteId;
-
-      path.unshift(currentSuite?.fullName || "");
-    }
+  private getCurrentSpecPath() {
+    const path = this.jasmineSuitesStack.map((suite) => suite?.fullName).filter(Boolean);
 
     return path.filter(Boolean).reduce(
       ([acc, lastPath], currentPath) => {
@@ -289,69 +249,63 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     )[0] as string[];
   }
 
-  private getSpecFullName(spec: JasmineSpecResult) {
-    const specFilename = spec.filename.replace(cwd(), "").replace(/^[/\\]/, "");
-    const specPath = this.getSpecPath(spec).concat(spec.description).join(" > ");
+  private getSpecFullName(spec: jasmine.SpecResult & { filename?: string }) {
+    const specFilename = (spec.filename || "").replace(cwd(), "").replace(/^[/\\]/, "");
+    const specPath = this.getCurrentSpecPath().concat(spec.description).join(" > ");
 
     return `${specFilename}#${specPath}`;
   }
 
-  handleAllureRuntimeMessages(messages: RuntimeMessage[]) {
-    this.allureRuntime.applyRuntimeMessages(this.currentAllureTestUuid!, messages);
+  handleAllureRuntimeMessages(message: RuntimeMessage) {
+    this.allureRuntime.applyRuntimeMessages(this.currentAllureTestUuid!, [message]);
   }
 
-  // get currentGroup(): AllureGroup {
-  //   const currentGroup = this.getCurrentGroup();
-  //   if (currentGroup === null) {
-  //     throw new Error("No active group");
-  //   }
-  //   return currentGroup;
-  // }
+  jasmineStarted(): void {
+    const allureRuntime = this.allureRuntime;
+    const globalJasmine = globalThis.jasmine;
+    const currentAllureResultUuidGetter = () => this.currentAllureTestUuid;
+    // @ts-ignore
+    const originalExpectationHandler = globalJasmine.Spec.prototype.addExpectationResult;
 
-  // getInterface(): Allure {
-  //   return new JasmineAllureInterface(this, this.runtime);
-  // }
+    // @ts-ignore
+    globalJasmine.Spec.prototype.addExpectationResult = function (passed, data, isError) {
+      allureRuntime.updateStep(currentAllureResultUuidGetter()!, (result) => {
+        if (!passed && !isError) {
+          result.status = Status.FAILED;
+          result.stage = Stage.FINISHED;
+        }
+      });
 
-  // get currentTest(): AllureTest {
-  //   if (this.runningTest === null) {
-  //     throw new Error("No active test");
-  //   }
-  //   return this.runningTest;
-  // }
-
-  // get currentExecutable(): ExecutableItemWrapper | null {
-  //   return this.runningExecutable;
-  // }
-
-  // writeAttachment(content: Buffer | string, options: ContentType | string | AttachmentOptions): string {
-  //   return this.runtime.writeAttachment(content, options);
-  // }
-
-  jasmineStarted(): void {}
-
-  suiteStarted(suite: jasmine.CustomReporterResult): void {
-    this.jasmineSuites.set(suite.id, suite);
+      originalExpectationHandler.call(this, passed, data, isError);
+    };
   }
 
-  specStarted(result: JasmineSpecResult): void {
+  suiteStarted(suite: jasmine.SuiteResult): void {
+    this.jasmineSuitesStack.push(suite);
+  }
+
+  suiteDone(): void {
+    this.jasmineSuitesStack.pop();
+  }
+
+  specStarted(spec: jasmine.SpecResult): void {
     this.currentAllureTestUuid = this.allureRuntime.start({
-      name: result.description,
-      fullName: this.getSpecFullName(result),
+      name: spec.description,
+      fullName: this.getSpecFullName(spec),
       stage: Stage.RUNNING,
     });
   }
 
-  specDone(spec: JasmineSpecResult): void {
+  specDone(spec: jasmine.SpecResult): void {
+    const specPath = this.getCurrentSpecPath();
+    const exceptionInfo = findMessageAboutThrow(spec.failedExpectations) || findAnyError(spec.failedExpectations);
+
     this.allureRuntime.update(this.currentAllureTestUuid!, (result) => {
-      const suitesLabels = getSuiteLabels(this.getSpecPath(spec));
+      const suitesLabels = getSuiteLabels(specPath);
 
       result.labels.push(...suitesLabels);
 
-      if (
-        spec.status === SpecStatus.PENDING ||
-        spec.status === SpecStatus.DISABLED ||
-        spec.status === SpecStatus.EXCLUDED
-      ) {
+      if (spec.status === "pending" || spec.status === "disabled" || spec.status === "excluded") {
         result.status = Status.SKIPPED;
         result.stage = Stage.PENDING;
         result.statusDetails = {
@@ -362,86 +316,46 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
       result.stage = Stage.FINISHED;
 
-      if (spec.status === Status.PASSED) {
+      if (spec.status === "passed") {
         result.status = Status.PASSED;
         return;
       }
 
-      const exceptionInfo = findMessageAboutThrow(spec.failedExpectations) || findAnyError(spec.failedExpectations);
-
-      if (exceptionInfo !== null) {
+      if (exceptionInfo) {
         result.statusDetails = {
           message: exceptionInfo.message,
           trace: exceptionInfo.stack,
         };
       }
 
-      if (spec.status === SpecStatus.FAILED) {
+      if (spec.status === "failed" && exceptionInfo?.matcherName) {
         result.status = Status.FAILED;
         return;
-      }
-
-      if (spec.status === SpecStatus.BROKEN) {
+      } else {
         result.status = Status.BROKEN;
         return;
       }
     });
+
     this.allureRuntime.stop(this.currentAllureTestUuid!);
     this.allureRuntime.write(this.currentAllureTestUuid!);
+    this.currentAllureTestUuid = undefined;
   }
 
-  suiteDone(): void {
-    // console.log("suite done", this.currentAllureTestUuid);
-    // if (this.runningTest !== null) {
-    //   // eslint-disable-next-line no-console
-    //   console.error("Allure reporter issue: running test on suiteDone");
-    // }
-    //
-    // const currentGroup = this.getCurrentGroup();
-    // if (currentGroup === null) {
-    //   throw new Error("No active suite");
-    // }
-    //
-    // currentGroup.endGroup();
-    // this.groupStack.pop();
-    // this.labelStack.pop();
+  jasmineDone(): void {
+    this.allureRuntime.writeEnvironmentInfo();
+    this.allureRuntime.writeCategoriesDefinitions();
   }
-
-  jasmineDone(): void {}
-
-  // addLabel(name: string, value: string): void {
-  //   if (this.labelStack.length) {
-  //     this.labelStack[this.labelStack.length - 1].push({ name, value });
-  //   }
-  // }
-  //
-  // pushStep(step: AllureStep): void {
-  //   this.stepStack.push(step);
-  // }
-  //
-  // popStep(): void {
-  //   this.stepStack.pop();
-  // }
-  //
-  // get currentStep(): AllureStep | null {
-  //   if (this.stepStack.length > 0) {
-  //     return this.stepStack[this.stepStack.length - 1];
-  //   }
-  //   return null;
-  // }
-  //
-  // private getCurrentGroup(): AllureGroup | null {
-  //   if (this.groupStack.length === 0) {
-  //     return null;
-  //   }
-  //   return this.groupStack[this.groupStack.length - 1];
-  // }
 
   private installHooks(): void {
-    // const jasmineBeforeAll: JasmineBeforeAfterFn = global.beforeAll;
-    // const jasmineAfterAll: JasmineBeforeAfterFn = global.afterAll;
-    // const jasmineBeforeEach: JasmineBeforeAfterFn = global.beforeEach;
-    // const jasmineAfterEach: JasmineBeforeAfterFn = global.afterEach;
+    const jasmineBeforeAll: JasmineBeforeAfterFn = global.beforeAll;
+    // @ts-ignore
+    const jasmineAfterAll: JasmineBeforeAfterFn = global.afterAll;
+    // @ts-ignore
+    const jasmineBeforeEach: JasmineBeforeAfterFn = global.beforeEach;
+    // @ts-ignore
+    const jasmineAfterEach: JasmineBeforeAfterFn = global.afterEach;
+
     // const makeWrapperAll = (wrapped: JasmineBeforeAfterFn, fun: () => ExecutableItemWrapper) => {
     //   return (action: (done: DoneFn) => void, timeout?: number): void => {
     //     try {

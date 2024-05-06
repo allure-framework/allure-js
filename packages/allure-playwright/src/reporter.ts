@@ -258,13 +258,8 @@ class AllureReporter implements Reporter {
   async onEnd() {
     await this.addSkippedResults();
 
-    if (this.options.environmentInfo) {
-      this.allureRuntime?.writeEnvironmentInfo(this.options?.environmentInfo);
-    }
-
-    if (this.options.categories) {
-      this.allureRuntime?.writeCategoriesDefinitions(this.options.categories);
-    }
+    this.allureRuntime!.writeEnvironmentInfo();
+    this.allureRuntime!.writeCategoriesDefinitions();
   }
 
   printsToStdio(): boolean {
