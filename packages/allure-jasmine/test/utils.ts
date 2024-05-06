@@ -4,8 +4,13 @@ import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
 import { LinkType, Status } from "allure-js-commons/new/sdk/node";
+import { parse } from "properties";
 
 export type TestResultsByFullName = Record<string, TestResult>;
+
+const parseJsonResult = <T>(data: string) => {
+  return JSON.parse(Buffer.from(data, "base64").toString("utf8"));
+};
 
 export const runJasmineInlineTest = async (test: string): Promise<AllureResults> => {
   const res: AllureResults = {
@@ -69,11 +74,10 @@ export const runJasmineInlineTest = async (test: string): Promise<AllureResults>
           matchedStatuses: ["${Status.BROKEN}"],
         },
       ],
-      // environmentInfo: {
-      //   a: "b",
-      //   PATH: "c",
-      //   APPDATA: "C:\\USERS\\test (x86)\\AppData",
-      // }
+      environmentInfo: {
+        envVar1: "envVar1Value",
+        envVar2: "envVar2Value",
+      },
     });
 
     jasmine.getEnv().addReporter(reporter);
@@ -101,17 +105,21 @@ export const runJasmineInlineTest = async (test: string): Promise<AllureResults>
 
   testProcess.on("message", (message: string) => {
     const event: { path: string; type: string; data: string } = JSON.parse(message);
-    const data = event.type !== "attachment" ? JSON.parse(Buffer.from(event.data, "base64").toString()) : event.data;
 
     switch (event.type) {
       case "container":
-        res.groups.push(data as TestResultContainer);
+        res.groups.push(parseJsonResult<TestResultContainer>(event.data));
         break;
       case "result":
-        res.tests.push(data as TestResult);
+        res.tests.push(parseJsonResult<TestResult>(event.data));
         break;
       case "attachment":
         res.attachments[event.path] = event.data;
+        break;
+      case "misc":
+        res.envInfo =
+          event.path === "environment.properties" ? parse(Buffer.from(event.data, "base64").toString()) : undefined;
+        res.categories = event.path === "categories.json" ? parseJsonResult(event.data) : undefined;
         break;
       default:
         break;

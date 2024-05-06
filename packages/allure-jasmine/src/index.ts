@@ -264,17 +264,20 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     const allureRuntime = this.allureRuntime;
     const globalJasmine = globalThis.jasmine;
     const currentAllureResultUuidGetter = () => this.currentAllureTestUuid;
+    const currentAllureStepResultGetter = () => this.allureRuntime.state.getCurrentStep(currentAllureResultUuidGetter()!);
     // @ts-ignore
     const originalExpectationHandler = globalJasmine.Spec.prototype.addExpectationResult;
 
     // @ts-ignore
     globalJasmine.Spec.prototype.addExpectationResult = function (passed, data, isError) {
-      allureRuntime.updateStep(currentAllureResultUuidGetter()!, (result) => {
-        if (!passed && !isError) {
-          result.status = Status.FAILED;
-          result.stage = Stage.FINISHED;
-        }
-      });
+      if (currentAllureStepResultGetter()) {
+        allureRuntime.updateStep(currentAllureResultUuidGetter()!, (result) => {
+          if (!passed && !isError) {
+            result.status = Status.FAILED;
+            result.stage = Stage.FINISHED;
+          }
+        });
+      }
 
       originalExpectationHandler.call(this, passed, data, isError);
     };

@@ -5455,6 +5455,7 @@ const RAW_RUNTIME_STATE =
           ["glob", "npm:10.3.12"],\
           ["jasmine", "npm:3.99.0"],\
           ["npm-run-all2", "npm:6.1.2"],\
+          ["properties", "npm:1.2.1"],\
           ["rimraf", "npm:5.0.5"],\
           ["rollup", "npm:4.17.2"],\
           ["tslib", "npm:2.6.2"],\
