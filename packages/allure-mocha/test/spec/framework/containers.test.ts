@@ -8,7 +8,7 @@ describe("containers", async () => {
     const { tests, groups } = await runMochaInlineTest(
       "plain-mocha/testInFileScope",
       "plain-mocha/testInSuite",
-      "plain-mocha/testInNestedSuites",
+      "plain-mocha/testInTwoSuites",
     );
     const testMap = new Map(
       tests.map((t) => [t.uuid, t.name!])
@@ -28,9 +28,9 @@ describe("containers", async () => {
 
   describe("global", async () => {
     it.each([
-      "test in file",
-      "test in suite",
-      "test in suite 1.1",
+      "a test in a file scope",
+      "a test in a suite",
+      "a test in two suites",
     ])("contains %s", async (testName) => {
       expect(testContainers.get(testName)).toContainEqual(
         expect.objectContaining({ name: "Global" })
@@ -52,19 +52,19 @@ describe("containers", async () => {
 
   describe("suite", async () => {
     it("creates a suite container", async () => {
-      expect(testContainers.get("test in suite")).toEqual([
+      expect(testContainers.get("a test in a suite")).toEqual([
         expect.objectContaining({name: "Global"}),
-        expect.objectContaining({name: "suite"}),
+        expect.objectContaining({name: "foo"}),
       ]);
     });
   });
 
   describe("nested suites", async () => {
     it("create nested suite containers", async () => {
-      expect(testContainers.get("test in suite 1.1")).toEqual([
+      expect(testContainers.get("a test in two suites")).toEqual([
         expect.objectContaining({name: "Global"}),
-        expect.objectContaining({name: "suite 1"}),
-        expect.objectContaining({name: "suite 1 suite 1.1"}),
+        expect.objectContaining({name: "foo"}),
+        expect.objectContaining({name: "foo bar"}),
       ]);
     });
   });

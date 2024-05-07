@@ -27,27 +27,27 @@ describe("fixtures", async () => {
 
   describe("global", async () => {
     it("affect tests without suites", async () => {
-      expect(testFixtures.get("affected by four fixtures")).toEqual([
+      expect(testFixtures.get("a test affected by four fixtures")).toEqual([
         [
           expect.objectContaining({
-            name: '"before all" hook for "affected by four fixtures"',
+            name: '"before all" hook for "a test affected by four fixtures"',
             status: Status.PASSED,
             stage: Stage.FINISHED,
           }),
           expect.objectContaining({
-            name: '"before each" hook for "affected by four fixtures"',
+            name: '"before each" hook for "a test affected by four fixtures"',
             status: Status.PASSED,
             stage: Stage.FINISHED,
           }),
         ],
         [
           expect.objectContaining({
-            name: '"after each" hook for "affected by four fixtures"',
+            name: '"after each" hook for "a test affected by four fixtures"',
             status: Status.PASSED,
             stage: Stage.FINISHED,
           }),
           expect.objectContaining({
-            name: '"after all" hook for "affected by four fixtures"',
+            name: '"after all" hook for "a test affected by four fixtures"',
             status: Status.PASSED,
             stage: Stage.FINISHED,
           }),

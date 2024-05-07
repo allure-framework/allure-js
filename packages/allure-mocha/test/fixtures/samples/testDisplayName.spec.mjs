@@ -1,6 +1,6 @@
 import { displayName } from "allure-js-commons/new";
 import { it } from "mocha";
 
-it("displayName", async () => {
+it("a renamed test", async () => {
   await displayName("foo");
 });

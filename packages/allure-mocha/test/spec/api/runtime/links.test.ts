@@ -13,6 +13,7 @@ describe("link", async () => {
       ["links", "namedIssue"],
       ["links", "urlOnlyTms"],
       ["links", "namedTms"],
+      ["links", "multipleLinks"],
     );
     for (const test of tests) {
       testMap.set(test.name!, test);
@@ -20,14 +21,14 @@ describe("link", async () => {
   });
 
   it("url only link", async () => {
-    const links = testMap.get("url only link")!.links;
+    const links = testMap.get("a test with a url only link")!.links;
     expect(links).toEqual([{
       url: "https://foo.bar",
     }]);
   });
 
   it("link type", async () => {
-    const links = testMap.get("link type")!.links;
+    const links = testMap.get("a test with a link of a custom type")!.links;
     expect(links).toEqual([{
       url: "https://foo.bar",
       type: "baz",
@@ -35,7 +36,7 @@ describe("link", async () => {
   });
 
   it("named link", async () => {
-    const links = testMap.get("named link")!.links;
+    const links = testMap.get("a test with a named link")!.links;
     expect(links).toEqual([{
       url: "https://foo.bar",
       type: "link",
@@ -44,7 +45,7 @@ describe("link", async () => {
   });
 
   it("url only issue", async () => {
-    const links = testMap.get("url only issue")!.links;
+    const links = testMap.get("a test with a url only issue link")!.links;
     expect(links).toEqual([{
       url: "https://foo.bar",
       type: "issue",
@@ -52,7 +53,7 @@ describe("link", async () => {
   });
 
   it("named issue", async () => {
-    const links = testMap.get("named issue")!.links;
+    const links = testMap.get("a test with a named issue link")!.links;
     expect(links).toEqual([{
       url: "https://foo.bar",
       type: "issue",
@@ -61,7 +62,7 @@ describe("link", async () => {
   });
 
   it("url only tms", async () => {
-    const links = testMap.get("url only tms")!.links;
+    const links = testMap.get("a test with a url only tms link")!.links;
     expect(links).toEqual([{
       url: "https://foo.bar",
       type: "tms",
@@ -69,11 +70,24 @@ describe("link", async () => {
   });
 
   it("named tms", async () => {
-    const links = testMap.get("named tms")!.links;
+    const links = testMap.get("a test with a named tms link")!.links;
     expect(links).toEqual([{
       url: "https://foo.bar",
       type: "tms",
       name: "baz",
+    }]);
+  });
+
+  it("multiple", async () => {
+    const links = testMap.get("a test with two links")!.links;
+    expect(links).toEqual([{
+      url: "https://foo.bar",
+      type: "link",
+      name: "baz",
+    }, {
+      url: "https://roo.rar",
+      type: "link",
+      name: "raz",
     }]);
   });
 });

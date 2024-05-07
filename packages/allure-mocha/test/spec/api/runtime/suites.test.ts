@@ -1,103 +1,192 @@
-import { LabelName } from "allure-js-commons/new/sdk/node";
 import { runMochaInlineTest } from "../../../utils";
 import { beforeAll, describe, expect, it, test } from "vitest";
 import { TestResult } from "allure-js-commons/new";
 
-const selectSuiteLabels = (test: TestResult) =>
-  test.labels.filter(l => /suite/i.test(l.name));
-
-describe("default suite labels", async () => {
-  const tests = new Map<string | undefined, TestResult>();
+describe("suites", async () => {
+  const testMap = new Map<string, TestResult>();
 
   beforeAll(async () => {
-    const results = await runMochaInlineTest("defaultSuites");
-    for (const test of results.tests) {
-      tests.set(test.name, test);
+    const { tests } = await runMochaInlineTest(
+      ["plain-mocha", "testInFileScope"],
+      ["plain-mocha", "testInSuite"],
+      ["plain-mocha", "testInTwoSuites"],
+      ["plain-mocha", "testInThreeSuites"],
+      ["plain-mocha", "testInFourSuites"],
+      ["labels", "suites", "parentSuiteFileScope"],
+      ["labels", "suites", "suiteFileScope"],
+      ["labels", "suites", "subSuiteFileScope"],
+      ["labels", "suites", "parentSuiteNestedScope"],
+      ["labels", "suites", "suiteNestedScope"],
+      ["labels", "suites", "subSuiteNestedScope"],
+    );
+    for (const test of tests) {
+      testMap.set(test.name!, test);
     }
   });
 
-  test.each([
-    { name: "root", expectedSuites: [] },
-    { name: "first", expectedSuites: [{name: "parentSuite", value: "suite 1"}] },
-    { name: "second", expectedSuites: [
-      {name: "parentSuite", value: "suite 1"},
-      {name: "suite", value: "suite 1.1"},
-    ] },
-    { name: "third", expectedSuites: [
-      {name: "parentSuite", value: "suite 1"},
-      {name: "suite", value: "suite 1.1"},
-      {name: "subSuite", value: "suite 1.1.1"},
-    ] },
-    { name: "fourth", expectedSuites: [
-      {name: "parentSuite", value: "suite 1"},
-      {name: "suite", value: "suite 1.1"},
-      {name: "subSuite", value: "suite 1.1.1 > suite 1.1.1.1"},
-    ] },
-  ])("$name contains expected suite labels", async ({name, expectedSuites}) => {
-    const test = tests.get(name);
-    expect(test).toBeDefined();
-    const labels = selectSuiteLabels(test!);
-    expect(labels).toEqual(expectedSuites);
-  });
-});
+  describe("parent suite", async () => {
+    it("not defined for a file scoped test by default", async () => {
+      expect(testMap.get("a test in a file scope")).not.toMatchObject({
+        labels: expect.arrayContaining([{
+          name: "parentSuite",
+          value: expect.anything(),
+        }]),
+      });
+    });
 
-describe("runtime suite labels", async () => {
-  let tests: TestResult[] = [];
-  beforeAll(async () => {
-    ({ tests } = await runMochaInlineTest(
-      "parentSuite",
-      "suite",
-      "subSuite",
-      "noDefaultSuites",
-    ));
-  });
+    test.each([
+      "a test in a suite",
+      "a test in two suites",
+      "a test in three suites",
+      "a test in four suites",
+    ])("defined for %s by default", async (name) => {
+      expect(testMap.get(name)).toMatchObject({
+        labels: expect.arrayContaining([{
+          name: "parentSuite",
+          value: "foo",
+        }]),
+      });
+    });
 
-  it("contains a test with a parentSuite", async () => {
-    expect(tests).toContainEqual(
-      expect.objectContaining({
-        name: "dynamic-parentSuite",
-        labels: expect.arrayContaining([
-          {
-            name: LabelName.PARENT_SUITE,
+    describe("api", async () => {
+      it("adds a parent suite label", async () => {
+        expect(testMap.get("a test with a parent suite")).toMatchObject({
+          labels: expect.arrayContaining([{
+            name: "parentSuite",
             value: "foo",
-          },
-        ]),
-      }),
-    );
+          }]),
+        });
+      });
+
+      it("overrides the default suites", async () => {
+        const labels = testMap.get("a scoped test with a parent suite")!.labels;
+        expect(labels).not.toContainEqual({
+          name: "parentSuite",
+          value: "foo",
+        });
+        expect(labels).not.toContainEqual({
+          name: "suite",
+          value: expect.anything(),
+        });
+        expect(labels).not.toContainEqual({
+          name: "subSuite",
+          value: expect.anything(),
+        });
+      });
+    });
   });
 
-  it("contains a test with a suite", async () => {
-    expect(tests).toContainEqual(
-      expect.objectContaining({
-        name: "dynamic-suite",
-        labels: expect.arrayContaining([
-          {
-            name: LabelName.SUITE,
+  describe("suite", async () => {
+    test.each([
+      "a test in a file scope",
+      "a test in a suite",
+    ])("not defined for %s by default", async (name) => {
+      expect(testMap.get(name)).not.toMatchObject({
+        labels: expect.arrayContaining([{
+          name: "suite",
+          value: expect.anything(),
+        }]),
+      });
+    });
+
+    test.each([
+      "a test in two suites",
+      "a test in three suites",
+      "a test in four suites",
+    ])("defined for %s by default", async (name) => {
+      expect(testMap.get(name)).toMatchObject({
+        labels: expect.arrayContaining([{
+          name: "suite",
+          value: "bar",
+        }]),
+      });
+    });
+
+    describe("api", async () => {
+      it("adds a suite label", async () => {
+        expect(testMap.get("a test with a suite")).toMatchObject({
+          labels: expect.arrayContaining([{
+            name: "suite",
             value: "foo",
-          },
-        ]),
-      }),
-    );
+          }]),
+        });
+      });
+
+      it("overrides the default suites", async () => {
+        const labels = testMap.get("a scoped test with a suite")!.labels;
+        expect(labels).not.toContainEqual({
+          name: "parentSuite",
+          value: expect.anything(),
+        });
+        expect(labels).not.toContainEqual({
+          name: "suite",
+          value: "bar",
+        });
+        expect(labels).not.toContainEqual({
+          name: "subSuite",
+          value: expect.anything(),
+        });
+      });
+    });
   });
 
-  it("contains a test with a subSuite", async () => {
-    expect(tests).toContainEqual(
-      expect.objectContaining({
-        name: "dynamic-subSuite",
-        labels: expect.arrayContaining([
-          {
-            name: LabelName.SUB_SUITE,
+  describe("sub-suite", async () => {
+    test.each([
+      "a test in a file scope",
+      "a test in a suite",
+      "a test in two suites",
+    ])("not defined for %s by default", async (name) => {
+      expect(testMap.get(name)).not.toMatchObject({
+        labels: expect.arrayContaining([{
+          name: "subSuite",
+          value: expect.anything(),
+        }]),
+      });
+    });
+
+    it("defined for a test in three suites by default", async () => {
+      expect(testMap.get("a test in three suites")).toMatchObject({
+        labels: expect.arrayContaining([{
+          name: "subSuite",
+          value: "baz",
+        }]),
+      });
+    });
+
+    it("defined for a test in four suites by default", async () => {
+      expect(testMap.get("a test in four suites")).toMatchObject({
+        labels: expect.arrayContaining([{
+          name: "subSuite",
+          value: "baz > qux",
+        }]),
+      });
+    });
+
+    describe("api", async () => {
+      it("adds a subSuite label", async () => {
+        expect(testMap.get("a test with a sub-suite")).toMatchObject({
+          labels: expect.arrayContaining([{
+            name: "subSuite",
             value: "foo",
-          },
-        ]),
-      }),
-    );
-  });
+          }]),
+        });
+      });
 
-  it("runtime suites replace default suites", async () => {
-    tests.forEach((test) => {
-      const suiteLabels = selectSuiteLabels(test);
-      expect(suiteLabels).lengthOf(1);
+      it("overrides the default suites", async () => {
+        const labels = testMap.get("a scoped test with a sub-suite")!.labels;
+        expect(labels).not.toContainEqual({
+          name: "parentSuite",
+          value: expect.anything(),
+        });
+        expect(labels).not.toContainEqual({
+          name: "suite",
+          value: expect.anything(),
+        });
+        expect(labels).not.toContainEqual({
+          name: "subSuite",
+          value: "baz",
+        });
+      });
     });
   });
 });

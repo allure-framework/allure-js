@@ -1,5 +1,5 @@
 import { it } from "mocha";
 
-describe("suite", async () => {
-  it("test in suite", async () => {});
+describe("foo", async () => {
+  it("a test in a suite", async () => {});
 });

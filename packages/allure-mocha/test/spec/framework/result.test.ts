@@ -1,6 +1,6 @@
 import { TestResult } from "allure-js-commons/new/sdk/node";
 import { runMochaInlineTest } from "../../utils";
-import { describe, beforeAll, expect, expectTypeOf, it } from "vitest";
+import { describe, beforeAll, expect, it } from "vitest";
 
 describe("defaults", async () => {
   let test: TestResult;
@@ -9,14 +9,14 @@ describe("defaults", async () => {
   beforeAll(async () => {
     sampleStart = Date.now();
     const { tests } = await runMochaInlineTest(
-      "minimal",
+      "plain-mocha/testInFileScope",
     );
     sampleStop = Date.now();
     test = tests[0];
   });
 
   it("has fullName", async () => {
-    expect(test.fullName).toMatch(/^test\/fixtures\/run-results\/[0-9a-f-]+\/minimal\.spec\.mjs: test$/);
+    expect(test.fullName).toMatch(/^test\/fixtures\/run-results\/[0-9a-f-]+\/plain-mocha\/testInFileScope\.spec\.mjs: a test in a file scope$/);
   });
 
   it("has historyId", async () => {
@@ -41,7 +41,7 @@ describe("defaults", async () => {
     expect(labels).toContainEqual({name: "host", value: expect.anything()});
     expect(labels).toContainEqual({
       name: "package",
-      value: expect.stringMatching(/^test\.fixtures\.run-results\.[0-9a-f-]+\.minimal\.spec\.mjs$/)
+      value: expect.stringMatching(/^test\.fixtures\.run-results\.[0-9a-f-]+\.plain-mocha\.testInFileScope\.spec\.mjs$/)
     });
   });
 });

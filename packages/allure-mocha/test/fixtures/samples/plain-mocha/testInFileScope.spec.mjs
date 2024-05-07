@@ -1,3 +1,3 @@
 import { it } from "mocha";
 
-it("test in file", async () => {});
+it("a test in a file scope", async () => {});
