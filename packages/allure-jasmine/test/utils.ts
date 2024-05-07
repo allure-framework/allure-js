@@ -9,7 +9,7 @@ import { parse } from "properties";
 export type TestResultsByFullName = Record<string, TestResult>;
 
 const parseJsonResult = <T>(data: string) => {
-  return JSON.parse(Buffer.from(data, "base64").toString("utf8"));
+  return JSON.parse(Buffer.from(data, "base64").toString("utf8")) as T;
 };
 
 export const runJasmineInlineTest = async (test: string): Promise<AllureResults> => {

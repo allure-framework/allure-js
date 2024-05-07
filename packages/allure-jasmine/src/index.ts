@@ -18,24 +18,8 @@ import {
   getSuiteLabels,
   setGlobalTestRuntime,
 } from "allure-js-commons/new/sdk/node";
-import { AllureJasmineConfig } from "./model.js";
-
-// eslint-disable-next-line no-undef
-import FailedExpectation = jasmine.FailedExpectation;
-
-const findAnyError = (expectations?: FailedExpectation[]): FailedExpectation | null => {
-  expectations = expectations || [];
-  if (expectations.length > 0) {
-    return expectations[0];
-  }
-  return null;
-};
-
-const findMessageAboutThrow = (expectations?: FailedExpectation[]) => {
-  return expectations?.find((e) => e.matcherName === "");
-};
-
-type JasmineBeforeAfterFn = (action: (done: DoneFn) => void, timeout?: number) => void;
+import { AllureJasmineConfig, JasmineBeforeAfterFn } from "./model.js";
+import { findAnyError, findMessageAboutThrow } from "./utils.js";
 
 class AllureJasmineTestRuntime implements TestRuntime {
   constructor(private allureJasmineReporter: AllureJasmineReporter) {}
@@ -264,7 +248,8 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     const allureRuntime = this.allureRuntime;
     const globalJasmine = globalThis.jasmine;
     const currentAllureResultUuidGetter = () => this.currentAllureTestUuid;
-    const currentAllureStepResultGetter = () => this.allureRuntime.state.getCurrentStep(currentAllureResultUuidGetter()!);
+    const currentAllureStepResultGetter = () =>
+      this.allureRuntime.state.getCurrentStep(currentAllureResultUuidGetter()!);
     // @ts-ignore
     const originalExpectationHandler = globalJasmine.Spec.prototype.addExpectationResult;
 
@@ -351,14 +336,11 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   }
 
   private installHooks(): void {
-    const jasmineBeforeAll: JasmineBeforeAfterFn = global.beforeAll;
-    // @ts-ignore
-    const jasmineAfterAll: JasmineBeforeAfterFn = global.afterAll;
-    // @ts-ignore
-    const jasmineBeforeEach: JasmineBeforeAfterFn = global.beforeEach;
-    // @ts-ignore
-    const jasmineAfterEach: JasmineBeforeAfterFn = global.afterEach;
-
+    // const jasmineBeforeAll: JasmineBeforeAfterFn = global.beforeAll;
+    // const jasmineAfterAll: JasmineBeforeAfterFn = global.afterAll;
+    // const jasmineBeforeEach: JasmineBeforeAfterFn = global.beforeEach;
+    // const jasmineAfterEach: JasmineBeforeAfterFn = global.afterEach;
+    //
     // const makeWrapperAll = (wrapped: JasmineBeforeAfterFn, fun: () => ExecutableItemWrapper) => {
     //   return (action: (done: DoneFn) => void, timeout?: number): void => {
     //     try {
@@ -403,21 +385,17 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     //     }, timeout);
     //   };
     // };
-    // const wrapperBeforeAll = makeWrapperAll(jasmineBeforeAll, () => {
-    //   return this.currentGroup.addBefore();
+    // global.beforeAll = makeWrapperAll(jasmineBeforeAll, () => {
+    //   // return this.currentGroup.addBefore();
     // });
-    // const wrapperAfterAll = makeWrapperAll(jasmineAfterAll, () => {
-    //   return this.currentGroup.addAfter();
+    // global.afterAll = makeWrapperAll(jasmineAfterAll, () => {
+    //   // return this.currentGroup.addAfter();
     // });
-    // const wrapperBeforeEach = makeWrapperAll(jasmineBeforeEach, () => {
-    //   return this.currentGroup.addBefore();
+    // global.beforeEach = makeWrapperAll(jasmineBeforeEach, () => {
+    //   // return this.currentGroup.addBefore();
     // });
-    // const wrapperAfterEach = makeWrapperAll(jasmineAfterEach, () => {
-    //   return this.currentGroup.addAfter();
+    // global.afterEach = makeWrapperAll(jasmineAfterEach, () => {
+    //   // return this.currentGroup.addAfter();
     // });
-    // global.beforeAll = wrapperBeforeAll;
-    // global.afterAll = wrapperAfterAll;
-    // global.beforeEach = wrapperBeforeEach;
-    // global.afterEach = wrapperAfterEach;
   }
 }
