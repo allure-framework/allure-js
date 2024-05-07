@@ -1,13 +1,9 @@
-import { ContentType, Label, LabelName, Link, LinkType, ParameterMode, ParameterOptions } from "./model.js";
+import { ContentType, Label, Link, ParameterMode, ParameterOptions } from "./model.js";
 
 export const ALLURE_TEST_RUNTIME_KEY = "allureTestRuntime";
 
 export interface TestRuntime {
-  label: (name: LabelName, value: string) => PromiseLike<void>;
-
   labels: (...labels: Label[]) => PromiseLike<void>;
-
-  link: (url: string, type?: LinkType | string, name?: string) => PromiseLike<void>;
 
   links: (...links: Link[]) => PromiseLike<void>;
 

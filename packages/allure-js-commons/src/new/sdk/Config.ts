@@ -1,6 +1,7 @@
 import { Category, EnvironmentInfo, TestResult } from "../model.js";
 import { LifecycleListener } from "./LifecycleListener.js";
 import { Writer } from "./Writer.js";
+import { AllureContextProvider } from "./context";
 
 export interface LinkConfig {
   type: string;
@@ -16,4 +17,5 @@ export interface Config {
   readonly listeners?: LifecycleListener[];
   readonly environmentInfo?: EnvironmentInfo;
   readonly categories?: Category[];
+  readonly contextProvider?: AllureContextProvider;
 }

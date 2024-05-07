@@ -4,7 +4,7 @@ import { ContentType, Label, LabelName, Link, LinkType, ParameterMode, Parameter
 export const label = (name: LabelName, value: string) => {
   const runtime = getGlobalTestRuntime();
 
-  return runtime.label(name, value);
+  return runtime.labels({name, value});
 };
 
 export const labels = (...lablesList: Label[]) => {
@@ -16,7 +16,7 @@ export const labels = (...lablesList: Label[]) => {
 export const link = (url: string, type?: LinkType | string, name?: string) => {
   const runtime = getGlobalTestRuntime();
 
-  return runtime.link(url, type, name);
+  return runtime.links({url, type, name});
 };
 
 export const links = (...linksList: Link[]) => {
@@ -91,83 +91,31 @@ export const step = (name: string, body: (context: StepContext) => void | Promis
   return runtime.step(name, () => body(stepContext));
 };
 
-export const issue = (url: string, name: string) => {
-  const runtime = getGlobalTestRuntime();
+export const issue = (url: string, name: string) => link(url, LinkType.ISSUE, name);
 
-  return runtime.link(url, LinkType.ISSUE, name);
-};
+export const tms = (url: string, name: string) => link(url, LinkType.TMS, name);
 
-export const tms = (url: string, name: string) => {
-  const runtime = getGlobalTestRuntime();
+export const allureId = (value: string) => label(LabelName.ALLURE_ID, value);
 
-  return runtime.link(url, LinkType.TMS, name);
-};
+export const epic = (name: string) => label(LabelName.EPIC, name);
 
-export const allureId = (value: string) => {
-  const runtime = getGlobalTestRuntime();
+export const feature = (name: string) => label(LabelName.FEATURE, name);
 
-  return runtime.label(LabelName.ALLURE_ID, value);
-};
+export const story = (name: string) => label(LabelName.STORY, name);
 
-export const epic = (name: string) => {
-  const runtime = getGlobalTestRuntime();
+export const suite = (name: string) => label(LabelName.SUITE, name);
 
-  return runtime.label(LabelName.EPIC, name);
-};
+export const parentSuite = (name: string) => label(LabelName.PARENT_SUITE, name);
 
-export const feature = (name: string) => {
-  const runtime = getGlobalTestRuntime();
+export const subSuite = (name: string) => label(LabelName.SUB_SUITE, name);
 
-  return runtime.label(LabelName.FEATURE, name);
-};
+export const owner = (name: string) => label(LabelName.OWNER, name);
 
-export const story = (name: string) => {
-  const runtime = getGlobalTestRuntime();
+export const severity = (name: string) => label(LabelName.SEVERITY, name);
 
-  return runtime.label(LabelName.STORY, name);
-};
+export const layer = (name: string) => label(LabelName.LAYER, name);
 
-export const suite = (name: string) => {
-  const runtime = getGlobalTestRuntime();
-
-  return runtime.label(LabelName.SUITE, name);
-};
-
-export const parentSuite = (name: string) => {
-  const runtime = getGlobalTestRuntime();
-
-  return runtime.label(LabelName.PARENT_SUITE, name);
-};
-
-export const subSuite = (name: string) => {
-  const runtime = getGlobalTestRuntime();
-
-  return runtime.label(LabelName.SUB_SUITE, name);
-};
-
-export const owner = (name: string) => {
-  const runtime = getGlobalTestRuntime();
-
-  return runtime.label(LabelName.OWNER, name);
-};
-
-export const severity = (name: string) => {
-  const runtime = getGlobalTestRuntime();
-
-  return runtime.label(LabelName.SEVERITY, name);
-};
-
-export const layer = (name: string) => {
-  const runtime = getGlobalTestRuntime();
-
-  return runtime.label(LabelName.LAYER, name);
-};
-
-export const tag = (name: string) => {
-  const runtime = getGlobalTestRuntime();
-
-  return runtime.label(LabelName.TAG, name);
-};
+export const tag = (name: string) => label(LabelName.TAG, name);
 
 export const tags = (...tagsList: string[]) => {
   const runtime = getGlobalTestRuntime();

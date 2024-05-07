@@ -1,125 +1,53 @@
-import { FixtureResult, Stage, StepResult, TestResult, TestResultContainer } from "../model.js";
-import { Stack } from "../utils.js";
-import { createFixtureResult, createStepResult, createTestResult, createTestResultContainer } from "./utils.js";
+import { FixtureResult, StepResult, TestResult, TestResultContainer } from "../model.js";
+import { createTestResultContainer } from "./utils.js";
 
 export class LifecycleState {
   testResults = new Map<string, TestResult>();
 
-  testResultsSteps = new Map<string, Stack<StepResult>>();
+  stepResults = new Map<string, StepResult>();
 
   fixturesResults = new Map<string, FixtureResult>();
 
   testContainers = new Map<string, TestResultContainer>();
 
+  getTestContainer = (uuid: string) =>
+    this.testContainers.get(uuid);
+
+  getFixture = (uuid: string) =>
+    this.fixturesResults.get(uuid);
+
+  getTest = (uuid: string) =>
+    this.testResults.get(uuid);
+
+  getStep = (uuid: string) =>
+    this.stepResults.get(uuid);
+
+  getExecutionItem = (uuid: string) =>
+    this.fixturesResults.get(uuid)
+      ?? this.testResults.get(uuid)
+      ?? this.stepResults.get(uuid);
+
   // test results
-  setTestResult = (uuid: string, result: Partial<TestResult>) => {
-    this.testResults.set(uuid, {
-      ...createTestResult(uuid),
-      ...result,
-    });
-  };
-
-  updateTestResult = (uuid: string, result: Partial<TestResult>) => {
-    const currentResult = this.testResults.get(uuid);
-
-    if (!currentResult) {
-      return;
-    }
-
-    const { name, labels = [], links = [], parameters = [], attachments = [], steps = [], ...rest } = result;
-    const updatedResult = { ...currentResult };
-
-    if (name) {
-      updatedResult.name = name;
-    }
-
-    updatedResult.labels.push(...labels);
-    updatedResult.links.push(...links);
-    updatedResult.attachments.push(...attachments);
-    updatedResult.parameters.push(...parameters);
-    updatedResult.steps.push(...steps);
-
-    Object.assign(updatedResult, rest);
-
-    this.testResults.set(uuid, updatedResult);
+  setTestResult = (uuid: string, result: TestResult) => {
+    this.testResults.set(uuid, result);
   };
 
   deleteTestResult = (uuid: string) => {
     this.testResults.delete(uuid);
-    this.testResultsSteps.delete(uuid);
   };
 
   // steps
-  setStepResult = (uuid: string, result: Partial<StepResult>) => {
-    if (!this.testResultsSteps.has(uuid)) {
-      this.testResultsSteps.set(uuid, new Stack());
-    }
-
-    this.testResultsSteps.get(uuid)!.push({
-      ...createStepResult(),
-      ...result,
-    });
+  setStepResult = (uuid: string, result: StepResult) => {
+    this.stepResults.set(uuid, result);
   };
 
-  updateCurrentStep = (uuid: string, result: Partial<StepResult>) => {
-    const currentStep = this.getCurrentStep(uuid);
-
-    if (!currentStep) {
-      return;
-    }
-
-    const { status, stage, statusDetails, attachments = [], steps = [], parameters = [], ...rest } = result;
-
-    // don't override status if it's already set
-    if (!currentStep.status) {
-      currentStep.status = status;
-    }
-
-    // don't override stage if it's already set
-    if (currentStep.stage !== Stage.PENDING && stage) {
-      currentStep.stage = stage;
-    }
-
-    // don't override status details if it's already set
-    if (!currentStep.statusDetails && statusDetails) {
-      currentStep.statusDetails = statusDetails;
-    }
-
-    currentStep.attachments.push(...attachments);
-    currentStep.steps.push(...steps);
-    currentStep.parameters.push(...parameters);
-
-    Object.assign(currentStep, rest);
-  };
-
-  popStep = (uuid: string) => {
-    return this.testResultsSteps.get(uuid)?.pop();
-  };
-
-  getCurrentStep = (uuid: string) => {
-    return this.testResultsSteps.get(uuid)?.last;
-  };
-
-  getFirstStep = (uuid: string) => {
-    return this.testResultsSteps.get(uuid)?.first;
+  deleteStepResult = (uuid: string) => {
+    this.stepResults.delete(uuid);
   };
 
   // fixtures
-  setFixtureResult = (uuid: string, result: Partial<FixtureResult>) => {
-    this.fixturesResults.set(uuid, {
-      ...createFixtureResult(),
-      ...result,
-    });
-  };
-
-  updateFixtureResult = (uuid: string, result: Partial<FixtureResult>) => {
-    const currentResult = this.fixturesResults.get(uuid);
-
-    if (!currentResult) {
-      return;
-    }
-
-    Object.assign(currentResult, result);
+  setFixtureResult = (uuid: string, result: FixtureResult) => {
+    this.fixturesResults.set(uuid, result);
   };
 
   deleteFixtureResult = (uuid: string) => {
@@ -132,16 +60,6 @@ export class LifecycleState {
       ...createTestResultContainer(uuid),
       ...container,
     });
-  };
-
-  updateTestContainer = (uuid: string, container: Partial<TestResultContainer>) => {
-    const currentContainer = this.testContainers.get(uuid);
-
-    if (!currentContainer) {
-      return;
-    }
-
-    Object.assign(currentContainer, container);
   };
 
   deleteTestContainer = (uuid: string) => {
