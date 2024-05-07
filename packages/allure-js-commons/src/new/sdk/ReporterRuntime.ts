@@ -68,6 +68,37 @@ export class ReporterRuntime {
   hasTest = () => !!this.contextProvider.getTest();
   hasSteps = () => !!this.contextProvider.getStep();
 
+  getCurrentTest = () => {
+    const testUuid = this.contextProvider.getTest();
+    return testUuid ? this.state.getTest(testUuid) : undefined;
+  };
+
+  getCurrentFixture = () => {
+    const fixtureUuid = this.contextProvider.getFixture();
+    return fixtureUuid ? this.state.getFixture(fixtureUuid) : undefined;
+  };
+
+  getCurrentStep = () => {
+    const stepUuid = this.contextProvider.getStep();
+    return stepUuid ? this.state.getStep(stepUuid) : undefined;
+  };
+
+  getCurrentStepOf = (scope: string) => {
+    const stepUuid = this.contextProvider.getStepOfScope(scope);
+    return stepUuid ? this.state.getStep(stepUuid) : undefined;
+  };
+
+  getCurrentExecutable = () => {
+    const uuid = this.contextProvider.getExecutionItem();
+    return uuid ? this.state.getExecutionItem(uuid) : undefined;
+  };
+
+  getCurrentExecutableOf = (scope: string) => {
+    const uuid = this.contextProvider.getExecutionItemByScope(scope);
+    return uuid ? this.state.getExecutionItem(uuid) : undefined;
+  };
+
+
   startContainer = (resultContainer: Partial<TestResultContainer>) => {
     const uuid = this.crypto.uuid();
     this.state.setTestContainer(uuid, resultContainer);
@@ -432,36 +463,6 @@ export class ReporterRuntime {
         customMessageHandler?.(unhandledMessage, fixture, test, step);
       }
     }
-  };
-
-  protected getCurrentTest = () => {
-    const testUuid = this.contextProvider.getTest();
-    return testUuid ? this.state.getTest(testUuid) : undefined;
-  };
-
-  protected getCurrentFixture = () => {
-    const fixtureUuid = this.contextProvider.getFixture();
-    return fixtureUuid ? this.state.getFixture(fixtureUuid) : undefined;
-  };
-
-  protected getCurrentStep = () => {
-    const stepUuid = this.contextProvider.getStep();
-    return stepUuid ? this.state.getStep(stepUuid) : undefined;
-  };
-
-  protected getCurrentStepOf = (scope: string) => {
-    const stepUuid = this.contextProvider.getStepOfScope(scope);
-    return stepUuid ? this.state.getStep(stepUuid) : undefined;
-  };
-
-  protected getCurrentExecutable = () => {
-    const uuid = this.contextProvider.getExecutionItem();
-    return uuid ? this.state.getExecutionItem(uuid) : undefined;
-  };
-
-  protected getCurrentExecutableOf = (scope: string) => {
-    const uuid = this.contextProvider.getExecutionItemByScope(scope);
-    return uuid ? this.state.getExecutionItem(uuid) : undefined;
   };
 
   protected createTestResult(result: Partial<TestResult>, start?: number): TestResult {

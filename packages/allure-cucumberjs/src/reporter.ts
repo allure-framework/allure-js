@@ -380,7 +380,7 @@ export default class AllureCucumberReporter extends Formatter {
 
   private onTestStepFinished(data: messages.TestStepFinished) {
     const testUuid = this.allureResultsUuids.get(data.testCaseStartedId)!;
-    const currentStep = this.runtime.state.getCurrentStep(testUuid);
+    const currentStep = this.runtime.getCurrentStepOf(testUuid);
 
     // TODO: support hooks reporting
     if (!currentStep) {
