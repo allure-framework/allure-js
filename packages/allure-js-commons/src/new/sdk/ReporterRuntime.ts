@@ -23,7 +23,7 @@ import { Config, LinkConfig } from "./Config.js";
 import { Crypto } from "./Crypto.js";
 import { Notifier } from "./LifecycleListener.js";
 import { LifecycleState } from "./LifecycleState.js";
-import { AllureContextProvider, StaticContextProvider } from "./context/index.js";
+import { AllureContextProvider, StaticContextProvider, MutableAllureContext, MutableAllureContextBox } from "./context/index.js";
 import { Writer } from "./Writer.js";
 import {
   createStepResult,
@@ -50,7 +50,7 @@ export class ReporterRuntime {
     links = [],
     environmentInfo,
     categories,
-    contextProvider = new StaticContextProvider(),
+    contextProvider = StaticContextProvider.wrap(new MutableAllureContextBox()),
   }: Config & {
     crypto: Crypto;
   }) {

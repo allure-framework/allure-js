@@ -1,4 +1,5 @@
-import { AllureContext, AllureContextBox, AllureContextProvider } from "./AllureContextAbs.js";
+import { AllureContextProviderBase } from "./AllureContextProviderBase.js";
+import { AllureContext, AllureContextBox } from "./types.js";
 
 /**
  * Allure context that stores its data in mutable class fields.
@@ -14,14 +15,14 @@ export class MutableAllureContext implements AllureContext {
   getFixture = () => this.currentFixture;
   getTest = () => this.currentTest;
   getStepStack = (scope: string) => this.stepStacks.get(scope) ?? [];
-};
+}
 
 /**
  * Implements transitioning between context values by mutating the context
  * object.
  * Unsafe from the cuncurrency standpoint.
  */
-export class MutableAllureContextBox implements AllureContextBox {
+export class MutableAllureContextBox implements AllureContextBox<MutableAllureContext> {
   private readonly context: MutableAllureContext = new MutableAllureContext();
 
   get = () => this.context;
@@ -87,17 +88,30 @@ export class MutableAllureContextBox implements AllureContextBox {
       arr.splice(i, 1);
     }
   }
-};
+}
 
 /**
  * Stores the context in a class field. That's a simple but not async-safe way of
  * manipulating the context.
  */
-export class StaticContextProvider extends AllureContextProvider {
-  private readonly box = new MutableAllureContextBox();
+export class StaticContextProvider<
+  TContext extends AllureContext,
+  TBox extends AllureContextBox<TContext>,
+> extends AllureContextProviderBase<TContext, TBox> {
+  constructor(private readonly boxSingleton: TBox) {
+    super();
+  }
 
-  protected override load = () => this.box;
+  protected override load = () => this.boxSingleton;
 
-  /* The changes are already persisted by the mutable nature of this context implementation. */
+  /* The changes are already persisted in the box singleton. */
   protected store = () => {};
-};
+
+  /**
+   * Wraps a context box singleton in the static context provider.
+   * @param boxSingleton The singleton to wrap.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  static wrap = <TContext extends AllureContext, TBox extends AllureContextBox<TContext>>(boxSingleton: TBox) =>
+    new StaticContextProvider<TContext, TBox>(boxSingleton);
+}

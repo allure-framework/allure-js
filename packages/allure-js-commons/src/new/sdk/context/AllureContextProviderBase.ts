@@ -1,49 +1,22 @@
-/**
- * Represents a snapshot of the Allure state at some particular moment during the run.
- */
-export type AllureContext = {
-  getContainerStack: () => readonly string[];
-  getFixture: () => string | null;
-  getTest: () => string | null;
-  getStepStack: (scope: string) => readonly string[];
-};
-
-/**
- * Implements the transitions from one snapshot to another.
- */
-export type AllureContextBox = {
-  get: () => AllureContext;
-
-  addContainer: (uuid: string) => void;
-  removeContainer: () => void;
-  removeContainerByUuid: (uuid: string) => void;
-
-  setFixture: (uuid: string) => void;
-  removeFixture: () => void;
-
-  setTest: (uuid: string) => void;
-  removeTest: () => void;
-
-  addStep: (scope: string, uuid: string) => void;
-  removeStep: (scope: string) => void;
-  removeStepByUuid: (scope: string, uuid: string) => void;
-};
+/* eslint brace-style: 0 */
+import { AllureContext, AllureContextBox, AllureContextProvider } from "./types.js";
 
 /**
  * Provides the set of methods to access and update the context.
  * Successor classes are responsible for persisting anc accessing the context.
  */
-export abstract class AllureContextProvider {
-
+export abstract class AllureContextProviderBase<TContext extends AllureContext, TBox extends AllureContextBox<TContext>>
+  implements AllureContextProvider
+{
   /**
    * Gets the box that contains the current value of the context.
    */
-  protected abstract load: () => AllureContextBox;
+  protected abstract load: () => TBox;
 
   /**
    * Persist the changes applied to the context since it was last time persisted.
    */
-  protected abstract store: () => void;
+  protected abstract store: (box: TBox) => void;
 
   /**
    * Gets the current container (i.e., the most recently added one).
@@ -55,7 +28,7 @@ export abstract class AllureContextProvider {
    * Gets the current container (i.e., the most recently added one).
    * @returns The UUID if the current container. If the container stack is empty, returns `null`.
    */
-  getContainer = () => AllureContextProvider.last(this.getContainerStack());
+  getContainer = () => AllureContextProviderBase.last(this.getContainerStack());
 
   /**
    * Gets the current fixture, if any. Each fixture has its own stack of steps
@@ -85,7 +58,7 @@ export abstract class AllureContextProvider {
     if (scope) {
       const steps = this.getStepStack(scope);
       if (steps) {
-        return AllureContextProvider.last(steps);
+        return AllureContextProviderBase.last(steps);
       }
     }
     return null;
@@ -100,7 +73,7 @@ export abstract class AllureContextProvider {
     const scope = this.getStepScope();
     if (scope) {
       const steps = this.getStepStack(scope);
-      return AllureContextProvider.last(steps) ?? scope;
+      return AllureContextProviderBase.last(steps) ?? scope;
     }
     return null;
   };
@@ -109,55 +82,37 @@ export abstract class AllureContextProvider {
    * Introduces a new container into the context. The container becomes the current one.
    * @param uuid The UUID of the new container.
    */
-  addContainer = (uuid: string) => {
-    this.load().addContainer(uuid);
-    this.store();
-  };
+  addContainer = (uuid: string) => this.update((b) => b.addContainer(uuid));
 
   /**
    * Removes the most recently added container from the context.
    * Has no effect if the container stack is empty.
    */
-  removeContainer = () => {
-    this.load().removeContainer();
-    this.store();
-  };
+  removeContainer = () => this.update((b) => b.removeContainer());
 
   /**
    * Applies the current fixture to the context.
    * @param uuid The UUID of the new fixture.
    */
-  setFixture = (uuid: string) => {
-    this.load().setFixture(uuid);
-    this.store();
-  };
+  setFixture = (uuid: string) => this.update((b) => b.setFixture(uuid));
 
   /**
    * Removes the current fixture from the context.
    * Subsequent calls to `getFixture` will return `null` until a new fixture is set.
    */
-  removeFixture = () => {
-    this.load().removeFixture();
-    this.store();
-  };
+  removeFixture = () => this.update((b) => b.removeFixture());
 
   /**
    * Applies the current test to the context.
    * @param uuid The UUID of the new test.
    */
-  setTest = (uuid: string) => {
-    this.load().setTest(uuid);
-    this.store();
-  };
+  setTest = (uuid: string) => this.update((b) => b.setTest(uuid));
 
   /**
    * Removes the current test from the context.
    * Subsequent calls to `getTest` will return `null` until a new test is set.
    */
-  removeTest = () => {
-    this.load().removeTest();
-    this.store();
-  };
+  removeTest = () => this.update((b) => b.removeTest());
 
   /**
    * Introduces a new step into the current fixture or test.
@@ -195,7 +150,7 @@ export abstract class AllureContextProvider {
    */
   getStepOfScope = (scope: string) => {
     const steps = this.getStepStack(scope);
-    return steps ? AllureContextProvider.last(steps) : null;
+    return steps ? AllureContextProviderBase.last(steps) : null;
   };
 
   /**
@@ -206,7 +161,7 @@ export abstract class AllureContextProvider {
    */
   getExecutionItemByScope = (scope: string) => {
     const steps = this.getStepStack(scope);
-    return AllureContextProvider.last(steps) ?? scope;
+    return AllureContextProviderBase.last(steps) ?? scope;
   };
 
   /**
@@ -215,8 +170,7 @@ export abstract class AllureContextProvider {
    */
   removeContainerByUuid = (uuid: string) => {
     if (this.getCurrentContext().getContainerStack().includes(uuid)) {
-      this.load().removeContainerByUuid(uuid);
-      this.store();
+      this.update((b) => b.removeContainerByUuid(uuid));
     }
   };
 
@@ -247,10 +201,7 @@ export abstract class AllureContextProvider {
    * The step becomes the current one in the current scope.
    * @param uuid The UUID of the new step.
    */
-  addStepToScope = (scope: string, uuid: string) => {
-    this.load().addStep(scope, uuid);
-    this.store();
-  };
+  addStepToScope = (scope: string, uuid: string) => this.update((b) => b.addStep(scope, uuid));
 
   /**
    * Removes the current step of the provided fixture or test.
@@ -260,8 +211,7 @@ export abstract class AllureContextProvider {
   removeStepFromScope = (scope: string) => {
     const steps = this.getCurrentContext().getStepStack(scope);
     if (steps.length) {
-      this.load().removeStep(scope);
-      this.store();
+      this.update((b) => b.removeStep(scope));
     }
   };
 
@@ -272,17 +222,19 @@ export abstract class AllureContextProvider {
   removeStepFromScopeByUuid = (scope: string, uuid: string) => {
     const steps = this.getCurrentContext().getStepStack(scope);
     if (steps.includes(uuid)) {
-      this.load().removeStepByUuid(scope, uuid);
-      this.store();
+      this.update((b) => b.removeStepByUuid(scope, uuid));
     }
   };
 
   private getCurrentContext = () => this.load().get();
 
+  private update = (fn: (box: TBox) => void) => {
+    const box = this.load();
+    fn(box);
+    this.store(box);
+  };
+
   private getStepStack = (scope: string) => this.getCurrentContext().getStepStack(scope);
 
-  private static last = <T>(arr: readonly T[]) =>
-    arr.length
-      ? arr[arr.length - 1]
-      : null;
-};
+  private static last = <T>(arr: readonly T[]) => (arr.length ? arr[arr.length - 1] : null);
+}

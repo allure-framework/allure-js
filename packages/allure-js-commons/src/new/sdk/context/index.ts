@@ -1,2 +1,2 @@
-export * from "./AllureContextAbs.js";
+export * from "./types.js";
 export * from "./StaticAllureContextProvider.js";
