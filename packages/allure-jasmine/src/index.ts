@@ -249,7 +249,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     const globalJasmine = globalThis.jasmine;
     const currentAllureResultUuidGetter = () => this.currentAllureTestUuid;
     const currentAllureStepResultGetter = () =>
-      this.allureRuntime.state.getCurrentStep(currentAllureResultUuidGetter()!);
+      this.allureRuntime.getCurrentStepOf(currentAllureResultUuidGetter()!);
     // @ts-ignore
     const originalExpectationHandler = globalJasmine.Spec.prototype.addExpectationResult;
 
