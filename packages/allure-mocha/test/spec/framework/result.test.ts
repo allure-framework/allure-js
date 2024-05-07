@@ -1,4 +1,4 @@
-import { TestResult, Status, Stage } from "allure-js-commons/new/sdk/node";
+import { TestResult } from "allure-js-commons/new/sdk/node";
 import { runMochaInlineTest } from "../../utils";
 import { describe, beforeAll, expect, expectTypeOf, it } from "vitest";
 

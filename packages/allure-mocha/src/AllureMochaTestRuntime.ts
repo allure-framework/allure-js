@@ -3,7 +3,6 @@ import {
   Status,
   Stage,
   StatusDetails,
-  LabelName,
   ParameterMode,
   ParameterOptions,
   RuntimeMessage,
@@ -15,33 +14,10 @@ import {
 import { errorToStatusDetails } from "./utils";
 
 export class AllureMochaTestRuntime implements TestRuntime {
-  private currentTestUuid: string | null = null;
-
   constructor(private readonly reporterRuntime: ReporterRuntime) {
   }
 
-  getCurrentTest() {
-    return this.currentTestUuid;
-  }
-
-  setCurrentTest(uuid: string) {
-    this.currentTestUuid = uuid;
-  }
-
-  clearCurrentTest() {
-    this.currentTestUuid = null;
-  }
-
-  async label(name: LabelName, value: string) {
-    await this.applyToCurrentTest({
-      type: "metadata",
-      data: {
-        labels: [{name, value}]
-      }
-    });
-  };
-
-  async labels(...lablesList: Label[]) {
+  labels = async (...lablesList: Label[]) => {
     await this.applyToCurrentTest({
       type: "metadata",
       data: {
@@ -50,16 +26,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
     });
   };
 
-  async link(url: string, type?: string, name?: string) {
-    await this.applyToCurrentTest({
-      type: "metadata",
-      data: {
-        links: [{url, type, name}]
-      }
-    });
-  }
-
-  async links(...linksList: Link[]) {
+  links = async (...linksList: Link[]) => {
     await this.applyToCurrentTest({
       type: "metadata",
       data: {
@@ -68,7 +35,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
     });
   };
 
-  async parameter(name: string, value: string, options?: ParameterOptions) {
+  parameter = async (name: string, value: string, options?: ParameterOptions) => {
     await this.applyToCurrentTest({
       type: "metadata",
       data: {
@@ -77,7 +44,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
     });
   }
 
-  async description(markdown: string) {
+  description = async (markdown: string) => {
     await this.applyToCurrentTest({
       type: "metadata",
       data: {
@@ -86,7 +53,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
     });
   }
 
-  async descriptionHtml(html: string) {
+  descriptionHtml = async (html: string) => {
     await this.applyToCurrentTest({
       type: "metadata",
       data: {
@@ -95,7 +62,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
     });
   }
 
-  async displayName(name: string) {
+  displayName = async (name: string) => {
     await this.applyToCurrentTest({
       type: "metadata",
       data: {
@@ -104,7 +71,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
     });
   }
 
-  async historyId(value: string) {
+  historyId = async (value: string) => {
     await this.applyToCurrentTest({
       type: "metadata",
       data: {
@@ -113,7 +80,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
     });
   }
 
-  async testCaseId(value: string) {
+  testCaseId = async (value: string) => {
     await this.applyToCurrentTest({
       type: "metadata",
       data: {
@@ -122,7 +89,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
     });
   }
 
-  async attachment(name: string, content: string | Buffer, type: string) {
+  attachment = async (name: string, content: string | Buffer, type: string) => {
     await this.applyToCurrentTest({
       type: "raw_attachment",
       data: {
@@ -134,7 +101,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
     });
   }
 
-  async step(name: string, body: () => void | PromiseLike<void>) {
+  step = async (name: string, body: () => void | PromiseLike<void>) => {
     let status = Status.PASSED;
     let statusDetails: StatusDetails | undefined;
 
@@ -165,14 +132,14 @@ export class AllureMochaTestRuntime implements TestRuntime {
     }
   }
 
-  async stepDisplayName(name: string) {
+  stepDisplayName = async (name: string) => {
     await this.applyToCurrentTest({
       type: "step_metadata",
       data: { name }
     });
   }
 
-  async stepParameter(name: string, value: string, mode?: ParameterMode | undefined) {
+  stepParameter = async (name: string, value: string, mode?: ParameterMode | undefined) => {
     await this.applyToCurrentTest({
       type: "step_metadata",
       data: {
@@ -181,11 +148,6 @@ export class AllureMochaTestRuntime implements TestRuntime {
     });
   }
 
-  private async applyToCurrentTest(message: RuntimeMessage) {
-    if (this.currentTestUuid) {
-      await this.reporterRuntime.applyRuntimeMessages(this.currentTestUuid, [message]);
-    } else {
-      // Log "No test is active"?
-    }
-  }
+  private applyToCurrentTest = async (message: RuntimeMessage) =>
+    await this.reporterRuntime.applyRuntimeMessagesToCurrentScope([message]);
 }

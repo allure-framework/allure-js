@@ -70,7 +70,6 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
       fn?.(failures);
       this.listenersChain = Promise.resolve();
       this.listenerError = null;
-      this.testRuntime.clearCurrentTest();
     });
   }
 
@@ -100,16 +99,15 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
         this.listenersChain = new Promise((resolve, reject) => {
           this.listenersChain.then(
             () => {
-              try {
-                // @ts-ignore
-                listener.apply(this, args).then(resolve);
-              } catch (error) {
-                this.listenerError = error instanceof Error
-                  ? error
-                  : new Error(error?.toString() ?? "unknown error");
+              // @ts-ignore
+              listener.apply(this, args).then(resolve, (e) => {
+                this.listenerError = e instanceof Error
+                  ? e
+                  : new Error(e?.toString() ?? "unknown error");
                 this.listenerError.message = `INTERNAL ERROR in listener of ${event}: ${this.listenerError.message}`;
+                console.error(this.listenerError);
                 reject(this.listenerError);
-              }
+              });
             },
             reject,
           );
@@ -121,12 +119,12 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   }
 
   private async onSuite(suite: Mocha.Suite) {
-    // this.coreReporter.startSuite(suite.fullTitle());
-    // this.runtime.start
+    const title = suite.fullTitle();
+    this.runtime.startContainer({name: title ? title : "Global"});
   }
 
   private async onSuiteEnd() {
-    // this.coreReporter.endSuite();
+    this.runtime.writeCurrentContainer();
   }
 
   private async onTest(test: Mocha.Test) {
@@ -145,23 +143,22 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
 
     fullName += test.titlePath().join(" > ");
 
-    const uuid = this.runtime.start({
+    this.runtime.start({
       name: test.title,
       stage: Stage.RUNNING,
       fullName,
       labels,
     });
-    this.testRuntime.setCurrentTest(uuid as string);
   }
 
   private async onPassed(_: Mocha.Test) {
-    await this.updateCurrentTest((r) => {
+    await this.runtime.updateCurrentTest((r) => {
       r.status = Status.PASSED;
     });
   }
 
   private async onFailed(_: Mocha.Test, error: Error) {
-    await this.updateCurrentTest((r) => {
+    await this.runtime.updateCurrentTest((r) => {
       r.status = getStatusFromError(error);
       r.statusDetails = {
         message: error.message,
@@ -172,7 +169,7 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
 
   private async onPending(test: Mocha.Test) {
     await this.onTest(test);
-    await this.updateCurrentTest((r) => {
+    await this.runtime.updateCurrentTest((r) => {
       r.status = Status.SKIPPED;
       r.statusDetails = {
         message: "Test skipped",
@@ -181,34 +178,41 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   }
 
   private async onTestEnd(test: Mocha.Test) {
-    const testUuid = this.testRuntime.getCurrentTest();
-    if (testUuid) {
-      const defaultSuites = getSuitesOfMochaTest(test);
-      this.runtime.update(testUuid, (t) => {
-        ensureSuiteLabels(t, defaultSuites);
-        t.stage = Stage.FINISHED;
-      });
-      this.runtime.stop(testUuid);
-      this.runtime.write(testUuid);
-      this.testRuntime.clearCurrentTest();
-    }
+    const defaultSuites = getSuitesOfMochaTest(test);
+    this.runtime.updateCurrentTest((t) => {
+      ensureSuiteLabels(t, defaultSuites);
+      t.stage = Stage.FINISHED;
+    });
+    this.runtime.stopCurrentTest();
+    this.runtime.writeCurrentTest();
   }
 
   private async onHookStart(hook: Mocha.Hook) {
-    // this.coreReporter.startHook(hook);
+    const name = hook.title;
+    if (name.includes("before")) {
+      this.runtime.startBeforeFixtureInCurrentContainer({name});
+    } else if (name.includes("after")) {
+      this.runtime.startAfterFixtureInCurrentContainer({name});
+    } else {
+      console.log(`onHookStart "${hook.title}", "${hook.fullTitle()}"`);
+    }
   }
 
   private async onHookEnd(hook: Mocha.Hook) {
-    // const error: Error | undefined = hook?.error?.();
-    // this.coreReporter.endHook(error);
-  }
-
-  private async updateCurrentTest(update: (test: Partial<TestResult>) => void | Promise<void>) {
-    const currentTestUuid = this.testRuntime.getCurrentTest();
-    if (currentTestUuid) {
-      this.runtime.update(currentTestUuid, update);
-    } else {
-      throw new Error("Internal error: no current test exists");
+    if (this.runtime.hasFixture()) {
+      await this.runtime.updateCurrentFixture((r) => {
+        const error = hook.error();
+        if (error) {
+          r.status = getStatusFromError(error);
+          r.statusDetails = {
+            message: error.message,
+            trace: error.stack
+          };
+        } else {
+          r.status = Status.PASSED;
+        }
+      });
+      this.runtime.stopCurrentFixture();
     }
   }
 }
