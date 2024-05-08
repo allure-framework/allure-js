@@ -3,20 +3,15 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
-import { LinkType } from "allure-js-commons/new/sdk/node";
+import { LinkType } from "allure-js-commons/new/sdk/node"
 
 export type TestResultsByFullName = Record<string, TestResult>;
 
-type AllureResultsExtended = AllureResults & {
-  processError: string;
-};
-
-export const runJestInlineTest = async (test: string): Promise<AllureResultsExtended> => {
-  const res: AllureResultsExtended = {
+export const runJestInlineTest = async (test: string): Promise<AllureResults> => {
+  const res: AllureResults = {
     tests: [],
     groups: [],
     attachments: {},
-    processError: "",
   };
   const testDir = join(__dirname, "fixtures", randomUUID());
   const configFilePath = join(testDir, "jest.config.js");
@@ -56,6 +51,7 @@ export const runJestInlineTest = async (test: string): Promise<AllureResultsExte
     cwd: testDir,
     stdio: "pipe",
   });
+  let processError = "";
 
   testProcess.on("message", (message: string) => {
     const event: { path: string; type: string; data: string } = JSON.parse(message);
@@ -80,7 +76,7 @@ export const runJestInlineTest = async (test: string): Promise<AllureResultsExte
   });
   testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
     process.stderr.write(String(chunk));
-    res.processError += chunk;
+    processError += chunk;
   });
 
   return new Promise((resolve) => {

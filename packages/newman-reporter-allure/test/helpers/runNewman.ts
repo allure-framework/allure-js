@@ -9,6 +9,7 @@ export const runNewman = async (collection: CollectionDefinition): Promise<TestR
       reporters: ["allure"],
       reporter: {
         allure: {
+          testMode: true,
           postProcessorForTest: (res: InMemoryAllureWriter) => {
             resolve(res.tests);
           },

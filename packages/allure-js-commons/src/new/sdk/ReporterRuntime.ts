@@ -195,7 +195,7 @@ export class ReporterRuntime {
     this.contextProvider.removeFixture();
   };
 
-  start = (result: Partial<TestResult>, start?: number) => {
+  start = (result: Partial<TestResult>, start?: number): string => {
     const stateObject = this.createTestResult(result, start);
     const uuid = stateObject.uuid;
 

@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/quotes */
-import { expect } from "expect";
-import { after, afterEach, before, test } from "mocha";
+import { afterAll, afterEach, beforeAll, test, expect } from "vitest";
 import { runNewman } from "../helpers/runNewman";
 import { server } from "../mocks/server";
 
-before(() => server.listen());
+beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
-after(() => server.close());
+afterAll(() => server.close());
 
 test("complex test overview", async () => {
   const [result] = await runNewman({

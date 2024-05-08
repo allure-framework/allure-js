@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/quotes */
-import { expect } from "expect";
-import { after, afterEach, before, test } from "mocha";
-import { LabelName, Status, md5 } from "allure-js-commons";
-import { runNewman } from "../helpers/runNewman";
+import { afterAll, afterEach, beforeAll, expect, test } from "vitest";
+import { LabelName, Stage, Status } from "allure-js-commons/new/sdk/node";
 import { server } from "../mocks/server";
+import { runNewmanCollection } from "../utils";
 
-before(() => server.listen());
+beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
-after(() => server.close());
+afterAll(() => server.close());
 
 test("complex test overview", async () => {
-  const [result] = await runNewman({
+  const { tests } = await runNewmanCollection({
     info: {
       name: "fff",
     },
@@ -71,43 +70,40 @@ test("complex test overview", async () => {
       },
     ],
   });
-  const name = "testReq";
-  const fullName = `ParentName/SuiteName/SubSub1/SubSub1#${name}`;
 
-  expect(result.status).toBe(Status.PASSED);
-  expect(result.name).toBe(name);
-
-  expect(result.parameters).toHaveLength(2);
-  expect(result.parameters).toEqual([
-    {
-      name: "Request",
-      value: "GET - http://example.com/test?dfgdfg",
-    },
-    {
-      excluded: true,
-      name: "Response Code",
-      value: "200",
-    },
-  ]);
-  expect(result.steps).toHaveLength(1);
-  expect(result.steps[0]).toMatchObject({
-    status: "passed" as any,
-    stage: "finished" as any,
-    statusDetails: {},
-    steps: [],
-    attachments: [],
-    parameters: [],
-    name: "Status code is 200",
-  });
-  expect(result.description).toBe("testDescription\n\nmultiline\n\n**somethingBold**");
-  expect(result.descriptionHtml).toBe("testDescription<br><br>multiline<br><br>somethingBold");
-  expect(result.labels).toEqual([
-    { name: "parentSuite", value: "ParentName" },
-    { name: "suite", value: "SuiteName" },
-    { name: "subSuite", value: "SubSub1 > SubSub1" },
-    { name: LabelName.ALLURE_ID, value: "228" },
-    { name: "custom", value: "test" },
-  ]);
-  expect(result.fullName).toEqual(fullName);
-  expect(result.testCaseId).toEqual(md5(fullName));
+  expect(tests).toHaveLength(1);
+  expect(tests[0]).toEqual(
+    expect.objectContaining({
+      name: "testReq",
+      fullName: "ParentName/SuiteName/SubSub1/SubSub1#testReq",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      description: "testDescription\n\nmultiline\n\n**somethingBold**",
+      descriptionHtml: "testDescription<br><br>multiline<br><br>somethingBold",
+      historyId: expect.any(String),
+      testCaseId: expect.any(String),
+      labels: expect.arrayContaining([
+        { name: LabelName.PARENT_SUITE, value: "ParentName" },
+        { name: LabelName.SUITE, value: "SuiteName" },
+        { name: LabelName.SUB_SUITE, value: "SubSub1 > SubSub1" },
+        { name: LabelName.ALLURE_ID, value: "228" },
+        { name: "custom", value: "test" },
+      ]),
+      parameters: expect.arrayContaining([
+        expect.objectContaining({ name: "Request", value: "GET - http://example.com/test?dfgdfg" }),
+        expect.objectContaining({ name: "Response Code", value: "200", excluded: true }),
+      ]),
+      steps: [
+        expect.objectContaining({
+          name: "Status code is 200",
+          status: Status.PASSED,
+          stage: "finished",
+          statusDetails: {},
+          steps: [],
+          attachments: [],
+          parameters: [],
+        }),
+      ],
+    }),
+  );
 });

@@ -23,22 +23,34 @@
     "email": "allure@qameta.io",
     "url": "https://qameta.io/"
   },
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
   "scripts": {
     "clean": "rimraf ./dist ./out",
-    "compile": "tsc",
+    "compile": "run-p 'compile:*'",
+    "compile:lib": "rollup -c",
+    "compile:types": "tsc --project ./tsconfig.json",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix",
-    "test": "ts-node --project test/tsconfig.json test/runner.ts"
+    "test": "vitest run"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
     "@types/eslint": "^8",
     "@types/mocha": "^10.0.1",
     "@types/newman": "^5.3.3",
@@ -57,15 +69,19 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "expect": "^29.7.0",
-    "glob": "^10.3.5",
+    "glob": "^10.3.12",
     "mocha": "^10.2.0",
     "mocha-multi-reporters": "^1.5.1",
     "msw": "1",
     "newman": "^5.3.2",
+    "npm-run-all2": "^6.1.2",
     "postman-collection": "^4.2.1",
     "rimraf": "^5.0.1",
+    "rollup": "^4.17.2",
     "source-map-support": "^0.5.21",
     "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "tslib": "^2.6.2",
+    "typescript": "^5.2.2",
+    "vitest": "^1.6.0"
   }
 }
