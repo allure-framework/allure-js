@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/quotes */
-import { expect } from "expect";
-import { after, afterEach, before, test } from "mocha";
-import { runNewman } from "../helpers/runNewman";
+import { afterAll, afterEach, beforeAll, expect, test } from "vitest";
+import { LabelName, Stage, Status } from "allure-js-commons/new/sdk/node";
 import { server } from "../mocks/server";
+import { runNewmanCollection } from "../utils";
 
-before(() => server.listen());
+beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
-after(() => server.close());
+afterAll(() => server.close());
 
-test("Verify Headers", async () => {
-  const [result] = await runNewman({
+test("verify headers", async () => {
+  const { tests } = await runNewmanCollection({
     item: [
       {
         name: "Header Test Request",
@@ -56,7 +56,8 @@ test("Verify Headers", async () => {
     ],
   });
 
-  expect(result.attachments).toEqual([
+  expect(tests).toHaveLength(1);
+  expect(tests[0].attachments).toEqual([
     {
       name: "TestScript",
       source: expect.stringContaining("attachment.txt"),

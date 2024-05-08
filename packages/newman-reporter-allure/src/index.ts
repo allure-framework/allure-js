@@ -120,10 +120,6 @@ class AllureReporter {
     const suiteName = this.currentCollection.name;
 
     this.allureRuntime.startContainer({ name: suiteName || "Global" });
-    // const scope = this.currentSuite || this.allureRuntime;
-    // const suite = scope.startGroup(suiteName || "Global");
-    // this.suites.push(suite);
-    // this.runningItems = [];
   }
 
   onPrerequest(
@@ -416,11 +412,14 @@ class AllureReporter {
     if (err) {
       currentPmItem.passed = false;
       currentPmItem.requestError = err.message;
+    }
+
+    if (!args.response) {
       return;
     }
 
-    const respStream = args.response.stream;
-    const respBody = (respStream && Buffer.from(respStream).toString()) || "";
+    const respStream = args?.response?.stream;
+    const respBody = respStream ? Buffer.from(respStream).toString() : "";
 
     currentPmItem.responseData = {
       status: args.response.status,
@@ -451,6 +450,10 @@ class AllureReporter {
         currentPmItem.passed = false;
         currentPmItem.failedAssertions.push(args.assertion);
 
+        step.statusDetails = {
+          message: err.message,
+          trace: err.stack,
+        };
         step.status = Status.FAILED;
       } else {
         step.status = Status.PASSED;

@@ -15588,7 +15588,6 @@ const RAW_RUNTIME_STATE =
           ["@rollup/plugin-node-resolve", "virtual:e64d7f26127b0c38f2abe71db23f0a141b0538db2f417ca2c220511e19f5e4f807ad3daa66e38a4a857f9c6bfd539c632538c990ab69f65c09d763e405a3f457#npm:15.2.3"],\
           ["@rollup/plugin-typescript", "virtual:e64d7f26127b0c38f2abe71db23f0a141b0538db2f417ca2c220511e19f5e4f807ad3daa66e38a4a857f9c6bfd539c632538c990ab69f65c09d763e405a3f457#npm:11.1.6"],\
           ["@types/eslint", "npm:8.56.3"],\
-          ["@types/mocha", "npm:10.0.6"],\
           ["@types/newman", "npm:5.3.6"],\
           ["@types/node", "npm:20.11.30"],\
           ["@types/postman-collection", "npm:3.5.10"],\
@@ -15597,7 +15596,6 @@ const RAW_RUNTIME_STATE =
           ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.21.0"],\
           ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.21.0"],\
           ["allure-js-commons", "workspace:packages/allure-js-commons"],\
-          ["allure-mocha", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#workspace:packages/allure-mocha"],\
           ["eslint", "npm:8.57.0"],\
           ["eslint-config-prettier", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:9.1.0"],\
           ["eslint-plugin-import", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:2.29.1"],\
@@ -15607,8 +15605,6 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
           ["expect", "npm:29.7.0"],\
           ["glob", "npm:10.3.12"],\
-          ["mocha", "npm:10.3.0"],\
-          ["mocha-multi-reporters", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:1.5.1"],\
           ["msw", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.3"],\
           ["newman", "npm:5.3.2"],\
           ["npm-run-all2", "npm:6.1.2"],\

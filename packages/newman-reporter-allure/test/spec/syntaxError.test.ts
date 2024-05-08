@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/quotes */
-import { expect } from "expect";
-import { after, afterEach, before, test } from "mocha";
-import { runNewman } from "../helpers/runNewman";
+import { afterAll, afterEach, beforeAll, expect, test } from "vitest";
+import { Stage, Status } from "allure-js-commons/new/sdk/node";
 import { server } from "../mocks/server";
+import { runNewmanCollection } from "../utils";
 
-before(() => server.listen());
+beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
-after(() => server.close());
+afterAll(() => server.close());
 
-test("Verify postman assertion error", async () => {
-  const [result] = await runNewman({
+test("verify postman assertion error", async () => {
+  const { tests } = await runNewmanCollection({
     item: [
       {
         name: "Syntax Error Test Request",
@@ -39,7 +39,21 @@ test("Verify postman assertion error", async () => {
       },
     ],
   });
-  expect(result.statusDetails.message).toEqual("SyntaxError");
-  expect(result.steps[0].name).toEqual("SyntaxError");
-  expect(result.steps[0].statusDetails.message).toEqual("missing ) after argument list");
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0]).toEqual(
+    expect.objectContaining({
+      statusDetails: {
+        message: "SyntaxError",
+        trace: expect.any(String),
+      },
+      steps: expect.arrayContaining([
+        expect.objectContaining({
+          statusDetails: {
+            message: "missing ) after argument list",
+          },
+        }),
+      ]),
+    }),
+  );
 });
