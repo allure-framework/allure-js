@@ -1,10 +1,10 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { parse } from "properties";
 import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
 import { LinkType, Status } from "allure-js-commons/new/sdk/node";
-import { parse } from "properties";
 
 export type TestResultsByFullName = Record<string, TestResult>;
 
@@ -12,84 +12,85 @@ const parseJsonResult = <T>(data: string) => {
   return JSON.parse(Buffer.from(data, "base64").toString("utf8")) as T;
 };
 
-export const runJasmineInlineTest = async (test: string): Promise<AllureResults> => {
+export const runJasmineInlineTest = async (files: Record<string, string>): Promise<AllureResults> => {
   const res: AllureResults = {
     tests: [],
     groups: [],
     attachments: {},
   };
   const testDir = join(__dirname, "fixtures", randomUUID());
-  const configFilePath = join(testDir, "spec/support/jasmine.json");
-  const helperFilePath = join(testDir, "spec/helpers/allure.js");
-  const testFilePath = join(testDir, "spec/test/sample.spec.js");
-  const configContent = `
-    {
-      "spec_dir": "spec",
-      "spec_files": [
-        "**/*[sS]pec.?(m)js"
-      ],
-      "helpers": [
-        "helpers/**/*.?(m)js"
-      ],
-      "env": {
-        "stopSpecOnExpectationFailure": false,
-        "random": true
-      }
-    }
-  `;
-  const helperContent = `
-    const AllureJasmineReporter = require("allure-jasmine");
-
-    const reporter = new AllureJasmineReporter({
-      testMode: true,
-      links: [
-        {
-          type: "${LinkType.ISSUE}",
-          urlTemplate: "https://example.org/issues/%s",
-        },
-        {
-          type: "${LinkType.TMS}",
-          urlTemplate: "https://example.org/tasks/%s",
+  const testFiles = {
+    "spec/support/jasmine.json": `
+      {
+        "spec_dir": "spec",
+        "spec_files": [
+          "**/*[sS]pec.?(m)js"
+        ],
+        "helpers": [
+          "helpers/**/*.?(m)js"
+        ],
+        "env": {
+          "stopSpecOnExpectationFailure": false,
+          "random": true
         }
-      ],
-      categories: [
-        {
-          name: "Sad tests",
-          messageRegex: /.*Sad.*/,
-          matchedStatuses: ["${Status.FAILED}"],
-        },
-        {
-          name: "Infrastructure problems",
-          messageRegex: ".*RuntimeException.*",
-          matchedStatuses: ["${Status.BROKEN}"],
-        },
-        {
-          name: "Outdated tests",
-          messageRegex: ".*FileNotFound.*",
-          matchedStatuses: ["${Status.BROKEN}"],
-        },
-        {
-          name: "Regression",
-          messageRegex: ".*\\sException:.*",
-          matchedStatuses: ["${Status.BROKEN}"],
-        },
-      ],
-      environmentInfo: {
-        envVar1: "envVar1Value",
-        envVar2: "envVar2Value",
-      },
-    });
+      }
+    `,
+    "spec/helpers/allure.js": `
+      const AllureJasmineReporter = require("allure-jasmine");
 
-    jasmine.getEnv().addReporter(reporter);
-  `;
+      const reporter = new AllureJasmineReporter({
+        testMode: true,
+        links: [
+          {
+            type: "${LinkType.ISSUE}",
+            urlTemplate: "https://example.org/issues/%s",
+          },
+          {
+            type: "${LinkType.TMS}",
+            urlTemplate: "https://example.org/tasks/%s",
+          }
+        ],
+        categories: [
+          {
+            name: "Sad tests",
+            messageRegex: /.*Sad.*/,
+            matchedStatuses: ["${Status.FAILED}"],
+          },
+          {
+            name: "Infrastructure problems",
+            messageRegex: ".*RuntimeException.*",
+            matchedStatuses: ["${Status.BROKEN}"],
+          },
+          {
+            name: "Outdated tests",
+            messageRegex: ".*FileNotFound.*",
+            matchedStatuses: ["${Status.BROKEN}"],
+          },
+          {
+            name: "Regression",
+            messageRegex: ".*\\sException:.*",
+            matchedStatuses: ["${Status.BROKEN}"],
+          },
+        ],
+        environmentInfo: {
+          envVar1: "envVar1Value",
+          envVar2: "envVar2Value",
+        },
+      });
+
+      jasmine.getEnv().addReporter(reporter);
+    `,
+    ...files,
+  };
+
   await mkdir(testDir, { recursive: true });
-  await mkdir(join(testDir, "spec/support"), { recursive: true });
-  await mkdir(join(testDir, "spec/helpers"), { recursive: true });
-  await mkdir(join(testDir, "spec/test"), { recursive: true });
 
-  await writeFile(configFilePath, configContent, "utf8");
-  await writeFile(helperFilePath, helperContent, "utf8");
-  await writeFile(testFilePath, test, "utf8");
+  for (const file of Object.keys(testFiles)) {
+    const filePath = join(testDir, file);
+
+    await mkdir(dirname(filePath), { recursive: true });
+    await writeFile(filePath, testFiles[file as keyof typeof testFiles], "utf8");
+  }
 
   const modulePath = require.resolve("jasmine/bin/jasmine");
   const args: string[] = [];
@@ -105,6 +106,8 @@ export const runJasmineInlineTest = async (test: string): Promise<AllureResults>
 
   testProcess.on("message", (message: string) => {
     const event: { path: string; type: string; data: string } = JSON.parse(message);
+
+    console.log({ event })
 
     switch (event.type) {
       case "container":

@@ -59,5 +59,6 @@ export {
   typeToExtension,
   isAllStepsEnded,
   isAnyStepFailed,
+  isPromise,
   Stack,
 } from "./utils.js";

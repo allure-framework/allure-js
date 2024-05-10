@@ -9311,6 +9311,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"glob@npm:^10.3.14":
+  version: 10.3.14
+  resolution: "glob@npm:10.3.14"
+  dependencies:
+    foreground-child: "npm:^3.1.0"
+    jackspeak: "npm:^2.3.6"
+    minimatch: "npm:^9.0.1"
+    minipass: "npm:^7.0.4"
+    path-scurry: "npm:^1.11.0"
+  bin:
+    glob: dist/esm/bin.mjs
+  checksum: 10/750dae74f2d73350f3b90b775f8b08d7ad3a174ec6f890ce712fe801be408794cc77da9808d45b60f4f15482d604861fe05980aceb3a7af95b539e1f0897187a
+  languageName: node
+  linkType: hard
+
 "glob@npm:^6.0.1":
   version: 6.0.4
   resolution: "glob@npm:6.0.4"
@@ -9666,6 +9681,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hermione-allure@workspace:packages/hermione-allure"
   dependencies:
+    "@rollup/plugin-commonjs": "npm:^25.0.7"
+    "@rollup/plugin-node-resolve": "npm:^15.2.3"
+    "@rollup/plugin-typescript": "npm:^11.1.6"
     "@types/chai": "npm:^4.3.6"
     "@types/chai-like": "npm:^1.1.1"
     "@types/chai-things": "npm:^0.0.36"
@@ -9691,14 +9709,17 @@ __metadata:
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     fs-jetpack: "npm:^4.1.0"
-    glob: "npm:^10.3.5"
+    glob: "npm:^10.3.14"
     hermione: "npm:^8.0.6"
     mocha: "npm:^10.2.0"
     mocha-multi-reporters: "npm:^1.5.1"
+    npm-run-all2: "npm:^6.1.2"
     rimraf: "npm:^5.0.1"
+    rollup: "npm:^4.17.2"
     sinon: "npm:^17.0.0"
     source-map-support: "npm:^0.5.21"
     ts-node: "npm:^10.9.1"
+    tslib: "npm:^2.6.2"
     typescript: "npm:^5.2.2"
   languageName: unknown
   linkType: soft
@@ -13900,6 +13921,16 @@ __metadata:
     lru-cache: "npm:^10.2.0"
     minipass: "npm:^5.0.0 || ^6.0.2 || ^7.0.0"
   checksum: 10/a2bbbe8dc284c49dd9be78ca25f3a8b89300e0acc24a77e6c74824d353ef50efbf163e64a69f4330b301afca42d0e2229be0560d6d616ac4e99d48b4062016b1
+  languageName: node
+  linkType: hard
+
+"path-scurry@npm:^1.11.0":
+  version: 1.11.0
+  resolution: "path-scurry@npm:1.11.0"
+  dependencies:
+    lru-cache: "npm:^10.2.0"
+    minipass: "npm:^5.0.0 || ^6.0.2 || ^7.0.0"
+  checksum: 10/b97e52746427f37ff8e7dcd00a9ed4562b7ee8b24b87c5c85e47105d48ab408624c943417f22792215b986d71d5d7d855235ee2aec68cbec370eaa78f720bb42
   languageName: node
   linkType: hard
 

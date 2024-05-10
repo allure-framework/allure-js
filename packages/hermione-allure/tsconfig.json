@@ -1,11 +1,23 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["./src/**/*"],
+  "include": [
+    "./src/**/*",
+    "./test/**/*"
+  ],
   "compilerOptions": {
-    "types": ["node", "chai"],
-    "lib": ["dom"],
-    "outDir": "./dist",
-    "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "types": [
+      "node"
+    ],
+    "outDir": "./dist"
   }
 }

@@ -3,6 +3,7 @@ import {
   AllureNodeReporterRuntime,
   ContentType,
   FileSystemAllureWriter,
+  FixtureResult,
   Label,
   LabelName,
   Link,
@@ -14,8 +15,10 @@ import {
   Stage,
   Status,
   TestRuntime,
+  createFixtureResult,
   getStatusFromError,
   getSuiteLabels,
+  isPromise,
   setGlobalTestRuntime,
 } from "allure-js-commons/new/sdk/node";
 import { AllureJasmineConfig, JasmineBeforeAfterFn } from "./model.js";
@@ -200,9 +203,13 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   private readonly allureRuntime: AllureNodeReporterRuntime;
   private currentAllureTestUuid?: string;
   private jasmineSuitesStack: jasmine.SuiteResult[] = [];
+  private beforeHooksFixtures: FixtureResult[] = [];
+  private afterHooksFixtures: FixtureResult[] = [];
 
   constructor(config: AllureJasmineConfig) {
     const { testMode, resultsDir = "./allure-results", ...restConfig } = config || {};
+
+    console.log("jasmine reporter init");
 
     this.allureRuntime = new AllureNodeReporterRuntime({
       ...restConfig,
@@ -248,11 +255,11 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     const allureRuntime = this.allureRuntime;
     const globalJasmine = globalThis.jasmine;
     const currentAllureResultUuidGetter = () => this.currentAllureTestUuid;
-    const currentAllureStepResultGetter = () =>
-      this.allureRuntime.getCurrentStepOf(currentAllureResultUuidGetter()!);
+    const currentAllureStepResultGetter = () => this.allureRuntime.getCurrentStepOf(currentAllureResultUuidGetter()!);
     // @ts-ignore
     const originalExpectationHandler = globalJasmine.Spec.prototype.addExpectationResult;
 
+    // soft-asserts support (when failed assertions don't throw errors)
     // @ts-ignore
     globalJasmine.Spec.prototype.addExpectationResult = function (passed, data, isError) {
       if (currentAllureStepResultGetter()) {
@@ -266,17 +273,28 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
       originalExpectationHandler.call(this, passed, data, isError);
     };
+
+    // TODO:
+    this.allureRuntime.startContainer({ name: "Global" });
   }
 
   suiteStarted(suite: jasmine.SuiteResult): void {
+    console.log("suite started", suite.description);
+
     this.jasmineSuitesStack.push(suite);
+
+    this.allureRuntime.startContainer({ name: suite.description });
   }
 
   suiteDone(): void {
     this.jasmineSuitesStack.pop();
+
+    this.allureRuntime.writeCurrentContainer();
   }
 
   specStarted(spec: jasmine.SpecResult): void {
+    console.log("spec started ", spec.description);
+
     this.currentAllureTestUuid = this.allureRuntime.start({
       name: spec.description,
       fullName: this.getSpecFullName(spec),
@@ -285,6 +303,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   }
 
   specDone(spec: jasmine.SpecResult): void {
+    console.log("spec done");
     const specPath = this.getCurrentSpecPath();
     const exceptionInfo = findMessageAboutThrow(spec.failedExpectations) || findAnyError(spec.failedExpectations);
 
@@ -325,6 +344,19 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
       }
     });
 
+    this.allureRuntime.updateCurrentContainer((container) => {
+      // add hooks only when they weren't added to the container before (we need to do it once)
+      if (!container.befores.length) {
+        container.befores.push(...this.beforeHooksFixtures);
+      }
+
+      if (!container.afters.length) {
+        container.afters.push(...this.afterHooksFixtures);
+      }
+
+      container.children.push(this.currentAllureTestUuid!);
+    });
+
     this.allureRuntime.stop(this.currentAllureTestUuid!);
     this.allureRuntime.write(this.currentAllureTestUuid!);
     this.currentAllureTestUuid = undefined;
@@ -333,69 +365,99 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   jasmineDone(): void {
     this.allureRuntime.writeEnvironmentInfo();
     this.allureRuntime.writeCategoriesDefinitions();
+    // write global container
+    this.allureRuntime.writeCurrentContainer();
   }
 
   private installHooks(): void {
-    // const jasmineBeforeAll: JasmineBeforeAfterFn = global.beforeAll;
-    // const jasmineAfterAll: JasmineBeforeAfterFn = global.afterAll;
-    // const jasmineBeforeEach: JasmineBeforeAfterFn = global.beforeEach;
-    // const jasmineAfterEach: JasmineBeforeAfterFn = global.afterEach;
-    //
-    // const makeWrapperAll = (wrapped: JasmineBeforeAfterFn, fun: () => ExecutableItemWrapper) => {
-    //   return (action: (done: DoneFn) => void, timeout?: number): void => {
-    //     try {
-    //       this.runningExecutable = fun();
-    //     } catch {
-    //       wrapped(action, timeout);
-    //       return;
-    //     }
-    //
-    //     wrapped((done) => {
-    //       let ret;
-    //       if (action.length > 0) {
-    //         // function takes done callback
-    //         ret = this.runningExecutable!.wrap(
-    //           () =>
-    //             // eslint-disable-next-line no-undef
-    //             new Promise((resolve, reject) => {
-    //               const t: any = resolve;
-    //               t.fail = reject;
-    //               // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    //               action(t);
-    //             }),
-    //         )();
-    //       } else {
-    //         ret = this.runningExecutable!.wrap(action)();
-    //       }
-    //       if (isPromise(ret)) {
-    //         (ret as Promise<any>)
-    //           .then(() => {
-    //             this.runningExecutable = null;
-    //             done();
-    //           })
-    //           .catch((e) => {
-    //             this.runningExecutable = null;
-    //             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    //             done.fail(e);
-    //           });
-    //       } else {
-    //         this.runningExecutable = null;
-    //         done();
-    //       }
-    //     }, timeout);
-    //   };
-    // };
-    // global.beforeAll = makeWrapperAll(jasmineBeforeAll, () => {
-    //   // return this.currentGroup.addBefore();
-    // });
-    // global.afterAll = makeWrapperAll(jasmineAfterAll, () => {
-    //   // return this.currentGroup.addAfter();
-    // });
-    // global.beforeEach = makeWrapperAll(jasmineBeforeEach, () => {
-    //   // return this.currentGroup.addBefore();
-    // });
-    // global.afterEach = makeWrapperAll(jasmineAfterEach, () => {
-    //   // return this.currentGroup.addAfter();
-    // });
+    const jasmineBeforeAll: JasmineBeforeAfterFn = global.beforeAll;
+    const jasmineAfterAll: JasmineBeforeAfterFn = global.afterAll;
+    const jasmineBeforeEach: JasmineBeforeAfterFn = global.beforeEach;
+    const jasmineAfterEach: JasmineBeforeAfterFn = global.afterEach;
+    const wrapJasmineHook = (original: JasmineBeforeAfterFn, cb: () => FixtureResult) => {
+      return (action: (done: DoneFn) => void, timeout?: number): void => {
+        const fixture = cb();
+
+        original((done) => {
+          let ret;
+
+          if (action.length > 0) {
+            // function takes done callback
+            ret = new Promise((resolve, reject) => {
+              const t: any = resolve;
+
+              t.fail = reject;
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              action(t);
+            });
+          } else {
+            ret = action(done);
+          }
+
+          if (isPromise(ret)) {
+            (ret as Promise<any>)
+              .then(() => {
+                fixture.stage = Stage.FINISHED;
+                fixture.status = Status.PASSED;
+
+                done();
+              })
+              .catch((e) => {
+                fixture.stage = Stage.FINISHED;
+                fixture.status = Status.BROKEN;
+
+                done.fail(e);
+              });
+          } else {
+            try {
+              fixture.stage = Stage.FINISHED;
+              fixture.status = Status.PASSED;
+
+              done();
+            } catch (err) {
+              const { message, stack } = err as Error;
+
+              fixture.stage = Stage.FINISHED;
+              fixture.status = Status.BROKEN;
+              fixture.statusDetails = {
+                message,
+                trace: stack,
+              };
+
+              throw err;
+            }
+          }
+        }, timeout);
+      };
+    };
+
+    global.beforeAll = wrapJasmineHook(jasmineBeforeAll, () => {
+      const fixture = createFixtureResult();
+
+      this.beforeHooksFixtures.push(fixture);
+
+      return fixture;
+    });
+    global.afterAll = wrapJasmineHook(jasmineAfterAll, () => {
+      const fixture = createFixtureResult();
+
+      this.afterHooksFixtures.push(fixture);
+
+      return fixture;
+    });
+    global.beforeEach = wrapJasmineHook(jasmineBeforeEach, () => {
+      const fixture = createFixtureResult();
+
+      this.beforeHooksFixtures.push(fixture);
+
+      return fixture;
+    });
+    global.afterEach = wrapJasmineHook(jasmineAfterEach, () => {
+      const fixture = createFixtureResult();
+
+      this.afterHooksFixtures.push(fixture);
+
+      return fixture;
+    });
   }
 }
