@@ -2675,15 +2675,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai-arrays@npm:2.0.3":
-  version: 2.0.3
-  resolution: "@types/chai-arrays@npm:2.0.3"
-  dependencies:
-    "@types/chai": "npm:*"
-  checksum: 10/26da0d01f5c998e7e3bf45495761d60d20bea9fe0a05a196f671dc60642e0d2d39632e9ad5020b32d7c1cb893aeedb27ab74535c60132d4cdfa153ebd952f436
-  languageName: node
-  linkType: hard
-
 "@types/chai-like@npm:^1.1.1":
   version: 1.1.3
   resolution: "@types/chai-like@npm:1.1.3"
@@ -4061,42 +4052,6 @@ __metadata:
     tslib: "npm:^2.6.2"
     typescript: "npm:^5.2.2"
     vitest: "npm:^1.4.0"
-  languageName: unknown
-  linkType: soft
-
-"allure-decorators@workspace:packages/allure-decorators":
-  version: 0.0.0-use.local
-  resolution: "allure-decorators@workspace:packages/allure-decorators"
-  dependencies:
-    "@testdeck/mocha": "npm:0.3.3"
-    "@types/chai": "npm:^4.3.6"
-    "@types/chai-arrays": "npm:2.0.3"
-    "@types/eslint": "npm:^8"
-    "@types/glob": "npm:^8.1.0"
-    "@types/mocha": "npm:^10.0.1"
-    "@types/node": "npm:^20.6.3"
-    "@typescript-eslint/eslint-plugin": "npm:^6.7.0"
-    "@typescript-eslint/parser": "npm:^6.7.0"
-    allure-js-commons: "workspace:*"
-    allure-mocha: "workspace:*"
-    chai: "npm:^4.3.8"
-    chai-arrays: "npm:^2.2.0"
-    codecov: "npm:^3.6.5"
-    eslint: "npm:^8.57.0"
-    eslint-config-prettier: "npm:^9.0.0"
-    eslint-plugin-import: "npm:^2.28.1"
-    eslint-plugin-jsdoc: "npm:^48.0.0"
-    eslint-plugin-no-null: "npm:^1.0.2"
-    eslint-plugin-node: "npm:^11.1.0"
-    eslint-plugin-prefer-arrow: "npm:^1.2.3"
-    fs-jetpack: "npm:^4.1.0"
-    glob: "npm:^10.3.5"
-    mocha: "npm:^10.2.0"
-    mocha-multi-reporters: "npm:^1.5.1"
-    rimraf: "npm:^5.0.1"
-    source-map-support: "npm:^0.5.21"
-    ts-node: "npm:^10.9.1"
-    typescript: "npm:^5.2.2"
   languageName: unknown
   linkType: soft
 
@@ -5628,13 +5583,6 @@ __metadata:
   version: 2.6.0
   resolution: "centra@npm:2.6.0"
   checksum: 10/3b4d44762bceb9e20f7e45d01ffb9e462523cf8a0186f6710c08863f0455bceabfbcb754d6b01ea095c3bdee09c4ebef912669dc2b391a9af400e9ba7e398bc5
-  languageName: node
-  linkType: hard
-
-"chai-arrays@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "chai-arrays@npm:2.2.0"
-  checksum: 10/5e8d077b83a155c0cce2a37a2f838b698aca6783b61f0be2a43a98c684627986063945a5b38ce5bbdf75135afec13a90f4b9ad643d68ce2e379e106f3aed7235
   languageName: node
   linkType: hard
 

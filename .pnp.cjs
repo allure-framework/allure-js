@@ -26,10 +26,6 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:packages/allure-cypress"\
     },\
     {\
-      "name": "allure-decorators",\
-      "reference": "workspace:packages/allure-decorators"\
-    },\
-    {\
       "name": "allure-jasmine",\
       "reference": "workspace:packages/allure-jasmine"\
     },\
@@ -68,7 +64,6 @@ const RAW_RUNTIME_STATE =
     ["allure-codeceptjs", ["workspace:packages/allure-codeceptjs"]],\
     ["allure-cucumberjs", ["workspace:packages/allure-cucumberjs"]],\
     ["allure-cypress", ["workspace:packages/allure-cypress"]],\
-    ["allure-decorators", ["workspace:packages/allure-decorators"]],\
     ["allure-jasmine", ["workspace:packages/allure-jasmine"]],\
     ["allure-jest", ["workspace:packages/allure-jest"]],\
     ["allure-js", ["workspace:."]],\
@@ -3896,16 +3891,6 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
-    ["@types/chai-arrays", [\
-      ["npm:2.0.3", {\
-        "packageLocation": "./.yarn/cache/@types-chai-arrays-npm-2.0.3-bd81117c4c-26da0d01f5.zip/node_modules/@types/chai-arrays/",\
-        "packageDependencies": [\
-          ["@types/chai-arrays", "npm:2.0.3"],\
-          ["@types/chai", "npm:4.3.12"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
     ["@types/chai-like", [\
       ["npm:1.1.3", {\
         "packageLocation": "./.yarn/cache/@types-chai-like-npm-1.1.3-a544cd56e3-7eb9176306.zip/node_modules/@types/chai-like/",\
@@ -5438,44 +5423,6 @@ const RAW_RUNTIME_STATE =
           ["tslib", "npm:2.6.2"],\
           ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\
           ["vitest", "virtual:6d38a828fa67a73f8257f65a124cb85372d7d0d896209b6ced40d48357d3207ca310e5ee72de5e4f845eddc9ef2b335bbb2ea733cf925469fc4898859b69f6cc#npm:1.4.0"]\
-        ],\
-        "linkType": "SOFT"\
-      }]\
-    ]],\
-    ["allure-decorators", [\
-      ["workspace:packages/allure-decorators", {\
-        "packageLocation": "./packages/allure-decorators/",\
-        "packageDependencies": [\
-          ["allure-decorators", "workspace:packages/allure-decorators"],\
-          ["@testdeck/mocha", "npm:0.3.3"],\
-          ["@types/chai", "npm:4.3.12"],\
-          ["@types/chai-arrays", "npm:2.0.3"],\
-          ["@types/eslint", "npm:8.56.3"],\
-          ["@types/glob", "npm:8.1.0"],\
-          ["@types/mocha", "npm:10.0.6"],\
-          ["@types/node", "npm:20.11.20"],\
-          ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.21.0"],\
-          ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:6.21.0"],\
-          ["allure-js-commons", "workspace:packages/allure-js-commons"],\
-          ["allure-mocha", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#workspace:packages/allure-mocha"],\
-          ["chai", "npm:4.4.1"],\
-          ["chai-arrays", "npm:2.2.0"],\
-          ["codecov", "npm:3.8.2"],\
-          ["eslint", "npm:8.57.0"],\
-          ["eslint-config-prettier", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:9.1.0"],\
-          ["eslint-plugin-import", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:2.29.1"],\
-          ["eslint-plugin-jsdoc", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:48.2.0"],\
-          ["eslint-plugin-no-null", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.0.2"],\
-          ["eslint-plugin-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:11.1.0"],\
-          ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
-          ["fs-jetpack", "npm:4.3.1"],\
-          ["glob", "npm:10.3.10"],\
-          ["mocha", "npm:10.3.0"],\
-          ["mocha-multi-reporters", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:1.5.1"],\
-          ["rimraf", "npm:5.0.5"],\
-          ["source-map-support", "npm:0.5.21"],\
-          ["ts-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:10.9.2"],\
-          ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -7339,15 +7286,6 @@ const RAW_RUNTIME_STATE =
           ["deep-eql", "npm:5.0.1"],\
           ["loupe", "npm:3.1.0"],\
           ["pathval", "npm:2.0.0"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
-    ["chai-arrays", [\
-      ["npm:2.2.0", {\
-        "packageLocation": "./.yarn/cache/chai-arrays-npm-2.2.0-beaeeeb6fe-5e8d077b83.zip/node_modules/chai-arrays/",\
-        "packageDependencies": [\
-          ["chai-arrays", "npm:2.2.0"]\
         ],\
         "linkType": "HARD"\
       }]\
