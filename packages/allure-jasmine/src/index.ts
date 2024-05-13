@@ -203,13 +203,11 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   private readonly allureRuntime: AllureNodeReporterRuntime;
   private currentAllureTestUuid?: string;
   private jasmineSuitesStack: jasmine.SuiteResult[] = [];
-  private beforeHooksFixtures: FixtureResult[] = [];
-  private afterHooksFixtures: FixtureResult[] = [];
+  private globalBeforeHooksFixtures: FixtureResult[] = [];
+  private globalAfterHooksFixtures: FixtureResult[] = [];
 
   constructor(config: AllureJasmineConfig) {
     const { testMode, resultsDir = "./allure-results", ...restConfig } = config || {};
-
-    console.log("jasmine reporter init");
 
     this.allureRuntime = new AllureNodeReporterRuntime({
       ...restConfig,
@@ -225,6 +223,9 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     setGlobalTestRuntime(testRuntime);
 
     this.installHooks();
+
+    // the best place to start global container for hooks and nested suites
+    this.allureRuntime.startContainer({ name: "Global" });
   }
 
   private getCurrentSpecPath() {
@@ -273,14 +274,9 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
       originalExpectationHandler.call(this, passed, data, isError);
     };
-
-    // TODO:
-    this.allureRuntime.startContainer({ name: "Global" });
   }
 
   suiteStarted(suite: jasmine.SuiteResult): void {
-    console.log("suite started", suite.description);
-
     this.jasmineSuitesStack.push(suite);
 
     this.allureRuntime.startContainer({ name: suite.description });
@@ -293,8 +289,6 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   }
 
   specStarted(spec: jasmine.SpecResult): void {
-    console.log("spec started ", spec.description);
-
     this.currentAllureTestUuid = this.allureRuntime.start({
       name: spec.description,
       fullName: this.getSpecFullName(spec),
@@ -303,7 +297,6 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   }
 
   specDone(spec: jasmine.SpecResult): void {
-    console.log("spec done");
     const specPath = this.getCurrentSpecPath();
     const exceptionInfo = findMessageAboutThrow(spec.failedExpectations) || findAnyError(spec.failedExpectations);
 
@@ -347,14 +340,12 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     this.allureRuntime.updateCurrentContainer((container) => {
       // add hooks only when they weren't added to the container before (we need to do it once)
       if (!container.befores.length) {
-        container.befores.push(...this.beforeHooksFixtures);
+        container.befores.push(...this.globalBeforeHooksFixtures);
       }
 
       if (!container.afters.length) {
-        container.afters.push(...this.afterHooksFixtures);
+        container.afters.push(...this.globalAfterHooksFixtures);
       }
-
-      container.children.push(this.currentAllureTestUuid!);
     });
 
     this.allureRuntime.stop(this.currentAllureTestUuid!);
@@ -374,9 +365,9 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     const jasmineAfterAll: JasmineBeforeAfterFn = global.afterAll;
     const jasmineBeforeEach: JasmineBeforeAfterFn = global.beforeEach;
     const jasmineAfterEach: JasmineBeforeAfterFn = global.afterEach;
-    const wrapJasmineHook = (original: JasmineBeforeAfterFn, cb: () => FixtureResult) => {
+    const wrapJasmineHook = (original: JasmineBeforeAfterFn, cb: (fixture: FixtureResult) => void) => {
       return (action: (done: DoneFn) => void, timeout?: number): void => {
-        const fixture = cb();
+        const fixture = createFixtureResult();
 
         original((done) => {
           let ret;
@@ -401,12 +392,14 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
                 fixture.status = Status.PASSED;
 
                 done();
+                cb(fixture);
               })
-              .catch((e) => {
+              .catch((err) => {
                 fixture.stage = Stage.FINISHED;
                 fixture.status = Status.BROKEN;
 
-                done.fail(e);
+                done.fail(err as Error);
+                cb(fixture);
               });
           } else {
             try {
@@ -414,6 +407,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
               fixture.status = Status.PASSED;
 
               done();
+              cb(fixture);
             } catch (err) {
               const { message, stack } = err as Error;
 
@@ -424,6 +418,8 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
                 trace: stack,
               };
 
+              cb(fixture);
+
               throw err;
             }
           }
@@ -431,33 +427,25 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
       };
     };
 
-    global.beforeAll = wrapJasmineHook(jasmineBeforeAll, () => {
-      const fixture = createFixtureResult();
-
-      this.beforeHooksFixtures.push(fixture);
-
-      return fixture;
+    global.beforeAll = wrapJasmineHook(jasmineBeforeAll, (fixture) => {
+      this.allureRuntime.updateCurrentContainer((container) => {
+        container.befores.push(fixture);
+      });
     });
-    global.afterAll = wrapJasmineHook(jasmineAfterAll, () => {
-      const fixture = createFixtureResult();
-
-      this.afterHooksFixtures.push(fixture);
-
-      return fixture;
+    global.beforeEach = wrapJasmineHook(jasmineBeforeEach, (fixture) => {
+      this.allureRuntime.updateCurrentContainer((container) => {
+        container.befores.push(fixture);
+      });
     });
-    global.beforeEach = wrapJasmineHook(jasmineBeforeEach, () => {
-      const fixture = createFixtureResult();
-
-      this.beforeHooksFixtures.push(fixture);
-
-      return fixture;
+    global.afterAll = wrapJasmineHook(jasmineAfterAll, (fixture) => {
+      this.allureRuntime.updateCurrentContainer((container) => {
+        container.afters.push(fixture);
+      });
     });
-    global.afterEach = wrapJasmineHook(jasmineAfterEach, () => {
-      const fixture = createFixtureResult();
-
-      this.afterHooksFixtures.push(fixture);
-
-      return fixture;
+    global.afterEach = wrapJasmineHook(jasmineAfterEach, (fixture) => {
+      this.allureRuntime.updateCurrentContainer((container) => {
+        container.afters.push(fixture);
+      });
     });
   }
 }

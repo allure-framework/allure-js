@@ -107,8 +107,6 @@ export const runJasmineInlineTest = async (files: Record<string, string>): Promi
   testProcess.on("message", (message: string) => {
     const event: { path: string; type: string; data: string } = JSON.parse(message);
 
-    console.log({ event })
-
     switch (event.type) {
       case "container":
         res.groups.push(parseJsonResult<TestResultContainer>(event.data));

@@ -78,6 +78,11 @@ export class ReporterRuntime {
     return fixtureUuid ? this.state.getFixture(fixtureUuid) : undefined;
   };
 
+  getCurrentContainer = () => {
+    const containerUuid = this.contextProvider.getContainer();
+    return containerUuid ? this.state.getTestContainer(containerUuid) : undefined;
+  };
+
   getCurrentStep = () => {
     const stepUuid = this.contextProvider.getStep();
     return stepUuid ? this.state.getStep(stepUuid) : undefined;
