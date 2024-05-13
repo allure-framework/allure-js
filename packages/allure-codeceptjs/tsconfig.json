@@ -1,15 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "include": [
-    "./src/**/*"
-  ],
-  "exclude": [
+    "./src/**/*",
     "./test/**/*"
   ],
   "compilerOptions": {
     "skipLibCheck": true,
-    "declaration": true,
-    "emitDeclarationOnly": true,
     "module": "ESNext",
     "target": "ES2022",
     "moduleResolution": "bundler",
@@ -18,8 +14,7 @@
       "esnext"
     ],
     "types": [
-      "node",
-      "mocha"
+      "node"
     ],
     "outDir": "./dist"
   }

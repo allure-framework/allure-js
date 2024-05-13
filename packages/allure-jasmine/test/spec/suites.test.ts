@@ -3,7 +3,8 @@ import { LabelName } from "allure-js-commons";
 import { runJasmineInlineTest } from "../utils";
 
 it("sets labels", async () => {
-  const { tests } = await runJasmineInlineTest(`
+  const { tests } = await runJasmineInlineTest({
+    "spec/test/sample.spec.js": `
     describe("first suite", () => {
       describe("second suite", () => {
         describe("third suite", () => {
@@ -25,7 +26,8 @@ it("sets labels", async () => {
         });
       });
     });
-  `);
+  `
+  });
 
   expect(tests).toHaveLength(3);
   expect(tests).toEqual(expect.arrayContaining([

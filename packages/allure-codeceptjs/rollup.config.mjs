@@ -1,5 +1,3 @@
-import commonjsPlugin from "@rollup/plugin-commonjs";
-import resolvePlugin from "@rollup/plugin-node-resolve";
 import typescriptPlugin from "@rollup/plugin-typescript";
 import { globSync } from "glob";
 import { join, relative } from "node:path";
@@ -26,8 +24,6 @@ const createNodeEntry = (inputFile) => {
         typescriptPlugin({
           tsconfig: "./tsconfig.rollup.json",
         }),
-        // resolvePlugin(),
-        // commonjsPlugin(),
       ],
       external,
     }),
@@ -42,8 +38,6 @@ const createNodeEntry = (inputFile) => {
         typescriptPlugin({
           tsconfig: "./tsconfig.rollup.json",
         }),
-        // resolvePlugin(),
-        // commonjsPlugin(),
       ],
       external,
     }),

@@ -1,18 +1,7 @@
 {
-  "extends": "../../tsconfig.json",
-  "include": [
-    "./src/**/*",
-    "index.ts",
-    "internal.ts",
-  ],
+  "extends": "./tsconfig.json",
+  "exclude": ["./test/**/*"],
   "compilerOptions": {
-    "declaration": false,
-    "target": "ES2015",
-    "lib": ["dom", "esnext"],
-    "moduleResolution": "bundler",
-    "types": [
-      "node",
-      "jasmine"
-    ],
+    "declaration": false
   }
 }

@@ -1,12 +1,13 @@
 {
   "extends": "../../tsconfig.json",
   "include": [
-    "./src/**/*"
+    "./src/**/*",
+    "./test/**/*",
+    "index.ts",
+    "internal.ts"
   ],
   "compilerOptions": {
     "skipLibCheck": true,
-    "declaration": true,
-    "emitDeclarationOnly": true,
     "module": "ESNext",
     "target": "ES2022",
     "moduleResolution": "bundler",

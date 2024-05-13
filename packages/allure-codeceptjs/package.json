@@ -29,7 +29,7 @@
     "clean": "rimraf ./dist ./out ./test-results",
     "compile": "run-p 'compile:*'",
     "compile:lib": "rollup -c",
-    "compile:types": "tsc --project ./tsconfig.json",
+    "compile:types": "tsc --project ./tsconfig.dts.json",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix",
     "test": "vitest run test/spec"
@@ -41,7 +41,6 @@
   "devDependencies": {
     "@codeceptjs/configure": "^0.10.0",
     "@codeceptjs/helper": "^2.0.4",
-    "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/eslint": "^8",

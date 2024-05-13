@@ -18,8 +18,7 @@ const createNodeEntry = (inputFile) => {
     "strip-ansi",
     "allure-js-commons/new",
     "allure-js-commons/new/sdk/node",
-    "allure-js-commons/new/internal",
-    "@playwright/test",
+    "allure-js-commons/new/internal"
   ];
 
   return [

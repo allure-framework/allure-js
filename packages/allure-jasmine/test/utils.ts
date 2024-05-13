@@ -3,8 +3,14 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { parse } from "properties";
-import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
-import { LinkType, Status } from "allure-js-commons/new/sdk/node";
+import {
+  AllureResults,
+  EnvironmentInfo,
+  LinkType,
+  Status,
+  TestResult,
+  TestResultContainer,
+} from "allure-js-commons/new/sdk/node";
 
 export type TestResultsByFullName = Record<string, TestResult>;
 
@@ -119,7 +125,9 @@ export const runJasmineInlineTest = async (files: Record<string, string>): Promi
         break;
       case "misc":
         res.envInfo =
-          event.path === "environment.properties" ? parse(Buffer.from(event.data, "base64").toString()) : undefined;
+          event.path === "environment.properties"
+            ? (parse(Buffer.from(event.data, "base64").toString()) as EnvironmentInfo)
+            : undefined;
         res.categories = event.path === "categories.json" ? parseJsonResult(event.data) : undefined;
         break;
       default:

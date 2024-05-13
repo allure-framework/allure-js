@@ -2,13 +2,15 @@ import { expect, it } from "vitest";
 import { runJasmineInlineTest } from "../utils";
 
 it("handles json attachment", async () => {
-  const { tests, attachments } = await runJasmineInlineTest(`
+  const { tests, attachments } = await runJasmineInlineTest({
+    "spec/test/sample.spec.js": `
     const { attachment } = require("allure-js-commons/new");
 
     it("json", async () => {
       await attachment("Request body", JSON.stringify({ foo: "bar" }), "application/json");
     });
-  `);
+  `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].attachments).toHaveLength(1);

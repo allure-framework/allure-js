@@ -1,22 +1,23 @@
 {
   "extends": "../../tsconfig.json",
   "include": [
-    "./src/**/*"
-  ],
-  "exclude": [
-    "test/**",
-    "runtime.d.ts",
-    "./src/MochaAllure.ts",
-    "./src/AllureReporter.ts"
+    "./src/**/*",
+    "./test/**/*",
+    "index.ts",
+    "internal.ts"
   ],
   "compilerOptions": {
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "lib": ["DOM", "ESNext"],
+    "skipLibCheck": true,
     "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "outDir": "./dist",
     "target": "ES2022",
-    "types": ["node"]
-  },
+    "moduleResolution": "bundler",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "types": [
+      "node"
+    ],
+    "outDir": "./dist"
+  }
 }

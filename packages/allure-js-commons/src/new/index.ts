@@ -30,6 +30,7 @@ export {
   AllureResults,
   Category,
   ContentType,
+  EnvironmentInfo,
   ParameterMode,
   ParameterOptions,
   Parameter,

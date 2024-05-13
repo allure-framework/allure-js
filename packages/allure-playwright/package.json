@@ -43,7 +43,7 @@
     "clean": "rimraf ./dist ./out",
     "compile": "run-p 'compile:*'",
     "compile:lib": "rollup -c",
-    "compile:types": "tsc --project ./tsconfig.json",
+    "compile:types": "tsc --project ./tsconfig.dts.json",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix",

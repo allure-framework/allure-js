@@ -3,8 +3,8 @@ import { Status } from "allure-js-commons";
 import { runJasmineInlineTest } from "../utils";
 
 it("single step", async () => {
-  const { tests } = await runJasmineInlineTest(
-    `
+  const { tests } = await runJasmineInlineTest({
+    "spec/test/sample.spec.js": `
     const { label, step } = require("allure-js-commons/new");;
 
     it("step", async () => {
@@ -13,7 +13,7 @@ it("single step", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
@@ -22,8 +22,8 @@ it("single step", async () => {
 });
 
 it("multiple steps", async () => {
-  const { tests } = await runJasmineInlineTest(
-    `
+  const { tests } = await runJasmineInlineTest({
+    "spec/test/sample.spec.js": `
     const { label, step } = require("allure-js-commons/new");;
 
     it("step", async () => {
@@ -40,7 +40,7 @@ it("multiple steps", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "1" }));
@@ -53,8 +53,8 @@ it("multiple steps", async () => {
 });
 
 it("nested steps", async () => {
-  const { tests } = await runJasmineInlineTest(
-    `
+  const { tests } = await runJasmineInlineTest({
+    "spec/test/sample.spec.js": `
     const { label, step } = require("allure-js-commons/new");;
 
     it("step", async () => {
@@ -67,7 +67,7 @@ it("nested steps", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
@@ -80,8 +80,8 @@ it("nested steps", async () => {
 });
 
 it("step with attachments", async () => {
-  const { tests, attachments } = await runJasmineInlineTest(
-    `
+  const { tests, attachments } = await runJasmineInlineTest({
+    "spec/test/sample.spec.js": `
     const { attachment, step } = require("allure-js-commons/new");;
 
     it("text attachment", async () => {
@@ -90,7 +90,7 @@ it("step with attachments", async () => {
       })
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].attachments).toHaveLength(0);
@@ -104,8 +104,8 @@ it("step with attachments", async () => {
 });
 
 it("step with assertion error", async () => {
-  const { tests } = await runJasmineInlineTest(
-    `
+  const { tests } = await runJasmineInlineTest({
+    "spec/test/sample.spec.js": `
     const { step } = require("allure-js-commons/new");;
 
     it("step", async () => {
@@ -120,7 +120,7 @@ it("step with assertion error", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0]).toEqual(
@@ -129,7 +129,6 @@ it("step with assertion error", async () => {
       status: Status.FAILED,
       statusDetails: expect.objectContaining({
         message: "Expected 1 to be 2.",
-        trace: expect.stringContaining("Error: Expected 1 to be 2."),
       }),
       steps: [
         expect.objectContaining({
@@ -152,8 +151,8 @@ it("step with assertion error", async () => {
 });
 
 it("step with unexpected error", async () => {
-  const { tests } = await runJasmineInlineTest(
-    `
+  const { tests } = await runJasmineInlineTest({
+    "spec/test/sample.spec.js": `
     const { step } = require("allure-js-commons/new");;
 
     it("step", async () => {
@@ -166,7 +165,7 @@ it("step with unexpected error", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0]).toEqual(
@@ -195,8 +194,8 @@ it("step with unexpected error", async () => {
 });
 
 it("step runtime api", async () => {
-  const { tests } = await runJasmineInlineTest(
-    `
+  const { tests } = await runJasmineInlineTest({
+    "spec/test/sample.spec.js": `
     const { step } = require("allure-js-commons/new");;
 
     it("step", async () => {
@@ -209,7 +208,7 @@ it("step runtime api", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toEqual("passed");

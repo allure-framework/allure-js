@@ -9,6 +9,6 @@ module.exports = {
   },
   extends: ["../../.eslintrc.cjs"],
   parserOptions: {
-    project: "./tsconfig.test.json",
+    project: "./tsconfig.json",
   },
 };

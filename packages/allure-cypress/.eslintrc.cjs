@@ -6,5 +6,8 @@ module.exports = {
   },
   env: {
     "cypress/globals": true,
-  }
+  },
+  parserOptions: {
+    project: "./tsconfig.json",
+  },
 };

@@ -3940,7 +3940,6 @@ __metadata:
   dependencies:
     "@codeceptjs/configure": "npm:^0.10.0"
     "@codeceptjs/helper": "npm:^2.0.4"
-    "@rollup/plugin-commonjs": "npm:^25.0.7"
     "@rollup/plugin-node-resolve": "npm:^15.2.3"
     "@rollup/plugin-typescript": "npm:^11.1.6"
     "@types/eslint": "npm:^8"
