@@ -1,20 +1,22 @@
 import { AllureContextProviderBase } from "./AllureContextProviderBase.js";
-import { AllureContext, AllureContextBox } from "./types.js";
+import { AllureContext, AllureContextHolder } from "./types.js";
 
 /**
  * Allure context that stores its data in mutable class fields.
  * Unsafe from the cuncurrency standpoint.
  */
 export class MutableAllureContext implements AllureContext {
-  readonly containerStack: string[] = [];
+  readonly scopeStack: string[] = [];
   currentFixture: string | null = null;
   currentTest: string | null = null;
   readonly stepStacks: Map<string, string[]> = new Map();
 
-  getContainerStack = () => this.containerStack;
+  getScope = () => MutableAllureContext.last(this.scopeStack);
   getFixture = () => this.currentFixture;
   getTest = () => this.currentTest;
-  getStepStack = (scope: string) => this.stepStacks.get(scope) ?? [];
+  getStep = (scope: string) => MutableAllureContext.last(this.stepStacks.get(scope));
+
+  private static last = <T>(arr: T[] | undefined) => arr?.[arr.length - 1] ?? null;
 }
 
 /**
@@ -22,21 +24,21 @@ export class MutableAllureContext implements AllureContext {
  * object.
  * Unsafe from the cuncurrency standpoint.
  */
-export class MutableAllureContextBox implements AllureContextBox<MutableAllureContext> {
+export class MutableAllureContextHolder implements AllureContextHolder<MutableAllureContext> {
   private readonly context: MutableAllureContext = new MutableAllureContext();
 
   get = () => this.context;
 
-  addContainer = (uuid: string) => {
-    this.context.containerStack.push(uuid);
+  addScope = (uuid: string) => {
+    this.context.scopeStack.push(uuid);
   };
 
-  removeContainer = () => {
-    this.context.containerStack.pop();
+  removeScope = () => {
+    this.context.scopeStack.pop();
   };
 
-  removeContainerByUuid = (uuid: string) =>
-    MutableAllureContextBox.removeAllOccurrences(this.context.containerStack, uuid);
+  removeScopeByUuid = (uuid: string) =>
+    MutableAllureContextHolder.removeAllOccurrences(this.context.scopeStack, uuid);
 
   setFixture = (uuid: string) => {
     this.context.currentFixture = uuid;
@@ -76,7 +78,7 @@ export class MutableAllureContextBox implements AllureContextBox<MutableAllureCo
   removeStepByUuid = (scope: string, uuid: string) => {
     const steps = this.context.stepStacks.get(scope);
     if (steps) {
-      MutableAllureContextBox.removeAllOccurrences(steps, uuid);
+      MutableAllureContextHolder.removeAllOccurrences(steps, uuid);
       if (!steps.length) {
         this.context.stepStacks.delete(scope);
       }
@@ -96,22 +98,27 @@ export class MutableAllureContextBox implements AllureContextBox<MutableAllureCo
  */
 export class StaticContextProvider<
   TContext extends AllureContext,
-  TBox extends AllureContextBox<TContext>,
-> extends AllureContextProviderBase<TContext, TBox> {
-  constructor(private readonly boxSingleton: TBox) {
+  THolder extends AllureContextHolder<TContext>,
+> extends AllureContextProviderBase<TContext, THolder> {
+
+  constructor(private readonly holderSingleton: THolder) {
     super();
   }
 
-  protected override load = () => this.boxSingleton;
+  protected override load = () => this.holderSingleton;
 
-  /* The changes are already persisted in the box singleton. */
-  protected store = () => {};
+  /* The changes are already persisted in the holder singleton. */
+  protected store = (holder: THolder) => {
+    if (!Object.is(holder, this.holderSingleton)) {
+      throw new Error("The static context holder can'be replaced with another one.");
+    }
+  };
 
   /**
-   * Wraps a context box singleton in the static context provider.
-   * @param boxSingleton The singleton to wrap.
+   * Wraps a context holder singleton in the static context provider.
+   * @param holderSingleton The singleton to wrap.
    */
   // eslint-disable-next-line @typescript-eslint/no-shadow
-  static wrap = <TContext extends AllureContext, TBox extends AllureContextBox<TContext>>(boxSingleton: TBox) =>
-    new StaticContextProvider<TContext, TBox>(boxSingleton);
+  static wrap = <TContext extends AllureContext, THolder extends AllureContextHolder<TContext>>(holderSingleton: THolder) =>
+    new StaticContextProvider<TContext, THolder>(holderSingleton);
 }

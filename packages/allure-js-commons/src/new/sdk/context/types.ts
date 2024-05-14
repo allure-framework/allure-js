@@ -2,21 +2,21 @@
  * Represents a snapshot of the Allure state at some particular moment during the run.
  */
 export type AllureContext = {
-  getContainerStack: () => readonly string[];
+  getScope: () => string | null;
   getFixture: () => string | null;
   getTest: () => string | null;
-  getStepStack: (scope: string) => readonly string[];
+  getStep: (root: string) => string | null;
 };
 
 /**
  * Implements the transitions from one snapshot to another.
  */
-export type AllureContextBox<TContext extends AllureContext> = {
+export type AllureContextHolder<TContext extends AllureContext> = {
   get: () => TContext;
 
-  addContainer: (uuid: string) => void;
-  removeContainer: () => void;
-  removeContainerByUuid: (uuid: string) => void;
+  addScope: (uuid: string) => void;
+  removeScope: () => void;
+  removeScopeByUuid: (uuid: string) => void;
 
   setFixture: (uuid: string) => void;
   removeFixture: () => void;
@@ -24,41 +24,26 @@ export type AllureContextBox<TContext extends AllureContext> = {
   setTest: (uuid: string) => void;
   removeTest: () => void;
 
-  addStep: (scope: string, uuid: string) => void;
-  removeStep: (scope: string) => void;
-  removeStepByUuid: (scope: string, uuid: string) => void;
+  addStep: (root: string, uuid: string) => void;
+  removeStep: (root: string) => void;
 };
 
 /**
  * Provides the set of methods to access and update the context.
  */
 export type AllureContextProvider = {
-  getContainerStack: () => readonly string[];
-  getContainer: () => string | null;
+  getScope: () => string | null;
   getFixture: () => string | null;
   getTest: () => string | null;
-  getStepScope: () => string | null;
-  getStep: () => string | null;
-  getExecutionItem: () => string | null;
-  addContainer: (uuid: string) => void;
-  removeContainer: () => void;
+  getStepRoot: () => string | null;
+  getStep: (root?: string) => string | null;
+  getExecutingItem: (root?: string) => string | null;
+  addScope: (uuid: string) => void;
+  removeScope: (uuid?: string) => void;
   setFixture: (uuid: string) => void;
-  removeFixture: () => void;
+  removeFixture: (uuid?: string) => void;
   setTest: (uuid: string) => void;
-  removeTest: () => void;
-  addStep: (uuid: string) => void;
-  removeStep: () => void;
-
-  /*
-   * Methods for manual UUID management.
-   */
-
-  getStepOfScope: (scope: string) => string | null;
-  getExecutionItemByScope: (scope: string) => string;
-  removeContainerByUuid: (uuid: string) => void;
-  removeFixtureByUuid: (uuid: string) => void;
-  removeTestByUuid: (uuid: string) => void;
-  addStepToScope: (scope: string, uuid: string) => void;
-  removeStepFromScope: (scope: string) => void;
-  removeStepFromScopeByUuid: (scope: string, uuid: string) => void;
+  removeTest: (uuid?: string) => void;
+  addStep: (uuid: string, root?: string) => void;
+  removeStep: (root?: string, uuid?: string) => void;
 };

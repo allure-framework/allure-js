@@ -23,4 +23,5 @@ export {
   RuntimeMessage,
   ExtensionMessage,
 } from "../model.js";
+export * from "./context/index.js";
 export * from "../index.js";

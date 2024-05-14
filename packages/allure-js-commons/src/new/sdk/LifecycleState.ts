@@ -1,20 +1,39 @@
-import { FixtureResult, StepResult, TestResult, TestResultContainer } from "../model.js";
-import { createTestResultContainer } from "./utils.js";
+import { FixtureResult, StepResult, TestResult } from "../model.js";
+
+export type TestScope = {
+  uuid: string;
+  tests: string[];
+  parent?: TestScope;
+  subScopes: TestScope[];
+  fixtures: FixtureWrapper[];
+};
+
+export type FixtureType = "before" | "after";
+
+export type FixtureWrapper = {
+  uuid: string;
+  value: FixtureResult;
+  scope?: TestScope;
+  type: FixtureType;
+};
 
 export class LifecycleState {
+  scopes = new Map<string, TestScope>();
+
   testResults = new Map<string, TestResult>();
 
   stepResults = new Map<string, StepResult>();
 
-  fixturesResults = new Map<string, FixtureResult>();
+  fixturesResults = new Map<string, FixtureWrapper>();
 
-  testContainers = new Map<string, TestResultContainer>();
+  getScope = (uuid: string) =>
+    this.scopes.get(uuid);
 
-  getTestContainer = (uuid: string) =>
-    this.testContainers.get(uuid);
+  getWrappedFixture = (uuid: string) =>
+    this.fixturesResults.get(uuid);
 
   getFixture = (uuid: string) =>
-    this.fixturesResults.get(uuid);
+    this.getWrappedFixture(uuid)?.value;
 
   getTest = (uuid: string) =>
     this.testResults.get(uuid);
@@ -23,7 +42,7 @@ export class LifecycleState {
     this.stepResults.get(uuid);
 
   getExecutionItem = (uuid: string) =>
-    this.fixturesResults.get(uuid)
+    this.fixturesResults.get(uuid)?.value
       ?? this.testResults.get(uuid)
       ?? this.stepResults.get(uuid);
 
@@ -46,23 +65,34 @@ export class LifecycleState {
   };
 
   // fixtures
-  setFixtureResult = (uuid: string, result: FixtureResult) => {
-    this.fixturesResults.set(uuid, result);
+  setFixtureResult = (uuid: string, type: FixtureType, result: FixtureResult) => {
+    const wrappedResult: FixtureWrapper = {
+      uuid,
+      type,
+      value: result,
+    };
+    this.fixturesResults.set(uuid, wrappedResult);
+    return wrappedResult;
   };
 
   deleteFixtureResult = (uuid: string) => {
     this.fixturesResults.delete(uuid);
   };
 
-  // test containers
-  setTestContainer = (uuid: string, container: Partial<TestResultContainer>) => {
-    this.testContainers.set(uuid, {
-      ...createTestResultContainer(uuid),
-      ...container,
-    });
+  // test scopes
+  setScope = (uuid: string, data: Partial<TestScope> = {}) => {
+    const scope: TestScope = {
+      fixtures: [],
+      tests: [],
+      subScopes: [],
+      ...data,
+      uuid,
+    };
+    this.scopes.set(uuid, scope);
+    return scope;
   };
 
-  deleteTestContainer = (uuid: string) => {
-    this.testContainers.delete(uuid);
+  deleteScope = (uuid: string) => {
+    this.scopes.delete(uuid);
   };
 }

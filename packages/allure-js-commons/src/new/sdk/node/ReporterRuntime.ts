@@ -17,51 +17,23 @@ export class AllureNodeReporterRuntime extends ReporterRuntime {
   }
 
   writeAttachmentFromPath = (
-    uuid: string,
     attachmentName: string,
     attachmentPath: string,
     options: AttachmentOptions,
+    uuid?: string,
   ) => {
-    const target = this.getCurrentExecutableOf(uuid);
+    const target = this.getCurrentExecutingItem(uuid);
     if (!target) {
-      // eslint-disable-next-line no-console
-      console.error(`No fixture or test (${uuid}) to attach!`);
+      if (uuid) {
+        // eslint-disable-next-line no-console
+        console.error(`No test or fixture ${uuid} to attach!`);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("No current test or fixture to attach!");
+      }
       return;
     }
 
-    return this.attachFromPath(attachmentName, attachmentPath, options, target);
-  };
-
-  writeAttachmentToCurrentItemFromPath = (
-    attachmentName: string,
-    attachmentPath: string,
-    options: AttachmentOptions,
-  ) => {
-    const target = this.getCurrentExecutable();
-    if (!target) {
-      // eslint-disable-next-line no-console
-      console.error("No current fixture, test, or step to attach!");
-      return;
-    }
-    return this.attachFromPath(attachmentName, attachmentPath, options, target);
-  };
-
-  protected override createTestResult(result: Partial<TestResult>, start?: number | undefined): TestResult {
-    return super.createTestResult(
-      {
-        ...result,
-        labels: (result.labels ?? []).concat(getGlobalLabels())
-      },
-      start
-    );
-  }
-
-  private attachFromPath = (
-    attachmentName: string,
-    attachmentPath: string,
-    options: AttachmentOptions,
-    target: Executable,
-  ) => {
     const attachmentFilename = this.buildAttachmentFileName(options);
 
     this.writer.writeAttachmentFromPath(attachmentPath, attachmentFilename);
@@ -76,4 +48,13 @@ export class AllureNodeReporterRuntime extends ReporterRuntime {
 
     return attachmentFilename;
   };
+
+  protected override createTestResult(result: Partial<TestResult>): TestResult {
+    return super.createTestResult(
+      {
+        ...result,
+        labels: (result.labels ?? []).concat(getGlobalLabels())
+      }
+    );
+  }
 }
