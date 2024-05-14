@@ -9,16 +9,17 @@ import {
   TestRuntime,
   getStatusFromError,
   Label,
-  Link
+  Link,
+  setGlobalTestRuntime,
 } from "allure-js-commons/new/sdk/node";
 import { errorToStatusDetails } from "./utils";
 
-export class AllureMochaTestRuntime implements TestRuntime {
-  constructor(private readonly reporterRuntime: ReporterRuntime) {
-  }
+export class ContextBasedTestRuntime implements TestRuntime {
+
+  constructor(private readonly reporterRuntime: ReporterRuntime) { }
 
   labels = async (...lablesList: Label[]) => {
-    await this.applyToCurrentTest({
+    await this.applyToContext({
       type: "metadata",
       data: {
         labels: lablesList
@@ -27,7 +28,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
   };
 
   links = async (...linksList: Link[]) => {
-    await this.applyToCurrentTest({
+    await this.applyToContext({
       type: "metadata",
       data: {
         links: linksList
@@ -36,7 +37,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
   };
 
   parameter = async (name: string, value: string, options?: ParameterOptions) => {
-    await this.applyToCurrentTest({
+    await this.applyToContext({
       type: "metadata",
       data: {
         parameters: [{name, value, ...options}]
@@ -45,7 +46,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
   }
 
   description = async (markdown: string) => {
-    await this.applyToCurrentTest({
+    await this.applyToContext({
       type: "metadata",
       data: {
         description: markdown,
@@ -54,7 +55,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
   }
 
   descriptionHtml = async (html: string) => {
-    await this.applyToCurrentTest({
+    await this.applyToContext({
       type: "metadata",
       data: {
         descriptionHtml: html,
@@ -63,7 +64,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
   }
 
   displayName = async (name: string) => {
-    await this.applyToCurrentTest({
+    await this.applyToContext({
       type: "metadata",
       data: {
         displayName: name,
@@ -72,7 +73,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
   }
 
   historyId = async (value: string) => {
-    await this.applyToCurrentTest({
+    await this.applyToContext({
       type: "metadata",
       data: {
         historyId: value,
@@ -81,7 +82,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
   }
 
   testCaseId = async (value: string) => {
-    await this.applyToCurrentTest({
+    await this.applyToContext({
       type: "metadata",
       data: {
         testCaseId: value,
@@ -90,7 +91,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
   }
 
   attachment = async (name: string, content: string | Buffer, type: string) => {
-    await this.applyToCurrentTest({
+    await this.applyToContext({
       type: "raw_attachment",
       data: {
         name,
@@ -105,7 +106,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
     let status = Status.PASSED;
     let statusDetails: StatusDetails | undefined;
 
-    await this.applyToCurrentTest({
+    await this.applyToContext({
       type: "step_start",
       data: {
         name,
@@ -120,7 +121,7 @@ export class AllureMochaTestRuntime implements TestRuntime {
       statusDetails = errorToStatusDetails(err);
       throw err;
     } finally {
-      await this.applyToCurrentTest({
+      await this.applyToContext({
         type: "step_stop",
         data: {
           status,
@@ -133,14 +134,14 @@ export class AllureMochaTestRuntime implements TestRuntime {
   }
 
   stepDisplayName = async (name: string) => {
-    await this.applyToCurrentTest({
+    await this.applyToContext({
       type: "step_metadata",
       data: { name }
     });
   }
 
   stepParameter = async (name: string, value: string, mode?: ParameterMode | undefined) => {
-    await this.applyToCurrentTest({
+    await this.applyToContext({
       type: "step_metadata",
       data: {
         parameters: [{name, value, mode}]
@@ -148,6 +149,9 @@ export class AllureMochaTestRuntime implements TestRuntime {
     });
   }
 
-  private applyToCurrentTest = async (message: RuntimeMessage) =>
-    await this.reporterRuntime.applyRuntimeMessagesToCurrentScope([message]);
+  private applyToContext = async (message: RuntimeMessage) =>
+    this.reporterRuntime.applyRuntimeMessages([message]);
 }
+
+export const setUpTestRuntime = (reporterRuntime: ReporterRuntime) =>
+  setGlobalTestRuntime(new ContextBasedTestRuntime(reporterRuntime));
