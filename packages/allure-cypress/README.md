@@ -43,7 +43,7 @@ Don't forget to add the Allure Cypress commands to your `cypress/support/e2e.js`
 the installation:
 
 ```diff
-+ import "allure-cypress/commands";
++ import "allure-cypress";
 ```
 
 ## Use Allure runtime Api
