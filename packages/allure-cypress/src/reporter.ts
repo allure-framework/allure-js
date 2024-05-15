@@ -5,7 +5,6 @@ import {
   ContentType,
   FileSystemAllureWriter,
   LabelName,
-  RuntimeMessage,
   Stage,
   extractMetadataFromString,
   getSuitesLabels,
@@ -25,7 +24,7 @@ export class AllureCypress {
 
   testsUuidsByCypressAbsolutePath = new Map<string, string[]>();
 
-  constructor(private config?: AllureCypressConfig) {
+  constructor(config?: AllureCypressConfig) {
     const { resultsDir = "./allure-results", ...rest } = config || {};
 
     this.runtime = new AllureNodeReporterRuntime({
@@ -56,14 +55,14 @@ export class AllureCypress {
         const suiteLabels = getSuitesLabels(startMessage.data.specPath.slice(0, -1));
         const testTitle = startMessage.data.specPath[startMessage.data.specPath.length - 1];
         const titleMetadata = extractMetadataFromString(testTitle);
-        const testUuid = this.runtime.start({
+        const testUuid = this.runtime.startTest({
           name: titleMetadata.cleanTitle || testTitle,
           start: startMessage.data.start,
           fullName: `${startMessage.data.filename}#${startMessage.data.specPath.join(" ")}`,
           stage: Stage.RUNNING,
         });
 
-        this.runtime.update(testUuid, (result) => {
+        this.runtime.updateTest((result) => {
           result.labels.push({
             name: LabelName.LANGUAGE,
             value: "javascript",
@@ -75,24 +74,27 @@ export class AllureCypress {
           result.labels.push(...suiteLabels);
           result.labels.push(...titleMetadata.labels);
 
-          this.runtime.applyRuntimeMessages(testUuid, messages.slice(1, messages.length - 1), (message) => {
-            const type = message.type;
+          this.runtime.applyRuntimeMessages(messages.slice(1, messages.length - 1), {
+            testUuid,
+            customHandler: (message) => {
+              const type = message.type;
 
-            if (type === "cypress_screenshot") {
-              const { name, path } = message.data;
-              // False positive by eslint (path is string)
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-              const screenshotBody = readFileSync(path);
+              if (type === "cypress_screenshot") {
+                const { name, path } = message.data;
+                // False positive by eslint (path is string)
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                const screenshotBody = readFileSync(path);
 
-              this.runtime.writeAttachment(testUuid, {
-                name,
-                content: screenshotBody,
-                contentType: ContentType.PNG,
-              });
+                this.runtime.writeAttachment({
+                  name,
+                  content: screenshotBody,
+                  contentType: ContentType.PNG,
+                }, testUuid);
+              }
             }
           });
-        });
-        this.runtime.update(testUuid, (result) => {
+        }, testUuid);
+        this.runtime.updateTest((result) => {
           result.stage = endMessage.data.stage;
           result.status = endMessage.data.status;
 
@@ -101,12 +103,12 @@ export class AllureCypress {
           }
 
           result.statusDetails = endMessage.data.statusDetails;
-        });
+        }, testUuid);
 
-        this.runtime.stop(testUuid, Date.now());
+        this.runtime.stopTest({  uuid: testUuid, stop: Date.now()});
 
         if (startMessage.data.isInteractive) {
-          this.runtime.write(testUuid);
+          this.runtime.writeTest(testUuid);
         } else {
           // False positive by eslint (testUuid is string)
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -130,25 +132,25 @@ export class AllureCypress {
 
     for (const uuid of testUuids) {
       if (!cypressResult.video) {
-        this.runtime.write(uuid);
+        this.runtime.writeTest(uuid);
         continue;
       }
 
       if (!videoSource) {
-        videoSource = this.runtime.writeAttachmentFromPath(uuid, "Video", cypressResult.video, {
+        videoSource = this.runtime.writeAttachmentFromPath("Video", cypressResult.video, {
           contentType: ContentType.MP4,
-        });
+        }, uuid);
       } else {
-        this.runtime.update(uuid, (result) => {
+        this.runtime.updateTest((result) => {
           result.attachments.push({
             name: "Video",
             source: videoSource!,
             type: ContentType.MP4,
           });
-        });
+        }, uuid);
       }
 
-      this.runtime.write(uuid);
+      this.runtime.writeTest(uuid);
     }
   }
 }
