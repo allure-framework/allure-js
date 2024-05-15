@@ -51,6 +51,10 @@ export {
   StatusDetails,
 } from "./model.js";
 export {
+  allureIdRegexp,
+  allureLabelRegexp,
+  allureLabelRegexpGlobal,
+  allureIdRegexpGlobal,
   extractMetadataFromString,
   escapeRegExp,
   getStatusFromError,

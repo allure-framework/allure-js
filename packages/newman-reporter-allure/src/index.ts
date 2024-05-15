@@ -77,7 +77,7 @@ class AllureReporter {
 
     const content = Buffer.from(stringToAttach, "utf8");
 
-    this.allureRuntime.writeAttachmentToCurrentItem({
+    this.allureRuntime.writeAttachment({
       contentType: ContentType.TEXT,
       name,
       content,
@@ -119,7 +119,7 @@ class AllureReporter {
   onStart() {
     const suiteName = this.currentCollection.name;
 
-    this.allureRuntime.startContainer({ name: suiteName || "Global" });
+    this.allureRuntime.startScope();
   }
 
   onPrerequest(
@@ -157,7 +157,7 @@ class AllureReporter {
     const fullName = this.getFullName(item);
     const testPath = this.pathToItem(item);
     const { labels } = extractMeta(args.item.events);
-    const currentTestUuid = this.allureRuntime.start({
+    const currentTestUuid = this.allureRuntime.startTest({
       name: args.item.name,
       fullName,
       stage: Stage.RUNNING,
@@ -169,7 +169,7 @@ class AllureReporter {
       ],
     });
 
-    this.allureRuntime.updateCurrentTest((test) => {
+    this.allureRuntime.updateTest((test) => {
       const [parentSuite, suite, ...subSuites] = testPath;
 
       if (parentSuite) {
@@ -230,7 +230,7 @@ class AllureReporter {
     }
 
     if (requestData?.headers && requestData?.headers?.count() > 0) {
-      this.allureRuntime.writeAttachmentToCurrentItem({
+      this.allureRuntime.writeAttachment({
         contentType: ContentType.JSON,
         name: "Request Headers",
         content: this.headerListToJsonString(requestData.headers),
@@ -242,7 +242,7 @@ class AllureReporter {
     }
 
     if (response?.headers && response?.headers?.count() > 0) {
-      this.allureRuntime.writeAttachmentToCurrentItem({
+      this.allureRuntime.writeAttachment({
         name: "Response Headers",
         contentType: ContentType.JSON,
         content: this.headerListToJsonString(response.headers),
@@ -250,14 +250,14 @@ class AllureReporter {
     }
 
     if (response?.body) {
-      this.allureRuntime.writeAttachmentToCurrentItem({
+      this.allureRuntime.writeAttachment({
         name: "Response Body",
         contentType: ContentType.TEXT,
         content: response.body,
       });
     }
 
-    this.allureRuntime.updateCurrentTest((test) => {
+    this.allureRuntime.updateTest((test) => {
       if (requestDataURL) {
         test.parameters.push({
           name: "Request",
@@ -288,7 +288,7 @@ class AllureReporter {
 
       const details = this.escape(`Response code: ${response.code}, status: ${response.status}`);
 
-      this.allureRuntime.updateCurrentTest((test) => {
+      this.allureRuntime.updateTest((test) => {
         test.status = Status.FAILED;
         test.stage = Stage.FINISHED;
         test.statusDetails = {
@@ -299,7 +299,7 @@ class AllureReporter {
     } else if (requestError) {
       const errorMsg = this.escape(requestError);
 
-      this.allureRuntime.updateCurrentTest((test) => {
+      this.allureRuntime.updateTest((test) => {
         test.status = Status.BROKEN;
         test.stage = Stage.FINISHED;
         test.statusDetails = {
@@ -307,14 +307,14 @@ class AllureReporter {
         };
       });
     } else {
-      this.allureRuntime.updateCurrentTest((test) => {
+      this.allureRuntime.updateTest((test) => {
         test.status = Status.PASSED;
         test.stage = Stage.FINISHED;
       });
     }
 
-    this.allureRuntime.stopCurrentTest();
-    this.allureRuntime.writeCurrentTest();
+    this.allureRuntime.stopTest();
+    this.allureRuntime.writeTest();
   }
 
   onTest(err: any, args: { executions: Event[] }) {
@@ -348,7 +348,7 @@ class AllureReporter {
     const errName: string = testArgs.error.name;
     const errMsg: string = testArgs.error.message;
 
-    this.allureRuntime.startStepInCurrentScope({
+    this.allureRuntime.startStep({
       name: errName,
       status: Status.FAILED,
       stage: Stage.FINISHED,
@@ -359,7 +359,7 @@ class AllureReporter {
 
     currentPmItem.failedAssertions.push(errName);
 
-    this.allureRuntime.stopCurrentStep();
+    this.allureRuntime.stopStep();
   }
 
   onConsole(err: any, args: ConsoleEvent) {
@@ -442,10 +442,10 @@ class AllureReporter {
       return;
     }
 
-    this.allureRuntime.startStepInCurrentScope({
+    this.allureRuntime.startStep({
       name: args.assertion,
     });
-    this.allureRuntime.updateCurrentStep((step) => {
+    this.allureRuntime.updateStep((step) => {
       if (err && currentPmItem) {
         currentPmItem.passed = false;
         currentPmItem.failedAssertions.push(args.assertion);
@@ -462,11 +462,11 @@ class AllureReporter {
       step.stage = Stage.FINISHED;
     });
 
-    this.allureRuntime.stopCurrentStep();
+    this.allureRuntime.stopStep();
   }
 
   onDone(err: any, args: unknown) {
-    this.allureRuntime.writeCurrentContainer();
+    this.allureRuntime.writeScope();
   }
 }
 
