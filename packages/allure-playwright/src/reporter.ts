@@ -89,10 +89,10 @@ class AllureReporter implements Reporter {
       result.parameters!.push({ name: "Repetition", value: `${test.repeatEachIndex + 1}` });
     }
 
-    const testUuid = this.allureRuntime!.start(result);
+    const testUuid = this.allureRuntime!.startTest(result);
 
     this.allureResultsUuids.set(test.id, testUuid as string);
-    this.startedTestCasesTitlesCache.push(titleMetadata.cleanTitle);
+    this.startedTestCasesTitlesCache.push(titleMetadata.cleanTitle as string);
   }
 
   onStepBegin(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
@@ -108,11 +108,11 @@ class AllureReporter implements Reporter {
     const testUuid = this.allureResultsUuids.get(test.id)!;
 
     this.allureRuntime!.startStep(
-      testUuid,
       {
         name: step.title.substring(0, stepAttachPrefixLength),
+        start: step.startTime.getTime(),
       },
-      step.startTime.getTime(),
+      testUuid,
     );
   }
 
@@ -128,7 +128,7 @@ class AllureReporter implements Reporter {
 
     const testUuid = this.allureResultsUuids.get(test.id)!;
 
-    this.allureRuntime!.updateStep(testUuid, (stepResult) => {
+    this.allureRuntime!.updateStep((stepResult) => {
       // TODO: step can be broken
       stepResult.status = step.error ? Status.FAILED : Status.PASSED;
       stepResult.stage = Stage.FINISHED;
@@ -136,8 +136,8 @@ class AllureReporter implements Reporter {
       if (step.error) {
         stepResult.statusDetails = getStatusDetails(step.error);
       }
-    });
-    this.allureRuntime!.stopStep(testUuid);
+    }, testUuid);
+    this.allureRuntime!.stopStep({ uuid: testUuid });
   }
 
   async onTestEnd(test: TestCase, result: PlaywrightTestResult) {
@@ -150,7 +150,7 @@ class AllureReporter implements Reporter {
     // only apply default suites if not set by user
     const [, projectSuiteTitle, fileSuiteTitle, ...suiteTitles] = test.parent.titlePath();
 
-    this.allureRuntime!.update(testUuid, (testResult) => {
+    this.allureRuntime!.updateTest((testResult) => {
       testResult.labels.push({ name: LabelName.HOST, value: this.hostname });
       testResult.labels.push({ name: LabelName.THREAD, value: thread });
 
@@ -172,32 +172,32 @@ class AllureReporter implements Reporter {
 
       testResult.status = statusToAllureStats(result.status, test.expectedStatus);
       testResult.stage = Stage.FINISHED;
-    });
+    }, testUuid);
 
     for (const attachment of result.attachments) {
       await this.processAttachment(test.id, attachment);
     }
 
     if (result.stdout.length > 0) {
-      this.allureRuntime!.writeAttachment(testUuid, {
+      this.allureRuntime!.writeAttachment({
         name: "stdout",
         contentType: ContentType.TEXT,
         content: Buffer.from(stripAnsi(result.stdout.join("")), "utf8"),
-      });
+      }, testUuid);
     }
 
     if (result.stderr.length > 0) {
-      this.allureRuntime!.writeAttachment(testUuid, {
+      this.allureRuntime!.writeAttachment({
         name: "stderr",
         contentType: ContentType.TEXT,
         content: Buffer.from(stripAnsi(result.stderr.join("")), "utf8"),
-      });
+      }, testUuid);
     }
 
     // FIXME: temp logic for labels override, we need it here to keep the reporter compatible with v2 API
     // in next iterations we need to implement the logic for every javascript integration
-    this.allureRuntime!.update(testUuid, (testResult) => {
-      const mappedLabels = testResult.labels.reduce(
+    this.allureRuntime!.updateTest((testResult) => {
+      const mappedLabels = testResult.labels.reduce<Record<string, Label[]>>(
         (acc, label) => {
           if (!acc[label.name]) {
             acc[label.name] = [];
@@ -207,7 +207,7 @@ class AllureReporter implements Reporter {
 
           return acc;
         },
-        {} as Record<string, Label[]>,
+        {},
       );
       const newLabels = Object.keys(mappedLabels).flatMap((labelName) => {
         const labelsGroup = mappedLabels[labelName];
@@ -224,17 +224,17 @@ class AllureReporter implements Reporter {
       });
 
       testResult.labels = newLabels;
-    });
+    }, testUuid);
 
-    this.allureRuntime!.stop(testUuid);
-    this.allureRuntime!.write(testUuid);
+    this.allureRuntime!.stopTest({ uuid: testUuid });
+    this.allureRuntime!.writeTest(testUuid);
   }
 
   async addSkippedResults() {
     const unprocessedCases = this.suite.allTests().filter(({ title }) => {
       const titleMetadata = extractMetadataFromString(title);
 
-      return !this.startedTestCasesTitlesCache.includes(titleMetadata.cleanTitle);
+      return !this.startedTestCasesTitlesCache.includes(titleMetadata.cleanTitle as string);
     });
 
     for (const testCase of unprocessedCases) {
@@ -291,22 +291,22 @@ class AllureReporter implements Reporter {
       const message = JSON.parse(attachment.body!.toString()) as RuntimeMessage;
 
       // TODO: make possible to pass single message and list of them
-      this.allureRuntime!.applyRuntimeMessages(testUuid, [message]);
+      this.allureRuntime!.applyRuntimeMessages([message], { testUuid });
       return;
     }
 
     if (attachment.body) {
-      this.allureRuntime!.writeAttachment(testUuid, {
+      this.allureRuntime!.writeAttachment({
         name: attachment.name,
         contentType: attachment.contentType,
         content: attachment.body,
-      });
+      }, testUuid);
     } else if (!existsSync(attachment.path!)) {
       return;
     } else {
-      this.allureRuntime!.writeAttachmentFromPath(testUuid, attachment.name, attachment.path!, {
+      this.allureRuntime!.writeAttachmentFromPath(attachment.name, attachment.path!, {
         contentType: attachment.contentType,
-      });
+      }, testUuid);
     }
 
     if (!attachment.name.match(diffEndRegexp)) {
@@ -324,7 +324,7 @@ class AllureReporter implements Reporter {
     const diffBase64 = await readImageAsBase64(`${pathWithoutEnd}-diff.png`);
     const diffName = attachment.name.replace(diffEndRegexp, "");
 
-    this.allureRuntime!.writeAttachment(testUuid, {
+    this.allureRuntime!.writeAttachment({
       name: diffName,
       content: JSON.stringify({
         expected: expectedBase64,
@@ -334,7 +334,7 @@ class AllureReporter implements Reporter {
       } as ImageDiffAttachment),
       contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE,
       fileExtension: ".imagediff",
-    });
+    }, testUuid);
 
     this.processedDiffs.push(pathWithoutEnd);
   }
