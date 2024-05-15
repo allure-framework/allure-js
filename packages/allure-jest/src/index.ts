@@ -267,7 +267,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         parent: { name: "ROOT_DESCRIBE_BLOCK" },
       } as Circus.TestEntry)!;
 
-      this.runtime.applyRuntimeMessages(testUuid, [payload.message]);
+      this.runtime.applyRuntimeMessages([payload.message], { testUuid });
     }
 
     private getTestUuid(test: Circus.TestEntry) {
@@ -332,7 +332,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const threadLabel = ALLURE_THREAD_NAME || JEST_WORKER_ID || process.pid.toString();
       const hostLabel = ALLURE_HOST_NAME || hostname;
       const packageLabel = dirname(this.testPath).split(sep).join(".");
-      const testUuid = this.runtime.start({
+      const testUuid = this.runtime.startTest({
         name: testName,
         fullName: newTestId,
         labels: [
@@ -351,7 +351,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         ],
       });
 
-      this.runtime.update(testUuid, (result) => {
+      this.runtime.updateTest((result) => {
         if (threadLabel) {
           result.labels.push({ name: LabelName.THREAD, value: threadLabel });
         }
@@ -361,7 +361,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         }
 
         result.labels.push(...getSuitesLabels(newTestSuitesPath));
-      });
+      }, testUuid);
 
       /**
        * If user have some tests with the same name, reporter will throw an error due the test with
@@ -385,9 +385,9 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      this.runtime.update(testUuid, (result) => {
+      this.runtime.updateTest((result) => {
         result.stage = Stage.RUNNING;
-      });
+      }, testUuid);
     }
 
     private handleTestPass(test: Circus.TestEntry) {
@@ -397,10 +397,10 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      this.runtime.update(testUuid, (result) => {
+      this.runtime.updateTest((result) => {
         result.stage = Stage.FINISHED;
         result.status = Status.PASSED;
-      });
+      }, testUuid);
     }
 
     private handleTestFail(test: Circus.TestEntry) {
@@ -417,14 +417,14 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const errorTrace = (hasMultipleErrors ? error[0]?.stack : error.stack) as string;
       const status = getStatusFromError(hasMultipleErrors ? error[0] : error);
 
-      this.runtime.update(testUuid, (result) => {
+      this.runtime.updateTest((result) => {
         result.stage = Stage.FINISHED;
         result.status = status;
         result.statusDetails = {
           message: stripAnsi(errorMessage || ""),
           trace: stripAnsi(errorTrace || ""),
         };
-      });
+      }, testUuid);
     }
 
     private handleTestSkip(test: Circus.TestEntry) {
@@ -434,12 +434,12 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      this.runtime.update(testUuid, (result) => {
+      this.runtime.updateTest((result) => {
         result.stage = Stage.PENDING;
         result.status = Status.SKIPPED;
-      });
-      this.runtime.stop(testUuid);
-      this.runtime.write(testUuid);
+      }, testUuid);
+      this.runtime.stopTest({ uuid: testUuid });
+      this.runtime.writeTest(testUuid);
       // TODO:
       this.allureUuidsByTestIds.delete(getTestId(getTestPath(test)));
     }
@@ -451,8 +451,8 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      this.runtime.stop(testUuid);
-      this.runtime.write(testUuid);
+      this.runtime.stopTest({ uuid: testUuid });
+      this.runtime.writeTest(testUuid);
       // TODO:
       this.allureUuidsByTestIds.delete(getTestId(getTestPath(test)));
     }
@@ -464,13 +464,13 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      this.runtime.update(testUuid, (result) => {
+      this.runtime.updateTest((result) => {
         result.stage = Stage.PENDING;
         result.status = Status.SKIPPED;
-      });
+      }, testUuid);
 
-      this.runtime.stop(testUuid);
-      this.runtime.write(testUuid);
+      this.runtime.stopTest({ uuid: testUuid });
+      this.runtime.writeTest(testUuid);
       // TODO:
       this.allureUuidsByTestIds.delete(getTestId(getTestPath(test)));
     }

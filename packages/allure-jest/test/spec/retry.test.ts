@@ -3,10 +3,13 @@ import { runJestInlineTest } from "../utils";
 
 it("should work for test with retries", async () => {
   const { tests, processError } = await runJestInlineTest(`
+    const { label } = require("allure-js-commons/new");
+
     jest.retryTimes(1);
 
     it("failure", async () => {
-      await allure.label("foo", "bar");
+      await label("foo", "bar");
+
       expect(false).toBeTruthy();
     });
   `);
