@@ -94,14 +94,14 @@ export default class AllureVitestReporter implements Reporter {
     const titleMetadata = extractMetadataFromString(task.name);
     const testDisplayName = titleMetadata.cleanTitle || task.name;
     const testFullname = getTestFullName(task, cwd());
-    const testUUID = this.allureReporterRuntime.start(
+    const testUuid = this.allureReporterRuntime.startTest(
       {
         name: testDisplayName,
+        start: task.result.startTime
       },
-      task.result.startTime,
     );
 
-    this.allureReporterRuntime.update(testUUID, async (result) => {
+    this.allureReporterRuntime.updateTest((result) => {
       const threadId = ALLURE_THREAD_NAME || (VITEST_POOL_ID && `${this.hostname}-vitest-worker-${VITEST_POOL_ID}`);
 
       result.fullName = testFullname;
@@ -134,7 +134,7 @@ export default class AllureVitestReporter implements Reporter {
         });
       }
 
-      this.allureReporterRuntime.applyRuntimeMessages(testUUID, allureRuntimeMessages);
+      this.allureReporterRuntime.applyRuntimeMessages(allureRuntimeMessages, { testUuid });
 
       switch (task.result?.state) {
         case "fail": {
@@ -160,8 +160,8 @@ export default class AllureVitestReporter implements Reporter {
           break;
         }
       }
-    });
-    this.allureReporterRuntime.stop(testUUID, task.result.startTime + task.result?.duration || 0);
-    this.allureReporterRuntime.write(testUUID);
+    }, testUuid);
+    this.allureReporterRuntime.stopTest({ uuid: testUuid, stop: task.result.startTime + task.result?.duration || 0 });
+    this.allureReporterRuntime.writeTest(testUuid);
   }
 }
