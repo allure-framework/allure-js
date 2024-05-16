@@ -2,7 +2,7 @@ import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { join, resolve as resolvePath } from "node:path";
-import type { AllureResults } from "allure-js-commons";
+import type { AllureResults, TestResultContainer, TestResult } from "allure-js-commons";
 
 export const runCypressInlineTest = async (
   test: (allureCommonsModulePath: string) => string,
@@ -97,12 +97,12 @@ export const runCypressInlineTest = async (
         }
 
         if (/-container\.json$/.test(resultFile)) {
-          res.groups.push(JSON.parse(await readFile(join(testResultsDir, resultFile), "utf8")));
+          res.groups.push(JSON.parse(await readFile(join(testResultsDir, resultFile), "utf8")) as TestResultContainer);
           continue;
         }
 
         if (/-result\.json$/.test(resultFile)) {
-          res.tests.push(JSON.parse(await readFile(join(testResultsDir, resultFile), "utf8")));
+          res.tests.push(JSON.parse(await readFile(join(testResultsDir, resultFile), "utf8")) as TestResult);
           continue;
         }
       }

@@ -55,9 +55,8 @@
     "compile:esm": "tsc --project ./tsconfig.esm.json",
     "compile:cjs": "tsc --project ./tsconfig.json",
     "compile:fixup": "ts-node --project ./tsconfig.json ./scripts/fixup.ts",
-    "lint": "eslint ./src ./test ./index.ts ./internal.ts --ext .ts",
-    "lint:fix": "eslint ./src ./test ./index.ts ./internal.ts --ext .ts --fix",
-    "_test": "ts-node --project test/tsconfig.json test/runner.ts",
+    "lint": "eslint ./src ./test --ext .ts",
+    "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "vitest run"
   },
   "dependencies": {

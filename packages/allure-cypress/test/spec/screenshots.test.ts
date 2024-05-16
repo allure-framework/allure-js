@@ -18,7 +18,7 @@ it("attaches screenshots for failed specs", async () => {
 
   expect(attachment.name).toBe("Screenshot");
   expect(attachment.type).toBe(ContentType.PNG);
-  expect(attachments).toHaveProperty(attachment.source as string);
+  expect(attachments).toHaveProperty(attachment.source);
 });
 
 it("attaches runtime screenshots", async () => {
@@ -37,5 +37,5 @@ it("attaches runtime screenshots", async () => {
 
   expect(attachment.name).toBe("foo");
   expect(attachment.type).toBe(ContentType.PNG);
-  expect(attachments).toHaveProperty(attachment.source as string);
+  expect(attachments).toHaveProperty(attachment.source);
 });

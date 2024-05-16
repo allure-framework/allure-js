@@ -50,5 +50,5 @@ it("attaches same video to each spec in a test", async () => {
   expect(attachment.name).toBe("Video");
   expect(attachment.type).toBe(ContentType.MP4);
   expect(tests[1].attachments).toContainEqual(attachment);
-  expect(attachments).toHaveProperty(attachment.source as string);
+  expect(attachments).toHaveProperty(attachment.source);
 });
