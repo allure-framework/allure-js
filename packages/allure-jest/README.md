@@ -61,7 +61,7 @@ The plugin provides custom global commands which allow to add additional info
 inside your tests:
 
 ```javascript
-import { attachment, epic, parameter } from "allure-js-commons/new";
+import { attachment, epic, parameter } from "allure-js-commons";
 
 it("my test", async () => {
   await attachment(currentTest.id(), screenshot, "image/png");
@@ -76,7 +76,7 @@ it("my test", async () => {
 ## Links usage
 
 ```js
-import { link, issue } from "allure-js-commons/new";
+import { link, issue } from "allure-js-commons";
 
 it("basic test", async () => {
   await link("https://allurereport.org", "Allure Report"); // link with name
@@ -116,7 +116,7 @@ module.exports = config
 Then you can assign link using shorter notation:
 
 ```js
-import { issue, tms, link } from "allure-js-commons/new";
+import { issue, tms, link } from "allure-js-commons";
 
 it("basic test", async () => {
   await issue("Issue Name", "352");
