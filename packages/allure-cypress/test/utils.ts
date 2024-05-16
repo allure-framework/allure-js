@@ -2,7 +2,7 @@ import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { join, resolve as resolvePath } from "node:path";
-import type { AllureResults, TestResultContainer, TestResult } from "allure-js-commons";
+import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
 
 export const runCypressInlineTest = async (
   test: (allureCommonsModulePath: string) => string,
