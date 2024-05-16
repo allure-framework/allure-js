@@ -5,7 +5,7 @@ import { runPlaywrightInlineTest } from "../utils";
 it("sets runtime labels", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import { test, expect } from "allure-playwright";
+      import { test, expect } from "@playwright/test";
       import {
         label,
         labels,

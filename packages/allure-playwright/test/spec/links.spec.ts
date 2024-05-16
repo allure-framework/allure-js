@@ -6,7 +6,7 @@ it("sets runtime links", async () => {
   const results = await runPlaywrightInlineTest({
     "sample.test.js": `
       import { test } from 'allure-playwright';
-      import { link, links, issue, tms } from 'allure-js-commons/';
+      import { link, links, issue, tms } from 'allure-js-commons';
 
       test('should add epic link', async ({}, testInfo) => {
         await link("https://playwright.dev/docs/api/class-page#page-workers");

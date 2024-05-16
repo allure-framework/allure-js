@@ -32,6 +32,23 @@ export const setGlobalTestRuntime = (runtime: TestRuntime) => {
   (globalThis as any)[ALLURE_TEST_RUNTIME_KEY] = () => runtime;
 };
 
-export const getGlobalTestRuntime = () => {
+export const getGlobalTestRuntime = (): TestRuntime => {
+  const testRuntime = (globalThis as any)?.[ALLURE_TEST_RUNTIME_KEY] as () => TestRuntime | undefined;
+
+  if (testRuntime) {
+    return testRuntime()!;
+  }
+
+  // @ts-ignore
+  if (globalThis._playwrightInstance) {
+    try {
+      const modulePath = require.resolve("allure-playwright/autoconfig");
+
+      debugger
+    } catch (err) {
+      debugger
+    }
+  }
+
   return (globalThis as any)[ALLURE_TEST_RUNTIME_KEY]() as TestRuntime;
 };
