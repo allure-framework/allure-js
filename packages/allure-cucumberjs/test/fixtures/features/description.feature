@@ -1,10 +1,12 @@
 Feature: description
-  Feature's description
+  Feature description
 
-  Scenario: a
+  Scenario: with feature description
     Given a step
 
-  Scenario: b
-    Scenario's description
-
+  Scenario: with scenario description
+    Scenario description
     Given a step
+
+  Scenario: with runtime description
+    Given a step with runtime description

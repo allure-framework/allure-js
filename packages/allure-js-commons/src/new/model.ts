@@ -1,11 +1,9 @@
 export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
 export const ALLURE_IMAGEDIFF_CONTENT_TYPE = "application/vnd.allure.image.diff";
 export const ALLURE_SKIPPED_BY_TEST_PLAN_LABEL = "allure-skipped-by-test-plan";
+export const ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE = "application/vnd.allure.message+json";
 
-export interface Crypto {
-  uuid: () => string;
-  md5: (str: string) => string;
-}
+export type EnvironmentInfo = Record<string, string | undefined>;
 
 export interface AttachmentMetadata {
   name: string;
@@ -14,7 +12,7 @@ export interface AttachmentMetadata {
   encoding: BufferEncoding;
 }
 
-export interface StepMetadata extends Omit<ExecutableItem, "attachments" | "steps"> {
+export interface StepMetadata extends Omit<Executable, "attachments" | "steps"> {
   steps: StepMetadata[];
   attachments: AttachmentMetadata[];
 }
@@ -40,7 +38,13 @@ export interface Attachment {
 
 export interface AttachmentOptions {
   contentType: ContentType | string;
+  encoding?: string;
   fileExtension?: string;
+}
+
+export interface RawAttachment extends AttachmentOptions {
+  name: string;
+  content: Buffer | string;
 }
 
 export interface Label {
@@ -54,11 +58,13 @@ export interface Link {
   type?: LinkType | string;
 }
 
+export type ParameterMode = "hidden" | "masked" | "default";
+
 export interface Parameter {
   name: string;
   value: string;
   excluded?: boolean;
-  mode?: "hidden" | "masked" | "default";
+  mode?: ParameterMode;
 }
 
 export type ParameterOptions = Pick<Parameter, "mode" | "excluded">;
@@ -68,7 +74,8 @@ export interface StatusDetails {
   trace?: string;
 }
 
-export interface ExecutableItem {
+// don't use the interface as is, use Results types instead
+export interface Executable {
   name?: string;
   status?: Status;
   statusDetails: StatusDetails;
@@ -82,13 +89,13 @@ export interface ExecutableItem {
   stop?: number;
 }
 
-export type FixtureResult = ExecutableItem;
+export type FixtureResult = Executable;
 
-export type StepResult = ExecutableItem;
+export type StepResult = Executable;
 
-export interface TestResult extends ExecutableItem {
+export interface TestResult extends Executable {
   uuid: string;
-  historyId: string;
+  historyId?: string;
   fullName?: string;
   testCaseId?: string;
   labels: Label[];
@@ -102,6 +109,8 @@ export interface TestResultContainer {
   befores: FixtureResult[];
   afters: FixtureResult[];
 }
+
+export type TestOrStepResult = StepResult | TestResult;
 
 export interface Category {
   name?: string;
@@ -131,6 +140,8 @@ export enum Status {
   PASSED = "passed",
   SKIPPED = "skipped",
 }
+
+export const StatusByPriority = [Status.FAILED, Status.BROKEN, Status.PASSED, Status.SKIPPED];
 
 /* eslint-disable no-shadow */
 export enum Stage {
@@ -212,6 +223,67 @@ export interface AllureResults {
   tests: TestResult[];
   groups: TestResultContainer[];
   attachments: Record<string, Buffer | string>;
-  envInfo?: Record<string, string | undefined>;
+  envInfo?: EnvironmentInfo;
   categories?: Category[];
 }
+
+type RuntimeMessageBase<T extends string> = {
+  type: T;
+};
+
+type MessageTypes<T> = T extends RuntimeMessageBase<infer K> ? K : never;
+
+export type RuntimeMetadataMessage = RuntimeMessageBase<"metadata"> & {
+  data: {
+    labels?: Label[];
+    links?: Link[];
+    parameters?: Parameter[];
+    attachments?: Attachment[];
+    description?: string;
+    descriptionHtml?: string;
+    testCaseId?: string;
+    historyId?: string;
+    displayName?: string;
+  };
+};
+
+export type RuntimeStartStepMessage = RuntimeMessageBase<"step_start"> & {
+  data: {
+    name: string;
+    start: number;
+  };
+};
+
+export type RuntimeStepMetadataMessage = RuntimeMessageBase<"step_metadata"> & {
+  data: {
+    name?: string;
+    parameters?: Parameter[];
+  };
+};
+
+export type RuntimeStopStepMessage = RuntimeMessageBase<"step_stop"> & {
+  data: {
+    stop: number;
+    status: Status;
+    stage: Stage;
+    statusDetails?: StatusDetails;
+  };
+};
+
+// use to send whole attachment to ReporterRuntime and write it on the node side
+export type RuntimeRawAttachmentMessage = RuntimeMessageBase<"raw_attachment"> & {
+  data: RawAttachment;
+};
+
+export type RuntimeMessage =
+  | RuntimeMetadataMessage
+  | RuntimeStartStepMessage
+  | RuntimeStepMetadataMessage
+  | RuntimeStopStepMessage
+  | RuntimeRawAttachmentMessage;
+
+// Could be used by adapters to define additional message types
+export type ExtensionMessage<T extends string> = T extends MessageTypes<RuntimeMessage> ? never : RuntimeMessageBase<T>;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export type Messages<T> = T extends RuntimeMessage | ExtensionMessage<infer _> ? T : never;

@@ -1,16 +1,16 @@
-import typescriptPlugin from "@rollup/plugin-typescript";
 import commonjsPlugin from "@rollup/plugin-commonjs";
 import resolvePlugin from "@rollup/plugin-node-resolve";
-import {glob} from "glob";
-import {join, relative} from "node:path";
-import {fileURLToPath} from "node:url";
-import {defineConfig} from "rollup";
+import typescriptPlugin from "@rollup/plugin-typescript";
+import { glob } from "glob";
+import { join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
+import { defineConfig } from "rollup";
 
 const dirname = fileURLToPath(new URL(".", import.meta.url));
 
 const createNodeEntry = (inputFile) => {
   const outputFileBase = inputFile.replace(/^src/, "dist");
-  const external = ["node:fs", "allure-js-commons/new", "allure-js-commons/new/node"];
+  const external = ["node:fs", "allure-js-commons/new/sdk/node"];
 
   return [
     defineConfig({
@@ -86,9 +86,5 @@ const createBrowserEntry = (inputFile) => {
 };
 
 export default () => {
-  return [
-    createBrowserEntry("src/index.ts"),
-    createBrowserEntry("src/commands.ts"),
-    createNodeEntry("src/reporter.ts"),
-  ].flat();
+  return [createBrowserEntry("src/index.ts"), createNodeEntry("src/reporter.ts")].flat();
 };

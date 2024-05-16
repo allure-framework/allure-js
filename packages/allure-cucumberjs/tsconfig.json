@@ -2,17 +2,20 @@
   "extends": "../../tsconfig.json",
   "include": [
     "./src/**/*",
-    "./index.ts"
+    "./test/**/*"
   ],
   "compilerOptions": {
-    "types": [
-      "node",
-      "chai"
-    ],
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "bundler",
     "lib": [
-      "dom"
+      "dom",
+      "esnext"
     ],
-    "outDir": "./dist",
-    "resolveJsonModule": true
+    "types": [
+      "node"
+    ],
+    "outDir": "./dist"
   }
 }

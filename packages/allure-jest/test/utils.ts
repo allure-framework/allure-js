@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
+import { LinkType } from "allure-js-commons/new/sdk/node";
 
 export type TestResultsByFullName = Record<string, TestResult>;
 
@@ -27,14 +28,14 @@ export const runJestInlineTest = async (test: string): Promise<AllureResultsExte
         testMode: true,
         links: [
           {
-            type: "issue",
-            urlTemplate: "http://example.org/issues/%s",
+            type: "${LinkType.ISSUE}",
+            urlTemplate: "https://example.org/issues/%s",
           },
           {
-            type: "tms",
-            urlTemplate: "http://example.org/tasks/%s",
-          },
-        ],
+            type: "${LinkType.TMS}",
+            urlTemplate: "https://example.org/tasks/%s",
+          }
+        ]
       },
     };
 

@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { AttachmentOptions } from "./model.js";
+import { AttachmentOptions, Executable, Label, LabelName, Status, TestResult } from "./model.js";
 
 const EXTENSIONS_BY_TYPE: Record<string, string> = {
   "application/andrew-inset": ".ez",
@@ -920,4 +920,151 @@ export const serialize = (val: unknown): string => {
   }
 
   return (val as any).toString();
+};
+
+export const allureIdRegexp = /@?allure.id[:=](?<id>[^\s]+)/;
+
+export const allureIdRegexpGlobal = new RegExp(allureIdRegexp, "g");
+
+export const allureLabelRegexp = /@?allure.label.(?<name>[^\s]+?)[:=](?<value>[^\s]+)/;
+
+export const allureLabelRegexpGlobal = new RegExp(allureLabelRegexp, "g");
+
+export const isAnyStepFailed = (item: Executable): boolean => {
+  const isFailed = item.status === Status.FAILED;
+
+  if (isFailed || item.steps.length === 0) {
+    return isFailed;
+  }
+
+  return !!item.steps.find((step) => isAnyStepFailed(step));
+};
+
+export const isAllStepsEnded = (item: Executable): boolean => {
+  return item.steps.every((val) => val.stop && isAllStepsEnded(val));
+};
+
+export const getStatusFromError = (error: Error): Status => {
+  switch (true) {
+    /**
+     * Native `node:assert` and `chai` (`vitest` uses it under the hood) throw `AssertionError`
+     * `jest` throws `JestAssertionError` instance
+     * `jasmine` throws `ExpectationFailed` instance
+     */
+    case /assert/gi.test(error.constructor.name):
+    case /expectation/gi.test(error.constructor.name):
+    case /assert/gi.test(error.name):
+    case /assert/gi.test(error.message):
+      return Status.FAILED;
+    default:
+      return Status.BROKEN;
+  }
+};
+
+export const getSuiteLabels = (suites: readonly string[]): Label[] => {
+  if (suites.length === 0) {
+    return [];
+  }
+
+  const [parentSuite, suite, ...subSuites] = suites;
+  const labels: Label[] = [];
+
+  if (parentSuite) {
+    labels.push({
+      name: LabelName.PARENT_SUITE,
+      value: parentSuite,
+    });
+  }
+
+  if (suite) {
+    labels.push({
+      name: LabelName.SUITE,
+      value: suite,
+    });
+  }
+
+  if (subSuites.length > 0) {
+    labels.push({
+      name: LabelName.SUB_SUITE,
+      value: subSuites.join(" > "),
+    });
+  }
+
+  return labels;
+};
+
+export const getSuitesLabels = getSuiteLabels;
+
+const suiteLabelNames: readonly string[] = [LabelName.PARENT_SUITE, LabelName.SUITE, LabelName.SUB_SUITE];
+
+export const ensureSuiteLabels = (test: Partial<TestResult>, defaultSuites: readonly string[]) => {
+  if (!test.labels?.find((l) => suiteLabelNames.includes(l.name))) {
+    test.labels = [...(test.labels ?? []), ...getSuiteLabels(defaultSuites)];
+  }
+};
+
+export const extractMetadataFromString = (
+  title: string,
+): {
+  labels: Label[];
+  cleanTitle: string;
+} => {
+  const labels = [] as Label[];
+
+  title.split(" ").forEach((val) => {
+    const idValue = val.match(allureIdRegexp)?.groups?.id;
+
+    if (idValue) {
+      labels.push({ name: LabelName.ALLURE_ID, value: idValue });
+    }
+
+    const labelMatch = val.match(allureLabelRegexp);
+    const { name, value } = labelMatch?.groups || {};
+
+    if (name && value) {
+      labels?.push({ name, value });
+    }
+  });
+
+  const cleanTitle = title.replace(allureLabelRegexpGlobal, "").replace(allureIdRegexpGlobal, "").trim();
+
+  return { labels, cleanTitle };
+};
+
+// seems the implementation covers all our needs
+export const deepClone = <T>(obj: T): T => JSON.parse(JSON.stringify(obj));
+
+export class Stack<T> {
+  entries: T[] = [];
+
+  get first() {
+    return this.entries[this.entries.length - 1];
+  }
+
+  get last() {
+    return this.entries[0];
+  }
+
+  push(entry: T) {
+    this.entries.unshift(entry);
+  }
+
+  pop(): T | undefined {
+    return this.entries.shift();
+  }
+
+  clone(): T[] {
+    return deepClone(this.entries);
+  }
+
+  toArray(): T[] {
+    return this.clone().toReversed();
+  }
+}
+
+const reRegExpChar = /[\\^$.*+?()[\]{}|]/g,
+  reHasRegExpChar = RegExp(reRegExpChar.source);
+
+export const escapeRegExp = (value: string): string => {
+  return reHasRegExpChar.test(value) ? value.replace(reRegExpChar, "\\$&") : value;
 };

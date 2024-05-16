@@ -2,15 +2,20 @@
   "extends": "../../tsconfig.json",
   "include": [
     "./src/**/*",
-    "types.d.ts"
-  ],
-  "exclude": [
-    "./test/**/*",
+    "./test/**/*"
   ],
   "compilerOptions": {
-    "types": ["codeceptjs"],
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "types": [
+      "node"
+    ],
+    "outDir": "./dist"
   }
 }

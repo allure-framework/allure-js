@@ -1,173 +1,168 @@
 import { hostname } from "node:os";
 import { basename, normalize, relative } from "node:path";
 import { cwd, env } from "node:process";
-import { File, Reporter, Suite, Task, Vitest } from "vitest";
+import { File, Reporter, Task } from "vitest";
+import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/new/internal";
 import {
-  AllureGroup,
-  AllureRuntime,
-  Label,
+  AllureNodeReporterRuntime,
+  Config,
+  FileSystemAllureWriter,
   LabelName,
-  Link,
   MessageAllureWriter,
-  MetadataMessage,
+  RuntimeMessage,
   Stage,
   Status,
   extractMetadataFromString,
   getSuitesLabels,
-} from "allure-js-commons";
-import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
+} from "allure-js-commons/new/sdk/node";
 import { getSuitePath, getTestFullName } from "./utils.js";
 
-export interface AllureReporterOptions {
+export interface AllureVitestReporterConfig extends Omit<Config, "writer"> {
   testMode?: boolean;
-  resultsDir?: string;
-  links?: {
-    type: string;
-    urlTemplate: string;
-  }[];
 }
 
 const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = env;
 
-export default class AllureReporter implements Reporter {
-  private allureRuntime: AllureRuntime;
-  private options: AllureReporterOptions;
+export default class AllureVitestReporter implements Reporter {
+  private allureReporterRuntime?: AllureNodeReporterRuntime;
+  private config: AllureVitestReporterConfig;
   private hostname: string = ALLURE_HOST_NAME || hostname();
 
-  constructor(options: AllureReporterOptions) {
-    this.options = options;
+  constructor(config: AllureVitestReporterConfig) {
+    this.config = config;
   }
 
-  private processMetadataLinks(links: Link[]): Link[] {
-    return links.map((link) => {
-      // TODO:
-      // @ts-ignore
-      const matcher = this.options.links?.find?.(({ type }) => type === link.type);
+  onInit() {
+    const { listeners, testMode, ...config } = this.config;
+    const writer = testMode
+      ? new MessageAllureWriter()
+      : new FileSystemAllureWriter({
+          resultsDir: config.resultsDir || "./allure-results",
+        });
 
-      // TODO:
-      if (!matcher || link.url.startsWith("http")) {
-        return link;
-      }
-
-      const url = matcher.urlTemplate.replace("%s", link.url);
-
-      return {
-        ...link,
-        url,
-      };
-    });
-  }
-
-  onInit(vitest: Vitest) {
-    this.allureRuntime = new AllureRuntime({
-      resultsDir: this.options.resultsDir ?? "allure-results",
-      writer: this.options.testMode ? new MessageAllureWriter() : undefined,
+    this.allureReporterRuntime = new AllureNodeReporterRuntime({
+      ...config,
+      writer,
+      listeners,
     });
   }
 
   onFinished(files?: File[]) {
-    const rootSuite = this.allureRuntime.startGroup(undefined);
-
     for (const file of files || []) {
-      const group = rootSuite.startGroup(file.name);
-
-      group.name = file.name;
-
       for (const task of file.tasks) {
-        this.handleTask(group, task);
+        this.handleTask(task);
       }
-
-      group.endGroup();
     }
-
-    rootSuite.endGroup();
   }
 
-  handleTask(parent: AllureGroup, task: Task) {
+  async handleTask(task: Task) {
     // do not report skipped tests
     if (task.mode === "skip" && !task.result) {
       return;
     }
 
     if (task.type === "suite") {
-      const group = parent.startGroup(task.name);
-
-      group.name = task.name;
-
       for (const innerTask of task.tasks) {
-        this.handleTask(group, innerTask);
+        await this.handleTask(innerTask);
       }
-
-      group.endGroup();
       return;
     }
 
-    const { currentTest = {}, VITEST_POOL_ID } = task.meta as {
-      currentTest: MetadataMessage;
+    const { allureRuntimeMessages = [], VITEST_POOL_ID } = task.meta as {
+      allureRuntimeMessages: RuntimeMessage[];
       VITEST_POOL_ID: string;
     };
-    const skippedByTestPlan = currentTest.labels?.some(({ name }) => name === ALLURE_SKIPPED_BY_TEST_PLAN_LABEL);
+    // TODO: maybe make part of core utils?
+    const skippedByTestPlan = allureRuntimeMessages.some((message) => {
+      if (message.type === "metadata") {
+        return (message.data?.labels || []).some(({ name }) => name === ALLURE_SKIPPED_BY_TEST_PLAN_LABEL);
+      }
+
+      return false;
+    });
 
     // do not report tests skipped by test plan
     if (skippedByTestPlan) {
       return;
     }
 
-    const titleMetadata = extractMetadataFromString(task.name);
-    const testDisplayName = currentTest.displayName || titleMetadata.cleanTitle;
-    const links = currentTest.links ? this.processMetadataLinks(currentTest.links) : [];
-    const labels: Label[] = [].concat(currentTest.labels || []).concat(titleMetadata.labels);
-    const test = parent.startTest(testDisplayName, task.result.startTime);
     const suitePath = getSuitePath(task);
-    const normalizedTestPath = normalize(relative(cwd(), task.file.filepath))
+    const normalizedTestPath = normalize(relative(cwd(), task.file!.filepath))
       .replace(/^\//, "")
       .split("/")
-      .filter((item: string) => item !== basename(task.file.filepath));
-
-    test.fullName = getTestFullName(task, cwd());
-    test.applyMetadata({
-      ...currentTest,
-      labels,
-      links,
-    });
-    test.addLabel(LabelName.FRAMEWORK, "vitest");
-    test.addLabel(LabelName.LANGUAGE, "javascript");
-    test.addLabel(LabelName.HOST, this.hostname);
-
-    const thread_id = ALLURE_THREAD_NAME || (VITEST_POOL_ID && `${this.hostname}-vitest-worker-${VITEST_POOL_ID}`);
-    if (thread_id) {
-      test.addLabel(LabelName.THREAD, thread_id);
-    }
-
-    getSuitesLabels(suitePath).forEach((label) => {
-      test.addLabel(label.name, label.value);
+      .filter((item: string) => item !== basename(task.file!.filepath));
+    const titleMetadata = extractMetadataFromString(task.name);
+    const testDisplayName = titleMetadata.cleanTitle || task.name;
+    const testFullname = getTestFullName(task, cwd());
+    const testUuid = this.allureReporterRuntime!.startTest({
+      name: testDisplayName,
+      start: task.result!.startTime,
     });
 
-    if (normalizedTestPath.length) {
-      test.addLabel(LabelName.PACKAGE, normalizedTestPath.join("."));
-    }
+    this.allureReporterRuntime!.updateTest((result) => {
+      const threadId = ALLURE_THREAD_NAME || (VITEST_POOL_ID && `${this.hostname}-vitest-worker-${VITEST_POOL_ID}`);
 
-    switch (task.result?.state) {
-      case "fail": {
-        test.detailsMessage = task.result.errors?.[0]?.message || "";
-        test.detailsTrace = task.result.errors?.[0]?.stack || "";
-        test.status = Status.FAILED;
-        test.stage = Stage.FINISHED;
-        break;
-      }
-      case "pass": {
-        test.status = Status.PASSED;
-        test.stage = Stage.FINISHED;
-        break;
-      }
-      case "skip": {
-        test.status = Status.SKIPPED;
-        test.stage = Stage.PENDING;
-        break;
-      }
-    }
+      result.fullName = testFullname;
+      result.labels.push({
+        name: LabelName.FRAMEWORK,
+        value: "vitest",
+      });
+      result.labels.push({
+        name: LabelName.LANGUAGE,
+        value: "javascript",
+      });
+      result.labels.push({
+        name: LabelName.HOST,
+        value: this.hostname,
+      });
+      result.labels.push(...titleMetadata.labels);
+      result.labels.push(...getSuitesLabels(suitePath));
 
-    test.calculateHistoryId();
-    test.endTest(task.result.startTime + task.result?.duration || 0);
+      if (threadId) {
+        result.labels.push({
+          name: LabelName.THREAD,
+          value: threadId,
+        });
+      }
+
+      if (normalizedTestPath.length) {
+        result.labels.push({
+          name: LabelName.PACKAGE,
+          value: normalizedTestPath.join("."),
+        });
+      }
+
+      this.allureReporterRuntime!.applyRuntimeMessages(allureRuntimeMessages, { testUuid });
+
+      switch (task.result?.state) {
+        case "fail": {
+          const [error] = task.result.errors || [];
+          const status = error?.name === "AssertionError" ? Status.FAILED : Status.BROKEN;
+
+          result.statusDetails = {
+            message: error?.message || "",
+            trace: error?.stack || "",
+          };
+          result.status = status;
+          result.stage = Stage.FINISHED;
+          break;
+        }
+        case "pass": {
+          result.status = Status.PASSED;
+          result.stage = Stage.FINISHED;
+          break;
+        }
+        case "skip": {
+          result.status = Status.SKIPPED;
+          result.stage = Stage.PENDING;
+          break;
+        }
+      }
+    }, testUuid);
+    this.allureReporterRuntime!.stopTest({
+      uuid: testUuid,
+      stop: (task.result?.startTime || 0) + (task.result?.duration || 0),
+    });
+    this.allureReporterRuntime!.writeTest(testUuid);
   }
 }

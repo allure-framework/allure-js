@@ -1,3 +1,3 @@
-import { MochaAllureReporter } from "./MochaAllureReporter";
+import { MochaAllureReporter } from "./reporter.js";
 
-export = MochaAllureReporter;
+export default MochaAllureReporter;

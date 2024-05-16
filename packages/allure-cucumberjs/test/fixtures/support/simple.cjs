@@ -1,14 +1,14 @@
 const { Given } = require("@cucumber/cucumber");
-const { expect } = require("chai");
+const { equal } = require("node:assert");
 
-Given("a passed step", () => {
-  expect(1).eq(1);
+Given("a passed step", async () => {
+  equal(1, 1);
 });
 
 Given("a failed step", () => {
-  expect(1).eq(2);
+  equal(1, 2);
 });
 
-Given("a step with browser parameter", async function () {
-  await this.parameter("Browser", "firefox");
+Given("a broken step", async function () {
+  throw new Error("an error");
 });

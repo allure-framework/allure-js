@@ -4,12 +4,12 @@ import { runCypressInlineTest } from "../utils";
 
 it("works with the reporter instance", async () => {
   const { tests } = await runCypressInlineTest(
-    `
+    () => `
     it("passed", () => {
       cy.wrap(1).should("eq", 1);
     });
   `,
-    (testDir) => `
+    () => `
       const { AllureCypress } = require("allure-cypress/reporter");
 
       module.exports = {

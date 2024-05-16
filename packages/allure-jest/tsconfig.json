@@ -1,11 +1,23 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["./src/**/*"],
+  "include": [
+    "./src/**/*",
+    "./test/**/*",
+    "index.ts",
+    "internal.ts"
+  ],
   "compilerOptions": {
-    "lib": ["ES2017", "DOM"],
-    "types": ["node"],
     "skipLibCheck": true,
-    "outDir": "./dist",
-    "rootDir": "./src"
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "types": [
+      "node"
+    ],
+    "outDir": "./dist"
   }
 }

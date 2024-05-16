@@ -1,4 +1,4 @@
-import JsDomEnvironment from "jest-environment-jsdom";
-import createJestEnvironment from "./AllureJest";
+import { TestEnvironment } from "jest-environment-jsdom";
+import createJestEnvironment from "./index.js";
 
-export default createJestEnvironment(JsDomEnvironment);
+export default createJestEnvironment(TestEnvironment);

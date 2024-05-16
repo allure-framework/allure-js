@@ -19,6 +19,8 @@ export const getTestPath = (test: Circus.TestEntry | Circus.DescribeBlock): stri
     currentUnit = currentUnit.parent;
   }
 
+  // debugger
+
   // first element is always ROOT_DESCRIBE_BLOCK, which shouldn't be reported
   return path.slice(1);
 };

@@ -1,25 +1,22 @@
-import { ReportFinalMessage, ReporterMessage, TestEndMessage, TestStartMessage } from "./model";
+export const uint8ArrayToBase64 = (data: unknown) => {
+  // @ts-ignore
+  const u8arrayLike = Array.isArray(data) || data.buffer;
 
-export const setStartTestReportMessage = (message: TestStartMessage) => {
-  const reportMessage: ReportFinalMessage = Cypress.env("allure").reportMessage;
+  if (!u8arrayLike) {
+    return data as string;
+  }
 
-  reportMessage.startMessage = message;
-
-  Cypress.env("allure", { reportMessage });
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  return btoa(String.fromCharCode.apply(null, data as number[]));
 };
 
-export const setEndTestReportMessage = (message: TestEndMessage) => {
-  const reportMessage: ReportFinalMessage = Cypress.env("allure").reportMessage;
+export const normalizeAttachmentContentEncoding = (data: unknown, encoding: BufferEncoding): BufferEncoding => {
+  // @ts-ignore
+  const u8arrayLike = Array.isArray(data) || data.buffer;
 
-  reportMessage.endMessage = message;
+  if (u8arrayLike) {
+    return "base64";
+  }
 
-  Cypress.env("allure", { reportMessage });
-};
-
-export const pushReportMessage = (message: ReporterMessage) => {
-  const reportMessage: ReportFinalMessage = Cypress.env("allure").reportMessage;
-
-  reportMessage.messages.push(message);
-
-  Cypress.env("allure", { reportMessage });
+  return encoding;
 };

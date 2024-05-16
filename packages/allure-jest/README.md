@@ -61,10 +61,12 @@ The plugin provides custom global commands which allow to add additional info
 inside your tests:
 
 ```javascript
-it("my test", () => {
-  allure.attachment(currentTest.id(), screenshot, "image/png");
-  allure.epic(currentTest.id(), "my_epic");
-  allure.parameter(currentTest.id(), "parameter_name", "parameter_value", {
+import { attachment, epic, parameter } from "allure-js-commons/new";
+
+it("my test", async () => {
+  await attachment(currentTest.id(), screenshot, "image/png");
+  await epic(currentTest.id(), "my_epic");
+  await parameter(currentTest.id(), "parameter_name", "parameter_value", {
     mode: "hidden",
     excluded: false,
   });
@@ -74,9 +76,11 @@ it("my test", () => {
 ## Links usage
 
 ```js
-it("basic test", () => {
-  allure.link("https://allurereport.org", "Allure Report"); // link with name
-  allure.issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
+import { link, issue } from "allure-js-commons/new";
+
+it("basic test", async () => {
+  await link("https://allurereport.org", "Allure Report"); // link with name
+  await issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
 });
 ```
 
@@ -112,10 +116,12 @@ module.exports = config
 Then you can assign link using shorter notation:
 
 ```js
-it("basic test", () => {
-  allure.issue("Issue Name", "352");
-  allure.tms("Task Name", "352");
-  allure.link("352", "Link name", "custom");
+import { issue, tms, link } from "allure-js-commons/new";
+
+it("basic test", async () => {
+  await issue("Issue Name", "352");
+  await tms("Task Name", "352");
+  await link("352", "Link name", "custom");
 });
 ```
 

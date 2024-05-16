@@ -20,7 +20,7 @@ export const getSuitePath = (task: Task): string[] => {
 
 export const getTestFullName = (task: Task, rootDir: string): string => {
   const suitePath = getSuitePath(task);
-  const relativeTestPath = relative(rootDir, task.file.filepath);
+  const relativeTestPath = relative(rootDir, task.file!.filepath);
 
   return `${relativeTestPath}#${suitePath.concat(task.name).join(" ")}`;
 };

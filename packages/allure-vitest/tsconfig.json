@@ -1,18 +1,21 @@
 {
-  "compilerOptions": {
-    "target": "es2022",
-    "lib": ["es2022"],
-    "types": [],
-    "skipLibCheck": true,
-    "module": "NodeNext",
-    "declaration": true,
-    "rootDir": "./src",
-    "outDir": "./dist"
-  },
+  "extends": "../../tsconfig.json",
   "include": [
-    "./src/**/*"
-  ],
-  "exclude": [
+    "./src/**/*",
     "./test/**/*"
-  ]
+  ],
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "types": [
+      "node"
+    ],
+    "outDir": "./dist"
+  }
 }

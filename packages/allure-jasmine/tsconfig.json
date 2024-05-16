@@ -2,11 +2,22 @@
   "extends": "../../tsconfig.json",
   "include": [
     "./src/**/*",
-    "./index.ts"
+    "./test/**/*",
+    "index.ts",
+    "internal.ts"
   ],
   "compilerOptions": {
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
     "types": [
-      "node", "jasmine"
+      "node",
+      "jasmine"
     ],
     "outDir": "./dist"
   }

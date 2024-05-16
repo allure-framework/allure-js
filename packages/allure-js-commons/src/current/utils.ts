@@ -89,8 +89,10 @@ export const getStatusFromError = (error: Error): Status => {
     /**
      * Native `node:assert` and `chai` (`vitest` uses it under the hood) throw `AssertionError`
      * `jest` throws `JestAssertionError` instance
+     * `jasmine` throws `ExpectationFailed` instance
      */
     case /assert/gi.test(error.constructor.name):
+    case /expectation/gi.test(error.constructor.name):
     case /assert/gi.test(error.name):
     case /assert/gi.test(error.message):
       return Status.FAILED;

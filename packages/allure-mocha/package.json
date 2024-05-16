@@ -19,7 +19,14 @@
     "email": "allure@qameta.io",
     "url": "https://qameta.io/"
   },
-  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
@@ -29,16 +36,21 @@
   "scripts": {
     "allure-report": "allure serve ./out/allure-results",
     "clean": "rimraf ./dist ./out",
-    "compile": "tsc",
+    "compile": "run-p 'compile:*'",
+    "compile:lib": "rollup -c",
+    "compile:types": "tsc --project ./tsconfig.dts.json",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "lint": "eslint ./src --ext .ts",
-    "lint:fix": "eslint ./src --ext .ts --fix",
-    "test": "ts-node --project test/tsconfig.json test/runner.ts"
+    "lint": "eslint ./src ./test --ext .ts",
+    "lint:fix": "eslint ./src ./test --ext .ts --fix",
+    "test": "vitest run ./test/spec/**/*.test.ts"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
     "@testdeck/mocha": "0.3.3",
     "@types/chai": "^4.3.6",
     "@types/eslint": "^8",
@@ -47,23 +59,30 @@
     "@types/sinon": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
+    "allure-vitest": "workspace:^",
     "chai": "^4.3.8",
+    "chai-like": "^1.1.1",
+    "chai-things": "^0.2.0",
     "codecov": "^3.6.5",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-jsdoc": "^48.0.0",
     "eslint-plugin-no-null": "^1.0.2",
+    "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "fs-jetpack": "^4.1.0",
-    "glob": "^10.3.5",
+    "glob": "^10.3.12",
     "mocha": "^10.2.0",
-    "mocha-multi-reporters": "^1.5.1",
+    "npm-run-all2": "^6.1.2",
     "rimraf": "^5.0.1",
+    "rollup": "^4.14.1",
     "sinon": "^17.0.0",
     "source-map-support": "^0.5.21",
     "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "tslib": "^2.6.2",
+    "typescript": "^5.2.2",
+    "vitest": "^1.4.0"
   },
   "peerDependencies": {
     "mocha": ">=6.2.x"
