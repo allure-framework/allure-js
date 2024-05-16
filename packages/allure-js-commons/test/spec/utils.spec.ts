@@ -1,5 +1,4 @@
-import { expect } from "chai";
-import { expect as jestExpect } from "expect";
+import { expect, describe, it } from "vitest";
 import assert from "node:assert";
 import {
   ExecutableItem,
@@ -63,7 +62,7 @@ describe("utils > isAnyStepFailed", () => {
     it("returns false", () => {
       // eslint-disable-next-line
       // @ts-ignore
-      expect(isAnyStepFailed(fixtures.withoutFailed as ExecutableItem)).eq(false);
+      expect(isAnyStepFailed(fixtures.withoutFailed as ExecutableItem)).toBe(false);
     });
   });
 
@@ -71,7 +70,7 @@ describe("utils > isAnyStepFailed", () => {
     it("returns true", () => {
       // eslint-disable-next-line
       // @ts-ignore
-      expect(isAnyStepFailed(fixtures.withFailedRoot as ExecutableItem)).eq(true);
+      expect(isAnyStepFailed(fixtures.withFailedRoot as ExecutableItem)).toBe(true);
     });
   });
 
@@ -79,7 +78,7 @@ describe("utils > isAnyStepFailed", () => {
     it("returns true", () => {
       // eslint-disable-next-line
       // @ts-ignore
-      expect(isAnyStepFailed(fixtures.withFailedNested as ExecutableItem)).eq(true);
+      expect(isAnyStepFailed(fixtures.withFailedNested as ExecutableItem)).toBe(true);
     });
   });
 });
@@ -91,8 +90,8 @@ describe("utils > allureLabelRegexp", () => {
       // @ts-ignore
       const labelMatch = "@allure.label.tag=FOO".match(allureLabelRegexp);
       const { name, value } = labelMatch?.groups || {};
-      expect(name).eq(LabelName.TAG);
-      expect(value).eq("FOO");
+      expect(name).toBe(LabelName.TAG);
+      expect(value).toBe("FOO");
     });
   });
   describe("with a scoped tag", () => {
@@ -101,8 +100,8 @@ describe("utils > allureLabelRegexp", () => {
       // @ts-ignore
       const labelMatch = "@allure.label.tag=FOO:123".match(allureLabelRegexp);
       const { name, value } = labelMatch?.groups || {};
-      expect(name).eq(LabelName.TAG);
-      expect(value).eq("FOO:123");
+      expect(name).toBe(LabelName.TAG);
+      expect(value).toBe("FOO:123");
     });
 
     it("return FOO:123", () => {
@@ -110,8 +109,8 @@ describe("utils > allureLabelRegexp", () => {
       // @ts-ignore
       const labelMatch = "@allure.label.tag:FOO:123".match(allureLabelRegexp);
       const { name, value } = labelMatch?.groups || {};
-      expect(name).eq(LabelName.TAG);
-      expect(value).eq("FOO:123");
+      expect(name).toBe(LabelName.TAG);
+      expect(value).toBe("FOO:123");
     });
   });
 
@@ -121,7 +120,7 @@ describe("utils > allureLabelRegexp", () => {
         try {
           assert(false, "test");
         } catch (err) {
-          expect(getStatusFromError(err as Error)).eq(Status.FAILED);
+          expect(getStatusFromError(err as Error)).toBe(Status.FAILED);
         }
       });
     });
@@ -129,9 +128,9 @@ describe("utils > allureLabelRegexp", () => {
     describe("with chai assertion error", () => {
       it("returns failed", () => {
         try {
-          expect(false).eq(true);
+          expect(false).toBe(true);
         } catch (err) {
-          expect(getStatusFromError(err as Error)).eq(Status.FAILED);
+          expect(getStatusFromError(err as Error)).toBe(Status.FAILED);
         }
       });
     });
@@ -139,9 +138,9 @@ describe("utils > allureLabelRegexp", () => {
     describe("with jest assertion error", () => {
       it("returns failed", () => {
         try {
-          jestExpect(false).toBe(true);
+          expect(false).toBe(true);
         } catch (err) {
-          expect(getStatusFromError(err as Error)).eq(Status.FAILED);
+          expect(getStatusFromError(err as Error)).toBe(Status.FAILED);
         }
       });
     });
@@ -155,7 +154,7 @@ describe("utils > allureLabelRegexp", () => {
 
           throw err;
         } catch (err) {
-          expect(getStatusFromError(err as Error)).eq(Status.FAILED);
+          expect(getStatusFromError(err as Error)).toBe(Status.FAILED);
         }
       });
     });
@@ -165,7 +164,7 @@ describe("utils > allureLabelRegexp", () => {
         try {
           throw new Error("assertion error");
         } catch (err) {
-          expect(getStatusFromError(err as Error)).eq(Status.FAILED);
+          expect(getStatusFromError(err as Error)).toBe(Status.FAILED);
         }
       });
     });
@@ -175,7 +174,7 @@ describe("utils > allureLabelRegexp", () => {
         try {
           throw new Error("an error");
         } catch (err) {
-          expect(getStatusFromError(err as Error)).eq(Status.BROKEN);
+          expect(getStatusFromError(err as Error)).toBe(Status.BROKEN);
         }
       });
     });
@@ -189,7 +188,7 @@ describe("writers > utils > typeToExtension", () => {
       fileExtension: ".txt",
     });
 
-    expect(extension).eq(".txt");
+    expect(extension).toBe(".txt");
   });
 
   it("should respect provided file extension without leading dot", () => {
@@ -198,7 +197,7 @@ describe("writers > utils > typeToExtension", () => {
       fileExtension: "txt",
     });
 
-    expect(extension).eq(".txt");
+    expect(extension).toBe(".txt");
   });
 
   it("should get extension for well-known content type", () => {
@@ -206,7 +205,7 @@ describe("writers > utils > typeToExtension", () => {
       contentType: "application/json",
     });
 
-    expect(extension).eq(".json");
+    expect(extension).toBe(".json");
   });
 
   it("should get extension for allure imagediff", () => {
@@ -214,7 +213,7 @@ describe("writers > utils > typeToExtension", () => {
       contentType: "application/vnd.allure.image.diff",
     });
 
-    expect(extension).eq(".imagediff");
+    expect(extension).toBe(".imagediff");
   });
 
   it("should get an empty extension for unknown type", () => {
@@ -222,20 +221,20 @@ describe("writers > utils > typeToExtension", () => {
       contentType: "application/vnd.unknown",
     });
 
-    expect(extension).eq("");
+    expect(extension).toBe("");
   });
 });
 
 describe("utils > getSuitesLabels", () => {
   describe("with empty suites", () => {
     it("returns empty array", () => {
-      expect(getSuitesLabels([])).eql([]);
+      expect(getSuitesLabels([])).toEqual([]);
     });
   });
 
   describe("with single suite", () => {
     it("returns parent suite label as the first element", () => {
-      expect(getSuitesLabels(["foo"])).eql([
+      expect(getSuitesLabels(["foo"])).toEqual([
         {
           name: LabelName.PARENT_SUITE,
           value: "foo",
@@ -246,7 +245,7 @@ describe("utils > getSuitesLabels", () => {
 
   describe("with two suites", () => {
     it("returns parent suite and suite labels as the first two elements", () => {
-      expect(getSuitesLabels(["foo", "bar"])).eql([
+      expect(getSuitesLabels(["foo", "bar"])).toEqual([
         {
           name: LabelName.PARENT_SUITE,
           value: "foo",
@@ -261,7 +260,7 @@ describe("utils > getSuitesLabels", () => {
 
   describe("with three or more suites", () => {
     it("returns list of three elements where last one is a sub suite label", () => {
-      expect(getSuitesLabels(["foo", "bar", "baz", "beep", "boop"])).eql([
+      expect(getSuitesLabels(["foo", "bar", "baz", "beep", "boop"])).toEqual([
         {
           name: LabelName.PARENT_SUITE,
           value: "foo",
@@ -283,53 +282,53 @@ describe("serialize", () => {
   describe("with object", () => {
     it("returns JSON string", () => {
       // eslint-disable-next-line @typescript-eslint/quotes
-      expect(serialize({ foo: "bar" })).eq('{"foo":"bar"}');
+      expect(serialize({ foo: "bar" })).toBe('{"foo":"bar"}');
     });
   });
 
   describe("with array", () => {
     it("returns JSON string", () => {
       // eslint-disable-next-line @typescript-eslint/quotes
-      expect(serialize(["foo", "bar"])).eq('["foo","bar"]');
+      expect(serialize(["foo", "bar"])).toBe('["foo","bar"]');
     });
   });
 
   describe("with map", () => {
     it("returns JSON string", () => {
-      expect(serialize(new Map([["foo", "bar"]]))).eq("[object Map]");
+      expect(serialize(new Map([["foo", "bar"]]))).toBe("[object Map]");
     });
   });
 
   describe("with set", () => {
     it("returns JSON string", () => {
-      expect(serialize(new Set(["foo", "bar"]))).eq("[object Set]");
+      expect(serialize(new Set(["foo", "bar"]))).toBe("[object Set]");
     });
   });
 
   describe("with undefined", () => {
     it("returns undefined string", () => {
-      expect(serialize(undefined)).eq("undefined");
+      expect(serialize(undefined)).toBe("undefined");
     });
   });
 
   describe("with null", () => {
     it("returns null string", () => {
-      expect(serialize(null)).eq("null");
+      expect(serialize(null)).toBe("null");
     });
   });
 
   describe("with function", () => {
     it("returns function string", () => {
-      expect(serialize(() => {})).eq("() => { }");
+      expect(serialize(() => {})).toBe("() => {\n      }");
     });
   });
 
   describe("with primitives", () => {
     it("returns stringified value", () => {
       // eslint-disable-next-line @typescript-eslint/quotes
-      expect(serialize("foo")).eq("foo");
-      expect(serialize(123)).eq("123");
-      expect(serialize(true)).eq("true");
+      expect(serialize("foo")).toBe("foo");
+      expect(serialize(123)).toBe("123");
+      expect(serialize(true)).toBe("true");
     });
   });
 });

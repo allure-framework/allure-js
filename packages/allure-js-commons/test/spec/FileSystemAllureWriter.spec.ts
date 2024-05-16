@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import { expect, describe, it } from "vitest";
 import { randomUUID } from "crypto";
 import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "fs";
 import * as os from "os";
@@ -24,12 +24,13 @@ describe("FileSystemAllureWriter", () => {
     runtime.writeAttachmentFromPath(from, { contentType: ContentType.TEXT });
 
     const resultFiles = readdirSync(allureResults);
-    expect(resultFiles).length(1);
+    expect(resultFiles).toHaveLength(1);
 
     const [actualAttachment] = resultFiles;
 
     const actualContent = readFileSync(path.join(allureResults, actualAttachment));
-    expect(actualContent.toString("utf-8")).to.be.eq(data, "data should match");
+
+    expect(actualContent.toString("utf-8")).toBe(data);
   });
 
   it("Should create allure-report nested path", () => {
@@ -37,8 +38,10 @@ describe("FileSystemAllureWriter", () => {
     const config: AllureConfig = {
       resultsDir: tmpReportPath,
     };
+
     new AllureRuntime(config);
-    expect(existsSync(tmpReportPath)).to.be.eq(true);
+
+    expect(existsSync(tmpReportPath)).toBe(true);
   });
 
   it("Should add env labels", () => {
@@ -54,8 +57,10 @@ describe("FileSystemAllureWriter", () => {
     const runtime = new AllureRuntime(config);
     const group = runtime.startGroup("test_group");
     const test = group.startTest("test_result");
+
     test.endTest();
     group.endGroup();
-    expect(writer.tests[0].labels[0]).to.eql({ name: "tag", value: "testTag" });
+
+    expect(writer.tests[0].labels[0]).toEqual({ name: "tag", value: "testTag" });
   });
 });

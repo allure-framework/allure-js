@@ -3668,17 +3668,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-js-commons@workspace:packages/allure-js-commons"
   dependencies:
-    "@types/chai": "npm:^4.3.6"
     "@types/eslint": "npm:^8"
     "@types/md5": "npm:^2"
-    "@types/mocha": "npm:^10.0.1"
     "@types/node": "npm:^20.6.3"
-    "@types/sinon": "npm:^17.0.0"
     "@types/source-map-support": "npm:^0.5.7"
     "@typescript-eslint/eslint-plugin": "npm:^6.7.0"
     "@typescript-eslint/parser": "npm:^6.7.0"
-    allure-mocha: "workspace:*"
-    chai: "npm:^4.3.8"
     eslint: "npm:^8.57.0"
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-import: "npm:^2.28.1"
@@ -3689,17 +3684,15 @@ __metadata:
     expect: "npm:^29.5.0"
     glob: "npm:^10.3.10"
     md5: "npm:^2.3.0"
-    mocha: "npm:^10.2.0"
-    mocha-multi-reporters: "npm:^1.5.1"
     npm-run-all2: "npm:^5.0.0"
     properties: "npm:^1.2.1"
     rimraf: "npm:^5.0.1"
-    sinon: "npm:^17.0.0"
     source-map-support: "npm:^0.5.21"
     strip-ansi: "npm:^5.2.0"
     ts-node: "npm:^10.9.1"
     tslib: "npm:^2.6.2"
     typescript: "npm:^5.2.2"
+    vitest: "npm:^1.6.0"
   languageName: unknown
   linkType: soft
 

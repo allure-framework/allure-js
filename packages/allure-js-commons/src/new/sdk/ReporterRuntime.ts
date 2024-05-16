@@ -3,6 +3,8 @@ import {
   AttachmentOptions,
   Category,
   EnvironmentInfo,
+  Executable,
+  FixtureResult,
   Link,
   Messages,
   RawAttachment,
@@ -12,23 +14,21 @@ import {
   RuntimeStartStepMessage,
   RuntimeStepMetadataMessage,
   RuntimeStopStepMessage,
+  Stage,
   StepResult,
   TestResult,
-  FixtureResult,
-  Stage,
-  Executable,
 } from "../model.js";
 import { deepClone, typeToExtension } from "../utils.js";
 import { Config, LinkConfig } from "./Config.js";
 import { Crypto } from "./Crypto.js";
 import { Notifier } from "./LifecycleListener.js";
-import { LifecycleState, TestScope, FixtureWrapper, FixtureType } from "./LifecycleState.js";
-import { AllureContextProvider, StaticContextProvider, MutableAllureContextHolder } from "./context/index.js";
+import { FixtureType, FixtureWrapper, LifecycleState, TestScope } from "./LifecycleState.js";
 import { Writer } from "./Writer.js";
+import { AllureContextProvider, MutableAllureContextHolder, StaticContextProvider } from "./context/index.js";
 import {
+  createFixtureResult,
   createStepResult,
   createTestResult,
-  createFixtureResult,
   getTestResultHistoryId,
   getTestResultTestCaseId,
 } from "./utils.js";
@@ -204,6 +204,11 @@ export class ReporterRuntime {
     return uuid ? this.state.getExecutionItem(uuid) : undefined;
   };
 
+  getCurrentScope = () => {
+    const scopeUuid = this.contextProvider.getScope();
+    return scopeUuid ? this.state.getScope(scopeUuid) : undefined;
+  };
+
   /**
    * Creates a new scope. The scope is pushed into the context unless the `manual`
    * option is set to `true`.
@@ -261,6 +266,7 @@ export class ReporterRuntime {
    */
   writeScope = (uuid?: string) => {
     const resolvedUuid = uuid ?? this.stopScope();
+
     if (!resolvedUuid) {
       return;
     }
@@ -295,10 +301,9 @@ export class ReporterRuntime {
   startFixture = (
     type: FixtureType,
     fixtureResult: Partial<FixtureResult>,
-    { scope, dedicatedScope, tests }: StartFixtureOpts = {}
+    { scope, dedicatedScope, tests }: StartFixtureOpts = {},
   ) => {
-
-    dedicatedScope = dedicatedScope || scope === null && !!tests;
+    dedicatedScope = dedicatedScope || (scope === null && !!tests);
     const scopeObj = this.resolveScope(scope);
     if (scopeObj === undefined) {
       // eslint-disable-next-line no-console
@@ -348,7 +353,7 @@ export class ReporterRuntime {
    *
    * @returns The UUID of the stopped fixture.
    */
-  stopFixture = ({uuid, stop}: StopOpts = {}) => {
+  stopFixture = ({ uuid, stop }: StopOpts = {}) => {
     const resolvedUuid = uuid ?? this.contextProvider.getFixture();
     if (!resolvedUuid) {
       // eslint-disable-next-line no-console
@@ -372,15 +377,17 @@ export class ReporterRuntime {
    *
    * At least two arguments must be provided.
    */
-  linkFixtures = ({fixtures = [], scope, tests = []}: LinkFixturesOpts) => {
-    const wrappedFixtures = fixtures.map((f) => {
-      const obj = this.state.getWrappedFixture(f);
-      if (obj === undefined) {
-        // eslint-disable-next-line no-console
-        console.error(`No fixture (${f}) to link!`);
-      }
-      return obj;
-    }).filter((f) => f) as FixtureWrapper[];
+  linkFixtures = ({ fixtures = [], scope, tests = [] }: LinkFixturesOpts) => {
+    const wrappedFixtures = fixtures
+      .map((f) => {
+        const obj = this.state.getWrappedFixture(f);
+        if (obj === undefined) {
+          // eslint-disable-next-line no-console
+          console.error(`No fixture (${f}) to link!`);
+        }
+        return obj;
+      })
+      .filter((f) => f) as FixtureWrapper[];
 
     const scopeObj = scope ? this.state.getScope(scope) : null;
     if (scopeObj === undefined) {
@@ -462,10 +469,12 @@ export class ReporterRuntime {
 
     this.notifier.beforeTestResultStart(stateObject);
 
-    const resolvedScope = dedicatedScope ? this.startScopeWithUuid(uuid, {
-      manual: scope !== undefined,
-      parent: scope ?? undefined,
-    }) : (scope ?? this.contextProvider.getScope());
+    const resolvedScope = dedicatedScope
+      ? this.startScopeWithUuid(uuid, {
+          manual: scope !== undefined,
+          parent: scope ?? undefined,
+        })
+      : scope ?? this.contextProvider.getScope();
 
     if (resolvedScope) {
       this.introduceTestIntoScopes(uuid, resolvedScope);
@@ -511,7 +520,7 @@ export class ReporterRuntime {
     this.notifier.afterTestResultUpdate(targetResult);
   };
 
-  stopTest = ({uuid, stop}: StopOpts = {}) => {
+  stopTest = ({ uuid, stop }: StopOpts = {}) => {
     const resolvedUuid = uuid ?? this.contextProvider.getTest();
     if (!resolvedUuid) {
       // eslint-disable-next-line no-console
@@ -613,7 +622,7 @@ export class ReporterRuntime {
     updateFunc(step);
   };
 
-  stopStep = ({uuid, stop}: StopOpts = {}) => {
+  stopStep = ({ uuid, stop }: StopOpts = {}) => {
     const stepUuid = this.contextProvider.getStep(uuid);
     if (!stepUuid) {
       this.logMissingStepRoot(uuid, "stop");
@@ -699,6 +708,7 @@ export class ReporterRuntime {
     const resolvedTestUuid = testUuid ?? this.contextProvider.getTest();
     const resolvedFixtureUuid = fixtureUuid ?? this.contextProvider.getFixture();
     const resolvedRootUuid = resolvedFixtureUuid ?? resolvedTestUuid ?? this.contextProvider.getStepRoot();
+
     if (!resolvedRootUuid) {
       // eslint-disable-next-line no-console
       console.error("No current fixture or test to apply runtime messages to!");
@@ -721,13 +731,16 @@ export class ReporterRuntime {
       testUuid: resolvedTestUuid ?? undefined,
       test,
       rootUuid: resolvedRootUuid,
-      root
+      root,
     };
 
     for (const message of messages) {
       const step = this.getCurrentStep(resolvedRootUuid);
+
       targets.step = step;
+
       const unhandledMessage = this.handleBuiltInMessage(message, targets);
+
       if (unhandledMessage && customHandler) {
         customHandler(unhandledMessage, fixture, test, step);
       }
@@ -764,15 +777,8 @@ export class ReporterRuntime {
     }
   };
 
-  private handleMetadataMessage = (message: RuntimeMetadataMessage, {test, root, step}: MessageTargets) => {
-    const {
-      links = [],
-      attachments = [],
-      displayName,
-      parameters = [],
-      labels = [],
-      ...rest
-    } = message.data;
+  private handleMetadataMessage = (message: RuntimeMetadataMessage, { test, root, step }: MessageTargets) => {
+    const { links = [], attachments = [], displayName, parameters = [], labels = [], ...rest } = message.data;
     const formattedLinks = this.formatLinks(links);
 
     if (displayName) {
@@ -790,8 +796,8 @@ export class ReporterRuntime {
     attachmentTarget.attachments = attachmentTarget.attachments.concat(attachments);
   };
 
-  private handleStepStartMessage = (message: RuntimeStartStepMessage, {rootUuid, root, step}: MessageTargets) =>
-    this.addStepToItem({...message.data}, rootUuid, step ?? root);
+  private handleStepStartMessage = (message: RuntimeStartStepMessage, { rootUuid, root, step }: MessageTargets) =>
+    this.addStepToItem({ ...message.data }, rootUuid, step ?? root);
 
   private handleStepMetadataMessage = (message: RuntimeStepMetadataMessage, { rootUuid, step }: MessageTargets) => {
     if (!step) {
@@ -814,9 +820,21 @@ export class ReporterRuntime {
       console.error(`No current step of ${rootUuid} to stop`);
       return;
     }
-    const { stop, ...rest } = message.data;
+
+    const { status, stage, stop, ...rest } = message.data;
+
+    // we should not override the status and stage if they are already set
+    if (step.status === undefined) {
+      step.status = status;
+    }
+
+    if (step.stage === undefined) {
+      step.stage = stage;
+    }
+
     Object.assign(step, rest);
-    this.stopStep({uuid: rootUuid, stop});
+
+    this.stopStep({ uuid: rootUuid, stop });
   };
 
   private handleRawAttachmentMessage = (message: RuntimeRawAttachmentMessage, { root, step }: MessageTargets) => {
@@ -843,6 +861,7 @@ export class ReporterRuntime {
 
   private startScopeWithUuid = (uuid: string, { manual, parent }: StartScopeOpts = {}) => {
     const newScope = this.state.setScope(uuid);
+
     if (!manual) {
       parent = this.contextProvider.getScope() ?? undefined;
       this.contextProvider.addScope(uuid);
@@ -874,7 +893,7 @@ export class ReporterRuntime {
     }
   };
 
-  private removeFixtureFromScope = ({fixtures}: TestScope, wrappedFixture: FixtureWrapper) => {
+  private removeFixtureFromScope = ({ fixtures }: TestScope, wrappedFixture: FixtureWrapper) => {
     const fixtureIndex = fixtures.indexOf(wrappedFixture);
     if (fixtureIndex !== -1) {
       fixtures.splice(fixtureIndex, 1);
@@ -884,7 +903,7 @@ export class ReporterRuntime {
   private setUpFixtureDedicatedScope = (
     wrappedFixture: FixtureWrapper,
     tests: readonly string[] | undefined,
-    parentScope?: TestScope | null
+    parentScope?: TestScope | null,
   ) => {
     const scope = this.state.setScope(wrappedFixture.uuid, {
       fixtures: [wrappedFixture],
@@ -945,7 +964,7 @@ export class ReporterRuntime {
     }
   };
 
-  private writeFixturesOfScope = ({fixtures, tests}: TestScope) => {
+  private writeFixturesOfScope = ({ fixtures, tests }: TestScope) => {
     const writtenFixtures = new Set<string>();
     if (tests.length) {
       for (const wrappedFixture of fixtures) {

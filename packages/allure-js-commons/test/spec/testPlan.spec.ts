@@ -1,12 +1,11 @@
-import { expect } from "chai";
 import { randomUUID } from "crypto";
 import { mkdtempSync, writeFileSync } from "fs";
 import os from "os";
 import path from "path";
+import { afterEach, expect, it } from "vitest";
 import { parseTestPlan } from "allure-js-commons";
 
 const originalEnv = process.env;
-
 const tmpDir = mkdtempSync(path.join(os.tmpdir(), "test-"));
 
 afterEach(() => {
@@ -37,12 +36,13 @@ it("should return testplan", () => {
 
   const res = parseTestPlan();
 
-  expect(res).to.eql(exampleTestPlan);
+  expect(res).toEqual(exampleTestPlan);
 });
 
 it("should return undefiend if ALLURE_TESTPLAN_PATH not set", () => {
   const res = parseTestPlan();
-  expect(res).to.be.undefined;
+
+  expect(res).toBeUndefined();
 });
 
 it("should return undefiend if testplan have 0 tests", () => {
@@ -57,7 +57,8 @@ it("should return undefiend if testplan have 0 tests", () => {
   };
 
   const res = parseTestPlan();
-  expect(res).to.be.undefined;
+
+  expect(res).toBeUndefined();
 });
 
 it("should return undefiend if file don't exist", () => {
@@ -67,5 +68,6 @@ it("should return undefiend if file don't exist", () => {
   };
 
   const res = parseTestPlan();
-  expect(res).to.be.undefined;
+
+  expect(res).toBeUndefined();
 });

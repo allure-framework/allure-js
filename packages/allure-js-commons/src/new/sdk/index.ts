@@ -25,3 +25,4 @@ export {
 } from "../model.js";
 export * from "./context/index.js";
 export * from "../index.js";
+export { FixtureType } from "./LifecycleState.js";
