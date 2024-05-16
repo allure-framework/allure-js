@@ -26,7 +26,7 @@ it("reports test steps", async () => {
        module.exports = {
          reporter: [
            [
-             require.resolve("allure-playwright/reporter"),
+             require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
                testMode: true,
@@ -99,7 +99,7 @@ it("reports failed test steps", async () => {
        module.exports = {
          reporter: [
            [
-             require.resolve("allure-playwright/reporter"),
+             require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
                testMode: true,

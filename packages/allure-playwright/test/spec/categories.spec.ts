@@ -14,7 +14,7 @@ it("has categories", async () => {
        module.exports = {
          reporter: [
            [
-             require.resolve("allure-playwright/reporter"),
+             require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
                testMode: true,

@@ -85,7 +85,7 @@ it("should add attachments into steps", async () => {
        module.exports = {
          reporter: [
            [
-             require.resolve("allure-playwright/reporter"),
+             require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
                testMode: true,
@@ -184,7 +184,7 @@ it("doesn't not report detail steps for attachments", async () => {
        module.exports = {
          reporter: [
            [
-             require.resolve("allure-playwright/reporter"),
+             require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
                testMode: true,
