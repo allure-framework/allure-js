@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { describe, expect, it } from "vitest";
 import {
-  ExecutableItem,
+  Executable,
   LabelName,
   Status,
   allureLabelRegexp,
@@ -10,7 +10,7 @@ import {
   isAnyStepFailed,
   serialize,
   typeToExtension,
-} from "allure-js-commons";
+} from "../../src/sdk/node";
 
 const fixtures = {
   withoutFailed: {
@@ -62,7 +62,7 @@ describe("utils > isAnyStepFailed", () => {
     it("returns false", () => {
       // eslint-disable-next-line
       // @ts-ignore
-      expect(isAnyStepFailed(fixtures.withoutFailed as ExecutableItem)).toBe(false);
+      expect(isAnyStepFailed(fixtures.withoutFailed as Executable)).toBe(false);
     });
   });
 
@@ -70,7 +70,7 @@ describe("utils > isAnyStepFailed", () => {
     it("returns true", () => {
       // eslint-disable-next-line
       // @ts-ignore
-      expect(isAnyStepFailed(fixtures.withFailedRoot as ExecutableItem)).toBe(true);
+      expect(isAnyStepFailed(fixtures.withFailedRoot as Executable)).toBe(true);
     });
   });
 
@@ -78,7 +78,7 @@ describe("utils > isAnyStepFailed", () => {
     it("returns true", () => {
       // eslint-disable-next-line
       // @ts-ignore
-      expect(isAnyStepFailed(fixtures.withFailedNested as ExecutableItem)).toBe(true);
+      expect(isAnyStepFailed(fixtures.withFailedNested as Executable)).toBe(true);
     });
   });
 });
