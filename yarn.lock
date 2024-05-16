@@ -461,7 +461,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codeceptjs/configure@npm:0.10.0, @codeceptjs/configure@npm:^0.10.0":
+"@codeceptjs/configure@npm:0.10.0":
   version: 0.10.0
   resolution: "@codeceptjs/configure@npm:0.10.0"
   dependencies:
@@ -470,6 +470,18 @@ __metadata:
   peerDependencies:
     codeceptjs: ">= 2.3.3"
   checksum: 10/afd4512fee9721c98c432a48689db65a80dccca96a59b5de23bae598c78811aa068f476874a0c05674fca258089fc42ddf6d457a16367caa5eb08dba3f88f85b
+  languageName: node
+  linkType: hard
+
+"@codeceptjs/configure@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "@codeceptjs/configure@npm:1.0.1"
+  dependencies:
+    lodash.merge: "npm:^4.6.2"
+    lodash.mergewith: "npm:^4.6.2"
+  peerDependencies:
+    codeceptjs: ">= 2.3.3"
+  checksum: 10/f570ddc1dba5cd53319cb23a1819723cfdba946b084fb39d84d25e0735300fdfb018ec5d8b1f7718d979cb17468126748d04d96aaeb7e1815694f9baca49dde2
   languageName: node
   linkType: hard
 
@@ -3463,7 +3475,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-codeceptjs@workspace:packages/allure-codeceptjs"
   dependencies:
-    "@codeceptjs/configure": "npm:^0.10.0"
+    "@codeceptjs/configure": "npm:^1.0.0"
     "@codeceptjs/helper": "npm:^2.0.4"
     "@rollup/plugin-node-resolve": "npm:^15.2.3"
     "@rollup/plugin-typescript": "npm:^11.1.6"
