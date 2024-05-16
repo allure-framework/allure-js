@@ -39,15 +39,47 @@ it("handles jasmine hooks in flat structure", async () => {
       }),
     ]),
   );
-  expect(groups).toHaveLength(1);
-  expect(groups[0]).toEqual(
-    expect.objectContaining({
-      name: "Global",
-      children: [tests[0].uuid, tests[1].uuid],
-    }),
+  expect(groups).toHaveLength(6);
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "beforeAll",
+        children: [tests[0].uuid, tests[1].uuid],
+        befores: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
+        afters: [],
+      }),
+      expect.objectContaining({
+        name: "beforeEach",
+        children: [tests[0].uuid, tests[1].uuid],
+        befores: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
+        afters: [],
+      }),
+      expect.objectContaining({
+        name: "afterEach",
+        children: [tests[0].uuid, tests[1].uuid],
+        befores: [],
+        afters: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
+      }),
+      expect.objectContaining({
+        name: "beforeEach",
+        children: [tests[0].uuid, tests[1].uuid],
+        befores: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
+        afters: [],
+      }),
+      expect.objectContaining({
+        name: "afterEach",
+        children: [tests[0].uuid, tests[1].uuid],
+        befores: [],
+        afters: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
+      }),
+      expect.objectContaining({
+        name: "afterAll",
+        children: [tests[0].uuid, tests[1].uuid],
+        befores: [],
+        afters: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
+      }),
+    ])
   );
-  expect(groups[0].afters).toHaveLength(3);
-  expect(groups[0].befores).toHaveLength(3);
 });
 
 it("handles jasmine hooks in nested structure", async () => {
@@ -62,7 +94,7 @@ it("handles jasmine hooks in nested structure", async () => {
 
         afterEach(() => {});
 
-        it("should pass", () => {
+        it("should pass 1", () => {
           expect(true).toBe(true);
         });
       })
@@ -77,7 +109,7 @@ it("handles jasmine hooks in nested structure", async () => {
 
         afterEach(() => {});
 
-        it("should pass", () => {
+        it("should pass 2", () => {
           expect(true).toBe(true);
         });
       })
@@ -88,43 +120,68 @@ it("handles jasmine hooks in nested structure", async () => {
   expect(tests).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
-        name: "should pass",
+        name: "should pass 1",
         status: Status.PASSED,
         stage: Stage.FINISHED,
       }),
       expect.objectContaining({
-        name: "should pass",
+        name: "should pass 2",
         status: Status.PASSED,
         stage: Stage.FINISHED,
       }),
     ]),
   );
-  expect(groups).toHaveLength(3);
+  expect(groups).toHaveLength(8);
   expect(groups).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
-        name: "nested 1",
+        name: "beforeAll",
+        children: [tests[0].uuid],
+        befores: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
+        afters: [],
       }),
       expect.objectContaining({
-        name: "nested 2",
+        name: "beforeEach",
+        children: [tests[0].uuid],
+        befores: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
+        afters: [],
       }),
       expect.objectContaining({
-        name: "Global",
+        name: "afterEach",
+        children: [tests[0].uuid],
+        befores: [],
+        afters: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
       }),
-    ]),
+      expect.objectContaining({
+        name: "afterAll",
+        children: [tests[0].uuid],
+        befores: [],
+        afters: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
+      }),
+      expect.objectContaining({
+        name: "beforeAll",
+        children: [tests[1].uuid],
+        befores: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
+        afters: [],
+      }),
+      expect.objectContaining({
+        name: "beforeEach",
+        children: [tests[1].uuid],
+        befores: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
+        afters: [],
+      }),
+      expect.objectContaining({
+        name: "afterEach",
+        children: [tests[1].uuid],
+        befores: [],
+        afters: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
+      }),
+      expect.objectContaining({
+        name: "afterAll",
+        children: [tests[1].uuid],
+        befores: [],
+        afters: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
+      }),
+    ])
   );
-
-  const nested1Group = groups.find((g) => g.name === "nested 1")!;
-  const nested2Group = groups.find((g) => g.name === "nested 2")!;
-  const globalGroup = groups.find((g) => g.name === "Global")!;
-
-  expect(nested1Group.children).toHaveLength(1);
-  expect(nested1Group.afters).toHaveLength(2);
-  expect(nested1Group.befores).toHaveLength(2);
-  expect(nested2Group.children).toHaveLength(1);
-  expect(nested2Group.afters).toHaveLength(2);
-  expect(nested2Group.befores).toHaveLength(2);
-  expect(globalGroup.children).toHaveLength(2);
-  expect(globalGroup.afters).toHaveLength(0);
-  expect(globalGroup.befores).toHaveLength(0);
 });

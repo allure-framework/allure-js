@@ -330,6 +330,7 @@ export class ReporterRuntime {
 
   updateFixture = (updateFunc: (result: FixtureResult) => void, uuid?: string) => {
     const resolvedUuid = uuid ?? this.contextProvider.getFixture();
+
     if (!resolvedUuid) {
       // eslint-disable-next-line no-console
       console.error("No current fixture to update!");
