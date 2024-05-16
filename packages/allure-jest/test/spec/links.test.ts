@@ -4,7 +4,7 @@ import { runJestInlineTest } from "../utils";
 
 it("sets links", async () => {
   const { tests } = await runJestInlineTest(`
-      const { link, links, issue, tms } = require('allure-js-commons/');
+      const { link, links, issue, tms } = require('allure-js-commons');
 
       it("link", async () => {
         await link("https://allurereport.org");

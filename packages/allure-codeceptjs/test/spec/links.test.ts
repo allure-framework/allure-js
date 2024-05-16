@@ -5,7 +5,7 @@ import { runCodeceptJSInlineTest } from "../utils";
 it("sets runtime links", async () => {
   const results = await runCodeceptJSInlineTest({
     "sample.test.js": `
-      const { link, links, issue, tms } = require('allure-js-commons/');
+      const { link, links, issue, tms } = require('allure-js-commons');
 
       Feature("login-feature");
       Scenario("login-scenario1", async () => {

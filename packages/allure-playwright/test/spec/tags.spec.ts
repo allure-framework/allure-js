@@ -6,7 +6,7 @@ it("sets multiply tags", async () => {
   const results = await runPlaywrightInlineTest({
     "sample.test.js": `
       import { test } from 'allure-playwright';
-      import { tag, tags } from 'allure-js-commons/';
+      import { tag, tags } from 'allure-js-commons';
 
       test('should add multiply tags', async ({}, testInfo) => {
           await tag('Allure');
