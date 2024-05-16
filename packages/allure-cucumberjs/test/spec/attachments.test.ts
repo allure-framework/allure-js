@@ -4,6 +4,8 @@ import { runCucumberInlineTest } from "../utils";
 it("handles runtime attachments", async () => {
   const { tests, attachments } = await runCucumberInlineTest(["attachments"], ["attachments"]);
 
+  debugger
+
   expect(tests).toHaveLength(4);
   expect(tests).toContainEqual(
     expect.objectContaining({

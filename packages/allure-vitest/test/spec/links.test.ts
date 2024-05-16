@@ -53,7 +53,7 @@ describe("links", () => {
     const { tests } = await runVitestInlineTest(
       `
       import { test } from "vitest";
-      import { tms } from "allure-js-commons/";
+      import { tms } from "allure-js-commons";
 
       test("tms", async () => {
         await tms("https://example.org/tms/1", "foo");

@@ -1,5 +1,5 @@
 import { beforeEach, describe, it } from "mocha";
-import { displayName } from "allure-js-commons/";
+import { displayName } from "allure-js-commons";
 
 describe("a suite with before", async () => {
   beforeEach("an initial name", async () => {
