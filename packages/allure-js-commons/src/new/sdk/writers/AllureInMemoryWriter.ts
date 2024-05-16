@@ -1,6 +1,6 @@
+import { PathLike } from "fs";
 import { AllureResults, Category, TestResult, TestResultContainer } from "../../model.js";
 import { Writer } from "../Writer.js";
-import {PathLike} from "fs";
 
 export class AllureInMemoryAllureWriter implements Writer, AllureResults {
   public groups: TestResultContainer[] = [];

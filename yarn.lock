@@ -3802,6 +3802,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-vitest@workspace:packages/allure-vitest"
   dependencies:
+    "@rollup/plugin-commonjs": "npm:^25.0.7"
+    "@rollup/plugin-node-resolve": "npm:^15.2.3"
+    "@rollup/plugin-typescript": "npm:^11.1.6"
     "@types/eslint": "npm:^8"
     "@types/node": "npm:^20.6.3"
     "@typescript-eslint/eslint-plugin": "npm:^6.7.0"
@@ -3814,9 +3817,11 @@ __metadata:
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-node: "npm:^11.1.0"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
-    glob: "npm:^10.3.10"
-    npm-run-all2: "npm:^5.0.0"
+    glob: "npm:^10.3.15"
+    npm-run-all2: "npm:^6.1.2"
     rimraf: "npm:^5.0.1"
+    rollup: "npm:^4.17.2"
+    tslib: "npm:^2.6.2"
     typescript: "npm:^5.2.2"
     vite: "npm:^5.0.11"
     vitest: "npm:^1.1.3"
@@ -7622,6 +7627,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"glob@npm:^10.3.15":
+  version: 10.3.15
+  resolution: "glob@npm:10.3.15"
+  dependencies:
+    foreground-child: "npm:^3.1.0"
+    jackspeak: "npm:^2.3.6"
+    minimatch: "npm:^9.0.1"
+    minipass: "npm:^7.0.4"
+    path-scurry: "npm:^1.11.0"
+  bin:
+    glob: dist/esm/bin.mjs
+  checksum: 10/b2b1c74309979b34fd6010afb50418a12525def32f1d3758d5827fc75d6143fc3ee5d1f3180a43111f6386c9e297c314f208d9d09955a6c6b69f22e92ee97635
+  languageName: node
+  linkType: hard
+
 "glob@npm:^6.0.1":
   version: 6.0.4
   resolution: "glob@npm:6.0.4"
@@ -11280,6 +11300,16 @@ __metadata:
     lru-cache: "npm:^10.2.0"
     minipass: "npm:^5.0.0 || ^6.0.2 || ^7.0.0"
   checksum: 10/a2bbbe8dc284c49dd9be78ca25f3a8b89300e0acc24a77e6c74824d353ef50efbf163e64a69f4330b301afca42d0e2229be0560d6d616ac4e99d48b4062016b1
+  languageName: node
+  linkType: hard
+
+"path-scurry@npm:^1.11.0":
+  version: 1.11.1
+  resolution: "path-scurry@npm:1.11.1"
+  dependencies:
+    lru-cache: "npm:^10.2.0"
+    minipass: "npm:^5.0.0 || ^6.0.2 || ^7.0.0"
+  checksum: 10/5e8845c159261adda6f09814d7725683257fcc85a18f329880ab4d7cc1d12830967eae5d5894e453f341710d5484b8fdbbd4d75181b4d6e1eb2f4dc7aeadc434
   languageName: node
   linkType: hard
 

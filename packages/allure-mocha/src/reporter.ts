@@ -142,9 +142,11 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
 
   private onHookStart = (hook: Mocha.Hook) => {
     const name = hook.originalTitle ?? "";
-    if (name.startsWith("\"before")) {
+    // eslint-disable-next-line @typescript-eslint/quotes
+    if (name.startsWith('"before')) {
       this.runtime.startFixture("before", { name });
-    } else if (name.startsWith("\"after")) {
+      // eslint-disable-next-line @typescript-eslint/quotes
+    } else if (name.startsWith('"after')) {
       this.runtime.startFixture("after", { name });
     }
   };

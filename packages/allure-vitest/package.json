@@ -22,11 +22,12 @@
   "type": "module",
   "exports": {
     "./reporter": {
-      "import": "./dist/reporter.js"
+      "require": "./dist/reporter.cjs",
+      "import": "./dist/reporter.mjs"
     },
     "./setup": {
-      "require": "./dist/setup.js",
-      "import": "./dist/setup.js"
+      "require": "./dist/setup.cjs",
+      "import": "./dist/setup.mjs"
     }
   },
   "files": [
@@ -35,7 +36,9 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist ./out",
-    "compile": "tsc",
+    "compile": "run-p 'compile:*'",
+    "compile:lib": "rollup -c",
+    "compile:types": "tsc --project ./tsconfig.dts.json",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "allure-report": "allure serve ./out/allure-results",
     "pretest": "run compile",
@@ -47,6 +50,9 @@
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
     "@types/eslint": "^8",
     "@types/node": "^20.6.3",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
@@ -58,9 +64,11 @@
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "glob": "^10.3.10",
-    "npm-run-all2": "^5.0.0",
+    "glob": "^10.3.15",
+    "npm-run-all2": "^6.1.2",
     "rimraf": "^5.0.1",
+    "rollup": "^4.17.2",
+    "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "vite": "^5.0.11",
     "vitest": "^1.1.3"
