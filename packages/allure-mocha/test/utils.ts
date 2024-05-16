@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { appendFileSync } from "node:fs";
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import * as path from "node:path";
-import { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/new/sdk/node";
+import { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/sdk/node";
 
 type MochaRunOptions = {
   env?: { [keys: string]: string };
@@ -35,7 +35,7 @@ export const runMochaInlineTest = async (
   const reporterPath = path.join(testDir, "reporter.cjs");
   const reporterContent = `
     const MochaAllureReporter = require('allure-mocha').default;
-    const { MessageAllureWriter } = require("allure-js-commons/new/sdk/node");
+    const { MessageAllureWriter } = require("allure-js-commons/sdk/node");
     class ProcessMessageAllureReporter extends MochaAllureReporter {
       constructor(runner, opts) {
         if (opts.reporterOptions?.emitFiles !== 'true') {

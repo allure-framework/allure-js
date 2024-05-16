@@ -1,12 +1,12 @@
 import { expect, it } from "vitest";
-import { LinkType } from "allure-js-commons/new";
+import { LinkType } from "allure-js-commons";
 import { runPlaywrightInlineTest } from "../utils";
 
 it("sets runtime links", async () => {
   const results = await runPlaywrightInlineTest({
     "sample.test.js": `
       import { test } from 'allure-playwright';
-      import { link, links, issue, tms } from 'allure-js-commons/new';
+      import { link, links, issue, tms } from 'allure-js-commons/';
 
       test('should add epic link', async ({}, testInfo) => {
         await link("https://playwright.dev/docs/api/class-page#page-workers");

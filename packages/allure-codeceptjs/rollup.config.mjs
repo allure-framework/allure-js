@@ -9,7 +9,11 @@ const dirname = fileURLToPath(new URL(".", import.meta.url));
 const createNodeEntry = (inputFile) => {
   const outputFileBase = inputFile.replace(/^src/, "dist");
   const external = [
-
+    "allure-js-commons",
+    "allure-js-commons/sdk/node",
+    "strip-ansi",
+    "codeceptjs",
+    "node:path",
   ];
 
   return [

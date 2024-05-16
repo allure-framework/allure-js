@@ -4,7 +4,7 @@ import { runVitestInlineTest } from "../utils.js";
 it("sets test display name", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
-    import { displayName } from "allure-js-commons/new";
+    import { displayName } from "allure-js-commons/";
 
     test("display name", async () => {
       await displayName("foo");

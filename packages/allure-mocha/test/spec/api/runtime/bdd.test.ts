@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { TestResult } from "allure-js-commons/new";
-import { LabelName } from "allure-js-commons/new/sdk/node";
+import { TestResult } from "allure-js-commons";
+import { LabelName } from "allure-js-commons/sdk/node";
 import { runMochaInlineTest } from "../../../utils";
 
 describe("bdd labels", () => {

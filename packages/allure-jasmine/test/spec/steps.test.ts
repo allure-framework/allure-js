@@ -5,7 +5,7 @@ import { runJasmineInlineTest } from "../utils";
 it("single step", async () => {
   const { tests } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `
-    const { label, step } = require("allure-js-commons/new");;
+    const { label, step } = require("allure-js-commons");;
 
     it("step", async () => {
       await step("foo", async () => {
@@ -24,7 +24,7 @@ it("single step", async () => {
 it("multiple steps", async () => {
   const { tests } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `
-    const { label, step } = require("allure-js-commons/new");;
+    const { label, step } = require("allure-js-commons");;
 
     it("step", async () => {
       await step("foo", async () => {
@@ -55,7 +55,7 @@ it("multiple steps", async () => {
 it("nested steps", async () => {
   const { tests } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `
-    const { label, step } = require("allure-js-commons/new");;
+    const { label, step } = require("allure-js-commons");;
 
     it("step", async () => {
       await step("foo", async () => {
@@ -82,7 +82,7 @@ it("nested steps", async () => {
 it("step with attachments", async () => {
   const { tests, attachments } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `
-    const { attachment, step } = require("allure-js-commons/new");;
+    const { attachment, step } = require("allure-js-commons");;
 
     it("text attachment", async () => {
       await step("foo", async () => {
@@ -106,7 +106,7 @@ it("step with attachments", async () => {
 it("step with assertion error", async () => {
   const { tests } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `
-    const { step } = require("allure-js-commons/new");;
+    const { step } = require("allure-js-commons");;
 
     it("step", async () => {
       await step("foo", async () => {
@@ -153,7 +153,7 @@ it("step with assertion error", async () => {
 it("step with unexpected error", async () => {
   const { tests } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `
-    const { step } = require("allure-js-commons/new");;
+    const { step } = require("allure-js-commons");;
 
     it("step", async () => {
       await step("foo", async () => {
@@ -196,7 +196,7 @@ it("step with unexpected error", async () => {
 it("step runtime api", async () => {
   const { tests } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `
-    const { step } = require("allure-js-commons/new");;
+    const { step } = require("allure-js-commons");;
 
     it("step", async () => {
       await step("step", (ctx) => {

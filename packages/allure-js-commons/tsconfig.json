@@ -1,12 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "include": [
-    "./src/**/*",
-    "index.ts",
-    "internal.ts"
+    "./src/**/*"
   ],
   "exclude": [
-    "src/**/__old__/*",
     "./scripts"
   ],
   "compilerOptions": {

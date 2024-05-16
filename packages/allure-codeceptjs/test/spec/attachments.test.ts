@@ -4,7 +4,7 @@ import { runCodeceptJSInlineTest } from "../utils";
 it("handles attachments in tests", async () => {
   const { tests, attachments } = await runCodeceptJSInlineTest({
     "login.test.js": `
-      const { attachment } = require("allure-js-commons/new");
+      const { attachment } = require("allure-js-commons");
 
       Feature("sample-feature");
       Scenario("sample-scenario", async () => {
@@ -30,7 +30,7 @@ it("handles attachments in tests", async () => {
 it("handles attachments in runtime steps", async () => {
   const { tests, attachments } = await runCodeceptJSInlineTest({
     "login.test.js": `
-      const { step, attachment } = require("allure-js-commons/new");
+      const { step, attachment } = require("allure-js-commons");
 
       Feature("sample-feature");
       Scenario("sample-scenario", async () => {

@@ -10,7 +10,7 @@ import {
   MessageAllureWriter,
   Stage,
   Status,
-} from "allure-js-commons/new/sdk/node";
+} from "allure-js-commons/sdk/node";
 import { AllureNewmanConfig, PmItem, RunningItem } from "./model.js";
 import { extractMeta } from "./utils.js";
 

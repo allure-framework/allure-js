@@ -6,7 +6,7 @@ import path from "node:path";
 import process from "node:process";
 import stripAnsi from "strip-ansi";
 import { ContentType, ImageDiffAttachment } from "allure-js-commons";
-import { ALLURE_IMAGEDIFF_CONTENT_TYPE, ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/new/internal";
+import { ALLURE_IMAGEDIFF_CONTENT_TYPE, ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/internal";
 import {
   AllureNodeReporterRuntime,
   FileSystemAllureWriter,
@@ -19,7 +19,7 @@ import {
   TestResult,
   extractMetadataFromString,
   readImageAsBase64,
-} from "allure-js-commons/new/sdk/node";
+} from "allure-js-commons/sdk/node";
 import { AllurePlaywrightReporterConfig } from "./model.js";
 import { getStatusDetails, hasLabel, statusToAllureStats } from "./utils.js";
 

@@ -44,6 +44,7 @@ export {
   FixtureResult,
   TestResultContainer,
   Attachment,
+  ImageDiffAttachment,
   Severity,
   Stage,
   Status,

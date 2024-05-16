@@ -3,7 +3,7 @@ import * as messages from "@cucumber/messages";
 import { PickleTag, Tag, TestStepResult, TestStepResultStatus } from "@cucumber/messages";
 import os from "node:os";
 import process from "node:process";
-import { ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/new/internal";
+import { ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/internal";
 import {
   AllureNodeReporterRuntime,
   Config,
@@ -18,7 +18,7 @@ import {
   TestResult,
   createStepResult,
   getWorstStepResultStatus,
-} from "allure-js-commons/new/sdk/node";
+} from "allure-js-commons/sdk/node";
 import { AllureCucumberReporterConfig, LabelConfig, LinkConfig } from "./model";
 
 const { ALLURE_THREAD_NAME } = process.env;

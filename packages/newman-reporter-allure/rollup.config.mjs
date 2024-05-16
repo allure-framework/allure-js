@@ -16,9 +16,9 @@ const createNodeEntry = (inputFile) => {
     "node:process",
     "node:path",
     "strip-ansi",
-    "allure-js-commons/new",
-    "allure-js-commons/new/sdk/node",
-    "allure-js-commons/new/internal",
+    "allure-js-commons",
+    "allure-js-commons/sdk/node",
+    "allure-js-commons/internal",
   ];
 
   return [

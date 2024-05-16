@@ -1,4 +1,4 @@
-import { Config, LabelName, LinkType } from "allure-js-commons/new/sdk/node";
+import { Config, LabelName, LinkType } from "allure-js-commons/sdk/node";
 
 export type LabelConfig = {
   pattern: RegExp[];

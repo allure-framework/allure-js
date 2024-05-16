@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { LabelName } from "allure-js-commons/new/sdk/node";
+import { LabelName } from "allure-js-commons/sdk/node";
 import { runPlaywrightInlineTest } from "../utils";
 
 it("has metadata from title", async () => {

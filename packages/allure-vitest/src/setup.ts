@@ -1,7 +1,7 @@
 /* eslint @typescript-eslint/require-await: off */
 import { cwd } from "node:process";
 import { type TaskContext, afterAll, afterEach, beforeAll, beforeEach } from "vitest";
-import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/new/internal";
+import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
 import {
   ContentType,
   Label,
@@ -20,7 +20,7 @@ import {
   getGlobalTestRuntime,
   parseTestPlan,
   setGlobalTestRuntime,
-} from "allure-js-commons/new/sdk/node";
+} from "allure-js-commons/sdk/node";
 import { getTestFullName } from "./utils.js";
 
 export class AllureVitestTestRuntime implements TestRuntime {

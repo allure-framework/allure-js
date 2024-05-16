@@ -2,7 +2,7 @@ import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { join, resolve as resolvePath } from "node:path";
-import type { AllureResults } from "allure-js-commons/new";
+import type { AllureResults } from "allure-js-commons";
 
 export const runCypressInlineTest = async (
   test: (allureCommonsModulePath: string) => string,
@@ -55,7 +55,7 @@ export const runCypressInlineTest = async (
   const supportContent = `
     import "allure-cypress";
   `;
-  const allureJsCommonsPath = require.resolve("allure-js-commons/new");
+  const allureJsCommonsPath = require.resolve("allure-js-commons");
 
   await mkdir(cypressTestsDir, { recursive: true });
   await mkdir(cypressSupportDir, { recursive: true });

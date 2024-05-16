@@ -4,7 +4,7 @@ import { runJasmineInlineTest } from "../utils";
 it("handles json attachment", async () => {
   const { tests, attachments } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `
-    const { attachment } = require("allure-js-commons/new");
+    const { attachment } = require("allure-js-commons");
 
     it("json", async () => {
       await attachment("Request body", JSON.stringify({ foo: "bar" }), "application/json");

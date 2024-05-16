@@ -3,7 +3,7 @@ import { runJestInlineTest } from "../utils";
 
 it("handles json attachment", async () => {
   const { tests, attachments } = await runJestInlineTest(`
-    const { attachment } = require("allure-js-commons/new");
+    const { attachment } = require("allure-js-commons");
 
     it("json", async () => {
       await attachment("Request body", JSON.stringify({ foo: "bar" }), "application/json");

@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { parse } from "properties";
-import { AllureResults, EnvironmentInfo, TestResult, TestResultContainer } from "allure-js-commons/new/sdk/node";
+import { AllureResults, EnvironmentInfo, TestResult, TestResultContainer } from "allure-js-commons/sdk/node";
 
 const parseJsonResult = <T>(data: string) => {
   return JSON.parse(Buffer.from(data, "base64").toString("utf8")) as T;

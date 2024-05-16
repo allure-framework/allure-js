@@ -4,7 +4,7 @@ import { runJasmineInlineTest } from "../utils";
 it("sets parameters", async () => {
   const { tests } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `
-      const { parameter } = require("allure-js-commons/new");
+      const { parameter } = require("allure-js-commons");
 
       it("parameter", async () => {
         await parameter("param1", "paramValue1");

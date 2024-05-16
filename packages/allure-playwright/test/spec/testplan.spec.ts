@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { TestPlanV1 } from "allure-js-commons/new/sdk/node";
+import { TestPlanV1 } from "allure-js-commons/sdk/node";
 import { runPlaywrightInlineTest } from "../utils";
 
 it("respects testplan", async () => {

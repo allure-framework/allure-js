@@ -2,7 +2,7 @@ import { hostname } from "node:os";
 import { basename, normalize, relative } from "node:path";
 import { cwd, env } from "node:process";
 import { File, Reporter, Task } from "vitest";
-import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/new/internal";
+import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
 import {
   AllureNodeReporterRuntime,
   Config,
@@ -14,7 +14,7 @@ import {
   Status,
   extractMetadataFromString,
   getSuitesLabels,
-} from "allure-js-commons/new/sdk/node";
+} from "allure-js-commons/sdk/node";
 import { getSuitePath, getTestFullName } from "./utils.js";
 
 export interface AllureVitestReporterConfig extends Omit<Config, "writer"> {

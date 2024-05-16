@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it, test } from "vitest";
-import { TestResult } from "allure-js-commons/new";
+import { TestResult } from "allure-js-commons";
 import { runMochaInlineTest } from "../../../utils";
 
 describe("suites", () => {

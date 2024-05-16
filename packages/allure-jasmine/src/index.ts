@@ -19,7 +19,7 @@ import {
   getSuiteLabels,
   isPromise,
   setGlobalTestRuntime,
-} from "allure-js-commons/new/sdk/node";
+} from "allure-js-commons/sdk/node";
 import { AllureJasmineConfig, JasmineBeforeAfterFn } from "./model.js";
 import { findAnyError, findMessageAboutThrow } from "./utils.js";
 

@@ -4,7 +4,7 @@ import { runJasmineInlineTest } from "../utils";
 it("sets description", async () => {
   const { tests } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `
-      const { description } = require("allure-js-commons/new");
+      const { description } = require("allure-js-commons");
 
       it("description", async () => {
         await description("foo");
@@ -19,7 +19,7 @@ it("sets description", async () => {
 it("sets html description", async () => {
   const { tests } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `
-      const { descriptionHtml } = require("allure-js-commons/new");
+      const { descriptionHtml } = require("allure-js-commons");
 
       it("descriptionHtml", async () => {
         await descriptionHtml("foo");

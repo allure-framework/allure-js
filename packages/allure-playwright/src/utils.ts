@@ -1,7 +1,7 @@
 import { TestStatus } from "@playwright/test";
 import { TestError } from "@playwright/test/reporter";
 import stripAnsi from "strip-ansi";
-import { LabelName, Status, StatusDetails, TestResult } from "allure-js-commons/new/sdk/node";
+import { LabelName, Status, StatusDetails, TestResult } from "allure-js-commons/sdk/node";
 
 export const statusToAllureStats = (status: TestStatus, expectedStatus: TestStatus): Status => {
   if (status === "skipped") {

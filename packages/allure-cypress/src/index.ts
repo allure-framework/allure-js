@@ -14,7 +14,7 @@ import {
   getUnfinishedStepsMessages,
   hasStepMessage,
   setGlobalTestRuntime,
-} from "allure-js-commons/new/sdk/browser";
+} from "allure-js-commons/sdk/browser";
 import { CypressRuntimeMessage } from "./model.js";
 import { normalizeAttachmentContentEncoding, uint8ArrayToBase64 } from "./utils.js";
 
