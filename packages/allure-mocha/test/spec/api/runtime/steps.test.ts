@@ -1,8 +1,8 @@
-import { runMochaInlineTest } from "../../../utils";
 import { beforeAll, describe, expect, it } from "vitest";
-import { TestResult, Stage, Status } from "allure-js-commons/new/sdk/node";
+import { Stage, Status, TestResult } from "allure-js-commons/new/sdk/node";
+import { runMochaInlineTest } from "../../../utils";
 
-describe("step", async () => {
+describe("step", () => {
   const testMap = new Map<string, TestResult>();
   let attachments: Record<string, string | Buffer>;
   beforeAll(async () => {
@@ -19,50 +19,53 @@ describe("step", async () => {
       ["steps", "stepWithMaskedParameter"],
       ["steps", "stepWithHiddenParameter"],
     );
-    for (const test of results.tests) {
-      testMap.set(test.name!, test);
+    for (const testResult of results.tests) {
+      testMap.set(testResult.name as string, testResult);
     }
     attachments = results.attachments;
   });
 
-  describe("structure", async () => {
-    it("noop", async () => {
+  describe("structure", () => {
+    it("noop", () => {
       expect(testMap.get("a log step")).toMatchObject({
-        steps: [expect.objectContaining({
-          name: "foo"
-        })]
-      });
-    });
-
-    it("lambda", async () => {
-      expect(testMap.get("a lambda step")).toMatchObject({
-        steps: [expect.objectContaining({
-          name: "foo"
-        })]
-      });
-    });
-
-    it("serial steps", async () => {
-      expect(testMap.get("two steps in a row")).toMatchObject({
         steps: [
-          expect.objectContaining({name: "foo"}),
-          expect.objectContaining({name: "bar"}),
-        ]
+          expect.objectContaining({
+            name: "foo",
+          }),
+        ],
       });
     });
 
-    it("nested steps", async () => {
+    it("lambda", () => {
+      expect(testMap.get("a lambda step")).toMatchObject({
+        steps: [
+          expect.objectContaining({
+            name: "foo",
+          }),
+        ],
+      });
+    });
+
+    it("serial steps", () => {
+      expect(testMap.get("two steps in a row")).toMatchObject({
+        steps: [expect.objectContaining({ name: "foo" }), expect.objectContaining({ name: "bar" })],
+      });
+    });
+
+    it("nested steps", () => {
       expect(testMap.get("two nested steps")).toMatchObject({
-        steps: [expect.objectContaining({
-          name: "foo",
-          steps: [expect.objectContaining({name: "bar"})]
-        }),]
+        steps: [
+          expect.objectContaining({
+            name: "foo",
+            steps: [expect.objectContaining({ name: "bar" })],
+          }),
+        ],
       });
     });
   });
 
-  describe("timings", async () => {
-    it("for serial tests match", async () => {
+  describe("timings", () => {
+    it("for serial tests match", () => {
       const test = testMap.get("two steps in a row")!;
       const [firstStep, secondStep] = test.steps;
       const timestamps = [
@@ -76,7 +79,7 @@ describe("step", async () => {
       expect(timestamps).toEqual([...timestamps].sort());
     });
 
-    it("for nested tests match", async () => {
+    it("for nested tests match", () => {
       const test = testMap.get("two nested steps")!;
       const [firstStep] = test.steps;
       const [secondStep] = firstStep.steps;
@@ -92,8 +95,8 @@ describe("step", async () => {
     });
   });
 
-  describe("status", async () => {
-    it("could be passed", async () => {
+  describe("status", () => {
+    it("could be passed", () => {
       expect(testMap.get("a lambda step")).toMatchObject({
         status: Status.PASSED,
         stage: Stage.FINISHED,
@@ -101,12 +104,12 @@ describe("step", async () => {
           expect.objectContaining({
             status: Status.PASSED,
             stage: Stage.FINISHED,
-          })
-        ]
+          }),
+        ],
       });
     });
 
-    it("could be failed", async () => {
+    it("could be failed", () => {
       expect(testMap.get("a failed step")).toMatchObject({
         status: Status.FAILED,
         stage: Stage.FINISHED,
@@ -122,12 +125,12 @@ describe("step", async () => {
               message: "baz: expected 'foo' to equal 'bar'",
               trace: expect.stringMatching(/.+/),
             },
-          })
-        ]
+          }),
+        ],
       });
     });
 
-    it("could be broken", async () => {
+    it("could be broken", () => {
       expect(testMap.get("a broken step")).toMatchObject({
         status: Status.BROKEN,
         stage: Stage.FINISHED,
@@ -143,28 +146,30 @@ describe("step", async () => {
               message: "foo",
               trace: expect.stringMatching(/.+/),
             },
-          })
-        ]
+          }),
+        ],
       });
     });
   });
 
-  it("can be renamed", async () => {
+  it("can be renamed", () => {
     expect(testMap.get("a renamed step")).toMatchObject({
-      steps: [expect.objectContaining({
-        name: "bar"
-      })]
+      steps: [
+        expect.objectContaining({
+          name: "bar",
+        }),
+      ],
     });
   });
 
-  it("may contain an attachment", async () => {
+  it("may contain an attachment", () => {
     const stepAttachments = testMap.get("a step with an attachment")?.steps[0].attachments;
 
     expect(stepAttachments).toEqual([
       expect.objectContaining({
         name: "foo.txt",
-        type: "text/plain"
-      })
+        type: "text/plain",
+      }),
     ]);
     const source = stepAttachments![0].source;
     const contentInBase64 = attachments[source] as string;
@@ -172,8 +177,8 @@ describe("step", async () => {
     expect(decodedContent).toEqual("bar");
   });
 
-  describe("parameters", async () => {
-    it("may contain a parameter", async () => {
+  describe("parameters", () => {
+    it("may contain a parameter", () => {
       expect(testMap.get("a step with a parameter")).toMatchObject({
         steps: expect.arrayContaining([
           expect.objectContaining({
@@ -183,7 +188,7 @@ describe("step", async () => {
       });
     });
 
-    it("may contain a masked parameter", async () => {
+    it("may contain a masked parameter", () => {
       expect(testMap.get("a step with a masked parameter")).toMatchObject({
         steps: expect.arrayContaining([
           expect.objectContaining({
@@ -193,7 +198,7 @@ describe("step", async () => {
       });
     });
 
-    it("may contain a hidden parameter", async () => {
+    it("may contain a hidden parameter", () => {
       expect(testMap.get("a step with a hidden parameter")).toMatchObject({
         steps: expect.arrayContaining([
           expect.objectContaining({

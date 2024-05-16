@@ -45,8 +45,8 @@
     "compile:lib": "rollup -c",
     "compile:types": "tsc --project ./tsconfig.dts.json",
     "coverage": "codecov",
-    "lint": "eslint ./src --ext .ts",
-    "lint:fix": "eslint ./src --ext .ts --fix",
+    "lint": "eslint ./src ./test --ext .ts",
+    "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "vitest run --dir ./test/spec"
   },
   "dependencies": {

@@ -37,8 +37,7 @@ export class MutableAllureContextHolder implements AllureContextHolder<MutableAl
     this.context.scopeStack.pop();
   };
 
-  removeScopeByUuid = (uuid: string) =>
-    MutableAllureContextHolder.removeAllOccurrences(this.context.scopeStack, uuid);
+  removeScopeByUuid = (uuid: string) => MutableAllureContextHolder.removeAllOccurrences(this.context.scopeStack, uuid);
 
   setFixture = (uuid: string) => {
     this.context.currentFixture = uuid;
@@ -100,7 +99,6 @@ export class StaticContextProvider<
   TContext extends AllureContext,
   THolder extends AllureContextHolder<TContext>,
 > extends AllureContextProviderBase<TContext, THolder> {
-
   constructor(private readonly holderSingleton: THolder) {
     super();
   }
@@ -119,6 +117,7 @@ export class StaticContextProvider<
    * @param holderSingleton The singleton to wrap.
    */
   // eslint-disable-next-line @typescript-eslint/no-shadow
-  static wrap = <TContext extends AllureContext, THolder extends AllureContextHolder<TContext>>(holderSingleton: THolder) =>
-    new StaticContextProvider<TContext, THolder>(holderSingleton);
+  static wrap = <TContext extends AllureContext, THolder extends AllureContextHolder<TContext>>(
+    holderSingleton: THolder,
+  ) => new StaticContextProvider<TContext, THolder>(holderSingleton);
 }

@@ -8,7 +8,6 @@ import {
   Status,
   StatusByPriority,
   StepResult,
-  TestOrStepResult,
   TestResult,
   TestResultContainer,
 } from "../model.js";

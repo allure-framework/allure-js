@@ -21,8 +21,8 @@ import {
   Stage,
   Status,
   TestRuntime,
-  getSuitesLabels,
   getStatusFromError,
+  getSuitesLabels,
 } from "allure-js-commons/new/sdk/node";
 import { AllureJestConfig } from "./model.js";
 import { getTestId, getTestPath } from "./utils.js";

@@ -26,25 +26,18 @@ export class LifecycleState {
 
   fixturesResults = new Map<string, FixtureWrapper>();
 
-  getScope = (uuid: string) =>
-    this.scopes.get(uuid);
+  getScope = (uuid: string) => this.scopes.get(uuid);
 
-  getWrappedFixture = (uuid: string) =>
-    this.fixturesResults.get(uuid);
+  getWrappedFixture = (uuid: string) => this.fixturesResults.get(uuid);
 
-  getFixture = (uuid: string) =>
-    this.getWrappedFixture(uuid)?.value;
+  getFixture = (uuid: string) => this.getWrappedFixture(uuid)?.value;
 
-  getTest = (uuid: string) =>
-    this.testResults.get(uuid);
+  getTest = (uuid: string) => this.testResults.get(uuid);
 
-  getStep = (uuid: string) =>
-    this.stepResults.get(uuid);
+  getStep = (uuid: string) => this.stepResults.get(uuid);
 
   getExecutionItem = (uuid: string) =>
-    this.fixturesResults.get(uuid)?.value
-      ?? this.testResults.get(uuid)
-      ?? this.stepResults.get(uuid);
+    this.fixturesResults.get(uuid)?.value ?? this.testResults.get(uuid) ?? this.stepResults.get(uuid);
 
   // test results
   setTestResult = (uuid: string, result: TestResult) => {

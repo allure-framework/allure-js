@@ -1,7 +1,7 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { join, resolve as resolvePath } from "node:path";
 import type { AllureResults } from "allure-js-commons/new";
 
 export const runCypressInlineTest = async (
@@ -68,7 +68,7 @@ export const runCypressInlineTest = async (
   }
 
   const moduleRootPath = require.resolve("cypress");
-  const modulePath = resolve(moduleRootPath, "../bin/cypress");
+  const modulePath = resolvePath(moduleRootPath, "../bin/cypress");
   const args = ["run", "-s", testFilePath];
   const testProcess = fork(modulePath, args, {
     env: {
@@ -85,7 +85,7 @@ export const runCypressInlineTest = async (
     process.stderr.write(String(chunk));
   });
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     testProcess.on("exit", async () => {
       const testResultsDir = join(testDir, "allure-results");
       const resultFiles = await readdir(testResultsDir);

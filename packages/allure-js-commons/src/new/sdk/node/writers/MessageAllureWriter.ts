@@ -6,11 +6,6 @@ import { Category, TestResult, TestResultContainer } from "../../../model.js";
 import { Writer } from "../../Writer.js";
 
 type EventType = "result" | "container" | "attachment" | "misc";
-type Event = {
-  path: string;
-  type: EventType;
-  data: string;
-};
 
 export class MessageAllureWriter implements Writer {
   constructor(private bus?: EventEmitter) {}

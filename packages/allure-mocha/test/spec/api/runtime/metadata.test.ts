@@ -1,8 +1,8 @@
+import { beforeAll, describe, expect, it } from "vitest";
+import { TestResult } from "allure-js-commons/new/sdk/node";
 import { runMochaInlineTest } from "../../../utils";
-import { beforeAll, describe, expect, it, test } from "vitest";
-import { TestResult, Severity } from "allure-js-commons/new/sdk/node";
 
-describe("test metadata api", async () => {
+describe("test metadata api", () => {
   let tests: TestResult[];
   beforeAll(async () => {
     ({ tests } = await runMochaInlineTest(
@@ -19,7 +19,7 @@ describe("test metadata api", async () => {
     ));
   });
 
-  it("can change a test's name", async () => {
+  it("can change a test's name", () => {
     expect(tests).toContainEqual(
       expect.objectContaining({
         fullName: expect.stringMatching(/a renamed test$/),
@@ -28,7 +28,7 @@ describe("test metadata api", async () => {
     );
   });
 
-  it("can set a test's description", async () => {
+  it("can set a test's description", () => {
     expect(tests).toContainEqual(
       expect.objectContaining({
         name: "a test with a description",
@@ -37,7 +37,7 @@ describe("test metadata api", async () => {
     );
   });
 
-  it("can set a test's descriptionHtml", async () => {
+  it("can set a test's descriptionHtml", () => {
     expect(tests).toContainEqual(
       expect.objectContaining({
         name: "a test with a description in HTML",
@@ -46,88 +46,102 @@ describe("test metadata api", async () => {
     );
   });
 
-  it("can set a test's owner", async () => {
+  it("can set a test's owner", () => {
     expect(tests).toContainEqual(
       expect.objectContaining({
         name: "a test with an owner",
-        labels: expect.arrayContaining([{
-          name: "owner",
-          value: "foo",
-        }]),
+        labels: expect.arrayContaining([
+          {
+            name: "owner",
+            value: "foo",
+          },
+        ]),
       }),
     );
   });
 
-  describe("for severity", async () => {
-    it("can make test a blocker", async () => {
+  describe("for severity", () => {
+    it("can make test a blocker", () => {
       expect(tests).toContainEqual(
         expect.objectContaining({
           name: "a blocker",
-          labels: expect.arrayContaining([{
-            name: "severity",
-            value: "blocker",
-          }]),
+          labels: expect.arrayContaining([
+            {
+              name: "severity",
+              value: "blocker",
+            },
+          ]),
         }),
       );
     });
 
-    it("can make test critical", async () => {
+    it("can make test critical", () => {
       expect(tests).toContainEqual(
         expect.objectContaining({
           name: "a critical test",
-          labels: expect.arrayContaining([{
-            name: "severity",
-            value: "critical",
-          }]),
+          labels: expect.arrayContaining([
+            {
+              name: "severity",
+              value: "critical",
+            },
+          ]),
         }),
       );
     });
 
-    it("can make test normal", async () => {
+    it("can make test normal", () => {
       expect(tests).toContainEqual(
         expect.objectContaining({
           name: "a normal test",
-          labels: expect.arrayContaining([{
-            name: "severity",
-            value: "normal",
-          }]),
+          labels: expect.arrayContaining([
+            {
+              name: "severity",
+              value: "normal",
+            },
+          ]),
         }),
       );
     });
 
-    it("can make test minor", async () => {
+    it("can make test minor", () => {
       expect(tests).toContainEqual(
         expect.objectContaining({
           name: "a minor test",
-          labels: expect.arrayContaining([{
-            name: "severity",
-            value: "minor",
-          }]),
+          labels: expect.arrayContaining([
+            {
+              name: "severity",
+              value: "minor",
+            },
+          ]),
         }),
       );
     });
 
-    it("can make test trivial", async () => {
+    it("can make test trivial", () => {
       expect(tests).toContainEqual(
         expect.objectContaining({
           name: "a trivial test",
-          labels: expect.arrayContaining([{
-            name: "severity",
-            value: "trivial",
-          }]),
+          labels: expect.arrayContaining([
+            {
+              name: "severity",
+              value: "trivial",
+            },
+          ]),
         }),
       );
     });
   });
 
-  it("can set a test's layer", async () => {
+  it("can set a test's layer", () => {
     expect(tests).toContainEqual(
       expect.objectContaining({
         name: "a test with a layer",
-        labels: expect.arrayContaining([{
-          name: "layer",
-          value: "foo",
-        }]),
+        labels: expect.arrayContaining([
+          {
+            name: "layer",
+            value: "foo",
+          },
+        ]),
       }),
     );
   });

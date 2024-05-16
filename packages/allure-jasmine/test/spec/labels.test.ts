@@ -36,7 +36,7 @@ it("sets labels", async () => {
         await tag("foo");
         await labels({ name: "test", value: "testValue" }, { name: "test2", value: "testValue2" });
       })
-    `
+    `,
   });
 
   expect(tests).toHaveLength(1);

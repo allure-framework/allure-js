@@ -20,7 +20,7 @@ it("historical data should be fine", async () => {
         name: "test",
         fullName: fullName,
         testCaseId: md5(fullName),
-        historyId: md5(fullName) + ":" + md5("Project:project"),
+        historyId: `${md5(fullName)}:${md5("Project:project")}`,
       }),
     ]),
   );

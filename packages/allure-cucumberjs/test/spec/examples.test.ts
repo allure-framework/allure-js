@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { ContentType, Stage, Status } from "allure-js-commons/new/sdk";
+import { ContentType } from "allure-js-commons/new/sdk";
 import { runCucumberInlineTest } from "../utils";
 
 it("handles examples table", async () => {
@@ -56,5 +56,5 @@ it("handles examples table", async () => {
       ]),
     }),
   );
-  expect(Object.keys(attachments)).toHaveLength(2);
+  expect(Object.keys(attachments as object)).toHaveLength(2);
 });

@@ -164,9 +164,9 @@ class AllurePlaywrightTestRuntime implements TestRuntime {
     }
   }
 
-  async stepDisplayName(name: string) {}
+  async stepDisplayName() {}
 
-  async stepParameter(name: string, value: string) {}
+  async stepParameter() {}
 
   async sendMessage(message: RuntimeMessage) {
     await test.info().attach("allure-metadata.json", {

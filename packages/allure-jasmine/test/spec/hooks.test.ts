@@ -78,7 +78,7 @@ it("handles jasmine hooks in flat structure", async () => {
         befores: [],
         afters: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
       }),
-    ])
+    ]),
   );
 });
 
@@ -182,6 +182,6 @@ it("handles jasmine hooks in nested structure", async () => {
         befores: [],
         afters: [expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED })],
       }),
-    ])
+    ]),
   );
 });

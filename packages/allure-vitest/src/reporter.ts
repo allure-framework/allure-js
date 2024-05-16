@@ -24,7 +24,7 @@ export interface AllureVitestReporterConfig extends Omit<Config, "writer"> {
 const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = env;
 
 export default class AllureVitestReporter implements Reporter {
-  private allureReporterRuntime: AllureNodeReporterRuntime;
+  private allureReporterRuntime?: AllureNodeReporterRuntime;
   private config: AllureVitestReporterConfig;
   private hostname: string = ALLURE_HOST_NAME || hostname();
 
@@ -37,7 +37,7 @@ export default class AllureVitestReporter implements Reporter {
     const writer = testMode
       ? new MessageAllureWriter()
       : new FileSystemAllureWriter({
-          resultsDir: config.resultsDir,
+          resultsDir: config.resultsDir || "./allure-results",
         });
 
     this.allureReporterRuntime = new AllureNodeReporterRuntime({
@@ -87,21 +87,19 @@ export default class AllureVitestReporter implements Reporter {
     }
 
     const suitePath = getSuitePath(task);
-    const normalizedTestPath = normalize(relative(cwd(), task.file.filepath))
+    const normalizedTestPath = normalize(relative(cwd(), task.file!.filepath))
       .replace(/^\//, "")
       .split("/")
-      .filter((item: string) => item !== basename(task.file.filepath));
+      .filter((item: string) => item !== basename(task.file!.filepath));
     const titleMetadata = extractMetadataFromString(task.name);
     const testDisplayName = titleMetadata.cleanTitle || task.name;
     const testFullname = getTestFullName(task, cwd());
-    const testUuid = this.allureReporterRuntime.startTest(
-      {
-        name: testDisplayName,
-        start: task.result.startTime
-      },
-    );
+    const testUuid = this.allureReporterRuntime!.startTest({
+      name: testDisplayName,
+      start: task.result!.startTime,
+    });
 
-    this.allureReporterRuntime.updateTest((result) => {
+    this.allureReporterRuntime!.updateTest((result) => {
       const threadId = ALLURE_THREAD_NAME || (VITEST_POOL_ID && `${this.hostname}-vitest-worker-${VITEST_POOL_ID}`);
 
       result.fullName = testFullname;
@@ -134,7 +132,7 @@ export default class AllureVitestReporter implements Reporter {
         });
       }
 
-      this.allureReporterRuntime.applyRuntimeMessages(allureRuntimeMessages, { testUuid });
+      this.allureReporterRuntime!.applyRuntimeMessages(allureRuntimeMessages, { testUuid });
 
       switch (task.result?.state) {
         case "fail": {
@@ -161,7 +159,7 @@ export default class AllureVitestReporter implements Reporter {
         }
       }
     }, testUuid);
-    this.allureReporterRuntime.stopTest({ uuid: testUuid, stop: task.result.startTime + task.result?.duration || 0 });
-    this.allureReporterRuntime.writeTest(testUuid);
+    this.allureReporterRuntime!.stopTest({ uuid: testUuid, stop: (task.result?.startTime || 0) + (task.result?.duration || 0) });
+    this.allureReporterRuntime!.writeTest(testUuid);
   }
 }

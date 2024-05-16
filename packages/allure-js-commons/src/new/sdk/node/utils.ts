@@ -1,8 +1,8 @@
-import * as process from "node:process";
 import * as fs from "node:fs";
-import { LabelName, Label } from "../../model.js";
 import * as path from "node:path";
+import * as process from "node:process";
 import { env } from "process";
+import { Label, LabelName } from "../../model.js";
 
 export const getProjectRoot = (() => {
   let cachedProjectRoot: string | null = null;
@@ -15,10 +15,7 @@ export const getProjectRoot = (() => {
     do {
       dir = nextDir;
       try {
-        fs.accessSync(
-          path.join(dir, "package.json"),
-          fs.constants.F_OK,
-        );
+        fs.accessSync(path.join(dir, "package.json"), fs.constants.F_OK);
 
         // package.json exists; use the directory as the project root
         return dir;
@@ -52,18 +49,19 @@ export const getPackageLabelFromPath = (filepath: string): Label => ({
   value: getRelativePath(filepath)
     .split(path.sep)
     .filter((v) => v)
-    .join(".")
+    .join("."),
 });
 
 export const getGlobalLabels = () => {
   const ENV_NAME_PREFIX = "ALLURE_LABEL_";
   let globalLabels: Label[];
   const initGlobalLabels: () => Label[] = () =>
-    Object.keys(env).filter(
-      (varname) => varname.startsWith(ENV_NAME_PREFIX)
-    ).map((varname) => ({
-      name: varname.substring(ENV_NAME_PREFIX.length),
-      value: env[varname] ?? "",
-    })).filter((l) => l.name && l.value);
-  return globalLabels ??= initGlobalLabels();
+    Object.keys(env)
+      .filter((varname) => varname.startsWith(ENV_NAME_PREFIX))
+      .map((varname) => ({
+        name: varname.substring(ENV_NAME_PREFIX.length),
+        value: env[varname] ?? "",
+      }))
+      .filter((l) => l.name && l.value);
+  return (globalLabels ??= initGlobalLabels());
 };

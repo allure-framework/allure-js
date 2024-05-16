@@ -1,4 +1,4 @@
-import { describe, it, beforeEach } from "mocha";
+import { beforeEach, describe, it } from "mocha";
 
 describe("a suite with beforeEach", async () => {
   beforeEach("a before each hook", async () => {});

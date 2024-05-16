@@ -5,8 +5,10 @@ import { AllureContext, AllureContextHolder, AllureContextProvider } from "./typ
  * Provides the set of methods to access and update the context.
  * Successor classes are responsible for persisting and accessing the context.
  */
-export abstract class AllureContextProviderBase<TContext extends AllureContext, THolder extends AllureContextHolder<TContext>>
-  implements AllureContextProvider
+export abstract class AllureContextProviderBase<
+  TContext extends AllureContext,
+  THolder extends AllureContextHolder<TContext>,
+> implements AllureContextProvider
 {
   /**
    * Gets the holder that contains the current value of the context.
@@ -44,9 +46,7 @@ export abstract class AllureContextProviderBase<TContext extends AllureContext, 
 
   addScope = (uuid: string) => this.update((b) => b.addScope(uuid));
 
-  removeScope = (uuid?: string) => this.update(
-    (b) => uuid ? b.removeScopeByUuid(uuid) : b.removeScope()
-  );
+  removeScope = (uuid?: string) => this.update((b) => (uuid ? b.removeScopeByUuid(uuid) : b.removeScope()));
 
   setFixture = (uuid: string) => this.update((b) => b.setFixture(uuid));
 

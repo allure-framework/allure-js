@@ -135,9 +135,12 @@ class AllureCodeceptJSReporter {
     // @ts-ignore
     this.startAllureTest(currentTest);
     // TODO: group before hooks into fixture
-    this.allureRuntime!.startStep({
-      name: "before hook",
-    }, this.currentAllureResultUuid!);
+    this.allureRuntime!.startStep(
+      {
+        name: "before hook",
+      },
+      this.currentAllureResultUuid!,
+    );
   }
 
   hookPassed() {
@@ -209,9 +212,12 @@ class AllureCodeceptJSReporter {
   }
 
   stepStarted(step: CodeceptStep) {
-    this.allureRuntime!.startStep({
-      name: `${step.actor} ${step.name}`,
-    }, this.currentAllureResultUuid!);
+    this.allureRuntime!.startStep(
+      {
+        name: `${step.actor} ${step.name}`,
+      },
+      this.currentAllureResultUuid!,
+    );
   }
 
   stepFailed() {
@@ -235,16 +241,16 @@ class AllureCodeceptJSReporter {
     this.closeCurrentAllureStep();
   }
 
-  // TODO:
-  addScreenDiff(name: string, expectedImg: string, actualImg: string, diffImg: string) {
-    // const screenDiff = {
-    //   name,
-    //   expected: `data:image/png;base64,${expectedImg}`,
-    //   actual: `data:image/png;base64,${actualImg}`,
-    //   diff: `data:image/png;base64,${diffImg}`,
-    // };
-    // this.addAttachment(name, JSON.stringify(screenDiff), "application/vnd.allure.image.diff");
-  }
+  // TODO: not implemented in the new version at all
+  // addScreenDiff(name: string, expectedImg: string, actualImg: string, diffImg: string) {
+  //   const screenDiff = {
+  //     name,
+  //     expected: `data:image/png;base64,${expectedImg}`,
+  //     actual: `data:image/png;base64,${actualImg}`,
+  //     diff: `data:image/png;base64,${diffImg}`,
+  //   };
+  //   this.addAttachment(name, JSON.stringify(screenDiff), "application/vnd.allure.image.diff");
+  // }
 
   handleRuntimeMessage(message: RuntimeMessage) {
     this.allureRuntime!.applyRuntimeMessages([message], { testUuid: this.currentAllureResultUuid! });

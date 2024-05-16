@@ -155,6 +155,8 @@ export class AllureVitestTestRuntime implements TestRuntime {
         },
       });
     } catch (err) {
+      const { message, stack } = err as Error;
+
       await this.sendMessage({
         type: "step_stop",
         data: {
@@ -162,8 +164,8 @@ export class AllureVitestTestRuntime implements TestRuntime {
           stage: Stage.FINISHED,
           stop: Date.now(),
           statusDetails: {
-            message: err.message,
-            trace: err.stack,
+            message,
+            trace: stack,
           },
         },
       });
@@ -212,10 +214,12 @@ const existsInTestPlan = (ctx: TaskContext, testPlan?: TestPlanV1) => {
 };
 
 beforeAll(() => {
+  // @ts-ignore
   global.allureTestPlan = parseTestPlan();
 });
 
 afterAll(() => {
+  // @ts-ignore
   global.allureTestPlan = undefined;
 });
 
@@ -225,6 +229,7 @@ beforeEach(async (ctx) => {
     VITEST_POOL_ID: process.env.VITEST_POOL_ID,
   };
 
+  // @ts-ignore
   if (!existsInTestPlan(ctx, global.allureTestPlan as TestPlanV1)) {
     // @ts-ignore
     ctx.task.meta.allureRuntimeMessages = [
@@ -246,5 +251,6 @@ afterEach((ctx) => {
   // @ts-ignore
   ctx.task.meta.allureRuntimeMessages = getGlobalTestRuntime<AllureVitestTestRuntime>().messagesHolder.messages;
 
+  // @ts-ignore
   setGlobalTestRuntime(undefined);
 });

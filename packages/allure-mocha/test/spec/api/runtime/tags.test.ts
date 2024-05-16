@@ -1,6 +1,6 @@
+import { expect, it } from "vitest";
 import { LabelName } from "allure-js-commons/new/sdk/node";
 import { runMochaInlineTest } from "../../../utils";
-import { expect, it } from "vitest";
 
 it("tags can be added at runtime", async () => {
   const { tests } = await runMochaInlineTest(["labels", "tags"]);

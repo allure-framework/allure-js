@@ -1,22 +1,22 @@
+import * as Mocha from "mocha";
 import { hostname } from "node:os";
 import { env } from "node:process";
-import * as Mocha from "mocha";
-import { getSuitesOfMochaTest } from "./utils.js";
+import "allure-js-commons/new";
 import {
   AllureNodeReporterRuntime,
-  FileSystemAllureWriter,
   Config,
-  Status,
-  Stage,
-  LabelName,
-  getRelativePath,
-  getPackageLabelFromPath,
-  ensureSuiteLabels,
+  FileSystemAllureWriter,
   Label,
+  LabelName,
+  Stage,
+  Status,
+  ensureSuiteLabels,
+  getPackageLabelFromPath,
+  getRelativePath,
   getStatusFromError,
 } from "allure-js-commons/new/sdk/node";
-import {} from "allure-js-commons/new";
 import { setUpTestRuntime } from "./ContextBasedTestRuntime.js";
+import { getSuitesOfMochaTest } from "./utils.js";
 
 const {
   EVENT_SUITE_BEGIN,
@@ -38,10 +38,7 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   private static readonly hostname = env.ALLURE_HOST_NAME || hostname();
   private readonly runtime: AllureNodeReporterRuntime;
 
-  constructor(
-    runner: ParallelRunner,
-    opts: Mocha.MochaOptions,
-  ) {
+  constructor(runner: ParallelRunner, opts: Mocha.MochaOptions) {
     super(runner, opts);
 
     this.runner = runner;
@@ -60,7 +57,8 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   }
 
   private applyAsyncListeners = () => {
-    this.runner.on(EVENT_SUITE_BEGIN, this.onSuite)
+    this.runner
+      .on(EVENT_SUITE_BEGIN, this.onSuite)
       .on(EVENT_SUITE_END, this.onSuiteEnd)
       .on(EVENT_TEST_BEGIN, this.onTest)
       .on(EVENT_TEST_PASS, this.onPassed)
@@ -71,7 +69,7 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
       .on(EVENT_HOOK_END, this.onHookEnd);
   };
 
-  private onSuite = (_: Mocha.Suite) => {
+  private onSuite = () => {
     this.runtime.startScope();
   };
 
@@ -95,15 +93,18 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
 
     fullName += test.titlePath().join(" > ");
 
-    this.runtime.startTest({
-      name: test.title,
-      stage: Stage.RUNNING,
-      fullName,
-      labels,
-    }, {dedicatedScope: true});
-  }
+    this.runtime.startTest(
+      {
+        name: test.title,
+        stage: Stage.RUNNING,
+        fullName,
+        labels,
+      },
+      { dedicatedScope: true },
+    );
+  };
 
-  private onPassed = (_: Mocha.Test) => {
+  private onPassed = () => {
     this.runtime.updateTest((r) => {
       r.status = Status.PASSED;
     });
@@ -114,7 +115,7 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
       r.status = getStatusFromError(error);
       r.statusDetails = {
         message: error.message,
-        trace: error.stack
+        trace: error.stack,
       };
     });
   };
@@ -142,9 +143,9 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
   private onHookStart = (hook: Mocha.Hook) => {
     const name = hook.originalTitle ?? "";
     if (name.startsWith("\"before")) {
-      this.runtime.startFixture("before", {name});
+      this.runtime.startFixture("before", { name });
     } else if (name.startsWith("\"after")) {
-      this.runtime.startFixture("after", {name});
+      this.runtime.startFixture("after", { name });
     }
   };
 
@@ -156,7 +157,7 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
           r.status = getStatusFromError(error);
           r.statusDetails = {
             message: error.message,
-            trace: error.stack
+            trace: error.stack,
           };
         } else {
           r.status = Status.PASSED;

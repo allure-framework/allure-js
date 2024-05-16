@@ -67,7 +67,6 @@ export const runVitestInlineTest = async (
     cwd: testDir,
     stdio: "pipe",
   });
-  let processError = "";
 
   testProcess.on("message", (message: string) => {
     const event: { path: string; type: string; data: string } = JSON.parse(message);
@@ -92,10 +91,9 @@ export const runVitestInlineTest = async (
   });
   testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
     process.stderr.write(String(chunk));
-    processError += chunk;
   });
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     testProcess.on("exit", async () => {
       await rm(testDir, { recursive: true });
 

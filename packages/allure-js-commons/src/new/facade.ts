@@ -4,7 +4,7 @@ import { ContentType, Label, LabelName, Link, LinkType, ParameterMode, Parameter
 export const label = (name: LabelName, value: string) => {
   const runtime = getGlobalTestRuntime();
 
-  return runtime.labels({name, value});
+  return runtime.labels({ name, value });
 };
 
 export const labels = (...lablesList: Label[]) => {
@@ -16,7 +16,7 @@ export const labels = (...lablesList: Label[]) => {
 export const link = (url: string, type?: LinkType | string, name?: string) => {
   const runtime = getGlobalTestRuntime();
 
-  return runtime.links({url, type, name});
+  return runtime.links({ url, type, name });
 };
 
 export const links = (...linksList: Link[]) => {

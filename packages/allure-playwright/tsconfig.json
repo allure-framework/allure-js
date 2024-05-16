@@ -2,9 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": [
     "./src/**/*",
-    "./test/**/*",
-    "index.ts",
-    "internal.ts"
+    "./test/**/*"
   ],
   "compilerOptions": {
     "skipLibCheck": true,

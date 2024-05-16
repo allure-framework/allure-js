@@ -1,5 +1,5 @@
-import { it } from "mocha";
 import { expect } from "chai";
+import { it } from "mocha";
 import { step } from "allure-js-commons/new";
 
 it("a failed step", async () => {

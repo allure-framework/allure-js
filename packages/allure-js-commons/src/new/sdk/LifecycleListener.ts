@@ -24,10 +24,11 @@ export interface LifecycleListener {
 
 type ListenerKey = keyof LifecycleListener;
 
-type ListenerTarget<T extends keyof LifecycleListener> =
-  LifecycleListener[T] extends ((_: infer TResult) => void) | undefined
-    ? TResult
-    : never;
+type ListenerTarget<T extends keyof LifecycleListener> = LifecycleListener[T] extends
+  | ((_: infer TResult) => void)
+  | undefined
+  ? TResult
+  : never;
 
 export class Notifier implements LifecycleListener {
   listeners: LifecycleListener[];

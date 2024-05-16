@@ -1,7 +1,0 @@
-{
-  "extends": "./tsconfig",
-  "compilerOptions": {
-    "noEmit": true
-  },
-  "include": ["**/*.js", "**/*.ts"]
-}

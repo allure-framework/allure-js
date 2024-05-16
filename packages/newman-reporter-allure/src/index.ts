@@ -117,8 +117,6 @@ class AllureReporter {
   }
 
   onStart() {
-    const suiteName = this.currentCollection.name;
-
     this.allureRuntime.startScope();
   }
 
@@ -465,7 +463,7 @@ class AllureReporter {
     this.allureRuntime.stopStep();
   }
 
-  onDone(err: any, args: unknown) {
+  onDone() {
     this.allureRuntime.writeScope();
   }
 }

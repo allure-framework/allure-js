@@ -1,5 +1,4 @@
 import { run } from "newman";
-import { mkdir, rm, writeFile } from "node:fs/promises";
 import type { CollectionDefinition } from "postman-collection";
 import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
 
@@ -23,7 +22,7 @@ export const runNewmanCollection = async (collection: CollectionDefinition): Pro
           },
         },
       },
-      (...args) => {
+      () => {
         return resolve(res);
       },
     );

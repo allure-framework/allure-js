@@ -25,6 +25,8 @@ it("handles both data table and examples for one feature", async () => {
       ]),
     }),
   );
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   expect(attachments).toHaveProperty(tests[0].attachments[0].source);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   expect(attachments).toHaveProperty(tests[0].steps[0].attachments[0].source);
 });

@@ -1,19 +1,18 @@
-import * as path from "node:path";
 import { fork } from "node:child_process";
-import { appendFileSync } from "node:fs";
-import { mkdir, copyFile, writeFile, rm, access, constants } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
-import {
-  AllureResults,
-  TestResultContainer,
-  TestResult,
-} from "allure-js-commons/new/sdk/node";
+import { appendFileSync } from "node:fs";
+import { copyFile, mkdir, writeFile } from "node:fs/promises";
+import * as path from "node:path";
+import { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/new/sdk/node";
 
 type MochaRunOptions = {
-  env?: {[keys: string]: string},
+  env?: { [keys: string]: string };
 };
 
-export const runMochaInlineTest = async (sampleOrConfig: string | string[] | MochaRunOptions, ...samples: (string|string[])[]) => {
+export const runMochaInlineTest = async (
+  sampleOrConfig: string | string[] | MochaRunOptions,
+  ...samples: (string | string[])[]
+) => {
   let options: MochaRunOptions;
   if (typeof sampleOrConfig === "object" && !(sampleOrConfig instanceof Array)) {
     options = sampleOrConfig;
@@ -52,38 +51,29 @@ export const runMochaInlineTest = async (sampleOrConfig: string | string[] | Moc
 
   const mochaPackagePath = require.resolve("mocha");
   const mochaRunScriptPath = path.resolve(mochaPackagePath, "../bin/mocha.js");
-  const mochaArgs = [
-    "--no-color",
-    "--reporter",
-    "./reporter.cjs",
-    "**/*.spec.mjs"
-  ];
+  const mochaArgs = ["--no-color", "--reporter", "./reporter.cjs", "**/*.spec.mjs"];
 
   const cmdPath = path.join(testDir, "cmd.log");
-  const cmdContent = [mochaRunScriptPath, ...mochaArgs]
-    .map((t) => `"${t}"`)
-    .join(" ");
+  const cmdContent = [mochaRunScriptPath, ...mochaArgs].map((t) => `"${t}"`).join(" ");
   const stdoutPath = path.join(testDir, "stdout.log");
   const stderrPath = path.join(testDir, "stderr.log");
 
   await mkdir(testDir, { recursive: true });
-  await Promise.all(
-    [
-      writeFile(reporterPath, reporterContent, "utf-8"),
-      writeFile(cmdPath, cmdContent, "utf-8"),
-      ...samples.map(async (sample) => {
-        if (sample instanceof Array) {
-          sample = path.join(...sample);
-        }
-        const filename = `${sample}.spec.mjs`;
-        const source = path.join(samplesPath, filename);
-        const destination = path.join(testDir, filename);
-        const destDir = path.dirname(destination);
-        await mkdir(destDir, {recursive: true});
-        await copyFile(source, destination);
-      })
-    ]
-  );
+  await Promise.all([
+    writeFile(reporterPath, reporterContent, "utf-8"),
+    writeFile(cmdPath, cmdContent, "utf-8"),
+    ...samples.map(async (sample) => {
+      if (sample instanceof Array) {
+        sample = path.join(...sample);
+      }
+      const filename = `${sample}.spec.mjs`;
+      const source = path.join(samplesPath, filename);
+      const destination = path.join(testDir, filename);
+      const destDir = path.dirname(destination);
+      await mkdir(destDir, { recursive: true });
+      await copyFile(source, destination);
+    }),
+  ]);
 
   const testProcess = fork(mochaRunScriptPath, mochaArgs, {
     env: {
@@ -113,21 +103,21 @@ export const runMochaInlineTest = async (sampleOrConfig: string | string[] | Moc
     }
   });
 
-  testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
+  testProcess.stdout?.setEncoding("utf8").on("data", (chunk: Buffer | string) => {
     appendFileSync(stdoutPath, chunk.toString());
   });
-  testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
+  testProcess.stderr?.setEncoding("utf8").on("data", (chunk: Buffer | string) => {
     appendFileSync(stderrPath, chunk.toString());
   });
 
   return new Promise<AllureResults>((resolve, reject) => {
     testProcess.on("exit", (code, signal) => {
-      if (((code ?? -1) >= 0) && !signal) {
+      if ((code ?? -1) >= 0 && !signal) {
         resolve(res);
       } else if (signal) {
         reject(new Error(`mocha was interrupted with ${signal}`));
       } else {
-        reject(new Error(`mocha failed with exit code ${code}`));
+        reject(new Error(`mocha failed with exit code ${code || 1}`));
       }
     });
   });

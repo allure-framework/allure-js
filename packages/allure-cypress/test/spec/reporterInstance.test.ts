@@ -9,7 +9,7 @@ it("works with the reporter instance", async () => {
       cy.wrap(1).should("eq", 1);
     });
   `,
-    (testDir) => `
+    () => `
       const { AllureCypress } = require("allure-cypress/reporter");
 
       module.exports = {

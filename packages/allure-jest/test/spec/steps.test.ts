@@ -1,5 +1,5 @@
 import { expect, it } from "@jest/globals";
-import { ContentType, Status } from "allure-js-commons";
+import { Status } from "allure-js-commons";
 import { runJestInlineTest } from "../utils";
 
 it("single step", async () => {

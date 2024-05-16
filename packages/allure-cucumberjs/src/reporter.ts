@@ -21,7 +21,7 @@ import {
 } from "allure-js-commons/new/sdk/node";
 import { AllureCucumberReporterConfig, LabelConfig, LinkConfig } from "./model";
 
-const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = process.env;
+const { ALLURE_THREAD_NAME } = process.env;
 
 export default class AllureCucumberReporter extends Formatter {
   private readonly afterHooks: TestCaseHookDefinition[];
@@ -136,8 +136,6 @@ export default class AllureCucumberReporter extends Formatter {
   }
 
   private parsePickleTags(tags: readonly PickleTag[]): Label[] {
-    const labels: Label[] = [];
-
     return tags
       .filter((tag) => !this.tagsIgnorePatterns.some((pattern) => pattern.test(tag.name)))
       .map((tag) => ({
@@ -317,10 +315,6 @@ export default class AllureCucumberReporter extends Formatter {
   }
 
   private onTestCaseFinished(data: messages.TestCaseFinished) {
-    const testCaseStarted = this.testCaseStartedMap.get(data.testCaseStartedId)!;
-    const testCase = this.testCaseMap.get(testCaseStarted.testCaseId)!;
-    const pickle = this.pickleMap.get(testCase.pickleId);
-    const testStepResults = this.testCaseTestStepsResults.get(testCaseStarted.id) || [];
     const testUuid = this.allureResultsUuids.get(data.testCaseStartedId)!;
 
     this.runtime.updateTest((result) => {
@@ -444,11 +438,14 @@ export default class AllureCucumberReporter extends Formatter {
     // only pass through valid encodings
     const encoding = Buffer.isEncoding(message.contentEncoding) ? message.contentEncoding : "utf8";
 
-    this.runtime.writeAttachment({
-      name: "Attachment",
-      content: message.body,
-      contentType: message.mediaType,
-      encoding,
-    }, testUuid);
+    this.runtime.writeAttachment(
+      {
+        name: "Attachment",
+        content: message.body,
+        contentType: message.mediaType,
+        encoding,
+      },
+      testUuid,
+    );
   }
 }

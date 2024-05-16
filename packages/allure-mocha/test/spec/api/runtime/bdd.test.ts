@@ -1,19 +1,19 @@
-import { LabelName } from "allure-js-commons/new/sdk/node";
-import { runMochaInlineTest } from "../../../utils";
 import { beforeAll, describe, expect, it } from "vitest";
 import { TestResult } from "allure-js-commons/new";
+import { LabelName } from "allure-js-commons/new/sdk/node";
+import { runMochaInlineTest } from "../../../utils";
 
-describe("bdd labels", async () => {
+describe("bdd labels", () => {
   let tests: TestResult[] = [];
   beforeAll(async () => {
     ({ tests } = await runMochaInlineTest(
       ["labels", "bdd", "epic"],
       ["labels", "bdd", "feature"],
-      ["labels", "bdd", "story"]
+      ["labels", "bdd", "story"],
     ));
   });
 
-  it("an epic can be added at runtime", async () => {
+  it("an epic can be added at runtime", () => {
     expect(tests).toContainEqual(
       expect.objectContaining({
         name: "a test with an epic",
@@ -27,7 +27,7 @@ describe("bdd labels", async () => {
     );
   });
 
-  it("a feature can be added at runtime", async () => {
+  it("a feature can be added at runtime", () => {
     expect(tests).toContainEqual(
       expect.objectContaining({
         name: "a test with a feature",
@@ -41,7 +41,7 @@ describe("bdd labels", async () => {
     );
   });
 
-  it("a story can be added at runtime", async () => {
+  it("a story can be added at runtime", () => {
     expect(tests).toContainEqual(
       expect.objectContaining({
         name: "a test with a story",

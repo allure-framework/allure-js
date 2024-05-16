@@ -285,4 +285,5 @@ export type RuntimeMessage =
 // Could be used by adapters to define additional message types
 export type ExtensionMessage<T extends string> = T extends MessageTypes<RuntimeMessage> ? never : RuntimeMessageBase<T>;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type Messages<T> = T extends RuntimeMessage | ExtensionMessage<infer _> ? T : never;

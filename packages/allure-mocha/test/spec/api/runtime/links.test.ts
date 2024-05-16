@@ -1,11 +1,11 @@
-import { runMochaInlineTest } from "../../../utils";
 import { beforeAll, describe, expect, it } from "vitest";
 import { TestResult } from "allure-js-commons/new/sdk/node";
+import { runMochaInlineTest } from "../../../utils";
 
-describe("link", async () => {
+describe("link", () => {
   const testMap = new Map<string, TestResult>();
   beforeAll(async () => {
-    const {tests} = await runMochaInlineTest(
+    const { tests } = await runMochaInlineTest(
       ["links", "urlOnlyLink"],
       ["links", "urlTypeLink"],
       ["links", "namedLink"],
@@ -16,78 +16,95 @@ describe("link", async () => {
       ["links", "multipleLinks"],
     );
     for (const test of tests) {
-      testMap.set(test.name!, test);
+      testMap.set(test.name as string, test);
     }
   });
 
-  it("url only link", async () => {
+  it("url only link", () => {
     const links = testMap.get("a test with a url only link")!.links;
-    expect(links).toEqual([{
-      url: "https://foo.bar",
-    }]);
+    expect(links).toEqual([
+      {
+        url: "https://foo.bar",
+      },
+    ]);
   });
 
-  it("link type", async () => {
+  it("link type", () => {
     const links = testMap.get("a test with a link of a custom type")!.links;
-    expect(links).toEqual([{
-      url: "https://foo.bar",
-      type: "baz",
-    }]);
+    expect(links).toEqual([
+      {
+        url: "https://foo.bar",
+        type: "baz",
+      },
+    ]);
   });
 
-  it("named link", async () => {
+  it("named link", () => {
     const links = testMap.get("a test with a named link")!.links;
-    expect(links).toEqual([{
-      url: "https://foo.bar",
-      type: "link",
-      name: "baz",
-    }]);
+    expect(links).toEqual([
+      {
+        url: "https://foo.bar",
+        type: "link",
+        name: "baz",
+      },
+    ]);
   });
 
-  it("url only issue", async () => {
+  it("url only issue", () => {
     const links = testMap.get("a test with a url only issue link")!.links;
-    expect(links).toEqual([{
-      url: "https://foo.bar",
-      type: "issue",
-    }]);
+    expect(links).toEqual([
+      {
+        url: "https://foo.bar",
+        type: "issue",
+      },
+    ]);
   });
 
-  it("named issue", async () => {
+  it("named issue", () => {
     const links = testMap.get("a test with a named issue link")!.links;
-    expect(links).toEqual([{
-      url: "https://foo.bar",
-      type: "issue",
-      name: "baz",
-    }]);
+    expect(links).toEqual([
+      {
+        url: "https://foo.bar",
+        type: "issue",
+        name: "baz",
+      },
+    ]);
   });
 
-  it("url only tms", async () => {
+  it("url only tms", () => {
     const links = testMap.get("a test with a url only tms link")!.links;
-    expect(links).toEqual([{
-      url: "https://foo.bar",
-      type: "tms",
-    }]);
+    expect(links).toEqual([
+      {
+        url: "https://foo.bar",
+        type: "tms",
+      },
+    ]);
   });
 
-  it("named tms", async () => {
+  it("named tms", () => {
     const links = testMap.get("a test with a named tms link")!.links;
-    expect(links).toEqual([{
-      url: "https://foo.bar",
-      type: "tms",
-      name: "baz",
-    }]);
+    expect(links).toEqual([
+      {
+        url: "https://foo.bar",
+        type: "tms",
+        name: "baz",
+      },
+    ]);
   });
 
-  it("multiple", async () => {
+  it("multiple", () => {
     const links = testMap.get("a test with two links")!.links;
-    expect(links).toEqual([{
-      url: "https://foo.bar",
-      type: "link",
-      name: "baz",
-    }, {
-      url: "https://roo.rar",
-      type: "link",
-      name: "raz",
-    }]);
+    expect(links).toEqual([
+      {
+        url: "https://foo.bar",
+        type: "link",
+        name: "baz",
+      },
+      {
+        url: "https://roo.rar",
+        type: "link",
+        name: "raz",
+      },
+    ]);
   });
 });

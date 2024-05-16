@@ -1,29 +1,28 @@
 import {
-  ReporterRuntime,
-  Status,
-  Stage,
-  StatusDetails,
-  ParameterMode,
-  ParameterOptions,
-  RuntimeMessage,
-  TestRuntime,
-  getStatusFromError,
   Label,
   Link,
+  ParameterMode,
+  ParameterOptions,
+  ReporterRuntime,
+  RuntimeMessage,
+  Stage,
+  Status,
+  StatusDetails,
+  TestRuntime,
+  getStatusFromError,
   setGlobalTestRuntime,
 } from "allure-js-commons/new/sdk/node";
 import { errorToStatusDetails } from "./utils";
 
 export class ContextBasedTestRuntime implements TestRuntime {
-
-  constructor(private readonly reporterRuntime: ReporterRuntime) { }
+  constructor(private readonly reporterRuntime: ReporterRuntime) {}
 
   labels = async (...lablesList: Label[]) => {
     await this.applyToContext({
       type: "metadata",
       data: {
-        labels: lablesList
-      }
+        labels: lablesList,
+      },
     });
   };
 
@@ -31,8 +30,8 @@ export class ContextBasedTestRuntime implements TestRuntime {
     await this.applyToContext({
       type: "metadata",
       data: {
-        links: linksList
-      }
+        links: linksList,
+      },
     });
   };
 
@@ -40,55 +39,55 @@ export class ContextBasedTestRuntime implements TestRuntime {
     await this.applyToContext({
       type: "metadata",
       data: {
-        parameters: [{name, value, ...options}]
-      }
+        parameters: [{ name, value, ...options }],
+      },
     });
-  }
+  };
 
   description = async (markdown: string) => {
     await this.applyToContext({
       type: "metadata",
       data: {
         description: markdown,
-      }
+      },
     });
-  }
+  };
 
   descriptionHtml = async (html: string) => {
     await this.applyToContext({
       type: "metadata",
       data: {
         descriptionHtml: html,
-      }
+      },
     });
-  }
+  };
 
   displayName = async (name: string) => {
     await this.applyToContext({
       type: "metadata",
       data: {
         displayName: name,
-      }
+      },
     });
-  }
+  };
 
   historyId = async (value: string) => {
     await this.applyToContext({
       type: "metadata",
       data: {
         historyId: value,
-      }
+      },
     });
-  }
+  };
 
   testCaseId = async (value: string) => {
     await this.applyToContext({
       type: "metadata",
       data: {
         testCaseId: value,
-      }
+      },
     });
-  }
+  };
 
   attachment = async (name: string, content: string | Buffer, type: string) => {
     await this.applyToContext({
@@ -98,9 +97,9 @@ export class ContextBasedTestRuntime implements TestRuntime {
         content: Buffer.from(content).toString("base64"),
         contentType: type,
         encoding: "base64",
-      }
+      },
     });
-  }
+  };
 
   step = async (name: string, body: () => void | PromiseLike<void>) => {
     let status = Status.PASSED;
@@ -131,26 +130,30 @@ export class ContextBasedTestRuntime implements TestRuntime {
         },
       });
     }
-  }
+  };
 
   stepDisplayName = async (name: string) => {
     await this.applyToContext({
       type: "step_metadata",
-      data: { name }
+      data: { name },
     });
-  }
+  };
 
   stepParameter = async (name: string, value: string, mode?: ParameterMode | undefined) => {
     await this.applyToContext({
       type: "step_metadata",
       data: {
-        parameters: [{name, value, mode}]
-      }
+        parameters: [{ name, value, mode }],
+      },
     });
-  }
+  };
 
-  private applyToContext = async (message: RuntimeMessage) =>
-    this.reporterRuntime.applyRuntimeMessages([message]);
+  private applyToContext = async (message: RuntimeMessage) => {
+    // trick to make function returning a true promise
+    await Promise.resolve();
+
+    return this.reporterRuntime.applyRuntimeMessages([message]);
+  };
 }
 
 export const setUpTestRuntime = (reporterRuntime: ReporterRuntime) =>

@@ -6,7 +6,7 @@ import { dirname, resolve as resolvePath } from "node:path";
 import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/new/sdk/node";
 
 const parseJsonResult = <T>(data: string) => {
-  return JSON.parse(Buffer.from(data, "base64").toString("utf8"));
+  return JSON.parse(Buffer.from(data, "base64").toString("utf8")) as T;
 };
 
 export const runCodeceptJSInlineTest = async (
@@ -69,7 +69,7 @@ export const runCodeceptJSInlineTest = async (
     }
   });
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     testProcess.on("exit", async () => {
       await rm(testDir, { recursive: true });
 

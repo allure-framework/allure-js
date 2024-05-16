@@ -1,6 +1,5 @@
 import { expect, it } from "vitest";
 import { ContentType, Status } from "allure-js-commons";
-// eslint-disable-next-line node/file-extension-in-import
 import { runCypressInlineTest } from "../utils";
 
 it("single step", async () => {

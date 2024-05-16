@@ -40,8 +40,8 @@
     "allure-report": "allure serve ./out/allure-results",
     "pretest": "run compile",
     "test": "vitest run --dir ./test/spec --config ./vitest.config.ts",
-    "lint": "eslint ./src --ext .ts",
-    "lint:fix": "eslint ./src --ext .ts --fix"
+    "lint": "eslint ./src ./test --ext .ts",
+    "lint:fix": "eslint ./src ./test --ext .ts --fix"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"

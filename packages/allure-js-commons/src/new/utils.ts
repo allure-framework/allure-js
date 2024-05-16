@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { TestResult, AttachmentOptions, Executable, Label, LabelName, Status } from "./model.js";
+import { AttachmentOptions, Executable, Label, LabelName, Status, TestResult } from "./model.js";
 
 const EXTENSIONS_BY_TYPE: Record<string, string> = {
   "application/andrew-inset": ".ez",
@@ -995,11 +995,7 @@ export const getSuiteLabels = (suites: readonly string[]): Label[] => {
 
 export const getSuitesLabels = getSuiteLabels;
 
-const suiteLabelNames: readonly string[] = [
-  LabelName.PARENT_SUITE,
-  LabelName.SUITE,
-  LabelName.SUB_SUITE,
-];
+const suiteLabelNames: readonly string[] = [LabelName.PARENT_SUITE, LabelName.SUITE, LabelName.SUB_SUITE];
 
 export const ensureSuiteLabels = (test: Partial<TestResult>, defaultSuites: readonly string[]) => {
   if (!test.labels?.find((l) => suiteLabelNames.includes(l.name))) {

@@ -179,37 +179,40 @@ class AllureReporter implements Reporter {
     }
 
     if (result.stdout.length > 0) {
-      this.allureRuntime!.writeAttachment({
-        name: "stdout",
-        contentType: ContentType.TEXT,
-        content: Buffer.from(stripAnsi(result.stdout.join("")), "utf8"),
-      }, testUuid);
+      this.allureRuntime!.writeAttachment(
+        {
+          name: "stdout",
+          contentType: ContentType.TEXT,
+          content: Buffer.from(stripAnsi(result.stdout.join("")), "utf8"),
+        },
+        testUuid,
+      );
     }
 
     if (result.stderr.length > 0) {
-      this.allureRuntime!.writeAttachment({
-        name: "stderr",
-        contentType: ContentType.TEXT,
-        content: Buffer.from(stripAnsi(result.stderr.join("")), "utf8"),
-      }, testUuid);
+      this.allureRuntime!.writeAttachment(
+        {
+          name: "stderr",
+          contentType: ContentType.TEXT,
+          content: Buffer.from(stripAnsi(result.stderr.join("")), "utf8"),
+        },
+        testUuid,
+      );
     }
 
     // FIXME: temp logic for labels override, we need it here to keep the reporter compatible with v2 API
     // in next iterations we need to implement the logic for every javascript integration
     this.allureRuntime!.updateTest((testResult) => {
-      const mappedLabels = testResult.labels.reduce<Record<string, Label[]>>(
-        (acc, label) => {
-          if (!acc[label.name]) {
-            acc[label.name] = [];
-          }
+      const mappedLabels = testResult.labels.reduce<Record<string, Label[]>>((acc, label) => {
+        if (!acc[label.name]) {
+          acc[label.name] = [];
+        }
 
-          acc[label.name].push(label);
+        acc[label.name].push(label);
 
-          return acc;
-        },
-        {},
-      );
-      const newLabels = Object.keys(mappedLabels).flatMap((labelName) => {
+        return acc;
+      }, {});
+      const newLabels = Object.keys(mappedLabels as Record<string, Label[]>).flatMap((labelName) => {
         const labelsGroup = mappedLabels[labelName];
 
         if (
@@ -296,17 +299,25 @@ class AllureReporter implements Reporter {
     }
 
     if (attachment.body) {
-      this.allureRuntime!.writeAttachment({
-        name: attachment.name,
-        contentType: attachment.contentType,
-        content: attachment.body,
-      }, testUuid);
+      this.allureRuntime!.writeAttachment(
+        {
+          name: attachment.name,
+          contentType: attachment.contentType,
+          content: attachment.body,
+        },
+        testUuid,
+      );
     } else if (!existsSync(attachment.path!)) {
       return;
     } else {
-      this.allureRuntime!.writeAttachmentFromPath(attachment.name, attachment.path!, {
-        contentType: attachment.contentType,
-      }, testUuid);
+      this.allureRuntime!.writeAttachmentFromPath(
+        attachment.name,
+        attachment.path!,
+        {
+          contentType: attachment.contentType,
+        },
+        testUuid,
+      );
     }
 
     if (!attachment.name.match(diffEndRegexp)) {
@@ -324,17 +335,20 @@ class AllureReporter implements Reporter {
     const diffBase64 = await readImageAsBase64(`${pathWithoutEnd}-diff.png`);
     const diffName = attachment.name.replace(diffEndRegexp, "");
 
-    this.allureRuntime!.writeAttachment({
-      name: diffName,
-      content: JSON.stringify({
-        expected: expectedBase64,
-        actual: actualBase64,
-        diff: diffBase64,
+    this.allureRuntime!.writeAttachment(
+      {
         name: diffName,
-      } as ImageDiffAttachment),
-      contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE,
-      fileExtension: ".imagediff",
-    }, testUuid);
+        content: JSON.stringify({
+          expected: expectedBase64,
+          actual: actualBase64,
+          diff: diffBase64,
+          name: diffName,
+        } as ImageDiffAttachment),
+        contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE,
+        fileExtension: ".imagediff",
+      },
+      testUuid,
+    );
 
     this.processedDiffs.push(pathWithoutEnd);
   }

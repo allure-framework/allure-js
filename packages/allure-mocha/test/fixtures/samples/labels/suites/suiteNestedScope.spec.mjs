@@ -1,5 +1,5 @@
-import { suite } from "allure-js-commons/new";
 import { it } from "mocha";
+import { suite } from "allure-js-commons/new";
 
 describe("foo", async () => {
   describe("bar", async () => {

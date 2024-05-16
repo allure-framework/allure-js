@@ -1,8 +1,8 @@
-import { TestResult, Status, Stage } from "allure-js-commons/new/sdk/node";
+import { beforeAll, describe, expect, it } from "vitest";
+import { Stage, Status, TestResult } from "allure-js-commons/new/sdk/node";
 import { runMochaInlineTest } from "../../utils";
-import { describe, beforeAll, expect, it } from "vitest";
 
-describe("test status", async () => {
+describe("test status", () => {
   const testMap = new Map<string | undefined, TestResult>();
   beforeAll(async () => {
     const { tests } = await runMochaInlineTest(
@@ -12,18 +12,18 @@ describe("test status", async () => {
       ["plain-mocha", "skippedTest"],
     );
     for (const test of tests) {
-      testMap.set(test.name, test);
+      testMap.set(test.name as string, test);
     }
   });
 
-  it("could be passed", async () => {
+  it("could be passed", () => {
     expect(testMap.get("a test in a file scope")).toMatchObject({
       status: Status.PASSED,
       stage: Stage.FINISHED,
     });
   });
 
-  it("could be failed", async () => {
+  it("could be failed", () => {
     expect(testMap.get("a failed test")).toMatchObject({
       status: Status.FAILED,
       stage: Stage.FINISHED,
@@ -34,7 +34,7 @@ describe("test status", async () => {
     });
   });
 
-  it("could be broken", async () => {
+  it("could be broken", () => {
     expect(testMap.get("a broken test")).toMatchObject({
       status: Status.BROKEN,
       stage: Stage.FINISHED,
@@ -45,7 +45,7 @@ describe("test status", async () => {
     });
   });
 
-  it("could be skipped", async () => {
+  it("could be skipped", () => {
     expect(testMap.get("a skipped test")).toMatchObject({
       status: Status.SKIPPED,
       stage: Stage.FINISHED,

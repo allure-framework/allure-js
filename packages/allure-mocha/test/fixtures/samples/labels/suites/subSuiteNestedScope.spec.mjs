@@ -1,5 +1,5 @@
-import { subSuite } from "allure-js-commons/new";
 import { it } from "mocha";
+import { subSuite } from "allure-js-commons/new";
 
 describe("foo", async () => {
   describe("bar", async () => {

@@ -35,8 +35,8 @@
     "compile:lib": "rollup -c",
     "compile:types": "tsc --project ./tsconfig.dts.json",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "lint": "eslint ./src ./index.ts --ext .ts",
-    "lint:fix": "eslint --fix ./src ./index.ts --ext .ts",
+    "lint": "eslint ./src ./test --ext .ts",
+    "lint:fix": "eslint --fix ./src ./test --ext .ts",
     "test": "vitest run"
   },
   "dependencies": {

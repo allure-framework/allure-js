@@ -12,7 +12,7 @@ it("sets parameters", async () => {
         await parameter("param3", "paramValue3", {mode:"masked", excluded:true});
         await parameter("param4", "paramValue4", {mode:"hidden"});
       })
-    `
+    `,
   });
 
   expect(tests).toHaveLength(1);

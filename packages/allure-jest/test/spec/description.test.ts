@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
+import { expect, it } from "@jest/globals";
 import { runJestInlineTest } from "../utils";
 
 it("sets description", async () => {

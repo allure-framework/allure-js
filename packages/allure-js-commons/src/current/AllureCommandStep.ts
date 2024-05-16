@@ -241,6 +241,7 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
             parameters: this.metadata.parameter || [], // when in stepFn，like this.parameter('xx', 'xxx')，emit parameters data to display，
             steps,
             description,
+            descriptionHtml,
           },
         ],
       });
@@ -264,6 +265,7 @@ export class AllureCommandStepExecutable implements AllureCommandStep {
             parameters: this.metadata.parameter || [], // when in stepFn，like this.parameter('xx', 'xxx')，emit parameters data to display，
             steps,
             description,
+            descriptionHtml,
           },
         ],
       });

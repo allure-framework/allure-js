@@ -1,8 +1,8 @@
+import { beforeAll, describe, expect, it } from "vitest";
 import { TestResultContainer } from "allure-js-commons/new/sdk/node";
 import { runMochaInlineTest } from "../../utils";
-import { describe, beforeAll, expect, it } from "vitest";
 
-describe("containers", async () => {
+describe("containers", () => {
   let groups: TestResultContainer[];
   beforeAll(async () => {
     ({ groups } = await runMochaInlineTest(
@@ -12,7 +12,7 @@ describe("containers", async () => {
     ));
   });
 
-  it("are not emitted if no fixtures defined", async () => {
+  it("are not emitted if no fixtures defined", () => {
     expect(groups).toHaveLength(0);
   });
 });

@@ -85,13 +85,16 @@ export class AllureCypress {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 const screenshotBody = readFileSync(path);
 
-                this.runtime.writeAttachment({
-                  name,
-                  content: screenshotBody,
-                  contentType: ContentType.PNG,
-                }, testUuid);
+                this.runtime.writeAttachment(
+                  {
+                    name,
+                    content: screenshotBody,
+                    contentType: ContentType.PNG,
+                  },
+                  testUuid,
+                );
               }
-            }
+            },
           });
         }, testUuid);
         this.runtime.updateTest((result) => {
@@ -105,7 +108,7 @@ export class AllureCypress {
           result.statusDetails = endMessage.data.statusDetails;
         }, testUuid);
 
-        this.runtime.stopTest({  uuid: testUuid, stop: Date.now()});
+        this.runtime.stopTest({ uuid: testUuid, stop: Date.now() });
 
         if (startMessage.data.isInteractive) {
           this.runtime.writeTest(testUuid);
@@ -137,9 +140,14 @@ export class AllureCypress {
       }
 
       if (!videoSource) {
-        videoSource = this.runtime.writeAttachmentFromPath("Video", cypressResult.video, {
-          contentType: ContentType.MP4,
-        }, uuid);
+        videoSource = this.runtime.writeAttachmentFromPath(
+          "Video",
+          cypressResult.video,
+          {
+            contentType: ContentType.MP4,
+          },
+          uuid,
+        );
       } else {
         this.runtime.updateTest((result) => {
           result.attachments.push({

@@ -1,4 +1,4 @@
-import { AttachmentOptions, Executable, TestResult } from "../../model.js";
+import { AttachmentOptions, TestResult } from "../../model.js";
 import { Config } from "../Config.js";
 import { ReporterRuntime } from "../ReporterRuntime.js";
 import { AllureNodeCrypto } from "./Crypto.js";
@@ -50,11 +50,9 @@ export class AllureNodeReporterRuntime extends ReporterRuntime {
   };
 
   protected override createTestResult(result: Partial<TestResult>): TestResult {
-    return super.createTestResult(
-      {
-        ...result,
-        labels: (result.labels ?? []).concat(getGlobalLabels())
-      }
-    );
+    return super.createTestResult({
+      ...result,
+      labels: (result.labels ?? []).concat(getGlobalLabels()),
+    });
   }
 }

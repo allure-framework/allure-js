@@ -1,4 +1,4 @@
-import { describe, it, before } from "mocha";
+import { before, describe, it } from "mocha";
 
 describe("a suite with before", async () => {
   before("a before all hook", async () => {});

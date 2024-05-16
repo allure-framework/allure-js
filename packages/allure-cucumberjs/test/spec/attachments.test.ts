@@ -65,5 +65,5 @@ it("handles runtime attachments", async () => {
       ]),
     }),
   );
-  expect(Object.keys(attachments)).toHaveLength(4);
+  expect(Object.keys(attachments as object)).toHaveLength(4);
 });

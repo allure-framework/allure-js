@@ -19,15 +19,15 @@
     "email": "allure@qameta.io",
     "url": "https://qameta.io/"
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     }
   },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "runtime.js",
@@ -40,8 +40,8 @@
     "compile:lib": "rollup -c",
     "compile:types": "tsc --project ./tsconfig.dts.json",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "lint": "eslint ./src --ext .ts",
-    "lint:fix": "eslint ./src --ext .ts --fix",
+    "lint": "eslint ./src ./test --ext .ts",
+    "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "vitest run ./test/spec/**/*.test.ts"
   },
   "dependencies": {

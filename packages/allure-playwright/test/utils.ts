@@ -1,13 +1,12 @@
-import { TestInfo, test as base } from "@playwright/test";
 import { fork } from "child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
-import { dirname, join, resolve as resolvePath } from "node:path";
+import { dirname, join } from "node:path";
 import { parse } from "properties";
-import { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/new/sdk/node";
+import { AllureResults, EnvironmentInfo, TestResult, TestResultContainer } from "allure-js-commons/new/sdk/node";
 
 const parseJsonResult = <T>(data: string) => {
-  return JSON.parse(Buffer.from(data, "base64").toString("utf8"));
+  return JSON.parse(Buffer.from(data, "base64").toString("utf8")) as T;
 };
 
 export const runPlaywrightInlineTest = async (
@@ -85,7 +84,9 @@ export const runPlaywrightInlineTest = async (
         break;
       case "misc":
         res.envInfo =
-          event.path === "environment.properties" ? parse(Buffer.from(event.data, "base64").toString()) : undefined;
+          event.path === "environment.properties"
+            ? (parse(Buffer.from(event.data, "base64").toString()) as EnvironmentInfo)
+            : undefined;
         res.categories = event.path === "categories.json" ? parseJsonResult(event.data) : undefined;
         break;
       default:
@@ -93,7 +94,7 @@ export const runPlaywrightInlineTest = async (
     }
   });
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     testProcess.on("exit", async () => {
       await rm(testDir, { recursive: true });
 

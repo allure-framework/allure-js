@@ -1,5 +1,5 @@
-import { resolve } from "node:path";
 import { access, constants, rm } from "node:fs/promises";
+import { resolve } from "node:path";
 
 export const setup = async () => {
   const runResultsDir = resolve(__dirname, "./fixtures/run-results");

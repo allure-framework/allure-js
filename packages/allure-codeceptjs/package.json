@@ -30,8 +30,8 @@
     "compile": "run-p 'compile:*'",
     "compile:lib": "rollup -c",
     "compile:types": "tsc --project ./tsconfig.dts.json",
-    "lint": "eslint ./src --ext .ts",
-    "lint:fix": "eslint ./src --ext .ts --fix",
+    "lint": "eslint ./src ./test --ext .ts",
+    "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "vitest run test/spec"
   },
   "dependencies": {

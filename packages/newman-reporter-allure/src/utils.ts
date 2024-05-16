@@ -13,13 +13,13 @@ export const extractMeta = (eventList: EventList) => {
         }
         const trimmedCommentValue = line.trim().replace("//", "").trim();
 
-        const idMatch = trimmedCommentValue.match(allureIdRegexp);
+        const idMatch = trimmedCommentValue.match(allureIdRegexp as RegExp);
         const idValue = idMatch?.groups?.id;
         if (idValue) {
           labels.push({ name: LabelName.ALLURE_ID, value: idValue });
         }
 
-        const labelMatch = trimmedCommentValue.match(allureLabelRegexp);
+        const labelMatch = trimmedCommentValue.match(allureLabelRegexp as RegExp);
         const { name, value } = labelMatch?.groups || {};
 
         if (name && value) {

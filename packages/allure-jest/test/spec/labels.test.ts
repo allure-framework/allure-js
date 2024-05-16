@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
+import { expect, it } from "@jest/globals";
 import { LabelName } from "allure-js-commons";
 import { runJestInlineTest } from "../utils";
 

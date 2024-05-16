@@ -1,9 +1,9 @@
-import { expect, describe, it } from "vitest";
 import { randomUUID } from "crypto";
 import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "fs";
 import * as os from "os";
 import path from "path";
 import { env } from "process";
+import { describe, expect, it } from "vitest";
 import { AllureConfig, AllureRuntime, ContentType, InMemoryAllureWriter } from "allure-js-commons";
 
 describe("FileSystemAllureWriter", () => {

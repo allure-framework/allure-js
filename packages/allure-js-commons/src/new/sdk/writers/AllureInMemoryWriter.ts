@@ -1,5 +1,6 @@
 import { AllureResults, Category, TestResult, TestResultContainer } from "../../model.js";
 import { Writer } from "../Writer.js";
+import {PathLike} from "fs";
 
 export class AllureInMemoryAllureWriter implements Writer, AllureResults {
   public groups: TestResultContainer[] = [];
@@ -20,7 +21,8 @@ export class AllureInMemoryAllureWriter implements Writer, AllureResults {
     this.attachments[name] = content;
   }
 
-  public writeAttachmentFromPath(from: string, toFileName: string): void {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public writeAttachmentFromPath(from: PathLike, toFileName: string): void {
     throw new Error(
       "Can't write attachment from path because generic writer doesn't implement this logic! Use AllureInMemoryWriter for node.js.",
     );

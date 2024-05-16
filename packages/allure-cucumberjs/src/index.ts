@@ -167,9 +167,9 @@ export class AllureCucumberTestRuntime extends World implements TestRuntime {
     }
   }
 
-  async stepDisplayName(name: string) {}
+  async stepDisplayName() {}
 
-  async stepParameter(name: string, value: string) {}
+  async stepParameter() {}
 
   sendMessage(message: RuntimeMessage) {
     this.attach(JSON.stringify(message), ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE as string);
