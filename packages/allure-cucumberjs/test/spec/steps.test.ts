@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { LabelName, Stage, Status } from "allure-js-commons/new/sdk/node";
+import { LabelName, Stage, Status } from "allure-js-commons/sdk/node";
 import { runCucumberInlineTest } from "../utils";
 
 it("handles runtime steps", async () => {

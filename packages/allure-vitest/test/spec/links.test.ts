@@ -7,7 +7,7 @@ describe("links", () => {
     const { tests } = await runVitestInlineTest(
       `
       import { test } from "vitest";
-      import { link } from "allure-js-commons/new";
+      import { link } from "allure-js-commons";
 
       test("link", async (t) => {
         await link("https://example.org", "foo", "bar");
@@ -27,7 +27,7 @@ describe("links", () => {
     const { tests } = await runVitestInlineTest(
       `
       import { test } from "vitest";
-      import { issue } from "allure-js-commons/new";
+      import { issue } from "allure-js-commons";
 
       test("issue", async () => {
         await issue("https://example.org/issue/1", "foo");
@@ -53,7 +53,7 @@ describe("links", () => {
     const { tests } = await runVitestInlineTest(
       `
       import { test } from "vitest";
-      import { tms } from "allure-js-commons/new";
+      import { tms } from "allure-js-commons";
 
       test("tms", async () => {
         await tms("https://example.org/tms/1", "foo");

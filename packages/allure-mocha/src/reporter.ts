@@ -1,7 +1,7 @@
 import * as Mocha from "mocha";
 import { hostname } from "node:os";
 import { env } from "node:process";
-import "allure-js-commons/new";
+import "allure-js-commons";
 import {
   AllureNodeReporterRuntime,
   Config,
@@ -14,7 +14,7 @@ import {
   getPackageLabelFromPath,
   getRelativePath,
   getStatusFromError,
-} from "allure-js-commons/new/sdk/node";
+} from "allure-js-commons/sdk/node";
 import { setUpTestRuntime } from "./ContextBasedTestRuntime.js";
 import { getSuitesOfMochaTest } from "./utils.js";
 

@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { Stage, Status } from "allure-js-commons/new/sdk/node";
+import { Stage, Status } from "allure-js-commons/sdk/node";
 import { runCodeceptJSInlineTest } from "../utils";
 
 it("handles hooks", async () => {

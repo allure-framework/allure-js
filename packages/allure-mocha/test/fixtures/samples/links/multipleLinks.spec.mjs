@@ -1,5 +1,5 @@
 import { it } from "mocha";
-import { links } from "allure-js-commons/new";
+import { links } from "allure-js-commons";
 
 it("a test with two links", async () => {
   await links(

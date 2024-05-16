@@ -1,5 +1,5 @@
 const { Given } = require("@cucumber/cucumber");
-const { description, descriptionHtml } = require("allure-js-commons/new");
+const { description, descriptionHtml } = require("allure-js-commons");
 
 Given("a step", () => {});
 

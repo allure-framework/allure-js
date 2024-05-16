@@ -1,4 +1,4 @@
-import { RuntimeMessage, Stage, Status, StatusDetails } from "allure-js-commons/new/sdk";
+import { RuntimeMessage, Stage, Status, StatusDetails } from "allure-js-commons/sdk";
 
 export type CypressTestStartRuntimeMessage = {
   type: "cypress_start";

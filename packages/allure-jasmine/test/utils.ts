@@ -10,7 +10,7 @@ import {
   Status,
   TestResult,
   TestResultContainer,
-} from "allure-js-commons/new/sdk/node";
+} from "allure-js-commons/sdk/node";
 
 export type TestResultsByFullName = Record<string, TestResult>;
 

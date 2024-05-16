@@ -12,7 +12,7 @@ const {
   severity,
   story,
   tag,
-} = require("allure-js-commons/new");
+} = require("allure-js-commons");
 
 Given("a step", () => {});
 

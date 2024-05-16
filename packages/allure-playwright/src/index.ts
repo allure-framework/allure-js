@@ -1,5 +1,5 @@
 import test from "@playwright/test";
-import { ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/new/internal";
+import { ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/internal";
 import {
   ContentType,
   Label,
@@ -13,7 +13,7 @@ import {
   TestRuntime,
   getStatusFromError,
   setGlobalTestRuntime,
-} from "allure-js-commons/new/sdk/node";
+} from "allure-js-commons/sdk/node";
 
 class AllurePlaywrightTestRuntime implements TestRuntime {
   async label(name: LabelName | string, value: string) {

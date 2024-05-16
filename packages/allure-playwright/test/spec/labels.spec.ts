@@ -20,7 +20,7 @@ it("sets runtime labels", async () => {
         severity,
         story,
         tag,
-      } from "allure-js-commons/new";
+      } from "allure-js-commons";
 
       test("should add epic label", async ({}, testInfo) => {
         await label("foo", "bar");

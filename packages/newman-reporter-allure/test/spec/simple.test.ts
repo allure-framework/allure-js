@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/quotes */
 import { afterAll, afterEach, beforeAll, expect, test } from "vitest";
-import { LabelName, Stage, Status } from "allure-js-commons/new/sdk/node";
+import { LabelName, Stage, Status } from "allure-js-commons/sdk/node";
 import { server } from "../mocks/server";
 import { runNewmanCollection } from "../utils";
 

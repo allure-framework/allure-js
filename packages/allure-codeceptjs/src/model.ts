@@ -1,4 +1,4 @@
-import type { Config } from "allure-js-commons/new/sdk/browser";
+import type { Config } from "allure-js-commons/sdk/browser";
 
 export interface CodeceptError {
   params: any;

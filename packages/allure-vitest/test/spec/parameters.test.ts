@@ -4,7 +4,7 @@ import { runVitestInlineTest } from "../utils.js";
 it("sets parameters", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
-    import { parameter } from "allure-js-commons/new";
+    import { parameter } from "allure-js-commons";
 
     test("parameter", async () => {
       await parameter("foo", "bar", { mode: "hidden", excluded: true });

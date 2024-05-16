@@ -14,7 +14,8 @@ const createNodeEntry = (inputFile) => {
     "node:os",
     "node:fs",
     "node:process",
-    "allure-js-commons/new/sdk/node",
+    "allure-js-commons",
+    "allure-js-commons/sdk/node",
   ];
 
   return [

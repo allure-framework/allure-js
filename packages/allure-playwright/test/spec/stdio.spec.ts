@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { ContentType } from "allure-js-commons/new/sdk/node";
+import { ContentType } from "allure-js-commons/sdk/node";
 import { runPlaywrightInlineTest } from "../utils";
 
 it("reports stdout", async () => {

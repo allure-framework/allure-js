@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it, test } from "vitest";
-import { TestResult } from "allure-js-commons/new";
+import { TestResult } from "allure-js-commons";
 import { runMochaInlineTest } from "../../../utils";
 
 describe("suites", () => {
@@ -20,7 +20,7 @@ describe("suites", () => {
       ["labels", "suites", "subSuiteNestedScope"],
     );
     for (const testResult of tests) {
-      testMap.set(testResult.name as string, testResult);
+      testMap.set(testResult.name as string, testResult as TestResult);
     }
   });
 

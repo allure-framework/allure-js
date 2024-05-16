@@ -11,7 +11,7 @@ import {
   TestRuntime,
   getStatusFromError,
   setGlobalTestRuntime,
-} from "allure-js-commons/new/sdk/node";
+} from "allure-js-commons/sdk/node";
 import { errorToStatusDetails } from "./utils";
 
 export class ContextBasedTestRuntime implements TestRuntime {

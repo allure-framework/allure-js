@@ -4,7 +4,7 @@ import { runJasmineInlineTest } from "../utils";
 it("sets historyId", async () => {
   const { tests } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `
-      const { historyId } = require("allure-js-commons/new");
+      const { historyId } = require("allure-js-commons");
 
       it("historyId", async () => {
         await historyId("foo");

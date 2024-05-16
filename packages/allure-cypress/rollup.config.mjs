@@ -10,7 +10,7 @@ const dirname = fileURLToPath(new URL(".", import.meta.url));
 
 const createNodeEntry = (inputFile) => {
   const outputFileBase = inputFile.replace(/^src/, "dist");
-  const external = ["node:fs", "allure-js-commons/new/sdk/node"];
+  const external = ["node:fs", "allure-js-commons/sdk/node"];
 
   return [
     defineConfig({

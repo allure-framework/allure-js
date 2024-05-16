@@ -1,5 +1,5 @@
 import { HeaderList, RequestBody } from "postman-collection";
-import { Config } from "allure-js-commons/new/sdk/node";
+import { Config } from "allure-js-commons/sdk/node";
 
 export interface AllureNewmanConfig extends Omit<Config, "writer"> {
   testMode?: boolean;

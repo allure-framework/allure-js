@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, it } from "vitest";
-import { ContentType } from "allure-js-commons/new/sdk/node";
+import { ContentType } from "allure-js-commons/sdk/node";
 import { runPlaywrightInlineTest } from "../utils";
 
 it("doesn't not throw on missing attachment", async () => {
@@ -62,7 +62,7 @@ it("should add attachments into steps", async () => {
   const { tests, attachments } = await runPlaywrightInlineTest({
     "sample.test.js": `
       import test from 'allure-playwright';
-      import { step, attachment } from 'allure-js-commons/new';
+      import { step, attachment } from 'allure-js-commons/';
 
       test('should add attachment', async ({}, testInfo) => {
         await step('outer step 1', async () => {
@@ -161,7 +161,7 @@ it("doesn't not report detail steps for attachments", async () => {
   const { tests, attachments } = await runPlaywrightInlineTest({
     "sample.test.js": `
       import test from 'allure-playwright';
-      import { step, attachment } from 'allure-js-commons/new';
+      import { step, attachment } from 'allure-js-commons/';
 
       test('should add attachment', async ({}, testInfo) => {
         await step('outer step 1', async () => {

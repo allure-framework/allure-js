@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { LabelName } from "allure-js-commons/new/sdk/node";
+import { LabelName } from "allure-js-commons/sdk/node";
 import { runCodeceptJSInlineTest } from "../utils";
 
 it("adds labels", async () => {
@@ -19,7 +19,7 @@ it("adds labels", async () => {
         severity,
         story,
         tag,
-      } = require("allure-js-commons/new");
+      } = require("allure-js-commons");
 
       Feature("login-feature");
       Scenario("login-scenario1", async () => {

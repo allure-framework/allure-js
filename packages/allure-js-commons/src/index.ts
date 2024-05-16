@@ -31,6 +31,7 @@ export {
   Category,
   ContentType,
   EnvironmentInfo,
+  Executable,
   ParameterMode,
   ParameterOptions,
   Parameter,
@@ -44,6 +45,7 @@ export {
   FixtureResult,
   TestResultContainer,
   Attachment,
+  ImageDiffAttachment,
   Severity,
   Stage,
   Status,
@@ -66,4 +68,5 @@ export {
   isAnyStepFailed,
   isPromise,
   Stack,
+  serialize,
 } from "./utils.js";

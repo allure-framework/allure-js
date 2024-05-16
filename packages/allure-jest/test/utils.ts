@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
-import { LinkType } from "allure-js-commons/new/sdk/node";
+import { LinkType } from "allure-js-commons/sdk/node";
 
 export type TestResultsByFullName = Record<string, TestResult>;
 

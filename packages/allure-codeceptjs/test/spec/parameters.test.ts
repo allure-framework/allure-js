@@ -4,7 +4,7 @@ import { runCodeceptJSInlineTest } from "../utils";
 it("sets parameters", async () => {
   const { tests } = await runCodeceptJSInlineTest({
     "sample.test.js": `
-       const { parameter } = require("allure-js-commons/new");
+       const { parameter } = require("allure-js-commons");
 
       Feature("login-feature");
       Scenario("login-scenario1", async () => {

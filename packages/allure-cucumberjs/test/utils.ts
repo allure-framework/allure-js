@@ -2,7 +2,7 @@ import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
 import { join, resolve as resolvePath } from "node:path";
-import { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/new/sdk";
+import { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/sdk";
 
 export const runCucumberInlineTest = async (features: string[], stepsDefs: string[]): Promise<AllureResults> => {
   const res: AllureResults = {

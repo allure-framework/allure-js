@@ -1,5 +1,5 @@
 import { it } from "mocha";
-import { attachment, step } from "allure-js-commons/new";
+import { attachment, step } from "allure-js-commons";
 
 it("a step with an attachment", async () => {
   await step("step", async () => {

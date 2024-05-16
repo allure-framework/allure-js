@@ -1,5 +1,5 @@
 const { Given } = require("@cucumber/cucumber");
-const { step, label, epic, attachment } = require("allure-js-commons/new");
+const { step, label, epic, attachment } = require("allure-js-commons");
 
 Given("allows to define runtime step", async () => {
   await step("first nested step", async function () {

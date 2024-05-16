@@ -1,5 +1,5 @@
 const { Given } = require("@cucumber/cucumber");
-const { attachment } = require("allure-js-commons/new");
+const { attachment } = require("allure-js-commons");
 
 Given("add a text", async () => {
   await attachment("Text attachment", "some text", "text/plain");

@@ -18,7 +18,7 @@ it("sets labels", async () => {
         severity,
         story,
         tag,
-      } = require("allure-js-commons/new");
+      } = require("allure-js-commons");
 
       it("label", async () => {
         await label("foo", "bar");

@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "url";
-import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/new";
+import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
 
 const fileDirname = dirname(fileURLToPath(import.meta.url));
 

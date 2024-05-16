@@ -7,6 +7,6 @@ Feature: dataTableAndExamples
     When I add <a> to <b>
     Then result is <result>
 
-    Examples: 
+    Examples:
       | b | result |
       | 3 |      4 |

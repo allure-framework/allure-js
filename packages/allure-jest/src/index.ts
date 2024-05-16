@@ -23,7 +23,7 @@ import {
   TestRuntime,
   getStatusFromError,
   getSuitesLabels,
-} from "allure-js-commons/new/sdk/node";
+} from "allure-js-commons/sdk/node";
 import { AllureJestConfig } from "./model.js";
 import { getTestId, getTestPath } from "./utils.js";
 

@@ -18,7 +18,7 @@ import {
   TestRuntime,
   extractMetadataFromString,
   setGlobalTestRuntime,
-} from "allure-js-commons/new/sdk/node";
+} from "allure-js-commons/sdk/node";
 import { extractMeta } from "./helpers";
 import { CodeceptError, CodeceptHook, CodeceptStep, CodeceptTest } from "./model";
 import { AllureCodeceptJSConfig } from "./model.js";

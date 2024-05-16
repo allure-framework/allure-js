@@ -4,7 +4,7 @@ import { runJestInlineTest } from "../utils";
 describe("historyId", () => {
   it("historyId", async () => {
     const { tests } = await runJestInlineTest(`
-      const { historyId } = require("allure-js-commons/new");
+      const { historyId } = require("allure-js-commons");
 
       it("historyId", async () => {
         await historyId("foo");
