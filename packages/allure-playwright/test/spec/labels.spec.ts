@@ -60,7 +60,7 @@ it("sets runtime labels", async () => {
 it("reports a single suite structure", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import test from 'allure-playwright';
+      import test from '@playwright/test';
 
       test.describe('suite', () => {
         test('should work', async ({}) => {});
@@ -118,7 +118,7 @@ it("reports a single suite structure", async () => {
 it("reports a multiple nested suites structure", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import test from 'allure-playwright';
+      import test from '@playwright/test';
 
       test.describe('parent suite 2', () => {
         test.describe('suite 2', () => {

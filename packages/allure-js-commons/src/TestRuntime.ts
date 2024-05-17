@@ -108,6 +108,7 @@ export const getGlobalTestRuntime = (): TestRuntime => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       require("allure-playwright/autoconfig");
+
       return getGlobalTestRuntimeFunction()?.() ?? noopRuntime;
     } catch (err) {
       // eslint-disable-next-line no-console

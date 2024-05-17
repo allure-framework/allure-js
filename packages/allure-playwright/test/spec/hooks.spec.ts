@@ -4,7 +4,7 @@ import { runPlaywrightInlineTest } from "../utils";
 it("handles before hooks", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-       import test from 'allure-playwright';
+       import test from '@playwright/test';
 
        test.beforeAll(async () => {});
 
@@ -34,7 +34,7 @@ it("handles before hooks", async () => {
 it("handles after hooks", async () => {
   const results = await runPlaywrightInlineTest({
     "sample.test.js": `
-       import test from 'allure-playwright';
+       import test from '@playwright/test';
 
        test.afterAll(async () => {});
 

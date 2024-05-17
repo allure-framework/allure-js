@@ -3,7 +3,7 @@ import { LabelName } from "allure-js-commons";
 import { runPlaywrightInlineTest } from "../utils";
 
 const testFile = `
-  import test from 'allure-playwright';
+  import test from '@playwright/test';
 
   test.beforeEach(() => {
       console.log("This is the beforeEach hook");

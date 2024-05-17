@@ -12,7 +12,6 @@ import {
   Status,
   TestRuntime,
   getStatusFromError,
-  setGlobalTestRuntime,
 } from "allure-js-commons/sdk/node";
 
 export class AllurePlaywrightTestRuntime implements TestRuntime {
