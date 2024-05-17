@@ -1,20 +1,20 @@
 import { expect, it } from "vitest";
 import { LinkType } from "allure-js-commons/sdk/node";
-import { runCodeceptJSInlineTest } from "../utils";
+import { runCodeceptJSInlineTest } from "../../../utils";
 
 it("sets runtime links", async () => {
   const results = await runCodeceptJSInlineTest({
     "sample.test.js": `
-      const { link, links, issue, tms } = require('allure-js-commons');
-
       Feature("login-feature");
       Scenario("login-scenario1", async () => {
-        await link("https://playwright.dev/docs/api/class-page#page-workers");
-        await issue("1");
-        await issue("https://example.org/issues/2");
-        await tms("1");
-        await tms("https://example.org/tasks/2");
-        await links(...[{ url:"https://www.google.com/1" }, { url:"https://www.google.com/2" }]);
+        const allure = codeceptjs.container.plugins("allure");
+
+        await allure.link("https://playwright.dev/docs/api/class-page#page-workers");
+        await allure.issue("1");
+        await allure.issue("https://example.org/issues/2");
+        await allure.tms("1");
+        await allure.tms("https://example.org/tasks/2");
+        await allure.links(...[{ url:"https://www.google.com/1" }, { url:"https://www.google.com/2" }]);
       });
     `,
     "codecept.conf.js": `
