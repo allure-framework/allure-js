@@ -28,6 +28,10 @@
     "./setup": {
       "require": "./dist/setup.cjs",
       "import": "./dist/setup.mjs"
+    },
+    "./autoconfig": {
+      "require": "./dist/autoconfig.cjs",
+      "import": "./dist/autoconfig.mjs"
     }
   },
   "files": [

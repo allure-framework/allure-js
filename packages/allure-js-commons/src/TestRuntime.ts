@@ -102,6 +102,8 @@ export const getGlobalTestRuntime = (): TestRuntime => {
     return testRuntime() ?? noopRuntime;
   }
 
+  debugger
+
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/dot-notation
   if ((globalThis as any)?.["_playwrightInstance"]) {
@@ -114,6 +116,18 @@ export const getGlobalTestRuntime = (): TestRuntime => {
       // eslint-disable-next-line no-console
       console.log(err);
     }
+  } else if ((globalThis as any)?.["__vitest_environment__"]) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      require("allure-vitest/autoconfig");
+
+      return getGlobalTestRuntimeFunction()?.() ?? noopRuntime;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.log(err);
+    }
   }
+
+
   return noopRuntime;
 };
