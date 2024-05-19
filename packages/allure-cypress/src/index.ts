@@ -166,9 +166,24 @@ export class AllureCypressTestRuntime implements TestRuntime {
     this.sendMessage(message);
     return Cypress.Promise.resolve();
   }
+
+  sendSkippedTestMessages(messages: CypressRuntimeMessage[]) {
+    const skippedTestsMessages: CypressRuntimeMessage[][] | undefined = Cypress.env("skippedTestsMessages");
+
+    if (!skippedTestsMessages) {
+      Cypress.env("skippedTestsMessages", [messages]);
+    } else {
+      skippedTestsMessages.push(messages);
+    }
+  }
 }
 
-const { EVENT_TEST_BEGIN, EVENT_TEST_FAIL, EVENT_TEST_PASS } = Mocha.Runner.constants;
+const {
+  EVENT_TEST_BEGIN,
+  EVENT_TEST_FAIL,
+  EVENT_TEST_PASS,
+  EVENT_TEST_PENDING
+} = Mocha.Runner.constants;
 
 const initializeAllure = () => {
   const initialized = Cypress.env("allureInitialized") as boolean;
@@ -225,19 +240,46 @@ const initializeAllure = () => {
     .on(EVENT_TEST_FAIL, (test: Mocha.Test, err: Error) => {
       const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
 
-      testRuntime.sendMessage({
-        type: "cypress_end",
-        data: {
-          stage: Stage.FINISHED,
-          status: err.constructor.name === "AssertionError" ? Status.FAILED : Status.BROKEN,
-          statusDetails: {
-            message: err.message,
-            trace: err.stack,
-          },
-          stop: Date.now(),
+    testRuntime.sendMessage({
+      type: "cypress_end",
+      data: {
+        stage: Stage.FINISHED,
+        status: err.constructor.name === "AssertionError" ? Status.FAILED : Status.BROKEN,
+        statusDetails: {
+          message: err.message,
+          trace: err.stack,
         },
-      });
+        stop: Date.now(),
+      },
     });
+  })
+  .on(EVENT_TEST_PENDING, (test: Mocha.Test, err: Error) => {
+    const testRuntime = new AllureCypressTestRuntime();
+
+    const startMessage: CypressRuntimeMessage = {
+      type: "cypress_start",
+      data: {
+        isInteractive: Cypress.config("isInteractive"),
+        absolutePath: Cypress.spec.absolute,
+        specPath: getSuitePath(test).concat(test.title),
+        filename: Cypress.spec.relative,
+        start: Date.now(),
+      },
+    };
+    const endMessage: CypressRuntimeMessage = {
+      type: "cypress_end",
+      data: {
+        stage: Stage.FINISHED,
+        status: Status.SKIPPED,
+        stop: Date.now(),
+      },
+    };
+
+    const skippedTestMessages: CypressRuntimeMessage[] = [startMessage, endMessage];
+    testRuntime.sendSkippedTestMessages(skippedTestMessages);
+
+    setGlobalTestRuntime(testRuntime);
+  });
 
   Cypress.Screenshot.defaults({
     onAfterScreenshot: (_, details) => {
@@ -290,8 +332,16 @@ const initializeAllure = () => {
     throw err;
   });
 
-  afterEach(() => {
-    const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
+after(() => {
+  const skippedTestsMessages = Cypress.env("skippedTestsMessages") as CypressRuntimeMessage[][];
+
+  for (const skippedTestMessages of skippedTestsMessages) {
+    cy.task("allureReportTest", skippedTestMessages, { log: false });
+  }
+});
+
+afterEach(() => {
+  const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
 
     cy.task("allureReportTest", runtimeMessages, { log: false });
   });
