@@ -197,6 +197,16 @@ export class AllureCypressTestRuntime implements TestRuntime {
 
     return Cypress.Promise.resolve();
   }
+
+  sendSkippedTestMessages(messages: CypressRuntimeMessage[]) {
+    const skippedTestsMessages: CypressRuntimeMessage[][] | undefined = Cypress.env("skippedTestsMessages");
+
+    if (!skippedTestsMessages) {
+      Cypress.env("skippedTestsMessages", [messages]);
+    } else {
+      skippedTestsMessages.push(messages);
+    }
+  }
 }
 
 const {
@@ -519,6 +529,12 @@ const initializeAllure = () => {
         status: Status.PASSED,
       },
     });
+  });
+
+  afterEach(() => {
+    const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressMessage[];
+
+    cy.task("allureReportTest", runtimeMessages, { log: false });
   });
 
   after(ALLURE_REPORT_SHUTDOWN_HOOK, () => {
