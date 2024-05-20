@@ -1,9 +1,9 @@
 import { expect, it } from "vitest";
 import { LinkType } from "allure-js-commons/sdk/node";
-import { runCodeceptJSInlineTest } from "../../../utils";
+import { runCodeceptJsInlineTest } from "../../../utils";
 
 it("sets runtime links", async () => {
-  const results = await runCodeceptJSInlineTest({
+  const results = await runCodeceptJsInlineTest({
     "sample.test.js": `
       Feature("login-feature");
       Scenario("login-scenario1", async () => {

@@ -1,8 +1,8 @@
 import { expect, it } from "vitest";
-import { runCodeceptJSInlineTest } from "../../../utils";
+import { runCodeceptJsInlineTest } from "../../../utils";
 
 it("sets parameters", async () => {
-  const { tests } = await runCodeceptJSInlineTest({
+  const { tests } = await runCodeceptJsInlineTest({
     "sample.test.js": `
        const { parameter } = require("allure-js-commons");
 

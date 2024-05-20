@@ -12,15 +12,15 @@ import {
   extractMetadataFromString,
 } from "allure-js-commons/sdk/node";
 import { extractMeta } from "./helpers";
-import { AllureCodeceptJSConfig, CodeceptError, CodeceptHook, CodeceptStep, CodeceptTest } from "./model.js";
+import { AllureCodeceptJsConfig, CodeceptError, CodeceptHook, CodeceptStep, CodeceptTest } from "./model.js";
 
-export class AllureCodeceptJSReporter {
+export class AllureCodeceptJsReporter {
   allureRuntime?: AllureNodeReporterRuntime;
   currentAllureResultUuid?: string;
   currentTest: CodeceptTest | null = null;
-  config!: AllureCodeceptJSConfig;
+  config!: AllureCodeceptJsConfig;
 
-  constructor(config: AllureCodeceptJSConfig) {
+  constructor(config: AllureCodeceptJsConfig) {
     this.registerEvents();
     this.config = config || {};
     this.allureRuntime = new AllureNodeReporterRuntime({

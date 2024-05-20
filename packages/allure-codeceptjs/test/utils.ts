@@ -9,7 +9,7 @@ const parseJsonResult = <T>(data: string) => {
   return JSON.parse(Buffer.from(data, "base64").toString("utf8")) as T;
 };
 
-export const runCodeceptJSInlineTest = async (
+export const runCodeceptJsInlineTest = async (
   files: Record<string, string | Buffer>,
   env?: Record<string, string>,
 ): Promise<AllureResults> => {

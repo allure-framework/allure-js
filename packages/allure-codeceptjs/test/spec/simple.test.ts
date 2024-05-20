@@ -1,9 +1,9 @@
 import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons/sdk/node";
-import { runCodeceptJSInlineTest } from "../utils";
+import { runCodeceptJsInlineTest } from "../utils";
 
 it("simple scenarios", async () => {
-  const { tests } = await runCodeceptJSInlineTest({
+  const { tests } = await runCodeceptJsInlineTest({
     "nested/login.test.js": `
         Feature("login-feature");
         Scenario("login-scenario1", async () => {});

@@ -1,8 +1,8 @@
 import { expect, it } from "vitest";
-import { runCodeceptJSInlineTest } from "../utils";
+import { runCodeceptJsInlineTest } from "../utils";
 
 it("handles retries", async () => {
-  const { tests } = await runCodeceptJSInlineTest({
+  const { tests } = await runCodeceptJsInlineTest({
     "nested/login.test.js": `
         Feature("login-feature");
         Scenario("login-scenario1", { retries: 2 }, async ({ I }) => {

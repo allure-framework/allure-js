@@ -30,6 +30,6 @@ export type CodeceptHook = Mocha.Hook;
 
 export type CodeceptTest = Mocha.Runnable;
 
-export interface AllureCodeceptJSConfig extends Config {
+export interface AllureCodeceptJsConfig extends Config {
   testMode?: boolean;
 }

@@ -11,10 +11,10 @@ import {
   Status,
   TestRuntime,
 } from "allure-js-commons/sdk/node";
-import { AllureCodeceptJSReporter } from "./reporter.js";
+import { AllureCodeceptJsReporter } from "./reporter.js";
 
-export class AllureCodeceptJSTestRuntime implements TestRuntime {
-  constructor(private readonly reporter: AllureCodeceptJSReporter) {}
+export class AllureCodeceptJsTestRuntime implements TestRuntime {
+  constructor(private readonly reporter: AllureCodeceptJsReporter) {}
 
   async label(name: LabelName | string, value: string) {
     await this.sendMessage({

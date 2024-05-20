@@ -1,9 +1,9 @@
 import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons/sdk/node";
-import { runCodeceptJSInlineTest } from "../../../utils";
+import { runCodeceptJsInlineTest } from "../../../utils";
 
 it("handles codeceptjs steps", async () => {
-  const { tests } = await runCodeceptJSInlineTest({
+  const { tests } = await runCodeceptJsInlineTest({
     "sample.test.js": `
       Feature("sample-feature-1");
       Scenario("passed-scenario1", async ({ I }) => {
@@ -41,7 +41,7 @@ it("handles codeceptjs steps", async () => {
 });
 
 it("handles lambda steps", async () => {
-  const { tests } = await runCodeceptJSInlineTest({
+  const { tests } = await runCodeceptJsInlineTest({
     "sample.test.js": `
       Feature("sample-feature-1");
       Scenario("scenario1", async ({ I }) => {
