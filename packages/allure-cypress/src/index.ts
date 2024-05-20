@@ -23,6 +23,7 @@ import {
   toReversed,
   uint8ArrayToBase64,
 } from "./utils.js";
+import {CypressTestStartRuntimeMessage} from "../dist/model";
 
 export class AllureCypressTestRuntime implements TestRuntime {
   labels(...labels: Label[]) {
@@ -204,6 +205,7 @@ const {
   EVENT_TEST_BEGIN,
   EVENT_TEST_FAIL,
   EVENT_TEST_PASS,
+  EVENT_TEST_PENDING,
   EVENT_SUITE_BEGIN,
   EVENT_SUITE_END,
   EVENT_HOOK_BEGIN,
@@ -404,6 +406,32 @@ const initializeAllure = () => {
           stop: testStartMessage.data.start + (test.duration ?? 0),
         },
       });
+    })
+    .on(EVENT_TEST_PENDING, (test: CypressTest) => {
+      const testRuntime = new AllureCypressTestRuntime();
+
+      const startMessage: CypressTestStartRuntimeMessage = {
+        type: "cypress_test_start",
+        data: {
+          id: test.id,
+          specPath: getSuitePath(test).concat(test.title),
+          filename: Cypress.spec.relative,
+          start: Date.now(),
+        },
+      };
+      const endMessage: CypressTestEndMessage = {
+        type: "cypress_test_end",
+        data: {
+          id: test.id,
+          status: Status.SKIPPED,
+          stop: Date.now(),
+        },
+      };
+
+      const skippedTestMessages: CypressRuntimeMessage[] = [startMessage, endMessage];
+      testRuntime.sendSkippedTestMessages(skippedTestMessages);
+
+      setGlobalTestRuntime(testRuntime);
     })
     .on(EVENT_RUN_END, () => {
       // this is the only way to say reporter process messages in interactive mode without data duplication
