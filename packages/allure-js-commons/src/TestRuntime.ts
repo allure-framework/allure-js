@@ -1,5 +1,4 @@
 import * as Buffer from "node:buffer";
-import { env } from "node:process";
 import { ContentType, Label, Link, ParameterMode, ParameterOptions } from "./model.js";
 
 export const ALLURE_TEST_RUNTIME_KEY = "allureTestRuntime";

@@ -1,7 +1,5 @@
 import { Before } from "@cucumber/cucumber";
-import {
-  setGlobalTestRuntime,
-} from "allure-js-commons/sdk/node";
+import { setGlobalTestRuntime } from "allure-js-commons/sdk/node";
 import { AllureCucumberTestRuntime } from "./runtime.js";
 
 Before(function () {

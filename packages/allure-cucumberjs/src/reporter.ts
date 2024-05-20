@@ -1,4 +1,4 @@
-import { World, Formatter, IFormatterOptions, TestCaseHookDefinition, setWorldConstructor } from "@cucumber/cucumber";
+import { Formatter, IFormatterOptions, TestCaseHookDefinition, World } from "@cucumber/cucumber";
 import * as messages from "@cucumber/messages";
 import { PickleTag, Tag, TestStepResult, TestStepResultStatus } from "@cucumber/messages";
 import os from "node:os";
@@ -19,8 +19,8 @@ import {
   createStepResult,
   getWorstStepResultStatus,
 } from "allure-js-commons/sdk/node";
-import { AllureCucumberTestRuntime } from "./runtime.js";
 import { AllureCucumberReporterConfig, LabelConfig, LinkConfig } from "./model.js";
+import { AllureCucumberTestRuntime } from "./runtime.js";
 
 const { ALLURE_THREAD_NAME } = process.env;
 
@@ -76,7 +76,7 @@ export default class AllureCucumberReporter extends Formatter {
     // set custom Allure World for single thread mode
     if (options.supportCodeLibrary.World === World) {
       // @ts-ignore
-      options.supportCodeLibrary.World = AllureCucumberTestRuntime
+      options.supportCodeLibrary.World = AllureCucumberTestRuntime;
     }
   }
 

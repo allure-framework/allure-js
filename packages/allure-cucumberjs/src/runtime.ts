@@ -167,7 +167,7 @@ export class AllureCucumberTestRuntime extends World implements TestRuntime {
   }
 
   issue(url: string, name: string) {
-    this.link(url, LinkType.ISSUE, name)
+    this.link(url, LinkType.ISSUE, name);
   }
 
   tms(url: string, name: string) {
@@ -220,7 +220,7 @@ export class AllureCucumberTestRuntime extends World implements TestRuntime {
 
   tags(...tagsList: string[]) {
     this.labels(...tagsList.map((value) => ({ name: LabelName.TAG, value })));
-  };
+  }
 
   async stepDisplayName() {}
 

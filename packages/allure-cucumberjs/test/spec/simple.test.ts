@@ -5,8 +5,6 @@ import { runCucumberInlineTest } from "../utils";
 it("handles basic cases", async () => {
   const { tests } = await runCucumberInlineTest(["simple"], ["simple"]);
 
-  debugger
-
   expect(tests).toHaveLength(3);
   expect(tests).toContainEqual(
     expect.objectContaining({

@@ -1,5 +1,5 @@
 const { setWorldConstructor, Given } = require("@cucumber/cucumber");
-const { CucumberAllureWorld }  = require("allure-cucumberjs")
+const { CucumberAllureWorld } = require("allure-cucumberjs");
 
 Given("a step", () => {});
 
