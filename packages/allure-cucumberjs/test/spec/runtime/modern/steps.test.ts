@@ -1,9 +1,9 @@
 import { expect, it } from "vitest";
 import { LabelName, Stage, Status } from "allure-js-commons/sdk/node";
-import { runCucumberInlineTest } from "../utils";
+import { runCucumberInlineTest } from "../../../utils";
 
 it("handles runtime steps", async () => {
-  const { tests } = await runCucumberInlineTest(["steps"], ["steps"]);
+  const { tests } = await runCucumberInlineTest(["steps"], ["runtime/modern/steps"]);
 
   expect(tests).toHaveLength(2);
   expect(tests).toContainEqual(
