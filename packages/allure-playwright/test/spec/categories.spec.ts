@@ -5,7 +5,7 @@ import { runPlaywrightInlineTest } from "../utils";
 it("has categories", async () => {
   const { categories } = await runPlaywrightInlineTest({
     "a.test.ts": `
-       import { test, expect } from 'allure-playwright';
+       import { test, expect } from '@playwright/test';
 
        test('does nothing', async ({}, testInfo) => {
        });
@@ -14,7 +14,7 @@ it("has categories", async () => {
        module.exports = {
          reporter: [
            [
-             require.resolve("allure-playwright/reporter"),
+             require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
                testMode: true,

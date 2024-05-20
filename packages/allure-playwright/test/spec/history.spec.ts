@@ -5,7 +5,7 @@ import { runPlaywrightInlineTest } from "../utils";
 it("historical data should be fine", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import { test } from 'allure-playwright';
+      import { test } from '@playwright/test';
 
       test.describe('nested', () => {
         test('test', async ({}, testInfo) => {});

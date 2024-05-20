@@ -5,7 +5,7 @@ import { runPlaywrightInlineTest } from "../utils";
 it("sets runtime labels", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import { test, expect } from "allure-playwright";
+      import { test, expect } from "@playwright/test";
       import {
         label,
         labels,
@@ -60,7 +60,7 @@ it("sets runtime labels", async () => {
 it("reports a single suite structure", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import test from 'allure-playwright';
+      import test from '@playwright/test';
 
       test.describe('suite', () => {
         test('should work', async ({}) => {});
@@ -70,7 +70,7 @@ it("reports a single suite structure", async () => {
        module.exports = {
          reporter: [
            [
-             require.resolve("allure-playwright/reporter"),
+             require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
                testMode: true,
@@ -118,7 +118,7 @@ it("reports a single suite structure", async () => {
 it("reports a multiple nested suites structure", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import test from 'allure-playwright';
+      import test from '@playwright/test';
 
       test.describe('parent suite 2', () => {
         test.describe('suite 2', () => {
@@ -132,7 +132,7 @@ it("reports a multiple nested suites structure", async () => {
        module.exports = {
          reporter: [
            [
-             require.resolve("allure-playwright/reporter"),
+             require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
                testMode: true,

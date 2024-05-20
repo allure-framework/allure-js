@@ -5,7 +5,7 @@ import { runPlaywrightInlineTest } from "../utils";
 it("has metadata from title", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import { test } from 'allure-playwright';
+      import { test } from '@playwright/test';
 
       test('some strange name to test @allure.id=228 @allure.label.tag=slow @allure.label.labelName=labelValue', async ({}, testInfo) => {
       });
@@ -28,7 +28,7 @@ it("has metadata from title", async () => {
 it("supports multiline name", async () => {
   const results = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import { test } from 'allure-playwright';
+      import { test } from '@playwright/test';
 
       test(
         \`some strange name to test @allure.label.l1=v1

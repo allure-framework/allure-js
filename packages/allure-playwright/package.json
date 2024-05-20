@@ -23,13 +23,13 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
-    "./reporter": {
-      "import": "./dist/reporter.mjs",
-      "require": "./dist/reporter.cjs"
-    },
     "./testplan": {
       "import": "./dist/testplan.mjs",
       "require": "./dist/testplan.cjs"
+    },
+    "./autoconfig": {
+      "import": "./dist/autoconfig.mjs",
+      "require": "./dist/autoconfig.cjs"
     }
   },
   "main": "./dist/index.cjs",

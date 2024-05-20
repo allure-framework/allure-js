@@ -4,7 +4,7 @@ import { runPlaywrightInlineTest } from "../utils";
 it("reports test status details", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import { test, expect } from 'allure-playwright';
+      import { test, expect } from '@playwright/test';
 
       test('should fail', async ({}) => {
         expect(true).toBe(false);
@@ -14,7 +14,7 @@ it("reports test status details", async () => {
        module.exports = {
          reporter: [
            [
-             require.resolve("allure-playwright/reporter"),
+             require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
                testMode: true,

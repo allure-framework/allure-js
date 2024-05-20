@@ -3,7 +3,7 @@ import { LabelName } from "allure-js-commons";
 import { runPlaywrightInlineTest } from "../utils";
 
 const testFile = `
-  import test from 'allure-playwright';
+  import test from '@playwright/test';
 
   test.beforeEach(() => {
       console.log("This is the beforeEach hook");
@@ -48,7 +48,7 @@ it("detail and suiteTitle true", async () => {
        module.exports = {
          reporter: [
            [
-             require.resolve("allure-playwright/reporter"),
+             require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
                testMode: true,
@@ -83,7 +83,7 @@ it("detail and suiteTitle false", async () => {
        module.exports = {
          reporter: [
            [
-             require.resolve("allure-playwright/reporter"),
+             require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
                testMode: true,

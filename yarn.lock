@@ -3764,7 +3764,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"allure-playwright@workspace:packages/allure-playwright":
+"allure-playwright@workspace:*, allure-playwright@workspace:packages/allure-playwright":
   version: 0.0.0-use.local
   resolution: "allure-playwright@workspace:packages/allure-playwright"
   dependencies:

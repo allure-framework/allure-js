@@ -5,7 +5,7 @@ import { runPlaywrightInlineTest } from "../utils";
 it("reports programmatically skipped results", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import test from 'allure-playwright';
+      import test from '@playwright/test';
 
       test.skip('should be skipped 1', async () => {});
 
