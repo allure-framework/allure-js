@@ -178,12 +178,7 @@ export class AllureCypressTestRuntime implements TestRuntime {
   }
 }
 
-const {
-  EVENT_TEST_BEGIN,
-  EVENT_TEST_FAIL,
-  EVENT_TEST_PASS,
-  EVENT_TEST_PENDING
-} = Mocha.Runner.constants;
+const { EVENT_TEST_BEGIN, EVENT_TEST_FAIL, EVENT_TEST_PASS, EVENT_TEST_PENDING } = Mocha.Runner.constants;
 
 const initializeAllure = () => {
   const initialized = Cypress.env("allureInitialized") as boolean;
@@ -253,7 +248,7 @@ const initializeAllure = () => {
       },
     });
   })
-  .on(EVENT_TEST_PENDING, (test: Mocha.Test, err: Error) => {
+  .on(EVENT_TEST_PENDING, (test: Mocha.Test) => {
     const testRuntime = new AllureCypressTestRuntime();
 
     const startMessage: CypressRuntimeMessage = {
