@@ -102,9 +102,7 @@ export const getGlobalTestRuntime = (): TestRuntime => {
     return testRuntime() ?? noopRuntime;
   }
 
-  // @ts-ignore
-  // eslint-disable-next-line @typescript-eslint/dot-notation
-  if ((globalThis as any)?.["_playwrightInstance"]) {
+  if ("_playwrightInstance" in globalThis) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       require("allure-playwright/autoconfig");
@@ -112,10 +110,12 @@ export const getGlobalTestRuntime = (): TestRuntime => {
       return getGlobalTestRuntimeFunction()?.() ?? noopRuntime;
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.log(err);
+      console.log("can't execute allure-playwright/autoconfig", err);
+      return noopRuntime;
     }
-    // eslint-disable-next-line no-underscore-dangle
-  } else if ((globalThis as any)?.__vitest_environment__) {
+  }
+
+  if ("__vitest_environment__" in globalThis) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       require("allure-vitest/autoconfig");
@@ -123,7 +123,8 @@ export const getGlobalTestRuntime = (): TestRuntime => {
       return getGlobalTestRuntimeFunction()?.() ?? noopRuntime;
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.log(err);
+      console.log("can't execute allure-vitest/autoconfig", err);
+      return noopRuntime;
     }
   }
 
