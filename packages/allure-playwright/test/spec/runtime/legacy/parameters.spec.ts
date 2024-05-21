@@ -1,12 +1,11 @@
 import { expect, it } from "vitest";
-import { runPlaywrightInlineTest } from "../utils";
+import { runPlaywrightInlineTest } from "../../../utils";
 
 it("sets parameters", async () => {
   const { tests } = await runPlaywrightInlineTest(
     {
       "sample.test.js": `
-       import { test, expect } from '@playwright/test';
-       import { parameter } from "allure-js-commons";
+       import { test, expect, parameter } from "allure-playwright";
 
        test('should add epic label', async ({}) => {
         await parameter("param1", "paramValue1");
