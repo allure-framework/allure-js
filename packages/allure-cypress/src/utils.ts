@@ -20,3 +20,18 @@ export const normalizeAttachmentContentEncoding = (data: unknown, encoding: Buff
 
   return encoding;
 };
+
+export const getSuitePath = (test: Mocha.Test): string[] => {
+  const path: string[] = [];
+  let currentSuite: Mocha.Suite | undefined = test.parent;
+
+  while (currentSuite) {
+    if (currentSuite.title) {
+      path.unshift(currentSuite.title);
+    }
+
+    currentSuite = currentSuite.parent;
+  }
+
+  return path;
+};

@@ -43,7 +43,7 @@ Don't forget to add the Allure Cypress commands to your `cypress/support/e2e.js`
 the installation:
 
 ```diff
-+ import "allure-cypress/commands";
++ import "allure-cypress";
 ```
 
 ## Use Allure runtime Api
@@ -51,7 +51,7 @@ the installation:
 The plugin provides custom commands which allow to add additional info inside your tests:
 
 ```javascript
-import { epic, attachment, parameter } from "allure-cypress";
+import { epic, attachment, parameter } from "allure-js-commons";
 
 it("my test", () => {
   attachment("Attachment name", "Hello world!", "text/plain");
@@ -66,7 +66,7 @@ it("my test", () => {
 ## Links usage
 
 ```js
-import { link, issue, tms } from "allure-cypress";
+import { link, issue, tms } from "allure-js-commons";
 
 it("basic test", () => {
   link("link_type", "https://allurereport.org", "Allure Report");
@@ -115,7 +115,7 @@ module.exports = {
 Then you can assign link using shorter notation:
 
 ```js
-import { link, issue, tms } from "allure-cypress";
+import { link, issue, tms } from "allure-js-commons";
 
 it("basic test", () => {
   issue("351");
@@ -132,7 +132,7 @@ it("basic test", () => {
 The integration supports Allure steps, use them in following way:
 
 ```js
-import { step } from "allure-cypress";
+import { step } from "allure-js-commons";
 
 it("my test", () => {
   step("foo", () => {

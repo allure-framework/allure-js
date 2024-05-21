@@ -1,10 +1,10 @@
 import { expect, it } from "vitest";
 import { LinkType } from "allure-js-commons";
-import { runCypressInlineTest } from "../utils";
+import { runCypressInlineTest } from "../../../utils";
 
 it("adds all the possible links", async () => {
   const { tests } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
+    ({ allureCommonsModulePath }) => `
     import { link, issue, tms } from "${allureCommonsModulePath}";
 
     it("links", () => {

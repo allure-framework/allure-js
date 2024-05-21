@@ -5,7 +5,7 @@ import { join, resolve as resolvePath } from "node:path";
 import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
 
 export const runCypressInlineTest = async (
-  test: (allureCommonsModulePath: string) => string,
+  test: (modulesPaths: { allureCommonsModulePath: string; allureCypressModulePath: string }) => string,
   externalConfigFactory?: (tempDir: string) => string,
   beforeTestCb?: (tempDir: string) => Promise<void>,
 ): Promise<AllureResults> => {
@@ -55,13 +55,14 @@ export const runCypressInlineTest = async (
   const supportContent = `
     import "allure-cypress";
   `;
-  const allureJsCommonsPath = require.resolve("allure-js-commons");
+  const allureCommonsModulePath = require.resolve("allure-js-commons");
+  const allureCypressModulePath = require.resolve("allure-cypress");
 
   await mkdir(cypressTestsDir, { recursive: true });
   await mkdir(cypressSupportDir, { recursive: true });
   await writeFile(configFilePath, configContent, "utf8");
   await writeFile(supportFilePath, supportContent, "utf8");
-  await writeFile(testFilePath, test(allureJsCommonsPath), "utf8");
+  await writeFile(testFilePath, test({ allureCommonsModulePath, allureCypressModulePath }), "utf8");
 
   if (beforeTestCb) {
     await beforeTestCb(testDir);

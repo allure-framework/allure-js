@@ -1,10 +1,10 @@
 import { expect, it } from "vitest";
-import { runCypressInlineTest } from "../utils";
+import { runCypressInlineTest } from "../../../utils";
 
 it("description", async () => {
   const { tests } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
-    import { description } from "${allureCommonsModulePath}";
+    ({ allureCypressModulePath }) => `
+    import { description } from "${allureCypressModulePath}";
 
     it("markdown", () => {
       description("foo");
@@ -18,8 +18,8 @@ it("description", async () => {
 
 it("descriptionHtml", async () => {
   const { tests } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
-    import { descriptionHtml } from "${allureCommonsModulePath}";
+    ({ allureCypressModulePath }) => `
+    import { descriptionHtml } from "${allureCypressModulePath}";
 
     it("html", () => {
       descriptionHtml("foo");
