@@ -1,5 +1,9 @@
-import { JestEnvironmentConfig } from "@jest/environment";
-import { Config } from "allure-js-commons/sdk/node";
+import { JestEnvironment, JestEnvironmentConfig } from "@jest/environment";
+import { Config, RuntimeMessage } from "allure-js-commons/sdk/node";
+
+export interface AllureJestEnvironment extends JestEnvironment {
+  handleAllureRuntimeMessage(payload: { currentTestName: string; message: RuntimeMessage }): void;
+}
 
 export interface AllureJestConfig extends JestEnvironmentConfig {
   projectConfig: JestEnvironmentConfig["projectConfig"] & {

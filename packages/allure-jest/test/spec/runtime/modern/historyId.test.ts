@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { runJestInlineTest } from "../utils";
+import { runJestInlineTest } from "../../../utils";
 
 describe("historyId", () => {
   it("historyId", async () => {

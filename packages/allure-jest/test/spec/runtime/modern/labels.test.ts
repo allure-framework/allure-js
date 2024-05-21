@@ -1,6 +1,6 @@
 import { expect, it } from "@jest/globals";
 import { LabelName } from "allure-js-commons";
-import { runJestInlineTest } from "../utils";
+import { runJestInlineTest } from "../../../utils";
 
 it("sets labels", async () => {
   const { tests } = await runJestInlineTest(`
