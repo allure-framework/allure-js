@@ -69,12 +69,6 @@
 
 [Read more](/packages/allure-decorators/README.md)
 
-### Hermione
-
-![npm](https://img.shields.io/npm/dm/hermione-allure.svg) ![npm](https://img.shields.io/npm/v/hermione-allure.svg)
-
-[Read more](/packages/hermione-allure/README.md)
-
 ### CodeceptJS
 
 ![npm](https://img.shields.io/npm/dm/allure-codeceptjs.svg) ![npm](https://img.shields.io/npm/v/allure-codeceptjs.svg)
