@@ -1,8 +1,8 @@
 import { expect, it } from "vitest";
-import { runCodeceptJSInlineTest } from "../utils";
+import { runCodeceptJsInlineTest } from "../utils";
 
 it("doesn't report skipped features and steps", async () => {
-  const { tests } = await runCodeceptJSInlineTest({
+  const { tests } = await runCodeceptJsInlineTest({
     "skipped_feature1.test.js": `
       xFeature("logout-feature");
       Scenario("logout-scenario1", async () => {});

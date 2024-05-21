@@ -1,9 +1,9 @@
 import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons/sdk/node";
-import { runCodeceptJSInlineTest } from "../utils";
+import { runCodeceptJsInlineTest } from "../utils";
 
 it("handles hooks", async () => {
-  const { tests } = await runCodeceptJSInlineTest({
+  const { tests } = await runCodeceptJsInlineTest({
     "sample.test.js": `
       Before(() => {});
 

@@ -1,9 +1,9 @@
 import { expect, it } from "vitest";
 import { LabelName } from "allure-js-commons/sdk/node";
-import { runCodeceptJSInlineTest } from "../utils";
+import { runCodeceptJsInlineTest } from "../utils";
 
 it("handles title metadata", async () => {
-  const { tests } = await runCodeceptJSInlineTest({
+  const { tests } = await runCodeceptJsInlineTest({
     "sample.test.js": `
         Feature("sample feature");
         Scenario("some strange name to test @allure.id=228 @allure.label.tag=slow @allure.label.labelName=labelValue", async () => {});

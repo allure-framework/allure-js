@@ -1,8 +1,8 @@
 import { expect, it } from "vitest";
-import { runCodeceptJSInlineTest } from "../utils";
+import { runCodeceptJsInlineTest } from "../../../utils";
 
 it("handles attachments in tests", async () => {
-  const { tests, attachments } = await runCodeceptJSInlineTest({
+  const { tests, attachments } = await runCodeceptJsInlineTest({
     "login.test.js": `
       const { attachment } = require("allure-js-commons");
 
@@ -28,7 +28,7 @@ it("handles attachments in tests", async () => {
 });
 
 it("handles attachments in runtime steps", async () => {
-  const { tests, attachments } = await runCodeceptJSInlineTest({
+  const { tests, attachments } = await runCodeceptJsInlineTest({
     "login.test.js": `
       const { step, attachment } = require("allure-js-commons");
 

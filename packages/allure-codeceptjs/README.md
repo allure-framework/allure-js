@@ -15,12 +15,14 @@
 ## Installation
 
 ```bash
-npm i -D allure-codeceptjs
+npm i -D allure-js-commons allure-codeceptjs
 ```
 
 ## Usage
+
 Add the allure plugin inside you plugins section of your CodeceptJS config file.
 For instance the config file is `codecept.config.(js|ts)` then:
+
 ```
   plugins: {
   ...
@@ -33,28 +35,27 @@ For instance the config file is `codecept.config.(js|ts)` then:
 };
 ```
 
-## Metadata usage
+## Allure Runtime API usage
 
 Right now you can access allure API through codeceptjs container.
 
 ```js
+import { label, tag, tags, issue, owner, layer, allureId, description, story, feature, epic, attachment } from "allure-js-commons";
+
 Feature("login-feature");
 Scenario("login-scenario1", async () => {
-  const allure = codeceptjs.container.plugins("allure");
-
-  allure.label("name", "value");
-  allure.tag("tag1");
-  allure.tags("tag2", "tag3");
-  allure.issue("issueName", "google.com");
-  allure.owner("eroshenkoam");
-  allure.layer("UI");
-  allure.id("228");
-  allure.description("aga");
-  allure.story("aga");
-  allure.feature("aga");
-  allure.epic("aga");
-  allure.epic("severity");
-  allure.addAttachment("data.txt", "some data", "text/plain");
+  await label("name", "value");
+  await tag("tag1");
+  await tags("tag2", "tag3");
+  await issue("issueName", "google.com");
+  await owner("eroshenkoam");
+  await layer("UI");
+  await allureId("228");
+  await description("aga");
+  await story("aga");
+  await feature("aga");
+  await epic("aga");
+  await attachment("data.txt", "some data", "text/plain");
 });
 ```
 
