@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { runJasmineInlineTest } from "../utils";
+import { runJasmineInlineTest } from "../../../utils";
 
 it("handles json attachment", async () => {
   const { tests, attachments } = await runJasmineInlineTest({

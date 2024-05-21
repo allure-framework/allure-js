@@ -1,4 +1,5 @@
 import { cwd } from "node:process";
+import * as allure from "allure-js-commons";
 import {
   AllureNodeReporterRuntime,
   ContentType,
@@ -243,6 +244,10 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     const specPath = this.getCurrentSpecPath().concat(spec.description).join(" > ");
 
     return `${specFilename}#${specPath}`;
+  }
+
+  getAllureInterface() {
+    return allure;
   }
 
   handleAllureRuntimeMessages(message: RuntimeMessage) {

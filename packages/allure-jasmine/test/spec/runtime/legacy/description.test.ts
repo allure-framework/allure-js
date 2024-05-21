@@ -1,15 +1,18 @@
+/* eslint  @typescript-eslint/no-require-imports: off */
+import { resolve } from "node:path";
 import { expect, it } from "vitest";
-import { runJasmineInlineTest } from "../utils";
+import { runJasmineInlineTest } from "../../../utils";
 
 it("sets description", async () => {
   const { tests } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `
-      const { description } = require("allure-js-commons");
+      const { allure } = require("../helpers/allure");
 
       it("description", async () => {
-        await description("foo");
+        await allure.description("foo");
       })
     `,
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
@@ -19,12 +22,13 @@ it("sets description", async () => {
 it("sets html description", async () => {
   const { tests } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `
-      const { descriptionHtml } = require("allure-js-commons");
+      const { allure } = require("../helpers/allure");
 
       it("descriptionHtml", async () => {
-        await descriptionHtml("foo");
+        await allure.descriptionHtml("foo");
       })
     `,
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);

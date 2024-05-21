@@ -1,6 +1,8 @@
+/* eslint  @typescript-eslint/no-require-imports: off */
+import { resolve } from "node:path";
 import { expect, it } from "vitest";
 import { Status } from "allure-js-commons";
-import { runJasmineInlineTest } from "../utils";
+import { runJasmineInlineTest } from "../../../utils";
 
 it("single step", async () => {
   const { tests } = await runJasmineInlineTest({
@@ -13,6 +15,7 @@ it("single step", async () => {
       });
     });
   `,
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
@@ -40,6 +43,7 @@ it("multiple steps", async () => {
       });
     });
   `,
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
@@ -67,6 +71,7 @@ it("nested steps", async () => {
       });
     });
   `,
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
@@ -90,6 +95,7 @@ it("step with attachments", async () => {
       })
     });
   `,
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
@@ -120,6 +126,7 @@ it("step with assertion error", async () => {
       });
     });
   `,
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
@@ -165,6 +172,7 @@ it("step with unexpected error", async () => {
       });
     });
   `,
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
@@ -208,6 +216,7 @@ it("step runtime api", async () => {
       });
     });
   `,
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);

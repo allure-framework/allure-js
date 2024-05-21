@@ -1,5 +1,7 @@
+/* eslint  @typescript-eslint/no-require-imports: off */
+import { resolve } from "node:path";
 import { expect, it } from "vitest";
-import { runJasmineInlineTest } from "../utils";
+import { runJasmineInlineTest } from "../../../utils";
 
 it("sets parameters", async () => {
   const { tests } = await runJasmineInlineTest({
@@ -13,6 +15,7 @@ it("sets parameters", async () => {
         await parameter("param4", "paramValue4", {mode:"hidden"});
       })
     `,
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);

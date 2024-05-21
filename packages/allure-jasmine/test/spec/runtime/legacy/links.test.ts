@@ -1,6 +1,8 @@
+/* eslint  @typescript-eslint/no-require-imports: off */
+import { resolve } from "node:path";
 import { expect, it } from "vitest";
 import { LinkType } from "allure-js-commons";
-import { runJasmineInlineTest } from "../utils";
+import { runJasmineInlineTest } from "../../../utils";
 
 it("sets links", async () => {
   const { tests } = await runJasmineInlineTest({
@@ -16,6 +18,7 @@ it("sets links", async () => {
         await links(...[{ url:"https://allurereport.org/1" }, { url:"https://allurereport.org/2" }]);
       })
     `,
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
