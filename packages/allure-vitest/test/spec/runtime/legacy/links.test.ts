@@ -1,16 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { LinkType } from "allure-js-commons";
-import { runVitestInlineTest } from "../utils.js";
+import { runVitestInlineTest } from "../../../utils.js";
 
 describe("links", () => {
   it("link", async () => {
     const { tests } = await runVitestInlineTest(
       `
       import { test } from "vitest";
-      import { link } from "allure-js-commons";
 
       test("link", async (t) => {
-        await link("https://example.org", "foo", "bar");
+        await allure.link("https://example.org", "foo", "bar");
       });
       `,
     );
@@ -27,11 +26,10 @@ describe("links", () => {
     const { tests } = await runVitestInlineTest(
       `
       import { test } from "vitest";
-      import { issue } from "allure-js-commons";
 
       test("issue", async () => {
-        await issue("https://example.org/issue/1", "foo");
-        await issue("2", "bar");
+        await allure.issue("https://example.org/issue/1", "foo");
+        await allure.issue("2", "bar");
       });
       `,
     );
@@ -53,11 +51,10 @@ describe("links", () => {
     const { tests } = await runVitestInlineTest(
       `
       import { test } from "vitest";
-      import { tms } from "allure-js-commons";
 
       test("tms", async () => {
-        await tms("https://example.org/tms/1", "foo");
-        await tms("2", "bar");
+        await allure.tms("https://example.org/tms/1", "foo");
+        await allure.tms("2", "bar");
       });
       `,
     );

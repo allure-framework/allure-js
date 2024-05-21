@@ -1,14 +1,13 @@
 import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
-import { runVitestInlineTest } from "../utils.js";
+import { runVitestInlineTest } from "../../../utils.js";
 
 it("handles single lambda step", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
-    import { step } from "allure-js-commons";
 
     test("steps", async () => {
-      await step("step", () => {});
+      await allure.step("step", () => {});
     });
   `);
 
@@ -24,11 +23,10 @@ it("handles single lambda step", async () => {
 it("handles single lambda step with attachment", async () => {
   const { tests, attachments } = await runVitestInlineTest(`
     import { test } from "vitest";
-    import { step, attachment } from "allure-js-commons";
 
     test("steps", async () => {
-      await step("step", async () => {
-        await attachment("foo.txt", Buffer.from("bar"), "text/plain");
+      await allure.step("step", async () => {
+        await allure.attachment("foo.txt", Buffer.from("bar"), "text/plain");
       });
     });
   `);
@@ -47,12 +45,11 @@ it("handles single lambda step with attachment", async () => {
 it("handles nested lambda steps", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
-    import { step } from "allure-js-commons";
 
     test("steps", async () => {
-      await step("step 1", async () => {
-        await step("step 2", async () => {
-          await step("step 3", () => {
+      await allure.step("step 1", async () => {
+        await allure.step("step 2", async () => {
+          await allure.step("step 3", () => {
           });
         });
       });
@@ -83,10 +80,9 @@ it("handles nested lambda steps", async () => {
 it("handles step renaming", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
-    import { step } from "allure-js-commons";
 
     test("steps", async () => {
-      await step("foo", async (ctx) => {
+      await allure.step("foo", async (ctx) => {
         await ctx.displayName("bar");
       });
     });
@@ -100,10 +96,9 @@ it("handles step renaming", async () => {
 it("supports step parameters", async () => {
   const { tests } = await runVitestInlineTest(`
     import { test } from "vitest";
-    import { step } from "allure-js-commons";
 
     test("steps", async () => {
-      await step("foo", async (ctx) => {
+      await allure.step("foo", async (ctx) => {
         await ctx.parameter("p1", "v1");
         await ctx.parameter("p2", "v2", "default");
         await ctx.parameter("p3", "v3", "masked");

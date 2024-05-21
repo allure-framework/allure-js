@@ -14,14 +14,10 @@
 
 ## Installation
 
-```bash
-npm i -D vitest allure-vitest
-```
-
-or via yarn:
+Use your favorite node package manager to install the package:
 
 ```bash
-yarn add -D vitest allure-vitest
+npm i -D allure-vitest
 ```
 
 ## Configuration
@@ -34,7 +30,7 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    // add setup file to be able to use Allure API via `this.allure` in your tests and to get test plan support
+    // add setup file to be able to use Allure API via `global.allure` in your tests and to get test plan support
     setupFiles: ["allure-vitest/setup"],
     reporters: [
       // do not forget to keep the "default" if you want to see something in the console
@@ -66,28 +62,22 @@ Some reporter settings can set by following options:
 | resultsDir | Path to results folder                                | `./allure-results` |
 | links      | Links templates to make runtime methods calls simpler | `undefined`        |
 
-## API
+## Runtime API
 
-If you use setup file shipped by the integration, use `this.allure` to get access
-to Allure Runtime API:
-
-```js
-import { test } from "vitest";
-
-test("sample test", async () => {
-  await allure.label("foo", "bar");
-});
-```
-
-Additionally, you can call Allure Runtime API methods directly passing the
-context argument to the method:
+Use functions provided by `allure-js-commons` package to call Allure Runtime API methods:
 
 ```js
 import { test } from "vitest";
-import * as allure from "allure-vitest";
+import * as allure from "allure-js-commons";
 
 test("sample test", async (context) => {
   await allure.label(context, "foo", "bar");
+  await allure.attachment("Attachment name", "Attachment content", "text/plain");
+  await allure.step("my step", async () => {
+    await allure.step("another step", async () => {
+      await allure.label("foo", "bar");
+    });
+  });
 });
 ```
 
