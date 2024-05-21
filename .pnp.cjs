@@ -4929,7 +4929,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-node", "virtual:3b04c8c38dde7165df844f9cd74e94cc47d78164564600cf56ba5f8c6011d25ef0d3afc13d610f3da970f6807c830914053ff96a43c86ba17f3ec650dfd687d3#npm:11.1.0"],\
           ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
           ["glob", "npm:10.3.10"],\
-          ["npm-run-all2", "npm:5.0.2"],\
+          ["npm-run-all2", "npm:6.2.0"],\
           ["rimraf", "npm:5.0.5"],\
           ["rollup", "npm:4.13.0"],\
           ["ts-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:10.9.2"],\
@@ -5077,7 +5077,7 @@ const RAW_RUNTIME_STATE =
           ["expect", "npm:29.7.0"],\
           ["glob", "npm:10.3.10"],\
           ["md5", "npm:2.3.0"],\
-          ["npm-run-all2", "npm:5.0.2"],\
+          ["npm-run-all2", "npm:6.2.0"],\
           ["properties", "npm:1.2.1"],\
           ["rimraf", "npm:5.0.5"],\
           ["source-map-support", "npm:0.5.21"],\
@@ -13064,24 +13064,24 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["npm-run-all2", [\
-      ["npm:5.0.2", {\
-        "packageLocation": "./.yarn/cache/npm-run-all2-npm-5.0.2-26599fa7da-fbebbc7837.zip/node_modules/npm-run-all2/",\
-        "packageDependencies": [\
-          ["npm-run-all2", "npm:5.0.2"],\
-          ["ansi-styles", "npm:5.2.0"],\
-          ["cross-spawn", "npm:7.0.3"],\
-          ["memorystream", "npm:0.3.1"],\
-          ["minimatch", "npm:3.1.2"],\
-          ["pidtree", "npm:0.5.0"],\
-          ["read-pkg", "npm:5.2.0"],\
-          ["shell-quote", "npm:1.8.1"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:6.1.2", {\
         "packageLocation": "./.yarn/cache/npm-run-all2-npm-6.1.2-5145e77577-b031f409a8.zip/node_modules/npm-run-all2/",\
         "packageDependencies": [\
           ["npm-run-all2", "npm:6.1.2"],\
+          ["ansi-styles", "npm:6.2.1"],\
+          ["cross-spawn", "npm:7.0.3"],\
+          ["memorystream", "npm:0.3.1"],\
+          ["minimatch", "npm:9.0.3"],\
+          ["pidtree", "npm:0.6.0"],\
+          ["read-package-json-fast", "npm:3.0.2"],\
+          ["shell-quote", "npm:1.8.1"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:6.2.0", {\
+        "packageLocation": "./.yarn/cache/npm-run-all2-npm-6.2.0-f9374fb4e6-917937b628.zip/node_modules/npm-run-all2/",\
+        "packageDependencies": [\
+          ["npm-run-all2", "npm:6.2.0"],\
           ["ansi-styles", "npm:6.2.1"],\
           ["cross-spawn", "npm:7.0.3"],\
           ["memorystream", "npm:0.3.1"],\
@@ -13742,13 +13742,6 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["pidtree", [\
-      ["npm:0.5.0", {\
-        "packageLocation": "./.yarn/cache/pidtree-npm-0.5.0-ed08283e89-72a5d75c34.zip/node_modules/pidtree/",\
-        "packageDependencies": [\
-          ["pidtree", "npm:0.5.0"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:0.6.0", {\
         "packageLocation": "./.yarn/cache/pidtree-npm-0.6.0-3d92e16117-ea67fb3159.zip/node_modules/pidtree/",\
         "packageDependencies": [\

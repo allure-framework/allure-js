@@ -3577,7 +3577,7 @@ __metadata:
     eslint-plugin-node: "npm:^11.1.0"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     glob: "npm:^10.3.5"
-    npm-run-all2: "npm:^5.0.0"
+    npm-run-all2: "npm:^6.0.0"
     rimraf: "npm:^5.0.1"
     rollup: "npm:^4.13.0"
     ts-node: "npm:^10.9.2"
@@ -3692,7 +3692,7 @@ __metadata:
     expect: "npm:^29.5.0"
     glob: "npm:^10.3.10"
     md5: "npm:^2.3.0"
-    npm-run-all2: "npm:^5.0.0"
+    npm-run-all2: "npm:^6.0.0"
     properties: "npm:^1.2.1"
     rimraf: "npm:^5.0.1"
     source-map-support: "npm:^0.5.21"
@@ -10728,22 +10728,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-run-all2@npm:^5.0.0":
-  version: 5.0.2
-  resolution: "npm-run-all2@npm:5.0.2"
+"npm-run-all2@npm:^6.0.0":
+  version: 6.2.0
+  resolution: "npm-run-all2@npm:6.2.0"
   dependencies:
-    ansi-styles: "npm:^5.0.0"
+    ansi-styles: "npm:^6.2.1"
     cross-spawn: "npm:^7.0.3"
     memorystream: "npm:^0.3.1"
-    minimatch: "npm:^3.0.4"
-    pidtree: "npm:^0.5.0"
-    read-pkg: "npm:^5.2.0"
-    shell-quote: "npm:^1.6.1"
+    minimatch: "npm:^9.0.0"
+    pidtree: "npm:^0.6.0"
+    read-package-json-fast: "npm:^3.0.2"
+    shell-quote: "npm:^1.7.3"
   bin:
     npm-run-all: bin/npm-run-all/index.js
+    npm-run-all2: bin/npm-run-all/index.js
     run-p: bin/run-p/index.js
     run-s: bin/run-s/index.js
-  checksum: 10/fbebbc7837fa6a67d4fb158566018c8d26dbf55b5035969e45722e7a2b82f373b56acf9619013ba182aa85725d7f7bfa8649961b6c3ca4cba17af9afe54b33bd
+  checksum: 10/917937b6280a4f7af168b784fba10f0c441d58d86ab5595c88e4aa4b9f69f7eaa0af62ddc8a12fed705debcfc5f77bf80bad48936a3384f3a0b527111b7ff4ec
   languageName: node
   linkType: hard
 
@@ -11353,15 +11354,6 @@ __metadata:
   bin:
     pidtree: bin/pidtree.js
   checksum: 10/ea67fb3159e170fd069020e0108ba7712df9f0fd13c8db9b2286762856ddce414fb33932e08df4bfe36e91fe860b51852aee49a6f56eb4714b69634343add5df
-  languageName: node
-  linkType: hard
-
-"pidtree@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "pidtree@npm:0.5.0"
-  bin:
-    pidtree: bin/pidtree.js
-  checksum: 10/72a5d75c345d7b1ed1f30ff50342d601040334be50f9cad1d6d7457f1ad7bbaacccb037667f4088ca2c257a574eeb00f03664bbd05c5e7d02e3feb1bc77ddbd3
   languageName: node
   linkType: hard
 
@@ -12917,7 +12909,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shell-quote@npm:^1.6.1, shell-quote@npm:^1.7.3":
+"shell-quote@npm:^1.7.3":
   version: 1.8.1
   resolution: "shell-quote@npm:1.8.1"
   checksum: 10/af19ab5a1ec30cb4b2f91fd6df49a7442d5c4825a2e269b3712eded10eedd7f9efeaab96d57829880733fc55bcdd8e9b1d8589b4befb06667c731d08145e274d
