@@ -4,7 +4,7 @@ module.exports = {
     node: true,
     es6: true,
   },
-  plugins: ["node"],
+  plugins: ["n"],
   extends: [
     "../../.eslintrc.cjs",
   ],
@@ -14,6 +14,6 @@ module.exports = {
     warnOnUnsupportedTypeScriptVersion: false,
   },
   rules: {
-    "node/file-extension-in-import": ["error", "always"],
+    "n/file-extension-in-import": ["error", "always"],
   }
 };
