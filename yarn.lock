@@ -10511,7 +10511,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"newman-reporter-allure@workspace:packages/newman-reporter-allure":
+"newman-reporter-allure@npm:*, newman-reporter-allure@workspace:packages/newman-reporter-allure":
   version: 0.0.0-use.local
   resolution: "newman-reporter-allure@workspace:packages/newman-reporter-allure"
   dependencies:
