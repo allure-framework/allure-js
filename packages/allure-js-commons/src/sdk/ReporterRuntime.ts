@@ -650,7 +650,10 @@ export class ReporterRuntime {
 
   buildAttachmentFileName = (options: AttachmentOptions): string => {
     const attachmentUuid = this.crypto.uuid();
-    const attachmentExtension = options.fileExtension || typeToExtension({ contentType: options.contentType });
+    const attachmentExtension = typeToExtension({
+      fileExtension: options.fileExtension,
+      contentType: options.contentType,
+    });
 
     return `${attachmentUuid}-attachment${attachmentExtension}`;
   };

@@ -17,12 +17,12 @@ export class AllureInMemoryAllureWriter implements Writer, AllureResults {
     this.tests.push(result);
   }
 
-  public writeAttachment(name: string, content: Buffer | string): void {
-    this.attachments[name] = content;
+  public writeAttachment(distFileName: string, content: Buffer | string): void {
+    this.attachments[distFileName] = content;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public writeAttachmentFromPath(from: PathLike, toFileName: string): void {
+  public writeAttachmentFromPath(from: PathLike, distFileName: string): void {
     throw new Error(
       "Can't write attachment from path because generic writer doesn't implement this logic! Use AllureInMemoryWriter for node.js.",
     );

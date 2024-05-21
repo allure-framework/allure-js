@@ -5,7 +5,7 @@ export interface Writer {
 
   writeGroup(result: TestResultContainer): void;
 
-  writeAttachment(name: string, content: Buffer | string, encoding?: BufferEncoding): void;
+  writeAttachment(distFileName: string, content: Buffer | string, encoding?: BufferEncoding): void;
 
   writeAttachmentFromPath(from: string, distFileName: string): void;
 
