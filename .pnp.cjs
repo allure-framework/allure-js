@@ -4893,7 +4893,7 @@ const RAW_RUNTIME_STATE =
           ["npm-run-all2", "npm:6.1.2"],\
           ["rimraf", "npm:5.0.5"],\
           ["rollup", "npm:4.14.1"],\
-          ["sinon", "npm:17.0.1"],\
+          ["sinon", "npm:18.0.0"],\
           ["ts-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:10.9.2"],\
           ["tslib", "npm:2.6.2"],\
           ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\
@@ -5018,7 +5018,7 @@ const RAW_RUNTIME_STATE =
           ["npm-run-all2", "npm:6.1.2"],\
           ["rimraf", "npm:5.0.5"],\
           ["rollup", "npm:4.17.1"],\
-          ["sinon", "npm:17.0.1"],\
+          ["sinon", "npm:18.0.0"],\
           ["source-map-support", "npm:0.5.21"],\
           ["strip-ansi", "npm:5.2.0"],\
           ["ts-jest", "virtual:f22a73b9c1f4f0e2e1c95f149ccb41c96491085e4b2ecd3061e554432306c4df6c2976f3c6ce3a6d62abead3ccc6cf04e88b4aebf1de7356583819351e2346e2#npm:29.1.2"],\
@@ -5125,7 +5125,7 @@ const RAW_RUNTIME_STATE =
           ["npm-run-all2", "npm:6.1.2"],\
           ["rimraf", "npm:5.0.5"],\
           ["rollup", "npm:4.14.1"],\
-          ["sinon", "npm:17.0.1"],\
+          ["sinon", "npm:18.0.0"],\
           ["source-map-support", "npm:0.5.21"],\
           ["ts-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:10.9.2"],\
           ["tslib", "npm:2.6.2"],\
@@ -12892,10 +12892,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["nise", [\
-      ["npm:5.1.9", {\
-        "packageLocation": "./.yarn/cache/nise-npm-5.1.9-6af6a9c69b-971caf7638.zip/node_modules/nise/",\
+      ["npm:6.0.0", {\
+        "packageLocation": "./.yarn/cache/nise-npm-6.0.0-a555b2bffd-a11be5fd21.zip/node_modules/nise/",\
         "packageDependencies": [\
-          ["nise", "npm:5.1.9"],\
+          ["nise", "npm:6.0.0"],\
           ["@sinonjs/commons", "npm:3.0.1"],\
           ["@sinonjs/fake-timers", "npm:11.2.2"],\
           ["@sinonjs/text-encoding", "npm:0.7.2"],\
@@ -15223,15 +15223,15 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["sinon", [\
-      ["npm:17.0.1", {\
-        "packageLocation": "./.yarn/cache/sinon-npm-17.0.1-997c13081d-b34f1a97da.zip/node_modules/sinon/",\
+      ["npm:18.0.0", {\
+        "packageLocation": "./.yarn/cache/sinon-npm-18.0.0-a220c4846c-4c491798e2.zip/node_modules/sinon/",\
         "packageDependencies": [\
-          ["sinon", "npm:17.0.1"],\
+          ["sinon", "npm:18.0.0"],\
           ["@sinonjs/commons", "npm:3.0.1"],\
           ["@sinonjs/fake-timers", "npm:11.2.2"],\
           ["@sinonjs/samsam", "npm:8.0.0"],\
           ["diff", "npm:5.2.0"],\
-          ["nise", "npm:5.1.9"],\
+          ["nise", "npm:6.0.0"],\
           ["supports-color", "npm:7.2.0"]\
         ],\
         "linkType": "HARD"\

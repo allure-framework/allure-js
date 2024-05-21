@@ -76,7 +76,7 @@
     "npm-run-all2": "^6.1.2",
     "rimraf": "^5.0.1",
     "rollup": "^4.14.1",
-    "sinon": "^17.0.0",
+    "sinon": "^18.0.0",
     "ts-node": "^10.9.1",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2",
