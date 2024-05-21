@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { AllureNodeReporterRuntime } from "../../../src/sdk/node";
-import { mockWriter } from "../../utils/writer";
+import { mockWriter } from "../../utils/writer.js";
 
 describe("AllureNodeReporterRuntime", () => {
   describe("writeAttachmentFromPath", () => {
-    it("should use extension from fileExtension option if specified", async () => {
+    it("should use extension from fileExtension option if specified", () => {
       const writer = mockWriter();
       const runtime = new AllureNodeReporterRuntime({ writer });
 
@@ -25,7 +25,7 @@ describe("AllureNodeReporterRuntime", () => {
       expect(writeAttachmentFromPathCall[1]).to.be.eq(attachment.source);
     });
 
-    it("should use extension from original file if fileExtension option is not specified", async () => {
+    it("should use extension from original file if fileExtension option is not specified", () => {
       const writer = mockWriter();
       const runtime = new AllureNodeReporterRuntime({ writer });
 
@@ -45,7 +45,7 @@ describe("AllureNodeReporterRuntime", () => {
       expect(writeAttachmentFromPathCall[1]).to.be.eq(attachment.source);
     });
 
-    it("should detect extension by content type if no option or path specified", async () => {
+    it("should detect extension by content type if no option or path specified", () => {
       const writer = mockWriter();
       const runtime = new AllureNodeReporterRuntime({ writer });
 
