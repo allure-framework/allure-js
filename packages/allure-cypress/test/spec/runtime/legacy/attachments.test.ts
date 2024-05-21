@@ -1,12 +1,12 @@
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { expect, test } from "vitest";
-import { runCypressInlineTest } from "../utils.js";
+import { runCypressInlineTest } from "../../../utils.js";
 
 test("text", async () => {
   const { tests, attachments } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
-    import { attachment } from "${allureCommonsModulePath}";
+    ({ allureCypressModulePath }) => `
+    import { attachment } from "${allureCypressModulePath}";
 
     it("text attachment", () => {
       attachment("foo.txt", "bar", "text/plain");
@@ -25,8 +25,8 @@ test("text", async () => {
 
 test("json", async () => {
   const { tests, attachments } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
-    import { attachment } from "${allureCommonsModulePath}";
+    ({ allureCypressModulePath }) => `
+    import { attachment } from "${allureCypressModulePath}";
 
     it("json attachment", () => {
       attachment("foo", JSON.stringify({ foo: "bar" }), "application/json");
@@ -47,7 +47,7 @@ test("json", async () => {
 
 test("cypress read file", async () => {
   const { tests, attachments } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
+    ({ allureCommonsModulePath }) => `
       import { attachment } from "${allureCommonsModulePath}";
 
       it("json attachment", () => {

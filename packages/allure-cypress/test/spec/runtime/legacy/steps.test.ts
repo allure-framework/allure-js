@@ -1,11 +1,11 @@
 import { expect, it } from "vitest";
 import { ContentType, Status } from "allure-js-commons";
-import { runCypressInlineTest } from "../utils";
+import { runCypressInlineTest } from "../../../utils";
 
 it("single step", async () => {
   const { tests } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
-    import { label, step } from "${allureCommonsModulePath}";
+    ({ allureCypressModulePath }) => `
+    import { label, step } from "${allureCypressModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -23,8 +23,8 @@ it("single step", async () => {
 
 it("multiple steps", async () => {
   const { tests } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
-    import { label, step } from "${allureCommonsModulePath}";
+    ({ allureCypressModulePath }) => `
+    import { label, step } from "${allureCypressModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -54,8 +54,8 @@ it("multiple steps", async () => {
 
 it("nested steps", async () => {
   const { tests } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
-    import { label, step } from "${allureCommonsModulePath}";
+    ({ allureCypressModulePath }) => `
+    import { label, step } from "${allureCypressModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -81,8 +81,8 @@ it("nested steps", async () => {
 
 it("step with attachments", async () => {
   const { tests, attachments } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
-    import { attachment, step } from "${allureCommonsModulePath}";
+    ({ allureCypressModulePath }) => `
+    import { attachment, step } from "${allureCypressModulePath}";
 
     it("text attachment", () => {
       step("foo", () => {
@@ -105,8 +105,8 @@ it("step with attachments", async () => {
 
 it("step with screenshot", async () => {
   const { tests, attachments } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
-    import { step } from "${allureCommonsModulePath}";
+    ({ allureCypressModulePath }) => `
+    import { step } from "${allureCypressModulePath}";
 
     it("manual", () => {
       step("foo", () => {
@@ -131,8 +131,8 @@ it("step with screenshot", async () => {
 
 it("step with cypress assertion error", async () => {
   const { tests } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
-    import { step } from "${allureCommonsModulePath}";
+    ({ allureCypressModulePath }) => `
+    import { step } from "${allureCypressModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -150,8 +150,8 @@ it("step with cypress assertion error", async () => {
 
 it("step with unexpected error", async () => {
   const { tests } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
-    import { step } from "${allureCommonsModulePath}";
+    ({ allureCypressModulePath }) => `
+    import { step } from "${allureCypressModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -169,11 +169,11 @@ it("step with unexpected error", async () => {
 
 it("step runtime api", async () => {
   const { tests } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
-    import { step } from "${allureCommonsModulePath}";
+    ({ allureCypressModulePath }) => `
+    import { step } from "${allureCypressModulePath}";
 
     it("step", () => {
-      step("${allureCommonsModulePath}", (ctx) => {
+      step("${allureCypressModulePath}", (ctx) => {
         ctx.displayName("bar");
         ctx.parameter("p1", "v1");
         ctx.parameter("p2", "v2", "default");
@@ -201,12 +201,12 @@ it("step runtime api", async () => {
 
 it("promise-step", async () => {
   const { tests } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
-    import { step, label } from "${allureCommonsModulePath}";
+    ({ allureCypressModulePath }) => `
+    import { step, label } from "${allureCypressModulePath}";
 
     it("step", () => {
       let value = "unset";
-      step("${allureCommonsModulePath}", () => {
+      step("${allureCypressModulePath}", () => {
         return new Cypress.Promise(
           (r) => setTimeout(() => {
             value = "set";

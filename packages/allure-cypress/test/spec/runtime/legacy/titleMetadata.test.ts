@@ -1,11 +1,11 @@
 import { expect, it } from "vitest";
 import { LabelName } from "allure-js-commons";
-import { runCypressInlineTest } from "../utils";
+import { runCypressInlineTest } from "../../../utils";
 
 it("title metadata", async () => {
   const { tests } = await runCypressInlineTest(
-    (allureCommonsModulePath) => `
-    import { label } from "${allureCommonsModulePath}";
+    ({ allureCypressModulePath }) => `
+    import { label } from "${allureCypressModulePath}";
 
     it("foo @allure.id=1 @allure.label.foo=2", () => {
       label("bar", "3");
