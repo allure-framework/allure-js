@@ -1,4 +1,5 @@
 import { cwd } from "node:process";
+import * as allure from "allure-js-commons";
 import {
   AllureNodeReporterRuntime,
   ContentType,
@@ -20,7 +21,6 @@ import {
   isPromise,
   setGlobalTestRuntime,
 } from "allure-js-commons/sdk/node";
-import * as allure from "allure-js-commons";
 import { AllureJasmineConfig, JasmineBeforeAfterFn } from "./model.js";
 import { findAnyError, findMessageAboutThrow } from "./utils.js";
 

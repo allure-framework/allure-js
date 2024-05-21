@@ -1,6 +1,7 @@
+/* eslint  @typescript-eslint/no-require-imports: off */
+import { resolve } from "node:path";
 import { expect, it } from "vitest";
 import { runJasmineInlineTest } from "../../../utils";
-import { resolve } from "node:path";
 
 it("sets parameters", async () => {
   const { tests } = await runJasmineInlineTest({

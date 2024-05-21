@@ -1,16 +1,10 @@
+/* eslint  @typescript-eslint/no-require-imports: off */
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { mkdir, rm, writeFile, readFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { parse } from "properties";
-import {
-  AllureResults,
-  EnvironmentInfo,
-  LinkType,
-  Status,
-  TestResult,
-  TestResultContainer,
-} from "allure-js-commons/sdk/node";
+import { AllureResults, EnvironmentInfo, TestResult, TestResultContainer } from "allure-js-commons/sdk/node";
 
 export type TestResultsByFullName = Record<string, TestResult>;
 
@@ -37,7 +31,7 @@ export const runJasmineInlineTest = async (files: Record<string, string>): Promi
     const filePath = join(testDir, file);
 
     await mkdir(dirname(filePath), { recursive: true });
-    await writeFile(filePath, testFiles[file as keyof typeof testFiles], "utf8");
+    await writeFile(filePath, testFiles[file as keyof typeof testFiles] as string, "utf8");
   }
 
   const modulePath = require.resolve("jasmine/bin/jasmine");

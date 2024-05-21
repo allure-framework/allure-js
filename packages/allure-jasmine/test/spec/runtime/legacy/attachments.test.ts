@@ -1,6 +1,6 @@
-import { expect, it } from "vitest";
-import { Status, LinkType } from "allure-js-commons/sdk/node";
+/* eslint  @typescript-eslint/no-require-imports: off */
 import { resolve } from "node:path";
+import { expect, it } from "vitest";
 import { runJasmineInlineTest } from "../../../utils";
 
 it("handles json attachment", async () => {

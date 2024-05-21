@@ -1,9 +1,10 @@
+/* eslint  @typescript-eslint/no-require-imports: off */
 import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons/sdk/node";
 import { runJasmineInlineTest } from "../utils";
 
 it("handles jasmine tests", async () => {
-  const { tests, groups } = await runJasmineInlineTest({
+  const { tests } = await runJasmineInlineTest({
     "spec/test/sample1.spec.js": `
       it("should pass", () => {
         expect(true).toBe(true);
