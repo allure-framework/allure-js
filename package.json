@@ -7,14 +7,14 @@
   ],
   "scripts": {
     "build": "yarn run clean && yarn run compile",
-    "clean": "yarn workspaces foreach -Avvpt run clean",
-    "compile": "yarn workspaces foreach -Avvpt run compile",
+    "clean": "yarn workspaces foreach -Avvt run clean",
+    "compile": "yarn workspaces foreach -Avvt run compile",
     "lint": "yarn workspaces foreach -Avvpt run lint",
     "lint:fix": "yarn workspaces foreach -Avvpt run lint:fix",
     "prepare": "husky install",
     "prettier:check": "prettier --check './packages/*/{src,test,features}/**/*.{mjs,cjs,js,ts}' 'package.json' 'packages/**/package.json' .prettierrc.js",
     "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{mjs,cjs,js,ts}' 'package.json' 'packages/**/package.json' .prettierrc.js",
-    "test": "yarn workspaces foreach -Avvpt run test"
+    "test": "yarn workspaces foreach -Avvt run test"
   },
   "lint-staged": {
     "packages/*/{src,test,features}/**/*.{mjs,cjs,js,ts,tsx}": [
