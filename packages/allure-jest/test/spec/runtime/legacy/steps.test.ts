@@ -1,15 +1,13 @@
 import { expect, it } from "@jest/globals";
 import { Status } from "allure-js-commons";
-import { runJestInlineTest } from "../utils";
+import { runJestInlineTest } from "../../../utils";
 
 it("single step", async () => {
   const { tests } = await runJestInlineTest(
     `
-    const { label, step } = require("allure-js-commons");
-
     it("step", async () => {
-      await step("foo", async () => {
-        await label("foo", "bar");
+      await allure.step("foo", async () => {
+        await allure.label("foo", "bar");
       });
     });
   `,
@@ -24,19 +22,17 @@ it("single step", async () => {
 it("multiple steps", async () => {
   const { tests } = await runJestInlineTest(
     `
-    const { label, step } = require("allure-js-commons");
-
     it("step", async () => {
-      await step("foo", async () => {
-        await label("foo", "1");
+      await allure.step("foo", async () => {
+        await allure.label("foo", "1");
       });
 
-      await step("bar", async () => {
-        await label("bar", "2");
+      await allure.step("bar", async () => {
+        await allure.label("bar", "2");
       });
 
-      await step("baz", async () => {
-        await label("baz", "3");
+      await allure.step("baz", async () => {
+        await allure.label("baz", "3");
       });
     });
   `,
@@ -55,13 +51,11 @@ it("multiple steps", async () => {
 it("nested steps", async () => {
   const { tests } = await runJestInlineTest(
     `
-    const { label, step } = require("allure-js-commons");
-
     it("step", async () => {
-      await step("foo", async () => {
-        await step("bar", async () => {
-           await step("baz", async () => {
-             await label("foo", "bar");
+      await allure.step("foo", async () => {
+        await allure.step("bar", async () => {
+           await allure.step("baz", async () => {
+             await allure.label("foo", "bar");
            });
         });
       });
@@ -82,11 +76,9 @@ it("nested steps", async () => {
 it("step with attachments", async () => {
   const { tests, attachments } = await runJestInlineTest(
     `
-    const { attachment, step } = require("allure-js-commons");
-
     it("text attachment", async () => {
-      await step("foo", async () => {
-        await attachment("foo.txt", "bar", "text/plain");
+      await allure.step("foo", async () => {
+        await allure.attachment("foo.txt", "bar", "text/plain");
       })
     });
   `,
@@ -106,10 +98,8 @@ it("step with attachments", async () => {
 it("step with assertion error", async () => {
   const { tests } = await runJestInlineTest(
     `
-    const { step } = require("allure-js-commons");
-
     it("step", async () => {
-      await step("foo", async () => {
+      await allure.step("foo", async () => {
         expect(1).toBe(2);
       });
     });
@@ -130,10 +120,8 @@ it("step with assertion error", async () => {
 it("step with unexpected error", async () => {
   const { tests } = await runJestInlineTest(
     `
-    const { step } = require("allure-js-commons");
-
     it("step", async () => {
-      await step("foo", async () => {
+      await allure.step("foo", async () => {
         throw new Error("foo");
       });
     });
@@ -152,10 +140,8 @@ it("step with unexpected error", async () => {
 it("step runtime api", async () => {
   const { tests } = await runJestInlineTest(
     `
-    const { step } = require("allure-js-commons");
-
     it("step", async () => {
-      await step("step", (ctx) => {
+      await allure.step("step", (ctx) => {
         ctx.displayName("bar");
         ctx.parameter("p1", "v1");
         ctx.parameter("p2", "v2", "default");

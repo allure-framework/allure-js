@@ -5,6 +5,7 @@ import os from "node:os";
 import { dirname, sep } from "node:path";
 import process from "node:process";
 import stripAnsi from "strip-ansi";
+import * as allure from "allure-js-commons";
 import {
   ALLURE_TEST_RUNTIME_KEY,
   AllureNodeReporterRuntime,
@@ -23,21 +24,13 @@ import {
   TestRuntime,
   getStatusFromError,
   getSuitesLabels,
+  setGlobalTestRuntime,
 } from "allure-js-commons/sdk/node";
-import { AllureJestConfig } from "./model.js";
+import { AllureJestConfig, AllureJestEnvironment } from "./model.js";
 import { getTestId, getTestPath } from "./utils.js";
 
 const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
 const hostname = os.hostname();
-
-export interface AllureJestEnvironment extends JestEnvironment {
-  handleAllureRuntimeMessage(payload: { currentTestName: string; message: RuntimeMessage }): void;
-}
-
-export interface LinkMatcher {
-  type: LinkType | string;
-  urlTemplate: string;
-}
 
 class AllureJestTestRuntime implements TestRuntime {
   constructor(
@@ -249,7 +242,12 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       this.testPath = context.testPath.replace(config.globalConfig.rootDir, "").replace(sep, "");
 
       // @ts-ignore
-      new AllureJestTestRuntime(this as AllureJestEnvironment, this.global);
+      const testRuntime = new AllureJestTestRuntime(this as AllureJestEnvironment, this.global);
+
+      // @ts-ignore
+      this.global.allure = allure;
+
+      setGlobalTestRuntime(testRuntime);
     }
 
     setup() {

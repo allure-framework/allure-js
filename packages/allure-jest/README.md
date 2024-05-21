@@ -24,7 +24,7 @@
 Use your favorite node package manager to install required packages:
 
 ```shell
-npm add -D allure-jest allure-js-commons
+npm add -D allure-jest
 ```
 
 If you're using `jest` for testing `node` add following line to your `jest.config.js` file:

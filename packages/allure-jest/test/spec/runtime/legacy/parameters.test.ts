@@ -1,15 +1,13 @@
 import { expect, it } from "@jest/globals";
-import { runJestInlineTest } from "../utils";
+import { runJestInlineTest } from "../../../utils";
 
 it("sets parameters", async () => {
   const { tests } = await runJestInlineTest(`
-      const { parameter } = require("allure-js-commons");
-
       it("parameter", async () => {
-        await parameter("param1", "paramValue1");
-        await parameter("param2", "paramValue2", {excluded:true});
-        await parameter("param3", "paramValue3", {mode:"masked", excluded:true});
-        await parameter("param4", "paramValue4", {mode:"hidden"});
+        await allure.parameter("param1", "paramValue1");
+        await allure.parameter("param2", "paramValue2", {excluded:true});
+        await allure.parameter("param3", "paramValue3", {mode:"masked", excluded:true});
+        await allure.parameter("param4", "paramValue4", {mode:"hidden"});
       })
     `);
 
