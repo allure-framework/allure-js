@@ -3489,8 +3489,8 @@ __metadata:
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-import: "npm:^2.28.1"
     eslint-plugin-jsdoc: "npm:^48.0.0"
+    eslint-plugin-n: "npm:^14.0.0"
     eslint-plugin-no-null: "npm:^1.0.2"
-    eslint-plugin-node: "npm:^11.1.0"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     expect: "npm:^29.7.0"
     glob: "npm:^10.3.12"
@@ -3536,8 +3536,8 @@ __metadata:
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-import: "npm:^2.28.1"
     eslint-plugin-jsdoc: "npm:^48.0.0"
+    eslint-plugin-n: "npm:^14.0.0"
     eslint-plugin-no-null: "npm:^1.0.2"
-    eslint-plugin-node: "npm:^11.1.0"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     glob: "npm:^10.3.12"
     npm-run-all2: "npm:^6.1.2"
@@ -3573,8 +3573,8 @@ __metadata:
     eslint-plugin-cypress: "npm:^3.0.0"
     eslint-plugin-import: "npm:^2.28.1"
     eslint-plugin-jsdoc: "npm:^48.0.0"
+    eslint-plugin-n: "npm:^14.0.0"
     eslint-plugin-no-null: "npm:^1.0.2"
-    eslint-plugin-node: "npm:^11.1.0"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     glob: "npm:^10.3.5"
     npm-run-all2: "npm:^5.0.0"
@@ -3604,8 +3604,8 @@ __metadata:
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-import: "npm:^2.28.1"
     eslint-plugin-jsdoc: "npm:^48.0.0"
+    eslint-plugin-n: "npm:^14.0.0"
     eslint-plugin-no-null: "npm:^1.0.2"
-    eslint-plugin-node: "npm:^11.1.0"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     glob: "npm:^10.3.12"
     jasmine: "npm:^3.4.0"
@@ -3647,8 +3647,8 @@ __metadata:
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-import: "npm:^2.28.1"
     eslint-plugin-jsdoc: "npm:^48.0.0"
+    eslint-plugin-n: "npm:^14.0.0"
     eslint-plugin-no-null: "npm:^1.0.2"
-    eslint-plugin-node: "npm:^11.1.0"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     expect: "npm:^29.7.0"
     glob: "npm:^10.3.12"
@@ -3686,8 +3686,8 @@ __metadata:
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-import: "npm:^2.28.1"
     eslint-plugin-jsdoc: "npm:^48.0.0"
+    eslint-plugin-n: "npm:^14.0.0"
     eslint-plugin-no-null: "npm:^1.0.2"
-    eslint-plugin-node: "npm:^11.1.0"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     expect: "npm:^29.5.0"
     glob: "npm:^10.3.10"
@@ -3752,8 +3752,8 @@ __metadata:
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-import: "npm:^2.28.1"
     eslint-plugin-jsdoc: "npm:^48.0.0"
+    eslint-plugin-n: "npm:^14.0.0"
     eslint-plugin-no-null: "npm:^1.0.2"
-    eslint-plugin-node: "npm:^11.1.0"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     fs-jetpack: "npm:^4.1.0"
     glob: "npm:^10.3.12"
@@ -3790,8 +3790,8 @@ __metadata:
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-import: "npm:^2.28.1"
     eslint-plugin-jsdoc: "npm:^48.0.0"
+    eslint-plugin-n: "npm:^14.0.0"
     eslint-plugin-no-null: "npm:^1.0.2"
-    eslint-plugin-node: "npm:^11.1.0"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     glob: "npm:^10.3.12"
     md5: "npm:^2.3.0"
@@ -3822,8 +3822,8 @@ __metadata:
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-import: "npm:^2.28.1"
     eslint-plugin-jsdoc: "npm:^48.0.0"
+    eslint-plugin-n: "npm:^14.0.0"
     eslint-plugin-no-null: "npm:^1.0.2"
-    eslint-plugin-node: "npm:^11.1.0"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     glob: "npm:^10.3.15"
     npm-run-all2: "npm:^6.1.2"
@@ -6490,15 +6490,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-es@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "eslint-plugin-es@npm:3.0.1"
+"eslint-plugin-es@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "eslint-plugin-es@npm:4.1.0"
   dependencies:
     eslint-utils: "npm:^2.0.0"
     regexpp: "npm:^3.0.0"
   peerDependencies:
     eslint: ">=4.19.1"
-  checksum: 10/9814e6305183edfdff7d99cbc0f95f0aed1446045cbd1d4f28e7be0903d0013880f0aaf04486a27de96bfb2f5a746bea97cbb238f9b0035cb378d48d179a0a1b
+  checksum: 10/431c7a6296f6f44d94acfb65c8d00fdd2c1c187d8aa97e1eab1d6780e9ed6cf6b62007fd403509ed5ec788a75cf41c8f1e3174cc16f5cc08b9ea266dc92de68e
   languageName: node
   linkType: hard
 
@@ -6548,28 +6548,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-n@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "eslint-plugin-n@npm:14.0.0"
+  dependencies:
+    eslint-plugin-es: "npm:^4.1.0"
+    eslint-utils: "npm:^3.0.0"
+    ignore: "npm:^5.1.1"
+    is-core-module: "npm:^2.3.0"
+    minimatch: "npm:^3.0.4"
+    resolve: "npm:^1.10.1"
+    semver: "npm:^6.1.0"
+  peerDependencies:
+    eslint: ">=7.0.0"
+  checksum: 10/37161c1fcfb83dd03e04771de48a3ddcd33b41517164b57eb968a015cf8cda54b74d124c939f7855d8caee908622698d3ad6244907e22ec6c45f697bf8b2a877
+  languageName: node
+  linkType: hard
+
 "eslint-plugin-no-null@npm:^1.0.2":
   version: 1.0.2
   resolution: "eslint-plugin-no-null@npm:1.0.2"
   peerDependencies:
     eslint: ">=3.0.0"
   checksum: 10/1cf6a64e68e83930692699c268914ef6aa34cf7521372521241e7ebe89927ebcb514149a0225705f5d34063d291d39e1dd98ef4aeb3a6daaa2b2c3241b361c6d
-  languageName: node
-  linkType: hard
-
-"eslint-plugin-node@npm:^11.1.0":
-  version: 11.1.0
-  resolution: "eslint-plugin-node@npm:11.1.0"
-  dependencies:
-    eslint-plugin-es: "npm:^3.0.0"
-    eslint-utils: "npm:^2.0.0"
-    ignore: "npm:^5.1.1"
-    minimatch: "npm:^3.0.4"
-    resolve: "npm:^1.10.1"
-    semver: "npm:^6.1.0"
-  peerDependencies:
-    eslint: ">=5.16.0"
-  checksum: 10/bda540f390a84d835989f21f56743f3aa8f41fd9b53359d635c116632c86af92d70d8e6449ddd18860e6241f9cef04fc90c37eb192a9047c3c3a46de6145c30c
   languageName: node
   linkType: hard
 
@@ -6601,10 +6602,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-utils@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "eslint-utils@npm:3.0.0"
+  dependencies:
+    eslint-visitor-keys: "npm:^2.0.0"
+  peerDependencies:
+    eslint: ">=5"
+  checksum: 10/7675260a6b220c70f13e4cdbf077e93cad0dfb388429a27d6c0b584b2b20dca24594508e8bdb00a460a5764bd364a5018e20c2b8b1d70f82bcc3fdc30692a4d2
+  languageName: node
+  linkType: hard
+
 "eslint-visitor-keys@npm:^1.1.0":
   version: 1.3.0
   resolution: "eslint-visitor-keys@npm:1.3.0"
   checksum: 10/595ab230e0fcb52f86ba0986a9a473b9fcae120f3729b43f1157f88f27f8addb1e545c4e3d444185f2980e281ca15be5ada6f65b4599eec227cf30e41233b762
+  languageName: node
+  linkType: hard
+
+"eslint-visitor-keys@npm:^2.0.0":
+  version: 2.1.0
+  resolution: "eslint-visitor-keys@npm:2.1.0"
+  checksum: 10/db4547eef5039122d518fa307e938ceb8589da5f6e8f5222efaf14dd62f748ce82e2d2becd3ff9412a50350b726bda95dbea8515a471074547daefa58aee8735
   languageName: node
   linkType: hard
 
@@ -8303,7 +8322,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-core-module@npm:^2.13.0, is-core-module@npm:^2.13.1":
+"is-core-module@npm:^2.13.0, is-core-module@npm:^2.13.1, is-core-module@npm:^2.3.0":
   version: 2.13.1
   resolution: "is-core-module@npm:2.13.1"
   dependencies:
@@ -10531,8 +10550,8 @@ __metadata:
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-import: "npm:^2.28.1"
     eslint-plugin-jsdoc: "npm:^48.0.0"
+    eslint-plugin-n: "npm:^14.0.0"
     eslint-plugin-no-null: "npm:^1.0.2"
-    eslint-plugin-node: "npm:^11.1.0"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     expect: "npm:^29.7.0"
     glob: "npm:^10.3.12"

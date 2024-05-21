@@ -1,11 +1,11 @@
 module.exports = {
   extends: ["../../.eslintrc.cjs"],
-  plugins: ["node"],
+  plugins: ["n"],
   globals: {
     allure: true,
   },
   rules: {
-    "node/file-extension-in-import": ["error", "always"],
+    "n/file-extension-in-import": ["error", "always"],
   },
   parserOptions: {
     tsconfigRootDir: __dirname,
