@@ -1,9 +1,9 @@
 import { expect, it } from "vitest";
 import { LinkType } from "allure-js-commons/sdk";
-import { runCucumberInlineTest } from "../utils";
+import { runCucumberInlineTest } from "../../../utils";
 
 it("handles runtime links", async () => {
-  const { tests } = await runCucumberInlineTest(["links"], ["links"]);
+  const { tests } = await runCucumberInlineTest(["links"], ["runtime/modern/links"]);
 
   expect(tests).toHaveLength(5);
   expect(tests).toContainEqual(

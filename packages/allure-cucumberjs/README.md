@@ -18,11 +18,11 @@ Install the required packages using your favorite package manager:
 
 ```shell
 # using npm
-npm install --save-dev allure-js-commons allure-cucumberjs
+npm install --save-dev allure-cucumberjs
 # using yarn
-yarn add -D allure-js-commons allure-cucumberjs
+yarn add -D allure-cucumberjs
 # using pnpm
-pnpm add -D allure-js-commons allure-cucumberjs
+pnpm add -D allure-cucumberjs
 ```
 
 Create `reporter.js` with following content:
@@ -85,6 +85,39 @@ Given(/my step/, async () => {
   });
 });
 ```
+
+### Using Allure Cucumber World
+
+If you prefer to use custom Allure World instead of global Allure API, you can use `AllureCucumberWorld` class:
+
+```js
+import { AllureCucumberWorld } from "allure-cucumberjs";
+import { setWorldConstructor } from "@cucumber/cucumber";
+
+setWorldConstructor(AllureCucumberWorld);
+```
+
+Then you'll be able to use Allure Runtime API through `this` in your step definition files:
+
+```js
+import { Given } from "@cucumber/cucumber";
+
+Given(/my step/, async function() {
+  const self = this;
+  
+  await self.step("step can have anonymous body function", async function() {
+    await self.label("label_name", "label_value");
+    await self.attachment(JSON.stringify({ foo: "bar " }), "application/json");
+  });
+
+  await self.step("by the way, body function can be arrow one", async function() {
+    await self.label("label_name", "label_value");
+    await self.attachment(JSON.stringify({ foo: "bar " }), "application/json");
+  });
+});
+```
+
+If you run your Cucumber features using single thread mode, `AllureCucumberWorld` is set automatically.
 
 ### Parameters usage
 

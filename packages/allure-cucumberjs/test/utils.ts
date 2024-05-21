@@ -1,10 +1,14 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
-import { join, resolve as resolvePath } from "node:path";
+import { dirname, join, resolve as resolvePath } from "node:path";
 import { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/sdk";
 
-export const runCucumberInlineTest = async (features: string[], stepsDefs: string[]): Promise<AllureResults> => {
+export const runCucumberInlineTest = async (
+  features: string[],
+  stepsDefs: string[],
+  parallel: boolean = true,
+): Promise<AllureResults> => {
   const res: AllureResults = {
     tests: [],
     groups: [],
@@ -20,7 +24,7 @@ export const runCucumberInlineTest = async (features: string[], stepsDefs: strin
   const configContent = `
     module.exports = {
       default: {
-        parallel: 4,
+        ${parallel ? "parallel: 4," : ""}
         format: ["summary", "./reporter.js"],
         formatOptions: {
           testMode: true,
@@ -75,8 +79,11 @@ export const runCucumberInlineTest = async (features: string[], stepsDefs: strin
   await Promise.all(
     stepsDefs.map(async (stepsDef) => {
       const stepsDefPath = join(fixturesPath, "support", `${stepsDef}.cjs`);
+      const supportFilePath = join(supportTempPath, `${stepsDef}.js`);
 
-      await copyFile(stepsDefPath, join(supportTempPath, `${stepsDef}.js`));
+      await mkdir(dirname(supportFilePath), { recursive: true });
+
+      await copyFile(stepsDefPath, supportFilePath);
     }),
   );
 

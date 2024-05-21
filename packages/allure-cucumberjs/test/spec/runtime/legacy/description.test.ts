@@ -1,8 +1,8 @@
 import { expect, it } from "vitest";
-import { runCucumberInlineTest } from "../utils";
+import { runCucumberInlineTest } from "../../../utils";
 
 it("handles runtime descriptions", async () => {
-  const { tests } = await runCucumberInlineTest(["description"], ["description"]);
+  const { tests } = await runCucumberInlineTest(["description"], ["runtime/legacy/description"], false);
 
   expect(tests).toHaveLength(3);
   expect(tests).toContainEqual(
