@@ -19,7 +19,7 @@ For usage example see `test/Setup.ts`
 Use your favorite node package manager to install required packages:
 
 ```bash
-npm add -D jest-jasmine2 allure-jasmine allure-js-commons @types/jasmine
+npm add -D jest-jasmine2 allure-jasmine @types/jasmine
 ```
 
 Create `allure-setup.ts` file:

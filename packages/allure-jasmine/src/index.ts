@@ -20,6 +20,7 @@ import {
   isPromise,
   setGlobalTestRuntime,
 } from "allure-js-commons/sdk/node";
+import * as allure from "allure-js-commons";
 import { AllureJasmineConfig, JasmineBeforeAfterFn } from "./model.js";
 import { findAnyError, findMessageAboutThrow } from "./utils.js";
 
@@ -243,6 +244,10 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     const specPath = this.getCurrentSpecPath().concat(spec.description).join(" > ");
 
     return `${specFilename}#${specPath}`;
+  }
+
+  getAllureInterface() {
+    return allure;
   }
 
   handleAllureRuntimeMessages(message: RuntimeMessage) {

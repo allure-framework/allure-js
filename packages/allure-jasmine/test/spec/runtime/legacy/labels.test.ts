@@ -1,6 +1,7 @@
+import { resolve } from "node:path";
 import { expect, it } from "vitest";
 import { LabelName } from "allure-js-commons";
-import { runJasmineInlineTest } from "../utils";
+import { runJasmineInlineTest } from "../../../utils";
 
 it("sets labels", async () => {
   const { tests } = await runJasmineInlineTest({
@@ -37,6 +38,7 @@ it("sets labels", async () => {
         await labels({ name: "test", value: "testValue" }, { name: "test2", value: "testValue2" });
       })
     `,
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);

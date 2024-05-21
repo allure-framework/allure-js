@@ -1,6 +1,6 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, rm, writeFile, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { parse } from "properties";
 import {
@@ -24,68 +24,10 @@ export const runJasmineInlineTest = async (files: Record<string, string>): Promi
     groups: [],
     attachments: {},
   };
-  const testDir = join(__dirname, "fixtures", randomUUID());
+  const testDir = join(__dirname, "temp", randomUUID());
   const testFiles = {
-    "spec/support/jasmine.json": `
-      {
-        "spec_dir": "spec",
-        "spec_files": [
-          "**/*[sS]pec.?(m)js"
-        ],
-        "helpers": [
-          "helpers/**/*.?(m)js"
-        ],
-        "env": {
-          "stopSpecOnExpectationFailure": false,
-          "random": true
-        }
-      }
-    `,
-    "spec/helpers/allure.js": `
-      const AllureJasmineReporter = require("allure-jasmine");
-
-      const reporter = new AllureJasmineReporter({
-        testMode: true,
-        links: [
-          {
-            type: "${LinkType.ISSUE}",
-            urlTemplate: "https://example.org/issues/%s",
-          },
-          {
-            type: "${LinkType.TMS}",
-            urlTemplate: "https://example.org/tasks/%s",
-          }
-        ],
-        categories: [
-          {
-            name: "Sad tests",
-            messageRegex: /.*Sad.*/,
-            matchedStatuses: ["${Status.FAILED}"],
-          },
-          {
-            name: "Infrastructure problems",
-            messageRegex: ".*RuntimeException.*",
-            matchedStatuses: ["${Status.BROKEN}"],
-          },
-          {
-            name: "Outdated tests",
-            messageRegex: ".*FileNotFound.*",
-            matchedStatuses: ["${Status.BROKEN}"],
-          },
-          {
-            name: "Regression",
-            messageRegex: ".*\\sException:.*",
-            matchedStatuses: ["${Status.BROKEN}"],
-          },
-        ],
-        environmentInfo: {
-          envVar1: "envVar1Value",
-          envVar2: "envVar2Value",
-        },
-      });
-
-      jasmine.getEnv().addReporter(reporter);
-    `,
+    "spec/support/jasmine.json": await readFile(join(__dirname, "./fixtures/spec/support/jasmine.json"), "utf8"),
+    "spec/helpers/allure.js": require("./fixtures/spec/helpers/modern/allure.cjs"),
     ...files,
   };
 
