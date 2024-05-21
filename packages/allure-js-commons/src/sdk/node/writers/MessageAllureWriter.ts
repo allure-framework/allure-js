@@ -25,8 +25,8 @@ export class MessageAllureWriter implements Writer {
     this.sendData(path, type, Buffer.from(JSON.stringify(data)));
   }
 
-  writeAttachment(name: string, content: Buffer | string, encoding: BufferEncoding = "utf-8"): void {
-    this.sendData(name, "attachment", typeof content === "string" ? Buffer.from(content, encoding) : content);
+  writeAttachment(distFileName: string, content: Buffer | string, encoding: BufferEncoding = "utf-8"): void {
+    this.sendData(distFileName, "attachment", typeof content === "string" ? Buffer.from(content, encoding) : content);
   }
 
   writeAttachmentFromPath(from: PathLike, distFileName: string): void {

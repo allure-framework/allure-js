@@ -1,3 +1,4 @@
+import { extname } from "path";
 import { AttachmentOptions, TestResult } from "../../model.js";
 import { Config } from "../Config.js";
 import { ReporterRuntime } from "../ReporterRuntime.js";
@@ -34,7 +35,10 @@ export class AllureNodeReporterRuntime extends ReporterRuntime {
       return;
     }
 
-    const attachmentFilename = this.buildAttachmentFileName(options);
+    const attachmentFilename = this.buildAttachmentFileName({
+      ...options,
+      fileExtension: options.fileExtension ?? extname(attachmentPath),
+    });
 
     this.writer.writeAttachmentFromPath(attachmentPath, attachmentFilename);
 
