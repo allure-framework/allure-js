@@ -10511,7 +10511,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"newman-reporter-allure@npm:*, newman-reporter-allure@workspace:packages/newman-reporter-allure":
+"newman-reporter-allure@workspace:packages/newman-reporter-allure":
   version: 0.0.0-use.local
   resolution: "newman-reporter-allure@workspace:packages/newman-reporter-allure"
   dependencies:
@@ -10537,7 +10537,7 @@ __metadata:
     expect: "npm:^29.7.0"
     glob: "npm:^10.3.12"
     msw: "npm:1"
-    newman: "npm:^6.0.0"
+    newman: "npm:^6.1.2"
     npm-run-all2: "npm:^6.1.2"
     postman-collection: "npm:^4.2.1"
     rimraf: "npm:^5.0.1"
@@ -10550,7 +10550,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"newman@npm:^6.0.0":
+"newman@npm:^6.1.2":
   version: 6.1.2
   resolution: "newman@npm:6.1.2"
   dependencies:

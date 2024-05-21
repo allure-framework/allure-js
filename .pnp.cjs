@@ -12836,7 +12836,6 @@ const RAW_RUNTIME_STATE =
           ["liquid-json", "npm:0.3.1"],\
           ["lodash", "npm:4.17.21"],\
           ["mkdirp", "npm:3.0.1"],\
-          ["newman-reporter-allure", "workspace:packages/newman-reporter-allure"],\
           ["postman-collection", "npm:4.4.0"],\
           ["postman-collection-transformer", "npm:4.1.8"],\
           ["postman-request", "npm:2.88.1-postman.33"],\
