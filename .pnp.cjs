@@ -940,10 +940,32 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "SOFT"\
       }],\
+      ["npm:1.0.1", {\
+        "packageLocation": "./.yarn/cache/@codeceptjs-configure-npm-1.0.1-d9352a52f7-f570ddc1db.zip/node_modules/@codeceptjs/configure/",\
+        "packageDependencies": [\
+          ["@codeceptjs/configure", "npm:1.0.1"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
       ["virtual:0f260612f43d62f390b7c799a6d835ee2a70036c46318983810c9645356da12a32ffa66b9a29be816548aaa485243032e8cbbe0967390766206b2817a3eada37#npm:0.10.0", {\
         "packageLocation": "./.yarn/__virtual__/@codeceptjs-configure-virtual-ef6a13bbe9/0/cache/@codeceptjs-configure-npm-0.10.0-ba73c0a5e7-afd4512fee.zip/node_modules/@codeceptjs/configure/",\
         "packageDependencies": [\
           ["@codeceptjs/configure", "virtual:0f260612f43d62f390b7c799a6d835ee2a70036c46318983810c9645356da12a32ffa66b9a29be816548aaa485243032e8cbbe0967390766206b2817a3eada37#npm:0.10.0"],\
+          ["@types/codeceptjs", null],\
+          ["codeceptjs", "npm:3.5.14"],\
+          ["lodash.merge", "npm:4.6.2"],\
+          ["lodash.mergewith", "npm:4.6.2"]\
+        ],\
+        "packagePeers": [\
+          "@types/codeceptjs",\
+          "codeceptjs"\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:1.0.1", {\
+        "packageLocation": "./.yarn/__virtual__/@codeceptjs-configure-virtual-b1595d0ff2/0/cache/@codeceptjs-configure-npm-1.0.1-d9352a52f7-f570ddc1db.zip/node_modules/@codeceptjs/configure/",\
+        "packageDependencies": [\
+          ["@codeceptjs/configure", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:1.0.1"],\
           ["@types/codeceptjs", null],\
           ["codeceptjs", "npm:3.5.14"],\
           ["lodash.merge", "npm:4.6.2"],\
@@ -4809,7 +4831,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./packages/allure-codeceptjs/",\
         "packageDependencies": [\
           ["allure-codeceptjs", "workspace:packages/allure-codeceptjs"],\
-          ["@codeceptjs/configure", "virtual:0f260612f43d62f390b7c799a6d835ee2a70036c46318983810c9645356da12a32ffa66b9a29be816548aaa485243032e8cbbe0967390766206b2817a3eada37#npm:0.10.0"],\
+          ["@codeceptjs/configure", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:1.0.1"],\
           ["@codeceptjs/helper", "npm:2.0.4"],\
           ["@rollup/plugin-node-resolve", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:15.2.3"],\
           ["@rollup/plugin-typescript", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:11.1.6"],\
