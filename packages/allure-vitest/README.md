@@ -40,16 +40,6 @@ export default defineConfig({
       // do not forget to keep the "default" if you want to see something in the console
       "default",
       new AllureReporter({
-        links: [
-          {
-            type: "issue",
-            urlTemplate: "https://example.org/issue/%s",
-          },
-          {
-            type: "tms",
-            urlTemplate: "https://example.org/task/%s",
-          },
-        ],
         resultsDir: "./allure-results",
       }),
     ],
@@ -66,7 +56,7 @@ Some reporter settings can set by following options:
 | resultsDir | Path to results folder                                | `./allure-results` |
 | links      | Links templates to make runtime methods calls simpler | `undefined`        |
 
-## API
+## Runtime API
 
 If you use setup file shipped by the integration, use `this.allure` to get access
 to Allure Runtime API:
@@ -88,6 +78,65 @@ import * as allure from "allure-vitest";
 
 test("sample test", async (context) => {
   await allure.label(context, "foo", "bar");
+});
+```
+
+## Links usage
+
+```js
+import { it } from "vitest";
+import { link, issue } from "allure-js-commons";
+
+it("basic test", async () => {
+  await link("https://allurereport.org", "Allure Report"); // link with name
+  await issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
+});
+```
+
+You can also configure links formatters to make usage much more convenient. `%s`
+in `urlTemplate` parameter will be replaced by given value.
+
+```diff
+import AllureReporter from "allure-vitest/reporter";
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    setupFiles: ["allure-vitest/setup"],
+    reporters: [
+      "default",
+      new AllureReporter({
+        resultsDir: "./allure-results",
++       links: [
++         {
++           type: "issue",
++           urlTemplate: "https://example.org/issues/%s"
++         },
++         {
++           type: "tms",
++           urlTemplate: "https://example.org/tasks/%s"
++         },
++         {
++           type: "custom",
++           urlTemplate: "https://example.org/custom/%s"
++         },
++       ]
+      }),
+    ],
+  },
+});
+```
+
+Then you can assign link using shorter notation:
+
+```js
+import { it } from "vitest";
+import { issue, tms, link } from "allure-js-commons";
+
+it("basic test", async () => {
+  await issue("Issue Name", "352");
+  await tms("Task Name", "352");
+  await link("352", "Link name", "custom");
 });
 ```
 
