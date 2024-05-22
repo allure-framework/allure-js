@@ -3,7 +3,7 @@ import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } fro
 import * as os from "os";
 import path from "path";
 import { describe, expect, it } from "vitest";
-import { AllureNodeReporterRuntime, Config, ContentType, FileSystemAllureWriter } from "../../src/sdk/node";
+import { AllureNodeReporterRuntime, Config, ContentType, FileSystemAllureWriter } from "../../src/sdk/node/index.js";
 
 describe("FileSystemAllureWriter", () => {
   it("should save attachment from path", () => {

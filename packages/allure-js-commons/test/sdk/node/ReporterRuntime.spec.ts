@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AllureNodeReporterRuntime } from "../../../src/sdk/node";
+import { AllureNodeReporterRuntime } from "../../../src/sdk/node/index.js";
 import { mockWriter } from "../../utils/writer.js";
 
 describe("AllureNodeReporterRuntime", () => {
