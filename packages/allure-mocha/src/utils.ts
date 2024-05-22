@@ -3,20 +3,7 @@ import { hostname } from "node:os";
 import { extname, join } from "node:path";
 import { env, pid } from "node:process";
 import { isMainThread, threadId } from "node:worker_threads";
-import { Label, LabelName, StatusDetails } from "allure-js-commons/sdk/node";
-
-export const errorToStatusDetails = (error: unknown): StatusDetails | undefined => {
-  if (error instanceof Error) {
-    return {
-      message: error.message,
-      trace: error.stack,
-    };
-  } else if (error instanceof String) {
-    return { message: error.toString() };
-  } else if (typeof error === "string") {
-    return { message: error };
-  }
-};
+import { Label, LabelName } from "allure-js-commons/sdk/node";
 
 export const getSuitesOfMochaTest = (test: Mocha.Test) => test.titlePath().slice(0, -1);
 

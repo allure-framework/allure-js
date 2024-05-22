@@ -1,6 +1,6 @@
 import { MessageTestRuntime, ReporterRuntime, RuntimeMessage, setGlobalTestRuntime } from "allure-js-commons/sdk/node";
 
-export class ContextBasedTestRuntime extends MessageTestRuntime {
+export class MochaTestRuntime extends MessageTestRuntime {
   constructor(private readonly reporterRuntime: ReporterRuntime) {
     super();
   }
@@ -12,4 +12,4 @@ export class ContextBasedTestRuntime extends MessageTestRuntime {
 }
 
 export const setUpTestRuntime = (reporterRuntime: ReporterRuntime) =>
-  setGlobalTestRuntime(new ContextBasedTestRuntime(reporterRuntime));
+  setGlobalTestRuntime(new MochaTestRuntime(reporterRuntime));
