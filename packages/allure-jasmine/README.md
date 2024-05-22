@@ -72,7 +72,8 @@ const reporter = new AllureJasmineReporter({
 +  links: [
 +    {
 +      type: "issue",
-+      urlTemplate: "https://example.org/issues/%s"
++      urlTemplate: "https://example.org/issues/%s",
++      nameTemplate: "Issue: %s",
 +    },
 +    {
 +      type: "tms",

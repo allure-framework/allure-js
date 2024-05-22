@@ -89,6 +89,7 @@ module.exports.config = {
 +        {
 +          type: "${LinkType.ISSUE}",
 +          urlTemplate: "https://example.org/issues/%s",
++          nameTemplate: "Issue: %s",
 +        },
 +        {
 +          type: "${LinkType.TMS}",
