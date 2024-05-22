@@ -53,7 +53,7 @@
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/eslint": "^8",
     "@types/newman": "^5.3.3",
-    "@types/node": "20.11.30",
+    "@types/node": "20.12.12",
     "@types/postman-collection": "^3.5.7",
     "@types/source-map-support": "^0.5.7",
     "@types/yargs": "^17.0.24",
