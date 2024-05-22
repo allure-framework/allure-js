@@ -21,7 +21,7 @@
 
 ## Installation
 
-Use your favorite node package manager to install required packages:
+Use your favorite node package manager to install the package:
 
 ```shell
 npm add -D allure-jest

@@ -23,14 +23,15 @@ npm i -D allure-js-commons allure-codeceptjs
 Add the allure plugin inside you plugins section of your CodeceptJS config file.
 For instance the config file is `codecept.config.(js|ts)` then:
 
-```
+```js
+module.exports.config = {
   plugins: {
-  ...
+    // ...
     allure: {
       enabled: true,
       require: "allure-codeceptjs",
     },
-  ...
+    // ...
   }
 };
 ```
@@ -60,6 +61,65 @@ Scenario("login-scenario1", async () => {
 ```
 
 You can also use tags to manage labels on scenarios.
+
+## Links usage
+
+```js
+import { link, issue, tms } from "allure-js-commons";
+
+Feature("login-feature");
+Scenario("login-scenario1", async () => {
+  await link("link_type", "https://allurereport.org", "Allure Report");
+  await issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
+  await tms("Task Name", "https://github.com/allure-framework/allure-js/tasks/352");
+});
+```
+
+You can also configure links formatters to make usage much more convenient. `%s`
+in `urlTemplate` parameter will be replaced by given value.
+
+```diff
+module.exports.config = {
+  // ...
+  plugins: {
+    allure: {
+      enabled: true,
+      require: "allure-codeceptjs",
++      links: [
++        {
++          type: "${LinkType.ISSUE}",
++          urlTemplate: "https://example.org/issues/%s",
++        },
++        {
++          type: "${LinkType.TMS}",
++          urlTemplate: "https://example.org/tasks/%s",
++        }
++      ]
+    },
+  },
+  // ...
+};
+```
+
+Then you can assign link using shorter notation:
+
+```js
+import { link, issue, tms } from "allure-js-commons";
+
+Feature("login-feature");
+Scenario("login-scenario1", async () => {
+  await issue("351");
+  await issue("352", "Issue Name");
+  await tms("351");
+  await tms("352", "Task Name");
+  await link("custom", "352");
+  await link("custom", "352", "Link name");
+});
+```
+
+## Tags metadata API
+
+You also can mark up your tests with Allure metadata using CodeceptJS tags API.
 
 ### Id
 
