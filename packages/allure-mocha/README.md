@@ -12,9 +12,6 @@
 
 ---
 
-**Allure API doesn't work in parallel mode**! If you want to use the functionality, please switch
-back to single thread mode!
-
 ## Installation
 
 ```bash
@@ -51,34 +48,33 @@ If you want to provide extra information, such as steps and attachments, import 
 into your code:
 
 ```javascript
-const { allure } = require("allure-mocha/runtime");
+const { epic } = require("allure-js-commons");
 
-it("is a test", () => {
-  allure.epic("Some info");
+it("is a test", async () => {
+  await epic("Some info");
 });
 ```
 
 ### Parameters usage
 
 ```ts
-const { allure } = require("allure-mocha/runtime");
+const { parameter } = require("allure-js-commons");
 
-it("is a test", () => {
-  allure.parameter("parameterName", "parameterValue");
+it("is a test", async () => {
+  await parameter("parameterName", "parameterValue");
 });
 ```
 
-Also `parameter` method takes an third optional argument with the hidden and excluded options:
-`mode: "hidden" | "masked"` - `masked` hide parameter value to secure sensitive data, and `hidden`
-entirely hide parameter from report
+The `parameter` method may also take the third argument with the `hidden` and `excluded` options:
+`mode: "hidden" | "masked"` - `masked` replaces the value with `*` characters to secure sensitive data, and `hidden` hides the parameter from report.
 
-`excluded: true` - excludes parameter from the history
+`excluded: true` - excludes the parameter from the history.
 
 ```ts
-import { allure } from "allure-mocha/runtime";
+import { parameter } from "allure-js-commons";
 
-it("is a test", () => {
-  allure.parameter("parameterName", "parameterValue", {
+it("is a test", async () => {
+  await parameter("parameterName", "parameterValue", {
     mode: "hidden",
     excluded: true,
   });
@@ -87,10 +83,10 @@ it("is a test", () => {
 
 ## Decorators Support
 
-To make tests more readable and avoid explicit API calls, you can use a special
+To make tests more readable and avoid explicit API calls, you may use a special
 extension - [ts-test-decorators](https://github.com/sskorol/ts-test-decorators).
 
 ## Examples
 
-[mocha-allure-example](https://github.com/vovsemenv/mocha-allure-example) - minimal setup for using
-mocha with allure
+[mocha-allure-example](https://github.com/vovsemenv/mocha-allure-example) - a minimal setup for using
+Mocha with Allure.
