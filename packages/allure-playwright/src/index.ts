@@ -1,5 +1,12 @@
 import { FullConfig } from "@playwright/test";
-import { TestResult as PlaywrightTestResult, Reporter, Suite, TestCase, TestStep } from "@playwright/test/reporter";
+import {
+  FullResult,
+  TestResult as PlaywrightTestResult,
+  Suite,
+  TestCase,
+  TestError,
+  TestStep,
+} from "@playwright/test/reporter";
 import { existsSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -18,6 +25,7 @@ import {
   Status,
   TestResult,
   extractMetadataFromString,
+  parseTestPlan,
   readImageAsBase64,
 } from "allure-js-commons/sdk/node";
 import { AllurePlaywrightReporterConfig } from "./model.js";
@@ -28,7 +36,23 @@ const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
 // 12 (allureattach) + 1 (_) + 36 (uuid v4) + 1 (_)
 const stepAttachPrefixLength = 50;
 
-export class AllureReporter implements Reporter {
+interface ReporterV2 {
+  onConfigure(config: FullConfig): void;
+  onBegin(suite: Suite): void;
+  onTestBegin(test: TestCase, result: PlaywrightTestResult): void;
+  onStdOut(chunk: string | Buffer, test?: TestCase, result?: PlaywrightTestResult): void;
+  onStdErr(chunk: string | Buffer, test?: TestCase, result?: PlaywrightTestResult): void;
+  onTestEnd(test: TestCase, result: PlaywrightTestResult): void;
+  onEnd(result: FullResult): Promise<{ status?: FullResult["status"] } | undefined | void> | void;
+  onExit(): void | Promise<void>;
+  onError(error: TestError): void;
+  onStepBegin(test: TestCase, result: PlaywrightTestResult, step: TestStep): void;
+  onStepEnd(test: TestCase, result: PlaywrightTestResult, step: TestStep): void;
+  printsToStdio(): boolean;
+  version(): "v2";
+}
+
+export class AllureReporter implements ReporterV2 {
   config!: FullConfig;
   suite!: Suite;
   options: AllurePlaywrightReporterConfig;
@@ -44,14 +68,33 @@ export class AllureReporter implements Reporter {
     this.options = { suiteTitle: true, detail: true, ...config };
   }
 
-  onBegin(config: FullConfig, suite: Suite): void {
+  onConfigure(config: FullConfig): void {
+    this.config = config;
+    const testPlan = parseTestPlan();
+    if (testPlan) {
+      // @ts-ignore
+      const configElement = config[Object.getOwnPropertySymbols(config)[0]];
+      if (configElement) {
+        configElement.cliArgs = testPlan.tests.filter((test) => test.selector).map((test) => test.selector);
+      }
+    }
+  }
+
+  onError(): void {}
+
+  onExit(): void {}
+
+  onStdErr(): void {}
+
+  onStdOut(): void {}
+
+  onBegin(suite: Suite): void {
     const writer = this.options.testMode
       ? new MessageAllureWriter()
       : new FileSystemAllureWriter({
           resultsDir: this.options.resultsDir || "./allure-results",
         });
 
-    this.config = config;
     this.suite = suite;
     this.allureRuntime = new AllureNodeReporterRuntime({
       ...this.options,
@@ -67,14 +110,14 @@ export class AllureReporter implements Reporter {
     // root > project > file path > test.describe...
     const [, , , ...suiteTitles] = suite.titlePath();
     const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
-    const fullName = `${relativeFile}#${nameSuites}${test.title}`;
+    const testCaseIdBase = `${relativeFile}#${nameSuites}${test.title}`;
     const result: Partial<TestResult> = {
       name: titleMetadata.cleanTitle,
       labels: titleMetadata.labels,
       links: [],
       parameters: [],
-      testCaseId: this.allureRuntime!.crypto.md5(fullName),
-      fullName,
+      testCaseId: this.allureRuntime!.crypto.md5(testCaseIdBase),
+      fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
     };
 
     result.labels!.push({ name: LabelName.LANGUAGE, value: "JavaScript" });
@@ -352,10 +395,20 @@ export class AllureReporter implements Reporter {
 
     this.processedDiffs.push(pathWithoutEnd);
   }
+
+  version(): "v2" {
+    return "v2";
+  }
 }
 
+/**
+ * @deprecated for removal, import functions directly from "allure-js-commons".
+ */
 export * from "allure-js-commons";
 
+/**
+ * @deprecated for removal, import functions directly from "@playwright/test".
+ */
 export { test, expect } from "@playwright/test";
 
 export default AllureReporter;
