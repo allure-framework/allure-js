@@ -17,12 +17,7 @@
 Install the required packages using your favorite package manager:
 
 ```shell
-# using npm
-npm install --save-dev allure-cucumberjs
-# using yarn
-yarn add -D allure-cucumberjs
-# using pnpm
-pnpm add -D allure-cucumberjs
+npm add -D allure-cucumberjs
 ```
 
 Create `reporter.js` with following content:
@@ -118,6 +113,70 @@ Given(/my step/, async function() {
 ```
 
 If you run your Cucumber features using single thread mode, `AllureCucumberWorld` is set automatically.
+
+### Links usage
+
+```js
+const { Given } = require("@cucumber/cucumber");
+import { link, issue, tms } from "allure-js-commons";
+
+Given("step name", async () => {
+  await link("link_type", "https://allurereport.org", "Allure Report");
+  await issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
+  await tms("Task Name", "https://github.com/allure-framework/allure-js/tasks/352");
+});
+```
+
+You can also configure links formatters to make usage much more convenient. `%s`
+in `urlTemplate` parameter will be replaced by given value.
+
+```diff
+// config.js
+export default {
+  format: "./path/to/reporter.js",
++  formatOptions: {
++    links: [
++      {
++        pattern: [/@issue=(.*)/],
++        type: "issue",
++        urlTemplate: "https://example.com/issues/%s",
++      },
++      {
++        pattern: [/@tms=(.*)/],
++        type: "tms",
++        urlTemplate: "https://example.com/tasks/%s",
++      },
++    ],
++  }
+};
+```
+
+Then you can assign link using shorter notation:
+
+```js
+const { Given } = require("@cucumber/cucumber");
+import { link, issue, tms } from "allure-js-commons";
+
+Given("step name", async () => {
+  await issue("351");
+  await issue("352", "Issue Name");
+  await tms("351");
+  await tms("352", "Task Name");
+  await link("custom", "352");
+  await link("custom", "352", "Link name");
+});
+```
+
+Links patterns also work with Cucumber tags which match `pattern` parameter:
+
+```gherkin
+@issue=0
+Feature: links
+
+  @issue=1 @tms=2
+  Scenario: a
+    Given a step
+```
 
 ### Parameters usage
 
