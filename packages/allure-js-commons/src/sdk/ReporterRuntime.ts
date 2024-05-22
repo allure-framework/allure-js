@@ -1036,8 +1036,19 @@ export class ReporterRuntime {
 
       const url = matcher.urlTemplate.replace("%s", link.url);
 
+      // we shouldn't need to reassign already assigned name
+      if (link.name || !matcher.nameTemplate) {
+        return {
+          ...link,
+          url,
+        };
+      }
+
+      const name = matcher.nameTemplate.replace("%s", link.url);
+
       return {
         ...link,
+        name,
         url,
       };
     });

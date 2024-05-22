@@ -1,6 +1,25 @@
 import { describe, expect, it } from "vitest";
+import { Link } from "../../../src/model.js";
 import { AllureNodeReporterRuntime } from "../../../src/sdk/node/index.js";
 import { mockWriter } from "../../utils/writer.js";
+
+const fixtures = {
+  links: [
+    {
+      url: "1",
+      name: "issue-1",
+      type: "issue",
+    },
+    {
+      url: "2",
+      type: "tms",
+    },
+    {
+      url: "3",
+      type: "custom",
+    }
+  ] as Link[],
+};
 
 describe("AllureNodeReporterRuntime", () => {
   describe("writeAttachmentFromPath", () => {
@@ -65,6 +84,74 @@ describe("AllureNodeReporterRuntime", () => {
 
       expect(writeAttachmentFromPathCall[0]).to.be.eq(attachment.source);
       expect(writeAttachmentFromPathCall[1]).to.be.eq("attachment content");
+    });
+  });
+
+  describe("applyRuntimeMessages", () => {
+    it("keeps links as they are when links configuration is not provided", () => {
+      const writer = mockWriter();
+      const runtime = new AllureNodeReporterRuntime({ writer });
+
+      runtime.startTest({});
+      runtime.applyRuntimeMessages([
+        {
+          type: "metadata",
+          data: {
+            links: fixtures.links,
+          },
+        },
+      ]);
+      runtime.writeTest();
+
+      expect(writer.writeResult).toHaveBeenCalledWith(expect.objectContaining({
+        links: fixtures.links,
+      }));
+    });
+
+    it("transforms links according the runtime configuration", () => {
+      const writer = mockWriter();
+      const runtime = new AllureNodeReporterRuntime({
+        writer,
+        links: [
+          {
+            type: "issue",
+            urlTemplate: "https://allurereport.org/issues/%s",
+            nameTemplate: "Issue %s",
+          },
+          {
+            type: "tms",
+            urlTemplate: "https://allurereport.org/tasks/%s",
+            nameTemplate: "Task %s",
+          },
+        ]
+      });
+
+      runtime.startTest({});
+      runtime.applyRuntimeMessages([
+        {
+          type: "metadata",
+          data: {
+            links: fixtures.links,
+          },
+        },
+      ]);
+      runtime.writeTest();
+
+      expect(writer.writeResult).toHaveBeenCalledWith(expect.objectContaining({
+        links: [
+          {
+            type: "issue",
+            url: "https://allurereport.org/issues/1",
+            name: "issue-1",
+          },
+          {
+            type: "tms",
+            url: "https://allurereport.org/tasks/2",
+            name: "Task 2",
+          },
+          fixtures.links[2],
+        ],
+      }));
     });
   });
 });
