@@ -1,12 +1,13 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { appendFileSync } from "node:fs";
-import { copyFile, mkdir, writeFile } from "node:fs/promises";
+import { copyFile, cp, mkdir, writeFile } from "node:fs/promises";
 import * as path from "node:path";
 import { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/sdk/node";
 
 type MochaRunOptions = {
   env?: { [keys: string]: string };
+  mode?: "serial" | "parallel";
 };
 
 export const runMochaInlineTest = async (
@@ -21,6 +22,8 @@ export const runMochaInlineTest = async (
     options = {};
   }
 
+  options.mode ??= process.env.ALLURE_MOCHA_TEST_PARALLEL ? "parallel" : "serial";
+
   const res: AllureResults = {
     tests: [],
     groups: [],
@@ -29,29 +32,31 @@ export const runMochaInlineTest = async (
 
   const fixturesPath = path.join(__dirname, "fixtures");
   const samplesPath = path.join(fixturesPath, "samples");
-  const runResultsDir = path.join(__dirname, "fixtures/run-results");
+  const runResultsDir = path.join(fixturesPath, "run-results");
   const testDir = path.join(runResultsDir, randomUUID());
 
-  const reporterPath = path.join(testDir, "reporter.cjs");
-  const reporterContent = `
-    const MochaAllureReporter = require('allure-mocha').default;
-    const { MessageAllureWriter } = require("allure-js-commons/sdk/node");
-    class ProcessMessageAllureReporter extends MochaAllureReporter {
-      constructor(runner, opts) {
-        if (opts.reporterOptions?.emitFiles !== 'true') {
-          opts.reporterOptions = {
-            writer: new MessageAllureWriter()
-          };
-        }
-        super(runner, opts);
-      }
-    }
-    module.exports = ProcessMessageAllureReporter;
-  `;
+  const reporterFileName = "reporter.cjs";
+  const reporterSrcPath = path.join(fixturesPath, reporterFileName);
+  const reporterDstPath = path.join(testDir, reporterFileName);
+
+  const filesToCopy: [string, string][] = [[reporterSrcPath, reporterDstPath]];
 
   const mochaPackagePath = require.resolve("mocha");
   const mochaRunScriptPath = path.resolve(mochaPackagePath, "../bin/mocha.js");
   const mochaArgs = ["--no-color", "--reporter", "./reporter.cjs", "**/*.spec.mjs"];
+
+  if (options.mode === "parallel") {
+    const parallelSetupFileName = "setupParallel.cjs";
+    const parallelSetupSrcPath = path.join(fixturesPath, parallelSetupFileName);
+    const parallelSetupDstPath = path.join(testDir, parallelSetupFileName);
+
+    const parallelWriterFileName = "AllureMochaParallelWriter.cjs";
+    const parallelWriterSrcPath = path.join(fixturesPath, parallelWriterFileName);
+    const parallelWriterDstPath = path.join(testDir, parallelWriterFileName);
+
+    filesToCopy.push([parallelSetupSrcPath, parallelSetupDstPath], [parallelWriterSrcPath, parallelWriterDstPath]);
+    mochaArgs.splice(1, 0, "--parallel", "--require", parallelSetupDstPath);
+  }
 
   const cmdPath = path.join(testDir, "cmd.log");
   const cmdContent = [mochaRunScriptPath, ...mochaArgs].map((t) => `"${t}"`).join(" ");
@@ -60,7 +65,7 @@ export const runMochaInlineTest = async (
 
   await mkdir(testDir, { recursive: true });
   await Promise.all([
-    writeFile(reporterPath, reporterContent, "utf-8"),
+    ...filesToCopy.map(([src, dst]) => cp(src, dst)),
     writeFile(cmdPath, cmdContent, "utf-8"),
     ...samples.map(async (sample) => {
       if (sample instanceof Array) {
@@ -79,6 +84,7 @@ export const runMochaInlineTest = async (
     env: {
       ...process.env,
       ...options.env,
+      ALLURE_MOCHA_TESTHOST_PID: process.pid.toString(),
     },
     cwd: testDir,
     stdio: "pipe",

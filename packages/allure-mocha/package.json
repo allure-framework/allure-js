@@ -42,7 +42,9 @@
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
-    "test": "vitest run ./test/spec/**/*.test.ts"
+    "test": "yarn run test:serial && yarn run test:parallel",
+    "test:serial": "vitest run ./test/spec/**/*.test.ts",
+    "test:parallel": "ALLURE_MOCHA_TEST_PARALLEL=true vitest run ./test/spec/**/*.test.ts"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
