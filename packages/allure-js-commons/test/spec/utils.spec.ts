@@ -10,7 +10,7 @@ import {
   isAnyStepFailed,
   serialize,
   typeToExtension,
-} from "../../src/sdk/node";
+} from "../../src/sdk/node/index.js";
 
 const fixtures = {
   withoutFailed: {

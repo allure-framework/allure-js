@@ -1,7 +1,7 @@
 import { Category, EnvironmentInfo, TestResult } from "../model.js";
 import { LifecycleListener } from "./LifecycleListener.js";
 import { Writer } from "./Writer.js";
-import { AllureContextProvider } from "./context";
+import { AllureContextProvider } from "./context/index.js";
 
 export interface LinkConfig {
   type: string;

@@ -3,7 +3,7 @@ import { mkdtempSync, writeFileSync } from "fs";
 import os from "os";
 import path from "path";
 import { afterEach, expect, it } from "vitest";
-import { parseTestPlan } from "../../src/sdk/node";
+import { parseTestPlan } from "../../src/sdk/node/index.js";
 
 const originalEnv = process.env;
 const tmpDir = mkdtempSync(path.join(os.tmpdir(), "test-"));
