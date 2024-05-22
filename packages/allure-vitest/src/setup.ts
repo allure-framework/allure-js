@@ -1,5 +1,6 @@
 /* eslint @typescript-eslint/require-await: off */
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
+import * as allure from "allure-js-commons";
 import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
 import { TestPlanV1, getGlobalTestRuntime, parseTestPlan } from "allure-js-commons/sdk/node";
 import { AllureVitestTestRuntime } from "./runtime.js";
@@ -35,9 +36,14 @@ beforeEach(async (ctx) => {
     ctx.skip();
     return;
   }
+
+  // @ts-ignore
+  globalThis.allure = allure;
 });
 
 afterEach((ctx) => {
   // @ts-ignore
   ctx.task.meta.allureRuntimeMessages = getGlobalTestRuntime<AllureVitestTestRuntime>().messagesHolder.messages;
+  // @ts-ignore
+  globalThis.allure = undefined;
 });

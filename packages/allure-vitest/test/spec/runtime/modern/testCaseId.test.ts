@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { runVitestInlineTest } from "../utils.js";
+import { runVitestInlineTest } from "../../../utils.js";
 
 it("sets test case id", async () => {
   const { tests } = await runVitestInlineTest(`
