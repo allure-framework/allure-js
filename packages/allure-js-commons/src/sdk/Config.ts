@@ -8,9 +8,11 @@ export interface LinkConfig {
   urlTemplate: string;
 }
 
+export type WriterDescriptor = [cls: string, ...args: readonly unknown[]] | string;
+
 export interface Config {
   readonly resultsDir?: string;
-  readonly writer: Writer;
+  readonly writer: Writer | WriterDescriptor;
   // TODO: handle lifecycle hooks here
   readonly testMapper?: (test: TestResult) => TestResult | null;
   readonly links?: LinkConfig[];

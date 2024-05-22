@@ -31,7 +31,10 @@ import {
   createTestResult,
   getTestResultHistoryId,
   getTestResultTestCaseId,
+  resolveWriter,
 } from "./utils.js";
+import type { WellKnownWriters } from "./utils.js";
+import * as wellKnownCommonWriters from "./writers/index.js";
 
 type StartScopeOpts = {
   /**
@@ -170,7 +173,7 @@ export class ReporterRuntime {
   }: Config & {
     crypto: Crypto;
   }) {
-    this.writer = writer;
+    this.writer = resolveWriter(this.getWellKnownWriters(), writer);
     this.notifier = new Notifier({ listeners });
     this.crypto = crypto;
     this.links = links;
@@ -758,6 +761,10 @@ export class ReporterRuntime {
       start: Date.now(),
       ...deepClone(result),
     };
+  }
+
+  protected getWellKnownWriters() {
+    return wellKnownCommonWriters as WellKnownWriters;
   }
 
   private handleBuiltInMessage = <T>(message: Messages<T>, targets: MessageTargets) => {

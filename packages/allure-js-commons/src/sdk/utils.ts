@@ -12,7 +12,9 @@ import {
   TestResultContainer,
 } from "../model.js";
 import { typeToExtension } from "../utils.js";
+import type { WriterDescriptor } from "./Config.js";
 import { Crypto } from "./Crypto.js";
+import type { Writer } from "./Writer.js";
 
 export const createTestResultContainer = (uuid: string): TestResultContainer => {
   return {
@@ -176,4 +178,31 @@ export const readImageAsBase64 = async (filePath: string): Promise<string | unde
   } catch (e) {
     return undefined;
   }
+};
+
+export type WellKnownWriters = {
+  [key: string]: (new (...args: readonly unknown[]) => Writer) | undefined;
+};
+
+export const resolveWriter = (wellKnownWriters: WellKnownWriters, value: Writer | WriterDescriptor): Writer => {
+  if (typeof value === "string") {
+    return createWriter(wellKnownWriters, value);
+  } else if (value instanceof Array) {
+    return createWriter(wellKnownWriters, value[0], value.slice(1));
+  }
+  return value;
+};
+
+const createWriter = (wellKnownWriters: WellKnownWriters, nameOrPath: string, args: readonly unknown[] = []) => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
+  const ctorOrInstance = getKnownWriterCtor(wellKnownWriters, nameOrPath) ?? requireWriterCtor(nameOrPath);
+  return typeof ctorOrInstance === "function" ? new ctorOrInstance(...args) : ctorOrInstance;
+};
+
+const getKnownWriterCtor = (wellKnownWriters: WellKnownWriters, name: string) =>
+  (wellKnownWriters as unknown as { [key: string]: Writer | undefined })[name];
+
+const requireWriterCtor = (modulePath: string): (new (...args: readonly unknown[]) => Writer) | Writer => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
+  return require(modulePath);
 };
