@@ -1,6 +1,6 @@
 export { Config } from "./Config.js";
 export { ReporterRuntime } from "./ReporterRuntime.js";
-export { TestRuntime, setGlobalTestRuntime, getGlobalTestRuntime } from "../TestRuntime.js";
+export { TestRuntime, MessageTestRuntime, setGlobalTestRuntime, getGlobalTestRuntime } from "../TestRuntime.js";
 export { TestHolder } from "./TestHolder.js";
 export { MessagesHolder } from "./MessageHolder.js";
 export {

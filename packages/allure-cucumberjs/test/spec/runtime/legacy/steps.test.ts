@@ -4,9 +4,11 @@ import { runCucumberInlineTest } from "../../../utils";
 
 it("handles runtime steps", async () => {
   const { tests } = await runCucumberInlineTest(["steps"], ["runtime/legacy/steps"], false);
-
   expect(tests).toHaveLength(2);
-  expect(tests).toContainEqual(
+
+  const test1 = tests.find((test) => test.name === "succeed");
+  const test2 = tests.find((test) => test.name === "broken");
+  expect(test1).toEqual(
     expect.objectContaining({
       name: "succeed",
       status: Status.PASSED,
@@ -49,7 +51,7 @@ it("handles runtime steps", async () => {
       ]),
     }),
   );
-  expect(tests).toContainEqual(
+  expect(test2).toEqual(
     expect.objectContaining({
       name: "broken",
       status: Status.BROKEN,
