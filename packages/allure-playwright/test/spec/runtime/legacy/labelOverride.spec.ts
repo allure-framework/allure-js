@@ -1,12 +1,11 @@
 import { expect, it } from "vitest";
 import { LabelName } from "allure-js-commons/sdk/node";
-import { runPlaywrightInlineTest } from "../utils";
+import { runPlaywrightInlineTest } from "../../../utils";
 
 it("overrides suite label", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "a.test.ts": `
-       import { test, expect } from '@playwright/test';
-       import { suite } from "allure-js-commons"
+       import { test, expect, suite } from "allure-playwright"
 
        test('should override SUITE label', async ({}) => {
            await suite('SUITE Override');
@@ -25,8 +24,7 @@ it("overrides suite label", async () => {
 it("overrides parent-suite label", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "a.test.ts": `
-       import { test, expect } from '@playwright/test';
-       import { parentSuite } from "allure-js-commons"
+       import { test, expect, parentSuite } from "allure-playwright"
 
        test('should override PARENT SUITE label', async ({}) => {
            await parentSuite('PARENT SUITE Override');
@@ -45,8 +43,7 @@ it("overrides parent-suite label", async () => {
 it("overrides sub-suite label", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "a.test.ts": `
-       import { test, expect } from '@playwright/test';
-       import { subSuite } from "allure-js-commons"
+       import { test, expect, subSuite } from "allure-playwright"
 
        test('should override SUB SUITE label', async ({}) => {
            await subSuite('SUB SUITE Override');

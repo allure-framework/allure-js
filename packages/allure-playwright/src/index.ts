@@ -354,4 +354,8 @@ export class AllureReporter implements Reporter {
   }
 }
 
+export * from "allure-js-commons";
+
+export { test, expect } from "@playwright/test";
+
 export default AllureReporter;
