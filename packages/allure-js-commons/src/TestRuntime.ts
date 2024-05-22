@@ -22,7 +22,7 @@ export interface TestRuntime {
 
   attachment: (name: string, content: Buffer | string, type: ContentType | string) => PromiseLike<void>;
 
-  step: (name: string, body: () => void | PromiseLike<void>) => PromiseLike<void>;
+  step: <T = void>(name: string, body: () => T | PromiseLike<T>) => PromiseLike<T>;
 
   stepDisplayName: (name: string) => PromiseLike<void>;
 
@@ -62,8 +62,9 @@ class NoopRuntime implements TestRuntime {
     await this.warning();
   }
 
-  async step() {
+  async step<T>(name: string, body: () => T | PromiseLike<T>): Promise<T> {
     await this.warning();
+    return body();
   }
 
   async stepDisplayName() {

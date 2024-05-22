@@ -126,7 +126,7 @@ export class AllureCucumberTestRuntime extends World implements TestRuntime {
     });
   }
 
-  async step(name: string, body: () => void | PromiseLike<void>) {
+  async step<T = void>(name: string, body: () => T | PromiseLike<T>) {
     await this.sendMessage({
       type: "step_start",
       data: {
@@ -136,7 +136,7 @@ export class AllureCucumberTestRuntime extends World implements TestRuntime {
     });
 
     try {
-      await body();
+      const result = await body();
 
       await this.sendMessage({
         type: "step_stop",
@@ -146,6 +146,7 @@ export class AllureCucumberTestRuntime extends World implements TestRuntime {
           stop: Date.now(),
         },
       });
+      return result;
     } catch (err) {
       const status = getStatusFromError(err as Error);
 

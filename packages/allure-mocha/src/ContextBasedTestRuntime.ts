@@ -101,7 +101,7 @@ export class ContextBasedTestRuntime implements TestRuntime {
     });
   };
 
-  step = async (name: string, body: () => void | PromiseLike<void>) => {
+  step = async <T = void>(name: string, body: () => T | PromiseLike<T>) => {
     let status = Status.PASSED;
     let statusDetails: StatusDetails | undefined;
 
@@ -114,7 +114,7 @@ export class ContextBasedTestRuntime implements TestRuntime {
     });
 
     try {
-      await body();
+      return await body();
     } catch (err) {
       status = err instanceof Error ? getStatusFromError(err) : Status.BROKEN;
       statusDetails = errorToStatusDetails(err);

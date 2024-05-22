@@ -125,7 +125,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
     });
   }
 
-  async step(name: string, body: () => void | PromiseLike<void>) {
+  async step<T = void>(name: string, body: () => T | PromiseLike<T>) {
     await this.sendMessage({
       type: "step_start",
       data: {
@@ -135,7 +135,7 @@ export class AllureVitestTestRuntime implements TestRuntime {
     });
 
     try {
-      await body();
+      const result = await body();
 
       await this.sendMessage({
         type: "step_stop",
@@ -145,6 +145,8 @@ export class AllureVitestTestRuntime implements TestRuntime {
           stop: Date.now(),
         },
       });
+
+      return result;
     } catch (err) {
       const { message, stack } = err as Error;
 

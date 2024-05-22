@@ -133,7 +133,7 @@ export class AllureCypressTestRuntime implements TestRuntime {
     });
   }
 
-  step(name: string, body: () => void | PromiseLike<void>) {
+  step<T = void>(name: string, body: () => T | PromiseLike<T>) {
     return cy
       .wrap(null, { log: false })
       .then(() => {
@@ -142,9 +142,9 @@ export class AllureCypressTestRuntime implements TestRuntime {
           data: { name, start: Date.now() },
         });
 
-        return body() || Cypress.Promise.resolve();
+        return Cypress.Promise.resolve(body());
       })
-      .then(() => {
+      .then((result) => {
         return this.sendMessageAsync({
           type: "step_stop",
           data: {
@@ -152,7 +152,7 @@ export class AllureCypressTestRuntime implements TestRuntime {
             stage: Stage.FINISHED,
             stop: Date.now(),
           },
-        });
+        }).then(() => result);
       });
   }
 

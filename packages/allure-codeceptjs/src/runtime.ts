@@ -180,7 +180,7 @@ export class AllureCodeceptJsTestRuntime implements TestRuntime {
     });
   }
 
-  async step(name: string, body: () => void | PromiseLike<void>) {
+  async step<T = void>(name: string, body: () => T | PromiseLike<T>) {
     await this.sendMessage({
       type: "step_start",
       data: {
@@ -190,7 +190,7 @@ export class AllureCodeceptJsTestRuntime implements TestRuntime {
     });
 
     try {
-      await body();
+      const result = await body();
 
       await this.sendMessage({
         type: "step_stop",
@@ -200,6 +200,7 @@ export class AllureCodeceptJsTestRuntime implements TestRuntime {
           stop: Date.now(),
         },
       });
+      return result;
     } catch (err) {
       await this.sendMessage({
         type: "step_stop",
