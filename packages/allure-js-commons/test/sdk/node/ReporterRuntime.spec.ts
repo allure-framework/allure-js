@@ -17,7 +17,7 @@ const fixtures = {
     {
       url: "3",
       type: "custom",
-    }
+    },
   ] as Link[],
 };
 
@@ -103,9 +103,11 @@ describe("AllureNodeReporterRuntime", () => {
       ]);
       runtime.writeTest();
 
-      expect(writer.writeResult).toHaveBeenCalledWith(expect.objectContaining({
-        links: fixtures.links,
-      }));
+      expect(writer.writeResult).toHaveBeenCalledWith(
+        expect.objectContaining({
+          links: fixtures.links,
+        }),
+      );
     });
 
     it("transforms links according the runtime configuration", () => {
@@ -123,7 +125,7 @@ describe("AllureNodeReporterRuntime", () => {
             urlTemplate: "https://allurereport.org/tasks/%s",
             nameTemplate: "Task %s",
           },
-        ]
+        ],
       });
 
       runtime.startTest({});
@@ -137,21 +139,23 @@ describe("AllureNodeReporterRuntime", () => {
       ]);
       runtime.writeTest();
 
-      expect(writer.writeResult).toHaveBeenCalledWith(expect.objectContaining({
-        links: [
-          {
-            type: "issue",
-            url: "https://allurereport.org/issues/1",
-            name: "issue-1",
-          },
-          {
-            type: "tms",
-            url: "https://allurereport.org/tasks/2",
-            name: "Task 2",
-          },
-          fixtures.links[2],
-        ],
-      }));
+      expect(writer.writeResult).toHaveBeenCalledWith(
+        expect.objectContaining({
+          links: [
+            {
+              type: "issue",
+              url: "https://allurereport.org/issues/1",
+              name: "issue-1",
+            },
+            {
+              type: "tms",
+              url: "https://allurereport.org/tasks/2",
+              name: "Task 2",
+            },
+            fixtures.links[2],
+          ],
+        }),
+      );
     });
   });
 });
