@@ -140,6 +140,7 @@ export default {
 +        pattern: [/@issue=(.*)/],
 +        type: "issue",
 +        urlTemplate: "https://example.com/issues/%s",
++        nameTemplate: "Issue: %s",
 +      },
 +      {
 +        pattern: [/@tms=(.*)/],

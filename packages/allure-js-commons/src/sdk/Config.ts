@@ -6,6 +6,7 @@ import { AllureContextProvider } from "./context/index.js";
 export interface LinkConfig {
   type: string;
   urlTemplate: string;
+  nameTemplate?: string;
 }
 
 export type WriterDescriptor = [cls: string, ...args: readonly unknown[]] | string;
