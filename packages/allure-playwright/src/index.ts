@@ -23,7 +23,9 @@ import {
   RuntimeMessage,
   Stage,
   Status,
+  TestPlanV1Test,
   TestResult,
+  escapeRegExp,
   extractMetadataFromString,
   parseTestPlan,
   readImageAsBase64,
@@ -38,17 +40,29 @@ const stepAttachPrefixLength = 50;
 
 interface ReporterV2 {
   onConfigure(config: FullConfig): void;
+
   onBegin(suite: Suite): void;
+
   onTestBegin(test: TestCase, result: PlaywrightTestResult): void;
+
   onStdOut(chunk: string | Buffer, test?: TestCase, result?: PlaywrightTestResult): void;
+
   onStdErr(chunk: string | Buffer, test?: TestCase, result?: PlaywrightTestResult): void;
+
   onTestEnd(test: TestCase, result: PlaywrightTestResult): void;
+
   onEnd(result: FullResult): Promise<{ status?: FullResult["status"] } | undefined | void> | void;
+
   onExit(): void | Promise<void>;
+
   onError(error: TestError): void;
+
   onStepBegin(test: TestCase, result: PlaywrightTestResult, step: TestStep): void;
+
   onStepEnd(test: TestCase, result: PlaywrightTestResult, step: TestStep): void;
+
   printsToStdio(): boolean;
+
   version(): "v2";
 }
 
@@ -70,14 +84,57 @@ export class AllureReporter implements ReporterV2 {
 
   onConfigure(config: FullConfig): void {
     this.config = config;
+
     const testPlan = parseTestPlan();
-    if (testPlan) {
-      // @ts-ignore
-      const configElement = config[Object.getOwnPropertySymbols(config)[0]];
-      if (configElement) {
-        configElement.cliArgs = testPlan.tests.filter((test) => test.selector).map((test) => test.selector);
-      }
+
+    if (!testPlan) {
+      return;
     }
+
+    // @ts-ignore
+    const configElement = config[Object.getOwnPropertySymbols(config)[0]];
+
+    if (!configElement) {
+      return;
+    }
+
+    const testsWithSelectors = testPlan.tests.filter((test) => test.selector);
+    const v1ReporterTests: TestPlanV1Test[] = [];
+    const v2ReporterTests: TestPlanV1Test[] = [];
+    const cliArgs: string[] = [];
+
+    testsWithSelectors.forEach((test) => {
+      if (!/#/.test(test.selector as string)) {
+        v2ReporterTests.push(test);
+        return;
+      }
+
+      v1ReporterTests.push(test);
+    });
+
+    if (v2ReporterTests.length) {
+      // we need to cut off column because playwright works only with line number
+      const v2SelectorsArgs = v2ReporterTests
+        .map((test) => test.selector.replace(/:\d+$/, ""))
+        .map((selector) => escapeRegExp(selector));
+
+      cliArgs.push(...(v2SelectorsArgs as string[]));
+    }
+
+    if (v1ReporterTests.length) {
+      const v1SelectorsArgs = v1ReporterTests
+        // we can filter tests only by absolute path, so we need to cut off test name
+        .map((test) => test.selector.split("#")[0])
+        .map((selector) => escapeRegExp(selector));
+
+      cliArgs.push(...(v1SelectorsArgs as string[]));
+    }
+
+    if (!cliArgs.length) {
+      return;
+    }
+
+    configElement.cliArgs = cliArgs;
   }
 
   onError(): void {}

@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
-import { TestPlanV1 } from "../TestPlan.js";
+import { TestPlanV1, TestPlanV1Test } from "../TestPlan.js";
 
-export { TestPlanV1 };
+export { TestPlanV1, TestPlanV1Test };
 
 export const parseTestPlan = (): TestPlanV1 | undefined => {
   const testPlanPath = process.env.ALLURE_TESTPLAN_PATH;
