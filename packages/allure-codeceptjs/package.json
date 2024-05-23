@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "allure-js-commons": "workspace:*",
-    "strip-ansi": "^5.2.0"
+    "strip-ansi": "^7.0.0"
   },
   "devDependencies": {
     "@codeceptjs/configure": "^1.0.0",
