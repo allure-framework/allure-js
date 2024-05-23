@@ -1,3 +1,5 @@
+import type { Writer } from "./sdk/Writer.js";
+
 export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
 export const ALLURE_IMAGEDIFF_CONTENT_TYPE = "application/vnd.allure.image.diff";
 export const ALLURE_SKIPPED_BY_TEST_PLAN_LABEL = "allure-skipped-by-test-plan";
@@ -287,3 +289,7 @@ export type ExtensionMessage<T extends string> = T extends MessageTypes<RuntimeM
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type Messages<T> = T extends RuntimeMessage | ExtensionMessage<infer _> ? T : never;
+
+export type WellKnownWriters = {
+  [key: string]: (new (...args: readonly unknown[]) => Writer) | undefined;
+};

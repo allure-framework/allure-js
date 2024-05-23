@@ -1,8 +1,7 @@
 import { extname } from "path";
-import { AttachmentOptions, TestResult } from "../../model.js";
+import { AttachmentOptions, TestResult, WellKnownWriters } from "../../model.js";
 import { Config } from "../Config.js";
 import { ReporterRuntime } from "../ReporterRuntime.js";
-import { WellKnownWriters } from "../utils.js";
 import { AllureNodeCrypto } from "./Crypto.js";
 import { getGlobalLabels } from "./utils.js";
 import * as wellKnownNodeWriters from "./writers/index.js";

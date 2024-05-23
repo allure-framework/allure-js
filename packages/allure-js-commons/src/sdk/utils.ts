@@ -10,6 +10,7 @@ import {
   StepResult,
   TestResult,
   TestResultContainer,
+  WellKnownWriters,
 } from "../model.js";
 import { typeToExtension } from "../utils.js";
 import type { WriterDescriptor } from "./Config.js";
@@ -178,10 +179,6 @@ export const readImageAsBase64 = async (filePath: string): Promise<string | unde
   } catch (e) {
     return undefined;
   }
-};
-
-export type WellKnownWriters = {
-  [key: string]: (new (...args: readonly unknown[]) => Writer) | undefined;
 };
 
 export const resolveWriter = (wellKnownWriters: WellKnownWriters, value: Writer | WriterDescriptor): Writer => {

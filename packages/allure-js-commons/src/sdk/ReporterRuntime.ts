@@ -17,6 +17,7 @@ import {
   Stage,
   StepResult,
   TestResult,
+  WellKnownWriters,
 } from "../model.js";
 import { deepClone, typeToExtension } from "../utils.js";
 import { Config, LinkConfig } from "./Config.js";
@@ -33,7 +34,6 @@ import {
   getTestResultTestCaseId,
   resolveWriter,
 } from "./utils.js";
-import type { WellKnownWriters } from "./utils.js";
 import * as wellKnownCommonWriters from "./writers/index.js";
 
 type StartScopeOpts = {
