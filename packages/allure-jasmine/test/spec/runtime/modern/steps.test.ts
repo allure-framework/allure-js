@@ -224,3 +224,29 @@ it("step runtime api", async () => {
     { name: "p4", value: "v4", mode: "hidden" },
   ]);
 });
+
+it("step returning data", async () => {
+  const { tests } = await runJasmineInlineTest({
+    "spec/test/sample.spec.js": `
+    const { step } = require("allure-js-commons");;
+
+    it("step", async () => {
+      const data = await step("data step", () => {
+        return "data123";
+      });
+      await step("previous: " + data, () => {
+      });
+    });
+  `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].status).toEqual("passed");
+  expect(tests[0].steps).toHaveLength(2);
+  const step1 = tests[0].steps[0];
+  expect(step1.status).toEqual("passed");
+  expect(step1.name).toEqual("data step");
+  const step2 = tests[0].steps[1];
+  expect(step2.status).toEqual("passed");
+  expect(step2.name).toEqual("previous: data123");
+});

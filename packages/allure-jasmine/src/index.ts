@@ -2,21 +2,13 @@ import { cwd } from "node:process";
 import * as allure from "allure-js-commons";
 import {
   AllureNodeReporterRuntime,
-  ContentType,
   FileSystemAllureWriter,
   FixtureType,
-  Label,
-  LabelName,
-  Link,
-  LinkType,
   MessageAllureWriter,
-  ParameterMode,
-  ParameterOptions,
+  MessageTestRuntime,
   RuntimeMessage,
   Stage,
   Status,
-  TestRuntime,
-  getStatusFromError,
   getSuiteLabels,
   isPromise,
   setGlobalTestRuntime,
@@ -24,177 +16,13 @@ import {
 import { AllureJasmineConfig, JasmineBeforeAfterFn } from "./model.js";
 import { findAnyError, findMessageAboutThrow } from "./utils.js";
 
-class AllureJasmineTestRuntime implements TestRuntime {
-  constructor(private allureJasmineReporter: AllureJasmineReporter) {}
-
-  async label(name: LabelName | string, value: string) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        labels: [{ name, value }],
-      },
-    });
-  }
-
-  async labels(...labels: Label[]) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        labels,
-      },
-    });
-  }
-
-  async link(url: string, type?: LinkType | string, name?: string) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        links: [{ type, url, name }],
-      },
-    });
-  }
-
-  async links(...links: Link[]) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        links,
-      },
-    });
-  }
-
-  async parameter(name: string, value: string, options?: ParameterOptions) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        parameters: [
-          {
-            name,
-            value,
-            ...options,
-          },
-        ],
-      },
-    });
-  }
-
-  async description(markdown: string) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        description: markdown,
-      },
-    });
-  }
-
-  async descriptionHtml(html: string) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        descriptionHtml: html,
-      },
-    });
-  }
-
-  async displayName(name: string) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        displayName: name,
-      },
-    });
-  }
-
-  async historyId(value: string) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        historyId: value,
-      },
-    });
-  }
-
-  async testCaseId(value: string) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        testCaseId: value,
-      },
-    });
-  }
-
-  async attachment(name: string, content: Buffer | string, type: string | ContentType) {
-    await this.sendMessage({
-      type: "raw_attachment",
-      data: {
-        name,
-        content: Buffer.from(content).toString("base64"),
-        contentType: type,
-        encoding: "base64",
-      },
-    });
-  }
-
-  async step(name: string, body: () => void | PromiseLike<void>) {
-    await this.sendMessage({
-      type: "step_start",
-      data: {
-        name,
-        start: Date.now(),
-      },
-    });
-
-    try {
-      await body();
-
-      await this.sendMessage({
-        type: "step_stop",
-        data: {
-          status: Status.PASSED,
-          stage: Stage.FINISHED,
-          stop: Date.now(),
-        },
-      });
-    } catch (err) {
-      await this.sendMessage({
-        type: "step_stop",
-        data: {
-          // @ts-ignore
-          status: getStatusFromError(err),
-          stage: Stage.FINISHED,
-          stop: Date.now(),
-          statusDetails: {
-            // @ts-ignore
-            message: err.message,
-            // @ts-ignore
-            trace: err.stack,
-          },
-        },
-      });
-
-      throw err;
-    }
-  }
-
-  async stepDisplayName(name: string) {
-    await this.sendMessage({
-      type: "step_metadata",
-      data: { name },
-    });
-  }
-
-  async stepParameter(name: string, value: string, mode?: ParameterMode) {
-    await this.sendMessage({
-      type: "step_metadata",
-      data: {
-        parameters: [{ name, value, mode }],
-      },
-    });
+class AllureJasmineTestRuntime extends MessageTestRuntime {
+  constructor(private readonly allureJasmineReporter: AllureJasmineReporter) {
+    super();
   }
 
   async sendMessage(message: RuntimeMessage) {
     this.allureJasmineReporter.handleAllureRuntimeMessages(message);
-
     await Promise.resolve();
   }
 }

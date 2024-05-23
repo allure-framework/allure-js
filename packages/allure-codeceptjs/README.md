@@ -15,7 +15,7 @@
 ## Installation
 
 ```bash
-npm i -D allure-js-commons allure-codeceptjs
+npm i -D allure-codeceptjs
 ```
 
 ## Usage

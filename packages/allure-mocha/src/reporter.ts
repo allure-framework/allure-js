@@ -11,7 +11,7 @@ import {
   getRelativePath,
   getStatusFromError,
 } from "allure-js-commons/sdk/node";
-import { setUpTestRuntime } from "./ContextBasedTestRuntime.js";
+import { setUpTestRuntime } from "./MochaTestRuntime.js";
 import { getInitialLabels, getSuitesOfMochaTest, resolveParallelModeSetupFile } from "./utils.js";
 
 const {

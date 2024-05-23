@@ -1,16 +1,16 @@
-import { getGlobalTestRuntime } from "./TestRuntime.js";
+import { TestRuntime, getGlobalTestRuntime } from "./TestRuntime.js";
 import { ContentType, Label, LabelName, Link, LinkType, ParameterMode, ParameterOptions } from "./model.js";
 
-export const label = (name: LabelName, value: string) => {
+export const label = (name: LabelName | string, value: string) => {
   const runtime = getGlobalTestRuntime();
 
   return runtime.labels({ name, value });
 };
 
-export const labels = (...lablesList: Label[]) => {
+export const labels = (...labelsList: Label[]) => {
   const runtime = getGlobalTestRuntime();
 
-  return runtime.labels(...lablesList);
+  return runtime.labels(...labelsList);
 };
 
 export const link = (url: string, type?: LinkType | string, name?: string) => {
@@ -72,28 +72,24 @@ export type StepContext = {
   parameter: (name: string, value: string, mode?: ParameterMode) => void | PromiseLike<void>;
 };
 
-const stepContext: StepContext = {
+const stepContext: (runtime: TestRuntime) => StepContext = (runtime) => ({
   displayName: (name) => {
-    const runtime = getGlobalTestRuntime();
-
     return runtime.stepDisplayName(name);
   },
   parameter: (name, value, mode?) => {
-    const runtime = getGlobalTestRuntime();
-
     return runtime.stepParameter(name, value, mode);
   },
-};
+});
 
-export const step = (name: string, body: (context: StepContext) => void | PromiseLike<void>) => {
+export const step = <T = void>(name: string, body: (context: StepContext) => T | PromiseLike<T>) => {
   const runtime = getGlobalTestRuntime();
 
-  return runtime.step(name, () => body(stepContext));
+  return runtime.step(name, () => body(stepContext(runtime)));
 };
 
-export const issue = (url: string, name: string) => link(url, LinkType.ISSUE, name);
+export const issue = (url: string, name?: string) => link(url, LinkType.ISSUE, name);
 
-export const tms = (url: string, name: string) => link(url, LinkType.TMS, name);
+export const tms = (url: string, name?: string) => link(url, LinkType.TMS, name);
 
 export const allureId = (value: string) => label(LabelName.ALLURE_ID, value);
 

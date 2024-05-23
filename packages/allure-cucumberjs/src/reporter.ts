@@ -20,7 +20,7 @@ import {
   getWorstStepResultStatus,
 } from "allure-js-commons/sdk/node";
 import { AllureCucumberReporterConfig, LabelConfig, LinkConfig } from "./model.js";
-import { AllureCucumberTestRuntime } from "./runtime.js";
+import { AllureCucumberWorld } from "./world.js";
 
 const { ALLURE_THREAD_NAME } = process.env;
 
@@ -73,10 +73,11 @@ export default class AllureCucumberReporter extends Formatter {
     this.beforeHooks = options.supportCodeLibrary.beforeTestCaseHookDefinitions;
     this.afterHooks = options.supportCodeLibrary.afterTestCaseHookDefinitions;
 
-    // set custom Allure World for single thread mode
+    // set AllureCucumberWorld for single thread mode
     if (options.supportCodeLibrary.World === World) {
       // @ts-ignore
-      options.supportCodeLibrary.World = AllureCucumberTestRuntime;
+      // noinspection JSConstantReassignment
+      options.supportCodeLibrary.World = AllureCucumberWorld;
     }
   }
 

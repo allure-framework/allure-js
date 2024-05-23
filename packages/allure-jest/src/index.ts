@@ -9,19 +9,13 @@ import * as allure from "allure-js-commons";
 import {
   ALLURE_TEST_RUNTIME_KEY,
   AllureNodeReporterRuntime,
-  ContentType,
   FileSystemAllureWriter,
-  Label,
   LabelName,
-  Link,
-  LinkType,
   MessageAllureWriter,
-  ParameterMode,
-  ParameterOptions,
+  MessageTestRuntime,
   RuntimeMessage,
   Stage,
   Status,
-  TestRuntime,
   getStatusFromError,
   getSuitesLabels,
   setGlobalTestRuntime,
@@ -32,174 +26,13 @@ import { getTestId, getTestPath } from "./utils.js";
 const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
 const hostname = os.hostname();
 
-class AllureJestTestRuntime implements TestRuntime {
+class AllureJestTestRuntime extends MessageTestRuntime {
   constructor(
-    private jestEnvironment: AllureJestEnvironment,
-    private context: Global.Global,
+    private readonly jestEnvironment: AllureJestEnvironment,
+    private readonly context: Global.Global,
   ) {
+    super();
     context[ALLURE_TEST_RUNTIME_KEY] = () => this;
-  }
-
-  async label(name: LabelName | string, value: string) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        labels: [{ name, value }],
-      },
-    });
-  }
-
-  async labels(...labels: Label[]) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        labels,
-      },
-    });
-  }
-
-  async link(url: string, type?: LinkType | string, name?: string) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        links: [{ type, url, name }],
-      },
-    });
-  }
-
-  async links(...links: Link[]) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        links,
-      },
-    });
-  }
-
-  async parameter(name: string, value: string, options?: ParameterOptions) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        parameters: [
-          {
-            name,
-            value,
-            ...options,
-          },
-        ],
-      },
-    });
-  }
-
-  async description(markdown: string) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        description: markdown,
-      },
-    });
-  }
-
-  async descriptionHtml(html: string) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        descriptionHtml: html,
-      },
-    });
-  }
-
-  async displayName(name: string) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        displayName: name,
-      },
-    });
-  }
-
-  async historyId(value: string) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        historyId: value,
-      },
-    });
-  }
-
-  async testCaseId(value: string) {
-    await this.sendMessage({
-      type: "metadata",
-      data: {
-        testCaseId: value,
-      },
-    });
-  }
-
-  async attachment(name: string, content: Buffer | string, type: string | ContentType) {
-    await this.sendMessage({
-      type: "raw_attachment",
-      data: {
-        name,
-        content: Buffer.from(content).toString("base64"),
-        contentType: type,
-        encoding: "base64",
-      },
-    });
-  }
-
-  async step(name: string, body: () => void | PromiseLike<void>) {
-    await this.sendMessage({
-      type: "step_start",
-      data: {
-        name,
-        start: Date.now(),
-      },
-    });
-
-    try {
-      await body();
-
-      await this.sendMessage({
-        type: "step_stop",
-        data: {
-          status: Status.PASSED,
-          stage: Stage.FINISHED,
-          stop: Date.now(),
-        },
-      });
-    } catch (err) {
-      await this.sendMessage({
-        type: "step_stop",
-        data: {
-          status: getStatusFromError(err as Error),
-          stage: Stage.FINISHED,
-          stop: Date.now(),
-          statusDetails: {
-            message: (err as Error).message,
-            trace: (err as Error).stack,
-          },
-        },
-      });
-
-      throw err;
-    }
-  }
-
-  async stepDisplayName(name: string) {
-    await this.sendMessage({
-      type: "step_metadata",
-      data: { name },
-    });
-  }
-
-  async stepParameter(name: string, value: string, mode?: ParameterMode) {
-    await this.sendMessage({
-      type: "step_metadata",
-      data: {
-        parameters: [{ name, value, mode }],
-      },
-    });
   }
 
   async sendMessage(message: RuntimeMessage) {
