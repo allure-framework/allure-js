@@ -1,9 +1,10 @@
 import { extname } from "path";
-import { AttachmentOptions, TestResult } from "../../model.js";
+import { AttachmentOptions, TestResult, WellKnownWriters } from "../../model.js";
 import { Config } from "../Config.js";
 import { ReporterRuntime } from "../ReporterRuntime.js";
 import { AllureNodeCrypto } from "./Crypto.js";
 import { getGlobalLabels } from "./utils.js";
+import * as wellKnownNodeWriters from "./writers/index.js";
 
 export class AllureNodeReporterRuntime extends ReporterRuntime {
   constructor({ writer, listeners, links, environmentInfo, categories }: Config) {
@@ -58,5 +59,9 @@ export class AllureNodeReporterRuntime extends ReporterRuntime {
       ...result,
       labels: (result.labels ?? []).concat(getGlobalLabels()),
     });
+  }
+
+  protected getWellKnownWriters(): WellKnownWriters {
+    return Object.assign({}, super.getWellKnownWriters(), wellKnownNodeWriters);
   }
 }

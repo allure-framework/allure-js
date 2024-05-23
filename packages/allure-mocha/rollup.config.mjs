@@ -1,7 +1,6 @@
-import commonjsPlugin from "@rollup/plugin-commonjs";
-import resolvePlugin from "@rollup/plugin-node-resolve";
+/* eslint @typescript-eslint/no-unsafe-argument: 0 */
 import typescriptPlugin from "@rollup/plugin-typescript";
-import { join, relative } from "node:path";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "rollup";
 
@@ -13,9 +12,12 @@ const createNodeEntry = (inputFile) => {
     "mocha",
     "node:os",
     "node:fs",
+    "node:path",
     "node:process",
+    "node:worker_threads",
     "allure-js-commons",
     "allure-js-commons/sdk/node",
+    "mocha/lib/nodejs/reporters/parallel-buffered.js",
   ];
 
   return [
@@ -53,5 +55,5 @@ const createNodeEntry = (inputFile) => {
 };
 
 export default () => {
-  return [createNodeEntry("src/index.ts")].flat();
+  return [createNodeEntry("src/index.ts"), createNodeEntry("src/setupAllureMochaParallel.ts")].flat();
 };
