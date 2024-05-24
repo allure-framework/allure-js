@@ -1,7 +1,7 @@
-import { randomUUID } from "crypto";
-import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "fs";
-import * as os from "os";
-import path from "path";
+import { randomUUID } from "node:crypto";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import * as os from "node:os";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { AllureNodeReporterRuntime, Config, ContentType, FileSystemAllureWriter } from "../../src/sdk/node/index.js";
 
@@ -48,6 +48,10 @@ describe("FileSystemAllureWriter", () => {
     };
     const runtime = new AllureNodeReporterRuntime(config);
 
+    runtime.startTest({});
+    runtime.stopTest();
+    runtime.writeTest();
+    rmSync(tmpReportPath, { recursive: true });
     runtime.startTest({});
     runtime.stopTest();
     runtime.writeTest();
