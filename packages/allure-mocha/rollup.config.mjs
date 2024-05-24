@@ -55,5 +55,9 @@ const createNodeEntry = (inputFile) => {
 };
 
 export default () => {
-  return [createNodeEntry("src/index.ts"), createNodeEntry("src/setupAllureMochaParallel.ts")].flat();
+  return [
+    createNodeEntry("src/index.ts"),
+    createNodeEntry("src/setupAllureMochaParallel.ts"),
+    createNodeEntry("src/legacy.ts"),
+  ].flat();
 };

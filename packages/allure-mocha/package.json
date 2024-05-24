@@ -23,15 +23,17 @@
     ".": {
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
+    },
+    "./runtime": {
+      "import": "./dist/legacy.mjs",
+      "require": "./dist/legacy.cjs"
     }
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist",
-    "runtime.js",
-    "runtime.d.ts"
+    "dist"
   ],
   "scripts": {
     "allure-report": "allure serve ./out/allure-results",

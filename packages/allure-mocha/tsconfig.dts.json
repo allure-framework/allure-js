@@ -5,10 +5,5 @@
     "emitDeclarationOnly": true
   },
   "include": ["./src/**/*"],
-  "exclude": [
-    "./test/**",
-    "runtime.d.ts",
-    "./src/MochaAllure.ts",
-    "./src/AllureReporter.ts"
-  ]
+  "exclude": ["./test/**"]
 }
