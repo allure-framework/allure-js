@@ -134,7 +134,7 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    configElement.cliArgs = cliArgs;
+    configElement.cliArgs = cliArgs.map((selector) => `/${selector}`);
   }
 
   onError(): void {}

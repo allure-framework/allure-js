@@ -111,7 +111,7 @@ describe("testplan with v2 reporter full names", () => {
         },
         {
           id: 4,
-          selector: "notaga.test.ts:3:13",
+          selector: "aga.test.ts:3:13",
         },
       ],
     };
@@ -174,7 +174,7 @@ describe("testplan with v2 reporter full names", () => {
         "b.test.ts:3:13",
         "nested/super strange nested/super strange name.test.ts:4:14",
         ".+.test.ts:3:13",
-        "notaga.test.ts:3:13",
+        "aga.test.ts:3:13",
       ]),
     );
   });
