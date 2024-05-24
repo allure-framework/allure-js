@@ -21,6 +21,7 @@ module.exports = {
     sourceType: "module",
     warnOnUnsupportedTypeScriptVersion: false,
   },
+  ignorePatterns: ["./**/dist/**/*"],
   plugins: [
     "eslint-plugin-no-null",
     "eslint-plugin-prefer-arrow",

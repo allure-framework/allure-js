@@ -1,5 +1,3 @@
-/* eslint @typescript-eslint/no-require-imports: 0 */
-/* eslint @typescript-eslint/no-var-requires: 0 */
 /* eslint no-underscore-dangle: 0 */
 const { BufferedWorkerPool } = require("mocha/lib/nodejs/buffered-worker-pool.js");
 const process = require("process");

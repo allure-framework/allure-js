@@ -1,5 +1,3 @@
-/* eslint @typescript-eslint/no-require-imports: 0 */
-/* eslint @typescript-eslint/no-var-requires: 0 */
 /* eslint no-underscore-dangle: 0 */
 const ParallelBuffered = require("mocha/lib/nodejs/reporters/parallel-buffered.js");
 const { MessageAllureWriter } = require("allure-js-commons/sdk/node");
