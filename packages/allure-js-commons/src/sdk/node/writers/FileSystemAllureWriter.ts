@@ -1,5 +1,5 @@
-import { PathLike, copyFileSync, existsSync, mkdirSync, writeFileSync } from "fs";
-import { join } from "path";
+import { PathLike, copyFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import properties from "properties";
 import { Category, TestResult, TestResultContainer } from "../../../model.js";
 import { Writer } from "../../Writer.js";
@@ -9,14 +9,7 @@ const writeJson = (path: string, data: unknown): void => {
 };
 
 export class FileSystemAllureWriter implements Writer {
-  constructor(private config: { resultsDir: string }) {
-    // TODO: create results dir every time we write something
-    if (!existsSync(this.config.resultsDir)) {
-      mkdirSync(this.config.resultsDir, {
-        recursive: true,
-      });
-    }
-  }
+  constructor(private config: { resultsDir: string }) {}
 
   writeAttachment(distFileName: string, content: Buffer | string, encoding: BufferEncoding = "utf-8"): void {
     const path = this.buildPath(distFileName);
@@ -54,6 +47,12 @@ export class FileSystemAllureWriter implements Writer {
   }
 
   private buildPath(name: string): string {
+    if (!existsSync(this.config.resultsDir)) {
+      mkdirSync(this.config.resultsDir, {
+        recursive: true,
+      });
+    }
+
     return join(this.config.resultsDir, name);
   }
 }

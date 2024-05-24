@@ -39,15 +39,18 @@ describe("FileSystemAllureWriter", () => {
     expect(actualContent.toString("utf8")).toBe(data);
   });
 
-  it("Should create allure-report nested path", () => {
+  it("creates allure-report nested path every time writer write something", () => {
     const tmpReportPath = path.join(os.tmpdir(), `./allure-testing-dir/${randomUUID()}`);
     const config: Config = {
       writer: new FileSystemAllureWriter({
         resultsDir: tmpReportPath,
       }),
     };
+    const runtime = new AllureNodeReporterRuntime(config);
 
-    new AllureNodeReporterRuntime(config);
+    runtime.startTest({});
+    runtime.stopTest();
+    runtime.writeTest();
 
     expect(existsSync(tmpReportPath)).toBe(true);
   });
