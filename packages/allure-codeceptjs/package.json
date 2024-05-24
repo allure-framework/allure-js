@@ -35,8 +35,7 @@
     "test": "vitest run test/spec"
   },
   "dependencies": {
-    "allure-js-commons": "workspace:*",
-    "strip-ansi": "^5.2.0"
+    "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
     "@codeceptjs/configure": "^1.0.0",

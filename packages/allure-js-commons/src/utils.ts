@@ -1,5 +1,7 @@
 /* eslint-disable max-lines */
-import { AttachmentOptions, Executable, Label, LabelName, Status, TestResult } from "./model.js";
+import stripAnsi from "strip-ansi";
+import type { AttachmentOptions, Executable, Label, StatusDetails, TestResult } from "./model.js";
+import { LabelName, Status } from "./model.js";
 
 const EXTENSIONS_BY_TYPE: Record<string, string> = {
   "application/andrew-inset": ".ez",
@@ -1067,4 +1069,18 @@ const reRegExpChar = /[\\^$.*+?()[\]{}|]/g,
 
 export const escapeRegExp = (value: string): string => {
   return reHasRegExpChar.test(value) ? value.replace(reRegExpChar, "\\$&") : value;
+};
+
+export const stripAnsiFromStatusDetails = (statusDetails: StatusDetails) => {
+  const cleanedUpStatusDetails = { ...statusDetails };
+
+  if (statusDetails.message) {
+    cleanedUpStatusDetails.message = stripAnsi(statusDetails.message);
+  }
+
+  if (statusDetails.trace) {
+    cleanedUpStatusDetails.trace = stripAnsi(statusDetails.trace);
+  }
+
+  return cleanedUpStatusDetails;
 };

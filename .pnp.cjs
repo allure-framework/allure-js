@@ -4853,7 +4853,6 @@ const RAW_RUNTIME_STATE =
           ["npm-run-all2", "npm:6.1.2"],\
           ["rimraf", "npm:5.0.5"],\
           ["rollup", "npm:4.16.3"],\
-          ["strip-ansi", "npm:5.2.0"],\
           ["ts-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:10.9.2"],\
           ["tslib", "npm:2.6.2"],\
           ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\
@@ -5028,7 +5027,6 @@ const RAW_RUNTIME_STATE =
           ["rollup", "npm:4.17.1"],\
           ["sinon", "npm:18.0.0"],\
           ["source-map-support", "npm:0.5.21"],\
-          ["strip-ansi", "npm:5.2.0"],\
           ["ts-jest", "virtual:f22a73b9c1f4f0e2e1c95f149ccb41c96491085e4b2ecd3061e554432306c4df6c2976f3c6ce3a6d62abead3ccc6cf04e88b4aebf1de7356583819351e2346e2#npm:29.1.2"],\
           ["ts-node", "virtual:3c6c31eedba60f6d4a0031098f0272720e7414162569ae8f58388d36f8e79683154a59f38a8e5aece9f0d5e45421fab86d5311a37a1c1aec338de3c79151496a#npm:10.9.2"],\
           ["tslib", "npm:2.6.2"],\

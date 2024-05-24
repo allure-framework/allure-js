@@ -19,7 +19,7 @@ import {
   TestResult,
   WellKnownWriters,
 } from "../model.js";
-import { deepClone, typeToExtension } from "../utils.js";
+import { deepClone, stripAnsiFromStatusDetails, typeToExtension } from "../utils.js";
 import { Config, LinkConfig } from "./Config.js";
 import { Crypto } from "./Crypto.js";
 import { Notifier } from "./LifecycleListener.js";
@@ -533,6 +533,7 @@ export class ReporterRuntime {
     }
 
     const targetResult = this.state.getTest(resolvedUuid);
+
     if (!targetResult) {
       // eslint-disable-next-line no-console
       console.error(`No test (${resolvedUuid}) to stop!`);
@@ -543,6 +544,10 @@ export class ReporterRuntime {
     targetResult.testCaseId ??= getTestResultTestCaseId(this.crypto, targetResult);
     targetResult.historyId ??= getTestResultHistoryId(this.crypto, targetResult);
     targetResult.stop = stop || Date.now();
+
+    if (targetResult.statusDetails) {
+      targetResult.statusDetails = stripAnsiFromStatusDetails(targetResult.statusDetails);
+    }
 
     this.notifier.afterTestResultStop(targetResult);
   };
@@ -573,6 +578,7 @@ export class ReporterRuntime {
     this.state.deleteTestResult(resolvedUuid);
 
     const currentScope = this.contextProvider.getScope();
+
     if (currentScope === resolvedUuid) {
       // Writes the scope introduced into the context by `startTest` with
       // `dedicatedScope` set to `true`.
@@ -634,6 +640,7 @@ export class ReporterRuntime {
     }
 
     const step = this.state.getStep(stepUuid);
+
     if (!step) {
       // eslint-disable-next-line no-console
       console.error(`No step ${stepUuid} to stop!`);
@@ -644,6 +651,10 @@ export class ReporterRuntime {
 
     step.stop = stop ?? Date.now();
     step.stage = Stage.FINISHED;
+
+    if (step.statusDetails) {
+      step.statusDetails = stripAnsiFromStatusDetails(step.statusDetails);
+    }
 
     this.state.deleteStepResult(stepUuid);
     this.contextProvider.removeStep(uuid);
@@ -844,6 +855,10 @@ export class ReporterRuntime {
     }
 
     Object.assign(step, rest);
+
+    if (step.statusDetails) {
+      step.statusDetails = stripAnsiFromStatusDetails(step.statusDetails);
+    }
 
     this.stopStep({ uuid: rootUuid, stop });
   };

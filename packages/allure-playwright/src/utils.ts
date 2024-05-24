@@ -1,6 +1,5 @@
 import { TestStatus } from "@playwright/test";
 import { TestError } from "@playwright/test/reporter";
-import stripAnsi from "strip-ansi";
 import { LabelName, Status, StatusDetails, TestResult } from "allure-js-commons/sdk/node";
 
 export const statusToAllureStats = (status: TestStatus, expectedStatus: TestStatus): Status => {
@@ -20,9 +19,8 @@ export const statusToAllureStats = (status: TestStatus, expectedStatus: TestStat
 };
 
 export const getStatusDetails = (error: TestError): StatusDetails => {
-  const message = error.message && stripAnsi(error.message);
-
-  let trace = error.stack && stripAnsi(error.stack);
+  const message = error.message;
+  let trace = error.stack;
 
   if (trace && message && trace.startsWith(`Error: ${message}`)) {
     trace = trace.substr(message.length + "Error: ".length);

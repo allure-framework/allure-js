@@ -59,6 +59,7 @@ export {
   allureIdRegexpGlobal,
   extractMetadataFromString,
   escapeRegExp,
+  stripAnsiFromStatusDetails,
   getStatusFromError,
   getSuiteLabels,
   getSuitesLabels,

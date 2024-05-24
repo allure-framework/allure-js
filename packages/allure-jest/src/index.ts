@@ -4,7 +4,6 @@ import type { Circus, Global } from "@jest/types";
 import os from "node:os";
 import { dirname, sep } from "node:path";
 import process from "node:process";
-import stripAnsi from "strip-ansi";
 import * as allure from "allure-js-commons";
 import {
   ALLURE_TEST_RUNTIME_KEY,
@@ -252,8 +251,8 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         result.stage = Stage.FINISHED;
         result.status = status;
         result.statusDetails = {
-          message: stripAnsi(errorMessage || ""),
-          trace: stripAnsi(errorTrace || ""),
+          message: errorMessage,
+          trace: errorTrace,
         };
       }, testUuid);
     }

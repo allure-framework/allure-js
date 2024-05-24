@@ -1,6 +1,5 @@
 import { event } from "codeceptjs";
 import path from "node:path";
-import stripAnsi from "strip-ansi";
 import {
   AllureNodeReporterRuntime,
   FileSystemAllureWriter,
@@ -156,7 +155,7 @@ export class AllureCodeceptJsReporter {
 
     this.allureRuntime!.updateTest((result) => {
       result.status = Status.FAILED;
-      result.statusDetails = { message: stripAnsi(err.message) };
+      result.statusDetails = { message: err.message };
     }, this.currentAllureResultUuid);
     this.closeCurrentAllureTest(test);
   }
