@@ -50,7 +50,9 @@
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "yarn run test:serial && yarn run test:parallel",
     "test:serial": "vitest run ./test/spec/**/*.test.ts",
-    "test:parallel": "ALLURE_MOCHA_TEST_PARALLEL=true vitest run ./test/spec/**/*.test.ts"
+    "test:parallel": "ALLURE_MOCHA_TEST_PARALLEL=true vitest run ./test/spec/**/*.test.ts",
+    "test:esm": "ALLURE_MOCHA_TEST_RUNNER=esm ALLURE_MOCHA_TEST_SPEC_FORMAT=esm vitest run ./test/spec/**/*.test.ts",
+    "test:cjs": "ALLURE_MOCHA_TEST_RUNNER=cjs ALLURE_MOCHA_TEST_SPEC_FORMAT=cjs vitest run ./test/spec/**/*.test.ts"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"

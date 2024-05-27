@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { TestResult } from "allure-js-commons/sdk/node";
-import { runMochaInlineTest } from "../../utils";
+import { SPEC_EXT, runMochaInlineTest } from "../../utils";
 
 describe("defaults", () => {
   let test: TestResult;
@@ -14,9 +14,8 @@ describe("defaults", () => {
   });
 
   it("has fullName", () => {
-    expect(test.fullName).toMatch(
-      /^test\/fixtures\/run-results\/[0-9a-f-]+\/plain-mocha\/testInFileScope\.spec\.mjs: a test in a file scope$/,
-    );
+    const fnPattern = new RegExp(`^plain-mocha\\/testInFileScope\\.spec\\${SPEC_EXT}: a test in a file scope$`);
+    expect(test.fullName).toMatch(fnPattern);
   });
 
   it("has historyId", () => {
@@ -36,14 +35,13 @@ describe("defaults", () => {
 
   it("has default labels", () => {
     const labels = test.labels;
+    const packagePattern = new RegExp(`^plain-mocha\\.testInFileScope\\.spec\\${SPEC_EXT}$`);
     expect(labels).toContainEqual({ name: "language", value: "javascript" });
     expect(labels).toContainEqual({ name: "framework", value: "mocha" });
     expect(labels).toContainEqual({ name: "host", value: expect.anything() });
     expect(labels).toContainEqual({
       name: "package",
-      value: expect.stringMatching(
-        /^test\.fixtures\.run-results\.[0-9a-f-]+\.plain-mocha\.testInFileScope\.spec\.mjs$/,
-      ),
+      value: expect.stringMatching(packagePattern),
     });
   });
 });
