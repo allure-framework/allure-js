@@ -1,13 +1,17 @@
 import * as Mocha from "mocha";
 import { hostname } from "node:os";
-import { extname, join } from "node:path";
+import { dirname, extname, join } from "node:path";
 import { env, pid } from "node:process";
+import { fileURLToPath } from "node:url";
 import { isMainThread, threadId } from "node:worker_threads";
 import { Label, LabelName } from "allure-js-commons/sdk/node";
 
+const filename = fileURLToPath(import.meta.url);
+
 export const getSuitesOfMochaTest = (test: Mocha.Test) => test.titlePath().slice(0, -1);
 
-export const resolveParallelModeSetupFile = () => join(__dirname, `setupAllureMochaParallel${extname(__filename)}`);
+export const resolveParallelModeSetupFile = () =>
+  join(dirname(filename), `setupAllureMochaParallel${extname(filename)}`);
 
 export const resolveMochaWorkerId = () => env.MOCHA_WORKER_ID ?? (isMainThread ? pid : threadId).toString();
 

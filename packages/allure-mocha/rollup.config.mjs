@@ -4,16 +4,14 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "rollup";
 
-const outdir = join(
-  fileURLToPath(new URL(".", import.meta.url)),
-  "dist",
-);
+const outdir = join(fileURLToPath(new URL(".", import.meta.url)), "dist");
 const external = [
   "mocha",
   "node:os",
   "node:fs",
   "node:path",
   "node:process",
+  "node:url",
   "node:worker_threads",
   "allure-js-commons",
   "allure-js-commons/sdk/node",
@@ -46,6 +44,6 @@ export default () => {
     createEntryConfigs("index", { format: "cjs" }),
     createEntryConfigs("index", { format: "esm", exports: "named" }),
     createEntryConfigs("legacy", { exports: "named" }),
-    createEntryConfigs("setupAllureMochaParallel", { exports: "none" })
+    createEntryConfigs("setupAllureMochaParallel", { exports: "none" }),
   ].flat();
 };
