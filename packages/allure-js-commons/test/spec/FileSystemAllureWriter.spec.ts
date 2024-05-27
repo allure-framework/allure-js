@@ -1,7 +1,7 @@
-import { randomUUID } from "crypto";
-import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "fs";
-import * as os from "os";
-import path from "path";
+import { randomUUID } from "node:crypto";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import * as os from "node:os";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { AllureNodeReporterRuntime, Config, ContentType, FileSystemAllureWriter } from "../../src/sdk/node/index.js";
 
@@ -39,15 +39,22 @@ describe("FileSystemAllureWriter", () => {
     expect(actualContent.toString("utf8")).toBe(data);
   });
 
-  it("Should create allure-report nested path", () => {
+  it("creates allure-report nested path every time writer write something", () => {
     const tmpReportPath = path.join(os.tmpdir(), `./allure-testing-dir/${randomUUID()}`);
     const config: Config = {
       writer: new FileSystemAllureWriter({
         resultsDir: tmpReportPath,
       }),
     };
+    const runtime = new AllureNodeReporterRuntime(config);
 
-    new AllureNodeReporterRuntime(config);
+    runtime.startTest({});
+    runtime.stopTest();
+    runtime.writeTest();
+    rmSync(tmpReportPath, { recursive: true });
+    runtime.startTest({});
+    runtime.stopTest();
+    runtime.writeTest();
 
     expect(existsSync(tmpReportPath)).toBe(true);
   });
