@@ -3,6 +3,9 @@
 // esm: import { it } from "mocha";
 // esm: import { allure } from "allure-mocha/runtime";
 
-it("a passed log step", () => {
-  allure.logStep("foo");
+it("a test with a step that returns a value", () => {
+  const result = allure.step("foo", () => "bar");
+  if (result !== "bar") {
+    throw new Error(`Unexpected value ${result}`);
+  }
 });

@@ -1,25 +1,26 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { Stage, Status, TestResult } from "allure-js-commons/sdk/node";
-import { runMochaInlineTest } from "../../../utils";
+import { runMochaInlineTest } from "../../../../utils";
 
 describe("step", () => {
   const testMap = new Map<string, TestResult>();
   let attachments: Record<string, string | Buffer>;
   beforeAll(async () => {
     const results = await runMochaInlineTest(
-      ["steps", "logStep"],
-      ["steps", "lambdaStep"],
-      ["steps", "twoStepsInRow"],
-      ["steps", "twoNestedSteps"],
-      ["steps", "renamedStep"],
-      ["steps", "failedStep"],
-      ["steps", "brokenStep"],
-      ["steps", "stepWithAttachment"],
-      ["steps", "stepWithParameter"],
-      ["steps", "stepWithMaskedParameter"],
-      ["steps", "stepWithHiddenParameter"],
-      ["steps", "stepReturnsValue"],
-      ["steps", "stepReturnsPromise"],
+      ["legacy", "steps", "logStep"],
+      ["legacy", "steps", "failedLogStep"],
+      ["legacy", "steps", "brokenLogStep"],
+      ["legacy", "steps", "skippedLogStep"],
+      ["legacy", "steps", "lambdaStep"],
+      ["legacy", "steps", "twoStepsInRow"],
+      ["legacy", "steps", "twoNestedSteps"],
+      ["legacy", "steps", "renamedStep"],
+      ["legacy", "steps", "failedStep"],
+      ["legacy", "steps", "brokenStep"],
+      ["legacy", "steps", "stepWithAttachment"],
+      ["legacy", "steps", "stepWithParameter"],
+      ["legacy", "steps", "stepReturnsValue"],
+      ["legacy", "steps", "stepReturnsPromise"],
     );
     for (const testResult of results.tests) {
       testMap.set(testResult.name as string, testResult);
@@ -28,13 +29,49 @@ describe("step", () => {
   });
 
   describe("structure", () => {
-    it("noop", () => {
-      expect(testMap.get("a log step")).toMatchObject({
-        steps: [
-          expect.objectContaining({
-            name: "foo",
-          }),
-        ],
+    describe("log steps", () => {
+      it("could be passed", () => {
+        expect(testMap.get("a passed log step")).toMatchObject({
+          steps: [
+            expect.objectContaining({
+              name: "foo",
+              status: Status.PASSED,
+            }),
+          ],
+        });
+      });
+
+      it("could be failed", () => {
+        expect(testMap.get("a failed log step")).toMatchObject({
+          steps: [
+            expect.objectContaining({
+              name: "foo",
+              status: Status.FAILED,
+            }),
+          ],
+        });
+      });
+
+      it("could be broken", () => {
+        expect(testMap.get("a broken log step")).toMatchObject({
+          steps: [
+            expect.objectContaining({
+              name: "foo",
+              status: Status.BROKEN,
+            }),
+          ],
+        });
+      });
+
+      it("could be skipped", () => {
+        expect(testMap.get("a skipped log step")).toMatchObject({
+          steps: [
+            expect.objectContaining({
+              name: "foo",
+              status: Status.SKIPPED,
+            }),
+          ],
+        });
       });
     });
 
@@ -169,7 +206,7 @@ describe("step", () => {
   });
 
   it("can be renamed", () => {
-    expect(testMap.get("a renamed step")).toMatchObject({
+    expect(testMap.get("a test with a renamed step")).toMatchObject({
       steps: [
         expect.objectContaining({
           name: "bar",
@@ -193,35 +230,13 @@ describe("step", () => {
     expect(decodedContent).toEqual("bar");
   });
 
-  describe("parameters", () => {
-    it("may contain a parameter", () => {
-      expect(testMap.get("a step with a parameter")).toMatchObject({
-        steps: expect.arrayContaining([
-          expect.objectContaining({
-            parameters: [{ name: "bar", value: "baz" }],
-          }),
-        ]),
-      });
-    });
-
-    it("may contain a masked parameter", () => {
-      expect(testMap.get("a step with a masked parameter")).toMatchObject({
-        steps: expect.arrayContaining([
-          expect.objectContaining({
-            parameters: [{ name: "bar", value: "baz", mode: "masked" }],
-          }),
-        ]),
-      });
-    });
-
-    it("may contain a hidden parameter", () => {
-      expect(testMap.get("a step with a hidden parameter")).toMatchObject({
-        steps: expect.arrayContaining([
-          expect.objectContaining({
-            parameters: [{ name: "bar", value: "baz", mode: "hidden" }],
-          }),
-        ]),
-      });
+  it("may contain a parameter", () => {
+    expect(testMap.get("a step with a parameter")).toMatchObject({
+      steps: expect.arrayContaining([
+        expect.objectContaining({
+          parameters: [{ name: "bar", value: "baz" }],
+        }),
+      ]),
     });
   });
 });

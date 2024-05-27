@@ -5,6 +5,6 @@
 
 it("a step with a parameter", async () => {
   await step("foo", async (ctx) => {
-    ctx.parameter("bar", "baz");
+    await ctx.parameter("bar", "baz");
   });
 });

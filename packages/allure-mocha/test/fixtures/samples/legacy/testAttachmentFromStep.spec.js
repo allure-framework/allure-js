@@ -3,6 +3,8 @@
 // esm: import { it } from "mocha";
 // esm: import { allure } from "allure-mocha/runtime";
 
-it("a passed log step", () => {
-  allure.logStep("foo");
+it("testAttachment from a step", () => {
+  allure.step("foo", () => {
+    allure.testAttachment("bar.txt", Buffer.from("baz"), "text/plain");
+  });
 });

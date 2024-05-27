@@ -93,7 +93,12 @@ abstract class AllureMochaTestRunner {
 
     testProcess.on("message", (message: string) => {
       const event: { path: string; type: string; data: string } = JSON.parse(message);
-      const data = event.type !== "attachment" ? JSON.parse(Buffer.from(event.data, "base64").toString()) : event.data;
+      const data =
+        event.type === "attachment"
+          ? event.data
+          : event.type === "misc" && event.path === "environment.properties"
+            ? Buffer.from(event.data, "base64").toString()
+            : JSON.parse(Buffer.from(event.data, "base64").toString());
 
       switch (event.type) {
         case "container":
@@ -103,8 +108,16 @@ abstract class AllureMochaTestRunner {
           res.tests.push(data as TestResult);
           break;
         case "attachment":
-          res.attachments[event.path] = event.data;
+          res.attachments[event.path] = data;
           break;
+        case "misc":
+          if (event.path === "environment.properties") {
+            // @ts-ignore
+            res.envInfo = data;
+          } else if (event.path === "categories.json") {
+            // @ts-ignore
+            res.categories = data;
+          }
         default:
           break;
       }

@@ -3,6 +3,6 @@
 // esm: import { it } from "mocha";
 // esm: import { allure } from "allure-mocha/runtime";
 
-it("a passed log step", () => {
-  allure.logStep("foo");
+it("a test run with env info", () => {
+  allure.writeEnvironmentInfo({ foo: "bar", baz: "qux" });
 });
