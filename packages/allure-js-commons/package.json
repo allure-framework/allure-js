@@ -1,6 +1,7 @@
 {
   "name": "allure-js-commons",
   "version": "2.15.0",
+  "type": "module",
   "description": "Allure JS Commons",
   "homepage": "https://allurereport.org/",
   "repository": {
@@ -17,44 +18,59 @@
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/esm/index.d.ts",
+      "default": "./dist/cjs/index.js"
     },
     "./internal": {
       "import": "./dist/esm/internal.js",
-      "require": "./dist/cjs/internal.js"
+      "require": "./dist/cjs/internal.js",
+      "types": "./dist/esm/internal.d.ts",
+      "default": "./dist/cjs/internal.js"
     },
     "./browser": {
       "import": "./dist/esm/browser/index.js",
-      "require": "./dist/cjs/browser/index.js"
+      "require": "./dist/cjs/browser/index.js",
+      "types": "./dist/esm/browser/index.d.ts",
+      "default": "./dist/cjs/browser/index.js"
     },
     "./node": {
       "import": "./dist/esm/node/index.js",
-      "require": "./dist/cjs/node/index.js"
+      "require": "./dist/cjs/node/index.js",
+      "types": "./dist/esm/node/index.d.ts",
+      "default": "./dist/cjs/node/index.js"
     },
     "./sdk": {
       "import": "./dist/esm/sdk/index.js",
-      "require": "./dist/cjs/sdk/index.js"
+      "require": "./dist/cjs/sdk/index.js",
+      "types": "./dist/esm/sdk/index.d.ts",
+      "default": "./dist/cjs/sdk/index.js"
     },
     "./sdk/node": {
       "import": "./dist/esm/sdk/node/index.js",
-      "require": "./dist/cjs/sdk/node/index.js"
+      "require": "./dist/cjs/sdk/node/index.js",
+      "types": "./dist/esm/sdk/node/index.d.ts",
+      "default": "./dist/cjs/sdk/node/index.js"
     },
     "./sdk/browser": {
       "import": "./dist/esm/sdk/browser/index.js",
-      "require": "./dist/cjs/sdk/browser/index.js"
+      "require": "./dist/cjs/sdk/browser/index.js",
+      "types": "./dist/esm/sdk/browser/index.d.ts",
+      "default": "./dist/cjs/sdk/browser/index.js"
     }
   },
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "compile": "run-p 'compile:*'",
-    "compile:esm": "tsc --project ./tsconfig.esm.json",
-    "compile:cjs": "tsc --project ./tsconfig.json",
-    "compile:fixup": "ts-node --project ./tsconfig.json ./scripts/fixup.ts",
+    "compile": "run-s compile:esm compile:cjs compile:fixup",
+    "compile:esm": "tsc --project ./tsconfig.json",
+    "compile:cjs": "babel ./dist/esm --out-dir ./dist/cjs --extensions '.js' --source-maps",
+    "compile:fixup": "node ./scripts/fixup.js",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "vitest run"
@@ -65,6 +81,10 @@
     "strip-ansi": "^5.2.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.24.6",
+    "@babel/core": "^7.24.6",
+    "@babel/plugin-transform-modules-commonjs": "^7.24.6",
+    "@types/babel__core": "^7",
     "@types/eslint": "^8",
     "@types/md5": "^2",
     "@types/node": "^20.6.3",

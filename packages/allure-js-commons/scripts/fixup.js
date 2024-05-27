@@ -1,8 +1,10 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const esmBuildPath = resolve(__dirname, "../dist/esm");
-const cjsBuildPath = resolve(__dirname, "../dist/cjs");
+const dirname = fileURLToPath(new URL(".", import.meta.url));
+const esmBuildPath = resolve(dirname, "../dist/esm");
+const cjsBuildPath = resolve(dirname, "../dist/cjs");
 
 try {
   mkdirSync(esmBuildPath, { recursive: true });

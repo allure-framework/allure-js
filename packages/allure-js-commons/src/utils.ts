@@ -1068,3 +1068,16 @@ const reRegExpChar = /[\\^$.*+?()[\]{}|]/g,
 export const escapeRegExp = (value: string): string => {
   return reHasRegExpChar.test(value) ? value.replace(reRegExpChar, "\\$&") : value;
 };
+
+export const requireModule = async (modulePath: string) => {
+  let module;
+
+  if (import.meta.url) {
+    module = await import(modulePath);
+  } else {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    module = require(modulePath);
+  }
+
+  return Promise.resolve(module);
+};

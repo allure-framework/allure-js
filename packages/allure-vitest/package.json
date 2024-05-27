@@ -1,6 +1,7 @@
 {
   "name": "allure-vitest",
   "version": "2.15.0",
+  "type": "module",
   "description": "Allure Vitest integration",
   "keywords": [
     "vitest",
@@ -19,19 +20,24 @@
     "email": "allure@qameta.io",
     "url": "https://qameta.io/"
   },
-  "type": "module",
   "exports": {
     "./reporter": {
-      "require": "./dist/reporter.cjs",
-      "import": "./dist/reporter.mjs"
+      "import": "./dist/esm/reporter.js",
+      "require": "./dist/cjs/reporter.js",
+      "types": "./dist/esm/reporter.d.ts",
+      "default": "./dist/cjs/reporter.js"
     },
     "./setup": {
-      "require": "./dist/setup.cjs",
-      "import": "./dist/setup.mjs"
+      "import": "./dist/esm/setup.js",
+      "require": "./dist/cjs/setup.js",
+      "types": "./dist/esm/setup.d.ts",
+      "default": "./dist/cjs/setup.js"
     },
     "./autoconfig": {
-      "require": "./dist/autoconfig.cjs",
-      "import": "./dist/autoconfig.mjs"
+      "import": "./dist/esm/autoconfig.js",
+      "require": "./dist/cjs/autoconfig.js",
+      "types": "./dist/esm/autoconfig.d.ts",
+      "default": "./dist/cjs/autoconfig.js"
     }
   },
   "files": [
@@ -39,24 +45,23 @@
     "*.d.ts"
   ],
   "scripts": {
-    "clean": "rimraf ./dist ./out",
-    "compile": "run-p 'compile:*'",
-    "compile:lib": "rollup -c",
-    "compile:types": "tsc --project ./tsconfig.dts.json",
-    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "allure-report": "allure serve ./out/allure-results",
-    "pretest": "run compile",
-    "test": "vitest run --dir ./test/spec --config ./vitest.config.ts",
+    "clean": "rimraf ./dist",
+    "compile": "run-s compile:esm compile:cjs compile:fixup",
+    "compile:esm": "tsc --project ./tsconfig.json",
+    "compile:cjs": "babel ./dist/esm --out-dir ./dist/cjs --extensions '.js' --source-maps",
+    "compile:fixup": "node ./scripts/fixup.js",
     "lint": "eslint ./src ./test --ext .ts",
-    "lint:fix": "eslint ./src ./test --ext .ts --fix"
+    "lint:fix": "eslint ./src ./test --ext .ts --fix",
+    "test": "vitest run --dir ./test/spec --config ./vitest.config.ts"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-typescript": "^11.1.6",
+    "@babel/cli": "^7.24.6",
+    "@babel/core": "^7.24.6",
+    "@babel/plugin-transform-modules-commonjs": "^7.24.6",
+    "@types/babel__core": "^7",
     "@types/eslint": "^8",
     "@types/node": "^20.6.3",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
@@ -71,8 +76,6 @@
     "glob": "^10.3.15",
     "npm-run-all2": "^6.1.2",
     "rimraf": "^5.0.1",
-    "rollup": "^4.17.2",
-    "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "vite": "^5.0.11",
     "vitest": "^1.1.3"

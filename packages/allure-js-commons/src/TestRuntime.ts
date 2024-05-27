@@ -10,7 +10,7 @@ import {
   Stage,
   Status,
 } from "./model.js";
-import { getStatusFromError } from "./utils.js";
+import { getStatusFromError, requireModule } from "./utils.js";
 
 export const ALLURE_TEST_RUNTIME_KEY = "allureTestRuntime";
 
@@ -277,7 +277,7 @@ const getGlobalTestRuntimeFunction = () => {
   return (globalThis as any)?.[ALLURE_TEST_RUNTIME_KEY] as (() => TestRuntime | undefined) | undefined;
 };
 
-export const getGlobalTestRuntime = (): TestRuntime => {
+export const getGlobalTestRuntime = async (): Promise<TestRuntime> => {
   const testRuntime = getGlobalTestRuntimeFunction();
 
   if (testRuntime) {
@@ -287,7 +287,7 @@ export const getGlobalTestRuntime = (): TestRuntime => {
   if ("_playwrightInstance" in globalThis) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      require("allure-playwright/autoconfig");
+      await requireModule("allure-playwright/autoconfig");
 
       return getGlobalTestRuntimeFunction()?.() ?? noopRuntime;
     } catch (err) {
@@ -300,7 +300,7 @@ export const getGlobalTestRuntime = (): TestRuntime => {
   if ("__vitest_environment__" in globalThis) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      require("allure-vitest/autoconfig");
+      await requireModule("allure-vitest/autoconfig");
 
       return getGlobalTestRuntimeFunction()?.() ?? noopRuntime;
     } catch (err) {

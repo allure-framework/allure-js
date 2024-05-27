@@ -1,68 +1,68 @@
 import { TestRuntime, getGlobalTestRuntime } from "./TestRuntime.js";
 import { ContentType, Label, LabelName, Link, LinkType, ParameterMode, ParameterOptions } from "./model.js";
 
-export const label = (name: LabelName | string, value: string) => {
-  const runtime = getGlobalTestRuntime();
+export const label = async (name: LabelName | string, value: string) => {
+  const runtime = await getGlobalTestRuntime();
 
   return runtime.labels({ name, value });
 };
 
-export const labels = (...labelsList: Label[]) => {
-  const runtime = getGlobalTestRuntime();
+export const labels = async (...labelsList: Label[]) => {
+  const runtime = await getGlobalTestRuntime();
 
   return runtime.labels(...labelsList);
 };
 
-export const link = (url: string, type?: LinkType | string, name?: string) => {
-  const runtime = getGlobalTestRuntime();
+export const link = async (url: string, type?: LinkType | string, name?: string) => {
+  const runtime = await getGlobalTestRuntime();
 
   return runtime.links({ url, type, name });
 };
 
-export const links = (...linksList: Link[]) => {
-  const runtime = getGlobalTestRuntime();
+export const links = async (...linksList: Link[]) => {
+  const runtime = await getGlobalTestRuntime();
 
   return runtime.links(...linksList);
 };
 
-export const parameter = (name: string, value: string, options?: ParameterOptions) => {
-  const runtime = getGlobalTestRuntime();
+export const parameter = async (name: string, value: string, options?: ParameterOptions) => {
+  const runtime = await getGlobalTestRuntime();
 
   return runtime.parameter(name, value, options);
 };
 
-export const description = (markdown: string) => {
-  const runtime = getGlobalTestRuntime();
+export const description = async (markdown: string) => {
+  const runtime = await getGlobalTestRuntime();
 
   return runtime.description(markdown);
 };
 
-export const descriptionHtml = (html: string) => {
-  const runtime = getGlobalTestRuntime();
+export const descriptionHtml = async (html: string) => {
+  const runtime = await getGlobalTestRuntime();
 
   return runtime.descriptionHtml(html);
 };
 
-export const displayName = (name: string) => {
-  const runtime = getGlobalTestRuntime();
+export const displayName = async (name: string) => {
+  const runtime = await getGlobalTestRuntime();
 
   return runtime.displayName(name);
 };
 
-export const historyId = (value: string) => {
-  const runtime = getGlobalTestRuntime();
+export const historyId = async (value: string) => {
+  const runtime = await getGlobalTestRuntime();
 
   return runtime.historyId(value);
 };
 
-export const testCaseId = (value: string) => {
-  const runtime = getGlobalTestRuntime();
+export const testCaseId = async (value: string) => {
+  const runtime = await getGlobalTestRuntime();
 
   return runtime.testCaseId(value);
 };
 
-export const attachment = (name: string, content: Buffer | string, type: ContentType | string) => {
-  const runtime = getGlobalTestRuntime();
+export const attachment = async (name: string, content: Buffer | string, type: ContentType | string) => {
+  const runtime = await getGlobalTestRuntime();
 
   return runtime.attachment(name, content, type);
 };
@@ -81,40 +81,40 @@ const stepContext: (runtime: TestRuntime) => StepContext = (runtime) => ({
   },
 });
 
-export const step = <T = void>(name: string, body: (context: StepContext) => T | PromiseLike<T>) => {
-  const runtime = getGlobalTestRuntime();
+export const step = async <T = void,>(name: string, body: (context: StepContext) => T | PromiseLike<T>) => {
+  const runtime = await getGlobalTestRuntime();
 
   return runtime.step(name, () => body(stepContext(runtime)));
 };
 
-export const issue = (url: string, name?: string) => link(url, LinkType.ISSUE, name);
+export const issue = async (url: string, name?: string) => link(url, LinkType.ISSUE, name);
 
-export const tms = (url: string, name?: string) => link(url, LinkType.TMS, name);
+export const tms = async (url: string, name?: string) => link(url, LinkType.TMS, name);
 
-export const allureId = (value: string) => label(LabelName.ALLURE_ID, value);
+export const allureId = async (value: string) => label(LabelName.ALLURE_ID, value);
 
-export const epic = (name: string) => label(LabelName.EPIC, name);
+export const epic = async (name: string) => label(LabelName.EPIC, name);
 
-export const feature = (name: string) => label(LabelName.FEATURE, name);
+export const feature = async (name: string) => label(LabelName.FEATURE, name);
 
-export const story = (name: string) => label(LabelName.STORY, name);
+export const story = async (name: string) => label(LabelName.STORY, name);
 
-export const suite = (name: string) => label(LabelName.SUITE, name);
+export const suite = async (name: string) => label(LabelName.SUITE, name);
 
-export const parentSuite = (name: string) => label(LabelName.PARENT_SUITE, name);
+export const parentSuite = async (name: string) => label(LabelName.PARENT_SUITE, name);
 
-export const subSuite = (name: string) => label(LabelName.SUB_SUITE, name);
+export const subSuite = async (name: string) => label(LabelName.SUB_SUITE, name);
 
-export const owner = (name: string) => label(LabelName.OWNER, name);
+export const owner = async (name: string) => label(LabelName.OWNER, name);
 
-export const severity = (name: string) => label(LabelName.SEVERITY, name);
+export const severity = async (name: string) => label(LabelName.SEVERITY, name);
 
-export const layer = (name: string) => label(LabelName.LAYER, name);
+export const layer = async (name: string) => label(LabelName.LAYER, name);
 
-export const tag = (name: string) => label(LabelName.TAG, name);
+export const tag = async (name: string) => label(LabelName.TAG, name);
 
-export const tags = (...tagsList: string[]) => {
-  const runtime = getGlobalTestRuntime();
+export const tags = async (...tagsList: string[]) => {
+  const runtime = await getGlobalTestRuntime();
 
   return runtime.labels(...tagsList.map((value) => ({ name: LabelName.TAG, value })));
 };
