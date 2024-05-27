@@ -9,7 +9,7 @@
     "types": [
       "node"
     ],
-    "outDir": "./dist/esm",
+    "outDir": "./dist",
     "module": "node16",
     "moduleResolution": "node16",
     "target": "es2020"

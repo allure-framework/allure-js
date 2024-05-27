@@ -22,22 +22,19 @@
   },
   "exports": {
     "./reporter": {
-      "import": "./dist/esm/reporter.js",
-      "require": "./dist/cjs/reporter.js",
-      "types": "./dist/esm/reporter.d.ts",
-      "default": "./dist/cjs/reporter.js"
+      "import": "./dist/reporter.js",
+      "types": "./dist/reporter.d.ts",
+      "default": "./dist/reporter.js"
     },
     "./setup": {
-      "import": "./dist/esm/setup.js",
-      "require": "./dist/cjs/setup.js",
-      "types": "./dist/esm/setup.d.ts",
-      "default": "./dist/cjs/setup.js"
+      "import": "./dist/setup.js",
+      "types": "./dist/setup.d.ts",
+      "default": "./dist/setup.js"
     },
     "./autoconfig": {
-      "import": "./dist/esm/autoconfig.js",
-      "require": "./dist/cjs/autoconfig.js",
-      "types": "./dist/esm/autoconfig.d.ts",
-      "default": "./dist/cjs/autoconfig.js"
+      "import": "./dist/autoconfig.js",
+      "types": "./dist/autoconfig.d.ts",
+      "default": "./dist/autoconfig.js"
     }
   },
   "files": [
@@ -45,10 +42,7 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "compile": "run-s compile:esm compile:cjs compile:fixup",
-    "compile:esm": "tsc --project ./tsconfig.json",
-    "compile:cjs": "babel ./dist/esm --out-dir ./dist/cjs --extensions '.js' --source-maps",
-    "compile:fixup": "node ./scripts/fixup.js",
+    "compile": "tsc --project ./tsconfig.json",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "vitest run --dir ./test/spec --config ./vitest.config.ts"
@@ -57,10 +51,6 @@
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
-    "@babel/cli": "^7.24.6",
-    "@babel/core": "^7.24.6",
-    "@babel/plugin-transform-modules-commonjs": "^7.24.6",
-    "@types/babel__core": "^7",
     "@types/eslint": "^8",
     "@types/node": "^20.6.3",
     "@typescript-eslint/eslint-plugin": "^7.0.0",

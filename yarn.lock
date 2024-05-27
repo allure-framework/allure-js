@@ -4121,10 +4121,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-vitest@workspace:packages/allure-vitest"
   dependencies:
-    "@babel/cli": "npm:^7.24.6"
-    "@babel/core": "npm:^7.24.6"
-    "@babel/plugin-transform-modules-commonjs": "npm:^7.24.6"
-    "@types/babel__core": "npm:^7"
     "@types/eslint": "npm:^8"
     "@types/node": "npm:^20.6.3"
     "@typescript-eslint/eslint-plugin": "npm:^7.0.0"
