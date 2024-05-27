@@ -56,6 +56,9 @@ abstract class AllureMochaTestRunner {
       const setupParallelCopyEntry = this.getCopyEntry("setupParallel.cjs", testDir);
       filesToCopy.push(setupParallelCopyEntry, this.getCopyEntry("AllureMochaParallelWriter.cjs", testDir));
       scriptArgs.push("--parallel");
+      if (RUNNER === "cli") {
+        scriptArgs.push("--require", setupParallelCopyEntry[1]);
+      }
     }
 
     const scriptPath = this.getScriptPath(testDir);
@@ -64,7 +67,6 @@ abstract class AllureMochaTestRunner {
 
     await mkdir(testDir, { recursive: true });
     await Promise.all([
-      writeFile(path.join(testDir, "package.json"), "{}", { encoding: "utf-8" }), // to simplify relative names
       ...filesToCopy.map(async ([src, dst]) => {
         const dstDir = path.dirname(dst);
         await mkdir(dstDir, { recursive: true });
