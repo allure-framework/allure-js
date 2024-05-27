@@ -22,11 +22,15 @@
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.cjs"
     },
     "./runtime": {
       "import": "./dist/legacy.mjs",
-      "require": "./dist/legacy.cjs"
+      "require": "./dist/legacy.cjs",
+      "types": "./dist/legacy.d.ts",
+      "default": "./dist/legacy.cjs"
     }
   },
   "main": "./dist/index.cjs",
