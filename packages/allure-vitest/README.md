@@ -25,7 +25,6 @@ npm i -D allure-vitest
 Add instance of the reporter to the [`reporters` section](https://vitest.dev/config/#reporters) of your Vitest config:
 
 ```js
-import AllureReporter from "allure-vitest/reporter";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
@@ -35,9 +34,7 @@ export default defineConfig({
     reporters: [
       // do not forget to keep the "default" if you want to see something in the console
       "default",
-      new AllureReporter({
-        resultsDir: "./allure-results",
-      }),
+      ["allure-vitest/reporter", { resultsDir: "./out/allure-results" }],
     ],
   },
 });
@@ -87,7 +84,6 @@ You can also configure links formatters to make usage much more convenient. `%s`
 in `urlTemplate` parameter will be replaced by given value.
 
 ```diff
-import AllureReporter from "allure-vitest/reporter";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
@@ -95,7 +91,7 @@ export default defineConfig({
     setupFiles: ["allure-vitest/setup"],
     reporters: [
       "default",
-      new AllureReporter({
+      ["allure-vitest/reporter", {
         resultsDir: "./allure-results",
 +       links: [
 +         {
@@ -112,7 +108,7 @@ export default defineConfig({
 +           urlTemplate: "https://example.org/custom/%s"
 +         },
 +       ]
-      }),
+      }],
     ],
   },
 });
