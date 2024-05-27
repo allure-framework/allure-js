@@ -1,10 +1,9 @@
-/* eslint @typescript-eslint/require-await: off */
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
-import * as allure from "allure-js-commons";
 import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
 import { TestPlanV1, getGlobalTestRuntime, parseTestPlan } from "allure-js-commons/sdk/node";
 import { existsInTestPlan } from "./utils.js";
 import { AllureVitestTestRuntime } from "./runtime.js";
+import { allureVitestLegacyApi } from "./legacy.js";
 
 beforeAll(() => {
   // @ts-ignore
@@ -16,7 +15,7 @@ afterAll(() => {
   global.allureTestPlan = undefined;
 });
 
-beforeEach(async (ctx) => {
+beforeEach((ctx) => {
   (ctx.task as any).meta = {
     ...ctx.task.meta,
     VITEST_POOL_ID: process.env.VITEST_POOL_ID,
@@ -38,7 +37,7 @@ beforeEach(async (ctx) => {
   }
 
   // @ts-ignore
-  globalThis.allure = allure;
+  globalThis.allure = allureVitestLegacyApi;
 });
 
 afterEach(async (ctx) => {
