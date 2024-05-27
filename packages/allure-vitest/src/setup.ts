@@ -7,12 +7,12 @@ import { allureVitestLegacyApi } from "./legacy.js";
 
 beforeAll(() => {
   // @ts-ignore
-  global.allureTestPlan = parseTestPlan();
+  globalThis.allureTestPlan = parseTestPlan();
 });
 
 afterAll(() => {
   // @ts-ignore
-  global.allureTestPlan = undefined;
+  globalThis.allureTestPlan = undefined;
 });
 
 beforeEach((ctx) => {
@@ -22,7 +22,7 @@ beforeEach((ctx) => {
   };
 
   // @ts-ignore
-  if (!existsInTestPlan(ctx, global.allureTestPlan as TestPlanV1)) {
+  if (!existsInTestPlan(ctx, globalThis.allureTestPlan as TestPlanV1)) {
     // @ts-ignore
     ctx.task.meta.allureRuntimeMessages = [
       {
