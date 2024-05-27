@@ -1,6 +1,7 @@
 import * as commons from "allure-js-commons";
-import type { Category, ContentType, ParameterOptions, Status } from "allure-js-commons";
-import type { ReporterRuntime } from "allure-js-commons/sdk";
+import type { Category, ContentType, ParameterOptions } from "allure-js-commons";
+import { Stage, Status, getStatusFromError, isPromise } from "allure-js-commons/sdk";
+import { getLegacyApiRuntime } from "./legacyUtils.js";
 
 interface StepInterface {
   parameter(name: string, value: string): void;
@@ -13,106 +14,141 @@ interface AttachmentOptions {
 }
 
 class LegacyAllureApi {
-  runtime: ReporterRuntime | undefined;
-
-  epic = (epic: string) => {
-    commons.epic(epic);
-  };
-  feature = (feature: string) => {
-    commons.feature(feature);
-  };
-  story = (story: string) => {
-    commons.story(story);
-  };
-  suite = (name: string) => {
-    commons.suite(name);
-  };
-  parentSuite = (name: string) => {
-    commons.parentSuite(name);
-  };
-  subSuite = (name: string) => {
-    commons.subSuite(name);
-  };
-  label = (name: string, value: string) => {
-    commons.label(name, value);
-  };
-  parameter = (name: string, value: any, options?: ParameterOptions) => {
-    commons.parameter(name, commons.serialize(value), options);
-  };
-  link = (url: string, name?: string, type?: string) => {
-    commons.link(url, type, name);
-  };
-  issue = (name: string, url: string) => {
-    commons.issue(url, name);
-  };
-  tms = (name: string, url: string) => {
-    commons.tms(url, name);
-  };
-  description = (markdown: string) => {
-    commons.description(markdown);
-  };
-  descriptionHtml = (html: string) => {
-    commons.descriptionHtml(html);
-  };
-  owner = (owner: string) => {
-    commons.owner(owner);
-  };
-  severity = (severity: string) => {
-    commons.severity(severity);
-  };
-  layer = (layer: string) => {
-    commons.layer(layer);
-  };
-  id = (allureId: string) => {
-    commons.allureId(allureId);
-  };
-  tag = (tag: string) => {
-    commons.tag(tag);
-  };
+  epic = (epic: string) => Promise.resolve(commons.epic(epic));
+  feature = (feature: string) => Promise.resolve(commons.feature(feature));
+  story = (story: string) => Promise.resolve(commons.story(story));
+  suite = (name: string) => Promise.resolve(commons.suite(name));
+  parentSuite = (name: string) => Promise.resolve(commons.parentSuite(name));
+  subSuite = (name: string) => Promise.resolve(commons.subSuite(name));
+  label = (name: string, value: string) => Promise.resolve(commons.label(name, value));
+  parameter = (name: string, value: any, options?: ParameterOptions) =>
+    Promise.resolve(commons.parameter(name, commons.serialize(value), options));
+  link = (url: string, name?: string, type?: string) => Promise.resolve(commons.link(url, type, name));
+  issue = (name: string, url: string) => Promise.resolve(commons.issue(url, name));
+  tms = (name: string, url: string) => Promise.resolve(commons.tms(url, name));
+  description = (markdown: string) => Promise.resolve(commons.description(markdown));
+  descriptionHtml = (html: string) => Promise.resolve(commons.descriptionHtml(html));
+  owner = (owner: string) => Promise.resolve(commons.owner(owner));
+  severity = (severity: string) => Promise.resolve(commons.severity(severity));
+  layer = (layer: string) => Promise.resolve(commons.layer(layer));
+  id = (allureId: string) => Promise.resolve(commons.allureId(allureId));
+  tag = (tag: string) => Promise.resolve(commons.tag(tag));
   writeEnvironmentInfo = (info: Record<string, string>) => {
-    this.runtime?.writer.writeEnvironmentInfo(info);
+    getLegacyApiRuntime()?.writer.writeEnvironmentInfo(info);
   };
   writeCategoriesDefinitions = (categories: Category[]) => {
-    this.runtime?.writer.writeCategoriesDefinitions(categories);
+    getLegacyApiRuntime()?.writer.writeCategoriesDefinitions(categories);
   };
-  attachment = (name: string, content: Buffer | string, options: ContentType | string | AttachmentOptions) => {
-    commons.attachment(name, content, typeof options === "string" ? options : options.contentType);
-  };
+  attachment = (name: string, content: Buffer | string, options: ContentType | string | AttachmentOptions) =>
+    Promise.resolve(commons.attachment(name, content, typeof options === "string" ? options : options.contentType));
   testAttachment = (name: string, content: Buffer | string, options: ContentType | string | AttachmentOptions) => {
-    const currentTestUuid = this.runtime?.getCurrentTest()?.uuid;
-    if (currentTestUuid) {
-      // TODO: handle options.fileExtension
-      this.runtime?.applyRuntimeMessages(
-        [
-          {
-            type: "raw_attachment",
-            data: {
-              name,
-              content: Buffer.from(content).toString("base64"),
-              contentType: typeof options === "string" ? options : options.contentType,
-              encoding: "base64",
-            },
-          },
-        ],
-        { testUuid: currentTestUuid },
+    const runtime = getLegacyApiRuntime();
+    const currentTest = runtime?.getCurrentTest();
+    if (currentTest) {
+      runtime?.writeAttachmentForItem(
+        {
+          name,
+          content: Buffer.from(content).toString("base64"),
+          contentType: typeof options === "string" ? options : options.contentType,
+          encoding: "base64",
+          fileExtension: typeof options === "string" ? undefined : options.fileExtension,
+        },
+        currentTest,
       );
     }
   };
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   logStep = (name: string, status?: Status) => {
-    commons.step(name, () => {}); // Allure Mocha 2.15.1 doesn't handle statuses too
+    this.step(name, () => {
+      getLegacyApiRuntime()?.updateStep((s) => (s.status = status));
+    });
   };
+  // It's sync-first. That's why we can't simply reuse commons.step.
   step = <T>(name: string, body: (step: StepInterface) => T): T => {
-    let result: T;
-    commons.step<T>(
-      name,
-      (ctx) =>
-        (result = body({
-          name: (n) => ctx.displayName(n),
-          parameter: (n, v) => ctx.parameter(n, v),
-        })),
-    );
-    return result!;
+    const runtime = getLegacyApiRuntime();
+    runtime?.applyRuntimeMessages([
+      {
+        type: "step_start",
+        data: {
+          name,
+          start: Date.now(),
+        },
+      },
+    ]);
+    try {
+      const result = body({
+        name: this.renameStep,
+        parameter: this.addStepParameter,
+      });
+      if (isPromise(result)) {
+        const promise = result as Promise<any>;
+        return promise
+          .then((v) => {
+            this.stopStepSuccess();
+            return v;
+          })
+          .catch((e) => {
+            this.stopStepWithError(e);
+            throw e;
+          }) as T;
+      }
+      this.stopStepSuccess();
+      return result;
+    } catch (e) {
+      this.stopStepWithError(e);
+      throw e;
+    }
+  };
+
+  private renameStep = (name: string) => {
+    getLegacyApiRuntime()?.applyRuntimeMessages([
+      {
+        type: "step_metadata",
+        data: { name },
+      },
+    ]);
+  };
+
+  private addStepParameter = (name: string, value: string) => {
+    getLegacyApiRuntime()?.applyRuntimeMessages([
+      {
+        type: "step_metadata",
+        data: {
+          parameters: [{ name, value }],
+        },
+      },
+    ]);
+  };
+
+  private stopStepSuccess = () => {
+    getLegacyApiRuntime()?.applyRuntimeMessages([
+      {
+        type: "step_stop",
+        data: {
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          stop: Date.now(),
+        },
+      },
+    ]);
+  };
+
+  private stopStepWithError = (error: unknown) => {
+    const { message, stack } = error as Error;
+    getLegacyApiRuntime()?.applyRuntimeMessages([
+      {
+        type: "step_stop",
+        data: {
+          status: getStatusFromError(error as Error),
+          stage: Stage.FINISHED,
+          stop: Date.now(),
+          statusDetails: {
+            message,
+            trace: stack,
+          },
+        },
+      },
+    ]);
   };
 }
 

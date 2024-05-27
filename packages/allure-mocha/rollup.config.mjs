@@ -14,6 +14,7 @@ const external = [
   "node:url",
   "node:worker_threads",
   "allure-js-commons",
+  "allure-js-commons/sdk",
   "allure-js-commons/sdk/node",
   "mocha/lib/nodejs/reporters/parallel-buffered.js",
 ];

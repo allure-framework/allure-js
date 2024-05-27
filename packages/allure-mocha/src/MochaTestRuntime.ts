@@ -1,5 +1,5 @@
 import { MessageTestRuntime, ReporterRuntime, RuntimeMessage, setGlobalTestRuntime } from "allure-js-commons/sdk/node";
-import { allure } from "./legacy.js";
+import { setLegacyApiRuntime } from "./legacyUtils.js";
 
 export class MochaTestRuntime extends MessageTestRuntime {
   constructor(private readonly reporterRuntime: ReporterRuntime) {
@@ -14,5 +14,5 @@ export class MochaTestRuntime extends MessageTestRuntime {
 
 export const setUpTestRuntime = (reporterRuntime: ReporterRuntime) => {
   setGlobalTestRuntime(new MochaTestRuntime(reporterRuntime));
-  allure.runtime = reporterRuntime;
+  setLegacyApiRuntime(reporterRuntime);
 };

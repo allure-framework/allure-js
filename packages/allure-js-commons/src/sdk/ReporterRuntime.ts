@@ -678,7 +678,23 @@ export class ReporterRuntime {
     this.writeAttachmentForItem(attachment, targetResult);
   };
 
-  /* TODO: Add executors.json */
+  writeAttachmentForItem = (attachment: RawAttachment, item: Executable) => {
+    const attachmentFilename = this.buildAttachmentFileName(attachment);
+
+    this.writer.writeAttachment(
+      attachmentFilename,
+      attachment.content,
+      (attachment.encoding as BufferEncoding) || "base64",
+    );
+
+    const rawAttachment = {
+      name: attachment.name,
+      source: attachmentFilename,
+      type: attachment.contentType,
+    };
+
+    item.attachments.push(rawAttachment);
+  };
 
   writeEnvironmentInfo = () => {
     if (!this.environmentInfo) {
@@ -850,24 +866,6 @@ export class ReporterRuntime {
 
   private handleRawAttachmentMessage = (message: RuntimeRawAttachmentMessage, { root, step }: MessageTargets) => {
     this.writeAttachmentForItem(message.data, step ?? root);
-  };
-
-  private writeAttachmentForItem = (attachment: RawAttachment, item: Executable) => {
-    const attachmentFilename = this.buildAttachmentFileName(attachment);
-
-    this.writer.writeAttachment(
-      attachmentFilename,
-      attachment.content,
-      (attachment.encoding as BufferEncoding) || "base64",
-    );
-
-    const rawAttachment = {
-      name: attachment.name,
-      source: attachmentFilename,
-      type: attachment.contentType,
-    };
-
-    item.attachments.push(rawAttachment);
   };
 
   private startScopeWithUuid = (uuid: string, { manual, parent }: StartScopeOpts = {}) => {
