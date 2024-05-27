@@ -41,8 +41,7 @@
     }
   },
   "files": [
-    "*.js",
-    "*.d.ts"
+    "dist"
   ],
   "scripts": {
     "clean": "rimraf ./dist",

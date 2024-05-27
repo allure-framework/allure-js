@@ -1,4 +1,2 @@
 test/fixtures/
-*.js
-*.d.ts
 vitest.config.ts.timestamp-*

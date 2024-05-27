@@ -3,8 +3,8 @@ import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 import * as allure from "allure-js-commons";
 import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
 import { TestPlanV1, getGlobalTestRuntime, parseTestPlan } from "allure-js-commons/sdk/node";
-import { AllureVitestTestRuntime } from "./runtime.js";
 import { existsInTestPlan } from "./utils.js";
+import { AllureVitestTestRuntime } from "./runtime.js";
 
 beforeAll(() => {
   // @ts-ignore
@@ -41,9 +41,12 @@ beforeEach(async (ctx) => {
   globalThis.allure = allure;
 });
 
-afterEach((ctx) => {
+afterEach(async (ctx) => {
   // @ts-ignore
-  ctx.task.meta.allureRuntimeMessages = getGlobalTestRuntime<AllureVitestTestRuntime>().messagesHolder.messages;
+  // eslint-disable-next-line
+  const globalTestRuntime: AllureVitestTestRuntime = await getGlobalTestRuntime();
+  // @ts-ignore
+  ctx.task.meta.allureRuntimeMessages = [...globalTestRuntime.messagesHolder];
   // @ts-ignore
   globalThis.allure = undefined;
 });

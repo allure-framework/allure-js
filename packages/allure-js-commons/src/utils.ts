@@ -1071,10 +1071,11 @@ export const escapeRegExp = (value: string): string => {
 
 export const requireModule = async (modulePath: string) => {
   let module;
-
-  if (import.meta.url) {
+  if (typeof __dirname === "undefined") {
+    console.log("requireModule esm");
     module = await import(modulePath);
   } else {
+    console.log("requireModule commonjs");
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     module = require(modulePath);
   }

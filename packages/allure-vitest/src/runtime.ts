@@ -1,8 +1,7 @@
-/* eslint @typescript-eslint/require-await: off */
-import { MessageTestRuntime, MessagesHolder, RuntimeMessage } from "allure-js-commons/sdk/node";
+import { MessageTestRuntime, RuntimeMessage } from "allure-js-commons/sdk/node";
 
 export class AllureVitestTestRuntime extends MessageTestRuntime {
-  readonly messagesHolder = new MessagesHolder();
+  messagesHolder: RuntimeMessage[] = [];
 
   constructor() {
     super();
@@ -10,5 +9,6 @@ export class AllureVitestTestRuntime extends MessageTestRuntime {
 
   async sendMessage(message: RuntimeMessage) {
     this.messagesHolder.push(message);
+    return Promise.resolve();
   }
 }
