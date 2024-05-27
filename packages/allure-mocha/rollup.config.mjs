@@ -4,29 +4,31 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "rollup";
 
-const dirname = fileURLToPath(new URL(".", import.meta.url));
+const outdir = join(
+  fileURLToPath(new URL(".", import.meta.url)),
+  "dist",
+);
+const external = [
+  "mocha",
+  "node:os",
+  "node:fs",
+  "node:path",
+  "node:process",
+  "node:worker_threads",
+  "allure-js-commons",
+  "allure-js-commons/sdk/node",
+  "mocha/lib/nodejs/reporters/parallel-buffered.js",
+];
 
-const createNodeEntry = (inputFile) => {
-  const outputFileBase = inputFile.replace(/^src/, "dist");
-  const external = [
-    "mocha",
-    "node:os",
-    "node:fs",
-    "node:path",
-    "node:process",
-    "node:worker_threads",
-    "allure-js-commons",
-    "allure-js-commons/sdk/node",
-    "mocha/lib/nodejs/reporters/parallel-buffered.js",
-  ];
-
-  return [
-    defineConfig({
-      input: inputFile,
+const createEntryConfigs = (entry, { format = ["cjs", "esm"], exports = "default" } = {}) => {
+  return (format instanceof Array ? format : [format]).map((f) => {
+    const outext = f === "cjs" ? ".cjs" : ".mjs";
+    return defineConfig({
+      input: join("src", `${entry}.ts`),
       output: {
-        file: join(dirname, outputFileBase.replace(/\.ts$/, ".mjs")),
-        format: "esm",
-        exports: "named",
+        file: join(outdir, `${entry}${outext}`),
+        format: f,
+        exports: exports,
         sourcemap: true,
       },
       plugins: [
@@ -35,29 +37,15 @@ const createNodeEntry = (inputFile) => {
         }),
       ],
       external,
-    }),
-    defineConfig({
-      input: inputFile,
-      output: {
-        file: join(dirname, outputFileBase.replace(/\.ts$/, ".cjs")),
-        format: "cjs",
-        exports: "named",
-        sourcemap: true,
-      },
-      plugins: [
-        typescriptPlugin({
-          tsconfig: "./tsconfig.rollup.json",
-        }),
-      ],
-      external,
-    }),
-  ];
+    });
+  });
 };
 
 export default () => {
   return [
-    createNodeEntry("src/index.ts"),
-    createNodeEntry("src/setupAllureMochaParallel.ts"),
-    createNodeEntry("src/legacy.ts"),
+    createEntryConfigs("index", { format: "cjs" }),
+    createEntryConfigs("index", { format: "esm", exports: "named" }),
+    createEntryConfigs("legacy", { exports: "named" }),
+    createEntryConfigs("setupAllureMochaParallel", { exports: "none" })
   ].flat();
 };

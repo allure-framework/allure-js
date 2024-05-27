@@ -1,5 +1,5 @@
 /* eslint @typescript-eslint/no-unsafe-argument: 0 */
-const MochaAllureReporter = require("allure-mocha").default;
+const MochaAllureReporter = require("allure-mocha");
 const path = require("path");
 
 class ProcessMessageAllureReporter extends MochaAllureReporter {
