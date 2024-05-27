@@ -16,11 +16,11 @@ it("reports programmatically skipped results", async () => {
   expect(tests).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
-        fullName: "sample.test.js#should be skipped 1",
+        fullName: "sample.test.js:4:12",
         status: Status.SKIPPED,
       }),
       expect.objectContaining({
-        fullName: "sample.test.js#should not be skipped",
+        fullName: "sample.test.js:6:11",
         status: Status.PASSED,
       }),
     ]),

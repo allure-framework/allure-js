@@ -1,4 +1,3 @@
-import md5 from "md5";
 import { expect, it } from "vitest";
 import { runPlaywrightInlineTest } from "../utils";
 
@@ -12,15 +11,15 @@ it("historical data should be fine", async () => {
       });
       `,
   });
-  const fullName = "sample.test.js#nested test";
+  const fullName = "sample.test.js:5:13";
 
   expect(tests).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
         name: "test",
-        fullName: fullName,
-        testCaseId: md5(fullName),
-        historyId: `${md5(fullName)}:${md5("Project:project")}`,
+        fullName,
+        testCaseId: "bf3198c05e4d7aaeeffe4ca4b5244d0f",
+        historyId: "bf3198c05e4d7aaeeffe4ca4b5244d0f:4d32f1bb70ce8096643fc1cc311d1fe1",
       }),
     ]),
   );
