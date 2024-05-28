@@ -10,8 +10,8 @@
       "node"
     ],
     "outDir": "./dist/esm",
-    "module": "node16",
-    "moduleResolution": "node16",
+    "module": "es2020",
+    "moduleResolution": "bundler",
     "target": "es2020"
   }
 }

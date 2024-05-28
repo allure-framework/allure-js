@@ -1,21 +1,17 @@
 {
   "extends": "../../tsconfig.json",
   "include": [
-    "./src/**/*",
-    "./test/**/*"
+    "./src/**/*"
   ],
   "compilerOptions": {
-    "skipLibCheck": true,
-    "module": "ESNext",
-    "target": "ES2022",
-    "moduleResolution": "bundler",
-    "lib": [
-      "dom",
-      "esnext"
-    ],
+    "declaration": true,
+    "lib": ["dom", "esnext"],
     "types": [
       "node"
     ],
-    "outDir": "./dist"
+    "outDir": "./dist/esm",
+    "module": "ES2020",
+    "moduleResolution": "Bundler",
+    "target": "ES2020"
   }
 }

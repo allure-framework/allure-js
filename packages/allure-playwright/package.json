@@ -20,20 +20,22 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./testplan": {
-      "import": "./dist/testplan.mjs",
-      "require": "./dist/testplan.cjs"
+      "require": "./dist/testplan.js",
+      "types": "./dist/testplan.d.ts",
+      "default": "./dist/testplan.js"
     },
     "./autoconfig": {
-      "import": "./dist/autoconfig.mjs",
-      "require": "./dist/autoconfig.cjs"
+      "require": "./dist/autoconfig.js",
+      "types": "./dist/autoconfig.d.ts",
+      "default": "./dist/autoconfig.js"
     }
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
@@ -41,9 +43,10 @@
   "scripts": {
     "allure-report": "allure serve ./out/allure-results",
     "clean": "rimraf ./dist ./out",
-    "compile": "run-p 'compile:*'",
-    "compile:lib": "rollup -c",
-    "compile:types": "tsc --project ./tsconfig.dts.json",
+    "compile": "run-s compile:esm compile:cjs compile:cleanup",
+    "compile:esm": "tsc --project ./tsconfig.json",
+    "compile:cjs": "babel ./dist/esm --out-dir ./dist --extensions '.js' --source-maps",
+    "compile:cleanup": "rimraf ./dist/esm",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
@@ -55,10 +58,11 @@
     "strip-ansi": "^5.2.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.24.6",
+    "@babel/core": "^7.24.6",
+    "@babel/plugin-transform-modules-commonjs": "^7.24.6",
     "@playwright/test": "^1.34.1",
-    "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/babel__core": "^7",
     "@types/eslint": "^8",
     "@types/md5": "^2",
     "@types/node": "^20.6.3",
@@ -76,8 +80,6 @@
     "npm-run-all2": "^6.1.2",
     "properties": "^1.2.1",
     "rimraf": "^5.0.1",
-    "rollup": "^4.14.3",
-    "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "vitest": "^1.5.0"
   }

@@ -1,7 +1,6 @@
 {
   "name": "allure-js-commons",
   "version": "2.15.0",
-  "type": "module",
   "description": "Allure JS Commons",
   "homepage": "https://allurereport.org/",
   "repository": {
@@ -58,7 +57,7 @@
     "compile": "run-s compile:esm compile:cjs compile:fixup",
     "compile:esm": "tsc --project ./tsconfig.json",
     "compile:cjs": "babel ./dist/esm --out-dir ./dist/cjs --extensions '.js' --source-maps",
-    "compile:fixup": "node ./scripts/fixup.js",
+    "compile:fixup": "node ./scripts/fixup.mjs",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "vitest run"

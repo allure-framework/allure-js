@@ -7,6 +7,7 @@ export class AllurePlaywrightTestRuntime extends MessageTestRuntime {
     super();
   }
   async sendMessage(message: RuntimeMessage) {
+    // @ts-ignore
     await test.info().attach("allure-metadata.json", {
       contentType: ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
       body: Buffer.from(JSON.stringify(message), "utf8"),
