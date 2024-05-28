@@ -1,5 +1,7 @@
-import { TestRuntime, getGlobalTestRuntime } from "./TestRuntime.js";
-import { ContentType, Label, LabelName, Link, LinkType, ParameterMode, ParameterOptions } from "./model.js";
+import type { ContentType, Label, Link, ParameterMode, ParameterOptions } from "./model.js";
+import { LabelName, LinkType } from "./model.js";
+import { getGlobalTestRuntime } from "./sdk/runtime/runtime.js";
+import type { TestRuntime } from "./sdk/runtime/types.js";
 
 export const label = async (name: LabelName | string, value: string) => {
   const runtime = await getGlobalTestRuntime();
@@ -81,7 +83,7 @@ const stepContext: (runtime: TestRuntime) => StepContext = (runtime) => ({
   },
 });
 
-export const step = async <T = void,>(name: string, body: (context: StepContext) => T | PromiseLike<T>) => {
+export const step = async <T = void>(name: string, body: (context: StepContext) => T | PromiseLike<T>) => {
   const runtime = await getGlobalTestRuntime();
 
   return runtime.step(name, () => body(stepContext(runtime)));

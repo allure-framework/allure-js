@@ -1,7 +1,8 @@
 import assert from "node:assert";
 import { describe, expect, it } from "vitest";
+import type {
+  Executable} from "../../src/sdk/node/index.js";
 import {
-  Executable,
   LabelName,
   Status,
   allureLabelRegexp,

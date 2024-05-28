@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Link } from "../../../src/model.js";
+import type { Link } from "../../../src/model.js";
 import { AllureNodeReporterRuntime } from "../../../src/sdk/node/index.js";
 import { mockWriter } from "../../utils/writer.js";
 

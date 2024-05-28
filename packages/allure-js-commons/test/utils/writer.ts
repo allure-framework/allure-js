@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import { Category, TestResult, TestResultContainer } from "../../src/index.js";
+import type { Category, TestResult, TestResultContainer } from "../../src/index.js";
 
 export const mockWriter = () => ({
   writeResult: vi.fn<[TestResult], void>(),

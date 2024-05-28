@@ -27,11 +27,7 @@ export {
   tags,
 } from "./facade.js";
 export type {
-  AllureResults,
   Attachment,
-  Category,
-  EnvironmentInfo,
-  Executable,
   FixtureResult,
   ImageDiffAttachment,
   Label,
@@ -46,21 +42,3 @@ export type {
   TestResultContainer,
 } from "./model.js";
 export { ContentType, LinkType, LabelName, Severity, Stage, Status, StatusByPriority } from "./model.js";
-export {
-  allureIdRegexp,
-  allureLabelRegexp,
-  allureLabelRegexpGlobal,
-  allureIdRegexpGlobal,
-  extractMetadataFromString,
-  escapeRegExp,
-  getStatusFromError,
-  getSuiteLabels,
-  getSuitesLabels,
-  ensureSuiteLabels,
-  typeToExtension,
-  isAllStepsEnded,
-  isAnyStepFailed,
-  isPromise,
-  Stack,
-  serialize,
-} from "./utils.js";

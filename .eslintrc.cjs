@@ -26,7 +26,7 @@ module.exports = {
     "eslint-plugin-prefer-arrow",
     "eslint-plugin-import",
     "eslint-plugin-jsdoc",
-    "@typescript-eslint"
+    "@typescript-eslint",
   ],
   rules: {
     "@typescript-eslint/ban-ts-comment": "off",
@@ -64,6 +64,8 @@ module.exports = {
     ],
     "@typescript-eslint/consistent-type-assertions": "error",
     "@typescript-eslint/consistent-type-definitions": "off",
+    "@typescript-eslint/consistent-type-exports": "error",
+    "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/dot-notation": "error",
     "@typescript-eslint/explicit-member-accessibility": [
       "off",
@@ -245,6 +247,6 @@ module.exports = {
       },
     ],
     "use-isnan": "error",
-    "valid-typeof": "off"
+    "valid-typeof": "off",
   },
 };

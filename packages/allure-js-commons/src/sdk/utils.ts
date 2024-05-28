@@ -1,205 +1,75 @@
-import { readFile } from "fs/promises";
-import {
-  AttachmentOptions,
-  ContentType,
-  FixtureResult,
-  RuntimeMessage,
-  Stage,
-  Status,
-  StatusByPriority,
-  StepResult,
-  TestResult,
-  TestResultContainer,
-  WellKnownWriters,
-} from "../model.js";
-import { typeToExtension } from "../utils.js";
-import type { WriterDescriptor } from "./Config.js";
-import { Crypto } from "./Crypto.js";
-import type { Writer } from "./Writer.js";
+import stripAnsi from "strip-ansi";
+import type { FixtureResult, Label, StatusDetails, StepResult, TestResult } from "../model.js";
+import { LabelName, Status } from "../model.js";
 
-export const createTestResultContainer = (uuid: string): TestResultContainer => {
-  return {
-    uuid,
-    children: [],
-    befores: [],
-    afters: [],
-  };
-};
-
-export const createFixtureResult = (): FixtureResult => {
-  return {
-    status: Status.BROKEN,
-    statusDetails: {},
-    stage: Stage.PENDING,
-    steps: [],
-    attachments: [],
-    parameters: [],
-  };
-};
-
-export const createStepResult = (): StepResult => {
-  return {
-    status: undefined,
-    statusDetails: {},
-    stage: Stage.PENDING,
-    steps: [],
-    attachments: [],
-    parameters: [],
-  };
-};
-
-export const createTestResult = (uuid: string, historyUuid?: string): TestResult => {
-  return {
-    uuid,
-    name: "",
-    historyId: historyUuid,
-    status: undefined,
-    statusDetails: {},
-    stage: Stage.PENDING,
-    steps: [],
-    attachments: [],
-    parameters: [],
-    labels: [],
-    links: [],
-  };
-};
-
-export const writeAttachment = (uuid: string, options: ContentType | string | AttachmentOptions): string => {
-  if (typeof options === "string") {
-    options = { contentType: options };
+export const getStatusFromError = (error: Error): Status => {
+  switch (true) {
+    /**
+     * Native `node:assert` and `chai` (`vitest` uses it under the hood) throw `AssertionError`
+     * `jest` throws `JestAssertionError` instance
+     * `jasmine` throws `ExpectationFailed` instance
+     */
+    case /assert/gi.test(error.constructor.name):
+    case /expectation/gi.test(error.constructor.name):
+    case /assert/gi.test(error.name):
+    case /assert/gi.test(error.message):
+      return Status.FAILED;
+    default:
+      return Status.BROKEN;
   }
-
-  const extension = typeToExtension(options);
-
-  return `${uuid}-attachment${extension}`;
 };
 
-export const getTestResultHistoryId = (crypto: Crypto, result: TestResult) => {
-  if (result.historyId) {
-    return result.historyId;
-  }
-
-  const tcId = result.testCaseId ?? (result.fullName ? crypto.md5(result.fullName) : null);
-
-  if (!tcId) {
-    return "";
-  }
-
-  const paramsString = result.parameters
-    .filter((p) => !p?.excluded)
-    .sort((a, b) => a.name?.localeCompare(b?.name) || a.value?.localeCompare(b?.value))
-    .map((p) => `${p.name ?? "null"}:${p.value ?? "null"}`)
-    .join(",");
-  const paramsHash = crypto.md5(paramsString);
-
-  return `${tcId}:${paramsHash}`;
+export const getMessageAndTraceFromError = (error: Error): Pick<StatusDetails, "message" | "trace"> => {
+  const { message, stack } = error;
+  return {
+    message: stripAnsi(message),
+    trace: stack ? stripAnsi(stack) : undefined,
+  };
 };
 
-export const getTestResultTestCaseId = (crypto: Crypto, result: TestResult) => {
-  return result.fullName ? crypto.md5(result.fullName) : undefined;
-};
+const allureIdRegexp = /@?allure.id[:=](?<id>[^\s]+)/;
+const allureIdRegexpGlobal = new RegExp(allureIdRegexp, "g");
+const allureLabelRegexp = /@?allure.label.(?<name>[^\s]+?)[:=](?<value>[^\s]+)/;
+const allureLabelRegexpGlobal = new RegExp(allureLabelRegexp, "g");
 
-export const hasStepMessage = (messages: RuntimeMessage[]) => {
-  return messages.some((message) => message.type === "step_start" || message.type === "step_stop");
-};
+export const extractMetadataFromString = (
+  title: string,
+): {
+  labels: Label[];
+  cleanTitle: string;
+} => {
+  const labels = [] as Label[];
 
-export const getStepsMessagesPair = (messages: RuntimeMessage[]) =>
-  messages.reduce((acc, message) => {
-    if (message.type !== "step_start" && message.type !== "step_stop") {
-      return acc;
+  title.split(" ").forEach((val) => {
+    const idValue = val.match(allureIdRegexp)?.groups?.id;
+
+    if (idValue) {
+      labels.push({ name: LabelName.ALLURE_ID, value: idValue });
     }
 
-    if (message.type === "step_start") {
-      acc.push([message]);
+    const labelMatch = val.match(allureLabelRegexp);
+    const { name, value } = labelMatch?.groups || {};
 
-      return acc;
+    if (name && value) {
+      labels?.push({ name, value });
     }
-
-    const unfinishedStepIdx = acc.findLastIndex((step) => step.length === 1);
-
-    if (unfinishedStepIdx === -1) {
-      return acc;
-    }
-
-    acc[unfinishedStepIdx].push(message);
-
-    return acc;
-  }, [] as RuntimeMessage[][]);
-
-export const getUnfinishedStepsMessages = (messages: RuntimeMessage[]) => {
-  const grouppedStepsMessage = getStepsMessagesPair(messages);
-
-  return grouppedStepsMessage.filter((step) => step.length === 1);
-};
-
-export const getWorstStepResultStatusPriority = (steps: StepResult[], priority?: number): number | undefined => {
-  let worstStatusPriority = priority;
-
-  steps.forEach((step) => {
-    if (step.steps?.length) {
-      worstStatusPriority = getWorstStepResultStatusPriority(step.steps, worstStatusPriority);
-    }
-
-    const stepStatusPriority = step.status ? StatusByPriority.indexOf(step.status) : undefined;
-
-    if (stepStatusPriority === undefined) {
-      return;
-    }
-
-    if (worstStatusPriority === undefined) {
-      worstStatusPriority = stepStatusPriority;
-      return;
-    }
-
-    if (stepStatusPriority >= worstStatusPriority) {
-      return;
-    }
-
-    worstStatusPriority = stepStatusPriority;
   });
 
-  return worstStatusPriority;
+  const cleanTitle = title.replace(allureLabelRegexpGlobal, "").replace(allureIdRegexpGlobal, "").trim();
+
+  return { labels, cleanTitle };
 };
 
-export const getWorstStepResultStatus = (steps: StepResult[]): Status | undefined => {
-  const worstStatusPriority = getWorstStepResultStatusPriority(steps);
+export const isAnyStepFailed = (item: StepResult | TestResult | FixtureResult): boolean => {
+  const isFailed = item.status === Status.FAILED;
 
-  if (worstStatusPriority === undefined) {
-    return undefined;
+  if (isFailed || item.steps.length === 0) {
+    return isFailed;
   }
 
-  return StatusByPriority[worstStatusPriority];
+  return !!item.steps.find((step) => isAnyStepFailed(step));
 };
 
-export const readImageAsBase64 = async (filePath: string): Promise<string | undefined> => {
-  try {
-    const file = await readFile(filePath, { encoding: "base64" });
-
-    return file ? `data:image/png;base64,${file}` : undefined;
-  } catch (e) {
-    return undefined;
-  }
-};
-
-export const resolveWriter = (wellKnownWriters: WellKnownWriters, value: Writer | WriterDescriptor): Writer => {
-  if (typeof value === "string") {
-    return createWriter(wellKnownWriters, value);
-  } else if (value instanceof Array) {
-    return createWriter(wellKnownWriters, value[0], value.slice(1));
-  }
-  return value;
-};
-
-const createWriter = (wellKnownWriters: WellKnownWriters, nameOrPath: string, args: readonly unknown[] = []) => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
-  const ctorOrInstance = getKnownWriterCtor(wellKnownWriters, nameOrPath) ?? requireWriterCtor(nameOrPath);
-  return typeof ctorOrInstance === "function" ? new ctorOrInstance(...args) : ctorOrInstance;
-};
-
-const getKnownWriterCtor = (wellKnownWriters: WellKnownWriters, name: string) =>
-  (wellKnownWriters as unknown as { [key: string]: Writer | undefined })[name];
-
-const requireWriterCtor = (modulePath: string): (new (...args: readonly unknown[]) => Writer) | Writer => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
-  return require(modulePath);
+export const isAllStepsEnded = (item: StepResult | TestResult | FixtureResult): boolean => {
+  return item.steps.every((val) => val.stop && isAllStepsEnded(val));
 };
