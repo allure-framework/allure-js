@@ -16,4 +16,10 @@ export type {
   TestPlanV1,
 } from "./types.js";
 
-export { getStatusFromError } from "./utils.js";
+export {
+  getStatusFromError,
+  getMessageAndTraceFromError,
+  extractMetadataFromString,
+  isAllStepsEnded,
+  isAnyStepFailed,
+} from "./utils.js";

@@ -1,7 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
-import type { Crypto } from "../types.js";
 
-export class AllureNodeCrypto implements Crypto {
+export class AllureNodeCrypto {
   uuid(): string {
     return randomUUID();
   }

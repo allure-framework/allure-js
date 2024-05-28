@@ -6,8 +6,8 @@ import { env } from "process";
 import type { AttachmentOptions, ContentType, Status, StepResult, TestResult } from "../../model.js";
 import { LabelName, StatusByPriority } from "../../model.js";
 import type { Label } from "../../model.js";
-import type { Crypto } from "../runtime/types.js";
 import type { RuntimeMessage } from "../types.js";
+import type { AllureNodeCrypto } from "./AllureNodeCrypto.js";
 import { EXTENSIONS_BY_TYPE } from "./extensions.js";
 import type { WellKnownWriters, Writer, WriterDescriptor } from "./types.js";
 
@@ -21,7 +21,7 @@ export const writeAttachment = (uuid: string, options: ContentType | string | At
   return `${uuid}-attachment${extension}`;
 };
 
-export const getTestResultHistoryId = (crypto: Crypto, result: TestResult) => {
+export const getTestResultHistoryId = (crypto: AllureNodeCrypto, result: TestResult) => {
   if (result.historyId) {
     return result.historyId;
   }
@@ -42,7 +42,7 @@ export const getTestResultHistoryId = (crypto: Crypto, result: TestResult) => {
   return `${tcId}:${paramsHash}`;
 };
 
-export const getTestResultTestCaseId = (crypto: Crypto, result: TestResult) => {
+export const getTestResultTestCaseId = (crypto: AllureNodeCrypto, result: TestResult) => {
   return result.fullName ? crypto.md5(result.fullName) : undefined;
 };
 

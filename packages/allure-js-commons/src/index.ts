@@ -26,6 +26,7 @@ export {
   tag,
   tags,
 } from "./facade.js";
+export type { StepContext } from "./facade.js";
 export type {
   Attachment,
   FixtureResult,

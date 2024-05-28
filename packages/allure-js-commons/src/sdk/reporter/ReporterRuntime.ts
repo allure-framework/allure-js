@@ -1,4 +1,5 @@
 /* eslint max-lines: 0 */
+import { extname } from "path";
 import type { AttachmentOptions, FixtureResult, Link, StepResult, TestResult } from "../../model.js";
 import { Stage } from "../../model.js";
 import type {
@@ -13,22 +14,14 @@ import type {
   RuntimeStepMetadataMessage,
   RuntimeStopStepMessage,
 } from "../types.js";
+import { AllureNodeCrypto } from "./AllureNodeCrypto.js";
 import { LifecycleState } from "./LifecycleState.js";
 import { MutableAllureContextHolder, StaticContextProvider } from "./context/StaticAllureContextProvider.js";
 import type { AllureContextProvider } from "./context/types.js";
 import { createFixtureResult, createStepResult, createTestResult } from "./factory.js";
-import { Notifier } from "./notifier.js";
-import type {
-  Config,
-  Crypto,
-  FixtureType,
-  FixtureWrapper,
-  LinkConfig,
-  TestScope,
-  WellKnownWriters,
-  Writer,
-} from "./types.js";
-import { deepClone, typeToExtension } from "./utils.js";
+import { Notifier } from "./Notifier.js";
+import type { Config, FixtureType, FixtureWrapper, LinkConfig, TestScope, WellKnownWriters, Writer } from "./types.js";
+import { deepClone, getGlobalLabels, typeToExtension } from "./utils.js";
 import { getTestResultHistoryId, getTestResultTestCaseId, resolveWriter } from "./utils.js";
 import * as wellKnownCommonWriters from "./writer/index.js";
 
@@ -149,29 +142,25 @@ type MessageTargets = {
 };
 
 export class ReporterRuntime {
+  private readonly crypto = new AllureNodeCrypto();
+  private readonly state = new LifecycleState();
   private notifier: Notifier;
   private links: LinkConfig[] = [];
   private contextProvider: AllureContextProvider;
-  state = new LifecycleState();
   writer: Writer;
-  crypto: Crypto;
   categories?: Category[];
   environmentInfo?: EnvironmentInfo;
 
   constructor({
     writer,
     listeners = [],
-    crypto,
     links = [],
     environmentInfo,
     categories,
     contextProvider = StaticContextProvider.wrap(new MutableAllureContextHolder()),
-  }: Config & {
-    crypto: Crypto;
-  }) {
+  }: Config) {
     this.writer = resolveWriter(this.getWellKnownWriters(), writer);
     this.notifier = new Notifier({ listeners });
-    this.crypto = crypto;
     this.links = links;
     this.categories = categories;
     this.environmentInfo = environmentInfo;
@@ -677,7 +666,41 @@ export class ReporterRuntime {
     this.writeAttachmentForItem(attachment, targetResult);
   };
 
-  /* TODO: Add executors.json */
+  writeAttachmentFromPath = (
+    attachmentName: string,
+    attachmentPath: string,
+    options: AttachmentOptions,
+    uuid?: string,
+  ) => {
+    const target = this.getCurrentExecutingItem(uuid);
+    if (!target) {
+      if (uuid) {
+        // eslint-disable-next-line no-console
+        console.error(`No test or fixture ${uuid} to attach!`);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("No current test or fixture to attach!");
+      }
+      return;
+    }
+
+    const attachmentFilename = this.buildAttachmentFileName({
+      ...options,
+      fileExtension: options.fileExtension ?? extname(attachmentPath),
+    });
+
+    this.writer.writeAttachmentFromPath(attachmentPath, attachmentFilename);
+
+    const rawAttachment = {
+      name: attachmentName,
+      source: attachmentFilename,
+      type: options.contentType,
+    };
+
+    target.attachments.push(rawAttachment);
+
+    return attachmentFilename;
+  };
 
   writeEnvironmentInfo = () => {
     if (!this.environmentInfo) {
@@ -758,6 +781,7 @@ export class ReporterRuntime {
     return {
       ...createTestResult(uuid),
       start: Date.now(),
+      labels: getGlobalLabels(),
       ...deepClone(result),
     };
   }

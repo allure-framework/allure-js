@@ -1,6 +1,6 @@
 import type { TestRuntime } from "./types.js";
 
-export class NoopRuntime implements TestRuntime {
+export class NoopTestRuntime implements TestRuntime {
   async attachment() {
     await this.warning();
   }
@@ -57,4 +57,4 @@ export class NoopRuntime implements TestRuntime {
   }
 }
 
-export const noopRuntime = new NoopRuntime();
+export const noopRuntime = new NoopTestRuntime();

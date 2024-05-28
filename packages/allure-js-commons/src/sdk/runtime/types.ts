@@ -1,9 +1,4 @@
-import type { ContentType, Label, Link, ParameterMode, ParameterOptions } from "../../model";
-
-export interface Crypto {
-  uuid(): string;
-  md5(str: string): string;
-}
+import type { ContentType, Label, Link, ParameterMode, ParameterOptions } from "../../model.js";
 
 export interface TestRuntime {
   labels: (...labels: Label[]) => PromiseLike<void>;

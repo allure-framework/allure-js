@@ -1,5 +1,5 @@
 import { createRequire } from "node:module";
-import { noopRuntime } from "./NoopRuntime.js";
+import { noopRuntime } from "./NoopTestRuntime";
 import type { TestRuntime } from "./types.js";
 
 const ALLURE_TEST_RUNTIME_KEY = "allureTestRuntime";
@@ -45,24 +45,6 @@ export const getGlobalTestRuntime = async (): Promise<TestRuntime> => {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log("can't execute allure-playwright/autoconfig", err);
-      return noopRuntime;
-    }
-  }
-
-  /**
-   * Vitest is only available as ESM, so use dynamic import for
-   * allure-js-commons loaded in both CJS and ESM.
-   */
-  if ("__vitest_environment__" in globalThis) {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      // @ts-ignore
-      await import("allure-vitest/autoconfig");
-
-      return getGlobalTestRuntimeFunction()?.() ?? noopRuntime;
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log("can't execute allure-vitest/autoconfig", err);
       return noopRuntime;
     }
   }
