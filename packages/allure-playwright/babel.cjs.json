@@ -1,0 +1,13 @@
+{
+  "presets": [
+    [
+      "@babel/preset-typescript",
+      {
+        "rewriteImportExtensions": true
+      }
+    ],
+    [
+      "@babel/preset-env",
+    ],
+  ]
+}
