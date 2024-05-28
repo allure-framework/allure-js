@@ -142,8 +142,8 @@ type MessageTargets = {
 };
 
 export class ReporterRuntime {
-  private readonly crypto = new AllureNodeCrypto();
   private readonly state = new LifecycleState();
+  readonly crypto = new AllureNodeCrypto();
   private notifier: Notifier;
   private links: LinkConfig[] = [];
   private contextProvider: AllureContextProvider;

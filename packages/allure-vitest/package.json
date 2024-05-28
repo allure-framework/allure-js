@@ -31,11 +31,6 @@
       "import": "./dist/setup.js",
       "types": "./dist/setup.d.ts",
       "default": "./dist/setup.js"
-    },
-    "./autoconfig": {
-      "import": "./dist/autoconfig.js",
-      "types": "./dist/autoconfig.d.ts",
-      "default": "./dist/autoconfig.js"
     }
   },
   "files": [

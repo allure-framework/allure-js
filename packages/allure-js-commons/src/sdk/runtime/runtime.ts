@@ -1,21 +1,7 @@
-import { createRequire } from "node:module";
-import { noopRuntime } from "./NoopTestRuntime";
+import { noopRuntime } from "./NoopTestRuntime.js";
 import type { TestRuntime } from "./types.js";
 
 const ALLURE_TEST_RUNTIME_KEY = "allureTestRuntime";
-
-const requireModule = async (modulePath: string) => {
-  let module;
-  if (typeof __dirname === "undefined") {
-    const rq = createRequire(import.meta.url);
-    module = rq(modulePath);
-  } else {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    module = require(modulePath);
-  }
-
-  return Promise.resolve(module);
-};
 
 export const setGlobalTestRuntime = (runtime: TestRuntime) => {
   (globalThis as any)[ALLURE_TEST_RUNTIME_KEY] = () => runtime;
@@ -32,14 +18,10 @@ export const getGlobalTestRuntime = async (): Promise<TestRuntime> => {
     return testRuntime() ?? noopRuntime;
   }
 
-  /**
-   * Playwright is only available as CJS, so use require for
-   * allure-js-commons loaded in both CJS and ESM.
-   */
   if ("_playwrightInstance" in globalThis) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      await requireModule("allure-playwright/autoconfig");
+      // @ts-ignore
+      await import("allure-playwright/autoconfig");
 
       return getGlobalTestRuntimeFunction()?.() ?? noopRuntime;
     } catch (err) {

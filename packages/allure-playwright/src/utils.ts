@@ -1,7 +1,8 @@
-import { TestStatus } from "@playwright/test";
-import { TestError } from "@playwright/test/reporter";
+import type { TestStatus } from "@playwright/test";
+import type { TestError } from "@playwright/test/reporter";
 import stripAnsi from "strip-ansi";
-import { LabelName, Status, StatusDetails, TestResult } from "allure-js-commons/sdk/node";
+import type { LabelName, StatusDetails, TestResult } from "allure-js-commons";
+import { Status } from "allure-js-commons";
 
 export const statusToAllureStats = (status: TestStatus, expectedStatus: TestStatus): Status => {
   if (status === "skipped") {
@@ -35,6 +36,6 @@ export const getStatusDetails = (error: TestError): StatusDetails => {
 };
 
 // TODO: move to commons
-export const hasLabel = (testResult: TestResult, labelName: LabelName): boolean => {
+export const hasLabel = (testResult: TestResult, labelName: LabelName | string): boolean => {
   return !!testResult.labels.find((l) => l.name === labelName);
 };

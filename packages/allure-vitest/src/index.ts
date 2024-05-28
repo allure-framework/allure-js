@@ -1,4 +1,4 @@
-import { AllureVitestLegacyApi } from "./legacy.js";
+import type { AllureVitestLegacyApi } from "./legacy.js";
 
 declare global {
   // eslint-disable-next-line

@@ -1,7 +1,9 @@
 import { relative } from "node:path";
 import { cwd } from "node:process";
-import { Suite, Task, type TaskContext } from "vitest";
-import { LabelName, TestPlanV1, extractMetadataFromString } from "allure-js-commons/sdk/node";
+import type { Suite, Task, TaskContext } from "vitest";
+import { LabelName } from "allure-js-commons";
+import type { TestPlanV1 } from "allure-js-commons/sdk";
+import { extractMetadataFromString } from "allure-js-commons/sdk";
 
 export const getSuitePath = (task: Task): string[] => {
   const path = [];

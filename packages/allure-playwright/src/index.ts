@@ -1,5 +1,5 @@
-import { FullConfig } from "@playwright/test";
-import {
+import type { FullConfig } from "@playwright/test";
+import type {
   FullResult,
   TestResult as PlaywrightTestResult,
   Suite,
@@ -12,27 +12,24 @@ import os from "node:os";
 import path from "node:path";
 import process from "node:process";
 import stripAnsi from "strip-ansi";
-import { ContentType, ImageDiffAttachment } from "allure-js-commons";
-import { ALLURE_IMAGEDIFF_CONTENT_TYPE, ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/internal";
+import type { ImageDiffAttachment } from "allure-js-commons";
+import { ContentType } from "allure-js-commons";
+import type { Label, TestResult } from "allure-js-commons";
+import { LabelName, Stage, Status } from "allure-js-commons";
+import type { RuntimeMessage, TestPlanV1Test } from "allure-js-commons/sdk";
+import { extractMetadataFromString } from "allure-js-commons/sdk";
 import {
-  AllureNodeReporterRuntime,
-  FileSystemAllureWriter,
-  Label,
-  LabelName,
-  MessageAllureWriter,
-  RuntimeMessage,
-  Stage,
-  Status,
-  TestPlanV1Test,
-  TestResult,
+  ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
+  FileSystemWriter,
+  MessageWriter,
+  ReporterRuntime,
   escapeRegExp,
-  extractMetadataFromString,
   parseTestPlan,
   readImageAsBase64,
-} from "allure-js-commons/sdk/node";
-import { AllurePlaywrightReporterConfig } from "./model.js";
-import { getStatusDetails, hasLabel, statusToAllureStats } from "./utils.js";
+} from "allure-js-commons/sdk/reporter";
 import { allurePlaywrightLegacyApi } from "./legacy.js";
+import type { AllurePlaywrightReporterConfig } from "./model.js";
+import { getStatusDetails, hasLabel, statusToAllureStats } from "./utils.js";
 
 // TODO: move to utils.ts
 const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
@@ -72,7 +69,7 @@ export class AllureReporter implements ReporterV2 {
   suite!: Suite;
   options: AllurePlaywrightReporterConfig;
 
-  private allureRuntime: AllureNodeReporterRuntime | undefined;
+  private allureRuntime: ReporterRuntime | undefined;
   private hostname: string = process.env.ALLURE_HOST_NAME || os.hostname();
   private globalStartTime = new Date();
   private processedDiffs: string[] = [];
@@ -148,13 +145,13 @@ export class AllureReporter implements ReporterV2 {
 
   onBegin(suite: Suite): void {
     const writer = this.options.testMode
-      ? new MessageAllureWriter()
-      : new FileSystemAllureWriter({
+      ? new MessageWriter()
+      : new FileSystemWriter({
           resultsDir: this.options.resultsDir || "./allure-results",
         });
 
     this.suite = suite;
-    this.allureRuntime = new AllureNodeReporterRuntime({
+    this.allureRuntime = new ReporterRuntime({
       ...this.options,
       writer,
     });
@@ -445,7 +442,7 @@ export class AllureReporter implements ReporterV2 {
           diff: diffBase64,
           name: diffName,
         } as ImageDiffAttachment),
-        contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE,
+        contentType: ContentType.IMAGEDIFF,
         fileExtension: ".imagediff",
       },
       testUuid,

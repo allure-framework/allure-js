@@ -1,9 +1,9 @@
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
-import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
-import { TestPlanV1, getGlobalTestRuntime, parseTestPlan } from "allure-js-commons/sdk/node";
-import { existsInTestPlan } from "./utils.js";
-import { AllureVitestTestRuntime } from "./runtime.js";
+import type { TestPlanV1 } from "allure-js-commons/sdk";
+import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL, parseTestPlan } from "allure-js-commons/sdk/reporter";
+import { MessageHolderTestRuntime, getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { allureVitestLegacyApi } from "./legacy.js";
+import { existsInTestPlan } from "./utils.js";
 
 beforeAll(() => {
   // @ts-ignore
@@ -38,14 +38,16 @@ beforeEach((ctx) => {
 
   // @ts-ignore
   globalThis.allure = allureVitestLegacyApi;
+
+  setGlobalTestRuntime(new MessageHolderTestRuntime());
 });
 
 afterEach(async (ctx) => {
   // @ts-ignore
   // eslint-disable-next-line
-  const globalTestRuntime: AllureVitestTestRuntime = await getGlobalTestRuntime();
+  const globalTestRuntime: MessageHolderTestRuntime = await getGlobalTestRuntime();
   // @ts-ignore
-  ctx.task.meta.allureRuntimeMessages = [...globalTestRuntime.messagesHolder];
+  ctx.task.meta.allureRuntimeMessages = [...globalTestRuntime.messages()];
   // @ts-ignore
   globalThis.allure = undefined;
 });

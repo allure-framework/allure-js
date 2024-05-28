@@ -39,11 +39,6 @@ export interface MetadataMessage {
   steps?: StepMetadata[];
 }
 
-export interface Crypto {
-  uuid(): string;
-  md5(str: string): string;
-}
-
 export interface LifecycleListener {
   beforeTestResultStart?: (result: TestResult) => void;
 
@@ -98,24 +93,6 @@ export interface Writer {
   writeEnvironmentInfo(info: EnvironmentInfo): void;
 
   writeCategoriesDefinitions(categories: Category[]): void;
-}
-
-export interface TestPlanV1Test {
-  id: string | number;
-  selector: string;
-}
-
-export interface TestPlanV1 {
-  version: "1.0";
-  tests: TestPlanV1Test[];
-}
-
-export interface AllureResults {
-  tests: TestResult[];
-  groups: TestResultContainer[];
-  attachments: Record<string, Buffer | string>;
-  envInfo?: EnvironmentInfo;
-  categories?: Category[];
 }
 
 export type WellKnownWriters = {
