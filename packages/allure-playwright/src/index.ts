@@ -32,6 +32,7 @@ import {
 } from "allure-js-commons/sdk/node";
 import { AllurePlaywrightReporterConfig } from "./model.js";
 import { getStatusDetails, hasLabel, statusToAllureStats } from "./utils.js";
+import { allurePlaywrightLegacyApi } from "./legacy.js";
 
 // TODO: move to utils.ts
 const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
@@ -461,7 +462,7 @@ export class AllureReporter implements ReporterV2 {
 /**
  * @deprecated for removal, import functions directly from "allure-js-commons".
  */
-export * from "allure-js-commons";
+export const allure = allurePlaywrightLegacyApi;
 
 /**
  * @deprecated for removal, import functions directly from "@playwright/test".
