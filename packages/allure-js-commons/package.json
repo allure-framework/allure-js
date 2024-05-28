@@ -18,45 +18,46 @@
     ".": {
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js",
-      "types": "./dist/esm/index.d.ts",
+      "types": "./dist/types/index.d.ts",
       "default": "./dist/cjs/index.js"
     },
     "./internal": {
       "import": "./dist/esm/internal.js",
       "require": "./dist/cjs/internal.js",
-      "types": "./dist/esm/internal.d.ts",
+      "types": "./dist/types/internal.d.ts",
       "default": "./dist/cjs/internal.js"
     },
     "./sdk": {
       "import": "./dist/esm/sdk/index.js",
       "require": "./dist/cjs/sdk/index.js",
-      "types": "./dist/esm/sdk/index.d.ts",
+      "types": "./dist/types/sdk/index.d.ts",
       "default": "./dist/cjs/sdk/index.js"
     },
     "./sdk/node": {
       "import": "./dist/esm/sdk/node/index.js",
       "require": "./dist/cjs/sdk/node/index.js",
-      "types": "./dist/esm/sdk/node/index.d.ts",
+      "types": "./dist/types/sdk/node/index.d.ts",
       "default": "./dist/cjs/sdk/node/index.js"
     },
     "./sdk/browser": {
       "import": "./dist/esm/sdk/browser/index.js",
       "require": "./dist/cjs/sdk/browser/index.js",
-      "types": "./dist/esm/sdk/browser/index.d.ts",
+      "types": "./dist/types/sdk/browser/index.d.ts",
       "default": "./dist/cjs/sdk/browser/index.js"
     }
   },
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts",
+  "types": "./dist/types/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "compile": "run-s compile:esm compile:cjs compile:fixup",
-    "compile:esm": "tsc --project ./tsconfig.json",
-    "compile:cjs": "babel ./dist/esm --out-dir ./dist/cjs --extensions '.js' --source-maps",
+    "compile": "run-s 'compile:*'",
+    "compile:esm-babel": "babel --config-file ./babel.esm.json ./src --out-dir ./dist/esm --extensions '.ts' --source-maps",
+    "compile:cjs-babel": "babel --config-file ./babel.cjs.json ./src --out-dir ./dist/cjs --extensions '.ts' --source-maps",
+    "compile:types": "tsc --project ./tsconfig.json --emitDeclarationOnly --declarationDir ./dist/types",
     "compile:fixup": "node ./scripts/fixup.mjs",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
@@ -71,7 +72,10 @@
     "@babel/cli": "^7.24.6",
     "@babel/core": "^7.24.6",
     "@babel/plugin-transform-modules-commonjs": "^7.24.6",
+    "@babel/preset-env": "^7.24.6",
+    "@babel/preset-typescript": "^7.24.6",
     "@types/babel__core": "^7",
+    "@types/babel__preset-env": "^7",
     "@types/eslint": "^8",
     "@types/md5": "^2",
     "@types/node": "^20.6.3",

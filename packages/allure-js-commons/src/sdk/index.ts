@@ -1,6 +1,6 @@
-export { Config } from "./Config.js";
+export type { Config } from "./Config.js";
 export { ReporterRuntime } from "./ReporterRuntime.js";
-export { TestRuntime, MessageTestRuntime, setGlobalTestRuntime, getGlobalTestRuntime } from "../TestRuntime.js";
+export { type TestRuntime, MessageTestRuntime, setGlobalTestRuntime, getGlobalTestRuntime } from "../TestRuntime.js";
 export { TestHolder } from "./TestHolder.js";
 export { MessagesHolder } from "./MessageHolder.js";
 export {
@@ -14,7 +14,7 @@ export {
   getWorstStepResultStatus,
   hasStepMessage,
 } from "./utils.js";
-export {
+export type {
   RuntimeRawAttachmentMessage,
   RuntimeMetadataMessage,
   RuntimeStartStepMessage,
@@ -25,4 +25,4 @@ export {
 } from "../model.js";
 export * from "./context/index.js";
 export * from "../index.js";
-export { FixtureType } from "./LifecycleState.js";
+export type { FixtureType } from "./LifecycleState.js";
