@@ -28,18 +28,6 @@
       "types": "./dist/esm/internal.d.ts",
       "default": "./dist/cjs/internal.js"
     },
-    "./browser": {
-      "import": "./dist/esm/browser/index.js",
-      "require": "./dist/cjs/browser/index.js",
-      "types": "./dist/esm/browser/index.d.ts",
-      "default": "./dist/cjs/browser/index.js"
-    },
-    "./node": {
-      "import": "./dist/esm/node/index.js",
-      "require": "./dist/cjs/node/index.js",
-      "types": "./dist/esm/node/index.d.ts",
-      "default": "./dist/cjs/node/index.js"
-    },
     "./sdk": {
       "import": "./dist/esm/sdk/index.js",
       "require": "./dist/cjs/sdk/index.js",

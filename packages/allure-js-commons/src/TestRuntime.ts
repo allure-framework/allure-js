@@ -300,6 +300,7 @@ export const getGlobalTestRuntime = async (): Promise<TestRuntime> => {
   if ("__vitest_environment__" in globalThis) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
+      // @ts-ignore
       await import("allure-vitest/autoconfig");
 
       return getGlobalTestRuntimeFunction()?.() ?? noopRuntime;
