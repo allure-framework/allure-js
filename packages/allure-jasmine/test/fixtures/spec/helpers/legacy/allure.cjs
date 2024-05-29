@@ -32,7 +32,7 @@ const fixture = `
       {
         name: "Regression",
         messageRegex: ".*\\sException:.*",
-        matchedStatuses: ["${Status.BROKEN}"],
+        matchedStatuses: ["broken"],
       },
     ],
     environmentInfo: {

@@ -4687,7 +4687,6 @@ __metadata:
   dependencies:
     "@babel/cli": "npm:^7.24.6"
     "@babel/core": "npm:^7.24.6"
-    "@babel/plugin-transform-modules-commonjs": "npm:^7.24.6"
     "@babel/preset-env": "npm:^7.24.6"
     "@babel/preset-typescript": "npm:^7.24.6"
     "@types/babel__core": "npm:^7"
@@ -4698,6 +4697,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^7.0.0"
     "@typescript-eslint/parser": "npm:^7.0.0"
     allure-js-commons: "workspace:*"
+    babel-plugin-add-module-exports: "npm:^1.0.4"
     eslint: "npm:^8.57.0"
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-import: "npm:^2.28.1"

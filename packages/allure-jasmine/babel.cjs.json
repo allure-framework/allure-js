@@ -8,6 +8,7 @@
     ],
     ["@babel/preset-env", { "modules": "commonjs" }]
   ],
+  "plugins": ["babel-plugin-add-module-exports"],
   "targets": {
     "esmodules": false,
     "node": 18
