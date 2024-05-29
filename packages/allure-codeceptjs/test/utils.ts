@@ -69,10 +69,12 @@ export const runCodeceptJsInlineTest = async (
     }
   });
 
+  testProcess.on("close", async () => {
+    await rm(testDir, { recursive: true });
+  });
+
   return new Promise((resolve) => {
     testProcess.on("exit", async () => {
-      await rm(testDir, { recursive: true });
-
       return resolve(res);
     });
   });

@@ -4,11 +4,11 @@ import { runCodeceptJsInlineTest } from "../../../utils";
 it("handles attachments in tests", async () => {
   const { tests, attachments } = await runCodeceptJsInlineTest({
     "login.test.js": `
-      const { attachment } = require("allure-js-commons");
-
       Feature("sample-feature");
       Scenario("sample-scenario", async () => {
-        await attachment("data.txt", "some data", "text/plain");
+        const allure = codeceptjs.container.plugins("allure");
+
+        await allure.attachment("data.txt", "some data", "text/plain");
       });
     `,
   });

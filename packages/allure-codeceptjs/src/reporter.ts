@@ -1,6 +1,7 @@
 import { event } from "codeceptjs";
 import path from "node:path";
 import { LabelName, Stage, Status } from "allure-js-commons";
+import * as allure from "allure-js-commons";
 import { type RuntimeMessage, extractMetadataFromString, getMessageAndTraceFromError } from "allure-js-commons/sdk";
 import { FileSystemWriter, MessageWriter, ReporterRuntime, md5 } from "allure-js-commons/sdk/reporter";
 import { extractMeta } from "./helpers";

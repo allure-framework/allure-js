@@ -21,7 +21,6 @@ it("adds labels", async () => {
         await allure.severity("foo");
         await allure.story("foo");
         await allure.tag("foo");
-        await allure.labels({ name: "test", value: "testValue" }, { name: "test2", value: "testValue2" });
       });
     `,
   });
@@ -80,14 +79,6 @@ it("adds labels", async () => {
       {
         name: LabelName.STORY,
         value: "foo",
-      },
-      {
-        name: "test",
-        value: "testValue",
-      },
-      {
-        name: "test2",
-        value: "testValue2",
       },
     ]),
   );

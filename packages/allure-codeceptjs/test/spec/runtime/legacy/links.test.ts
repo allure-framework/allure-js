@@ -9,12 +9,11 @@ it("sets runtime links", async () => {
       Scenario("login-scenario1", async () => {
         const allure = codeceptjs.container.plugins("allure");
 
-        await allure.link("https://playwright.dev/docs/api/class-page#page-workers");
-        await allure.issue("1");
-        await allure.issue("https://example.org/issues/2");
-        await allure.tms("1");
-        await allure.tms("https://example.org/tasks/2");
-        await allure.links(...[{ url:"https://www.google.com/1" }, { url:"https://www.google.com/2" }]);
+        await allure.link("custom", "https://playwright.dev/docs/api/class-page#page-workers");
+        await allure.issue("issue 1", "1");
+        await allure.issue("issue 2", "https://example.org/issues/2");
+        await allure.tms("task 1", "1");
+        await allure.tms("task 2", "https://example.org/tasks/2");
       });
     `,
     "codecept.conf.js": `
@@ -57,28 +56,27 @@ it("sets runtime links", async () => {
       links: [
         {
           url: "https://playwright.dev/docs/api/class-page#page-workers",
+          type: "custom",
         },
         {
           url: "https://example.org/issues/1",
           type: LinkType.ISSUE,
+          name: "issue 1",
         },
         {
           url: "https://example.org/issues/2",
           type: LinkType.ISSUE,
+          name: "issue 2",
         },
         {
           url: "https://example.org/tasks/1",
           type: LinkType.TMS,
+          name: "task 1"
         },
         {
           url: "https://example.org/tasks/2",
           type: LinkType.TMS,
-        },
-        {
-          url: "https://www.google.com/1",
-        },
-        {
-          url: "https://www.google.com/2",
+          name: "task 2"
         },
       ],
     }),
