@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { env } from "process";
+import properties from "properties";
 import type { AttachmentOptions, ContentType, Status, StepResult, TestResult } from "../../model.js";
 import { LabelName, StatusByPriority } from "../../model.js";
 import type { Label } from "../../model.js";
@@ -294,3 +295,6 @@ const reRegExpChar = /[\\^$.*+?()[\]{}|]/g,
 export const escapeRegExp = (value: string): string => {
   return reHasRegExpChar.test(value) ? value.replace(reRegExpChar, "\\$&") : value;
 };
+
+export const parseProperties = properties.parse;
+export const stringifyProperties = properties.stringify;

@@ -2,10 +2,10 @@ import type { PathLike } from "fs";
 import { readFileSync } from "fs";
 import type { EventEmitter } from "node:events";
 import process from "process";
-import properties from "properties";
 import type { TestResult, TestResultContainer } from "../../../model.js";
 import type { Category, EnvironmentInfo } from "../../types.js";
 import type { Writer } from "../types.js";
+import { stringifyProperties } from "../utils.js";
 
 type EventType = "result" | "container" | "attachment" | "misc";
 
@@ -36,7 +36,7 @@ export class MessageWriter implements Writer {
   }
 
   writeEnvironmentInfo(info: EnvironmentInfo): void {
-    const text = properties.stringify(info, { unicode: true }).toString();
+    const text = stringifyProperties(info, { unicode: true }).toString();
 
     this.sendData("environment.properties", "misc", Buffer.from(text));
   }
