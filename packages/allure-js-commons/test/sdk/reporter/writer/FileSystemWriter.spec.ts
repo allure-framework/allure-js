@@ -3,21 +3,23 @@ import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSy
 import * as os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import type { Config} from "../../src/sdk/node/index.js";
-import { AllureNodeReporterRuntime, ContentType, FileSystemAllureWriter } from "../../src/sdk/node/index.js";
+import { ContentType } from "../../../../src/model.js";
+import { ReporterRuntime } from "../../../../src/sdk/reporter/ReporterRuntime.js";
+import type { Config } from "../../../../src/sdk/reporter/types.js";
+import { FileSystemWriter } from "../../../../src/sdk/reporter/writer/FileSystemWriter.js";
 
-describe("FileSystemAllureWriter", () => {
+describe("FileSystemWriter", () => {
   it("should save attachment from path", () => {
     const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
     const allureResults = path.join(tmp, "allure-results");
 
     const config: Config = {
-      writer: new FileSystemAllureWriter({
+      writer: new FileSystemWriter({
         resultsDir: allureResults,
       }),
     };
 
-    const runtime = new AllureNodeReporterRuntime(config);
+    const runtime = new ReporterRuntime(config);
 
     const from = path.join(tmp, "test-attachment.txt");
     const data = "test content";
@@ -43,11 +45,11 @@ describe("FileSystemAllureWriter", () => {
   it("creates allure-report nested path every time writer write something", () => {
     const tmpReportPath = path.join(os.tmpdir(), `./allure-testing-dir/${randomUUID()}`);
     const config: Config = {
-      writer: new FileSystemAllureWriter({
+      writer: new FileSystemWriter({
         resultsDir: tmpReportPath,
       }),
     };
-    const runtime = new AllureNodeReporterRuntime(config);
+    const runtime = new ReporterRuntime(config);
 
     runtime.startTest({});
     runtime.stopTest();

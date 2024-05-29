@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Link } from "../../../src/model.js";
-import { AllureNodeReporterRuntime } from "../../../src/sdk/node/index.js";
+import { ReporterRuntime } from "../../../src/sdk/reporter/ReporterRuntime.js";
 import { mockWriter } from "../../utils/writer.js";
 
 const fixtures = {
@@ -21,11 +21,11 @@ const fixtures = {
   ] as Link[],
 };
 
-describe("AllureNodeReporterRuntime", () => {
+describe("ReporterRuntime", () => {
   describe("writeAttachmentFromPath", () => {
     it("should use extension from fileExtension option if specified", () => {
       const writer = mockWriter();
-      const runtime = new AllureNodeReporterRuntime({ writer });
+      const runtime = new ReporterRuntime({ writer });
 
       runtime.startTest({});
 
@@ -46,7 +46,7 @@ describe("AllureNodeReporterRuntime", () => {
 
     it("should use extension from original file if fileExtension option is not specified", () => {
       const writer = mockWriter();
-      const runtime = new AllureNodeReporterRuntime({ writer });
+      const runtime = new ReporterRuntime({ writer });
 
       runtime.startTest({});
 
@@ -66,7 +66,7 @@ describe("AllureNodeReporterRuntime", () => {
 
     it("should detect extension by content type if no option or path specified", () => {
       const writer = mockWriter();
-      const runtime = new AllureNodeReporterRuntime({ writer });
+      const runtime = new ReporterRuntime({ writer });
 
       runtime.startTest({});
 
@@ -90,7 +90,7 @@ describe("AllureNodeReporterRuntime", () => {
   describe("applyRuntimeMessages", () => {
     it("keeps links as they are when links configuration is not provided", () => {
       const writer = mockWriter();
-      const runtime = new AllureNodeReporterRuntime({ writer });
+      const runtime = new ReporterRuntime({ writer });
 
       runtime.startTest({});
       runtime.applyRuntimeMessages([
@@ -112,7 +112,7 @@ describe("AllureNodeReporterRuntime", () => {
 
     it("transforms links according the runtime configuration", () => {
       const writer = mockWriter();
-      const runtime = new AllureNodeReporterRuntime({
+      const runtime = new ReporterRuntime({
         writer,
         links: [
           {

@@ -27,10 +27,10 @@ export const getMessageAndTraceFromError = (error: Error): Pick<StatusDetails, "
   };
 };
 
-const allureIdRegexp = /@?allure.id[:=](?<id>[^\s]+)/;
-const allureIdRegexpGlobal = new RegExp(allureIdRegexp, "g");
-const allureLabelRegexp = /@?allure.label.(?<name>[^\s]+?)[:=](?<value>[^\s]+)/;
-const allureLabelRegexpGlobal = new RegExp(allureLabelRegexp, "g");
+export const allureIdRegexp = /@?allure.id[:=](?<id>[^\s]+)/;
+export const allureIdRegexpGlobal = new RegExp(allureIdRegexp, "g");
+export const allureLabelRegexp = /@?allure.label.(?<name>[^\s]+?)[:=](?<value>[^\s]+)/;
+export const allureLabelRegexpGlobal = new RegExp(allureLabelRegexp, "g");
 
 export const extractMetadataFromString = (
   title: string,
