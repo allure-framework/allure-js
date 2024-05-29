@@ -12,10 +12,8 @@ import os from "node:os";
 import path from "node:path";
 import process from "node:process";
 import stripAnsi from "strip-ansi";
-import type { ImageDiffAttachment } from "allure-js-commons";
-import { ContentType } from "allure-js-commons";
-import type { Label, TestResult } from "allure-js-commons";
-import { LabelName, Stage, Status } from "allure-js-commons";
+import type { Label, TestResult, ImageDiffAttachment } from "allure-js-commons";
+import { LabelName, Stage, Status, ContentType } from "allure-js-commons";
 import type { RuntimeMessage, TestPlanV1Test } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import {
