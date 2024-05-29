@@ -1,4 +1,4 @@
-import { Config } from "allure-js-commons/sdk/node";
+import type { Config } from "allure-js-commons/sdk/reporter";
 
 export interface AllureJasmineConfig extends Config {
   testMode?: boolean;
