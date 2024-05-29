@@ -5863,6 +5863,13 @@ const RAW_RUNTIME_STATE =
           ["@types/jasmine", "npm:3.10.18"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:5.1.4", {\
+        "packageLocation": "./.yarn/cache/@types-jasmine-npm-5.1.4-2a05d96f38-6b21eb0fc7.zip/node_modules/@types/jasmine/",\
+        "packageDependencies": [\
+          ["@types/jasmine", "npm:5.1.4"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["@types/jest", [\
@@ -6828,6 +6835,7 @@ const RAW_RUNTIME_STATE =
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.9.6"],\
           ["@types/eslint", "npm:8.56.3"],\
+          ["@types/jasmine", "npm:5.1.4"],\
           ["@types/node", "npm:20.11.20"],\
           ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:7.10.0"],\
           ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:7.10.0"],\
