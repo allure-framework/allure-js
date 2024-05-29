@@ -3,7 +3,7 @@ const { setCommonPlugins } = require("@codeceptjs/configure");
 
 setCommonPlugins();
 
-module.exports.config = {
+exports.config = {
   tests: "./**/*.test.js",
   output: path.resolve(__dirname, "./output"),
   plugins: {

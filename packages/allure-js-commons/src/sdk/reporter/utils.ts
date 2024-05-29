@@ -1,4 +1,5 @@
 import { readFile } from "fs/promises";
+import { createHash, randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
@@ -7,9 +8,16 @@ import type { AttachmentOptions, ContentType, Status, StepResult, TestResult } f
 import { LabelName, StatusByPriority } from "../../model.js";
 import type { Label } from "../../model.js";
 import type { RuntimeMessage } from "../types.js";
-import type { AllureNodeCrypto } from "./AllureNodeCrypto.js";
 import { EXTENSIONS_BY_TYPE } from "./extensions.js";
 import type { WellKnownWriters, Writer, WriterDescriptor } from "./types.js";
+
+export const randomUuid = () => {
+  return randomUUID();
+};
+
+export const md5 = (str: string) => {
+  return createHash("md5").update(str).digest("hex");
+};
 
 export const writeAttachment = (uuid: string, options: ContentType | string | AttachmentOptions): string => {
   if (typeof options === "string") {
@@ -21,12 +29,12 @@ export const writeAttachment = (uuid: string, options: ContentType | string | At
   return `${uuid}-attachment${extension}`;
 };
 
-export const getTestResultHistoryId = (crypto: AllureNodeCrypto, result: TestResult) => {
+export const getTestResultHistoryId = (result: TestResult) => {
   if (result.historyId) {
     return result.historyId;
   }
 
-  const tcId = result.testCaseId ?? (result.fullName ? crypto.md5(result.fullName) : null);
+  const tcId = result.testCaseId ?? (result.fullName ? md5(result.fullName) : null);
 
   if (!tcId) {
     return "";
@@ -37,13 +45,13 @@ export const getTestResultHistoryId = (crypto: AllureNodeCrypto, result: TestRes
     .sort((a, b) => a.name?.localeCompare(b?.name) || a.value?.localeCompare(b?.value))
     .map((p) => `${p.name ?? "null"}:${p.value ?? "null"}`)
     .join(",");
-  const paramsHash = crypto.md5(paramsString);
+  const paramsHash = md5(paramsString);
 
   return `${tcId}:${paramsHash}`;
 };
 
-export const getTestResultTestCaseId = (crypto: AllureNodeCrypto, result: TestResult) => {
-  return result.fullName ? crypto.md5(result.fullName) : undefined;
+export const getTestResultTestCaseId = (result: TestResult) => {
+  return result.fullName ? md5(result.fullName) : undefined;
 };
 
 export const hasStepMessage = (messages: RuntimeMessage[]) => {

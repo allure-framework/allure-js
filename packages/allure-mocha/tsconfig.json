@@ -7,7 +7,6 @@
     "internal.ts"
   ],
   "compilerOptions": {
-    "skipLibCheck": true,
     "module": "ESNext",
     "target": "ES2022",
     "moduleResolution": "bundler",

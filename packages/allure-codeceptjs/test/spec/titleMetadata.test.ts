@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { LabelName } from "allure-js-commons/sdk/node";
+import { LabelName } from "allure-js-commons";
 import { runCodeceptJsInlineTest } from "../utils";
 
 it("handles title metadata", async () => {

@@ -5,17 +5,12 @@
     "./test/**/*"
   ],
   "compilerOptions": {
-    "skipLibCheck": true,
-    "module": "ESNext",
-    "target": "ES2022",
-    "moduleResolution": "bundler",
-    "lib": [
-      "dom",
-      "esnext"
-    ],
+    "lib": ["dom", "esnext"],
     "types": [
       "node"
     ],
-    "outDir": "./dist"
+    "module": "ES2020",
+    "moduleResolution": "Bundler",
+    "target": "ES2020"
   }
 }

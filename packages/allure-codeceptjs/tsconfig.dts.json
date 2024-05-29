@@ -1,9 +1,9 @@
 {
-  "extends": "./tsconfig",
+  "extends": "./tsconfig.json",
+  "exclude": ["./test/**/*"],
   "compilerOptions": {
     "declaration": true,
-    "emitDeclarationOnly": true
-  },
-  "include": ["./src/**/*"],
-  "exclude": ["./test/**/*"]
+    "emitDeclarationOnly": true,
+    "outDir": "./dist/types"
+  }
 }

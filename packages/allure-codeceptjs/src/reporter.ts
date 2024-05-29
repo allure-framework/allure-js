@@ -1,21 +1,13 @@
 import { event } from "codeceptjs";
 import path from "node:path";
-import stripAnsi from "strip-ansi";
-import {
-  AllureNodeReporterRuntime,
-  FileSystemAllureWriter,
-  LabelName,
-  MessageAllureWriter,
-  RuntimeMessage,
-  Stage,
-  Status,
-  extractMetadataFromString,
-} from "allure-js-commons/sdk/node";
+import { LabelName, Stage, Status } from "allure-js-commons";
+import { type RuntimeMessage, extractMetadataFromString, getMessageAndTraceFromError } from "allure-js-commons/sdk";
+import { FileSystemWriter, MessageWriter, ReporterRuntime, md5 } from "allure-js-commons/sdk/reporter";
 import { extractMeta } from "./helpers";
-import { AllureCodeceptJsConfig, CodeceptError, CodeceptHook, CodeceptStep, CodeceptTest } from "./model.js";
+import type { AllureCodeceptJsConfig, CodeceptError, CodeceptHook, CodeceptStep, CodeceptTest } from "./model.js";
 
 export class AllureCodeceptJsReporter {
-  allureRuntime?: AllureNodeReporterRuntime;
+  allureRuntime?: ReporterRuntime;
   currentAllureResultUuid?: string;
   currentTest: CodeceptTest | null = null;
   config!: AllureCodeceptJsConfig;
@@ -23,11 +15,11 @@ export class AllureCodeceptJsReporter {
   constructor(config: AllureCodeceptJsConfig) {
     this.registerEvents();
     this.config = config || {};
-    this.allureRuntime = new AllureNodeReporterRuntime({
+    this.allureRuntime = new ReporterRuntime({
       ...config,
       writer: config.testMode
-        ? new MessageAllureWriter()
-        : new FileSystemAllureWriter({
+        ? new MessageWriter()
+        : new FileSystemWriter({
             resultsDir: config.resultsDir || "./allure-results",
           }),
     });
@@ -65,7 +57,7 @@ export class AllureCodeceptJsReporter {
     this.currentAllureResultUuid = this.allureRuntime!.startTest({
       name: titleMetadata.cleanTitle,
       fullName,
-      testCaseId: this.allureRuntime!.crypto.md5(fullName),
+      testCaseId: md5(fullName),
     });
 
     this.allureRuntime!.updateTest((result) => {
@@ -156,7 +148,8 @@ export class AllureCodeceptJsReporter {
 
     this.allureRuntime!.updateTest((result) => {
       result.status = Status.FAILED;
-      result.statusDetails = { message: stripAnsi(err.message) };
+      // @ts-ignore
+      result.statusDetails = getMessageAndTraceFromError(err);
     }, this.currentAllureResultUuid);
     this.closeCurrentAllureTest(test);
   }

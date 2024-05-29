@@ -14,14 +14,13 @@ import type {
   RuntimeStepMetadataMessage,
   RuntimeStopStepMessage,
 } from "../types.js";
-import { AllureNodeCrypto } from "./AllureNodeCrypto.js";
 import { LifecycleState } from "./LifecycleState.js";
 import { MutableAllureContextHolder, StaticContextProvider } from "./context/StaticAllureContextProvider.js";
 import type { AllureContextProvider } from "./context/types.js";
 import { createFixtureResult, createStepResult, createTestResult } from "./factory.js";
 import { Notifier } from "./Notifier.js";
 import type { Config, FixtureType, FixtureWrapper, LinkConfig, TestScope, WellKnownWriters, Writer } from "./types.js";
-import { deepClone, getGlobalLabels, typeToExtension } from "./utils.js";
+import { randomUuid, deepClone, getGlobalLabels, typeToExtension } from "./utils.js";
 import { getTestResultHistoryId, getTestResultTestCaseId, resolveWriter } from "./utils.js";
 import * as wellKnownCommonWriters from "./writer/index.js";
 
@@ -143,7 +142,6 @@ type MessageTargets = {
 
 export class ReporterRuntime {
   private readonly state = new LifecycleState();
-  readonly crypto = new AllureNodeCrypto();
   private notifier: Notifier;
   private links: LinkConfig[] = [];
   private contextProvider: AllureContextProvider;
@@ -204,7 +202,7 @@ export class ReporterRuntime {
    * @param opts
    * @returns
    */
-  startScope = (opts: StartScopeOpts = {}) => this.startScopeWithUuid(this.crypto.uuid(), opts);
+  startScope = (opts: StartScopeOpts = {}) => this.startScopeWithUuid(randomUuid(), opts);
 
   updateScope = (updateFunc: (scope: TestScope) => void, uuid?: string) => {
     const resolvedUuid = uuid ?? this.contextProvider.getScope();
@@ -302,7 +300,7 @@ export class ReporterRuntime {
       return;
     }
 
-    const uuid = this.crypto.uuid();
+    const uuid = randomUuid();
     const wrappedFixture = this.state.setFixtureResult(uuid, type, {
       ...createFixtureResult(),
       start: Date.now(),
@@ -528,8 +526,8 @@ export class ReporterRuntime {
     }
 
     this.notifier.beforeTestResultStop(targetResult);
-    targetResult.testCaseId ??= getTestResultTestCaseId(this.crypto, targetResult);
-    targetResult.historyId ??= getTestResultHistoryId(this.crypto, targetResult);
+    targetResult.testCaseId ??= getTestResultTestCaseId(targetResult);
+    targetResult.historyId ??= getTestResultHistoryId(targetResult);
     targetResult.stop = stop || Date.now();
 
     this.notifier.afterTestResultStop(targetResult);
@@ -640,7 +638,7 @@ export class ReporterRuntime {
   };
 
   buildAttachmentFileName = (options: AttachmentOptions): string => {
-    const attachmentUuid = this.crypto.uuid();
+    const attachmentUuid = randomUuid();
     const attachmentExtension = typeToExtension({
       fileExtension: options.fileExtension,
       contentType: options.contentType,
@@ -777,7 +775,7 @@ export class ReporterRuntime {
   };
 
   protected createTestResult(result: Partial<TestResult>): TestResult {
-    const uuid = this.crypto.uuid();
+    const uuid = randomUuid();
     return {
       ...createTestResult(uuid),
       start: Date.now(),
@@ -1017,7 +1015,7 @@ export class ReporterRuntime {
     const befores = wrappedFixture.type === "before" ? [wrappedFixture.value] : [];
     const afters = wrappedFixture.type === "after" ? [wrappedFixture.value] : [];
     this.writer.writeGroup({
-      uuid: this.crypto.uuid(),
+      uuid: randomUuid(),
       name: fixture.name,
       children: [...new Set(tests)],
       befores,
@@ -1036,7 +1034,7 @@ export class ReporterRuntime {
       ...data,
     };
     parent.steps.push(stepResult);
-    const stepUuid = this.crypto.uuid();
+    const stepUuid = randomUuid();
     this.state.setStepResult(stepUuid, stepResult);
 
     this.contextProvider.addStep(stepUuid, rootUuid);
