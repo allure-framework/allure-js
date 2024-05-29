@@ -1,25 +1,23 @@
-import { Formatter, IFormatterOptions, TestCaseHookDefinition, World } from "@cucumber/cucumber";
-import * as messages from "@cucumber/messages";
-import { PickleTag, Tag, TestStepResult, TestStepResultStatus } from "@cucumber/messages";
+import type { IFormatterOptions, TestCaseHookDefinition } from "@cucumber/cucumber";
+import { Formatter, World } from "@cucumber/cucumber";
+import type * as messages from "@cucumber/messages";
+import type { PickleTag, Tag, TestStepResult } from "@cucumber/messages";
+import { TestStepResultStatus } from "@cucumber/messages";
 import os from "node:os";
 import process from "node:process";
-import { ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/internal";
+import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
+import type { Label, Link, TestResult } from "allure-js-commons";
 import {
-  AllureNodeReporterRuntime,
-  Config,
-  ContentType,
-  FileSystemAllureWriter,
-  Label,
-  LabelName,
-  Link,
-  MessageAllureWriter,
-  Stage,
-  Status,
-  TestResult,
+  ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
+  FileSystemWriter,
+  MessageWriter,
+  ReporterRuntime,
   createStepResult,
   getWorstStepResultStatus,
-} from "allure-js-commons/sdk/node";
-import { AllureCucumberReporterConfig, LabelConfig, LinkConfig } from "./model.js";
+  md5,
+} from "allure-js-commons/sdk/reporter";
+import type { Config } from "allure-js-commons/sdk/reporter";
+import type { AllureCucumberReporterConfig, LabelConfig, LinkConfig } from "./model.js";
 import { AllureCucumberWorld } from "./world.js";
 
 const { ALLURE_THREAD_NAME } = process.env;
@@ -30,7 +28,7 @@ export default class AllureCucumberReporter extends Formatter {
 
   private linksConfigs: LinkConfig[] = [];
   private labelsConfigs: LabelConfig[] = [];
-  private runtime: AllureNodeReporterRuntime;
+  private runtime: ReporterRuntime;
 
   private readonly documentMap: Map<string, messages.GherkinDocument> = new Map();
   private readonly scenarioMap: Map<string, messages.Scenario> = new Map();
@@ -56,10 +54,10 @@ export default class AllureCucumberReporter extends Formatter {
       ...rest
     } = options.parsedArgvOptions as AllureCucumberReporterConfig;
 
-    this.runtime = new AllureNodeReporterRuntime({
+    this.runtime = new ReporterRuntime({
       writer: testMode
-        ? new MessageAllureWriter()
-        : new FileSystemAllureWriter({
+        ? new MessageWriter()
+        : new FileSystemWriter({
             resultsDir,
           }),
       links: links as Config["links"] | undefined,
@@ -242,7 +240,7 @@ export default class AllureCucumberReporter extends Formatter {
       description: (scenario?.description || doc?.feature?.description || "").trim(),
       labels: [],
       links: [],
-      testCaseId: this.runtime.crypto.md5(fullName),
+      testCaseId: md5(fullName),
       start: Date.now(),
       fullName,
     };

@@ -1,6 +1,7 @@
-import { IWorld, IWorldOptions } from "@cucumber/cucumber";
-import { ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/internal";
-import { MessageTestRuntime, RuntimeMessage } from "allure-js-commons/sdk/node";
+import type { IWorld, IWorldOptions } from "@cucumber/cucumber";
+import type { RuntimeMessage } from "allure-js-commons/sdk";
+import { ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/sdk/reporter";
+import { MessageTestRuntime } from "allure-js-commons/sdk/runtime";
 
 export class AllureCucumberTestRuntime extends MessageTestRuntime implements IWorld {
   public readonly attach: IWorldOptions["attach"];

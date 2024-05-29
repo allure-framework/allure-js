@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { ContentType } from "allure-js-commons/sdk";
+import { ContentType } from "allure-js-commons";
 import { runCucumberInlineTest } from "../utils";
 
 it("handles examples table", async () => {
