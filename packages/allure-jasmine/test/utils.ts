@@ -1,10 +1,10 @@
-/* eslint  @typescript-eslint/no-require-imports: off */
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { parse } from "properties";
-import { AllureResults, EnvironmentInfo, TestResult, TestResultContainer } from "allure-js-commons/sdk/node";
+import type { TestResult, TestResultContainer } from "allure-js-commons";
+import type { AllureResults, EnvironmentInfo } from "allure-js-commons/sdk";
 
 export type TestResultsByFullName = Record<string, TestResult>;
 

@@ -27,10 +27,12 @@
     "dist"
   ],
   "scripts": {
-    "clean": "rimraf ./dist ./out",
-    "compile": "run-p 'compile:*'",
-    "compile:lib": "rollup -c",
-    "compile:types": "tsc --project ./tsconfig.dts.json",
+    "clean": "rimraf ./dist",
+    "compile": "run-s 'compile:*'",
+    "compile:esm-babel": "babel --config-file ./babel.esm.json ./src --out-dir ./dist/esm --extensions '.ts' --source-maps",
+    "compile:cjs-babel": "babel --config-file ./babel.cjs.json ./src --out-dir ./dist/cjs --extensions '.ts' --source-maps",
+    "compile:types": "tsc --project ./tsconfig.json --emitDeclarationOnly --declarationDir ./dist/types",
+    "compile:fixup": "node ./scripts/fixup.mjs",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "vitest run"
@@ -39,9 +41,12 @@
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-typescript": "^11.1.6",
+    "@babel/cli": "^7.24.6",
+    "@babel/core": "^7.24.6",
+    "@babel/preset-env": "^7.24.6",
+    "@babel/preset-typescript": "^7.24.6",
+    "@types/babel__core": "^7",
+    "@types/babel__preset-env": "^7",
     "@types/eslint": "^8",
     "@types/jasmine": "^3.3.12",
     "@types/node": "^20.6.3",
@@ -57,9 +62,7 @@
     "glob": "^10.3.12",
     "jasmine": "^3.4.0",
     "npm-run-all2": "^6.1.2",
-    "properties": "^1.2.1",
     "rimraf": "^5.0.1",
-    "rollup": "^4.17.2",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "vitest": "^1.5.3"

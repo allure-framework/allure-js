@@ -1,6 +1,5 @@
-/* eslint  @typescript-eslint/no-require-imports: off */
 import { expect, it } from "vitest";
-import { Stage, Status } from "allure-js-commons/sdk/node";
+import { Stage, Status } from "allure-js-commons";
 import { runJasmineInlineTest } from "../utils";
 
 it("handles jasmine tests", async () => {
