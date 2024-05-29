@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { runJasmineInlineTest } from "../../../utils";
+import { runJasmineInlineTest } from "../../../utils.js";
 
 it("sets historyId", async () => {
   const { tests } = await runJasmineInlineTest({

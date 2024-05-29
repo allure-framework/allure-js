@@ -6945,6 +6945,7 @@ const RAW_RUNTIME_STATE =
           ["allure-jasmine", "workspace:packages/allure-jasmine"],\
           ["@babel/cli", "virtual:3b04c8c38dde7165df844f9cd74e94cc47d78164564600cf56ba5f8c6011d25ef0d3afc13d610f3da970f6807c830914053ff96a43c86ba17f3ec650dfd687d3#npm:7.24.6"],\
           ["@babel/core", "npm:7.24.6"],\
+          ["@babel/plugin-transform-modules-commonjs", "virtual:3b04c8c38dde7165df844f9cd74e94cc47d78164564600cf56ba5f8c6011d25ef0d3afc13d610f3da970f6807c830914053ff96a43c86ba17f3ec650dfd687d3#npm:7.24.6"],\
           ["@babel/preset-env", "virtual:3b04c8c38dde7165df844f9cd74e94cc47d78164564600cf56ba5f8c6011d25ef0d3afc13d610f3da970f6807c830914053ff96a43c86ba17f3ec650dfd687d3#npm:7.24.6"],\
           ["@babel/preset-typescript", "virtual:3b04c8c38dde7165df844f9cd74e94cc47d78164564600cf56ba5f8c6011d25ef0d3afc13d610f3da970f6807c830914053ff96a43c86ba17f3ec650dfd687d3#npm:7.24.6"],\
           ["@types/babel__core", "npm:7.20.5"],\

@@ -16,13 +16,13 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
     }
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
   "files": [
     "dist"
   ],
@@ -43,6 +43,7 @@
   "devDependencies": {
     "@babel/cli": "^7.24.6",
     "@babel/core": "^7.24.6",
+    "@babel/plugin-transform-modules-commonjs": "^7.24.6",
     "@babel/preset-env": "^7.24.6",
     "@babel/preset-typescript": "^7.24.6",
     "@types/babel__core": "^7",

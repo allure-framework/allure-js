@@ -1,5 +1,3 @@
-const { LinkType, Status } = require("allure-js-commons/sdk/node");
-
 const fixture = `
   const AllureJasmineReporter = require("allure-jasmine");
 
@@ -7,11 +5,11 @@ const fixture = `
     testMode: true,
     links: [
       {
-        type: "${LinkType.ISSUE}",
+        type: "issue",
         urlTemplate: "https://example.org/issues/%s",
       },
       {
-        type: "${LinkType.TMS}",
+        type: "tms",
         urlTemplate: "https://example.org/tasks/%s",
       }
     ],
@@ -19,17 +17,17 @@ const fixture = `
       {
         name: "Sad tests",
         messageRegex: /.*Sad.*/,
-        matchedStatuses: ["${Status.FAILED}"],
+        matchedStatuses: ["failed"],
       },
       {
         name: "Infrastructure problems",
         messageRegex: ".*RuntimeException.*",
-        matchedStatuses: ["${Status.BROKEN}"],
+        matchedStatuses: ["broken"],
       },
       {
         name: "Outdated tests",
         messageRegex: ".*FileNotFound.*",
-        matchedStatuses: ["${Status.BROKEN}"],
+        matchedStatuses: ["broken"],
       },
       {
         name: "Regression",

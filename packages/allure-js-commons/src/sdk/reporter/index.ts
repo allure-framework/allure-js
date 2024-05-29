@@ -9,4 +9,6 @@ export * from "./testplan.js";
 export * from "./factory.js";
 export { LifecycleState } from "./LifecycleState.js";
 export { ReporterRuntime } from "./ReporterRuntime.js";
-export * from "./writer/index.js";
+export { InMemoryWriter } from "./writer/InMemoryWriter.js";
+export { FileSystemWriter } from "./writer/FileSystemWriter.js";
+export { MessageWriter, MessageReader } from "./writer/MessageWriter.js";

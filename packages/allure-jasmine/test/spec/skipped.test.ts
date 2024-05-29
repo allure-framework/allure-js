@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
-import { runJasmineInlineTest } from "../utils";
+import { runJasmineInlineTest } from "../utils.js";
 
 it("skipped test", async () => {
   const { tests } = await runJasmineInlineTest({

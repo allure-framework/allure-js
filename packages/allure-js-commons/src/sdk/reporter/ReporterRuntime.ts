@@ -15,14 +15,14 @@ import type {
   RuntimeStopStepMessage,
 } from "../types.js";
 import { LifecycleState } from "./LifecycleState.js";
+import { Notifier } from "./Notifier.js";
 import { MutableAllureContextHolder, StaticContextProvider } from "./context/StaticAllureContextProvider.js";
 import type { AllureContextProvider } from "./context/types.js";
 import { createFixtureResult, createStepResult, createTestResult } from "./factory.js";
-import { Notifier } from "./Notifier.js";
 import type { Config, FixtureType, FixtureWrapper, LinkConfig, TestScope, WellKnownWriters, Writer } from "./types.js";
 import { randomUuid, deepClone, getGlobalLabels, typeToExtension } from "./utils.js";
 import { getTestResultHistoryId, getTestResultTestCaseId, resolveWriter } from "./utils.js";
-import * as wellKnownCommonWriters from "./writer/index.js";
+import * as wellKnownCommonWriters from "./writer/wellKnownCommonWriters.js";
 
 type StartScopeOpts = {
   /**
