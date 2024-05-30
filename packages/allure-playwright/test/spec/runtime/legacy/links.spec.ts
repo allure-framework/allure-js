@@ -1,5 +1,4 @@
 import { expect, it } from "vitest";
-import { LinkType } from "allure-js-commons";
 import { runPlaywrightInlineTest } from "../../../utils";
 
 it("sets runtime links", async () => {
@@ -7,7 +6,7 @@ it("sets runtime links", async () => {
     "sample.test.js": `
       import { test, allure } from 'allure-playwright';
 
-      test('should add epic link', async ({}, testInfo) => {
+      test('should add links', async ({}, testInfo) => {
         await allure.link("custom", "https://playwright.dev/docs/api/class-page#page-workers");
         await allure.issue("issue 1", "1");
         await allure.issue("issue 2", "https://example.org/issues/2");
@@ -27,11 +26,11 @@ it("sets runtime links", async () => {
                suiteTitle: true,
                links: [
                  {
-                   type: "${LinkType.ISSUE}",
+                   type: "issue",
                    urlTemplate: "https://example.org/issues/%s",
                  },
                  {
-                   type: "${LinkType.TMS}",
+                   type: "tms",
                    urlTemplate: "https://example.org/tasks/%s",
                  }
                ]
@@ -53,27 +52,27 @@ it("sets runtime links", async () => {
       links: [
         {
           url: "https://playwright.dev/docs/api/class-page#page-workers",
-          type: "custom"
+          type: "custom",
         },
         {
           url: "https://example.org/issues/1",
-          type: LinkType.ISSUE,
-          name: "issue 1"
+          type: "issue",
+          name: "issue 1",
         },
         {
           url: "https://example.org/issues/2",
-          type: LinkType.ISSUE,
-          name: "issue 2"
+          type: "issue",
+          name: "issue 2",
         },
         {
           url: "https://example.org/tasks/1",
-          type: LinkType.TMS,
-          name: "task 1"
+          type: "tms",
+          name: "task 1",
         },
         {
           url: "https://example.org/tasks/2",
-          type: LinkType.TMS,
-          name: "task 2"
+          type: "tms",
+          name: "task 2",
         },
         {
           url: "https://www.google.com/1",
