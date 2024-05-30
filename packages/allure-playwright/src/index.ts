@@ -12,10 +12,11 @@ import os from "node:os";
 import path from "node:path";
 import process from "node:process";
 import stripAnsi from "strip-ansi";
-import type { Label, TestResult, ImageDiffAttachment } from "allure-js-commons";
-import { LabelName, Stage, Status, ContentType } from "allure-js-commons";
+import type { ImageDiffAttachment, Label, TestResult } from "allure-js-commons";
+import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage, TestPlanV1Test } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
+import { md5 } from "allure-js-commons/sdk/reporter";
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
   FileSystemWriter,
@@ -169,7 +170,7 @@ export class AllureReporter implements ReporterV2 {
       labels: titleMetadata.labels,
       links: [],
       parameters: [],
-      testCaseId: this.allureRuntime!.crypto.md5(testCaseIdBase),
+      testCaseId: md5(testCaseIdBase),
       fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
     };
 
@@ -250,15 +251,15 @@ export class AllureReporter implements ReporterV2 {
       testResult.labels.push({ name: LabelName.HOST, value: this.hostname });
       testResult.labels.push({ name: LabelName.THREAD, value: thread });
 
-      if (projectSuiteTitle && !hasLabel(testResult, LabelName.PARENT_SUITE)) {
+      if (projectSuiteTitle && !hasLabel(testResult as TestResult, LabelName.PARENT_SUITE)) {
         testResult.labels.push({ name: LabelName.PARENT_SUITE, value: projectSuiteTitle });
       }
 
-      if (this.options.suiteTitle && fileSuiteTitle && !hasLabel(testResult, LabelName.SUITE)) {
+      if (this.options.suiteTitle && fileSuiteTitle && !hasLabel(testResult as TestResult, LabelName.SUITE)) {
         testResult.labels.push({ name: LabelName.SUITE, value: fileSuiteTitle });
       }
 
-      if (suiteTitles.length > 0 && !hasLabel(testResult, LabelName.SUB_SUITE)) {
+      if (suiteTitles.length > 0 && !hasLabel(testResult as TestResult, LabelName.SUB_SUITE)) {
         testResult.labels.push({ name: LabelName.SUB_SUITE, value: suiteTitles.join(" > ") });
       }
 

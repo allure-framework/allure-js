@@ -1,25 +1,25 @@
 import { expect, it } from "vitest";
-import { ContentType } from "allure-js-commons/sdk/node";
+import { ContentType } from "allure-js-commons";
 import { runPlaywrightInlineTest } from "../../../utils";
 
 it("should add attachments into steps", async () => {
   const { tests, attachments } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import { test, step, attachment } from 'allure-playwright';
+      import { test, allure } from 'allure-playwright';
 
       test('should add attachment', async ({}, testInfo) => {
-        await step('outer step 1', async () => {
-          await step('inner step 1.1', async () => {
-            await attachment('some', 'some-data', 'text/plain');
+        await allure.step('outer step 1', async () => {
+          await allure.step('inner step 1.1', async () => {
+            await allure.attachment('some', 'some-data', 'text/plain');
           });
-          await step('inner step 1.2', async () => {
+          await allure.step('inner step 1.2', async () => {
           });
         });
-        await step('outer step 2', async () => {
-          await step('inner step 2.1', async () => {
+        await allure.step('outer step 2', async () => {
+          await allure.step('inner step 2.1', async () => {
           });
-          await step('inner step 2.2', async () => {
-            await attachment('some', 'other-data', 'text/plain');
+          await allure.step('inner step 2.2', async () => {
+            await allure.attachment('some', 'other-data', 'text/plain');
           });
         });
       });
@@ -103,21 +103,21 @@ it("should add attachments into steps", async () => {
 it("doesn't not report detail steps for attachments", async () => {
   const { tests, attachments } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import { test, step, attachment } from 'allure-playwright';
+      import { test, allure } from 'allure-playwright';
 
       test('should add attachment', async ({}, testInfo) => {
-        await step('outer step 1', async () => {
-          await step('inner step 1.1', async () => {
-            await attachment('some', 'some-data', 'text/plain');
+        await allure.step('outer step 1', async () => {
+          await allure.step('inner step 1.1', async () => {
+            await allure.attachment('some', 'some-data', 'text/plain');
           });
-          await step('inner step 1.2', async () => {
+          await allure.step('inner step 1.2', async () => {
           });
         });
-        await step('outer step 2', async () => {
-          await step('inner step 2.1', async () => {
+        await allure.step('outer step 2', async () => {
+          await allure.step('inner step 2.1', async () => {
           });
-          await step('inner step 2.2', async () => {
-            await attachment('some', 'other-data', 'text/plain');
+          await allure.step('inner step 2.2', async () => {
+            await allure.attachment('some', 'other-data', 'text/plain');
           });
         });
       });

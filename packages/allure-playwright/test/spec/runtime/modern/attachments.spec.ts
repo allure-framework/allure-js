@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { ContentType } from "allure-js-commons/sdk/node";
+import { ContentType } from "allure-js-commons";
 import { runPlaywrightInlineTest } from "../../../utils";
 
 it("should add attachments into steps", async () => {

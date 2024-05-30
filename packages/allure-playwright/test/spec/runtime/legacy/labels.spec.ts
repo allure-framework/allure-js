@@ -5,38 +5,22 @@ import { runPlaywrightInlineTest } from "../../../utils";
 it("sets runtime labels", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import {
-        test,
-        expect,
-        label,
-        labels,
-        feature,
-        allureId,
-        epic,
-        layer,
-        owner,
-        parentSuite,
-        suite,
-        subSuite,
-        severity,
-        story,
-        tag,
-      } from "allure-playwright";
+      import { test, expect, allure } from "allure-playwright";
 
       test("should add epic label", async ({}, testInfo) => {
-        await label("foo", "bar");
-        await allureId("foo");
-        await epic("foo");
-        await feature("foo");
-        await layer("foo");
-        await owner("foo");
-        await parentSuite("foo");
-        await subSuite("foo");
-        await suite("foo");
-        await severity("foo");
-        await story("foo");
-        await tag("foo");
-        await labels({ name: "test", value: "testValue" }, { name: "test2", value: "testValue2" });
+        await allure.label("foo", "bar");
+        await allure.allureId("foo");
+        await allure.epic("foo");
+        await allure.feature("foo");
+        await allure.layer("foo");
+        await allure.owner("foo");
+        await allure.parentSuite("foo");
+        await allure.subSuite("foo");
+        await allure.suite("foo");
+        await allure.severity("foo");
+        await allure.story("foo");
+        await allure.tag("foo");
+        await allure.labels({ name: "test", value: "testValue" }, { name: "test2", value: "testValue2" });
       });
     `,
   });
