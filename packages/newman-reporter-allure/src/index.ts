@@ -2,20 +2,13 @@
 import type { EventEmitter } from "events";
 import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
 import type { CollectionDefinition, Event, HeaderList, Item, Request, Response } from "postman-collection";
-import {
-  AllureNodeReporterRuntime,
-  ContentType,
-  FileSystemAllureWriter,
-  LabelName,
-  MessageAllureWriter,
-  Stage,
-  Status,
-} from "allure-js-commons/sdk/node";
-import { AllureNewmanConfig, PmItem, RunningItem } from "./model.js";
+import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
+import { FileSystemWriter, MessageWriter, ReporterRuntime } from "allure-js-commons/sdk/reporter";
+import type { AllureNewmanConfig, PmItem, RunningItem } from "./model.js";
 import { extractMeta } from "./utils.js";
 
 class AllureReporter {
-  allureRuntime: AllureNodeReporterRuntime;
+  allureRuntime: ReporterRuntime;
   allureConfig: AllureNewmanConfig;
   runningItems: RunningItem[] = [];
   currentCollection: CollectionDefinition;
@@ -32,11 +25,11 @@ class AllureReporter {
 
     this.currentCollection = options.collection;
     this.allureConfig = reporterConfig;
-    this.allureRuntime = new AllureNodeReporterRuntime({
+    this.allureRuntime = new ReporterRuntime({
       ...restConfig,
       writer: testMode
-        ? new MessageAllureWriter(emitter)
-        : new FileSystemAllureWriter({
+        ? new MessageWriter(emitter)
+        : new FileSystemWriter({
             resultsDir,
           }),
     });

@@ -109,11 +109,3 @@ Generate the static report web-application folder using allure-commandline
 ```
 
 Report will be generated under folder "allure-report" in the root location.
-
-![Report-screenshot](./report-preview.jpg)
-
-## Allure TestOps preview
-
-Generated report can be uploaded to Allure TestOps to store and analyze your tests-results.
-
-![TestOps-screenshot](./testops-preview.jpg)

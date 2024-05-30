@@ -1,4 +1,3 @@
-import {} from "node:crypto";
 import stripAnsi from "strip-ansi";
 import type { FixtureResult, Label, StatusDetails, StepResult, TestResult } from "../model.js";
 import { LabelName, Status } from "../model.js";

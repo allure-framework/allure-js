@@ -1,5 +1,6 @@
-import { EventList } from "postman-collection";
-import { Label, LabelName, allureIdRegexp, allureLabelRegexp } from "allure-js-commons/sdk/node";
+import type { EventList } from "postman-collection";
+import type { Label } from "allure-js-commons";
+import { extractMetadataFromString } from "allure-js-commons/sdk";
 
 export const extractMeta = (eventList: EventList) => {
   const labels: Label[] = [];
@@ -12,19 +13,8 @@ export const extractMeta = (eventList: EventList) => {
           return;
         }
         const trimmedCommentValue = line.trim().replace("//", "").trim();
-
-        const idMatch = trimmedCommentValue.match(allureIdRegexp as RegExp);
-        const idValue = idMatch?.groups?.id;
-        if (idValue) {
-          labels.push({ name: LabelName.ALLURE_ID, value: idValue });
-        }
-
-        const labelMatch = trimmedCommentValue.match(allureLabelRegexp as RegExp);
-        const { name, value } = labelMatch?.groups || {};
-
-        if (name && value) {
-          labels.push({ name, value });
-        }
+        const metadata = extractMetadataFromString(trimmedCommentValue);
+        labels.push(...(metadata.labels as Label[]));
       });
     }
   });
