@@ -1,58 +1,26 @@
-import { EnvironmentContext, JestEnvironment } from "@jest/environment";
-import type { JestExpect } from "@jest/expect";
-import type { Circus, Global } from "@jest/types";
+import type { EnvironmentContext, JestEnvironment } from "@jest/environment";
+import type { Circus } from "@jest/types";
 import os from "node:os";
 import { dirname, sep } from "node:path";
 import process from "node:process";
-import stripAnsi from "strip-ansi";
 import * as allure from "allure-js-commons";
-import {
-  ALLURE_TEST_RUNTIME_KEY,
-  AllureNodeReporterRuntime,
-  FileSystemAllureWriter,
-  LabelName,
-  MessageAllureWriter,
-  MessageTestRuntime,
-  RuntimeMessage,
-  Stage,
-  Status,
-  getStatusFromError,
-  getSuitesLabels,
-  setGlobalTestRuntime,
-} from "allure-js-commons/sdk/node";
-import { AllureJestConfig, AllureJestEnvironment } from "./model.js";
+import { LabelName, Stage, Status } from "allure-js-commons";
+import type { RuntimeMessage } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
+import { FileSystemWriter, MessageWriter, ReporterRuntime, getSuitesLabels } from "allure-js-commons/sdk/reporter";
+import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
+import { AllureJestTestRuntime } from "./AllureJestTestRuntime.js";
+import type { AllureJestConfig, AllureJestEnvironment } from "./model.js";
 import { getTestId, getTestPath } from "./utils.js";
 
 const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
 const hostname = os.hostname();
 
-class AllureJestTestRuntime extends MessageTestRuntime {
-  constructor(
-    private readonly jestEnvironment: AllureJestEnvironment,
-    private readonly context: Global.Global,
-  ) {
-    super();
-    context[ALLURE_TEST_RUNTIME_KEY] = () => this;
-  }
-
-  async sendMessage(message: RuntimeMessage) {
-    const { currentTestName, currentConcurrentTestName } = (this.context.expect as JestExpect).getState();
-    const testName = currentTestName || currentConcurrentTestName?.();
-
-    this.jestEnvironment.handleAllureRuntimeMessage({
-      currentTestName: testName as string,
-      message,
-    });
-
-    await Promise.resolve();
-  }
-}
-
 const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
   // @ts-expect-error (ts(2545)) Incorrect assumption about a mixin class: https://github.com/microsoft/TypeScript/issues/37142
   return class extends Base {
     testPath: string;
-    runtime: AllureNodeReporterRuntime;
+    runtime: ReporterRuntime;
     allureUuidsByTestIds: Map<string, string> = new Map();
 
     constructor(config: AllureJestConfig, context: EnvironmentContext) {
@@ -64,11 +32,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         ...restConfig
       } = config?.projectConfig?.testEnvironmentOptions || {};
 
-      this.runtime = new AllureNodeReporterRuntime({
+      this.runtime = new ReporterRuntime({
         ...restConfig,
         writer: testMode
-          ? new MessageAllureWriter()
-          : new FileSystemAllureWriter({
+          ? new MessageWriter()
+          : new FileSystemWriter({
               resultsDir,
             }),
       });
@@ -244,16 +212,15 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       // jest collects all errors, but we need to report the first one because it's a reason why the test has been failed
       const [error] = test.errors;
       const hasMultipleErrors = Array.isArray(error);
-      const errorMessage = (hasMultipleErrors ? error[0]?.message : error.message) as string;
-      const errorTrace = (hasMultipleErrors ? error[0]?.stack : error.stack) as string;
-      const status = getStatusFromError(hasMultipleErrors ? error[0] : error);
+      const firstError: Error = hasMultipleErrors ? error[0] : error;
+      const details = getMessageAndTraceFromError(firstError);
+      const status = getStatusFromError(firstError);
 
       this.runtime.updateTest((result) => {
         result.stage = Stage.FINISHED;
         result.status = status;
         result.statusDetails = {
-          message: stripAnsi(errorMessage || ""),
-          trace: stripAnsi(errorTrace || ""),
+          ...details,
         };
       }, testUuid);
     }

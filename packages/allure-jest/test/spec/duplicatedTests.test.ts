@@ -1,4 +1,4 @@
-import { expect, it } from "@jest/globals";
+import { expect, it } from "vitest";
 import { runJestInlineTest } from "../utils";
 
 it("doesn't report tests with the same name several times", async () => {

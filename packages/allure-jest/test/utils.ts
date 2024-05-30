@@ -2,22 +2,10 @@ import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
-import { LinkType } from "allure-js-commons/sdk/node";
+import type { AllureResults } from "allure-js-commons/sdk";
+import { MessageReader } from "allure-js-commons/sdk/reporter";
 
-export type TestResultsByFullName = Record<string, TestResult>;
-
-type AllureResultsExtended = AllureResults & {
-  processError: string;
-};
-
-export const runJestInlineTest = async (test: string): Promise<AllureResultsExtended> => {
-  const res: AllureResultsExtended = {
-    tests: [],
-    groups: [],
-    attachments: {},
-    processError: "",
-  };
+export const runJestInlineTest = async (test: string): Promise<AllureResults> => {
   const testDir = join(__dirname, "fixtures", randomUUID());
   const configFilePath = join(testDir, "jest.config.js");
   const testFilePath = join(testDir, "sample.test.js");
@@ -28,11 +16,11 @@ export const runJestInlineTest = async (test: string): Promise<AllureResultsExte
         testMode: true,
         links: [
           {
-            type: "${LinkType.ISSUE}",
+            type: "issue",
             urlTemplate: "https://example.org/issues/%s",
           },
           {
-            type: "${LinkType.TMS}",
+            type: "tms",
             urlTemplate: "https://example.org/tasks/%s",
           }
         ]
@@ -57,37 +45,20 @@ export const runJestInlineTest = async (test: string): Promise<AllureResultsExte
     stdio: "pipe",
   });
 
-  testProcess.on("message", (message: string) => {
-    const event: { path: string; type: string; data: string } = JSON.parse(message);
-    const data = event.type !== "attachment" ? JSON.parse(Buffer.from(event.data, "base64").toString()) : event.data;
-
-    switch (event.type) {
-      case "container":
-        res.groups.push(data as TestResultContainer);
-        break;
-      case "result":
-        res.tests.push(data as TestResult);
-        break;
-      case "attachment":
-        res.attachments[event.path] = event.data;
-        break;
-      default:
-        break;
-    }
-  });
+  const messageReader = new MessageReader();
+  testProcess.on("message", messageReader.handleMessage);
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
     process.stdout.write(String(chunk));
   });
   testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
     process.stderr.write(String(chunk));
-    res.processError += chunk;
   });
 
   return new Promise((resolve) => {
     testProcess.on("exit", async () => {
       await rm(testDir, { recursive: true });
 
-      return resolve(res);
+      return resolve(messageReader.results);
     });
   });
 };
