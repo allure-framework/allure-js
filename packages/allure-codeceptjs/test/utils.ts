@@ -4,6 +4,7 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { dirname, resolve as resolvePath } from "node:path";
 import type { AllureResults } from "allure-js-commons/sdk";
+import { MessageReader } from "allure-js-commons/sdk/reporter";
 
 const parseJsonResult = <T>(data: string) => {
   return JSON.parse(Buffer.from(data, "base64").toString("utf8")) as T;
@@ -13,11 +14,6 @@ export const runCodeceptJsInlineTest = async (
   files: Record<string, string | Buffer>,
   env?: Record<string, string>,
 ): Promise<AllureResults> => {
-  const res: AllureResults = {
-    tests: [],
-    groups: [],
-    attachments: {},
-  };
   const testFiles = {
     "codecept.conf.js": await readFile(resolvePath(__dirname, "./fixtures/codecept.conf.js"), "utf-8"),
     "helper.js": await readFile(resolvePath(__dirname, "./fixtures/helper.js"), "utf-8"),
@@ -51,23 +47,8 @@ export const runCodeceptJsInlineTest = async (
   testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
     process.stderr.write(String(chunk));
   });
-  testProcess.on("message", (message: string) => {
-    const event: { path: string; type: string; data: string } = JSON.parse(message);
-
-    switch (event.type) {
-      case "container":
-        res.groups.push(parseJsonResult(event.data));
-        break;
-      case "result":
-        res.tests.push(parseJsonResult(event.data));
-        break;
-      case "attachment":
-        res.attachments[event.path] = event.data;
-        break;
-      default:
-        break;
-    }
-  });
+  const messageReader = new MessageReader();
+  testProcess.on("message", messageReader.handleMessage);
 
   testProcess.on("close", async () => {
     await rm(testDir, { recursive: true });
@@ -75,7 +56,7 @@ export const runCodeceptJsInlineTest = async (
 
   return new Promise((resolve) => {
     testProcess.on("exit", async () => {
-      return resolve(res);
+      return resolve(messageReader.results);
     });
   });
 };

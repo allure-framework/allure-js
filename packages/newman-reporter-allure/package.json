@@ -73,7 +73,6 @@
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "expect": "^29.7.0",
-    "glob": "^10.3.12",
     "msw": "1",
     "newman": "^6.1.2",
     "npm-run-all2": "^6.1.2",

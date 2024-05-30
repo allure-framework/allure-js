@@ -78,7 +78,6 @@
     "eslint-plugin-n": "^17.0.0",
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "glob": "^10.3.12",
     "md5": "^2.3.0",
     "npm-run-all2": "^6.1.2",
     "properties": "^1.2.1",
