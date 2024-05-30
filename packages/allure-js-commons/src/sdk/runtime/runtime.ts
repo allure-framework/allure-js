@@ -20,8 +20,8 @@ export const getGlobalTestRuntime = async (): Promise<TestRuntime> => {
 
   if ("_playwrightInstance" in globalThis) {
     try {
-      // @ts-ignore
-      await import("allure-playwright/autoconfig");
+      // eslint-disable-next-line no-eval
+      await eval("(() => import('allure-playwright/autoconfig'))()");
 
       return getGlobalTestRuntimeFunction()?.() ?? noopRuntime;
     } catch (err) {

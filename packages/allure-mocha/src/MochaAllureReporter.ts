@@ -1,17 +1,17 @@
 import * as Mocha from "mocha";
-import "allure-js-commons";
+import type { Label } from "allure-js-commons";
+import { Stage, Status } from "allure-js-commons";
+import { getStatusFromError } from "allure-js-commons/sdk";
+import type { Config } from "allure-js-commons/sdk/reporter";
 import {
-  AllureNodeReporterRuntime,
-  Config,
-  FileSystemAllureWriter,
-  Stage,
-  Status,
+  FileSystemWriter,
+  ReporterRuntime,
   ensureSuiteLabels,
   getPackageLabelFromPath,
   getRelativePath,
-  getStatusFromError,
-} from "allure-js-commons/sdk/node";
-import { setUpTestRuntime } from "./MochaTestRuntime.js";
+} from "allure-js-commons/sdk/reporter";
+import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
+import { MochaTestRuntime } from "./MochaTestRuntime";
 import { getInitialLabels, getSuitesOfMochaTest, resolveParallelModeSetupFile } from "./utils.js";
 
 const {
@@ -27,18 +27,18 @@ const {
 } = Mocha.Runner.constants;
 
 export class MochaAllureReporter extends Mocha.reporters.Base {
-  private readonly runtime: AllureNodeReporterRuntime;
+  private readonly runtime: ReporterRuntime;
 
   constructor(runner: Mocha.Runner, opts: Mocha.MochaOptions) {
     super(runner, opts);
 
     const { resultsDir = "allure-results", writer, ...restOptions }: Config = opts.reporterOptions || {};
-    this.runtime = new AllureNodeReporterRuntime({
-      writer: writer || new FileSystemAllureWriter({ resultsDir }),
+    this.runtime = new ReporterRuntime({
+      writer: writer || new FileSystemWriter({ resultsDir }),
       ...restOptions,
     });
 
-    setUpTestRuntime(this.runtime);
+    setGlobalTestRuntime(new MochaTestRuntime(this.runtime));
 
     if (opts.parallel) {
       opts.require = [...(opts.require ?? []), resolveParallelModeSetupFile()];
@@ -70,12 +70,13 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
 
   private onTest = (test: Mocha.Test) => {
     let fullName = "";
-    const labels = getInitialLabels();
+    const labels: Label[] = getInitialLabels();
 
     if (test.file) {
       const testPath = getRelativePath(test.file);
       fullName = `${testPath!}: `;
-      labels.push(getPackageLabelFromPath(testPath));
+      const packageLabelFromPath: Label = getPackageLabelFromPath(testPath);
+      labels.push(packageLabelFromPath);
     }
 
     fullName += test.titlePath().join(" > ");

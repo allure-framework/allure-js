@@ -206,7 +206,7 @@ const getProjectRoot = (() => {
   };
 })();
 
-const getRelativePath = (filepath: string) => {
+export const getRelativePath = (filepath: string) => {
   if (path.isAbsolute(filepath)) {
     const projectRoot = getProjectRoot();
     filepath = path.relative(projectRoot, filepath);

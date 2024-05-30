@@ -1,9 +1,10 @@
-import * as Mocha from "mocha";
+import type * as Mocha from "mocha";
 import { hostname } from "node:os";
 import { extname, join } from "node:path";
 import { env, pid } from "node:process";
 import { isMainThread, threadId } from "node:worker_threads";
-import { Label, LabelName } from "allure-js-commons/sdk/node";
+import type { Label } from "allure-js-commons";
+import { LabelName } from "allure-js-commons";
 
 export const getSuitesOfMochaTest = (test: Mocha.Test) => test.titlePath().slice(0, -1);
 

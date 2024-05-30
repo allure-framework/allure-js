@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { TestResultContainer } from "allure-js-commons/sdk/node";
+import type { TestResultContainer } from "allure-js-commons";
 import { runMochaInlineTest } from "../../utils";
 
 describe("containers", () => {

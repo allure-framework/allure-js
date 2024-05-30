@@ -1,6 +1,6 @@
 /* eslint @typescript-eslint/quotes: off */
 import { beforeAll, describe, expect, it } from "vitest";
-import { FixtureResult, TestResult, TestResultContainer } from "allure-js-commons/sdk/node";
+import type { FixtureResult, TestResult, TestResultContainer } from "allure-js-commons";
 import { runMochaInlineTest } from "../../utils";
 
 describe("fixtures", () => {

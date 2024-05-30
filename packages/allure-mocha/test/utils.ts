@@ -3,7 +3,8 @@ import { randomUUID } from "node:crypto";
 import { appendFileSync } from "node:fs";
 import { copyFile, cp, mkdir, writeFile } from "node:fs/promises";
 import * as path from "node:path";
-import { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/sdk/node";
+import type { AllureResults } from "allure-js-commons/sdk";
+import { MessageReader } from "allure-js-commons/sdk/reporter";
 
 type MochaRunOptions = {
   env?: { [keys: string]: string };
@@ -13,7 +14,7 @@ type MochaRunOptions = {
 export const runMochaInlineTest = async (
   sampleOrConfig: string | string[] | MochaRunOptions,
   ...samples: (string | string[])[]
-) => {
+): Promise<AllureResults> => {
   let options: MochaRunOptions;
   if (typeof sampleOrConfig === "object" && !(sampleOrConfig instanceof Array)) {
     options = sampleOrConfig;
@@ -23,12 +24,6 @@ export const runMochaInlineTest = async (
   }
 
   options.mode ??= process.env.ALLURE_MOCHA_TEST_PARALLEL ? "parallel" : "serial";
-
-  const res: AllureResults = {
-    tests: [],
-    groups: [],
-    attachments: {},
-  };
 
   const fixturesPath = path.join(__dirname, "fixtures");
   const samplesPath = path.join(fixturesPath, "samples");
@@ -90,24 +85,9 @@ export const runMochaInlineTest = async (
     stdio: "pipe",
   });
 
-  testProcess.on("message", (message: string) => {
-    const event: { path: string; type: string; data: string } = JSON.parse(message);
-    const data = event.type !== "attachment" ? JSON.parse(Buffer.from(event.data, "base64").toString()) : event.data;
+  const messageReader = new MessageReader();
 
-    switch (event.type) {
-      case "container":
-        res.groups.push(data as TestResultContainer);
-        break;
-      case "result":
-        res.tests.push(data as TestResult);
-        break;
-      case "attachment":
-        res.attachments[event.path] = event.data;
-        break;
-      default:
-        break;
-    }
-  });
+  testProcess.on("message", messageReader.handleMessage);
 
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk: Buffer | string) => {
     appendFileSync(stdoutPath, chunk.toString());
@@ -119,7 +99,7 @@ export const runMochaInlineTest = async (
   return new Promise<AllureResults>((resolve, reject) => {
     testProcess.on("exit", (code, signal) => {
       if ((code ?? -1) >= 0 && !signal) {
-        resolve(res);
+        resolve(messageReader.results);
       } else if (signal) {
         reject(new Error(`mocha was interrupted with ${signal}`));
       } else {

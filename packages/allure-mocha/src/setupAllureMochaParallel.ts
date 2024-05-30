@@ -1,4 +1,4 @@
-import * as Mocha from "mocha";
+import type * as Mocha from "mocha";
 // @ts-ignore
 import { default as ParallelBuffered } from "mocha/lib/nodejs/reporters/parallel-buffered.js";
 import { MochaAllureReporter } from "./reporter.js";

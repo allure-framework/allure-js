@@ -158,4 +158,16 @@ describe("ReporterRuntime", () => {
       );
     });
   });
+
+  describe("load well-known writers", () => {
+    it("should load MessageWriter", () => {
+      new ReporterRuntime({ writer: "MessageWriter" });
+    });
+    it("should load FileSystemWriter", () => {
+      new ReporterRuntime({ writer: "FileSystemWriter" });
+    });
+    it("should load InMemoryWriter", () => {
+      new ReporterRuntime({ writer: "InMemoryWriter" });
+    });
+  });
 });
