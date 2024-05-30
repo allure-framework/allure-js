@@ -15,7 +15,7 @@ import stripAnsi from "strip-ansi";
 import type { ImageDiffAttachment, Label, TestResult } from "allure-js-commons";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage, TestPlanV1Test } from "allure-js-commons/sdk";
-import { extractMetadataFromString } from "allure-js-commons/sdk";
+import { extractMetadataFromString, getMessageAndTraceFromError, hasLabel } from "allure-js-commons/sdk";
 import { md5 } from "allure-js-commons/sdk/reporter";
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
@@ -28,7 +28,7 @@ import {
 } from "allure-js-commons/sdk/reporter";
 import { allurePlaywrightLegacyApi } from "./legacy.js";
 import type { AllurePlaywrightReporterConfig } from "./model.js";
-import { getStatusDetails, hasLabel, statusToAllureStats } from "./utils.js";
+import { statusToAllureStats } from "./utils.js";
 
 // TODO: move to utils.ts
 const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
@@ -226,12 +226,11 @@ export class AllureReporter implements ReporterV2 {
     const testUuid = this.allureResultsUuids.get(test.id)!;
 
     this.allureRuntime!.updateStep((stepResult) => {
-      // TODO: step can be broken
       stepResult.status = step.error ? Status.FAILED : Status.PASSED;
       stepResult.stage = Stage.FINISHED;
 
       if (step.error) {
-        stepResult.statusDetails = getStatusDetails(step.error);
+        stepResult.statusDetails = { ...getMessageAndTraceFromError(step.error) };
       }
     }, testUuid);
     this.allureRuntime!.stopStep({ uuid: testUuid });
@@ -264,7 +263,7 @@ export class AllureReporter implements ReporterV2 {
       }
 
       if (error) {
-        testResult.statusDetails = getStatusDetails(error);
+        testResult.statusDetails = { ...getMessageAndTraceFromError(error) };
       }
 
       testResult.status = statusToAllureStats(result.status, test.expectedStatus);

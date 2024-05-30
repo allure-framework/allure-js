@@ -22,4 +22,5 @@ export {
   extractMetadataFromString,
   isAllStepsEnded,
   isAnyStepFailed,
+  hasLabel
 } from "./utils.js";

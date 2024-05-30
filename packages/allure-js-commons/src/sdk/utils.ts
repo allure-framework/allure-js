@@ -19,10 +19,12 @@ export const getStatusFromError = (error: Error): Status => {
   }
 };
 
-export const getMessageAndTraceFromError = (error: Error): Pick<StatusDetails, "message" | "trace"> => {
+export const getMessageAndTraceFromError = (
+  error: Error | { message?: string; stack?: string },
+): Pick<StatusDetails, "message" | "trace"> => {
   const { message, stack } = error;
   return {
-    message: stripAnsi(message),
+    message: message ? stripAnsi(message) : undefined,
     trace: stack ? stripAnsi(stack) : undefined,
   };
 };
@@ -72,4 +74,8 @@ export const isAnyStepFailed = (item: StepResult | TestResult | FixtureResult): 
 
 export const isAllStepsEnded = (item: StepResult | TestResult | FixtureResult): boolean => {
   return item.steps.every((val) => val.stop && isAllStepsEnded(val));
+};
+
+export const hasLabel = (testResult: TestResult, labelName: LabelName | string): boolean => {
+  return !!testResult.labels.find((l) => l.name === labelName);
 };
