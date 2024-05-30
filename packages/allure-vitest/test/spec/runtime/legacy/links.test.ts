@@ -9,7 +9,7 @@ describe("links", () => {
       import { test } from "vitest";
 
       test("link", async (t) => {
-        await allure.link("https://example.org", "foo", "bar");
+        await allure.link("foo", "https://example.org", "bar");
       });
       `,
     );
@@ -28,8 +28,8 @@ describe("links", () => {
       import { test } from "vitest";
 
       test("issue", async () => {
-        await allure.issue("https://example.org/issue/1", "foo");
-        await allure.issue("2", "bar");
+        await allure.issue("foo", "https://example.org/issue/1");
+        await allure.issue("bar", "2");
       });
       `,
     );
@@ -53,8 +53,8 @@ describe("links", () => {
       import { test } from "vitest";
 
       test("tms", async () => {
-        await allure.tms("https://example.org/tms/1", "foo");
-        await allure.tms("2", "bar");
+        await allure.tms("foo", "https://example.org/tms/1");
+        await allure.tms("bar", "2");
       });
       `,
     );

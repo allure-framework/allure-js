@@ -3,7 +3,8 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "url";
-import type { AllureResults, TestResult, TestResultContainer } from "allure-js-commons";
+import type { AllureResults } from "allure-js-commons/sdk";
+import { MessageReader } from "allure-js-commons/sdk/reporter";
 
 const fileDirname = dirname(fileURLToPath(import.meta.url));
 
@@ -12,11 +13,6 @@ export const runVitestInlineTest = async (
   externalConfigFactory?: (tempDir: string) => string,
   beforeTestCb?: (tempDir: string) => Promise<void>,
 ): Promise<AllureResults> => {
-  const res: AllureResults = {
-    tests: [],
-    groups: [],
-    attachments: {},
-  };
   const testDir = join(fileDirname, "fixtures", randomUUID());
   const configFilePath = join(testDir, "vitest.config.ts");
   const testFilePath = join(testDir, "sample.test.ts");
@@ -68,24 +64,8 @@ export const runVitestInlineTest = async (
     stdio: "pipe",
   });
 
-  testProcess.on("message", (message: string) => {
-    const event: { path: string; type: string; data: string } = JSON.parse(message);
-    const data = event.type !== "attachment" ? JSON.parse(Buffer.from(event.data, "base64").toString()) : event.data;
-
-    switch (event.type) {
-      case "container":
-        res.groups.push(data as TestResultContainer);
-        break;
-      case "result":
-        res.tests.push(data as TestResult);
-        break;
-      case "attachment":
-        res.attachments[event.path] = event.data;
-        break;
-      default:
-        break;
-    }
-  });
+  const messageReader = new MessageReader();
+  testProcess.on("message", messageReader.handleMessage);
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
     process.stdout.write(String(chunk));
   });
@@ -97,7 +77,7 @@ export const runVitestInlineTest = async (
     testProcess.on("exit", async () => {
       await rm(testDir, { recursive: true });
 
-      return resolve(res);
+      return resolve(messageReader.results);
     });
   });
 };

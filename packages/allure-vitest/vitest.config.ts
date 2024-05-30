@@ -5,5 +5,8 @@ export default defineConfig({
     testTimeout: 20000,
     setupFiles: ["allure-vitest/setup"],
     reporters: ["default", ["allure-vitest/reporter", { resultsDir: "./out/allure-results" }]],
+    typecheck: {
+      tsconfig: "./tsconfig.test.json",
+    },
   },
 });
