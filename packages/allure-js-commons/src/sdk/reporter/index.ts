@@ -12,3 +12,4 @@ export { ReporterRuntime } from "./ReporterRuntime.js";
 export { InMemoryWriter } from "./writer/InMemoryWriter.js";
 export { FileSystemWriter } from "./writer/FileSystemWriter.js";
 export { MessageWriter, MessageReader } from "./writer/MessageWriter.js";
+export { getEnvironmentLabels, getHostLabel, getThreadLabel } from "./utils/labels.js";

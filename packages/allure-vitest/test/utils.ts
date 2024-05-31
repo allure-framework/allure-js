@@ -6,12 +6,17 @@ import { fileURLToPath } from "url";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
+type Opts = {
+  env?: Record<string, string>;
+};
+
 const fileDirname = dirname(fileURLToPath(import.meta.url));
 
 export const runVitestInlineTest = async (
   test: string,
   externalConfigFactory?: (tempDir: string) => string,
   beforeTestCb?: (tempDir: string) => Promise<void>,
+  opts: Opts = {},
 ): Promise<AllureResults> => {
   const testDir = join(fileDirname, "fixtures", randomUUID());
   const configFilePath = join(testDir, "vitest.config.ts");
@@ -54,11 +59,14 @@ export const runVitestInlineTest = async (
     await beforeTestCb(testDir);
   }
 
+  const { env = {} } = opts;
+
   const modulePath = require.resolve("vitest/dist/cli-wrapper.js");
   const args = ["run", "--config", configFilePath, "--dir", testDir];
   const testProcess = fork(modulePath, args, {
     env: {
       ...process.env,
+      ...env,
     },
     cwd: testDir,
     stdio: "pipe",
