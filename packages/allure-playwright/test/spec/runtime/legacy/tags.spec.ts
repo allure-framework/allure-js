@@ -1,17 +1,17 @@
 import { expect, it } from "vitest";
-import { LabelName } from "allure-js-commons/sdk/node";
+import { LabelName } from "allure-js-commons";
 import { runPlaywrightInlineTest } from "../../../utils";
 
 it("sets multiply tags", async () => {
   const results = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import { test, tag, tags } from 'allure-playwright';
+      import { test, allure } from 'allure-playwright';
 
       test('should add multiply tags', async ({}, testInfo) => {
-          await tag('Allure');
-          await tag('Playwright');
-          await tag('TestInfo');
-          await tags(...['some', 'other', 'tags']);
+          await allure.tag('Allure');
+          await allure.tag('Playwright');
+          await allure.tag('TestInfo');
+          await allure.tags(...['some', 'other', 'tags']);
       });
       `,
   });

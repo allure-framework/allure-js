@@ -1,14 +1,14 @@
 import { expect, it } from "vitest";
-import { Stage, Status } from "allure-js-commons/sdk/node";
+import { Stage, Status } from "allure-js-commons";
 import { runPlaywrightInlineTest } from "../../../utils";
 
 it("handles single lambda step", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.spec.ts": `
-      import { test, step } from "allure-playwright";
+      import { test, allure } from "allure-playwright";
 
       test("steps", async () => {
-        await step("step", () => {});
+        await allure.step("step", () => {});
       });
     `,
   });
@@ -26,11 +26,11 @@ it("handles single lambda step", async () => {
 it("handles single lambda step with attachment", async () => {
   const { tests, attachments } = await runPlaywrightInlineTest({
     "sample.test.ts": `
-      import { test, step, attachment } from "allure-playwright";
+      import { test, allure } from "allure-playwright";
 
       test("steps", async () => {
-        await step("step", async () => {
-          await attachment("foo.txt", Buffer.from("bar"), "text/plain");
+        await allure.step("step", async () => {
+          await allure.attachment("foo.txt", Buffer.from("bar"), "text/plain");
         });
       });
     `,
@@ -50,12 +50,12 @@ it("handles single lambda step with attachment", async () => {
 it("handles nested lambda steps", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.ts": `
-      import { test, step } from "allure-playwright";
+      import { test, allure } from "allure-playwright";
 
       test("steps", async () => {
-        await step("step 1", async () => {
-          await step("step 2", async () => {
-            await step("step 3", () => {
+        await allure.step("step 1", async () => {
+          await allure.step("step 2", async () => {
+            await allure.step("step 3", () => {
             });
           });
         });

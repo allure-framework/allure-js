@@ -1,4 +1,6 @@
-import { MessageTestRuntime, ReporterRuntime, RuntimeMessage, setGlobalTestRuntime } from "allure-js-commons/sdk/node";
+import type { RuntimeMessage } from "allure-js-commons/sdk";
+import type { ReporterRuntime } from "allure-js-commons/sdk/reporter";
+import { MessageTestRuntime } from "allure-js-commons/sdk/runtime";
 
 export class MochaTestRuntime extends MessageTestRuntime {
   constructor(private readonly reporterRuntime: ReporterRuntime) {
@@ -10,6 +12,3 @@ export class MochaTestRuntime extends MessageTestRuntime {
     await Promise.resolve();
   }
 }
-
-export const setUpTestRuntime = (reporterRuntime: ReporterRuntime) =>
-  setGlobalTestRuntime(new MochaTestRuntime(reporterRuntime));

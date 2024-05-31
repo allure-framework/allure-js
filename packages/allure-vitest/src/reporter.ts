@@ -1,32 +1,29 @@
-import { hostname } from "node:os";
 import { basename, normalize, relative } from "node:path";
-import { cwd, env } from "node:process";
-import { File, Reporter, Task } from "vitest";
-import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/internal";
+import { cwd } from "node:process";
+import type { File, Reporter, Task } from "vitest";
+import { LabelName, Stage, Status } from "allure-js-commons";
+import type { RuntimeMessage } from "allure-js-commons/sdk";
+import { extractMetadataFromString } from "allure-js-commons/sdk";
+import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/sdk/reporter";
+import type { Config } from "allure-js-commons/sdk/reporter";
 import {
-  AllureNodeReporterRuntime,
-  Config,
-  FileSystemAllureWriter,
-  LabelName,
-  MessageAllureWriter,
-  RuntimeMessage,
-  Stage,
-  Status,
-  extractMetadataFromString,
+  FileSystemWriter,
+  MessageWriter,
+  ReporterRuntime,
+  getEnvironmentLabels,
+  getHostLabel,
   getSuitesLabels,
-} from "allure-js-commons/sdk/node";
+  getThreadLabel,
+} from "allure-js-commons/sdk/reporter";
 import { getSuitePath, getTestFullName } from "./utils.js";
 
 export interface AllureVitestReporterConfig extends Omit<Config, "writer"> {
   testMode?: boolean;
 }
 
-const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME } = env;
-
 export default class AllureVitestReporter implements Reporter {
-  private allureReporterRuntime?: AllureNodeReporterRuntime;
+  private allureReporterRuntime?: ReporterRuntime;
   private config: AllureVitestReporterConfig;
-  private hostname: string = ALLURE_HOST_NAME || hostname();
 
   constructor(config: AllureVitestReporterConfig) {
     this.config = config;
@@ -35,12 +32,12 @@ export default class AllureVitestReporter implements Reporter {
   onInit() {
     const { listeners, testMode, ...config } = this.config;
     const writer = testMode
-      ? new MessageAllureWriter()
-      : new FileSystemAllureWriter({
+      ? new MessageWriter()
+      : new FileSystemWriter({
           resultsDir: config.resultsDir || "./allure-results",
         });
 
-    this.allureReporterRuntime = new AllureNodeReporterRuntime({
+    this.allureReporterRuntime = new ReporterRuntime({
       ...config,
       writer,
       listeners,
@@ -100,8 +97,6 @@ export default class AllureVitestReporter implements Reporter {
     });
 
     this.allureReporterRuntime!.updateTest((result) => {
-      const threadId = ALLURE_THREAD_NAME || (VITEST_POOL_ID && `${this.hostname}-vitest-worker-${VITEST_POOL_ID}`);
-
       result.fullName = testFullname;
       result.labels.push({
         name: LabelName.FRAMEWORK,
@@ -111,19 +106,11 @@ export default class AllureVitestReporter implements Reporter {
         name: LabelName.LANGUAGE,
         value: "javascript",
       });
-      result.labels.push({
-        name: LabelName.HOST,
-        value: this.hostname,
-      });
       result.labels.push(...titleMetadata.labels);
       result.labels.push(...getSuitesLabels(suitePath));
-
-      if (threadId) {
-        result.labels.push({
-          name: LabelName.THREAD,
-          value: threadId,
-        });
-      }
+      result.labels.push(...getEnvironmentLabels());
+      result.labels.push(getHostLabel());
+      result.labels.push(getThreadLabel(VITEST_POOL_ID && `vitest-worker-${VITEST_POOL_ID}`));
 
       if (normalizedTestPath.length) {
         result.labels.push({

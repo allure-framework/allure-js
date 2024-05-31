@@ -1,4 +1,4 @@
-import { expect, it } from "@jest/globals";
+import { expect, it } from "vitest";
 import { Status } from "allure-js-commons";
 import { runJestInlineTest } from "../../../utils";
 

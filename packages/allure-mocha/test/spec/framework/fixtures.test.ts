@@ -1,6 +1,6 @@
 /* eslint @typescript-eslint/quotes: off */
 import { beforeAll, describe, expect, it } from "vitest";
-import { FixtureResult, TestResult, TestResultContainer } from "allure-js-commons/sdk/node";
+import type { FixtureResult, TestResult, TestResultContainer } from "allure-js-commons";
 import { runMochaInlineTest } from "../../utils";
 
 describe("fixtures", () => {
@@ -27,7 +27,7 @@ describe("fixtures", () => {
 
   it("reports each fixture in its own container", () => {
     const totalFixtures = groups.reduce((a, v) => a + v.afters.length + v.befores.length, 0);
-    expect(groups).toHaveLength(totalFixtures as number);
+    expect(groups).toHaveLength(totalFixtures);
   });
 
   describe("in suites", () => {

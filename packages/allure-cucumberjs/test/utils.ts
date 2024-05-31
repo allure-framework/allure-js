@@ -2,18 +2,14 @@ import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve as resolvePath } from "node:path";
-import { AllureResults, TestResult, TestResultContainer } from "allure-js-commons/sdk";
+import type { AllureResults } from "allure-js-commons/sdk";
+import { MessageReader } from "allure-js-commons/sdk/reporter";
 
 export const runCucumberInlineTest = async (
   features: string[],
   stepsDefs: string[],
   parallel: boolean = true,
 ): Promise<AllureResults> => {
-  const res: AllureResults = {
-    tests: [],
-    groups: [],
-    attachments: {},
-  };
   const fixturesPath = join(__dirname, "fixtures");
   const testDir = join(__dirname, "fixtures/temp", randomUUID());
   const configFilePath = join(testDir, "config.js");
@@ -97,24 +93,10 @@ export const runCucumberInlineTest = async (
     stdio: "pipe",
   });
 
-  testProcess.on("message", (message: string) => {
-    const event: { path: string; type: string; data: string } = JSON.parse(message);
-    const data = event.type !== "attachment" ? JSON.parse(Buffer.from(event.data, "base64").toString()) : event.data;
+  const messageReader = new MessageReader();
 
-    switch (event.type) {
-      case "container":
-        res.groups.push(data as TestResultContainer);
-        break;
-      case "result":
-        res.tests.push(data as TestResult);
-        break;
-      case "attachment":
-        res.attachments[event.path] = event.data;
-        break;
-      default:
-        break;
-    }
-  });
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  testProcess.on("message", messageReader.handleMessage);
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
     process.stdout.write(String(chunk));
   });
@@ -126,7 +108,7 @@ export const runCucumberInlineTest = async (
     testProcess.on("exit", async () => {
       await rm(testDir, { recursive: true });
 
-      return resolve(res);
+      return resolve(messageReader.results);
     });
   });
 };

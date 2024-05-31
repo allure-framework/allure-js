@@ -1,10 +1,12 @@
-import { env } from "node:process";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
     fileParallelism: false,
-    testTimeout: env.TEST_ENV === "local" ? Infinity : 25000,
+    testTimeout: 5000,
     reporters: ["default"],
+    typecheck: {
+      tsconfig: "./tsconfig.test.json"
+    }
   },
 });

@@ -2,7 +2,7 @@
 import { resolve } from "node:path";
 import { expect, it } from "vitest";
 import { LinkType } from "allure-js-commons";
-import { runJasmineInlineTest } from "../../../utils";
+import { runJasmineInlineTest } from "../../../utils.js";
 
 it("sets links", async () => {
   const { tests } = await runJasmineInlineTest({

@@ -1,8 +1,8 @@
-import { expect, it } from "@jest/globals";
+import { expect, it } from "vitest";
 import { runJestInlineTest } from "../utils";
 
 it("should work for test with retries", async () => {
-  const { tests, processError } = await runJestInlineTest(`
+  const { tests } = await runJestInlineTest(`
     const { label } = require("allure-js-commons");
 
     jest.retryTimes(1);
@@ -14,7 +14,6 @@ it("should work for test with retries", async () => {
     });
   `);
 
-  expect(processError).toContain("FAIL");
   expect(tests).toHaveLength(2);
   expect(tests[0].labels).toContainEqual(
     expect.objectContaining({

@@ -2,9 +2,9 @@
 /* eslint @typescript-eslint/no-var-requires: 0 */
 /* eslint no-underscore-dangle: 0 */
 const ParallelBuffered = require("mocha/lib/nodejs/reporters/parallel-buffered.js");
-const { MessageAllureWriter } = require("allure-js-commons/sdk/node");
+const { MessageWriter } = require("allure-js-commons/sdk/reporter");
 
-class AllureMochaParallelWriter extends MessageAllureWriter {
+class MochaParallelWriter extends MessageWriter {
   constructor() {
     super();
     this.events = [];
@@ -16,7 +16,7 @@ class AllureMochaParallelWriter extends MessageAllureWriter {
   }
 }
 
-const writer = new AllureMochaParallelWriter();
+const writer = new MochaParallelWriter();
 
 const originalDone = ParallelBuffered.prototype.done;
 ParallelBuffered.prototype.done = function (failures, callback) {

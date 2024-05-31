@@ -5,13 +5,13 @@ it("sets parameters", async () => {
   const { tests } = await runPlaywrightInlineTest(
     {
       "sample.test.js": `
-       import { test, expect, parameter } from "allure-playwright";
+       import { test, expect, allure } from "allure-playwright";
 
        test('should add epic label', async ({}) => {
-        await parameter("param1", "paramValue1");
-        await parameter("param2", "paramValue2", {excluded:true});
-        await parameter("param3", "paramValue3", {mode:"masked", excluded:true});
-        await parameter("param4", "paramValue4", {mode:"hidden"});
+        await allure.parameter("param1", "paramValue1");
+        await allure.parameter("param2", "paramValue2", {excluded:true});
+        await allure.parameter("param3", "paramValue3", {mode:"masked", excluded:true});
+        await allure.parameter("param4", "paramValue4", {mode:"hidden"});
        });
      `,
     },

@@ -1,5 +1,5 @@
-import { FullConfig } from "@playwright/test";
-import {
+import type { FullConfig } from "@playwright/test";
+import type {
   FullResult,
   TestResult as PlaywrightTestResult,
   Suite,
@@ -11,27 +11,23 @@ import { existsSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import process from "node:process";
-import stripAnsi from "strip-ansi";
-import { ContentType, ImageDiffAttachment } from "allure-js-commons";
-import { ALLURE_IMAGEDIFF_CONTENT_TYPE, ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/internal";
+import type { ImageDiffAttachment, Label, TestResult } from "allure-js-commons";
+import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
+import type { RuntimeMessage, TestPlanV1Test } from "allure-js-commons/sdk";
+import { extractMetadataFromString, getMessageAndTraceFromError, hasLabel, stripAnsi } from "allure-js-commons/sdk";
+import { md5 } from "allure-js-commons/sdk/reporter";
 import {
-  AllureNodeReporterRuntime,
-  FileSystemAllureWriter,
-  Label,
-  LabelName,
-  MessageAllureWriter,
-  RuntimeMessage,
-  Stage,
-  Status,
-  TestPlanV1Test,
-  TestResult,
+  ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
+  FileSystemWriter,
+  MessageWriter,
+  ReporterRuntime,
   escapeRegExp,
-  extractMetadataFromString,
   parseTestPlan,
   readImageAsBase64,
-} from "allure-js-commons/sdk/node";
-import { AllurePlaywrightReporterConfig } from "./model.js";
-import { getStatusDetails, hasLabel, statusToAllureStats } from "./utils.js";
+} from "allure-js-commons/sdk/reporter";
+import { allurePlaywrightLegacyApi } from "./legacy.js";
+import type { AllurePlaywrightReporterConfig } from "./model.js";
+import { statusToAllureStats } from "./utils.js";
 
 // TODO: move to utils.ts
 const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
@@ -71,7 +67,7 @@ export class AllureReporter implements ReporterV2 {
   suite!: Suite;
   options: AllurePlaywrightReporterConfig;
 
-  private allureRuntime: AllureNodeReporterRuntime | undefined;
+  private allureRuntime: ReporterRuntime | undefined;
   private hostname: string = process.env.ALLURE_HOST_NAME || os.hostname();
   private globalStartTime = new Date();
   private processedDiffs: string[] = [];
@@ -147,13 +143,13 @@ export class AllureReporter implements ReporterV2 {
 
   onBegin(suite: Suite): void {
     const writer = this.options.testMode
-      ? new MessageAllureWriter()
-      : new FileSystemAllureWriter({
+      ? new MessageWriter()
+      : new FileSystemWriter({
           resultsDir: this.options.resultsDir || "./allure-results",
         });
 
     this.suite = suite;
-    this.allureRuntime = new AllureNodeReporterRuntime({
+    this.allureRuntime = new ReporterRuntime({
       ...this.options,
       writer,
     });
@@ -173,7 +169,7 @@ export class AllureReporter implements ReporterV2 {
       labels: titleMetadata.labels,
       links: [],
       parameters: [],
-      testCaseId: this.allureRuntime!.crypto.md5(testCaseIdBase),
+      testCaseId: md5(testCaseIdBase),
       fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
     };
 
@@ -229,12 +225,11 @@ export class AllureReporter implements ReporterV2 {
     const testUuid = this.allureResultsUuids.get(test.id)!;
 
     this.allureRuntime!.updateStep((stepResult) => {
-      // TODO: step can be broken
       stepResult.status = step.error ? Status.FAILED : Status.PASSED;
       stepResult.stage = Stage.FINISHED;
 
       if (step.error) {
-        stepResult.statusDetails = getStatusDetails(step.error);
+        stepResult.statusDetails = { ...getMessageAndTraceFromError(step.error) };
       }
     }, testUuid);
     this.allureRuntime!.stopStep({ uuid: testUuid });
@@ -254,20 +249,20 @@ export class AllureReporter implements ReporterV2 {
       testResult.labels.push({ name: LabelName.HOST, value: this.hostname });
       testResult.labels.push({ name: LabelName.THREAD, value: thread });
 
-      if (projectSuiteTitle && !hasLabel(testResult, LabelName.PARENT_SUITE)) {
+      if (projectSuiteTitle && !hasLabel(testResult as TestResult, LabelName.PARENT_SUITE)) {
         testResult.labels.push({ name: LabelName.PARENT_SUITE, value: projectSuiteTitle });
       }
 
-      if (this.options.suiteTitle && fileSuiteTitle && !hasLabel(testResult, LabelName.SUITE)) {
+      if (this.options.suiteTitle && fileSuiteTitle && !hasLabel(testResult as TestResult, LabelName.SUITE)) {
         testResult.labels.push({ name: LabelName.SUITE, value: fileSuiteTitle });
       }
 
-      if (suiteTitles.length > 0 && !hasLabel(testResult, LabelName.SUB_SUITE)) {
+      if (suiteTitles.length > 0 && !hasLabel(testResult as TestResult, LabelName.SUB_SUITE)) {
         testResult.labels.push({ name: LabelName.SUB_SUITE, value: suiteTitles.join(" > ") });
       }
 
       if (error) {
-        testResult.statusDetails = getStatusDetails(error);
+        testResult.statusDetails = { ...getMessageAndTraceFromError(error) };
       }
 
       testResult.status = statusToAllureStats(result.status, test.expectedStatus);
@@ -283,6 +278,7 @@ export class AllureReporter implements ReporterV2 {
         {
           name: "stdout",
           contentType: ContentType.TEXT,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           content: Buffer.from(stripAnsi(result.stdout.join("")), "utf8"),
         },
         testUuid,
@@ -294,6 +290,7 @@ export class AllureReporter implements ReporterV2 {
         {
           name: "stderr",
           contentType: ContentType.TEXT,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           content: Buffer.from(stripAnsi(result.stderr.join("")), "utf8"),
         },
         testUuid,
@@ -444,7 +441,7 @@ export class AllureReporter implements ReporterV2 {
           diff: diffBase64,
           name: diffName,
         } as ImageDiffAttachment),
-        contentType: ALLURE_IMAGEDIFF_CONTENT_TYPE,
+        contentType: ContentType.IMAGEDIFF,
         fileExtension: ".imagediff",
       },
       testUuid,
@@ -461,7 +458,7 @@ export class AllureReporter implements ReporterV2 {
 /**
  * @deprecated for removal, import functions directly from "allure-js-commons".
  */
-export * from "allure-js-commons";
+export const allure = allurePlaywrightLegacyApi;
 
 /**
  * @deprecated for removal, import functions directly from "@playwright/test".

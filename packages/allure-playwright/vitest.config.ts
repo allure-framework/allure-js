@@ -7,5 +7,8 @@ export default defineConfig({
     reporters: [
       "default",
     ],
+    typecheck: {
+      tsconfig: "./tsconfig.test.json"
+    }
   },
 });

@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { Stage, Status } from "allure-js-commons/sdk";
+import { Stage, Status } from "allure-js-commons";
 import { runCucumberInlineTest } from "../utils";
 
 it("handles basic cases", async () => {

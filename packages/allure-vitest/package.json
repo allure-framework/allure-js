@@ -22,41 +22,31 @@
   "type": "module",
   "exports": {
     "./reporter": {
-      "require": "./dist/reporter.cjs",
-      "import": "./dist/reporter.mjs"
+      "import": "./dist/reporter.js",
+      "types": "./dist/reporter.d.ts",
+      "default": "./dist/reporter.js"
     },
     "./setup": {
-      "require": "./dist/setup.cjs",
-      "import": "./dist/setup.mjs"
-    },
-    "./autoconfig": {
-      "require": "./dist/autoconfig.cjs",
-      "import": "./dist/autoconfig.mjs"
+      "import": "./dist/setup.js",
+      "types": "./dist/setup.d.ts",
+      "default": "./dist/setup.js"
     }
   },
+  "types": "./dist/index.d.ts",
   "files": [
-    "*.js",
-    "*.d.ts"
+    "dist"
   ],
   "scripts": {
-    "clean": "rimraf ./dist ./out",
-    "compile": "run-p 'compile:*'",
-    "compile:lib": "rollup -c",
-    "compile:types": "tsc --project ./tsconfig.dts.json",
-    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "allure-report": "allure serve ./out/allure-results",
-    "pretest": "run compile",
-    "test": "vitest run --dir ./test/spec --config ./vitest.config.ts",
+    "clean": "rimraf ./dist",
+    "compile": "tsc --project ./tsconfig.json",
     "lint": "eslint ./src ./test --ext .ts",
-    "lint:fix": "eslint ./src ./test --ext .ts --fix"
+    "lint:fix": "eslint ./src ./test --ext .ts --fix",
+    "test": "vitest run --dir ./test/spec --config ./vitest.config.ts"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-typescript": "^11.1.6",
     "@types/eslint": "^8",
     "@types/node": "^20.6.3",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
@@ -68,11 +58,8 @@
     "eslint-plugin-n": "^17.0.0",
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "glob": "^10.3.15",
     "npm-run-all2": "^6.1.2",
     "rimraf": "^5.0.1",
-    "rollup": "^4.17.2",
-    "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "vite": "^5.0.11",
     "vitest": "^1.1.3"

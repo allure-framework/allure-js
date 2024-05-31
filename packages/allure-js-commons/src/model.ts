@@ -1,37 +1,3 @@
-import type { Writer } from "./sdk/Writer.js";
-
-export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
-export const ALLURE_IMAGEDIFF_CONTENT_TYPE = "application/vnd.allure.image.diff";
-export const ALLURE_SKIPPED_BY_TEST_PLAN_LABEL = "allure-skipped-by-test-plan";
-export const ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE = "application/vnd.allure.message+json";
-
-export type EnvironmentInfo = Record<string, string | undefined>;
-
-export interface AttachmentMetadata {
-  name: string;
-  type: string;
-  content: string;
-  encoding: BufferEncoding;
-}
-
-export interface StepMetadata extends Omit<Executable, "attachments" | "steps"> {
-  steps: StepMetadata[];
-  attachments: AttachmentMetadata[];
-}
-
-export interface MetadataMessage {
-  attachments?: AttachmentMetadata[];
-  displayName?: string;
-  testCaseId?: string;
-  historyId?: string;
-  labels?: Label[];
-  links?: Link[];
-  parameter?: Parameter[];
-  description?: string;
-  descriptionHtml?: string;
-  steps?: StepMetadata[];
-}
-
 export interface Attachment {
   name: string;
   type: string;
@@ -42,11 +8,6 @@ export interface AttachmentOptions {
   contentType: ContentType | string;
   encoding?: string;
   fileExtension?: string;
-}
-
-export interface RawAttachment extends AttachmentOptions {
-  name: string;
-  content: Buffer | string;
 }
 
 export interface Label {
@@ -77,7 +38,7 @@ export interface StatusDetails {
 }
 
 // don't use the interface as is, use Results types instead
-export interface Executable {
+interface Executable {
   name?: string;
   status?: Status;
   statusDetails: StatusDetails;
@@ -91,9 +52,9 @@ export interface Executable {
   stop?: number;
 }
 
-export type FixtureResult = Executable;
+export interface FixtureResult extends Executable {}
 
-export type StepResult = Executable;
+export interface StepResult extends Executable {}
 
 export interface TestResult extends Executable {
   uuid: string;
@@ -113,27 +74,6 @@ export interface TestResultContainer {
 }
 
 export type TestOrStepResult = StepResult | TestResult;
-
-export interface Category {
-  name?: string;
-  description?: string;
-  descriptionHtml?: string;
-  messageRegex?: string | RegExp;
-  traceRegex?: string | RegExp;
-  matchedStatuses?: Status[];
-  flaky?: boolean;
-}
-
-export interface ExecutorInfo {
-  name?: string;
-  type?: string;
-  url?: string;
-  buildOrder?: number;
-  buildName?: string;
-  buildUrl?: string;
-  reportUrl?: string;
-  reportName?: string;
-}
 
 /* eslint-disable no-shadow */
 export enum Status {
@@ -206,6 +146,7 @@ export enum ContentType {
   WEBM = "video/webm",
   JPEG = "image/jpeg",
   MP4 = "video/mp4",
+  IMAGEDIFF = "application/vnd.allure.image.diff",
 }
 
 /* eslint-disable no-shadow */
@@ -220,76 +161,3 @@ export interface ImageDiffAttachment {
   diff: string | undefined; // data:image;base64,
   name: string;
 }
-
-export interface AllureResults {
-  tests: TestResult[];
-  groups: TestResultContainer[];
-  attachments: Record<string, Buffer | string>;
-  envInfo?: EnvironmentInfo;
-  categories?: Category[];
-}
-
-type RuntimeMessageBase<T extends string> = {
-  type: T;
-};
-
-type MessageTypes<T> = T extends RuntimeMessageBase<infer K> ? K : never;
-
-export type RuntimeMetadataMessage = RuntimeMessageBase<"metadata"> & {
-  data: {
-    labels?: Label[];
-    links?: Link[];
-    parameters?: Parameter[];
-    attachments?: Attachment[];
-    description?: string;
-    descriptionHtml?: string;
-    testCaseId?: string;
-    historyId?: string;
-    displayName?: string;
-  };
-};
-
-export type RuntimeStartStepMessage = RuntimeMessageBase<"step_start"> & {
-  data: {
-    name: string;
-    start: number;
-  };
-};
-
-export type RuntimeStepMetadataMessage = RuntimeMessageBase<"step_metadata"> & {
-  data: {
-    name?: string;
-    parameters?: Parameter[];
-  };
-};
-
-export type RuntimeStopStepMessage = RuntimeMessageBase<"step_stop"> & {
-  data: {
-    stop: number;
-    status: Status;
-    stage: Stage;
-    statusDetails?: StatusDetails;
-  };
-};
-
-// use to send whole attachment to ReporterRuntime and write it on the node side
-export type RuntimeRawAttachmentMessage = RuntimeMessageBase<"raw_attachment"> & {
-  data: RawAttachment;
-};
-
-export type RuntimeMessage =
-  | RuntimeMetadataMessage
-  | RuntimeStartStepMessage
-  | RuntimeStepMetadataMessage
-  | RuntimeStopStepMessage
-  | RuntimeRawAttachmentMessage;
-
-// Could be used by adapters to define additional message types
-export type ExtensionMessage<T extends string> = T extends MessageTypes<RuntimeMessage> ? never : RuntimeMessageBase<T>;
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export type Messages<T> = T extends RuntimeMessage | ExtensionMessage<infer _> ? T : never;
-
-export type WellKnownWriters = {
-  [key: string]: (new (...args: readonly unknown[]) => Writer) | undefined;
-};

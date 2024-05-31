@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { Stage, Status, TestResult } from "allure-js-commons/sdk/node";
+import type { TestResult } from "allure-js-commons";
+import { Stage, Status } from "allure-js-commons";
 import { runMochaInlineTest } from "../../utils";
 
 describe("test status", () => {
@@ -12,7 +13,7 @@ describe("test status", () => {
       ["plain-mocha", "skippedTest"],
     );
     for (const test of tests) {
-      testMap.set(test.name as string, test);
+      testMap.set(test.name as string, test as TestResult);
     }
   });
 

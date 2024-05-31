@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { LabelName } from "allure-js-commons/sdk";
+import { LabelName } from "allure-js-commons";
 import { runCucumberInlineTest } from "../../../utils";
 
 it("handles runtime labels", async () => {

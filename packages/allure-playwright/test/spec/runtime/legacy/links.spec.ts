@@ -1,19 +1,18 @@
 import { expect, it } from "vitest";
-import { LinkType } from "allure-js-commons";
 import { runPlaywrightInlineTest } from "../../../utils";
 
 it("sets runtime links", async () => {
   const results = await runPlaywrightInlineTest({
     "sample.test.js": `
-      import { test, link, links, issue, tms } from 'allure-playwright';
+      import { test, allure } from 'allure-playwright';
 
-      test('should add epic link', async ({}, testInfo) => {
-        await link("https://playwright.dev/docs/api/class-page#page-workers");
-        await issue("1");
-        await issue("https://example.org/issues/2");
-        await tms("1");
-        await tms("https://example.org/tasks/2");
-        await links(...[{ url:"https://www.google.com/1" }, { url:"https://www.google.com/2" }]);
+      test('should add links', async ({}, testInfo) => {
+        await allure.link("custom", "https://playwright.dev/docs/api/class-page#page-workers");
+        await allure.issue("issue 1", "1");
+        await allure.issue("issue 2", "https://example.org/issues/2");
+        await allure.tms("task 1", "1");
+        await allure.tms("task 2", "https://example.org/tasks/2");
+        await allure.links(...[{ url:"https://www.google.com/1" }, { url:"https://www.google.com/2" }]);
       });
     `,
     "playwright.config.js": `
@@ -27,11 +26,11 @@ it("sets runtime links", async () => {
                suiteTitle: true,
                links: [
                  {
-                   type: "${LinkType.ISSUE}",
+                   type: "issue",
                    urlTemplate: "https://example.org/issues/%s",
                  },
                  {
-                   type: "${LinkType.TMS}",
+                   type: "tms",
                    urlTemplate: "https://example.org/tasks/%s",
                  }
                ]
@@ -53,22 +52,27 @@ it("sets runtime links", async () => {
       links: [
         {
           url: "https://playwright.dev/docs/api/class-page#page-workers",
+          type: "custom",
         },
         {
           url: "https://example.org/issues/1",
-          type: LinkType.ISSUE,
+          type: "issue",
+          name: "issue 1",
         },
         {
           url: "https://example.org/issues/2",
-          type: LinkType.ISSUE,
+          type: "issue",
+          name: "issue 2",
         },
         {
           url: "https://example.org/tasks/1",
-          type: LinkType.TMS,
+          type: "tms",
+          name: "task 1",
         },
         {
           url: "https://example.org/tasks/2",
-          type: LinkType.TMS,
+          type: "tms",
+          name: "task 2",
         },
         {
           url: "https://www.google.com/1",

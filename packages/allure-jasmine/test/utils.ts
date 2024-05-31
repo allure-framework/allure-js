@@ -1,26 +1,15 @@
-/* eslint  @typescript-eslint/no-require-imports: off */
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { parse } from "properties";
-import { AllureResults, EnvironmentInfo, TestResult, TestResultContainer } from "allure-js-commons/sdk/node";
-
-export type TestResultsByFullName = Record<string, TestResult>;
-
-const parseJsonResult = <T>(data: string) => {
-  return JSON.parse(Buffer.from(data, "base64").toString("utf8")) as T;
-};
+import type { AllureResults } from "allure-js-commons/sdk";
+import { MessageReader } from "allure-js-commons/sdk/reporter";
 
 export const runJasmineInlineTest = async (files: Record<string, string>): Promise<AllureResults> => {
-  const res: AllureResults = {
-    tests: [],
-    groups: [],
-    attachments: {},
-  };
   const testDir = join(__dirname, "temp", randomUUID());
   const testFiles = {
     "spec/support/jasmine.json": await readFile(join(__dirname, "./fixtures/spec/support/jasmine.json"), "utf8"),
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     "spec/helpers/allure.js": require("./fixtures/spec/helpers/modern/allure.cjs"),
     ...files,
   };
@@ -39,36 +28,15 @@ export const runJasmineInlineTest = async (files: Record<string, string>): Promi
   const testProcess = fork(modulePath, args, {
     env: {
       ...process.env,
-      ALLURE_POST_PROCESSOR_FOR_TEST: String("true"),
     },
     cwd: testDir,
     stdio: "pipe",
   });
 
-  testProcess.on("message", (message: string) => {
-    const event: { path: string; type: string; data: string } = JSON.parse(message);
+  const messageReader = new MessageReader();
 
-    switch (event.type) {
-      case "container":
-        res.groups.push(parseJsonResult<TestResultContainer>(event.data));
-        break;
-      case "result":
-        res.tests.push(parseJsonResult<TestResult>(event.data));
-        break;
-      case "attachment":
-        res.attachments[event.path] = event.data;
-        break;
-      case "misc":
-        res.envInfo =
-          event.path === "environment.properties"
-            ? (parse(Buffer.from(event.data, "base64").toString()) as EnvironmentInfo)
-            : undefined;
-        res.categories = event.path === "categories.json" ? parseJsonResult(event.data) : undefined;
-        break;
-      default:
-        break;
-    }
-  });
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  testProcess.on("message", messageReader.handleMessage);
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
     process.stdout.write(String(chunk));
   });
@@ -80,7 +48,7 @@ export const runJasmineInlineTest = async (files: Record<string, string>): Promi
     testProcess.on("exit", async () => {
       await rm(testDir, { recursive: true });
 
-      return resolve(res);
+      return resolve(messageReader.results);
     });
   });
 };

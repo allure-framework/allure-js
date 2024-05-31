@@ -17,54 +17,58 @@
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
-    },
-    "./internal": {
-      "import": "./dist/esm/internal.js",
-      "require": "./dist/cjs/internal.js"
-    },
-    "./browser": {
-      "import": "./dist/esm/browser/index.js",
-      "require": "./dist/cjs/browser/index.js"
-    },
-    "./node": {
-      "import": "./dist/esm/node/index.js",
-      "require": "./dist/cjs/node/index.js"
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/cjs/index.js"
     },
     "./sdk": {
       "import": "./dist/esm/sdk/index.js",
-      "require": "./dist/cjs/sdk/index.js"
+      "require": "./dist/cjs/sdk/index.js",
+      "types": "./dist/types/sdk/index.d.ts",
+      "default": "./dist/cjs/sdk/index.js"
     },
-    "./sdk/node": {
-      "import": "./dist/esm/sdk/node/index.js",
-      "require": "./dist/cjs/sdk/node/index.js"
+    "./sdk/reporter": {
+      "import": "./dist/esm/sdk/reporter/index.js",
+      "require": "./dist/cjs/sdk/reporter/index.js",
+      "types": "./dist/types/sdk/reporter/index.d.ts",
+      "default": "./dist/cjs/sdk/reporter/index.js"
     },
-    "./sdk/browser": {
-      "import": "./dist/esm/sdk/browser/index.js",
-      "require": "./dist/cjs/sdk/browser/index.js"
+    "./sdk/runtime": {
+      "import": "./dist/esm/sdk/runtime/index.js",
+      "require": "./dist/cjs/sdk/runtime/index.js",
+      "types": "./dist/types/sdk/runtime/index.d.ts",
+      "default": "./dist/cjs/sdk/runtime/index.js"
     }
   },
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "compile": "run-p 'compile:*'",
-    "compile:esm": "tsc --project ./tsconfig.esm.json",
-    "compile:cjs": "tsc --project ./tsconfig.json",
-    "compile:fixup": "ts-node --project ./tsconfig.json ./scripts/fixup.ts",
+    "compile": "run-s 'compile:*'",
+    "compile:esm": "babel --config-file ./babel.esm.json ./src --out-dir ./dist/esm --extensions '.ts' --source-maps",
+    "compile:cjs": "babel --config-file ./babel.cjs.json ./src --out-dir ./dist/cjs --extensions '.ts' --source-maps",
+    "compile:types": "tsc --project ./tsconfig.json --emitDeclarationOnly --declarationDir ./dist/types",
+    "compile:fixup": "node ./scripts/fixup.mjs",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "vitest run"
   },
   "dependencies": {
     "md5": "^2.3.0",
-    "properties": "^1.2.1",
-    "strip-ansi": "^5.2.0"
+    "properties": "^1.2.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.24.6",
+    "@babel/core": "^7.24.6",
+    "@babel/plugin-transform-modules-commonjs": "^7.24.6",
+    "@babel/preset-env": "^7.24.6",
+    "@babel/preset-typescript": "^7.24.6",
+    "@types/babel__core": "^7",
+    "@types/babel__preset-env": "^7",
     "@types/eslint": "^8",
     "@types/md5": "^2",
     "@types/node": "^20.6.3",
@@ -79,7 +83,6 @@
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "expect": "^29.5.0",
-    "glob": "^10.3.10",
     "npm-run-all2": "^6.0.0",
     "rimraf": "^5.0.1",
     "source-map-support": "^0.5.21",

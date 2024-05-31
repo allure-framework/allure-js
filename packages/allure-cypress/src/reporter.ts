@@ -1,15 +1,9 @@
-import Cypress from "cypress";
+import type Cypress from "cypress";
 import { readFileSync } from "node:fs";
-import {
-  AllureNodeReporterRuntime,
-  ContentType,
-  FileSystemAllureWriter,
-  LabelName,
-  Stage,
-  extractMetadataFromString,
-  getSuitesLabels,
-} from "allure-js-commons/sdk/node";
-import { CypressRuntimeMessage, CypressTestEndRuntimeMessage, CypressTestStartRuntimeMessage } from "./model.js";
+import { ContentType, LabelName, Stage } from "allure-js-commons";
+import { extractMetadataFromString } from "allure-js-commons/sdk";
+import { FileSystemWriter, ReporterRuntime, getSuitesLabels } from "allure-js-commons/sdk/reporter";
+import type { CypressRuntimeMessage, CypressTestEndRuntimeMessage, CypressTestStartRuntimeMessage } from "./model.js";
 
 export type AllureCypressConfig = {
   resultsDir?: string;
@@ -20,15 +14,15 @@ export type AllureCypressConfig = {
 };
 
 export class AllureCypress {
-  runtime: AllureNodeReporterRuntime;
+  runtime: ReporterRuntime;
 
   testsUuidsByCypressAbsolutePath = new Map<string, string[]>();
 
   constructor(config?: AllureCypressConfig) {
     const { resultsDir = "./allure-results", ...rest } = config || {};
 
-    this.runtime = new AllureNodeReporterRuntime({
-      writer: new FileSystemAllureWriter({
+    this.runtime = new ReporterRuntime({
+      writer: new FileSystemWriter({
         resultsDir,
       }),
       ...rest,
@@ -48,7 +42,6 @@ export class AllureCypress {
         const endMessage = messages[messages.length - 1] as CypressTestEndRuntimeMessage;
 
         if (startMessage.type !== "cypress_start" || endMessage.type !== "cypress_end") {
-          // TODO:
           throw new Error("INTERNAL ERROR: Invalid message sequence");
         }
 

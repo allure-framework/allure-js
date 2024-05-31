@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
-import { Stage, Status } from "allure-js-commons/sdk/node";
-import { runJasmineInlineTest } from "../utils";
+import { Stage, Status } from "allure-js-commons";
+import { runJasmineInlineTest } from "../utils.js";
 
 it("handles jasmine hooks in flat structure", async () => {
   const { tests, groups } = await runJasmineInlineTest({

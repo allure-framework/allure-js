@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { ContentType } from "allure-js-commons";
+import { type Attachment, ContentType } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils";
 
 it("attaches screenshots for failed specs", async () => {
@@ -18,7 +18,7 @@ it("attaches screenshots for failed specs", async () => {
 
   expect(attachment.name).toBe("Screenshot");
   expect(attachment.type).toBe(ContentType.PNG);
-  expect(attachments).toHaveProperty(attachment.source);
+  expect(attachments).toHaveProperty((attachment as Attachment).source);
 });
 
 it("attaches runtime screenshots", async () => {
@@ -37,5 +37,5 @@ it("attaches runtime screenshots", async () => {
 
   expect(attachment.name).toBe("foo");
   expect(attachment.type).toBe(ContentType.PNG);
-  expect(attachments).toHaveProperty(attachment.source);
+  expect(attachments).toHaveProperty((attachment as Attachment).source);
 });

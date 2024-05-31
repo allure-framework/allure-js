@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { Stage, Status, TestResult } from "allure-js-commons/sdk/node";
+import type { TestResult } from "allure-js-commons";
+import { Stage, Status } from "allure-js-commons";
 import { runMochaInlineTest } from "../../../utils";
 
 describe("step", () => {
@@ -20,7 +21,7 @@ describe("step", () => {
       ["steps", "stepWithHiddenParameter"],
     );
     for (const testResult of results.tests) {
-      testMap.set(testResult.name as string, testResult);
+      testMap.set(testResult.name as string, testResult as TestResult);
     }
     attachments = results.attachments;
   });

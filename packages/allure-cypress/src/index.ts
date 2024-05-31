@@ -1,21 +1,10 @@
-import {
-  ContentType,
-  Label,
-  LabelName,
-  Link,
-  LinkType,
-  ParameterMode,
-  ParameterOptions,
-  RuntimeMessage,
-  Stage,
-  Status,
-  TestRuntime,
-  getGlobalTestRuntime,
-  getUnfinishedStepsMessages,
-  hasStepMessage,
-  setGlobalTestRuntime,
-} from "allure-js-commons/sdk/browser";
-import { CypressRuntimeMessage } from "./model.js";
+import { Stage, Status } from "allure-js-commons";
+import type { ContentType, Label, LabelName, Link, LinkType, ParameterMode, ParameterOptions } from "allure-js-commons";
+import type { RuntimeMessage } from "allure-js-commons/sdk";
+import { getUnfinishedStepsMessages, hasStepMessage } from "allure-js-commons/sdk";
+import type { TestRuntime } from "allure-js-commons/sdk/runtime";
+import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
+import type { CypressRuntimeMessage } from "./model.js";
 import { getSuitePath, normalizeAttachmentContentEncoding, uint8ArrayToBase64 } from "./utils.js";
 
 export class AllureCypressTestRuntime implements TestRuntime {

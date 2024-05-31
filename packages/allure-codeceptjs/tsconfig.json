@@ -1,21 +1,13 @@
 {
   "extends": "../../tsconfig.json",
-  "include": [
-    "./src/**/*",
-    "./test/**/*"
-  ],
+  "include": ["./src/**/*"],
   "compilerOptions": {
     "skipLibCheck": true,
-    "module": "ESNext",
+    "module": "ES2022",
     "target": "ES2022",
     "moduleResolution": "bundler",
-    "lib": [
-      "dom",
-      "esnext"
-    ],
-    "types": [
-      "node"
-    ],
+    "lib": ["dom", "esnext"],
+    "types": ["node", "jasmine"],
     "outDir": "./dist"
   }
 }
