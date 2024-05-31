@@ -26,9 +26,9 @@
       "types": "./dist/types/index.d.ts"
     },
     "./runtime": {
-      "import": "./dist/esm/runtime.js",
-      "require": "./dist/cjs/runtime.js",
-      "types": "./dist/types/runtime.d.ts"
+      "import": "./dist/esm/legacy.js",
+      "require": "./dist/cjs/legacy.js",
+      "types": "./dist/types/legacy.d.ts"
     }
   },
   "main": "./dist/cjs/index.js",
