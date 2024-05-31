@@ -75,8 +75,6 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
     const initialLabels: Label[] = getInitialLabels();
     const labels = globalLabels.concat(initialLabels);
 
-    debugger
-
     if (test.file) {
       const testPath = getRelativePath(test.file);
       fullName = `${testPath!}: `;
