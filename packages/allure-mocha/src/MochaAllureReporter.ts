@@ -7,6 +7,7 @@ import {
   FileSystemWriter,
   ReporterRuntime,
   ensureSuiteLabels,
+  getEnvironmentLabels,
   getPackageLabelFromPath,
   getRelativePath,
 } from "allure-js-commons/sdk/reporter";
@@ -70,7 +71,11 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
 
   private onTest = (test: Mocha.Test) => {
     let fullName = "";
-    const labels: Label[] = getInitialLabels();
+    const globalLabels = getEnvironmentLabels().filter((label) => !!label.value);
+    const initialLabels: Label[] = getInitialLabels();
+    const labels = globalLabels.concat(initialLabels);
+
+    debugger
 
     if (test.file) {
       const testPath = getRelativePath(test.file);

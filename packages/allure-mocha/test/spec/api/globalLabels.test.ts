@@ -35,6 +35,15 @@ describe("env labels", () => {
     expect(labels).toContainEqual({ name: "workerId", value: "baz" });
   });
 
+  it("adds non-empty labels from environment variables", () => {
+    expect(labels).toMatchObject(
+      expect.arrayContaining([
+        { name: "B", value: "foo" },
+        { name: "b", value: "bar" },
+      ]),
+    );
+  });
+
   it("global label takes precedence over the initial one", () => {
     expect(labels).toMatchObject(
       expect.arrayContaining([
