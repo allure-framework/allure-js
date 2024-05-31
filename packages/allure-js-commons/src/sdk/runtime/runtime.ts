@@ -33,7 +33,7 @@ export const getGlobalTestRuntimeWithAutoconfig = (): TestRuntime | Promise<Test
       // protection from bundlers tree-shaking visiting (webpack, rollup)
       // @ts-ignore
       // eslint-disable-next-line no-eval
-      return eval("(() => import('allure-playwright/autoconfig'))()").then(() => {
+      return (0, eval)("(() => import('allure-playwright/autoconfig'))()").then(() => {
         return getGlobalTestRuntimeFunction()?.() ?? noopRuntime;
       });
     } catch (err) {
