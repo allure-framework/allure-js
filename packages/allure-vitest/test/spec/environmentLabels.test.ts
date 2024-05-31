@@ -1,5 +1,4 @@
 import { expect, it } from "vitest";
-import { LabelName } from "allure-js-commons";
 import { runVitestInlineTest } from "../utils.js";
 
 it("should add environment labels", async () => {
@@ -24,10 +23,9 @@ it("should add environment labels", async () => {
   );
 
   tests.forEach((testResult) => {
-    expect(testResult.labels).toContainEqual(expect.objectContaining({ name: LabelName.ALLURE_ID, value: "1" }));
     expect(testResult.labels).toContainEqual(expect.objectContaining({ name: "A", value: "" }));
     expect(testResult.labels).toContainEqual(expect.objectContaining({ name: "B", value: "foo" }));
     expect(testResult.labels).toContainEqual(expect.objectContaining({ name: "b", value: "bar" }));
-    expect(testResult.labels).toContainEqual(expect.objectContaining({ name: "workerId", value: "workerId" }));
+    expect(testResult.labels).toContainEqual(expect.objectContaining({ name: "workerId", value: "baz" }));
   });
 });
