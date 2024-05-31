@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { ContentType, LabelName, Stage } from "allure-js-commons";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { FileSystemWriter, ReporterRuntime, getSuitesLabels } from "allure-js-commons/sdk/reporter";
-import type { CypressRuntimeMessage, CypressTestStartRuntimeMessage, CypressTestEndRuntimeMessage } from "./model.js";
+import type { CypressRuntimeMessage, CypressTestEndRuntimeMessage, CypressTestStartRuntimeMessage } from "./model.js";
 
 export type AllureCypressConfig = {
   resultsDir?: string;

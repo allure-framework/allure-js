@@ -22,6 +22,7 @@ export const runNewmanCollection = async (collection: CollectionDefinition): Pro
       },
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     newmanEmitter.on("allureWriterMessage", reader.handleMessage);
   });
 };

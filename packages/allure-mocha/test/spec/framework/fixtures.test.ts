@@ -27,7 +27,7 @@ describe("fixtures", () => {
 
   it("reports each fixture in its own container", () => {
     const totalFixtures = groups.reduce((a, v) => a + v.afters.length + v.befores.length, 0);
-    expect(groups).toHaveLength(totalFixtures as number);
+    expect(groups).toHaveLength(totalFixtures);
   });
 
   describe("in suites", () => {

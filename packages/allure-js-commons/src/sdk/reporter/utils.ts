@@ -261,4 +261,3 @@ export const escapeRegExp = (value: string): string => {
 
 export const parseProperties = properties.parse;
 export const stringifyProperties = properties.stringify;
-

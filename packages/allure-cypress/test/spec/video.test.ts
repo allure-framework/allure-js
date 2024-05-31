@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { ContentType } from "allure-js-commons";
+import { type Attachment, ContentType } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils";
 
 it("attaches same video to each spec in a test", async () => {
@@ -50,5 +50,5 @@ it("attaches same video to each spec in a test", async () => {
   expect(attachment.name).toBe("Video");
   expect(attachment.type).toBe(ContentType.MP4);
   expect(tests[1].attachments).toContainEqual(attachment);
-  expect(attachments).toHaveProperty(attachment.source);
+  expect(attachments).toHaveProperty((attachment as Attachment).source);
 });

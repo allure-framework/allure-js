@@ -278,6 +278,7 @@ export class AllureReporter implements ReporterV2 {
         {
           name: "stdout",
           contentType: ContentType.TEXT,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           content: Buffer.from(stripAnsi(result.stdout.join("")), "utf8"),
         },
         testUuid,
@@ -289,6 +290,7 @@ export class AllureReporter implements ReporterV2 {
         {
           name: "stderr",
           contentType: ContentType.TEXT,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           content: Buffer.from(stripAnsi(result.stderr.join("")), "utf8"),
         },
         testUuid,

@@ -16,7 +16,7 @@ describe("link", () => {
       ["links", "multipleLinks"],
     );
     for (const test of tests) {
-      testMap.set(test.name as string, test);
+      testMap.set(test.name as string, test as TestResult);
     }
   });
 

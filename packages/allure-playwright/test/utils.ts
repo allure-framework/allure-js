@@ -55,6 +55,8 @@ export const runPlaywrightInlineTest = async (
   });
 
   const messageReader = new MessageReader();
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   testProcess.on("message", messageReader.handleMessage);
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
     process.stdout.write(String(chunk));

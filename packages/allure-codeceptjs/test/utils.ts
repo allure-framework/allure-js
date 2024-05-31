@@ -6,10 +6,6 @@ import { dirname, resolve as resolvePath } from "node:path";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
-const parseJsonResult = <T>(data: string) => {
-  return JSON.parse(Buffer.from(data, "base64").toString("utf8")) as T;
-};
-
 export const runCodeceptJsInlineTest = async (
   files: Record<string, string | Buffer>,
   env?: Record<string, string>,
@@ -48,6 +44,8 @@ export const runCodeceptJsInlineTest = async (
     process.stderr.write(String(chunk));
   });
   const messageReader = new MessageReader();
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   testProcess.on("message", messageReader.handleMessage);
 
   testProcess.on("close", async () => {
@@ -55,8 +53,6 @@ export const runCodeceptJsInlineTest = async (
   });
 
   return new Promise((resolve) => {
-    testProcess.on("exit", async () => {
-      return resolve(messageReader.results);
-    });
+    testProcess.on("exit", () => resolve(messageReader.results));
   });
 };

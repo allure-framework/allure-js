@@ -1,7 +1,6 @@
 {
   "name": "allure-vitest",
   "version": "2.15.0",
-  "type": "module",
   "description": "Allure Vitest integration",
   "keywords": [
     "vitest",
@@ -20,7 +19,7 @@
     "email": "allure@qameta.io",
     "url": "https://qameta.io/"
   },
-  "types": "./dist/index.d.ts",
+  "type": "module",
   "exports": {
     "./reporter": {
       "import": "./dist/reporter.js",
@@ -33,6 +32,7 @@
       "default": "./dist/setup.js"
     }
   },
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],

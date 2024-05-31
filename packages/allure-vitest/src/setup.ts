@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL, parseTestPlan } from "allure-js-commons/sdk/reporter";
-import { MessageHolderTestRuntime, getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
+import { MessageHolderTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { allureVitestLegacyApi } from "./legacy.js";
 import { existsInTestPlan } from "./utils.js";
 

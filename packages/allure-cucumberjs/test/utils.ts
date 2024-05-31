@@ -2,7 +2,7 @@ import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve as resolvePath } from "node:path";
-import { AllureResults } from "allure-js-commons/sdk";
+import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
 export const runCucumberInlineTest = async (
@@ -94,6 +94,8 @@ export const runCucumberInlineTest = async (
   });
 
   const messageReader = new MessageReader();
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   testProcess.on("message", messageReader.handleMessage);
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
     process.stdout.write(String(chunk));

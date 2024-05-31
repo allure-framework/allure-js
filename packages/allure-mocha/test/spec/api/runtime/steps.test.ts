@@ -21,7 +21,7 @@ describe("step", () => {
       ["steps", "stepWithHiddenParameter"],
     );
     for (const testResult of results.tests) {
-      testMap.set(testResult.name as string, testResult);
+      testMap.set(testResult.name as string, testResult as TestResult);
     }
     attachments = results.attachments;
   });

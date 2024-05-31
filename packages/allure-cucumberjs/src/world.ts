@@ -8,11 +8,7 @@ import type { ParameterOptions } from "allure-js-commons";
 export interface AllureCucumberLegacyApi {
   label: (name: string, value: string) => Promise<void>;
   link: (type: string, url: string, name?: string) => Promise<void>;
-  parameter: (
-    name: string,
-    value: string,
-    options?: ParameterOptions,
-  ) => Promise<void>;
+  parameter: (name: string, value: string, options?: ParameterOptions) => Promise<void>;
   description: (markdown: string) => Promise<void>;
   descriptionHtml: (html: string) => Promise<void>;
   testCaseId: (id: string) => Promise<void>;

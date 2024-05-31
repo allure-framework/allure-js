@@ -71,12 +71,12 @@ it("sets runtime links", async () => {
         {
           url: "https://example.org/tasks/1",
           type: LinkType.TMS,
-          name: "task 1"
+          name: "task 1",
         },
         {
           url: "https://example.org/tasks/2",
           type: LinkType.TMS,
-          name: "task 2"
+          name: "task 2",
         },
       ],
     }),

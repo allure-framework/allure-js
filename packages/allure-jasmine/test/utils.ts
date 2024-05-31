@@ -9,6 +9,7 @@ export const runJasmineInlineTest = async (files: Record<string, string>): Promi
   const testDir = join(__dirname, "temp", randomUUID());
   const testFiles = {
     "spec/support/jasmine.json": await readFile(join(__dirname, "./fixtures/spec/support/jasmine.json"), "utf8"),
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     "spec/helpers/allure.js": require("./fixtures/spec/helpers/modern/allure.cjs"),
     ...files,
   };
@@ -33,6 +34,8 @@ export const runJasmineInlineTest = async (files: Record<string, string>): Promi
   });
 
   const messageReader = new MessageReader();
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   testProcess.on("message", messageReader.handleMessage);
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
     process.stdout.write(String(chunk));

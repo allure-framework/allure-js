@@ -13,9 +13,9 @@ describe("runtime parameter", () => {
     );
     for (const testResult of results.tests) {
       if (testMap.has(testResult.name as string)) {
-        testMap.get(testResult.name as string)!.push(testResult);
+        testMap.get(testResult.name as string)!.push(testResult as TestResult);
       } else {
-        testMap.set(testResult.name as string, [testResult]);
+        testMap.set(testResult.name as string, [testResult as TestResult]);
       }
     }
   });
