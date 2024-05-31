@@ -45,7 +45,7 @@ beforeEach((ctx) => {
 afterEach(async (ctx) => {
   // @ts-ignore
   // eslint-disable-next-line
-  const globalTestRuntime: MessageHolderTestRuntime = await getGlobalTestRuntime();
+  const globalTestRuntime: MessageHolderTestRuntime = await getGlobalTestRuntimeWithAutoconfig();
   // @ts-ignore
   ctx.task.meta.allureRuntimeMessages = [...globalTestRuntime.messages()];
   // @ts-ignore

@@ -54,8 +54,7 @@
     "test": "vitest run test/spec"
   },
   "dependencies": {
-    "allure-js-commons": "workspace:*",
-    "strip-ansi": "^5.2.0"
+    "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.6",

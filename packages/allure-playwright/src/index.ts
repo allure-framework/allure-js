@@ -11,11 +11,10 @@ import { existsSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import process from "node:process";
-import stripAnsi from "strip-ansi";
 import type { ImageDiffAttachment, Label, TestResult } from "allure-js-commons";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage, TestPlanV1Test } from "allure-js-commons/sdk";
-import { extractMetadataFromString, getMessageAndTraceFromError, hasLabel } from "allure-js-commons/sdk";
+import { extractMetadataFromString, getMessageAndTraceFromError, hasLabel, stripAnsi } from "allure-js-commons/sdk";
 import { md5 } from "allure-js-commons/sdk/reporter";
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,

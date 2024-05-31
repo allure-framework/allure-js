@@ -1,6 +1,6 @@
-import stripAnsi from "strip-ansi";
 import type { FixtureResult, Label, StatusDetails, StepResult, TestResult } from "../model.js";
 import { LabelName, Status } from "../model.js";
+import type { RuntimeMessage } from "./types.js";
 
 export const getStatusFromError = (error: Error): Status => {
   switch (true) {
@@ -17,6 +17,31 @@ export const getStatusFromError = (error: Error): Status => {
     default:
       return Status.BROKEN;
   }
+};
+
+/**
+ * Source: https://github.com/chalk/ansi-regex
+ */
+export const ansiRegex = ({ onlyFirst = false } = {}) => {
+  const pattern = [
+    "[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)",
+    "(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))",
+  ].join("|");
+
+  return new RegExp(pattern, onlyFirst ? undefined : "g");
+};
+
+/**
+ * https://github.com/chalk/strip-ansi
+ */
+export const stripAnsi = (str: string) => {
+  if (typeof str !== "string") {
+    throw new TypeError(`Expected a \`string\`, got \`${typeof str}\``);
+  }
+
+  const regex = ansiRegex();
+
+  return str.replace(regex, "");
 };
 
 export const getMessageAndTraceFromError = (
@@ -79,3 +104,39 @@ export const isAllStepsEnded = (item: StepResult | TestResult | FixtureResult): 
 export const hasLabel = (testResult: TestResult, labelName: LabelName | string): boolean => {
   return !!testResult.labels.find((l) => l.name === labelName);
 };
+
+export const hasStepMessage = (messages: RuntimeMessage[]) => {
+  return messages.some((message) => message.type === "step_start" || message.type === "step_stop");
+};
+
+export const getStepsMessagesPair = (messages: RuntimeMessage[]) =>
+  messages.reduce((acc, message) => {
+    if (message.type !== "step_start" && message.type !== "step_stop") {
+      return acc;
+    }
+
+    if (message.type === "step_start") {
+      acc.push([message]);
+
+      return acc;
+    }
+
+    const unfinishedStepIdx = acc.findLastIndex((step) => step.length === 1);
+
+    if (unfinishedStepIdx === -1) {
+      return acc;
+    }
+
+    acc[unfinishedStepIdx].push(message);
+
+    return acc;
+  }, [] as RuntimeMessage[][]);
+
+export const getUnfinishedStepsMessages = (messages: RuntimeMessage[]) => {
+  const grouppedStepsMessage = getStepsMessagesPair(messages);
+
+  return grouppedStepsMessage.filter((step) => step.length === 1);
+};
+
+export const isPromise = (obj: any): boolean =>
+  !!obj && (typeof obj === "object" || typeof obj === "function") && typeof obj.then === "function";

@@ -15,12 +15,15 @@ export type {
   TestPlanV1Test,
   TestPlanV1,
 } from "./types.js";
-
 export {
   getStatusFromError,
   getMessageAndTraceFromError,
   extractMetadataFromString,
   isAllStepsEnded,
   isAnyStepFailed,
-  hasLabel
+  getUnfinishedStepsMessages,
+  hasStepMessage,
+  isPromise,
+  hasLabel,
+  stripAnsi,
 } from "./utils.js";

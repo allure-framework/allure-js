@@ -11,7 +11,17 @@ const getGlobalTestRuntimeFunction = () => {
   return (globalThis as any)?.[ALLURE_TEST_RUNTIME_KEY] as (() => TestRuntime | undefined) | undefined;
 };
 
-export const getGlobalTestRuntime = async (): Promise<TestRuntime> => {
+export const getGlobalTestRuntime = (): TestRuntime => {
+  const testRuntime = getGlobalTestRuntimeFunction();
+
+  if (testRuntime) {
+    return testRuntime() ?? noopRuntime;
+  }
+
+  return noopRuntime;
+};
+
+export const getGlobalTestRuntimeWithAutoconfig = (): TestRuntime | Promise<TestRuntime> => {
   const testRuntime = getGlobalTestRuntimeFunction();
 
   if (testRuntime) {
@@ -20,10 +30,12 @@ export const getGlobalTestRuntime = async (): Promise<TestRuntime> => {
 
   if ("_playwrightInstance" in globalThis) {
     try {
+      // protection from bundlers tree-shaking visiting (webpack, rollup)
+      // @ts-ignore
       // eslint-disable-next-line no-eval
-      await eval("(() => import('allure-playwright/autoconfig'))()");
-
-      return getGlobalTestRuntimeFunction()?.() ?? noopRuntime;
+      return eval("(() => import('allure-playwright/autoconfig'))()").then(() => {
+        return getGlobalTestRuntimeFunction()?.() ?? noopRuntime;
+      });
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log("can't execute allure-playwright/autoconfig", err);

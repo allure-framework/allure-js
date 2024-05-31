@@ -8,7 +8,6 @@ import properties from "properties";
 import type { AttachmentOptions, ContentType, Status, StepResult, TestResult } from "../../model.js";
 import { LabelName, StatusByPriority } from "../../model.js";
 import type { Label } from "../../model.js";
-import type { RuntimeMessage } from "../types.js";
 import { EXTENSIONS_BY_TYPE } from "./extensions.js";
 import type { WellKnownWriters, Writer, WriterDescriptor } from "./types.js";
 
@@ -53,39 +52,6 @@ export const getTestResultHistoryId = (result: TestResult) => {
 
 export const getTestResultTestCaseId = (result: TestResult) => {
   return result.fullName ? md5(result.fullName) : undefined;
-};
-
-export const hasStepMessage = (messages: RuntimeMessage[]) => {
-  return messages.some((message) => message.type === "step_start" || message.type === "step_stop");
-};
-
-export const getStepsMessagesPair = (messages: RuntimeMessage[]) =>
-  messages.reduce((acc, message) => {
-    if (message.type !== "step_start" && message.type !== "step_stop") {
-      return acc;
-    }
-
-    if (message.type === "step_start") {
-      acc.push([message]);
-
-      return acc;
-    }
-
-    const unfinishedStepIdx = acc.findLastIndex((step) => step.length === 1);
-
-    if (unfinishedStepIdx === -1) {
-      return acc;
-    }
-
-    acc[unfinishedStepIdx].push(message);
-
-    return acc;
-  }, [] as RuntimeMessage[][]);
-
-export const getUnfinishedStepsMessages = (messages: RuntimeMessage[]) => {
-  const grouppedStepsMessage = getStepsMessagesPair(messages);
-
-  return grouppedStepsMessage.filter((step) => step.length === 1);
 };
 
 export const getWorstStepResultStatusPriority = (steps: StepResult[], priority?: number): number | undefined => {
@@ -223,9 +189,6 @@ export const getPackageLabelFromPath = (filepath: string): Label => ({
 });
 
 export const deepClone = <T>(obj: T): T => JSON.parse(JSON.stringify(obj));
-
-export const isPromise = (obj: any): boolean =>
-  !!obj && (typeof obj === "object" || typeof obj === "function") && typeof obj.then === "function";
 
 export const typeToExtension = (options: AttachmentOptions): string => {
   if (options.fileExtension) {

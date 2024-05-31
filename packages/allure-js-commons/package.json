@@ -59,8 +59,7 @@
   },
   "dependencies": {
     "md5": "^2.3.0",
-    "properties": "^1.2.1",
-    "strip-ansi": "^5.2.0"
+    "properties": "^1.2.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.6",

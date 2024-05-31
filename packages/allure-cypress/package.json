@@ -20,19 +20,19 @@
   "author": "Qameta Software <allure@qameta.io> (https://qameta.io/)",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
     },
     "./reporter": {
-      "import": "./dist/reporter.mjs",
-      "require": "./dist/reporter.cjs",
-      "types": "./dist/reporter.d.ts"
+      "import": "./dist/esm/reporter.js",
+      "require": "./dist/cjs/reporter.js",
+      "types": "./dist/types/reporter.d.ts"
     }
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
   "directories": {
     "test": "test"
   },
@@ -41,10 +41,13 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist ./out",
-    "compile": "run-p 'compile:*'",
-    "compile:lib": "rollup -c",
-    "compile:types": "tsc --project ./tsconfig.dts.json",
-    "coverage": "codecov",
+    "compile": "run-s 'compile:*'",
+    "compile:esm-node": "babel --config-file ./babel.esm.json ./src --ignore './src/index.ts' --out-dir ./dist/esm --extensions '.ts' --source-maps",
+    "compile:cjs-node": "babel --config-file ./babel.cjs.json ./src --ignore './src/index.ts' --out-dir ./dist/cjs --extensions '.ts' --source-maps",
+    "compile:esm-browser": "esbuild ./src/index.ts --bundle --minify --sourcemap --format=esm --outfile=./dist/esm/index.js --external:allure-playwright",
+    "compile:cjs-browser": "esbuild ./src/index.ts --bundle --minify --sourcemap --format=cjs --outfile=./dist/cjs/index.js --external:allure-playwright",
+    "compile:types": "tsc --declaration --emitDeclarationOnly",
+    "compile:fixup": "node ./scripts/fixup.mjs",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "vitest run --dir ./test/spec"
@@ -53,9 +56,13 @@
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-typescript": "^11.1.6",
+    "@babel/cli": "^7.24.6",
+    "@babel/core": "^7.24.6",
+    "@babel/plugin-transform-modules-commonjs": "^7.24.6",
+    "@babel/preset-env": "^7.24.6",
+    "@babel/preset-typescript": "^7.24.6",
+    "@types/babel__core": "^7",
+    "@types/babel__preset-env": "^7",
     "@types/eslint": "^8",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
@@ -63,8 +70,10 @@
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "allure-vitest": "workspace:*",
+    "babel-plugin-add-module-exports": "^1.0.4",
     "cypress": "^13.6.0",
     "enquirer": "^2.3.6",
+    "esbuild": "^0.21.4",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-cypress": "^3.0.0",
@@ -75,9 +84,7 @@
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "npm-run-all2": "^6.0.0",
     "rimraf": "^5.0.1",
-    "rollup": "^4.13.0",
     "ts-node": "^10.9.2",
-    "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "vitest": "^1.4.0"
   }

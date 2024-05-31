@@ -2,13 +2,13 @@ import { cwd } from "node:process";
 import * as allure from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
+import { isPromise } from "allure-js-commons/sdk";
 import type { FixtureType } from "allure-js-commons/sdk/reporter";
 import {
   FileSystemWriter,
   MessageWriter,
   ReporterRuntime,
   getSuiteLabels,
-  isPromise,
 } from "allure-js-commons/sdk/reporter";
 import { MessageTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import type { AllureJasmineConfig, JasmineBeforeAfterFn } from "./model.js";
