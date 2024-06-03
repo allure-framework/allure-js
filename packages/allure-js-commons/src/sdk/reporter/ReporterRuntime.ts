@@ -874,7 +874,7 @@ export class ReporterRuntime {
     this.writeAttachmentForItem(message.data, step ?? root);
   };
 
-  private writeAttachmentForItem = (attachment: RawAttachment, item: StepResult | TestResult | FixtureResult) => {
+  writeAttachmentForItem = (attachment: RawAttachment, item: StepResult | TestResult | FixtureResult) => {
     const attachmentFilename = this.buildAttachmentFileName(attachment);
 
     this.writer.writeAttachment(

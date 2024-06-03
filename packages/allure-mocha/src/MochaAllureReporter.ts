@@ -13,6 +13,7 @@ import {
 } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { MochaTestRuntime } from "./MochaTestRuntime";
+import { setLegacyApiRuntime } from "./legacyUtils.js";
 import { getInitialLabels, getSuitesOfMochaTest, resolveParallelModeSetupFile } from "./utils.js";
 
 const {
@@ -34,12 +35,15 @@ export class MochaAllureReporter extends Mocha.reporters.Base {
     super(runner, opts);
 
     const { resultsDir = "allure-results", writer, ...restOptions }: Config = opts.reporterOptions || {};
+
     this.runtime = new ReporterRuntime({
       writer: writer || new FileSystemWriter({ resultsDir }),
       ...restOptions,
     });
+    const testRuntime = new MochaTestRuntime(this.runtime);
 
-    setGlobalTestRuntime(new MochaTestRuntime(this.runtime));
+    setGlobalTestRuntime(testRuntime);
+    setLegacyApiRuntime(this.runtime);
 
     if (opts.parallel) {
       opts.require = [...(opts.require ?? []), resolveParallelModeSetupFile()];
