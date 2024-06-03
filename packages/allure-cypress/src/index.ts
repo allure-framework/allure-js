@@ -1,5 +1,5 @@
 import { Stage, Status } from "allure-js-commons";
-import type { ContentType, Label, Link, ParameterMode, ParameterOptions } from "allure-js-commons";
+import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getUnfinishedStepsMessages, hasStepMessage } from "allure-js-commons/sdk";
 import type { TestRuntime } from "allure-js-commons/sdk/runtime";
@@ -86,7 +86,7 @@ export class AllureCypressTestRuntime implements TestRuntime {
     });
   }
 
-  attachment(name: string, content: Buffer | string, type: string | ContentType) {
+  attachment(name: string, content: Buffer | string, options: AttachmentOptions) {
     // @ts-ignore
     const attachmentRawContent: string | Uint8Array = content?.type === "Buffer" ? content.data : content;
     const encoding = content instanceof Buffer ? "base64" : "utf-8";
@@ -98,7 +98,7 @@ export class AllureCypressTestRuntime implements TestRuntime {
       data: {
         content: attachmentContent,
         encoding: actualEncoding,
-        contentType: type,
+        contentType: options.contentType,
         name,
       },
     });

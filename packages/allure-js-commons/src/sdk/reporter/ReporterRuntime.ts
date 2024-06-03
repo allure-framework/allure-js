@@ -888,7 +888,7 @@ export class ReporterRuntime {
       type: attachment.contentType,
     };
 
-    item.attachments.push(rawAttachment);
+    item.steps.push({ name: attachment.name, attachments: [ rawAttachment ]} as StepResult);
   };
 
   private startScopeWithUuid = (uuid: string, { manual, parent }: StartScopeOpts = {}) => {

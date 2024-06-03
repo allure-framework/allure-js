@@ -6,7 +6,7 @@ export interface Attachment {
 
 export interface AttachmentOptions {
   contentType: ContentType | string;
-  encoding?: string;
+  encoding?: BufferEncoding;
   fileExtension?: string;
 }
 
