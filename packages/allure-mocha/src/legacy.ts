@@ -44,7 +44,9 @@ class LegacyAllureApi {
     getLegacyApiRuntime()?.writer.writeCategoriesDefinitions(categories);
   };
   attachment = (name: string, content: Buffer | string, options: ContentType | string | AttachmentOptions) =>
-    Promise.resolve(commons.attachment(name, content, typeof options === "string" ? options : options.contentType));
+    Promise.resolve(
+      commons.attachment(name, content, typeof options === "string" ? { contentType: options } : options),
+    );
   testAttachment = (name: string, content: Buffer | string, options: ContentType | string | AttachmentOptions) => {
     const runtime = getLegacyApiRuntime();
     const currentTest = runtime?.getCurrentTest();

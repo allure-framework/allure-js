@@ -18,7 +18,7 @@ import {
 } from "allure-js-commons/sdk/reporter";
 import type { Config } from "allure-js-commons/sdk/reporter";
 import type { AllureCucumberReporterConfig, LabelConfig, LinkConfig } from "./model.js";
-import { AllureCucumberWorld } from "./world.js";
+import { AllureCucumberWorld } from "./legacy.js";
 
 const { ALLURE_THREAD_NAME } = process.env;
 
