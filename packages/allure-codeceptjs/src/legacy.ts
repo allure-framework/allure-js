@@ -44,7 +44,7 @@ export const allureCodeceptJsLegacyApi: AllureCodeceptJsLegacyApi = {
   /**
    * @deprecated please use import { link } from "allure-js-commons" instead.
    */
-  link: (type, url, name) => Promise.resolve(allure.link(url, type, name)),
+  link: (type, url, name) => Promise.resolve(allure.link(url, name, type)),
   /**
    * @deprecated please use import { parameter } from "allure-js-commons" instead.
    */

@@ -52,7 +52,7 @@ export const allurePlaywrightLegacyApi: AllurePlaywrightLegacyApi = {
   /**
    * @deprecated please use import { link } from "allure-js-commons" instead.
    */
-  link: (type, url, name) => allure.link(url, type, name),
+  link: (type, url, name) => allure.link(url, name, type),
   /**
    * @deprecated please use import { links } from "allure-js-commons" instead.
    */

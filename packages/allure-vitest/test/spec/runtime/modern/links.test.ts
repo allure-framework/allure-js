@@ -17,8 +17,8 @@ describe("links", () => {
 
     expect(tests).toHaveLength(1);
     expect(tests[0].links).toContainEqual({
-      name: "bar",
-      type: "foo",
+      name: "foo",
+      type: "bar",
       url: "https://example.org",
     });
   });
