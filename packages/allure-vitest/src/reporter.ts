@@ -12,7 +12,7 @@ import {
   ReporterRuntime,
   getEnvironmentLabels,
   getHostLabel,
-  getSuitesLabels,
+  getSuiteLabels,
   getThreadLabel,
 } from "allure-js-commons/sdk/reporter";
 import { getSuitePath, getTestFullName } from "./utils.js";
@@ -107,7 +107,7 @@ export default class AllureVitestReporter implements Reporter {
         value: "javascript",
       });
       result.labels.push(...titleMetadata.labels);
-      result.labels.push(...getSuitesLabels(suitePath));
+      result.labels.push(...getSuiteLabels(suitePath));
       result.labels.push(...getEnvironmentLabels());
       result.labels.push(getHostLabel());
       result.labels.push(getThreadLabel(VITEST_POOL_ID && `vitest-worker-${VITEST_POOL_ID}`));

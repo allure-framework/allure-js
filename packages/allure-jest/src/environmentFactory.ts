@@ -7,7 +7,7 @@ import * as allure from "allure-js-commons";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
-import { FileSystemWriter, MessageWriter, ReporterRuntime, getSuitesLabels } from "allure-js-commons/sdk/reporter";
+import { FileSystemWriter, MessageWriter, ReporterRuntime, getSuiteLabels } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { AllureJestTestRuntime } from "./AllureJestTestRuntime.js";
 import type { AllureJestConfig, AllureJestEnvironment } from "./model.js";
@@ -159,7 +159,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
           result.labels.push({ name: LabelName.HOST, value: hostLabel });
         }
 
-        result.labels.push(...getSuitesLabels(newTestSuitesPath));
+        result.labels.push(...getSuiteLabels(newTestSuitesPath));
       }, testUuid);
 
       /**

@@ -227,8 +227,6 @@ export const getSuiteLabels = (suites: readonly string[]): Label[] => {
   return labels;
 };
 
-export const getSuitesLabels = getSuiteLabels;
-
 const suiteLabelNames: readonly string[] = [LabelName.PARENT_SUITE, LabelName.SUITE, LabelName.SUB_SUITE];
 
 export const ensureSuiteLabels = (test: Partial<TestResult>, defaultSuites: readonly string[]) => {
