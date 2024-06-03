@@ -2,12 +2,14 @@
   "extends": "../../tsconfig.json",
   "include": ["./src/**/*"],
   "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
     "skipLibCheck": true,
     "module": "ES2022",
     "target": "ES2022",
     "moduleResolution": "bundler",
     "lib": ["dom", "esnext"],
     "types": ["node", "jasmine"],
-    "outDir": "./dist"
+    "outDir": "./dist/types"
   }
 }
