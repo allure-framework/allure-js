@@ -14,9 +14,10 @@ it("handles attachments in tests", async () => {
   });
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].attachments).toHaveLength(1);
+  expect(tests[0].steps).toHaveLength(1);
+  expect(tests[0].steps[0].attachments).toHaveLength(1);
 
-  const [attachment] = tests[0].attachments;
+  const [attachment] = tests[0].steps[0].attachments;
 
   expect(attachment).toEqual({
     name: "data.txt",
@@ -30,12 +31,12 @@ it("handles attachments in tests", async () => {
 it("handles attachments in runtime steps", async () => {
   const { tests, attachments } = await runCodeceptJsInlineTest({
     "login.test.js": `
-      const { step, attachment } = require("allure-js-commons");
-
       Feature("sample-feature");
       Scenario("sample-scenario", async () => {
-        await step("step1", async () => {
-          await attachment("data.txt", "some data", "text/plain");
+        const allure = codeceptjs.container.plugins("allure");
+
+        await allure.step("step1", async () => {
+          await allure.attachment("data.txt", "some data", "text/plain");
         });
       });
     `,
@@ -44,9 +45,11 @@ it("handles attachments in runtime steps", async () => {
   expect(tests).toHaveLength(1);
   expect(tests[0].attachments).toHaveLength(0);
   expect(tests[0].steps).toHaveLength(1);
-  expect(tests[0].steps[0].attachments).toHaveLength(1);
+  expect(tests[0].steps[0].steps).toHaveLength(1);
+  expect(tests[0].steps[0].steps[0].attachments).toHaveLength(1);
+  expect(tests[0].steps[0].steps[0].attachments).toHaveLength(1);
 
-  const [attachment] = tests[0].steps[0].attachments;
+  const [attachment] = tests[0].steps[0].steps[0].attachments;
 
   expect(attachment).toEqual({
     name: "data.txt",

@@ -35,7 +35,7 @@
     "compile:fixup": "node ./scripts/fixup.mjs",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
-    "test": "vitest run"
+    "test": "vitest run --dir test/spec"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
