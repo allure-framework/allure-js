@@ -76,7 +76,10 @@ describe("ReporterRuntime", () => {
         content: "attachment content",
       });
 
-      const attachment = runtime.getCurrentTest()!.attachments[0];
+      const stepResult = runtime.getCurrentTest()!.steps[0];
+      expect(stepResult.name).to.be.eq("some other attachment");
+
+      const attachment = stepResult.attachments[0];
 
       expect(attachment.name).to.be.eq("some other attachment");
       expect(attachment.source).to.match(/.+\.csv/);
