@@ -3,7 +3,6 @@ import { createHash, randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { env } from "process";
 import properties from "properties";
 import type { AttachmentOptions, ContentType, Status, StepResult, TestResult } from "../../model.js";
 import { LabelName, StatusByPriority } from "../../model.js";
@@ -124,20 +123,6 @@ const getKnownWriterCtor = (wellKnownWriters: WellKnownWriters, name: string) =>
 const requireWriterCtor = (modulePath: string): (new (...args: readonly unknown[]) => Writer) | Writer => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
   return require(modulePath);
-};
-
-export const getGlobalLabels = () => {
-  const ENV_NAME_PREFIX = "ALLURE_LABEL_";
-  let globalLabels: Label[];
-  const initGlobalLabels: () => Label[] = () =>
-    Object.keys(env)
-      .filter((varname) => varname.startsWith(ENV_NAME_PREFIX))
-      .map((varname) => ({
-        name: varname.substring(ENV_NAME_PREFIX.length),
-        value: env[varname] ?? "",
-      }))
-      .filter((l) => l.name && l.value);
-  return (globalLabels ??= initGlobalLabels());
 };
 
 const getProjectRoot = (() => {
