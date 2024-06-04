@@ -5,7 +5,6 @@ export type {
   ExecutorInfo,
   ExtensionMessage,
   Messages,
-  RawAttachment,
   RuntimeMessage,
   RuntimeMetadataMessage,
   RuntimeAttachmentContentMessage,

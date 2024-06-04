@@ -1,10 +1,4 @@
-import type {
-  AttachmentOptions,
-  Label,
-  Link,
-  ParameterMode,
-  ParameterOptions
-} from "./model.js";
+import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions } from "./model.js";
 import { LabelName, LinkType } from "./model.js";
 import { getGlobalTestRuntimeWithAutoconfig } from "./sdk/runtime/runtime.js";
 import type { TestRuntime } from "./sdk/runtime/types.js";
@@ -71,6 +65,10 @@ export const testCaseId = (value: string) => {
 
 export const attachment = (name: string, content: Buffer | string, options: AttachmentOptions) => {
   return callRuntimeMethod("attachment", name, content, options);
+};
+
+export const attachmentPath = (name: string, path: string, options: Omit<AttachmentOptions, "encoding">) => {
+  return callRuntimeMethod("attachmentFromPath", name, path, options);
 };
 
 export type StepContext = {

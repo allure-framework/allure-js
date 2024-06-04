@@ -119,6 +119,20 @@ export abstract class MessageTestRuntime implements TestRuntime {
         encoding: "base64",
         contentType: options.contentType,
         fileExtension: options.fileExtension,
+        wrapInStep: true,
+      },
+    });
+  }
+
+  async attachmentFromPath(name: string, path: string, options: AttachmentOptions) {
+    await this.sendMessage({
+      type: "attachment_path",
+      data: {
+        name,
+        path,
+        contentType: options.contentType,
+        fileExtension: options.fileExtension,
+        wrapInStep: true,
       },
     });
   }

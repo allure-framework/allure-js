@@ -846,17 +846,14 @@ export class ReporterRuntime {
     { root, step }: MessageTargets,
   ) => {
     const item: FixtureResult | TestResult | StepResult = step ?? root;
-    const { name, content, encoding, contentType, fileExtension } = message.data;
-    this.writeAttachmentForItem(name, Buffer.from(content, encoding), { contentType, fileExtension }, item);
+    const { name, content, encoding, contentType, fileExtension, wrapInStep } = message.data;
+    this.writeAttachmentForItem(name, Buffer.from(content, encoding), { contentType, fileExtension }, item, wrapInStep);
   };
 
-  private handleAttachmentPathMessage = (
-    message: RuntimeAttachmentPathMessage,
-    { root, step }: MessageTargets,
-  ) => {
+  private handleAttachmentPathMessage = (message: RuntimeAttachmentPathMessage, { root, step }: MessageTargets) => {
     const item: FixtureResult | TestResult | StepResult = step ?? root;
-    const { name, path, contentType, fileExtension } = message.data;
-    this.writeAttachmentForItem(name, path, { contentType, fileExtension }, item);
+    const { name, path, contentType, fileExtension, wrapInStep } = message.data;
+    this.writeAttachmentForItem(name, path, { contentType, fileExtension }, item, wrapInStep);
   };
 
   private writeAttachmentForItem = (
@@ -864,6 +861,7 @@ export class ReporterRuntime {
     attachmentContentOrPath: Buffer | string,
     options: Pick<AttachmentOptions, "fileExtension" | "contentType">,
     item: StepResult | TestResult | FixtureResult,
+    wrapInStepAttachment: boolean = false,
   ) => {
     const isPath = typeof attachmentContentOrPath === "string";
     const fileExtension = options.fileExtension ?? (isPath ? extname(attachmentContentOrPath) : undefined);
@@ -881,7 +879,11 @@ export class ReporterRuntime {
       type: options.contentType,
     };
 
-    item.attachments.push(attachment);
+    if (wrapInStepAttachment) {
+      item.steps.push({ name: attachmentName, attachments: [attachment] } as StepResult);
+    } else {
+      item.attachments.push(attachment);
+    }
   };
 
   private startScopeWithUuid = (uuid: string, { manual, parent }: StartScopeOpts = {}) => {

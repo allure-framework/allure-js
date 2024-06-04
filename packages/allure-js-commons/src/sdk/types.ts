@@ -1,6 +1,5 @@
 import type {
   Attachment,
-  AttachmentOptions,
   Label,
   Link,
   Parameter,
@@ -10,11 +9,6 @@ import type {
   TestResult,
   TestResultContainer,
 } from "../model.js";
-
-export interface RawAttachment extends AttachmentOptions {
-  name: string;
-  content: Buffer;
-}
 
 type RuntimeMessageBase<T extends string> = {
   type: T;
@@ -66,6 +60,7 @@ export type RuntimeAttachmentContentMessage = RuntimeMessageBase<"attachment_con
     encoding: BufferEncoding;
     contentType: string;
     fileExtension?: string;
+    wrapInStep?: boolean;
   };
 };
 
@@ -75,6 +70,7 @@ export type RuntimeAttachmentPathMessage = RuntimeMessageBase<"attachment_path">
     path: string;
     contentType: string;
     fileExtension?: string;
+    wrapInStep?: boolean;
   };
 };
 

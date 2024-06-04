@@ -1,13 +1,5 @@
 import { ContentType, Stage, Status } from "allure-js-commons";
-import type {
-  AttachmentOptions,
-  Label,
-
-  Link,
-
-  ParameterMode,
-  ParameterOptions,
-} from "allure-js-commons";
+import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getUnfinishedStepsMessages, hasStepMessage } from "allure-js-commons/sdk";
 import type { TestRuntime } from "allure-js-commons/sdk/runtime";
@@ -104,10 +96,23 @@ export class AllureCypressTestRuntime implements TestRuntime {
     return this.sendMessageAsync({
       type: "attachment_content",
       data: {
+        name,
         content: attachmentContent,
         encoding: actualEncoding,
         contentType: options.contentType,
+        fileExtension: options.fileExtension,
+      },
+    });
+  }
+
+  attachmentFromPath(name: string, path: string, options: Omit<AttachmentOptions, "encoding">) {
+    return this.sendMessageAsync({
+      type: "attachment_path",
+      data: {
         name,
+        path,
+        contentType: options.contentType,
+        fileExtension: options.fileExtension,
       },
     });
   }
