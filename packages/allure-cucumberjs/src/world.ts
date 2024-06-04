@@ -42,7 +42,7 @@ export class AllureCucumberWorld extends World implements AllureCucumberLegacyAp
   /**
    * @deprecated please use import { link } from "allure-js-commons" instead.
    */
-  link = (type: string, url: string, name?: string) => allure.link(url, type, name);
+  link = (type: string, url: string, name?: string) => allure.link(url, name, type);
   /**
    * @deprecated please use import { parameter } from "allure-js-commons" instead.
    */

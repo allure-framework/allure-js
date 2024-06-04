@@ -1,5 +1,5 @@
 import { Stage, Status } from "allure-js-commons";
-import type { ContentType, Label, LabelName, Link, LinkType, ParameterMode, ParameterOptions } from "allure-js-commons";
+import type { ContentType, Label, Link, ParameterMode, ParameterOptions } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getUnfinishedStepsMessages, hasStepMessage } from "allure-js-commons/sdk";
 import type { TestRuntime } from "allure-js-commons/sdk/runtime";
@@ -8,29 +8,11 @@ import type { CypressRuntimeMessage } from "./model.js";
 import { getSuitePath, normalizeAttachmentContentEncoding, uint8ArrayToBase64 } from "./utils.js";
 
 export class AllureCypressTestRuntime implements TestRuntime {
-  label(name: LabelName | string, value: string) {
-    return this.sendMessageAsync({
-      type: "metadata",
-      data: {
-        labels: [{ name, value }],
-      },
-    });
-  }
-
   labels(...labels: Label[]) {
     return this.sendMessageAsync({
       type: "metadata",
       data: {
         labels,
-      },
-    });
-  }
-
-  link(url: string, type?: LinkType | string, name?: string) {
-    return this.sendMessageAsync({
-      type: "metadata",
-      data: {
-        links: [{ type, url, name }],
       },
     });
   }

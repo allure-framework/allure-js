@@ -20,7 +20,7 @@ import { MutableAllureContextHolder, StaticContextProvider } from "./context/Sta
 import type { AllureContextProvider } from "./context/types.js";
 import { createFixtureResult, createStepResult, createTestResult } from "./factory.js";
 import type { Config, FixtureType, FixtureWrapper, LinkConfig, TestScope, WellKnownWriters, Writer } from "./types.js";
-import { deepClone, getGlobalLabels, randomUuid, typeToExtension } from "./utils.js";
+import { deepClone, randomUuid, typeToExtension } from "./utils.js";
 import { getTestResultHistoryId, getTestResultTestCaseId, resolveWriter } from "./utils.js";
 import * as wellKnownCommonWriters from "./writer/wellKnownCommonWriters.js";
 
@@ -779,7 +779,6 @@ export class ReporterRuntime {
     return {
       ...createTestResult(uuid),
       start: Date.now(),
-      labels: getGlobalLabels(),
       ...deepClone(result),
     };
   }

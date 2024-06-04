@@ -31,7 +31,7 @@
     "compile": "run-s 'compile:*'",
     "compile:esm": "babel --config-file ./babel.esm.json ./src --out-dir ./dist/esm --extensions '.ts' --source-maps",
     "compile:cjs": "babel --config-file ./babel.cjs.json ./src --out-dir ./dist/cjs --extensions '.ts' --source-maps",
-    "compile:types": "tsc --declaration --emitDeclarationOnly",
+    "compile:types": "tsc",
     "compile:fixup": "node ./scripts/fixup.mjs",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",

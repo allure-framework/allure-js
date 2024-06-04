@@ -46,7 +46,7 @@
     "compile:cjs-node": "babel --config-file ./babel.cjs.json ./src --ignore './src/index.ts' --out-dir ./dist/cjs --extensions '.ts' --source-maps",
     "compile:esm-browser": "esbuild ./src/index.ts --bundle --minify --sourcemap --format=esm --outfile=./dist/esm/index.js --external:allure-playwright",
     "compile:cjs-browser": "esbuild ./src/index.ts --bundle --minify --sourcemap --format=cjs --outfile=./dist/cjs/index.js --external:allure-playwright",
-    "compile:types": "tsc --declaration --emitDeclarationOnly",
+    "compile:types": "tsc",
     "compile:fixup": "node ./scripts/fixup.mjs",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",

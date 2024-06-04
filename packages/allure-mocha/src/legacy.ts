@@ -27,7 +27,7 @@ class LegacyAllureApi {
   label = (name: string, value: string) => Promise.resolve(commons.label(name, value));
   parameter = (name: string, value: any, options?: ParameterOptions) =>
     Promise.resolve(commons.parameter(name, serialize(value) as string, options));
-  link = (url: string, name?: string, type?: string) => Promise.resolve(commons.link(url, type, name));
+  link = (url: string, name?: string, type?: string) => Promise.resolve(commons.link(url, name, type));
   issue = (name: string, url: string) => Promise.resolve(commons.issue(url, name));
   tms = (name: string, url: string) => Promise.resolve(commons.tms(url, name));
   description = (markdown: string) => Promise.resolve(commons.description(markdown));

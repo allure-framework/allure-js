@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { LabelName } from "../../../src/model.js";
-import { getSuitesLabels, serialize, typeToExtension } from "../../../src/sdk/reporter/utils.js";
+import { getSuiteLabels, serialize, typeToExtension } from "../../../src/sdk/reporter/utils.js";
 
 describe("typeToExtension", () => {
   it("should respect provided file extension", () => {
@@ -46,16 +46,16 @@ describe("typeToExtension", () => {
   });
 });
 
-describe("getSuitesLabels", () => {
+describe("getSuiteLabels", () => {
   describe("with empty suites", () => {
     it("returns empty array", () => {
-      expect(getSuitesLabels([])).toEqual([]);
+      expect(getSuiteLabels([])).toEqual([]);
     });
   });
 
   describe("with single suite", () => {
     it("returns parent suite label as the first element", () => {
-      expect(getSuitesLabels(["foo"])).toEqual([
+      expect(getSuiteLabels(["foo"])).toEqual([
         {
           name: LabelName.PARENT_SUITE,
           value: "foo",
@@ -66,7 +66,7 @@ describe("getSuitesLabels", () => {
 
   describe("with two suites", () => {
     it("returns parent suite and suite labels as the first two elements", () => {
-      expect(getSuitesLabels(["foo", "bar"])).toEqual([
+      expect(getSuiteLabels(["foo", "bar"])).toEqual([
         {
           name: LabelName.PARENT_SUITE,
           value: "foo",
@@ -81,7 +81,7 @@ describe("getSuitesLabels", () => {
 
   describe("with three or more suites", () => {
     it("returns list of three elements where last one is a sub suite label", () => {
-      expect(getSuitesLabels(["foo", "bar", "baz", "beep", "boop"])).toEqual([
+      expect(getSuiteLabels(["foo", "bar", "baz", "beep", "boop"])).toEqual([
         {
           name: LabelName.PARENT_SUITE,
           value: "foo",

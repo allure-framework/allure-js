@@ -34,7 +34,8 @@ describe("link", () => {
     expect(links).toEqual([
       {
         url: "https://foo.bar",
-        type: "baz",
+        name: "baz",
+        type: "qux",
       },
     ]);
   });
@@ -44,7 +45,6 @@ describe("link", () => {
     expect(links).toEqual([
       {
         url: "https://foo.bar",
-        type: "link",
         name: "baz",
       },
     ]);

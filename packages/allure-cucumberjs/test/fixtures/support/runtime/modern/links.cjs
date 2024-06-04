@@ -4,7 +4,7 @@ const { link, issue, tms } = require("allure-js-commons");
 Given("a step", () => {});
 
 Given("a step with runtime link", async () => {
-  await link("https://example.com", "custom", "Custom link");
+  await link("https://example.com", "Custom link", "custom");
 });
 
 Given("a step with runtime issue links", async () => {

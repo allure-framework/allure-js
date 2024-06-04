@@ -36,7 +36,7 @@ export const labels = (...labelsList: Label[]) => {
   return callRuntimeMethod("labels", ...labelsList);
 };
 
-export const link = (url: string, type?: LinkType | string, name?: string) => {
+export const link = (url: string, name?: string, type?: LinkType | string) => {
   // const runtime = await getGlobalTestRuntimeWithAutoconfig();
   //
   // return runtime.links({ url, type, name });
@@ -123,9 +123,9 @@ export const step = <T = void>(name: string, body: (context: StepContext) => T |
   return callRuntimeMethod("step", name, () => body(stepContext()));
 };
 
-export const issue = (url: string, name?: string) => link(url, LinkType.ISSUE, name);
+export const issue = (url: string, name?: string) => link(url, name, LinkType.ISSUE);
 
-export const tms = (url: string, name?: string) => link(url, LinkType.TMS, name);
+export const tms = (url: string, name?: string) => link(url, name, LinkType.TMS);
 
 export const allureId = (value: string) => label(LabelName.ALLURE_ID, value);
 

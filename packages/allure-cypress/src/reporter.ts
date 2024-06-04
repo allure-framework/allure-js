@@ -2,7 +2,7 @@ import type Cypress from "cypress";
 import { readFileSync } from "node:fs";
 import { ContentType, LabelName, Stage } from "allure-js-commons";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
-import { FileSystemWriter, ReporterRuntime, getSuitesLabels } from "allure-js-commons/sdk/reporter";
+import { FileSystemWriter, ReporterRuntime, getSuiteLabels } from "allure-js-commons/sdk/reporter";
 import type { CypressRuntimeMessage, CypressTestEndRuntimeMessage, CypressTestStartRuntimeMessage } from "./model.js";
 
 export type AllureCypressConfig = {
@@ -45,7 +45,7 @@ export class AllureCypress {
           throw new Error("INTERNAL ERROR: Invalid message sequence");
         }
 
-        const suiteLabels = getSuitesLabels(startMessage.data.specPath.slice(0, -1));
+        const suiteLabels = getSuiteLabels(startMessage.data.specPath.slice(0, -1));
         const testTitle = startMessage.data.specPath[startMessage.data.specPath.length - 1];
         const titleMetadata = extractMetadataFromString(testTitle);
         const testUuid = this.runtime.startTest({
