@@ -51,15 +51,14 @@ class LegacyAllureApi {
     const runtime = getLegacyApiRuntime();
     const currentTest = runtime?.getCurrentTest();
     if (currentTest) {
-      runtime?.writeAttachmentForItem(
+      const opts: AttachmentOptions = typeof options === "string" ? { contentType: options } : { ...options };
+      runtime?.writeAttachment(
+        name,
+        Buffer.from(content),
         {
-          name,
-          content: Buffer.from(content).toString("base64"),
-          contentType: typeof options === "string" ? options : options.contentType,
-          encoding: "base64",
-          fileExtension: typeof options === "string" ? undefined : options.fileExtension,
+          ...opts,
         },
-        currentTest,
+        currentTest.uuid,
       );
     }
   };

@@ -1,5 +1,4 @@
 import type Cypress from "cypress";
-import { readFileSync } from "node:fs";
 import { ContentType, LabelName, Stage } from "allure-js-commons";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { FileSystemWriter, ReporterRuntime, getSuiteLabels } from "allure-js-commons/sdk/reporter";
@@ -69,25 +68,6 @@ export class AllureCypress {
 
           this.runtime.applyRuntimeMessages(messages.slice(1, messages.length - 1), {
             testUuid,
-            customHandler: (message) => {
-              const type = message.type;
-
-              if (type === "cypress_screenshot") {
-                const { name, path } = message.data;
-                // False positive by eslint (path is string)
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                const screenshotBody = readFileSync(path);
-
-                this.runtime.writeAttachment(
-                  {
-                    name,
-                    content: screenshotBody,
-                    contentType: ContentType.PNG,
-                  },
-                  testUuid,
-                );
-              }
-            },
           });
         }, testUuid);
         this.runtime.updateTest((result) => {
@@ -124,16 +104,10 @@ export class AllureCypress {
       return;
     }
 
-    let videoSource: string | undefined;
-
     for (const uuid of testUuids) {
-      if (!cypressResult.video) {
-        this.runtime.writeTest(uuid);
-        continue;
-      }
-
-      if (!videoSource) {
-        videoSource = this.runtime.writeAttachmentFromPath(
+      // TODO add it to spec scope to remove duplicates.
+      if (cypressResult.video) {
+        this.runtime.writeAttachmentFromPath(
           "Video",
           cypressResult.video,
           {
@@ -141,14 +115,6 @@ export class AllureCypress {
           },
           uuid,
         );
-      } else {
-        this.runtime.updateTest((result) => {
-          result.attachments.push({
-            name: "Video",
-            source: videoSource!,
-            type: ContentType.MP4,
-          });
-        }, uuid);
       }
 
       this.runtime.writeTest(uuid);

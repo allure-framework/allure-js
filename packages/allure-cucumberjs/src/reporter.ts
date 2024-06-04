@@ -1,9 +1,10 @@
 import type { IFormatterOptions, TestCaseHookDefinition } from "@cucumber/cucumber";
 import { Formatter, World } from "@cucumber/cucumber";
 import type * as messages from "@cucumber/messages";
-import type { PickleTag, Tag, TestStepResult } from "@cucumber/messages";
+import { AttachmentContentEncoding, type PickleTag, type Tag, type TestStepResult } from "@cucumber/messages";
 import { TestStepResultStatus } from "@cucumber/messages";
 import os from "node:os";
+import { extname } from "node:path";
 import process from "node:process";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import type { Label, Link, TestResult } from "allure-js-commons";
@@ -17,8 +18,8 @@ import {
   md5,
 } from "allure-js-commons/sdk/reporter";
 import type { Config } from "allure-js-commons/sdk/reporter";
-import type { AllureCucumberReporterConfig, LabelConfig, LinkConfig } from "./model.js";
 import { AllureCucumberWorld } from "./legacy.js";
+import type { AllureCucumberReporterConfig, LabelConfig, LinkConfig } from "./model.js";
 
 const { ALLURE_THREAD_NAME } = process.env;
 
@@ -307,14 +308,10 @@ export default class AllureCucumberReporter extends Formatter {
 
       const csvDataTable = `${csvDataTableHeader}\n${csvDataTableBody}\n`;
 
-      // TODO: actually we don't need to write the same attachment multiple times, just need to keep them in Map and then re-use for each test
       this.runtime.writeAttachment(
-        {
-          name: "Examples",
-          content: csvDataTable,
-          contentType: ContentType.CSV,
-          encoding: "utf8",
-        },
+        "Examples",
+        Buffer.from(csvDataTable, "utf-8"),
+        { contentType: ContentType.CSV, fileExtension: ".csv" },
         testUuid,
       );
     });
@@ -375,11 +372,11 @@ export default class AllureCucumberReporter extends Formatter {
     );
 
     this.runtime.writeAttachment(
+      "Data table",
+      Buffer.from(csvDataTable, "utf-8"),
       {
-        name: "Data table",
-        content: csvDataTable,
         contentType: ContentType.CSV,
-        encoding: "utf8",
+        fileExtension: ".csv",
       },
       testUuid,
     );
@@ -441,15 +438,14 @@ export default class AllureCucumberReporter extends Formatter {
       return;
     }
 
-    // only pass through valid encodings
-    const encoding = Buffer.isEncoding(message.contentEncoding) ? message.contentEncoding : "utf8";
+    const encoding: BufferEncoding = message.contentEncoding === AttachmentContentEncoding.BASE64 ? "base64" : "utf-8";
 
     this.runtime.writeAttachment(
+      message.fileName ?? "Attachment",
+      Buffer.from(message.body, encoding),
       {
-        name: "Attachment",
-        content: message.body,
         contentType: message.mediaType,
-        encoding,
+        fileExtension: message.fileName ? extname(message.fileName) : undefined,
       },
       testUuid,
     );

@@ -1,5 +1,13 @@
-import { Stage, Status } from "allure-js-commons";
-import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions } from "allure-js-commons";
+import { ContentType, Stage, Status } from "allure-js-commons";
+import type {
+  AttachmentOptions,
+  Label,
+
+  Link,
+
+  ParameterMode,
+  ParameterOptions,
+} from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getUnfinishedStepsMessages, hasStepMessage } from "allure-js-commons/sdk";
 import type { TestRuntime } from "allure-js-commons/sdk/runtime";
@@ -94,7 +102,7 @@ export class AllureCypressTestRuntime implements TestRuntime {
     const attachmentContent = uint8ArrayToBase64(attachmentRawContent);
 
     return this.sendMessageAsync({
-      type: "raw_attachment",
+      type: "attachment_content",
       data: {
         content: attachmentContent,
         encoding: actualEncoding,
@@ -230,11 +238,12 @@ const initializeAllure = () => {
     onAfterScreenshot: (_, details) => {
       const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
 
-      testRuntime.sendMessage({
-        type: "cypress_screenshot",
+      return testRuntime.sendMessageAsync({
+        type: "attachment_path",
         data: {
           path: details.path,
           name: details.name || "Screenshot",
+          contentType: ContentType.PNG,
         },
       });
     },

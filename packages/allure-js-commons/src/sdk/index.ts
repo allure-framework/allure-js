@@ -8,7 +8,7 @@ export type {
   RawAttachment,
   RuntimeMessage,
   RuntimeMetadataMessage,
-  RuntimeRawAttachmentMessage,
+  RuntimeAttachmentContentMessage,
   RuntimeStartStepMessage,
   RuntimeStepMetadataMessage,
   RuntimeStopStepMessage,

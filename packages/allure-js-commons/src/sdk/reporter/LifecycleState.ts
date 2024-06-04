@@ -20,8 +20,8 @@ export class LifecycleState {
 
   getStep = (uuid: string) => this.stepResults.get(uuid);
 
-  getExecutionItem = (uuid: string) =>
-    this.fixturesResults.get(uuid)?.value ?? this.testResults.get(uuid) ?? this.stepResults.get(uuid);
+  getExecutionItem = (uuid: string): FixtureResult | TestResult | StepResult | undefined =>
+    this.getFixture(uuid) ?? this.getTest(uuid) ?? this.getStep(uuid);
 
   // test results
   setTestResult = (uuid: string, result: TestResult) => {

@@ -4,10 +4,9 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import properties from "properties";
-import type { AttachmentOptions, ContentType, Status, StepResult, TestResult } from "../../model.js";
+import type { Status, StepResult, TestResult } from "../../model.js";
 import { LabelName, StatusByPriority } from "../../model.js";
 import type { Label } from "../../model.js";
-import { EXTENSIONS_BY_TYPE } from "./extensions.js";
 import type { WellKnownWriters, Writer, WriterDescriptor } from "./types.js";
 
 export const randomUuid = () => {
@@ -16,16 +15,6 @@ export const randomUuid = () => {
 
 export const md5 = (str: string) => {
   return createHash("md5").update(str).digest("hex");
-};
-
-export const writeAttachment = (uuid: string, options: ContentType | string | AttachmentOptions): string => {
-  if (typeof options === "string") {
-    options = { contentType: options };
-  }
-
-  const extension = typeToExtension(options);
-
-  return `${uuid}-attachment${extension}`;
 };
 
 export const getTestResultHistoryId = (result: TestResult) => {
@@ -102,29 +91,6 @@ export const readImageAsBase64 = async (filePath: string): Promise<string | unde
   }
 };
 
-export const resolveWriter = (wellKnownWriters: WellKnownWriters, value: Writer | WriterDescriptor): Writer => {
-  if (typeof value === "string") {
-    return createWriter(wellKnownWriters, value);
-  } else if (value instanceof Array) {
-    return createWriter(wellKnownWriters, value[0], value.slice(1));
-  }
-  return value;
-};
-
-const createWriter = (wellKnownWriters: WellKnownWriters, nameOrPath: string, args: readonly unknown[] = []) => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
-  const ctorOrInstance = getKnownWriterCtor(wellKnownWriters, nameOrPath) ?? requireWriterCtor(nameOrPath);
-  return typeof ctorOrInstance === "function" ? new ctorOrInstance(...args) : ctorOrInstance;
-};
-
-const getKnownWriterCtor = (wellKnownWriters: WellKnownWriters, name: string) =>
-  (wellKnownWriters as unknown as { [key: string]: Writer | undefined })[name];
-
-const requireWriterCtor = (modulePath: string): (new (...args: readonly unknown[]) => Writer) | Writer => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
-  return require(modulePath);
-};
-
 const getProjectRoot = (() => {
   let cachedProjectRoot: string | null = null;
 
@@ -174,14 +140,6 @@ export const getPackageLabelFromPath = (filepath: string): Label => ({
 });
 
 export const deepClone = <T>(obj: T): T => JSON.parse(JSON.stringify(obj));
-
-export const typeToExtension = (options: AttachmentOptions): string => {
-  if (options.fileExtension) {
-    return options.fileExtension.startsWith(".") ? options.fileExtension : `.${options.fileExtension}`;
-  }
-
-  return EXTENSIONS_BY_TYPE[options.contentType] || "";
-};
 
 export const serialize = (val: unknown): string => {
   if (typeof val === "object" && !(val instanceof Map || val instanceof Set)) {

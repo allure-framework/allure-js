@@ -86,9 +86,9 @@ export interface Writer {
 
   writeGroup(result: TestResultContainer): void;
 
-  writeAttachment(distFileName: string, content: Buffer | string, encoding?: BufferEncoding): void;
+  writeAttachment(distFileName: string, content: Buffer): void;
 
-  writeAttachmentFromPath(from: string, distFileName: string): void;
+  writeAttachmentFromPath(distFileName: string, from: string): void;
 
   writeEnvironmentInfo(info: EnvironmentInfo): void;
 

@@ -15,13 +15,13 @@ import type { ImageDiffAttachment, Label, TestResult } from "allure-js-commons";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage, TestPlanV1Test } from "allure-js-commons/sdk";
 import { extractMetadataFromString, getMessageAndTraceFromError, hasLabel, stripAnsi } from "allure-js-commons/sdk";
-import { md5 } from "allure-js-commons/sdk/reporter";
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
   FileSystemWriter,
   MessageWriter,
   ReporterRuntime,
   escapeRegExp,
+  md5,
   parseTestPlan,
   readImageAsBase64,
 } from "allure-js-commons/sdk/reporter";
@@ -275,11 +275,10 @@ export class AllureReporter implements ReporterV2 {
 
     if (result.stdout.length > 0) {
       this.allureRuntime!.writeAttachment(
+        "stdout",
+        Buffer.from(stripAnsi(result.stdout.join("")) as string, "utf-8"),
         {
-          name: "stdout",
           contentType: ContentType.TEXT,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          content: Buffer.from(stripAnsi(result.stdout.join("")), "utf8"),
         },
         testUuid,
       );
@@ -287,11 +286,10 @@ export class AllureReporter implements ReporterV2 {
 
     if (result.stderr.length > 0) {
       this.allureRuntime!.writeAttachment(
+        "stderr",
+        Buffer.from(stripAnsi(result.stderr.join("")) as string, "utf-8"),
         {
-          name: "stderr",
           contentType: ContentType.TEXT,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          content: Buffer.from(stripAnsi(result.stderr.join("")), "utf8"),
         },
         testUuid,
       );
@@ -397,10 +395,10 @@ export class AllureReporter implements ReporterV2 {
 
     if (attachment.body) {
       this.allureRuntime!.writeAttachment(
+        attachment.name,
+        attachment.body,
         {
-          name: attachment.name,
           contentType: attachment.contentType,
-          content: attachment.body,
         },
         testUuid,
       );
@@ -433,14 +431,17 @@ export class AllureReporter implements ReporterV2 {
     const diffName = attachment.name.replace(diffEndRegexp, "");
 
     this.allureRuntime!.writeAttachment(
-      {
-        name: diffName,
-        content: JSON.stringify({
+      diffName,
+      Buffer.from(
+        JSON.stringify({
           expected: expectedBase64,
           actual: actualBase64,
           diff: diffBase64,
           name: diffName,
         } as ImageDiffAttachment),
+        "utf-8",
+      ),
+      {
         contentType: ContentType.IMAGEDIFF,
         fileExtension: ".imagediff",
       },

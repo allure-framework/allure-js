@@ -68,23 +68,21 @@ class AllureReporter {
       return;
     }
 
-    const content = Buffer.from(stringToAttach, "utf8");
+    const content = Buffer.from(stringToAttach, "utf-8");
 
-    this.allureRuntime.writeAttachment({
+    this.allureRuntime.writeAttachment(name, content, {
       contentType: ContentType.TEXT,
-      name,
-      content,
     });
   }
 
-  headerListToJsonString(headers: HeaderList) {
+  headerListToJsonBuffer(headers: HeaderList) {
     const ret: { [k: string]: any } = {};
 
     headers.all().forEach((h) => {
       ret[h.key] = h.value;
     });
 
-    return JSON.stringify(ret, null, 4);
+    return Buffer.from(JSON.stringify(ret, null, 4), "utf-8");
   }
 
   escape(val: string) {
@@ -221,10 +219,8 @@ class AllureReporter {
     }
 
     if (requestData?.headers && requestData?.headers?.count() > 0) {
-      this.allureRuntime.writeAttachment({
+      this.allureRuntime.writeAttachment("Request Headers", this.headerListToJsonBuffer(requestData.headers), {
         contentType: ContentType.JSON,
-        name: "Request Headers",
-        content: this.headerListToJsonString(requestData.headers),
       });
     }
 
@@ -233,18 +229,14 @@ class AllureReporter {
     }
 
     if (response?.headers && response?.headers?.count() > 0) {
-      this.allureRuntime.writeAttachment({
-        name: "Response Headers",
+      this.allureRuntime.writeAttachment("Response Headers", this.headerListToJsonBuffer(response.headers), {
         contentType: ContentType.JSON,
-        content: this.headerListToJsonString(response.headers),
       });
     }
 
     if (response?.body) {
-      this.allureRuntime.writeAttachment({
-        name: "Response Body",
+      this.allureRuntime.writeAttachment("Response Body", Buffer.from(response.body, "utf-8"), {
         contentType: ContentType.TEXT,
-        content: response.body,
       });
     }
 

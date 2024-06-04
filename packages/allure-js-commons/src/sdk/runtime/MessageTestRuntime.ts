@@ -112,13 +112,13 @@ export abstract class MessageTestRuntime implements TestRuntime {
   async attachment(name: string, content: Buffer | string, options: AttachmentOptions) {
     const bufferContent = typeof content === "string" ? Buffer.from(content, options.encoding) : content;
     await this.sendMessage({
-      type: "raw_attachment",
+      type: "attachment_content",
       data: {
         name,
         content: bufferContent.toString("base64"),
+        encoding: "base64",
         contentType: options.contentType,
         fileExtension: options.fileExtension,
-        encoding: "base64",
       },
     });
   }

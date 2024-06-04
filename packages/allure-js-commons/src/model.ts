@@ -1,6 +1,6 @@
 export interface Attachment {
   name: string;
-  type: string;
+  type?: string;
   source: string;
 }
 

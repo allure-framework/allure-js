@@ -1,6 +1,7 @@
 import type { Stage, Status, StatusDetails } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 
+
 export type CypressTestStartRuntimeMessage = {
   type: "cypress_start";
   data: {
@@ -22,16 +23,4 @@ export type CypressTestEndRuntimeMessage = {
   };
 };
 
-export type CypressScreenshotRuntimeMessage = {
-  type: "cypress_screenshot";
-  data: {
-    path: string;
-    name: string;
-  };
-};
-
-export type CypressRuntimeMessage =
-  | RuntimeMessage
-  | CypressScreenshotRuntimeMessage
-  | CypressTestStartRuntimeMessage
-  | CypressTestEndRuntimeMessage;
+export type CypressRuntimeMessage = RuntimeMessage | CypressTestStartRuntimeMessage | CypressTestEndRuntimeMessage;
