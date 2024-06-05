@@ -21,13 +21,7 @@ module.exports = {
     sourceType: "module",
     warnOnUnsupportedTypeScriptVersion: false,
   },
-  plugins: [
-    "eslint-plugin-no-null",
-    "eslint-plugin-prefer-arrow",
-    "eslint-plugin-import",
-    "eslint-plugin-jsdoc",
-    "@typescript-eslint",
-  ],
+  plugins: ["n", "no-null", "prefer-arrow", "import", "jsdoc", "@typescript-eslint"],
   rules: {
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/adjacent-overload-signatures": "error",
@@ -187,13 +181,8 @@ module.exports = {
     "jsdoc/check-alignment": "error",
     "jsdoc/check-indentation": "error",
     "max-classes-per-file": ["error", 5],
-    // "max-len": [
-    //   "error",
-    //   {
-    //     code: 120,
-    //   },
-    // ],
     "max-lines": ["error", 700],
+    "n/file-extension-in-import": ["error", "always"],
     "new-parens": "error",
     "no-bitwise": "error",
     "no-caller": "error",

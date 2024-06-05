@@ -1,19 +1,6 @@
 module.exports = {
-  env: {
-    browser: true,
-    node: true,
-    es6: true,
-  },
-  plugins: ["n"],
-  extends: [
-    "../../.eslintrc.cjs",
-  ],
+  extends: ["../../.eslintrc.cjs"],
   parserOptions: {
-    project: "./tsconfig.json",
-    sourceType: "module",
-    warnOnUnsupportedTypeScriptVersion: false,
+    project: ["./tsconfig.json", "./tsconfig.test.json"],
   },
-  rules: {
-    "n/file-extension-in-import": ["error", "always"],
-  }
 };

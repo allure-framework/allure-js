@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { ContentType } from "allure-js-commons";
-import { runCucumberInlineTest } from "../utils";
+import { runCucumberInlineTest } from "../utils.js";
 
 it("handles examples table", async () => {
   const { tests, attachments } = await runCucumberInlineTest(["examples"], ["examples"]);

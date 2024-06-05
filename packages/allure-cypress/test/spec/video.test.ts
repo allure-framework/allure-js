@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { type Attachment, ContentType } from "allure-js-commons";
-import { runCypressInlineTest } from "../utils";
+import { runCypressInlineTest } from "../utils.js";
 
 it("attaches same video to each spec in a test", async () => {
   const { tests, attachments } = await runCypressInlineTest(

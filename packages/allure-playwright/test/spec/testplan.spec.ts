@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
-import { runPlaywrightInlineTest } from "../utils";
+import { runPlaywrightInlineTest } from "../utils.js";
 
 describe("testplan with v1 reporter full names", () => {
   it("respects testplan", async () => {

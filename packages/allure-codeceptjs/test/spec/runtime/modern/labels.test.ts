@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { LabelName } from "allure-js-commons";
-import { runCodeceptJsInlineTest } from "../../../utils";
+import { runCodeceptJsInlineTest } from "../../../utils.js";
 
 it("adds labels", async () => {
   const { tests } = await runCodeceptJsInlineTest({

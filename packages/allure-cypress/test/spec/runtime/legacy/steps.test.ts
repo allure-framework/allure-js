@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { ContentType, Status } from "allure-js-commons";
-import { runCypressInlineTest } from "../../../utils";
+import { runCypressInlineTest } from "../../../utils.js";
 
 it("single step", async () => {
   const { tests } = await runCypressInlineTest(

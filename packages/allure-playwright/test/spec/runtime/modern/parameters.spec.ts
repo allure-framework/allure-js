@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { runPlaywrightInlineTest } from "../../../utils";
+import { runPlaywrightInlineTest } from "../../../utils.js";
 
 it("sets parameters", async () => {
   const { tests } = await runPlaywrightInlineTest(

@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { ContentType } from "allure-js-commons";
-import { runPlaywrightInlineTest } from "../../../utils";
+import { runPlaywrightInlineTest } from "../../../utils.js";
 
 it("should add attachments into steps", async () => {
   const { tests, attachments } = await runPlaywrightInlineTest({

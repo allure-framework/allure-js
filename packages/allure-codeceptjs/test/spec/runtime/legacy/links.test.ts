@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { LinkType } from "allure-js-commons";
-import { runCodeceptJsInlineTest } from "../../../utils";
+import { runCodeceptJsInlineTest } from "../../../utils.js";
 
 it("sets runtime links", async () => {
   const results = await runCodeceptJsInlineTest({

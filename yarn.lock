@@ -4443,6 +4443,7 @@ __metadata:
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-import: "npm:^2.28.1"
     eslint-plugin-jsdoc: "npm:^48.0.0"
+    eslint-plugin-n: "npm:^17.8.0"
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     husky: "npm:^9.0.0"
@@ -6874,6 +6875,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"enhanced-resolve@npm:^5.17.0":
+  version: 5.17.0
+  resolution: "enhanced-resolve@npm:5.17.0"
+  dependencies:
+    graceful-fs: "npm:^4.2.4"
+    tapable: "npm:^2.2.0"
+  checksum: 10/8f7bf71537d78e7d20a27363793f2c9e13ec44800c7c7830364a448f80a44994aa19d64beecefa1ab49e4de6f7fbe18cc0931dc449c115f02918ff5fcbe7705f
+  languageName: node
+  linkType: hard
+
 "enquirer@npm:^2.3.6":
   version: 2.4.1
   resolution: "enquirer@npm:2.4.1"
@@ -7378,6 +7389,24 @@ __metadata:
   peerDependencies:
     eslint: ">=8.23.0"
   checksum: 10/5fad81e4ed2e83754f2c7499756360fd1f829737c68fb384b83f82f92347e4b755014dcdbe17a88db2360c69da332a56c5b82480377cd0d562b187d97861f7e3
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-n@npm:^17.8.0":
+  version: 17.8.0
+  resolution: "eslint-plugin-n@npm:17.8.0"
+  dependencies:
+    "@eslint-community/eslint-utils": "npm:^4.4.0"
+    enhanced-resolve: "npm:^5.17.0"
+    eslint-plugin-es-x: "npm:^7.5.0"
+    get-tsconfig: "npm:^4.7.0"
+    globals: "npm:^15.0.0"
+    ignore: "npm:^5.2.4"
+    minimatch: "npm:^9.0.0"
+    semver: "npm:^7.5.3"
+  peerDependencies:
+    eslint: ">=8.23.0"
+  checksum: 10/80295e21014111e63ad8e82f8cd4cb415d84c89b24e24fcc1a0c220bbb9050dd35ca86fa5920d6e19624d224999c5227979e0b6022ebd7d43ed8e98ef273046e
   languageName: node
   linkType: hard
 

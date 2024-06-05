@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { runCodeceptJsInlineTest } from "../../../utils";
+import { runCodeceptJsInlineTest } from "../../../utils.js";
 
 it("handles attachments in tests", async () => {
   const { tests, attachments } = await runCodeceptJsInlineTest({

@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { LabelName } from "allure-js-commons";
-import { runCypressInlineTest } from "../../../utils";
+import { runCypressInlineTest } from "../../../utils.js";
 
 it("title metadata", async () => {
   const { tests } = await runCypressInlineTest(

@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { LinkType } from "allure-js-commons";
-import { runCucumberInlineTest } from "../../../utils";
+import { runCucumberInlineTest } from "../../../utils.js";
 
 it("handles runtime links", async () => {
   const { tests } = await runCucumberInlineTest(["links"], ["runtime/modern/links"]);

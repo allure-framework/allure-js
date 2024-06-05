@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import type { TestResult } from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
-import { runMochaInlineTest } from "../../../utils";
+import { runMochaInlineTest } from "../../../utils.js";
 
 describe("step", () => {
   const testMap = new Map<string, TestResult>();

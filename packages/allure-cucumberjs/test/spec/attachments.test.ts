@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { runCucumberInlineTest } from "../utils";
+import { runCucumberInlineTest } from "../utils.js";
 
 it("handles runtime attachments", async () => {
   const { tests, attachments } = await runCucumberInlineTest(["attachments"], ["attachments"]);

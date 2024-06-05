@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { runJestInlineTest } from "../../../utils";
+import { runJestInlineTest } from "../../../utils.js";
 
 describe("historyId", () => {
   it("historyId", async () => {

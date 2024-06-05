@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { LabelName } from "allure-js-commons";
-import { runCucumberInlineTest } from "../utils";
+import { runCucumberInlineTest } from "../utils.js";
 
 it("assigns unmatched tags as tags labels", async () => {
   const { tests } = await runCucumberInlineTest(["tags"], ["tags"]);

@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import type { TestResult } from "allure-js-commons";
-import { runMochaInlineTest } from "../../../../utils";
+import { runMochaInlineTest } from "../../../../utils.js";
 
 describe("legacy link API", () => {
   const testMap = new Map<string, TestResult>();

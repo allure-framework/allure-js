@@ -1,14 +1,10 @@
 {
   "extends": "../../tsconfig.json",
-  "include": [
-    "./src/**/*"
-  ],
+  "include": ["./src/**/*"],
   "compilerOptions": {
     "declaration": true,
     "lib": ["dom", "esnext"],
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "outDir": "./dist",
     "module": "node16",
     "moduleResolution": "node16",

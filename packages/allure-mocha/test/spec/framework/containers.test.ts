@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import type { TestResultContainer } from "allure-js-commons";
-import { runMochaInlineTest } from "../../utils";
+import { runMochaInlineTest } from "../../utils.js";
 
 describe("containers", () => {
   let groups: TestResultContainer[];

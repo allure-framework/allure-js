@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import type { AllureResults } from "allure-js-commons/sdk";
-import { runMochaInlineTest } from "../../../../utils";
+import { runMochaInlineTest } from "../../../../utils.js";
 
 describe("legacy test attachments API", () => {
   let results: AllureResults;

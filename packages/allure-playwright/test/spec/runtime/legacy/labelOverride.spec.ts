@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
 import type { Label } from "allure-js-commons";
 import { LabelName } from "allure-js-commons";
-import { runPlaywrightInlineTest } from "../../../utils";
+import { runPlaywrightInlineTest } from "../../../utils.js";
 
 it("overrides suite label", async () => {
   const { tests } = await runPlaywrightInlineTest({

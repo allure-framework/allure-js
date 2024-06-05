@@ -123,7 +123,7 @@ class AllureReporter {
       return;
     }
 
-    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid as string);
+    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid);
 
     if (!currentPmItem) {
       return;
@@ -173,7 +173,7 @@ class AllureReporter {
         test.labels.push({ name: LabelName.SUB_SUITE, value: subSuites.join(" > ") });
       }
     });
-    this.pmItemsByAllureUuid.set(currentTestUuid as string, pmItem);
+    this.pmItemsByAllureUuid.set(currentTestUuid, pmItem);
 
     if (itemGroup && this.currentCollection !== itemGroup) {
       this.currentCollection = itemGroup;
@@ -192,7 +192,7 @@ class AllureReporter {
       return;
     }
 
-    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid as string);
+    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid);
 
     if (!currentPmItem) {
       return;
@@ -307,7 +307,7 @@ class AllureReporter {
       return;
     }
 
-    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid as string);
+    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid);
 
     if (!currentPmItem) {
       return;
@@ -352,7 +352,7 @@ class AllureReporter {
       return;
     }
 
-    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid as string);
+    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid);
 
     if (!currentPmItem || err) {
       return;
@@ -376,7 +376,7 @@ class AllureReporter {
       return;
     }
 
-    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid as string);
+    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid);
 
     if (!currentPmItem) {
       return;
@@ -419,7 +419,7 @@ class AllureReporter {
       return;
     }
 
-    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid as string);
+    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid);
 
     if (!currentPmItem) {
       return;

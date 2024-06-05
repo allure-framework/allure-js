@@ -7,7 +7,6 @@ import properties from "properties";
 import type { Status, StepResult, TestResult } from "../../model.js";
 import { LabelName, StatusByPriority } from "../../model.js";
 import type { Label } from "../../model.js";
-import type { WellKnownWriters, Writer, WriterDescriptor } from "./types.js";
 
 export const randomUuid = () => {
   return randomUUID();

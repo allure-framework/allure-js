@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { LabelName } from "allure-js-commons";
-import { runPlaywrightInlineTest } from "../utils";
+import { runPlaywrightInlineTest } from "../utils.js";
 
 it("reports a single suite structure", async () => {
   const { tests } = await runPlaywrightInlineTest({
