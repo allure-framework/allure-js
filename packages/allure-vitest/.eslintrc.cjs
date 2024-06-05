@@ -1,5 +1,6 @@
 module.exports = {
   extends: ["../../.eslintrc.cjs"],
+  ignorePatterns: ["test/fixtures/**"],
   globals: {
     allure: true,
   },
