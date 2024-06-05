@@ -69,6 +69,7 @@
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "babel-plugin-add-module-exports": "^1.0.4",
+    "babel-plugin-transform-import-meta": "^2.2.1",
     "chai": "^4.3.8",
     "chai-like": "^1.1.1",
     "chai-things": "^0.2.0",
