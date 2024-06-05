@@ -89,7 +89,9 @@ it("step with attachments", async () => {
   expect(tests[0].steps).toHaveLength(1);
   expect(tests[0].steps).toContainEqual(expect.objectContaining({ name: "foo" }));
 
-  const [attachment] = tests[0].steps[0].attachments;
+  const [step] = tests[0].steps[0].steps;
+  expect(step.name).toBe("foo.txt");
+  const [attachment] = step.attachments;
 
   expect(attachment.name).toBe("foo.txt");
   expect(Buffer.from(attachments[attachment.source] as string, "base64").toString("utf8")).toBe("bar");
