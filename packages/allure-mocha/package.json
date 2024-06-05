@@ -47,8 +47,8 @@
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "run-s 'test:*'",
-    "test:serial": "vitest run ./test/spec/**/*.test.ts",
-    "test:parallel": "ALLURE_MOCHA_TEST_PARALLEL=true vitest run ./test/spec/**/*.test.ts"
+    "test:serial": "vitest run",
+    "test:parallel": "ALLURE_MOCHA_TEST_PARALLEL=true vitest run"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"

@@ -41,7 +41,7 @@
     "compile:fixup": "node ./scripts/fixup.mjs",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint --fix ./src ./test --ext .ts",
-    "test": "vitest run --dir test/spec"
+    "test": "vitest run"
   },
   "dependencies": {
     "@cucumber/cucumber": "^10.4.0",

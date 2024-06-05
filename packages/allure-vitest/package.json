@@ -41,7 +41,7 @@
     "compile": "tsc --project ./tsconfig.json",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
-    "test": "vitest run --dir ./test/spec --config ./vitest.config.ts"
+    "test": "vitest run"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
