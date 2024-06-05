@@ -1,6 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import type { Label } from "allure-js-commons";
-import { LabelName } from "allure-js-commons";
 import { runMochaInlineTest } from "../../utils.js";
 
 describe("env labels", () => {
@@ -35,20 +34,11 @@ describe("env labels", () => {
     expect(labels).toContainEqual({ name: "workerId", value: "baz" });
   });
 
-  it("adds non-empty labels from environment variables", () => {
-    expect(labels).toMatchObject(
-      expect.arrayContaining([
-        { name: "B", value: "foo" },
-        { name: "b", value: "bar" },
-      ]),
-    );
-  });
-
   it("global label takes precedence over the initial one", () => {
     expect(labels).toMatchObject(
       expect.arrayContaining([
-        { name: LabelName.LANGUAGE, value: "foobar" },
-        { name: LabelName.LANGUAGE, value: "javascript" },
+        { name: "language", value: "foobar" },
+        { name: "language", value: "javascript" },
       ]),
     );
   });

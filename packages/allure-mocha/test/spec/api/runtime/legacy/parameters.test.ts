@@ -48,7 +48,7 @@ describe("legacy runtime parameters API", () => {
         parameters: [
           {
             name: "foo",
-            // eslint-disable-next-line
+            // eslint-disable-next-line @typescript-eslint/quotes
             value: '{"key":10}',
           },
         ],

@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import type { TestResult } from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
+import type { TestResult } from "allure-js-commons";
 import { runMochaInlineTest } from "../../utils.js";
 
 describe("test status", () => {

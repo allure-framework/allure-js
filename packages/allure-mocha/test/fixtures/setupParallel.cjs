@@ -1,8 +1,8 @@
 /* eslint no-underscore-dangle: 0 */
 const { BufferedWorkerPool } = require("mocha/lib/nodejs/buffered-worker-pool.js");
+const ParallelBuffered = require("mocha/lib/nodejs/reporters/parallel-buffered.js");
 const process = require("process");
 const path = require("path");
-
 let poolClassPatched = false;
 let workerClassPatched = false;
 
@@ -71,19 +71,32 @@ const patchPool = () => {
   BufferedWorkerPool.create = createPatchedPoolCreate(BufferedWorkerPool.create);
 };
 
-const ensurePoolPatched = () => {
+const patchLeader = () => {
   if (!poolClassPatched) {
     patchPool();
     poolClassPatched = true;
   }
 };
 
-const shouldPatchPool = () => !process.connected || process.ppid.toString() === process.env.ALLURE_MOCHA_TESTHOST_PID;
+const patchWorker = () => {
+  const originalCreateListeners = ParallelBuffered.prototype.createListeners;
+  ParallelBuffered.prototype.createListeners = function (runner) {
+    const writer = this.options.reporterOptions?.writer;
+    if (writer === "MessageWriter") {
+      this.options.reporterOptions.writer = require("./AllureMochaParallelWriter.cjs");
+    }
+    return originalCreateListeners.call(this, runner);
+  };
+};
 
-const patchLeader = () => {
-  if (shouldPatchPool()) {
-    ensurePoolPatched();
+const shouldPatchLeader = () => !process.connected || process.ppid.toString() === process.env.ALLURE_MOCHA_TESTHOST_PID;
+
+const patch = () => {
+  if (shouldPatchLeader()) {
+    patchLeader();
+  } else {
+    patchWorker();
   }
 };
 
-patchLeader();
+patch();

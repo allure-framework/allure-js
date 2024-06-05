@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import type { TestResult } from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
+import type { TestResult } from "allure-js-commons";
 import { runMochaInlineTest } from "../../../utils.js";
 
 describe("step", () => {
@@ -19,6 +19,8 @@ describe("step", () => {
       ["steps", "stepWithParameter"],
       ["steps", "stepWithMaskedParameter"],
       ["steps", "stepWithHiddenParameter"],
+      ["steps", "stepReturnsValue"],
+      ["steps", "stepReturnsPromise"],
     );
     for (const testResult of results.tests) {
       testMap.set(testResult.name as string, testResult as TestResult);
@@ -149,6 +151,20 @@ describe("step", () => {
             },
           }),
         ],
+      });
+    });
+  });
+
+  describe("step that return values", () => {
+    it("may return a plain value", () => {
+      expect(testMap.get("a test with a step that returns a value")).toMatchObject({
+        status: Status.PASSED,
+      });
+    });
+
+    it("may return a promised", () => {
+      expect(testMap.get("a test with a step that returns a value promise")).toMatchObject({
+        status: Status.PASSED,
       });
     });
   });
