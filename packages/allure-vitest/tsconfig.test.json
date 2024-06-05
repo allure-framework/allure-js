@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "include": ["./test/**/*"],
+  "exclude": ["./test/fixtures/**/*"],
   "compilerOptions": {
     "noEmit": true
   }

@@ -4,7 +4,6 @@ import type { File, Reporter, Task } from "vitest";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
-import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL } from "allure-js-commons/sdk/reporter";
 import type { Config } from "allure-js-commons/sdk/reporter";
 import {
   FileSystemWriter,
@@ -65,21 +64,18 @@ export default class AllureVitestReporter implements Reporter {
       return;
     }
 
-    const { allureRuntimeMessages = [], VITEST_POOL_ID } = task.meta as {
+    const {
+      allureRuntimeMessages = [],
+      VITEST_POOL_ID,
+      allureSkip = false,
+    } = task.meta as {
       allureRuntimeMessages: RuntimeMessage[];
       VITEST_POOL_ID: string;
+      allureSkip?: boolean;
     };
-    // TODO: maybe make part of core utils?
-    const skippedByTestPlan = allureRuntimeMessages.some((message) => {
-      if (message.type === "metadata") {
-        return (message.data?.labels || []).some(({ name }) => name === ALLURE_SKIPPED_BY_TEST_PLAN_LABEL);
-      }
-
-      return false;
-    });
 
     // do not report tests skipped by test plan
-    if (skippedByTestPlan) {
+    if (allureSkip) {
       return;
     }
 

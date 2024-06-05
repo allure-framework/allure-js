@@ -1,17 +1,15 @@
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
-import { ALLURE_SKIPPED_BY_TEST_PLAN_LABEL, parseTestPlan } from "allure-js-commons/sdk/reporter";
-import {
-  MessageHolderTestRuntime,
-  getGlobalTestRuntimeWithAutoconfig,
-  setGlobalTestRuntime,
-} from "allure-js-commons/sdk/runtime";
+import { parseTestPlan } from "allure-js-commons/sdk/reporter";
+import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
+import { VitestTestRuntime } from "./VitestTestRuntime.js";
 import { allureVitestLegacyApi } from "./legacy.js";
 import { existsInTestPlan } from "./utils.js";
 
 beforeAll(() => {
   // @ts-ignore
   globalThis.allureTestPlan = parseTestPlan();
+  setGlobalTestRuntime(new VitestTestRuntime());
 });
 
 afterAll(() => {
@@ -28,30 +26,16 @@ beforeEach((ctx) => {
   // @ts-ignore
   if (!existsInTestPlan(ctx, globalThis.allureTestPlan as TestPlanV1)) {
     // @ts-ignore
-    ctx.task.meta.allureRuntimeMessages = [
-      {
-        type: "metadata",
-        data: {
-          labels: [{ name: ALLURE_SKIPPED_BY_TEST_PLAN_LABEL, value: "true" }],
-        },
-      },
-    ];
+    ctx.task.meta.allureSkip = true;
     ctx.skip();
     return;
   }
 
   // @ts-ignore
   globalThis.allure = allureVitestLegacyApi;
-
-  setGlobalTestRuntime(new MessageHolderTestRuntime());
 });
 
-afterEach(async (ctx) => {
-  // @ts-ignore
-  // eslint-disable-next-line
-  const globalTestRuntime: MessageHolderTestRuntime = await getGlobalTestRuntimeWithAutoconfig();
-  // @ts-ignore
-  ctx.task.meta.allureRuntimeMessages = [...globalTestRuntime.messages()];
+afterEach(() => {
   // @ts-ignore
   globalThis.allure = undefined;
 });
