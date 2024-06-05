@@ -1,12 +1,12 @@
 import type * as Mocha from "mocha";
 // @ts-ignore
 import { default as ParallelBuffered } from "mocha/lib/nodejs/reporters/parallel-buffered.js";
-import { MochaAllureReporter } from "./MochaAllureReporter.js";
+import { AllureMochaReporter } from "./AllureMochaReporter.js";
 
 const originalCreateListeners: (runner: Mocha.Runner) => Mocha.reporters.Base =
   ParallelBuffered.prototype.createListeners;
 
 ParallelBuffered.prototype.createListeners = function (runner: Mocha.Runner) {
-  new MochaAllureReporter(runner, this.options as Mocha.MochaOptions);
+  new AllureMochaReporter(runner, this.options as Mocha.MochaOptions);
   return originalCreateListeners.call(this, runner);
 };

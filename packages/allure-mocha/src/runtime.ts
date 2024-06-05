@@ -1,1 +1,1 @@
-export { MochaAllureReporter } from "./MochaAllureReporter.js";
+export { AllureMochaReporter } from "./AllureMochaReporter.js";

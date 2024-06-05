@@ -28,7 +28,7 @@ const {
   EVENT_HOOK_END,
 } = Mocha.Runner.constants;
 
-export class MochaAllureReporter extends Mocha.reporters.Base {
+export class AllureMochaReporter extends Mocha.reporters.Base {
   private readonly runtime: ReporterRuntime;
 
   constructor(runner: Mocha.Runner, opts: Mocha.MochaOptions) {
