@@ -74,7 +74,6 @@ describe("ReporterRuntime", () => {
         contentType: "text/csv",
       });
 
-
       const attachment = runtime.getCurrentTest()!.attachments[0];
 
       expect(attachment.name).to.be.eq("some other attachment");

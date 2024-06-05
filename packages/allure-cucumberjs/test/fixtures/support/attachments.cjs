@@ -2,7 +2,7 @@ const { Given } = require("@cucumber/cucumber");
 const { attachment } = require("allure-js-commons");
 
 Given("add a text", async () => {
-  await attachment("Text attachment", "some text", { contentType: "text/plain"});
+  await attachment("Text attachment", "some text", { contentType: "text/plain" });
 });
 
 Given("add an image", async () => {

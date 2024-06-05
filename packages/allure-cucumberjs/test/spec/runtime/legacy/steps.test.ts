@@ -36,16 +36,18 @@ it("handles runtime steps", async () => {
               steps: expect.arrayContaining([
                 expect.objectContaining({
                   name: "second nested step",
-                  steps: [expect.objectContaining({
-                    name: "My attachment",
-                    attachments: expect.arrayContaining([
-                      expect.objectContaining({
-                        name: "My attachment",
-                        type: "application/json",
-                        source: expect.any(String),
-                      }),
-                    ]),
-                  })]
+                  steps: [
+                    expect.objectContaining({
+                      name: "My attachment",
+                      attachments: expect.arrayContaining([
+                        expect.objectContaining({
+                          name: "My attachment",
+                          type: "application/json",
+                          source: expect.any(String),
+                        }),
+                      ]),
+                    }),
+                  ],
                 }),
               ]),
             }),

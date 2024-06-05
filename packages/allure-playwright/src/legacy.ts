@@ -88,7 +88,7 @@ export const allurePlaywrightLegacyApi: AllurePlaywrightLegacyApi = {
   /**
    * @deprecated please use import { attachment } from "allure-js-commons" instead.
    */
-  attachment: (name, content, type) => Promise.resolve(allure.attachment(name, content, { contentType: type})),
+  attachment: (name, content, type) => Promise.resolve(allure.attachment(name, content, { contentType: type })),
   /**
    * @deprecated please use import { issue } from "allure-js-commons" instead.
    */

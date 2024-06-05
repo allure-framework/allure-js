@@ -162,15 +162,17 @@ it("doesn't not report detail steps for attachments", async () => {
           steps: expect.arrayContaining([
             expect.objectContaining({
               name: "inner step 1.1",
-              steps: [expect.objectContaining({
-                name: "some",
-                attachments: expect.arrayContaining([
-                  expect.objectContaining({
-                    name: "some",
-                    type: ContentType.TEXT,
-                  }),
-                ]),
-              })]
+              steps: [
+                expect.objectContaining({
+                  name: "some",
+                  attachments: expect.arrayContaining([
+                    expect.objectContaining({
+                      name: "some",
+                      type: ContentType.TEXT,
+                    }),
+                  ]),
+                }),
+              ],
             }),
             expect.objectContaining({
               name: "inner step 1.2",
@@ -185,15 +187,17 @@ it("doesn't not report detail steps for attachments", async () => {
             }),
             expect.objectContaining({
               name: "inner step 2.2",
-              steps: [expect.objectContaining({
-                name: "some",
-                attachments: expect.arrayContaining([
-                  expect.objectContaining({
-                    name: "some",
-                    type: ContentType.TEXT,
-                  }),
-                ]),
-              })]
+              steps: [
+                expect.objectContaining({
+                  name: "some",
+                  attachments: expect.arrayContaining([
+                    expect.objectContaining({
+                      name: "some",
+                      type: ContentType.TEXT,
+                    }),
+                  ]),
+                }),
+              ],
             }),
           ]),
         }),

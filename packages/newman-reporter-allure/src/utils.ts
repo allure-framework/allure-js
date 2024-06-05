@@ -14,7 +14,7 @@ export const extractMeta = (eventList: EventList) => {
         }
         const trimmedCommentValue = line.trim().replace("//", "").trim();
         const metadata = extractMetadataFromString(trimmedCommentValue);
-        labels.push(...(metadata.labels));
+        labels.push(...metadata.labels);
       });
     }
   });

@@ -1,5 +1,5 @@
-import type { AllureResults, EnvironmentInfo } from "../../types.js";
 import type { TestResult, TestResultContainer } from "../../../model.js";
+import type { AllureResults, EnvironmentInfo } from "../../types.js";
 import { parseProperties } from "../utils.js";
 
 const parseJsonResult = <T>(data: string) => {
