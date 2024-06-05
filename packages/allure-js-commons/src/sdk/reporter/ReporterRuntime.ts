@@ -671,6 +671,7 @@ export class ReporterRuntime {
       }
       return;
     }
+    this.writeAttachmentForItem(attachmentName, attachmentPath, options, target);
   };
 
   writeEnvironmentInfo = () => {

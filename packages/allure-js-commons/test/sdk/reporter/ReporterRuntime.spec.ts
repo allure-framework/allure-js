@@ -40,8 +40,8 @@ describe("ReporterRuntime", () => {
       expect(attachment.source).to.match(/.+\.mst/);
       const writeAttachmentFromPathCall = writer.writeAttachmentFromPath.mock.calls[0];
 
-      expect(writeAttachmentFromPathCall[0]).to.be.eq("some/path/to/file");
-      expect(writeAttachmentFromPathCall[1]).to.be.eq(attachment.source);
+      expect(writeAttachmentFromPathCall[0]).to.be.eq(attachment.source);
+      expect(writeAttachmentFromPathCall[1]).to.be.eq("some/path/to/file");
     });
 
     it("should use extension from original file if fileExtension option is not specified", () => {
@@ -60,8 +60,8 @@ describe("ReporterRuntime", () => {
       expect(attachment.source).to.match(/.+\.abc/);
       const writeAttachmentFromPathCall = writer.writeAttachmentFromPath.mock.calls[0];
 
-      expect(writeAttachmentFromPathCall[0]).to.be.eq("some/path/to/file.abc");
-      expect(writeAttachmentFromPathCall[1]).to.be.eq(attachment.source);
+      expect(writeAttachmentFromPathCall[0]).to.be.eq(attachment.source);
+      expect(writeAttachmentFromPathCall[1]).to.be.eq("some/path/to/file.abc");
     });
 
     it("should detect extension by content type if no option or path specified", () => {
@@ -70,23 +70,19 @@ describe("ReporterRuntime", () => {
 
       runtime.startTest({});
 
-      runtime.writeAttachment({
+      runtime.writeAttachment("some other attachment", Buffer.from("attachment content"), {
         contentType: "text/csv",
-        name: "some other attachment",
-        content: "attachment content",
       });
 
-      const stepResult = runtime.getCurrentTest()!.steps[0];
-      expect(stepResult.name).to.be.eq("some other attachment");
 
-      const attachment = stepResult.attachments[0];
+      const attachment = runtime.getCurrentTest()!.attachments[0];
 
       expect(attachment.name).to.be.eq("some other attachment");
       expect(attachment.source).to.match(/.+\.csv/);
       const writeAttachmentFromPathCall = writer.writeAttachment.mock.calls[0];
 
       expect(writeAttachmentFromPathCall[0]).to.be.eq(attachment.source);
-      expect(writeAttachmentFromPathCall[1]).to.be.eq("attachment content");
+      expect(writeAttachmentFromPathCall[1].toString("utf-8")).to.be.eq("attachment content");
     });
   });
 
@@ -142,6 +138,7 @@ describe("ReporterRuntime", () => {
       ]);
       runtime.writeTest();
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(writer.writeResult).toHaveBeenCalledWith(
         expect.objectContaining({
           links: [
