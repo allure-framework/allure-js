@@ -6,7 +6,8 @@ export default defineConfig({
     testTimeout: 5000,
     reporters: ["default"],
     typecheck: {
-      tsconfig: "./tsconfig.test.json"
-    }
+      enabled: true,
+      tsconfig: "./tsconfig.test.json",
+    },
   },
 });

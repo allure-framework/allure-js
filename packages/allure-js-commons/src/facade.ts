@@ -1,11 +1,5 @@
-import {
-  type AttachmentOptions,
-  ContentType,
-  type Label,
-  type Link,
-  type ParameterMode,
-  type ParameterOptions,
-} from "./model.js";
+import type { ContentType } from "./model.js";
+import { type AttachmentOptions, type Label, type Link, type ParameterMode, type ParameterOptions } from "./model.js";
 import { LabelName, LinkType } from "./model.js";
 import { getGlobalTestRuntimeWithAutoconfig } from "./sdk/runtime/runtime.js";
 import type { TestRuntime } from "./sdk/runtime/types.js";

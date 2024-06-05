@@ -102,6 +102,7 @@ describe("ReporterRuntime", () => {
       ]);
       runtime.writeTest();
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(writer.writeResult).toHaveBeenCalledWith(
         expect.objectContaining({
           links: fixtures.links,

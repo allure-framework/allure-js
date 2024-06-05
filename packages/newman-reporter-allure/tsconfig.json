@@ -1,21 +1,14 @@
 {
   "extends": "../../tsconfig.json",
-  "include": [
-    "./src/**/*",
-  ],
+  "include": ["./src/**/*"],
   "compilerOptions": {
     "declaration": true,
     "emitDeclarationOnly": true,
     "module": "ES2022",
     "target": "ES2022",
     "moduleResolution": "bundler",
-    "lib": [
-      "dom",
-      "esnext"
-    ],
-    "types": [
-      "node"
-    ],
+    "lib": ["dom", "esnext"],
+    "types": ["node"],
     "outDir": "./dist/types"
   }
 }

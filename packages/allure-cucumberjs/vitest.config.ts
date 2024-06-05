@@ -8,6 +8,7 @@ export default defineConfig({
       "default",
     ],
     typecheck: {
+      enabled: true,
       tsconfig: "./tsconfig.test.json"
     }
   },

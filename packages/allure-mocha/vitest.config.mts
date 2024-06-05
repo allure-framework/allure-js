@@ -5,9 +5,10 @@ export default defineConfig({
     fileParallelism: false,
     testTimeout: 25000,
     reporters: ["default"],
+    globalSetup: ["./test/setup.ts"],
     typecheck: {
+      enabled: true,
       tsconfig: "./tsconfig.test.json",
     },
-    globalSetup: ["./test/setup.ts"],
   },
 });
