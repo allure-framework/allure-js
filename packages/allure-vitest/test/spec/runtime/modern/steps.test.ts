@@ -34,10 +34,10 @@ it("handles single lambda step with attachment", async () => {
   `);
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].steps).toHaveLength(1);
-  expect(tests[0].steps[0].attachments).toHaveLength(1);
+  const [step] = tests[0].steps[0].steps;
+  expect(step.name).toBe("foo.txt");
 
-  const [attachment] = tests[0].steps[0].attachments;
+  const [attachment] = step.attachments;
 
   expect(attachment.name).toBe("foo.txt");
   expect(attachment.type).toBe("text/plain");

@@ -1,15 +1,15 @@
 /* eslint max-lines: 0 */
 import { extname } from "path";
-import type { AttachmentOptions, FixtureResult, Link, StepResult, TestResult } from "../../model.js";
+import type { Attachment, AttachmentOptions, FixtureResult, Link, StepResult, TestResult } from "../../model.js";
 import { Stage } from "../../model.js";
 import type {
   Category,
   EnvironmentInfo,
   Messages,
-  RawAttachment,
+  RuntimeAttachmentContentMessage,
+  RuntimeAttachmentPathMessage,
   RuntimeMessage,
   RuntimeMetadataMessage,
-  RuntimeRawAttachmentMessage,
   RuntimeStartStepMessage,
   RuntimeStepMetadataMessage,
   RuntimeStopStepMessage,
@@ -19,10 +19,11 @@ import { Notifier } from "./Notifier.js";
 import { MutableAllureContextHolder, StaticContextProvider } from "./context/StaticAllureContextProvider.js";
 import type { AllureContextProvider } from "./context/types.js";
 import { createFixtureResult, createStepResult, createTestResult } from "./factory.js";
-import type { Config, FixtureType, FixtureWrapper, LinkConfig, TestScope, WellKnownWriters, Writer } from "./types.js";
-import { deepClone, randomUuid, typeToExtension } from "./utils.js";
-import { getTestResultHistoryId, getTestResultTestCaseId, resolveWriter } from "./utils.js";
-import * as wellKnownCommonWriters from "./writer/wellKnownCommonWriters.js";
+import type { Config, FixtureType, FixtureWrapper, LinkConfig, TestScope, Writer } from "./types.js";
+import { deepClone, randomUuid } from "./utils.js";
+import { getTestResultHistoryId, getTestResultTestCaseId } from "./utils.js";
+import { buildAttachmentFileName } from "./utils/attachments.js";
+import { resolveWriter } from "./writer/loader.js";
 
 type StartScopeOpts = {
   /**
@@ -157,7 +158,7 @@ export class ReporterRuntime {
     categories,
     contextProvider = StaticContextProvider.wrap(new MutableAllureContextHolder()),
   }: Config) {
-    this.writer = resolveWriter(this.getWellKnownWriters(), writer);
+    this.writer = resolveWriter(writer);
     this.notifier = new Notifier({ listeners });
     this.links = links;
     this.categories = categories;
@@ -185,7 +186,7 @@ export class ReporterRuntime {
     return stepUuid ? this.state.getStep(stepUuid) : undefined;
   };
 
-  getCurrentExecutingItem = (root?: string) => {
+  getCurrentExecutingItem = (root?: string): FixtureResult | TestResult | StepResult | undefined => {
     const uuid = this.contextProvider.getExecutingItem(root);
     return uuid ? this.state.getExecutionItem(uuid) : undefined;
   };
@@ -637,31 +638,20 @@ export class ReporterRuntime {
     this.notifier.afterStepStop(step);
   };
 
-  buildAttachmentFileName = (options: AttachmentOptions): string => {
-    const attachmentUuid = randomUuid();
-    const attachmentExtension = typeToExtension({
-      fileExtension: options.fileExtension,
-      contentType: options.contentType,
-    });
-
-    return `${attachmentUuid}-attachment${attachmentExtension}`;
-  };
-
-  writeAttachment = (attachment: RawAttachment, uuid?: string) => {
-    const targetUuid = this.contextProvider.getExecutingItem(uuid);
-    if (!targetUuid) {
-      this.logMissingStepRoot(uuid, "attach");
+  writeAttachment = (attachmentName: string, attachmentContent: Buffer, options: AttachmentOptions, uuid?: string) => {
+    const target = this.getCurrentExecutingItem(uuid);
+    if (!target) {
+      if (uuid) {
+        // eslint-disable-next-line no-console
+        console.error(`No test or fixture ${uuid} to attach!`);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("No current test or fixture to attach!");
+      }
       return;
     }
 
-    const targetResult = this.state.getExecutionItem(targetUuid);
-    if (!targetResult) {
-      // eslint-disable-next-line no-console
-      console.error(`No test, fixture, or step ${targetUuid} to attach!`);
-      return;
-    }
-
-    this.writeAttachmentForItem(attachment, targetResult);
+    this.writeAttachmentForItem(attachmentName, attachmentContent, options, target);
   };
 
   writeAttachmentFromPath = (
@@ -681,23 +671,7 @@ export class ReporterRuntime {
       }
       return;
     }
-
-    const attachmentFilename = this.buildAttachmentFileName({
-      ...options,
-      fileExtension: options.fileExtension ?? extname(attachmentPath),
-    });
-
-    this.writer.writeAttachmentFromPath(attachmentPath, attachmentFilename);
-
-    const rawAttachment = {
-      name: attachmentName,
-      source: attachmentFilename,
-      type: options.contentType,
-    };
-
-    target.attachments.push(rawAttachment);
-
-    return attachmentFilename;
+    this.writeAttachmentForItem(attachmentName, attachmentPath, options, target);
   };
 
   writeEnvironmentInfo = () => {
@@ -783,10 +757,6 @@ export class ReporterRuntime {
     };
   }
 
-  protected getWellKnownWriters() {
-    return wellKnownCommonWriters as WellKnownWriters;
-  }
-
   private handleBuiltInMessage = <T>(message: Messages<T>, targets: MessageTargets) => {
     switch (message.type) {
       case "metadata":
@@ -801,8 +771,11 @@ export class ReporterRuntime {
       case "step_stop":
         this.handleStepStopMessage(message as RuntimeStopStepMessage, targets);
         return;
-      case "raw_attachment":
-        this.handleRawAttachmentMessage(message as RuntimeRawAttachmentMessage, targets);
+      case "attachment_content":
+        this.handleAttachmentContentMessage(message as RuntimeAttachmentContentMessage, targets);
+        return;
+      case "attachment_path":
+        this.handleAttachmentPathMessage(message as RuntimeAttachmentPathMessage, targets);
         return;
       default:
         return message as Exclude<Messages<T>, RuntimeMessage>;
@@ -869,26 +842,49 @@ export class ReporterRuntime {
     this.stopStep({ uuid: rootUuid, stop });
   };
 
-  private handleRawAttachmentMessage = (message: RuntimeRawAttachmentMessage, { root, step }: MessageTargets) => {
-    this.writeAttachmentForItem(message.data, step ?? root);
+  private handleAttachmentContentMessage = (
+    message: RuntimeAttachmentContentMessage,
+    { root, step }: MessageTargets,
+  ) => {
+    const item: FixtureResult | TestResult | StepResult = step ?? root;
+    const { name, content, encoding, contentType, fileExtension, wrapInStep } = message.data;
+    this.writeAttachmentForItem(name, Buffer.from(content, encoding), { contentType, fileExtension }, item, wrapInStep);
   };
 
-  writeAttachmentForItem = (attachment: RawAttachment, item: StepResult | TestResult | FixtureResult) => {
-    const attachmentFilename = this.buildAttachmentFileName(attachment);
+  private handleAttachmentPathMessage = (message: RuntimeAttachmentPathMessage, { root, step }: MessageTargets) => {
+    const item: FixtureResult | TestResult | StepResult = step ?? root;
+    const { name, path, contentType, fileExtension, wrapInStep } = message.data;
+    this.writeAttachmentForItem(name, path, { contentType, fileExtension }, item, wrapInStep);
+  };
 
-    this.writer.writeAttachment(
-      attachmentFilename,
-      attachment.content,
-      (attachment.encoding as BufferEncoding) || "base64",
-    );
+  private writeAttachmentForItem = (
+    attachmentName: string,
+    attachmentContentOrPath: Buffer | string,
+    options: Pick<AttachmentOptions, "fileExtension" | "contentType">,
+    item: StepResult | TestResult | FixtureResult,
+    wrapInStepAttachment: boolean = false,
+  ) => {
+    const isPath = typeof attachmentContentOrPath === "string";
+    const fileExtension = options.fileExtension ?? (isPath ? extname(attachmentContentOrPath) : undefined);
+    const attachmentFileName = buildAttachmentFileName({ contentType: options.contentType, fileExtension });
 
-    const rawAttachment = {
-      name: attachment.name,
-      source: attachmentFilename,
-      type: attachment.contentType,
+    if (isPath) {
+      this.writer.writeAttachmentFromPath(attachmentFileName, attachmentContentOrPath);
+    } else {
+      this.writer.writeAttachment(attachmentFileName, attachmentContentOrPath);
+    }
+
+    const attachment: Attachment = {
+      name: attachmentName,
+      source: attachmentFileName,
+      type: options.contentType,
     };
 
-    item.attachments.push(rawAttachment);
+    if (wrapInStepAttachment) {
+      item.steps.push({ name: attachmentName, attachments: [attachment] } as StepResult);
+    } else {
+      item.attachments.push(attachment);
+    }
   };
 
   private startScopeWithUuid = (uuid: string, { manual, parent }: StartScopeOpts = {}) => {

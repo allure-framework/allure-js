@@ -13,9 +13,9 @@ it("handles json attachment", async () => {
   });
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].attachments).toHaveLength(1);
-
-  const [attachment] = tests[0].attachments;
+  const [step] = tests[0].steps;
+  expect(step.name).toBe("Request body");
+  const [attachment] = step.attachments;
 
   expect(attachment.name).toBe("Request body");
   expect(Buffer.from(attachments[attachment.source] as string, "base64").toString("utf8")).toBe(

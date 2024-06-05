@@ -3,7 +3,7 @@ import path from "node:path";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import { type RuntimeMessage, extractMetadataFromString, getMessageAndTraceFromError } from "allure-js-commons/sdk";
 import { FileSystemWriter, MessageWriter, ReporterRuntime, md5 } from "allure-js-commons/sdk/reporter";
-import { extractMeta } from "./helpers";
+import { extractMeta } from "./helpers.js";
 import type { AllureCodeceptJsConfig, CodeceptError, CodeceptHook, CodeceptStep, CodeceptTest } from "./model.js";
 
 export class AllureCodeceptJsReporter {

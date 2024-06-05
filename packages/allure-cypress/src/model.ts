@@ -22,16 +22,4 @@ export type CypressTestEndRuntimeMessage = {
   };
 };
 
-export type CypressScreenshotRuntimeMessage = {
-  type: "cypress_screenshot";
-  data: {
-    path: string;
-    name: string;
-  };
-};
-
-export type CypressRuntimeMessage =
-  | RuntimeMessage
-  | CypressScreenshotRuntimeMessage
-  | CypressTestStartRuntimeMessage
-  | CypressTestEndRuntimeMessage;
+export type CypressRuntimeMessage = RuntimeMessage | CypressTestStartRuntimeMessage | CypressTestEndRuntimeMessage;

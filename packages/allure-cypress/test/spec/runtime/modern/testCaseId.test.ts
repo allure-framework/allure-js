@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { runCypressInlineTest } from "../../../utils";
+import { runCypressInlineTest } from "../../../utils.js";
 
 it("testCaseId", async () => {
   const { tests } = await runCypressInlineTest(

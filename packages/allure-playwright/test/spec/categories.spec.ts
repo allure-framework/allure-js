@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { Status } from "allure-js-commons";
-import { runPlaywrightInlineTest } from "../utils";
+import { runPlaywrightInlineTest } from "../utils.js";
 
 it("has categories", async () => {
   const { categories } = await runPlaywrightInlineTest({

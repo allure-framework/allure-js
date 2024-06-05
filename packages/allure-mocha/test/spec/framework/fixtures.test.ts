@@ -1,7 +1,7 @@
 /* eslint @typescript-eslint/quotes: off */
 import { beforeAll, describe, expect, it } from "vitest";
 import type { FixtureResult, TestResult, TestResultContainer } from "allure-js-commons";
-import { runMochaInlineTest } from "../../utils";
+import { runMochaInlineTest } from "../../utils.js";
 
 describe("fixtures", () => {
   const testFixtures = new Map<string, [FixtureResult[], FixtureResult[]]>();

@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
-import { runCodeceptJsInlineTest } from "../utils";
+import { runCodeceptJsInlineTest } from "../utils.js";
 
 it("handles hooks", async () => {
   const { tests } = await runCodeceptJsInlineTest({

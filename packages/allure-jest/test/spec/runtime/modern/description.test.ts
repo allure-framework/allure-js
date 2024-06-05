@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { runJestInlineTest } from "../../../utils";
+import { runJestInlineTest } from "../../../utils.js";
 
 it("sets description", async () => {
   const { tests } = await runJestInlineTest(`

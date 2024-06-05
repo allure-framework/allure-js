@@ -1,5 +1,4 @@
-import type { PathLike } from "node:fs";
-import { copyFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { TestResult, TestResultContainer } from "../../../model.js";
 import type { Category, EnvironmentInfo } from "../../types.js";
@@ -7,19 +6,19 @@ import type { Writer } from "../types.js";
 import { stringifyProperties } from "../utils.js";
 
 const writeJson = (path: string, data: unknown): void => {
-  writeFileSync(path, JSON.stringify(data), "utf8");
+  writeFileSync(path, JSON.stringify(data), "utf-8");
 };
 
 export class FileSystemWriter implements Writer {
   constructor(private config: { resultsDir: string }) {}
 
-  writeAttachment(distFileName: string, content: Buffer | string, encoding: BufferEncoding = "utf-8"): void {
+  writeAttachment(distFileName: string, content: Buffer): void {
     const path = this.buildPath(distFileName);
 
-    writeFileSync(path, content, encoding);
+    writeFileSync(path, content, "utf-8");
   }
 
-  writeAttachmentFromPath(from: PathLike, distFileName: string): void {
+  writeAttachmentFromPath(distFileName: string, from: string): void {
     const to = this.buildPath(distFileName);
 
     copyFileSync(from, to);
@@ -49,12 +48,9 @@ export class FileSystemWriter implements Writer {
   }
 
   private buildPath(name: string): string {
-    if (!existsSync(this.config.resultsDir)) {
-      mkdirSync(this.config.resultsDir, {
-        recursive: true,
-      });
-    }
-
+    mkdirSync(this.config.resultsDir, {
+      recursive: true,
+    });
     return join(this.config.resultsDir, name);
   }
 }

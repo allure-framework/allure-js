@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import type { Label } from "allure-js-commons";
 import { LabelName } from "allure-js-commons";
-import { runMochaInlineTest } from "../../utils";
+import { runMochaInlineTest } from "../../utils.js";
 
 describe("env labels", () => {
   let labels: Label[];

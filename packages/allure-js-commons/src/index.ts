@@ -29,6 +29,7 @@ export {
 export type { StepContext } from "./facade.js";
 export type {
   Attachment,
+  AttachmentOptions,
   FixtureResult,
   ImageDiffAttachment,
   Label,

@@ -1,6 +1,5 @@
 import type {
   Attachment,
-  AttachmentOptions,
   Label,
   Link,
   Parameter,
@@ -10,11 +9,6 @@ import type {
   TestResult,
   TestResultContainer,
 } from "../model.js";
-
-export interface RawAttachment extends AttachmentOptions {
-  name: string;
-  content: Buffer | string;
-}
 
 type RuntimeMessageBase<T extends string> = {
   type: T;
@@ -59,9 +53,25 @@ export type RuntimeStopStepMessage = RuntimeMessageBase<"step_stop"> & {
   };
 };
 
-// use to send whole attachment to ReporterRuntime and write it on the node side
-export type RuntimeRawAttachmentMessage = RuntimeMessageBase<"raw_attachment"> & {
-  data: RawAttachment;
+export type RuntimeAttachmentContentMessage = RuntimeMessageBase<"attachment_content"> & {
+  data: {
+    name: string;
+    content: string;
+    encoding: BufferEncoding;
+    contentType: string;
+    fileExtension?: string;
+    wrapInStep?: boolean;
+  };
+};
+
+export type RuntimeAttachmentPathMessage = RuntimeMessageBase<"attachment_path"> & {
+  data: {
+    name: string;
+    path: string;
+    contentType: string;
+    fileExtension?: string;
+    wrapInStep?: boolean;
+  };
 };
 
 export type RuntimeMessage =
@@ -69,7 +79,8 @@ export type RuntimeMessage =
   | RuntimeStartStepMessage
   | RuntimeStepMetadataMessage
   | RuntimeStopStepMessage
-  | RuntimeRawAttachmentMessage;
+  | RuntimeAttachmentContentMessage
+  | RuntimeAttachmentPathMessage;
 
 // Could be used by adapters to define additional message types
 export type ExtensionMessage<T extends string> = T extends MessageTypes<RuntimeMessage> ? never : RuntimeMessageBase<T>;

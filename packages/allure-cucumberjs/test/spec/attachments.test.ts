@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { runCucumberInlineTest } from "../utils";
+import { runCucumberInlineTest } from "../utils.js";
 
 it("handles runtime attachments", async () => {
   const { tests, attachments } = await runCucumberInlineTest(["attachments"], ["attachments"]);
@@ -10,12 +10,17 @@ it("handles runtime attachments", async () => {
       steps: expect.arrayContaining([
         expect.objectContaining({
           name: "Given add a text",
-          attachments: expect.arrayContaining([
+          steps: [
             expect.objectContaining({
               name: "Text attachment",
-              type: "text/plain",
+              attachments: expect.arrayContaining([
+                expect.objectContaining({
+                  name: "Text attachment",
+                  type: "text/plain",
+                }),
+              ]),
             }),
-          ]),
+          ],
         }),
       ]),
     }),
@@ -25,12 +30,17 @@ it("handles runtime attachments", async () => {
       steps: expect.arrayContaining([
         expect.objectContaining({
           name: "Given add an image",
-          attachments: expect.arrayContaining([
+          steps: [
             expect.objectContaining({
               name: "Image attachment",
-              type: "image/png",
+              attachments: expect.arrayContaining([
+                expect.objectContaining({
+                  name: "Image attachment",
+                  type: "image/png",
+                }),
+              ]),
             }),
-          ]),
+          ],
         }),
       ]),
     }),
@@ -40,12 +50,17 @@ it("handles runtime attachments", async () => {
       steps: expect.arrayContaining([
         expect.objectContaining({
           name: "Given add a cucumber text attachment",
-          attachments: expect.arrayContaining([
+          steps: [
             expect.objectContaining({
               name: "Attachment",
-              type: "text/plain",
+              attachments: expect.arrayContaining([
+                expect.objectContaining({
+                  name: "Attachment",
+                  type: "text/plain",
+                }),
+              ]),
             }),
-          ]),
+          ],
         }),
       ]),
     }),
@@ -55,12 +70,17 @@ it("handles runtime attachments", async () => {
       steps: expect.arrayContaining([
         expect.objectContaining({
           name: "Given add a cucumber binary text attachment",
-          attachments: expect.arrayContaining([
+          steps: [
             expect.objectContaining({
               name: "Attachment",
-              type: "text/plain",
+              attachments: expect.arrayContaining([
+                expect.objectContaining({
+                  name: "Attachment",
+                  type: "text/plain",
+                }),
+              ]),
             }),
-          ]),
+          ],
         }),
       ]),
     }),

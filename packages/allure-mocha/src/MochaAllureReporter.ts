@@ -12,7 +12,7 @@ import {
   getRelativePath,
 } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
-import { MochaTestRuntime } from "./MochaTestRuntime";
+import { MochaTestRuntime } from "./MochaTestRuntime.js";
 import { setLegacyApiRuntime } from "./legacyUtils.js";
 import { getInitialLabels, getSuitesOfMochaTest, resolveParallelModeSetupFile } from "./utils.js";
 

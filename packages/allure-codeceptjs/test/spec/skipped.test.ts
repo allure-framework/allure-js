@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { runCodeceptJsInlineTest } from "../utils";
+import { runCodeceptJsInlineTest } from "../utils.js";
 
 it("doesn't report skipped features and steps", async () => {
   const { tests } = await runCodeceptJsInlineTest({

@@ -1,5 +1,5 @@
-import { Stage, Status } from "allure-js-commons";
-import type { ContentType, Label, Link, ParameterMode, ParameterOptions } from "allure-js-commons";
+import { ContentType, Stage, Status } from "allure-js-commons";
+import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getUnfinishedStepsMessages, hasStepMessage } from "allure-js-commons/sdk";
 import type { TestRuntime } from "allure-js-commons/sdk/runtime";
@@ -86,7 +86,7 @@ export class AllureCypressTestRuntime implements TestRuntime {
     });
   }
 
-  attachment(name: string, content: Buffer | string, type: string | ContentType) {
+  attachment(name: string, content: Buffer | string, options: AttachmentOptions) {
     // @ts-ignore
     const attachmentRawContent: string | Uint8Array = content?.type === "Buffer" ? content.data : content;
     const encoding = content instanceof Buffer ? "base64" : "utf-8";
@@ -94,12 +94,25 @@ export class AllureCypressTestRuntime implements TestRuntime {
     const attachmentContent = uint8ArrayToBase64(attachmentRawContent);
 
     return this.sendMessageAsync({
-      type: "raw_attachment",
+      type: "attachment_content",
       data: {
+        name,
         content: attachmentContent,
         encoding: actualEncoding,
-        contentType: type,
+        contentType: options.contentType,
+        fileExtension: options.fileExtension,
+      },
+    });
+  }
+
+  attachmentFromPath(name: string, path: string, options: Omit<AttachmentOptions, "encoding">) {
+    return this.sendMessageAsync({
+      type: "attachment_path",
+      data: {
         name,
+        path,
+        contentType: options.contentType,
+        fileExtension: options.fileExtension,
       },
     });
   }
@@ -230,11 +243,12 @@ const initializeAllure = () => {
     onAfterScreenshot: (_, details) => {
       const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
 
-      testRuntime.sendMessage({
-        type: "cypress_screenshot",
+      return testRuntime.sendMessageAsync({
+        type: "attachment_path",
         data: {
           path: details.path,
           name: details.name || "Screenshot",
+          contentType: ContentType.PNG,
         },
       });
     },

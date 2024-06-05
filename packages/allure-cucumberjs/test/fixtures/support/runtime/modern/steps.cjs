@@ -7,7 +7,7 @@ Given("allows to define runtime step", async () => {
 
     await step("second nested step", async () => {
       await epic("foo");
-      await attachment("My attachment", JSON.stringify({ foo: "bar" }), "application/json");
+      await attachment("My attachment", JSON.stringify({ foo: "bar" }), { contentType: "application/json" });
     });
   });
 });

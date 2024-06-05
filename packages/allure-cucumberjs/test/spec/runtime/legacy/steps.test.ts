@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { LabelName, Stage, Status } from "allure-js-commons";
-import { runCucumberInlineTest } from "../../../utils";
+import { runCucumberInlineTest } from "../../../utils.js";
 
 it("handles runtime steps", async () => {
   const { tests } = await runCucumberInlineTest(["steps"], ["runtime/legacy/steps"], false);
@@ -36,13 +36,18 @@ it("handles runtime steps", async () => {
               steps: expect.arrayContaining([
                 expect.objectContaining({
                   name: "second nested step",
-                  attachments: expect.arrayContaining([
+                  steps: [
                     expect.objectContaining({
                       name: "My attachment",
-                      type: "application/json",
-                      source: expect.any(String),
+                      attachments: expect.arrayContaining([
+                        expect.objectContaining({
+                          name: "My attachment",
+                          type: "application/json",
+                          source: expect.any(String),
+                        }),
+                      ]),
                     }),
-                  ]),
+                  ],
                 }),
               ]),
             }),

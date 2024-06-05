@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import type { TestResult } from "allure-js-commons";
 import { LabelName } from "allure-js-commons";
-import { runMochaInlineTest } from "../../../utils";
+import { runMochaInlineTest } from "../../../utils.js";
 
 describe("bdd labels", () => {
   let tests: TestResult[] = [];

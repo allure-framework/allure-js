@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
-import { runPlaywrightInlineTest } from "../../../utils";
+import { runPlaywrightInlineTest } from "../../../utils.js";
 
 it("handles single lambda step", async () => {
   const { tests } = await runPlaywrightInlineTest({
@@ -38,9 +38,10 @@ it("handles single lambda step with attachment", async () => {
 
   expect(tests).toHaveLength(1);
   expect(tests[0].steps).toHaveLength(3);
-  expect(tests[0].steps[2].attachments).toHaveLength(1);
+  const [step] = tests[0].steps[2].steps;
+  expect(step.name).toBe("foo.txt");
 
-  const [attachment] = tests[0].steps[2].attachments;
+  const [attachment] = step.attachments;
 
   expect(attachment.name).toBe("foo.txt");
   expect(attachment.type).toBe("text/plain");

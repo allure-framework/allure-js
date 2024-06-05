@@ -1,17 +1,9 @@
 module.exports = {
-  globals: {
-    __PATH_PREFIX__: true,
-  },
+  extends: ["../../.eslintrc.cjs"],
   env: {
-    browser: true,
-    node: true,
-    es6: true,
     jasmine: true,
   },
-  extends: [
-    "../../.eslintrc.cjs",
-  ],
   parserOptions: {
-    project: "./tsconfig.json",
+    project: ["./tsconfig.json", "./tsconfig.test.json"],
   },
 };

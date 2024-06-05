@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { LabelName } from "allure-js-commons";
-import { runPlaywrightInlineTest } from "../../../utils";
+import { runPlaywrightInlineTest } from "../../../utils.js";
 
 it("sets multiply tags", async () => {
   const results = await runPlaywrightInlineTest({

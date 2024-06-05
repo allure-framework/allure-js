@@ -1,12 +1,12 @@
 export interface Attachment {
   name: string;
-  type: string;
+  type?: string;
   source: string;
 }
 
 export interface AttachmentOptions {
   contentType: ContentType | string;
-  encoding?: string;
+  encoding?: BufferEncoding;
   fileExtension?: string;
 }
 

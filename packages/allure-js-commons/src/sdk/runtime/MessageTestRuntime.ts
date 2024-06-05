@@ -1,4 +1,12 @@
-import type { ContentType, Label, LabelName, Link, LinkType, ParameterMode, ParameterOptions } from "../../model.js";
+import type {
+  AttachmentOptions,
+  Label,
+  LabelName,
+  Link,
+  LinkType,
+  ParameterMode,
+  ParameterOptions,
+} from "../../model.js";
 import { Stage, Status } from "../../model.js";
 import type { RuntimeMessage } from "../types.js";
 import { getStatusFromError } from "../utils.js";
@@ -101,14 +109,30 @@ export abstract class MessageTestRuntime implements TestRuntime {
     });
   }
 
-  async attachment(name: string, content: Buffer | string, type: string | ContentType) {
+  async attachment(name: string, content: Buffer | string, options: AttachmentOptions) {
+    const bufferContent = typeof content === "string" ? Buffer.from(content, options.encoding) : content;
     await this.sendMessage({
-      type: "raw_attachment",
+      type: "attachment_content",
       data: {
         name,
-        content: Buffer.from(content).toString("base64"),
-        contentType: type,
+        content: bufferContent.toString("base64"),
         encoding: "base64",
+        contentType: options.contentType,
+        fileExtension: options.fileExtension,
+        wrapInStep: true,
+      },
+    });
+  }
+
+  async attachmentFromPath(name: string, path: string, options: AttachmentOptions) {
+    await this.sendMessage({
+      type: "attachment_path",
+      data: {
+        name,
+        path,
+        contentType: options.contentType,
+        fileExtension: options.fileExtension,
+        wrapInStep: true,
       },
     });
   }

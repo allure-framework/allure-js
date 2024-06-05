@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/quotes */
 import { afterAll, afterEach, beforeAll, expect, test } from "vitest";
 import { LabelName, Stage, Status } from "allure-js-commons";
-import { server } from "../mocks/server";
-import { runNewmanCollection } from "../utils";
+import { server } from "../mocks/server.js";
+import { runNewmanCollection } from "../utils.js";
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());

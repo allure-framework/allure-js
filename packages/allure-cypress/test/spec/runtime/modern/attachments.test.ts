@@ -9,7 +9,7 @@ test("text", async () => {
     import { attachment } from "${allureCommonsModulePath}";
 
     it("text attachment", () => {
-      attachment("foo.txt", "bar", "text/plain");
+      attachment("foo.txt", "bar", { contentType: "text/plain" });
     });
   `,
   );
@@ -29,7 +29,7 @@ test("json", async () => {
     import { attachment } from "${allureCommonsModulePath}";
 
     it("json attachment", () => {
-      attachment("foo", JSON.stringify({ foo: "bar" }), "application/json");
+      attachment("foo", JSON.stringify({ foo: "bar" }), { contentType: "application/json" });
     });
   `,
   );
@@ -52,7 +52,7 @@ test("cypress read file", async () => {
 
       it("json attachment", () => {
         cy.readFile("foo.txt", null).then((content) => {
-          attachment("foo.txt", content, "text/plain")
+          attachment("foo.txt", content, { contentType: "text/plain" })
         })
       });
     `,

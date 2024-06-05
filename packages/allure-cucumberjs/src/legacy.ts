@@ -38,93 +38,95 @@ export class AllureCucumberWorld extends World implements AllureCucumberLegacyAp
   /**
    * @deprecated please use import { label } from "allure-js-commons" instead.
    */
-  label = (name: string, value: string) => allure.label(name, value);
+  label = (name: string, value: string) => Promise.resolve(allure.label(name, value));
   /**
    * @deprecated please use import { link } from "allure-js-commons" instead.
    */
-  link = (type: string, url: string, name?: string) => allure.link(url, name, type);
+  link = (type: string, url: string, name?: string) => Promise.resolve(allure.link(url, name, type));
   /**
    * @deprecated please use import { parameter } from "allure-js-commons" instead.
    */
-  parameter = (name: string, value: string, options?: ParameterOptions) => allure.parameter(name, value, options);
+  parameter = (name: string, value: string, options?: ParameterOptions) =>
+    Promise.resolve(allure.parameter(name, value, options));
   /**
    * @deprecated please use import { description } from "allure-js-commons" instead.
    */
-  description = (value: string) => allure.description(value);
+  description = (value: string) => Promise.resolve(allure.description(value));
   /**
    * @deprecated please use import { descriptionHtml } from "allure-js-commons" instead.
    */
-  descriptionHtml = (html: string) => allure.descriptionHtml(html);
+  descriptionHtml = (html: string) => Promise.resolve(allure.descriptionHtml(html));
   /**
    * @deprecated please use import { testCaseId } from "allure-js-commons" instead.
    */
-  testCaseId = (id: string) => allure.testCaseId(id);
+  testCaseId = (id: string) => Promise.resolve(allure.testCaseId(id));
   /**
    * @deprecated please use import { historyId } from "allure-js-commons" instead.
    */
-  historyId = (id: string) => allure.historyId(id);
+  historyId = (id: string) => Promise.resolve(allure.historyId(id));
   /**
    * @deprecated please use import { allureId } from "allure-js-commons" instead.
    */
-  allureId = (id: string) => allure.allureId(id);
+  allureId = (id: string) => Promise.resolve(allure.allureId(id));
   /**
    * @deprecated please use import { displayName } from "allure-js-commons" instead.
    */
-  displayName = (name: string) => allure.displayName(name);
+  displayName = (name: string) => Promise.resolve(allure.displayName(name));
   /**
    * @deprecated please use import { attachment } from "allure-js-commons" instead.
    */
-  attachment = (name: string, content: Buffer | string, type: string) => allure.attachment(name, content, type);
+  attachment = (name: string, content: Buffer | string, type: string) =>
+    Promise.resolve(allure.attachment(name, content, { contentType: type }));
   /**
    * @deprecated please use import { issue } from "allure-js-commons" instead.
    */
-  issue = (name: string, url: string) => allure.issue(url, name);
+  issue = (name: string, url: string) => Promise.resolve(allure.issue(url, name));
   /**
    * @deprecated please use import { tms } from "allure-js-commons" instead.
    */
-  tms = (name: string, url: string) => allure.tms(url, name);
+  tms = (name: string, url: string) => Promise.resolve(allure.tms(url, name));
   /**
    * @deprecated please use import { epic } from "allure-js-commons" instead.
    */
-  epic = (name: string) => allure.epic(name);
+  epic = (name: string) => Promise.resolve(allure.epic(name));
   /**
    * @deprecated please use import { feature } from "allure-js-commons" instead.
    */
-  feature = (name: string) => allure.feature(name);
+  feature = (name: string) => Promise.resolve(allure.feature(name));
   /**
    * @deprecated please use import { story } from "allure-js-commons" instead.
    */
-  story = (name: string) => allure.story(name);
+  story = (name: string) => Promise.resolve(allure.story(name));
   /**
    * @deprecated please use import { suite } from "allure-js-commons" instead.
    */
-  suite = (name: string) => allure.suite(name);
+  suite = (name: string) => Promise.resolve(allure.suite(name));
   /**
    * @deprecated please use import { parentSuite } from "allure-js-commons" instead.
    */
-  parentSuite = (name: string) => allure.parentSuite(name);
+  parentSuite = (name: string) => Promise.resolve(allure.parentSuite(name));
   /**
    * @deprecated please use import { subSuite } from "allure-js-commons" instead.
    */
-  subSuite = (name: string) => allure.subSuite(name);
+  subSuite = (name: string) => Promise.resolve(allure.subSuite(name));
   /**
    * @deprecated please use import { owner } from "allure-js-commons" instead.
    */
-  owner = (name: string) => allure.owner(name);
+  owner = (name: string) => Promise.resolve(allure.owner(name));
   /**
    * @deprecated please use import { severity } from "allure-js-commons" instead.
    */
-  severity = (name: string) => allure.severity(name);
+  severity = (name: string) => Promise.resolve(allure.severity(name));
   /**
    * @deprecated please use import { layer } from "allure-js-commons" instead.
    */
-  layer = (name: string) => allure.layer(name);
+  layer = (name: string) => Promise.resolve(allure.layer(name));
   /**
    * @deprecated please use import { tag } from "allure-js-commons" instead.
    */
-  tag = (name: string) => allure.tag(name);
+  tag = (name: string) => Promise.resolve(allure.tag(name));
   /**
    * @deprecated please use import { step } from "allure-js-commons" instead.
    */
-  step = (name: string, body: () => any) => allure.step(name, body);
+  step = (name: string, body: () => any) => Promise.resolve(allure.step(name, body));
 }

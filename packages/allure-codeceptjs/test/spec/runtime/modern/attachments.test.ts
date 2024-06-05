@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { runCodeceptJsInlineTest } from "../../../utils";
+import { runCodeceptJsInlineTest } from "../../../utils.js";
 
 it("handles attachments in tests", async () => {
   const { tests, attachments } = await runCodeceptJsInlineTest({
@@ -8,15 +8,16 @@ it("handles attachments in tests", async () => {
 
       Feature("sample-feature");
       Scenario("sample-scenario", async () => {
-        await attachment("data.txt", "some data", "text/plain");
+        await attachment("data.txt", "some data", { contentType: "text/plain" });
       });
     `,
   });
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].attachments).toHaveLength(1);
+  expect(tests[0].steps).toHaveLength(1);
+  expect(tests[0].steps[0].attachments).toHaveLength(1);
 
-  const [attachment] = tests[0].attachments;
+  const [attachment] = tests[0].steps[0].attachments;
 
   expect(attachment).toEqual({
     name: "data.txt",
@@ -35,7 +36,7 @@ it("handles attachments in runtime steps", async () => {
       Feature("sample-feature");
       Scenario("sample-scenario", async () => {
         await step("step1", async () => {
-          await attachment("data.txt", "some data", "text/plain");
+          await attachment("data.txt", "some data", { contentType: "text/plain" });
         });
       });
     `,
@@ -44,9 +45,11 @@ it("handles attachments in runtime steps", async () => {
   expect(tests).toHaveLength(1);
   expect(tests[0].attachments).toHaveLength(0);
   expect(tests[0].steps).toHaveLength(1);
-  expect(tests[0].steps[0].attachments).toHaveLength(1);
+  expect(tests[0].steps[0].steps).toHaveLength(1);
+  expect(tests[0].steps[0].steps[0].attachments).toHaveLength(1);
+  expect(tests[0].steps[0].steps[0].attachments).toHaveLength(1);
 
-  const [attachment] = tests[0].steps[0].attachments;
+  const [attachment] = tests[0].steps[0].steps[0].attachments;
 
   expect(attachment).toEqual({
     name: "data.txt",

@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { LabelName } from "allure-js-commons";
-import { runMochaInlineTest } from "../../../../utils";
+import { runMochaInlineTest } from "../../../../utils.js";
 
 it("tags can be added via legacy API", async () => {
   const { tests } = await runMochaInlineTest(["legacy", "labels", "tags"]);

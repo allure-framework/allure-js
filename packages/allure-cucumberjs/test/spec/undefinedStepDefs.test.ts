@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
-import { runCucumberInlineTest } from "../utils";
+import { runCucumberInlineTest } from "../utils.js";
 
 it("reports undefined tests and steps", async () => {
   const { tests } = await runCucumberInlineTest(["undefinedStepDefs"], ["undefinedStepDefs"]);

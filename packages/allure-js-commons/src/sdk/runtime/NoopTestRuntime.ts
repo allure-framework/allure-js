@@ -5,6 +5,10 @@ export class NoopTestRuntime implements TestRuntime {
     await this.warning();
   }
 
+  async attachmentFromPath() {
+    await this.warning();
+  }
+
   async description() {
     await this.warning();
   }
@@ -57,4 +61,4 @@ export class NoopTestRuntime implements TestRuntime {
   }
 }
 
-export const noopRuntime = new NoopTestRuntime();
+export const noopRuntime: TestRuntime = new NoopTestRuntime();
