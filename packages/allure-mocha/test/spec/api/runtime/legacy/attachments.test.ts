@@ -9,11 +9,15 @@ describe("legacy test attachments API", () => {
   });
 
   it("test may contain an attachment", () => {
-    const testAttachments = results.tests.find((t) => t.name === "test attachment")?.attachments;
+    const testResult = results.tests.find((t) => t.name === "test attachment")!;
+    const [step] = testResult.steps;
 
-    expect(testAttachments).toHaveLength(1);
-    expect(testAttachments).toContainEqual(expect.objectContaining({ name: "foo.txt", type: "text/plain" }));
-    const source = testAttachments![0].source;
+    expect(step.name).toBe("foo.txt");
+    const [attachment] = step.attachments;
+    expect(attachment.name).toBe("foo.txt");
+    expect(attachment.type).toBe("text/plain");
+
+    const source = attachment.source;
     const contentInBase64 = results.attachments[source] as string;
     const decodedContent = Buffer.from(contentInBase64, "base64").toString("utf8");
     expect(decodedContent).toEqual("bar");

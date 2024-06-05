@@ -164,15 +164,13 @@ describe("step", () => {
   });
 
   it("may contain an attachment", () => {
-    const stepAttachments = testMap.get("a step with an attachment")?.steps[0].attachments;
-
-    expect(stepAttachments).toEqual([
-      expect.objectContaining({
-        name: "foo.txt",
-        type: "text/plain",
-      }),
-    ]);
-    const source = stepAttachments![0].source;
+    const tr = testMap.get("a step with an attachment")!;
+    const [step] = tr.steps[0].steps;
+    expect(step.name).toBe("foo.txt");
+    const [attachment] = step.attachments;
+    expect(attachment.name).toBe("foo.txt");
+    expect(attachment.type).toBe("text/plain");
+    const source = attachment.source;
     const contentInBase64 = attachments[source] as string;
     const decodedContent = Buffer.from(contentInBase64, "base64").toString("utf8");
     expect(decodedContent).toEqual("bar");
