@@ -440,14 +440,21 @@ export default class AllureCucumberReporter extends Formatter {
 
     const encoding: BufferEncoding = message.contentEncoding === AttachmentContentEncoding.BASE64 ? "base64" : "utf-8";
 
-    this.runtime.writeAttachment(
-      message.fileName ?? "Attachment",
-      Buffer.from(message.body, encoding),
-      {
-        contentType: message.mediaType,
-        fileExtension: message.fileName ? extname(message.fileName) : undefined,
-      },
-      testUuid,
+    this.runtime.applyRuntimeMessages(
+      [
+        {
+          type: "attachment_content",
+          data: {
+            name: message.fileName ?? "Attachment",
+            content: Buffer.from(message.body, encoding).toString("base64"),
+            encoding: "base64",
+            contentType: message.mediaType,
+            fileExtension: message.fileName ? extname(message.fileName) : undefined,
+            wrapInStep: true,
+          },
+        },
+      ],
+      { testUuid },
     );
   }
 }

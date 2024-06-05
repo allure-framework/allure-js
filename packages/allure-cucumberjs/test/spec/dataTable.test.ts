@@ -10,19 +10,16 @@ it("handles data tables", async () => {
   expect(tests[0].steps).toContainEqual(
     expect.objectContaining({
       name: "Given a table step",
-      steps: [expect.objectContaining({
-        name: "Data table",
-        attachments: expect.arrayContaining([
-          expect.objectContaining({
-            name: "Data table",
-            type: ContentType.CSV,
-          }),
-        ]),
-      })]
+      attachments: expect.arrayContaining([
+        expect.objectContaining({
+          name: "Data table",
+          type: ContentType.CSV,
+        }),
+      ]),
     }),
   );
 
-  const [attachment] = tests[0].steps[0].steps[0].attachments;
+  const [attachment] = tests[0].steps[0].attachments;
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   expect(attachments).toHaveProperty(attachment.source);
