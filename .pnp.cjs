@@ -5332,10 +5332,10 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["npm:20.12.12", {\
-        "packageLocation": "./.yarn/cache/@types-node-npm-20.12.12-3a45001f1f-e3945da0a3.zip/node_modules/@types/node/",\
+      ["npm:20.14.2", {\
+        "packageLocation": "./.yarn/cache/@types-node-npm-20.14.2-fa12d1e34b-c38e47b190.zip/node_modules/@types/node/",\
         "packageDependencies": [\
-          ["@types/node", "npm:20.12.12"],\
+          ["@types/node", "npm:20.14.2"],\
           ["undici-types", "npm:5.26.5"]\
         ],\
         "linkType": "HARD"\
@@ -14180,7 +14180,7 @@ const RAW_RUNTIME_STATE =
           ["@types/babel__preset-env", "npm:7.9.6"],\
           ["@types/eslint", "npm:8.56.3"],\
           ["@types/newman", "npm:5.3.6"],\
-          ["@types/node", "npm:20.12.12"],\
+          ["@types/node", "npm:20.14.2"],\
           ["@types/postman-collection", "npm:3.5.10"],\
           ["@types/source-map-support", "npm:0.5.10"],\
           ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:7.10.0"],\
@@ -17554,7 +17554,7 @@ const RAW_RUNTIME_STATE =
           ["@tsconfig/node12", "npm:1.0.11"],\
           ["@tsconfig/node14", "npm:1.0.3"],\
           ["@tsconfig/node16", "npm:1.0.4"],\
-          ["@types/node", "npm:20.12.12"],\
+          ["@types/node", "npm:20.14.2"],\
           ["@types/swc__core", null],\
           ["@types/swc__wasm", null],\
           ["@types/typescript", null],\
@@ -18254,7 +18254,7 @@ const RAW_RUNTIME_STATE =
           ["vite", "virtual:9d405c006fcb09a715a90b0896cc410416582d2528aeba8333c459aafd8e6f4f8f98b84528898eccc62b671067218935b8205839d63ea57c5ec3b72bdbc11936#npm:5.1.4"],\
           ["@types/less", null],\
           ["@types/lightningcss", null],\
-          ["@types/node", "npm:20.12.12"],\
+          ["@types/node", "npm:20.14.2"],\
           ["@types/sass", null],\
           ["@types/stylus", null],\
           ["@types/sugarss", null],\
@@ -18496,7 +18496,7 @@ const RAW_RUNTIME_STATE =
           ["@types/edge-runtime__vm", null],\
           ["@types/happy-dom", null],\
           ["@types/jsdom", null],\
-          ["@types/node", "npm:20.12.12"],\
+          ["@types/node", "npm:20.14.2"],\
           ["@types/vitest__browser", null],\
           ["@types/vitest__ui", null],\
           ["@vitest/browser", null],\
