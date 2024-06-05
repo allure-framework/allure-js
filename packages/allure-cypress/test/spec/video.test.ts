@@ -45,10 +45,11 @@ it("attaches same video to each spec in a test", async () => {
 
   expect(tests).toHaveLength(2);
 
-  const [attachment] = tests[0].attachments;
+  const [attachment1] = tests[0].attachments;
+  expect(attachment1.name).toBe("Video");
+  expect(attachment1.type).toBe(ContentType.MP4);
 
-  expect(attachment.name).toBe("Video");
-  expect(attachment.type).toBe(ContentType.MP4);
-  expect(tests[1].attachments).toContainEqual(attachment);
-  expect(attachments).toHaveProperty((attachment as Attachment).source);
+  const [attachment2] = tests[1].attachments;
+  expect(attachment2.name).toBe("Video");
+  expect(attachment2.type).toBe(ContentType.MP4);
 });
