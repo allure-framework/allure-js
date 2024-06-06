@@ -63,12 +63,6 @@
 
 [Read more](/packages/newman-reporter-allure/README.md)
 
-### Decorators @testdeck
-
-![npm](https://img.shields.io/npm/dm/allure-decorators.svg) ![npm](https://img.shields.io/npm/v/allure-decorators.svg)
-
-[Read more](/packages/allure-decorators/README.md)
-
 ### CodeceptJS
 
 ![npm](https://img.shields.io/npm/dm/allure-codeceptjs.svg) ![npm](https://img.shields.io/npm/v/allure-codeceptjs.svg)
