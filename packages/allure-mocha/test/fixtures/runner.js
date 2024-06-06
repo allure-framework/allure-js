@@ -1,8 +1,8 @@
-// cjs: const { opendir } = require("fs/promises");
+// cjs: const { Glob } = require("glob");
 // cjs: const path = require("path");
 // cjs: const Mocha = require("mocha");
 // cjs: const AllureReporter = require("allure-mocha");
-// esm: import { opendir } from "fs/promises";
+// esm: import { Glob } from "glob";
 // esm: import path from "path";
 // esm: import { fileURLToPath } from "url";
 // esm: import Mocha from "mocha";
@@ -44,18 +44,10 @@ const mocha = new Mocha({
   color: false,
 });
 
-const specFilePattern = /\.spec\./;
-
-const loadSpecFiles = async () => {
-  for await (const node of await opendir(dirname, { recursive: true })) {
-    if (node.isFile() && specFilePattern.test(node.name)) {
-      mocha.addFile(path.join(node.path ?? node.parentPath, node.name));
-    }
-  }
-};
-
 const run = async () => {
-  await loadSpecFiles();
+  for await (const file of new Glob("./**/*.spec.*", {})) {
+    mocha.addFile(path.resolve(file));
+  }
   await mocha.loadFilesAsync();
   mocha.run((failures) => process.exit(failures));
 };
