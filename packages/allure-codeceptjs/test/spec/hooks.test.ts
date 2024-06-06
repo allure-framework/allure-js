@@ -29,7 +29,7 @@ it("handles hooks", async () => {
   expect(groups).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
-        name: "\"before all\" hook: BeforeSuite for \"sample-scenario\"",
+        name: String.raw`"before all" hook: BeforeSuite for "sample-scenario"`,
         befores: expect.arrayContaining([
           expect.objectContaining({
             status: Status.PASSED,
@@ -39,7 +39,7 @@ it("handles hooks", async () => {
         afters: [],
       }),
       expect.objectContaining({
-        name: "\"before each\" hook: Before for \"sample-scenario\"",
+        name: String.raw`"before each" hook: Before for "sample-scenario"`,
         befores: expect.arrayContaining([
           expect.objectContaining({
             status: Status.PASSED,
@@ -49,7 +49,7 @@ it("handles hooks", async () => {
         afters: [],
       }),
       expect.objectContaining({
-        name: "\"after each\" hook: After for \"sample-scenario\"",
+        name: String.raw`"after each" hook: After for "sample-scenario"`,
         befores: [],
         afters: expect.arrayContaining([
           expect.objectContaining({
@@ -59,7 +59,7 @@ it("handles hooks", async () => {
         ]),
       }),
       expect.objectContaining({
-        name: "\"after all\" hook: AfterSuite for \"sample-scenario\"",
+        name: String.raw`"after all" hook: AfterSuite for "sample-scenario"`,
         befores: [],
         afters: expect.arrayContaining([
           expect.objectContaining({
