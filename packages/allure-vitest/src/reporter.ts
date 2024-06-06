@@ -49,6 +49,8 @@ export default class AllureVitestReporter implements Reporter {
         this.handleTask(task);
       }
     }
+    this.allureReporterRuntime!.writeEnvironmentInfo();
+    this.allureReporterRuntime!.writeCategoriesDefinitions();
   }
 
   async handleTask(task: Task) {
