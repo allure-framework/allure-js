@@ -76,7 +76,7 @@ import { link, issue } from "allure-js-commons";
 
 it("basic test", async () => {
   await link("https://allurereport.org", "Allure Report"); // link with name
-  await issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
+  await issue("https://github.com/allure-framework/allure-js/issues/352", "Issue Name");
 });
 ```
 
@@ -121,8 +121,8 @@ import { it } from "vitest";
 import { issue, tms, link } from "allure-js-commons";
 
 it("basic test", async () => {
-  await issue("Issue Name", "352");
-  await tms("Task Name", "352");
+  await issue("352", "Issue Name");
+  await tms("352", "Task Name");
   await link("352", "Link name", "custom");
 });
 ```
