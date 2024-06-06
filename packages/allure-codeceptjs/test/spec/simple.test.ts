@@ -2,7 +2,7 @@ import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
 import { runCodeceptJsInlineTest } from "../utils.js";
 
-it("simple scenarios", async () => {
+it("handles simple scenarios", async () => {
   const { tests } = await runCodeceptJsInlineTest({
     "nested/login.test.js": `
         Feature("login-feature");

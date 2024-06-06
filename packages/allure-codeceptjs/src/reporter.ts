@@ -90,6 +90,9 @@ export class AllureCodeceptJsReporter {
     // Hooks
     event.dispatcher.addListener(event.hook.started, this.hookStarted.bind(this));
     event.dispatcher.addListener(event.hook.passed, this.hookPassed.bind(this));
+    // Suite
+    event.dispatcher.addListener(event.suite.before, this.suiteBefore.bind(this));
+    event.dispatcher.addListener(event.suite.after, this.suiteAfter.bind(this));
     // Test
     event.dispatcher.addListener(event.test.started, this.testStarted.bind(this));
     event.dispatcher.addListener(event.test.skipped, this.testSkipped.bind(this));
@@ -102,34 +105,35 @@ export class AllureCodeceptJsReporter {
     event.dispatcher.addListener(event.step.comment, this.stepComment.bind(this));
   }
 
+  suiteBefore() {
+    this.allureRuntime!.startScope();
+  }
+
+  suiteAfter() {
+    this.allureRuntime!.writeScope();
+  }
+
   hookStarted(hook: CodeceptHook) {
-    const currentTest = hook?.ctx?.currentTest;
+    const currentRunnable = hook?.ctx?.test;
+    const hookType = currentRunnable!.title.match(/^"(?<hookType>.+)" hook/)!.groups!.hookType;
+    const fixtureType = /before/.test(hookType) ? "before" : "after";
 
-    if (!currentTest) {
-      return;
-    }
-
-    // @ts-ignore
-    this.startAllureTest(currentTest);
-    // TODO: group before hooks into fixture
-    this.allureRuntime!.startStep(
-      {
-        name: "before hook",
-      },
-      this.currentAllureResultUuid!,
-    );
+    this.allureRuntime!.startFixture(fixtureType, {
+      name: currentRunnable!.title,
+      stage: Stage.RUNNING,
+      start: Date.now(),
+    });
   }
 
   hookPassed() {
-    if (!this.currentAllureResultUuid) {
-      return;
-    }
-
-    this.allureRuntime!.updateStep((result) => {
+    this.allureRuntime!.updateFixture((result) => {
       result.status = Status.PASSED;
       result.stage = Stage.FINISHED;
-    }, this.currentAllureResultUuid);
-    this.allureRuntime!.stopStep({ uuid: this.currentAllureResultUuid });
+    });
+
+    const fixtureUuid = this.allureRuntime!.stopFixture({ stop: Date.now() });
+
+    this.allureRuntime!.writeFixture(fixtureUuid);
   }
 
   testStarted(test: CodeceptTest & { tags: string[] }) {
