@@ -22,6 +22,7 @@ module.exports = {
     warnOnUnsupportedTypeScriptVersion: false,
   },
   plugins: ["n", "no-null", "prefer-arrow", "import", "jsdoc", "@typescript-eslint"],
+  ignorePatterns: ["**/dist/**/*"],
   rules: {
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/adjacent-overload-signatures": "error",

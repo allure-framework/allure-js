@@ -1,4 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
+import type { TestResult } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { runMochaInlineTest } from "../../../utils.js";
 
@@ -9,7 +10,7 @@ describe("test attachments", () => {
   });
 
   it("test may contain an attachment", () => {
-    const testResult = results.tests.find((t) => t.name === "test attachment")!;
+    const testResult = results.tests.find((t: TestResult) => t.name === "test attachment")!;
     const [step] = testResult.steps;
 
     expect(step.name).toBe("foo.txt");

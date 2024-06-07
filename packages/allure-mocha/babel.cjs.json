@@ -8,7 +8,7 @@
     ],
     ["@babel/preset-env", { "modules": "commonjs" }]
   ],
-  "plugins": ["babel-plugin-add-module-exports"],
+  "plugins": ["babel-plugin-add-module-exports", "babel-plugin-transform-import-meta"],
   "targets": {
     "esmodules": false,
     "node": 18

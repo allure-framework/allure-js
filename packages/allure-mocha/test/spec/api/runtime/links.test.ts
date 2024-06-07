@@ -7,7 +7,7 @@ describe("link", () => {
   beforeAll(async () => {
     const { tests } = await runMochaInlineTest(
       ["links", "urlOnlyLink"],
-      ["links", "urlTypeLink"],
+      ["links", "customTypeLink"],
       ["links", "namedLink"],
       ["links", "urlOnlyIssue"],
       ["links", "namedIssue"],

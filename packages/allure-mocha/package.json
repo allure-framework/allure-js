@@ -48,7 +48,9 @@
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "run-s 'test:*'",
     "test:serial": "vitest run",
-    "test:parallel": "ALLURE_MOCHA_TEST_PARALLEL=true vitest run"
+    "test:parallel": "ALLURE_MOCHA_TEST_PARALLEL=true vitest run",
+    "test:runner": "ALLURE_MOCHA_TEST_RUNNER=cjs ALLURE_MOCHA_TEST_SPEC_FORMAT=cjs vitest run",
+    "test:runner-parallel": "ALLURE_MOCHA_TEST_RUNNER=esm ALLURE_MOCHA_TEST_SPEC_FORMAT=esm ALLURE_MOCHA_TEST_PARALLEL=true vitest run"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
@@ -67,6 +69,7 @@
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "babel-plugin-add-module-exports": "^1.0.4",
+    "babel-plugin-transform-import-meta": "^2.2.1",
     "chai": "^4.3.8",
     "chai-like": "^1.1.1",
     "chai-things": "^0.2.0",
@@ -77,6 +80,7 @@
     "eslint-plugin-n": "^17.0.0",
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
+    "glob": "^10.4.1",
     "mocha": "^10.2.0",
     "npm-run-all2": "^6.1.2",
     "rimraf": "^5.0.1",

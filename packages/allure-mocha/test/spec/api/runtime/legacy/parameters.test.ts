@@ -48,8 +48,7 @@ describe("legacy runtime parameters API", () => {
         parameters: [
           {
             name: "foo",
-            // eslint-disable-next-line
-            value: '{"key":10}',
+            value: String.raw`{"key":10}`,
           },
         ],
       }),
