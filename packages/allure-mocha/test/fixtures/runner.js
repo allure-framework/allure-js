@@ -17,8 +17,8 @@ const requires = [];
 
 const sepIndex = process.argv.indexOf("--");
 const args = sepIndex === -1 ? [] : process.argv.splice(sepIndex);
-for (let i = 0; i < args.length; i++) {
-  switch (args[i]) {
+for (const arg of args) {
+  switch (arg) {
     case "--emit-files":
       emitFiles = true;
       break;
@@ -27,9 +27,6 @@ for (let i = 0; i < args.length; i++) {
       // cjs: require("./setupParallel.cjs");
       // esm: await import("./setupParallel.cjs");
       requires.push(path.join(dirname, "setupParallel.cjs"));
-      break;
-    case "--require":
-      requires.push(args[++i]);
       break;
   }
 }
