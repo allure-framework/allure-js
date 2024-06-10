@@ -848,7 +848,16 @@ export class ReporterRuntime {
   ) => {
     const item: FixtureResult | TestResult | StepResult = step ?? root;
     const { name, content, encoding, contentType, fileExtension, wrapInStep } = message.data;
-    this.writeAttachmentForItem(name, Buffer.from(content, encoding), { contentType, fileExtension }, item, wrapInStep);
+    this.writeAttachmentForItem(
+      name,
+      Buffer.from(content, encoding),
+      {
+        contentType,
+        fileExtension,
+      },
+      item,
+      wrapInStep,
+    );
   };
 
   private handleAttachmentPathMessage = (message: RuntimeAttachmentPathMessage, { root, step }: MessageTargets) => {
@@ -866,7 +875,10 @@ export class ReporterRuntime {
   ) => {
     const isPath = typeof attachmentContentOrPath === "string";
     const fileExtension = options.fileExtension ?? (isPath ? extname(attachmentContentOrPath) : undefined);
-    const attachmentFileName = buildAttachmentFileName({ contentType: options.contentType, fileExtension });
+    const attachmentFileName = buildAttachmentFileName({
+      contentType: options.contentType,
+      fileExtension,
+    });
 
     if (isPath) {
       this.writer.writeAttachmentFromPath(attachmentFileName, attachmentContentOrPath);
