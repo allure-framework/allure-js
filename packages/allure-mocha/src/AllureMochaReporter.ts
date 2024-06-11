@@ -67,6 +67,12 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     }
   }
 
+  override done(failures: number, fn?: ((failures: number) => void) | undefined): void {
+    this.runtime.writeEnvironmentInfo();
+    this.runtime.writeCategoriesDefinitions();
+    return fn?.(failures);
+  }
+
   private applyListeners = () => {
     this.runner
       .on(EVENT_SUITE_BEGIN, this.onSuite)

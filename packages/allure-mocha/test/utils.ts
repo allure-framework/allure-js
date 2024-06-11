@@ -3,8 +3,15 @@ import { randomUUID } from "node:crypto";
 import { appendFileSync } from "node:fs";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import * as path from "node:path";
-import type { AllureResults } from "allure-js-commons/sdk";
+import type { AllureResults, Category } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
+
+type MochaRunOptions = {
+  env?: { [keys: string]: string };
+  testplan?: readonly TestPlanEntryFixture[];
+  environmentInfo?: { [keys: string]: string};
+  categories?: readonly Category[];
+};
 
 type TestPlanEntryFixture = {
   id?: string | number;
@@ -13,10 +20,6 @@ type TestPlanEntryFixture = {
 
 type TestPlanSelectorEntryFixture = [file: readonly string[], name: string];
 
-type MochaRunOptions = {
-  env?: { [keys: string]: string };
-  testplan?: readonly TestPlanEntryFixture[];
-};
 type ModuleFormat = "cjs" | "esm";
 
 const getFormatExt = (format: ModuleFormat) => (format === "cjs" ? ".cjs" : ".mjs");
@@ -40,7 +43,7 @@ abstract class AllureMochaTestRunner {
   readonly fixturesPath: string;
   readonly samplesPath: string;
   readonly runResultsDir: string;
-  constructor(private readonly config: MochaRunOptions) {
+  constructor(protected readonly config: MochaRunOptions) {
     this.fixturesPath = path.join(__dirname, "fixtures");
     this.samplesPath = path.join(this.fixturesPath, "samples");
     this.runResultsDir = path.join(this.fixturesPath, "run-results");
@@ -156,6 +159,12 @@ abstract class AllureMochaTestRunner {
     ];
   };
 
+  protected encodeEnvironmentInfo = () => this.toBase64Url(this.config.environmentInfo);
+
+  protected encodeCategories = () => this.toBase64Url(this.config.categories);
+
+  protected toBase64Url = (value: any) => Buffer.from(JSON.stringify(value)).toString("base64url");
+
   private getSampleEntry = (name: string | readonly string[], samplesDir: string, testDir: string) => {
     if (name instanceof Array) {
       name = path.join(...name);
@@ -175,9 +184,17 @@ abstract class AllureMochaTestRunner {
 
 class AllureMochaCliTestRunner extends AllureMochaTestRunner {
   getFilesToCopy = (testDir: string) => [this.getCopyEntry("reporter.cjs", testDir)];
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   getScriptPath = () => path.resolve(require.resolve("mocha"), "../bin/mocha.js");
-  getScriptArgs = () => ["--no-color", "--reporter", "./reporter.cjs", "**/*.spec.*"];
+  getScriptArgs = () => {
+    const args = ["--no-color", "--reporter", "./reporter.cjs", "**/*.spec.*"];
+    if (this.config.environmentInfo) {
+      args.push("--reporter-option", `environmentInfo=${this.encodeEnvironmentInfo()}`);
+    }
+    if (this.config.categories) {
+      args.push("--reporter-option", `categories=${this.encodeCategories()}`);
+    }
+    return args;
+  };
 }
 
 class AllureMochaCodeTestRunner extends AllureMochaTestRunner {
@@ -189,7 +206,16 @@ class AllureMochaCodeTestRunner extends AllureMochaTestRunner {
   }
   getFilesToTransform = (testDir: string) => [this.getTransformEntry("runner", this.runnerFormat, testDir)];
   getScriptPath = (testDir: string) => path.join(testDir, `runner${getFormatExt(this.runnerFormat)}`);
-  getScriptArgs = () => ["--"];
+  getScriptArgs = () => {
+    const args = ["--"];
+    if (this.config.environmentInfo) {
+      args.push("--environment-info", this.encodeEnvironmentInfo());
+    }
+    if (this.config.categories) {
+      args.push("--categories", this.encodeCategories());
+    }
+    return args;
+  };
 }
 
 export const runMochaInlineTest = async (
