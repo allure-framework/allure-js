@@ -46,7 +46,7 @@
     "compile:fixup": "node ./scripts/fixup.mjs",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
-    "test": "run-s 'test:*'",
+    "test": "run-s --print-name 'test:*'",
     "test:serial": "vitest run",
     "test:parallel": "ALLURE_MOCHA_TEST_PARALLEL=true vitest run",
     "test:runner": "ALLURE_MOCHA_TEST_RUNNER=cjs ALLURE_MOCHA_TEST_SPEC_FORMAT=cjs vitest run",
