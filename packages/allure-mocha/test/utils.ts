@@ -6,8 +6,16 @@ import * as path from "node:path";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
+type TestPlanEntryFixture = {
+  id?: string | number;
+  selector?: TestPlanSelectorEntryFixture;
+};
+
+type TestPlanSelectorEntryFixture = [file: readonly string[], name: string];
+
 type MochaRunOptions = {
   env?: { [keys: string]: string };
+  testplan?: readonly TestPlanEntryFixture[];
 };
 type ModuleFormat = "cjs" | "esm";
 
@@ -72,12 +80,26 @@ abstract class AllureMochaTestRunner {
         const dstDir = path.dirname(dst);
         const content = await readFile(src, { encoding: "utf-8" });
         await mkdir(dstDir, { recursive: true });
-        const uncommentedSample = content.replaceAll(uncomment, "$1");
+        const uncommentedSample = content.replace(uncomment, "$1");
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         writeFile(dst, uncommentedSample, { encoding: "utf-8" });
       }),
       writeFile(cmdPath, cmdContent, "utf-8"),
     ]);
+
+    if (this.config.testplan) {
+      const testplanPath = path.join(testDir, "testplan.json");
+      this.config.env ??= {};
+      this.config.env.ALLURE_TESTPLAN_PATH = testplanPath;
+      const selectorPrefix = path.relative(path.join(__dirname, ".."), testDir);
+      await writeFile(testplanPath, JSON.stringify({
+        version: "1.0",
+        tests: this.config.testplan.map((test) => ({
+          id: test.id,
+          selector: test.selector ? this.resolveTestplanSelector(selectorPrefix, test.selector) : undefined,
+        })),
+      }), { encoding: "utf-8" });
+    }
 
     const testProcess = fork(scriptPath, scriptArgs, {
       env: {
@@ -139,6 +161,10 @@ abstract class AllureMochaTestRunner {
       name = path.join(...name);
     }
     return this.getTransformEntry(`${name}.spec`, SPEC_FORMAT, testDir, samplesDir);
+  };
+
+  private resolveTestplanSelector = (prefix: string, [file, name]: TestPlanSelectorEntryFixture) => {
+    return `${path.join(prefix, ...file)}.spec${SPEC_EXT}: ${name}`;
   };
 
   getFilesToCopy: (testDir: string) => readonly [string, string][] = () => [];
