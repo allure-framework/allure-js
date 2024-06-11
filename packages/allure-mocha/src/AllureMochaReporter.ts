@@ -22,6 +22,8 @@ import {
   getAllureFullName,
   isIncludedInTestRun,
   getAllureDisplayName,
+  getAllureMetaLabels,
+  getTestCaseId,
   createTestPlanIndices,
 } from "./utils.js";
 import type { TestPlanIndices } from "./utils.js";
@@ -92,7 +94,8 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   private onTest = (test: Mocha.Test) => {
     const globalLabels = getEnvironmentLabels().filter((label) => !!label.value);
     const initialLabels: Label[] = getInitialLabels();
-    const labels = globalLabels.concat(initialLabels);
+    const metaLabels = getAllureMetaLabels(test);
+    const labels = globalLabels.concat(initialLabels, metaLabels);
 
     if (test.file) {
       const testPath = getRelativePath(test.file);
@@ -106,6 +109,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
         stage: Stage.RUNNING,
         fullName: getAllureFullName(test),
         labels,
+        testCaseId: getTestCaseId(test),
       },
       { dedicatedScope: true },
     );

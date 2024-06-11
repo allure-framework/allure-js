@@ -72,6 +72,9 @@ export const getAllureFullName = (test: Mocha.Test) =>
 export const isIncludedInTestRun = (test: Mocha.Test) =>
   getAllureData(test).isIncludedInTestRun;
 
+export const getAllureMetaLabels = (test: Mocha.Test) =>
+  getAllureData(test).labels;
+
 export const getAllureId = (data: AllureMochaTestData) => {
   const values = data.labels.filter((l) => l.name === LabelName.ALLURE_ID).map((l) => l.value);
   if (values.length) {
@@ -93,6 +96,11 @@ export const getInitialLabels = (): Label[] => [
   getHostLabel(),
   getThreadLabel(env.MOCHA_WORKER_ID),
 ];
+
+export const getTestCaseId = (test: Mocha.Test) => {
+  const suiteTitles = test.titlePath().slice(0, -1);
+  return md5(JSON.stringify([...suiteTitles, getAllureDisplayName(test)]));
+};
 
 export const applyTestPlan = (ids: ReadonlySet<string>, selectors: ReadonlySet<string>, rootSuite: Mocha.Suite) => {
   const suiteQueue = [];
