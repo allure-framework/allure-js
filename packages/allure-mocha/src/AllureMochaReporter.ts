@@ -15,16 +15,16 @@ import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { MochaTestRuntime } from "./MochaTestRuntime.js";
 import { setLegacyApiRuntime } from "./legacyUtils.js";
 import {
+  applyTestPlan,
+  createTestPlanIndices,
+  getAllureDisplayName,
+  getAllureFullName,
+  getAllureMetaLabels,
   getInitialLabels,
   getSuitesOfMochaTest,
-  resolveParallelModeSetupFile,
-  applyTestPlan,
-  getAllureFullName,
-  isIncludedInTestRun,
-  getAllureDisplayName,
-  getAllureMetaLabels,
   getTestCaseId,
-  createTestPlanIndices,
+  isIncludedInTestRun,
+  resolveParallelModeSetupFile,
 } from "./utils.js";
 import type { TestPlanIndices } from "./utils.js";
 

@@ -61,8 +61,8 @@ describe("embedded metadata", () => {
 
   it("meta doesn't affect testCaseId and historyId", () => {
     const [
-      {testCaseId: testCaseIdBefore, historyId: historyIdBefore},
-      {testCaseId: testCaseIdAfter, historyId: historyIdAfter},
+      { testCaseId: testCaseIdBefore, historyId: historyIdBefore },
+      { testCaseId: testCaseIdAfter, historyId: historyIdAfter },
     ] = tests.filter((t) => t.name === "a test a changing meta");
 
     expect(testCaseIdBefore).toBe(testCaseIdAfter);

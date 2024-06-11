@@ -9,7 +9,7 @@ import { MessageReader } from "allure-js-commons/sdk/reporter";
 type MochaRunOptions = {
   env?: { [keys: string]: string };
   testplan?: readonly TestPlanEntryFixture[];
-  environmentInfo?: { [keys: string]: string};
+  environmentInfo?: { [keys: string]: string };
   categories?: readonly Category[];
 };
 
@@ -95,13 +95,17 @@ abstract class AllureMochaTestRunner {
       this.config.env ??= {};
       this.config.env.ALLURE_TESTPLAN_PATH = testplanPath;
       const selectorPrefix = path.relative(path.join(__dirname, ".."), testDir);
-      await writeFile(testplanPath, JSON.stringify({
-        version: "1.0",
-        tests: this.config.testplan.map((test) => ({
-          id: test.id,
-          selector: test.selector ? this.resolveTestplanSelector(selectorPrefix, test.selector) : undefined,
-        })),
-      }), { encoding: "utf-8" });
+      await writeFile(
+        testplanPath,
+        JSON.stringify({
+          version: "1.0",
+          tests: this.config.testplan.map((test) => ({
+            id: test.id,
+            selector: test.selector ? this.resolveTestplanSelector(selectorPrefix, test.selector) : undefined,
+          })),
+        }),
+        { encoding: "utf-8" },
+      );
     }
 
     const testProcess = fork(scriptPath, scriptArgs, {

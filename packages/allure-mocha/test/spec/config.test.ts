@@ -8,17 +8,20 @@ describe("configuration", () => {
     ({ envInfo, categories } = await runMochaInlineTest(
       {
         environmentInfo: { foo: "bar", baz: "qux" },
-        categories: [{
-          name: "foo",
-          description: "bar",
-          messageRegex: "broken",
-          matchedStatuses: [Status.BROKEN],
-        }, {
-          name: "baz",
-          description: "qux",
-          messageRegex: "failure",
-          matchedStatuses: [Status.FAILED],
-        }],
+        categories: [
+          {
+            name: "foo",
+            description: "bar",
+            messageRegex: "broken",
+            matchedStatuses: [Status.BROKEN],
+          },
+          {
+            name: "baz",
+            description: "qux",
+            messageRegex: "failure",
+            matchedStatuses: [Status.FAILED],
+          },
+        ],
       },
       ["plain-mocha", "testInFileScope"],
     ));

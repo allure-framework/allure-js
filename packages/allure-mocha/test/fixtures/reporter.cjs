@@ -8,9 +8,7 @@ class ProcessMessageAllureReporter extends AllureMochaReporter {
     }
     for (const key of ["environmentInfo", "categories"]) {
       if (typeof opts.reporterOptions?.[key] === "string") {
-        opts.reporterOptions[key] = JSON.parse(
-          Buffer.from(opts.reporterOptions[key], "base64Url").toString()
-        );
+        opts.reporterOptions[key] = JSON.parse(Buffer.from(opts.reporterOptions[key], "base64Url").toString());
       }
     }
     super(runner, opts);
