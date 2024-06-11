@@ -5,6 +5,7 @@ export default defineConfig({
     dir: "./test/spec",
     fileParallelism: false,
     testTimeout: 25000,
+    hookTimeout: 25000,
     reporters: ["default"],
     globalSetup: ["./test/setup.ts"],
     typecheck: {
