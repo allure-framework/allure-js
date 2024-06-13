@@ -4,9 +4,9 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import properties from "properties";
-import type { Status, StepResult, TestResult } from "../../model.js";
-import { LabelName, StatusByPriority } from "../../model.js";
-import type { Label } from "../../model.js";
+import type { Label, Link, Status, StepResult, TestResult } from "../../model.js";
+import { LabelName, LinkType, StatusByPriority } from "../../model.js";
+import type { LinkConfig } from "./types.js";
 
 export const randomUuid = () => {
   return randomUUID();
@@ -201,3 +201,40 @@ export const escapeRegExp = (value: string): string => {
 
 export const parseProperties = properties.parse;
 export const stringifyProperties = (data: any): string => properties.stringify(data, { unicode: true }).toString();
+
+// TODO: consider using URL.canParse instead (requires node.js v18.17, v19.9, or higher)
+const isUrl = (potentialUrl: string) => {
+  // Short-circuits the check for many short URL cases, bypassing the try-catch logic.
+  if (potentialUrl.indexOf(":") === -1) {
+    return false;
+  }
+
+  // There is ':' in the string: a potential scheme separator.
+  // The string might be a proper URL already.
+  try {
+    new URL(potentialUrl);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+export const formatLink = (templates: LinkConfig, link: Link) => {
+  const { url, name, type } = link;
+  if (isUrl(url)) {
+    return link;
+  } else {
+    const formattedLink = { ...link };
+    const { urlTemplate, nameTemplate } = templates[type ?? LinkType.DEFAULT] ?? {};
+    if (urlTemplate !== undefined) {
+      formattedLink.url = urlTemplate.replace("%s", url);
+    }
+    if (name === undefined && nameTemplate !== undefined) {
+      formattedLink.name = nameTemplate.replace("%s", url);
+    }
+    return formattedLink;
+  }
+};
+
+export const formatLinks = (templates: LinkConfig, links: readonly Link[]) =>
+  links.map<Link>((link) => formatLink(templates, link));

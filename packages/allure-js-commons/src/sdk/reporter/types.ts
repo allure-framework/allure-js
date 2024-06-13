@@ -2,6 +2,7 @@ import type {
   FixtureResult,
   Label,
   Link,
+  LinkType,
   Parameter,
   StepResult,
   TestResult,
@@ -61,11 +62,13 @@ export interface LifecycleListener {
   afterStepStop?: (result: StepResult) => void;
 }
 
-export interface LinkConfig {
-  type: string;
+export type LinkTypeOptions = {
   urlTemplate: string;
   nameTemplate?: string;
-}
+};
+
+export type LinkConfig<TOpts extends LinkTypeOptions = LinkTypeOptions> = Partial<Record<LinkType, TOpts>> &
+  Record<string, TOpts>;
 
 export type WriterDescriptor = [cls: string, ...args: readonly unknown[]] | string;
 
@@ -74,7 +77,7 @@ export interface Config {
   readonly writer: Writer | WriterDescriptor;
   // TODO: handle lifecycle hooks here
   readonly testMapper?: (test: TestResult) => TestResult | null;
-  readonly links?: LinkConfig[];
+  readonly links?: LinkConfig;
   readonly listeners?: LifecycleListener[];
   readonly environmentInfo?: EnvironmentInfo;
   readonly categories?: Category[];

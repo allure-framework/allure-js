@@ -30,16 +30,14 @@ it("sets runtime links", async () => {
             require: require.resolve("allure-codeceptjs"),
             testMode: true,
             enabled: true,
-            links: [
-              {
-                type: "${LinkType.ISSUE}",
+            links: {
+              ${LinkType.ISSUE}: {
                 urlTemplate: "https://example.org/issues/%s",
               },
-              {
-                type: "${LinkType.TMS}",
+              ${LinkType.TMS}: {
                 urlTemplate: "https://example.org/tasks/%s",
               }
-            ]
+            }
           },
         },
         helpers: {

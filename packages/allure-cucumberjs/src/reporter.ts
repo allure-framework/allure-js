@@ -17,9 +17,8 @@ import {
   getWorstStepResultStatus,
   md5,
 } from "allure-js-commons/sdk/reporter";
-import type { Config } from "allure-js-commons/sdk/reporter";
 import { AllureCucumberWorld } from "./legacy.js";
-import type { AllureCucumberReporterConfig, LabelConfig, LinkConfig } from "./model.js";
+import type { AllureCucumberLinkConfig, AllureCucumberReporterConfig, LabelConfig } from "./model.js";
 import { ALLURE_SETUP_REPORTER_HOOK } from "./model.js";
 
 const { ALLURE_THREAD_NAME } = process.env;
@@ -28,7 +27,7 @@ export default class AllureCucumberReporter extends Formatter {
   private readonly afterHooks: Record<string, TestCaseHookDefinition> = {};
   private readonly beforeHooks: Record<string, TestCaseHookDefinition> = {};
 
-  private linksConfigs: LinkConfig[] = [];
+  private linksConfigs: AllureCucumberLinkConfig = {};
   private labelsConfigs: LabelConfig[] = [];
   private allureRuntime: ReporterRuntime;
 
@@ -59,10 +58,10 @@ export default class AllureCucumberReporter extends Formatter {
         : new FileSystemWriter({
             resultsDir,
           }),
-      links: links as Config["links"] | undefined,
+      links,
       ...rest,
     });
-    this.linksConfigs = links || [];
+    this.linksConfigs = links || {};
     this.labelsConfigs = labels || [];
 
     options.eventBroadcaster.on("envelope", this.parseEnvelope.bind(this));
@@ -85,8 +84,8 @@ export default class AllureCucumberReporter extends Formatter {
 
   private get tagsIgnorePatterns(): RegExp[] {
     const { labelsConfigs, linksConfigs } = this;
-
-    return [...labelsConfigs, ...linksConfigs].flatMap(({ pattern }) => pattern);
+    const linkConfigEntries = Object.entries(linksConfigs).map(([, v]) => v);
+    return [...labelsConfigs, ...linkConfigEntries].flatMap(({ pattern }) => pattern);
   }
 
   private parseEnvelope(envelope: messages.Envelope) {
@@ -155,18 +154,18 @@ export default class AllureCucumberReporter extends Formatter {
     const tagKeyRe = /^@\S+=/;
     const links: Link[] = [];
 
-    if (this.linksConfigs.length === 0) {
+    if (Object.keys(this.linksConfigs).length === 0) {
       return links;
     }
 
-    this.linksConfigs.forEach((matcher) => {
+    Object.entries(this.linksConfigs).forEach(([type, matcher]) => {
       const matchedTags = tags.filter((tag) => matcher.pattern.some((pattern) => pattern.test(tag.name)));
       const matchedLinks = matchedTags.map((tag) => {
         const tagValue = tag.name.replace(tagKeyRe, "");
 
         return {
           url: matcher.urlTemplate.replace(/%s$/, tagValue) || tagValue,
-          type: matcher.type,
+          type,
         };
       });
 

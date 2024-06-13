@@ -35,16 +35,14 @@ export const runVitestInlineTest = async (
           "default",
           new AllureReporter({
             testMode: true,
-            links: [
-              {
-                type: "issue",
+            links: {
+              issue: {
                 urlTemplate: "https://example.org/issue/%s",
               },
-              {
-                type: "tms",
+              tms: {
                 urlTemplate: "https://example.org/tms/%s",
               },
-            ],
+            },
             resultsDir: "${join(testDir, "allure-results")}",
           }),
         ],

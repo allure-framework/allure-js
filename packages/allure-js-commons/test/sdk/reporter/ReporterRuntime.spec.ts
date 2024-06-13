@@ -113,18 +113,16 @@ describe("ReporterRuntime", () => {
       const writer = mockWriter();
       const runtime = new ReporterRuntime({
         writer,
-        links: [
-          {
-            type: "issue",
+        links: {
+          issue: {
             urlTemplate: "https://allurereport.org/issues/%s",
             nameTemplate: "Issue %s",
           },
-          {
-            type: "tms",
+          tms: {
             urlTemplate: "https://allurereport.org/tasks/%s",
             nameTemplate: "Task %s",
           },
-        ],
+        },
       });
 
       runtime.startTest({});

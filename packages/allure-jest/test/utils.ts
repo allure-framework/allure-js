@@ -14,16 +14,14 @@ export const runJestInlineTest = async (test: string): Promise<AllureResults> =>
       testEnvironment: require.resolve("allure-jest/node"),
       testEnvironmentOptions: {
         testMode: true,
-        links: [
-          {
-            type: "issue",
+        links: {
+          issue: {
             urlTemplate: "https://example.org/issues/%s",
           },
-          {
-            type: "tms",
+          tms: {
             urlTemplate: "https://example.org/tasks/%s",
           }
-        ]
+        }
       },
     };
 

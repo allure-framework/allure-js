@@ -151,6 +151,7 @@ export enum ContentType {
 
 /* eslint-disable no-shadow */
 export enum LinkType {
+  DEFAULT = "link",
   ISSUE = "issue",
   TMS = "tms",
 }

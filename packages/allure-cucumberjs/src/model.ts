@@ -1,5 +1,5 @@
-import type { LabelName, LinkType } from "allure-js-commons";
-import type { Config } from "allure-js-commons/sdk/reporter";
+import type { LabelName } from "allure-js-commons";
+import type { Config, LinkConfig, LinkTypeOptions } from "allure-js-commons/sdk/reporter";
 
 export const ALLURE_SETUP_REPORTER_HOOK = "__allure_reporter_setup_hook__";
 
@@ -8,14 +8,10 @@ export type LabelConfig = {
   name: LabelName | string;
 };
 
-export type LinkConfig = {
-  pattern: RegExp[];
-  urlTemplate: string;
-  type: LinkType | string;
-};
+export type AllureCucumberLinkConfig = LinkConfig<LinkTypeOptions & { pattern: RegExp[] }>;
 
 export interface AllureCucumberReporterConfig extends Omit<Config, "writer" | "links"> {
   testMode?: boolean;
-  links?: LinkConfig[];
+  links?: AllureCucumberLinkConfig;
   labels?: LabelConfig[];
 }
