@@ -24,7 +24,7 @@ it("handles attachments in tests", async () => {
     type: "text/plain",
     source: expect.any(String),
   });
-  expect(attachments).toHaveProperty(attachment.source as string);
+  expect(attachments).toHaveProperty(attachment.source);
   expect(Buffer.from(attachments[attachment.source] as string, "base64").toString("utf8")).toEqual("some data");
 });
 
@@ -56,6 +56,6 @@ it("handles attachments in runtime steps", async () => {
     type: "text/plain",
     source: expect.any(String),
   });
-  expect(attachments).toHaveProperty(attachment.source as string);
+  expect(attachments).toHaveProperty(attachment.source);
   expect(Buffer.from(attachments[attachment.source] as string, "base64").toString("utf8")).toEqual("some data");
 });
