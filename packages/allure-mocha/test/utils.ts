@@ -3,12 +3,23 @@ import { randomUUID } from "node:crypto";
 import { appendFileSync } from "node:fs";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import * as path from "node:path";
-import type { AllureResults } from "allure-js-commons/sdk";
+import type { AllureResults, Category } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
 type MochaRunOptions = {
   env?: { [keys: string]: string };
+  testplan?: readonly TestPlanEntryFixture[];
+  environmentInfo?: { [keys: string]: string };
+  categories?: readonly Category[];
 };
+
+type TestPlanEntryFixture = {
+  id?: string | number;
+  selector?: TestPlanSelectorEntryFixture;
+};
+
+type TestPlanSelectorEntryFixture = [file: readonly string[], name: string];
+
 type ModuleFormat = "cjs" | "esm";
 
 const getFormatExt = (format: ModuleFormat) => (format === "cjs" ? ".cjs" : ".mjs");
@@ -32,7 +43,7 @@ abstract class AllureMochaTestRunner {
   readonly fixturesPath: string;
   readonly samplesPath: string;
   readonly runResultsDir: string;
-  constructor(private readonly config: MochaRunOptions) {
+  constructor(protected readonly config: MochaRunOptions) {
     this.fixturesPath = path.join(__dirname, "fixtures");
     this.samplesPath = path.join(this.fixturesPath, "samples");
     this.runResultsDir = path.join(this.fixturesPath, "run-results");
@@ -72,12 +83,30 @@ abstract class AllureMochaTestRunner {
         const dstDir = path.dirname(dst);
         const content = await readFile(src, { encoding: "utf-8" });
         await mkdir(dstDir, { recursive: true });
-        const uncommentedSample = content.replaceAll(uncomment, "$1");
+        const uncommentedSample = content.replace(uncomment, "$1");
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         writeFile(dst, uncommentedSample, { encoding: "utf-8" });
       }),
       writeFile(cmdPath, cmdContent, "utf-8"),
     ]);
+
+    if (this.config.testplan) {
+      const testplanPath = path.join(testDir, "testplan.json");
+      this.config.env ??= {};
+      this.config.env.ALLURE_TESTPLAN_PATH = testplanPath;
+      const selectorPrefix = path.relative(path.join(__dirname, ".."), testDir);
+      await writeFile(
+        testplanPath,
+        JSON.stringify({
+          version: "1.0",
+          tests: this.config.testplan.map((test) => ({
+            id: test.id,
+            selector: test.selector ? this.resolveTestplanSelector(selectorPrefix, test.selector) : undefined,
+          })),
+        }),
+        { encoding: "utf-8" },
+      );
+    }
 
     const testProcess = fork(scriptPath, scriptArgs, {
       env: {
@@ -134,11 +163,21 @@ abstract class AllureMochaTestRunner {
     ];
   };
 
+  protected encodeEnvironmentInfo = () => this.toBase64Url(this.config.environmentInfo);
+
+  protected encodeCategories = () => this.toBase64Url(this.config.categories);
+
+  protected toBase64Url = (value: any) => Buffer.from(JSON.stringify(value)).toString("base64url");
+
   private getSampleEntry = (name: string | readonly string[], samplesDir: string, testDir: string) => {
     if (name instanceof Array) {
       name = path.join(...name);
     }
     return this.getTransformEntry(`${name}.spec`, SPEC_FORMAT, testDir, samplesDir);
+  };
+
+  private resolveTestplanSelector = (prefix: string, [file, name]: TestPlanSelectorEntryFixture) => {
+    return `${path.join(prefix, ...file)}.spec${SPEC_EXT}: ${name}`;
   };
 
   getFilesToCopy: (testDir: string) => readonly [string, string][] = () => [];
@@ -149,9 +188,17 @@ abstract class AllureMochaTestRunner {
 
 class AllureMochaCliTestRunner extends AllureMochaTestRunner {
   getFilesToCopy = (testDir: string) => [this.getCopyEntry("reporter.cjs", testDir)];
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   getScriptPath = () => path.resolve(require.resolve("mocha"), "../bin/mocha.js");
-  getScriptArgs = () => ["--no-color", "--reporter", "./reporter.cjs", "**/*.spec.*"];
+  getScriptArgs = () => {
+    const args = ["--no-color", "--reporter", "./reporter.cjs", "**/*.spec.*"];
+    if (this.config.environmentInfo) {
+      args.push("--reporter-option", `environmentInfo=${this.encodeEnvironmentInfo()}`);
+    }
+    if (this.config.categories) {
+      args.push("--reporter-option", `categories=${this.encodeCategories()}`);
+    }
+    return args;
+  };
 }
 
 class AllureMochaCodeTestRunner extends AllureMochaTestRunner {
@@ -163,7 +210,16 @@ class AllureMochaCodeTestRunner extends AllureMochaTestRunner {
   }
   getFilesToTransform = (testDir: string) => [this.getTransformEntry("runner", this.runnerFormat, testDir)];
   getScriptPath = (testDir: string) => path.join(testDir, `runner${getFormatExt(this.runnerFormat)}`);
-  getScriptArgs = () => ["--"];
+  getScriptArgs = () => {
+    const args = ["--"];
+    if (this.config.environmentInfo) {
+      args.push("--environment-info", this.encodeEnvironmentInfo());
+    }
+    if (this.config.categories) {
+      args.push("--categories", this.encodeCategories());
+    }
+    return args;
+  };
 }
 
 export const runMochaInlineTest = async (

@@ -14,7 +14,19 @@ import {
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { MochaTestRuntime } from "./MochaTestRuntime.js";
 import { setLegacyApiRuntime } from "./legacyUtils.js";
-import { getInitialLabels, getSuitesOfMochaTest, resolveParallelModeSetupFile } from "./utils.js";
+import {
+  applyTestPlan,
+  createTestPlanIndices,
+  getAllureDisplayName,
+  getAllureFullName,
+  getAllureMetaLabels,
+  getInitialLabels,
+  getSuitesOfMochaTest,
+  getTestCaseId,
+  isIncludedInTestRun,
+  resolveParallelModeSetupFile,
+} from "./utils.js";
+import type { TestPlanIndices } from "./utils.js";
 
 const {
   EVENT_SUITE_BEGIN,
@@ -30,6 +42,7 @@ const {
 
 export class AllureMochaReporter extends Mocha.reporters.Base {
   private readonly runtime: ReporterRuntime;
+  private readonly testplan?: TestPlanIndices;
 
   constructor(runner: Mocha.Runner, opts: Mocha.MochaOptions) {
     super(runner, opts);
@@ -40,6 +53,8 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       writer: writer || new FileSystemWriter({ resultsDir }),
       ...restOptions,
     });
+    this.testplan = createTestPlanIndices();
+
     const testRuntime = new MochaTestRuntime(this.runtime);
 
     setGlobalTestRuntime(testRuntime);
@@ -50,6 +65,12 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     } else {
       this.applyListeners();
     }
+  }
+
+  override done(failures: number, fn?: ((failures: number) => void) | undefined): void {
+    this.runtime.writeEnvironmentInfo();
+    this.runtime.writeCategoriesDefinitions();
+    return fn?.(failures);
   }
 
   private applyListeners = () => {
@@ -65,7 +86,10 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       .on(EVENT_HOOK_END, this.onHookEnd);
   };
 
-  private onSuite = () => {
+  private onSuite = (suite: Mocha.Suite) => {
+    if (!suite.parent && this.testplan) {
+      applyTestPlan(this.testplan.idIndex, this.testplan.fullNameIndex, suite);
+    }
     this.runtime.startScope();
   };
 
@@ -74,26 +98,24 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   };
 
   private onTest = (test: Mocha.Test) => {
-    let fullName = "";
     const globalLabels = getEnvironmentLabels().filter((label) => !!label.value);
     const initialLabels: Label[] = getInitialLabels();
-    const labels = globalLabels.concat(initialLabels);
+    const metaLabels = getAllureMetaLabels(test);
+    const labels = globalLabels.concat(initialLabels, metaLabels);
 
     if (test.file) {
       const testPath = getRelativePath(test.file);
-      fullName = `${testPath!}: `;
       const packageLabelFromPath: Label = getPackageLabelFromPath(testPath);
       labels.push(packageLabelFromPath);
     }
 
-    fullName += test.titlePath().join(" > ");
-
     this.runtime.startTest(
       {
-        name: test.title,
+        name: getAllureDisplayName(test),
         stage: Stage.RUNNING,
-        fullName,
+        fullName: getAllureFullName(test),
         labels,
+        testCaseId: getTestCaseId(test),
       },
       { dedicatedScope: true },
     );
@@ -116,23 +138,27 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   };
 
   private onPending = (test: Mocha.Test) => {
-    this.onTest(test);
-    this.runtime.updateTest((r) => {
-      r.status = Status.SKIPPED;
-      r.statusDetails = {
-        message: "Test skipped",
-      };
-    });
+    if (isIncludedInTestRun(test)) {
+      this.onTest(test);
+      this.runtime.updateTest((r) => {
+        r.status = Status.SKIPPED;
+        r.statusDetails = {
+          message: "Test skipped",
+        };
+      });
+    }
   };
 
   private onTestEnd = (test: Mocha.Test) => {
-    const defaultSuites = getSuitesOfMochaTest(test);
-    this.runtime.updateTest((t) => {
-      ensureSuiteLabels(t, defaultSuites);
-      t.stage = Stage.FINISHED;
-    });
-    this.runtime.stopTest();
-    this.runtime.writeTest();
+    if (isIncludedInTestRun(test)) {
+      const defaultSuites = getSuitesOfMochaTest(test);
+      this.runtime.updateTest((t) => {
+        ensureSuiteLabels(t, defaultSuites);
+        t.stage = Stage.FINISHED;
+      });
+      this.runtime.stopTest();
+      this.runtime.writeTest();
+    }
   };
 
   private onHookStart = (hook: Mocha.Hook) => {

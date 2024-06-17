@@ -14,11 +14,12 @@
 let emitFiles = false;
 let parallel = false;
 const requires = [];
+const reporterOptions = {};
 
 const sepIndex = process.argv.indexOf("--");
 const args = sepIndex === -1 ? [] : process.argv.splice(sepIndex);
-for (const arg of args) {
-  switch (arg) {
+for (let i = 0; i < args.length; i++) {
+  switch (args[i]) {
     case "--emit-files":
       emitFiles = true;
       break;
@@ -28,14 +29,22 @@ for (const arg of args) {
       // esm: await import("./setupParallel.cjs");
       requires.push(path.join(dirname, "setupParallel.cjs"));
       break;
+    case "--environment-info":
+      reporterOptions.environmentInfo = JSON.parse(Buffer.from(args[++i], "base64url").toString());
+      break;
+    case "--categories":
+      reporterOptions.categories = JSON.parse(Buffer.from(args[++i], "base64url").toString());
+      break;
   }
+}
+
+if (!emitFiles) {
+  reporterOptions.writer = "MessageWriter";
 }
 
 const mocha = new Mocha({
   reporter: AllureReporter,
-  reporterOptions: {
-    writer: emitFiles ? undefined : "MessageWriter",
-  },
+  reporterOptions,
   parallel,
   require: requires,
   color: false,
