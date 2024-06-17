@@ -16,7 +16,7 @@ it("overrides suite label", async () => {
 
   expect(tests).toHaveLength(1);
 
-  const suiteLabels = tests[0]!.labels.filter((label: Label) => label.name === LabelName.SUITE);
+  const suiteLabels = tests[0].labels.filter((label: Label) => label.name === LabelName.SUITE);
 
   expect(suiteLabels).toHaveLength(1);
   expect(suiteLabels[0]).toEqual({ name: LabelName.SUITE, value: "SUITE Override" });
@@ -35,7 +35,7 @@ it("overrides parent-suite label", async () => {
 
   expect(tests).toHaveLength(1);
 
-  const parentSuiteLabels = tests[0]!.labels.filter((label: Label) => label.name === LabelName.PARENT_SUITE);
+  const parentSuiteLabels = tests[0].labels.filter((label: Label) => label.name === LabelName.PARENT_SUITE);
 
   expect(parentSuiteLabels).toHaveLength(1);
   expect(parentSuiteLabels[0]).toEqual({
@@ -57,7 +57,7 @@ it("overrides sub-suite label", async () => {
 
   expect(tests).toHaveLength(1);
 
-  const subSuiteLabels = tests[0]!.labels.filter((label: Label) => label.name === LabelName.SUB_SUITE);
+  const subSuiteLabels = tests[0].labels.filter((label: Label) => label.name === LabelName.SUB_SUITE);
 
   expect(subSuiteLabels).toHaveLength(1);
   expect(subSuiteLabels[0]).toEqual({ name: LabelName.SUB_SUITE, value: "SUB SUITE Override" });

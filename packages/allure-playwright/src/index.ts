@@ -100,7 +100,7 @@ export class AllureReporter implements ReporterV2 {
     const cliArgs: string[] = [];
 
     testsWithSelectors.forEach((test) => {
-      if (!/#/.test(test.selector as string)) {
+      if (!/#/.test(test.selector)) {
         v2ReporterTests.push(test);
         return;
       }
@@ -114,7 +114,7 @@ export class AllureReporter implements ReporterV2 {
         .map((test) => test.selector.replace(/:\d+$/, ""))
         .map((selector) => escapeRegExp(selector));
 
-      cliArgs.push(...(v2SelectorsArgs as string[]));
+      cliArgs.push(...v2SelectorsArgs);
     }
 
     if (v1ReporterTests.length) {
@@ -123,7 +123,7 @@ export class AllureReporter implements ReporterV2 {
         .map((test) => test.selector.split("#")[0])
         .map((selector) => escapeRegExp(selector));
 
-      cliArgs.push(...(v1SelectorsArgs as string[]));
+      cliArgs.push(...v1SelectorsArgs);
     }
 
     if (!cliArgs.length) {
@@ -187,8 +187,8 @@ export class AllureReporter implements ReporterV2 {
 
     const testUuid = this.allureRuntime!.startTest(result);
 
-    this.allureResultsUuids.set(test.id, testUuid as string);
-    this.startedTestCasesTitlesCache.push(titleMetadata.cleanTitle as string);
+    this.allureResultsUuids.set(test.id, testUuid);
+    this.startedTestCasesTitlesCache.push(titleMetadata.cleanTitle);
   }
 
   onStepBegin(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
@@ -249,15 +249,15 @@ export class AllureReporter implements ReporterV2 {
       testResult.labels.push({ name: LabelName.HOST, value: this.hostname });
       testResult.labels.push({ name: LabelName.THREAD, value: thread });
 
-      if (projectSuiteTitle && !hasLabel(testResult as TestResult, LabelName.PARENT_SUITE)) {
+      if (projectSuiteTitle && !hasLabel(testResult, LabelName.PARENT_SUITE)) {
         testResult.labels.push({ name: LabelName.PARENT_SUITE, value: projectSuiteTitle });
       }
 
-      if (this.options.suiteTitle && fileSuiteTitle && !hasLabel(testResult as TestResult, LabelName.SUITE)) {
+      if (this.options.suiteTitle && fileSuiteTitle && !hasLabel(testResult, LabelName.SUITE)) {
         testResult.labels.push({ name: LabelName.SUITE, value: fileSuiteTitle });
       }
 
-      if (suiteTitles.length > 0 && !hasLabel(testResult as TestResult, LabelName.SUB_SUITE)) {
+      if (suiteTitles.length > 0 && !hasLabel(testResult, LabelName.SUB_SUITE)) {
         testResult.labels.push({ name: LabelName.SUB_SUITE, value: suiteTitles.join(" > ") });
       }
 
@@ -276,7 +276,7 @@ export class AllureReporter implements ReporterV2 {
     if (result.stdout.length > 0) {
       this.allureRuntime!.writeAttachment(
         "stdout",
-        Buffer.from(stripAnsi(result.stdout.join("")) as string, "utf-8"),
+        Buffer.from(stripAnsi(result.stdout.join("")), "utf-8"),
         {
           contentType: ContentType.TEXT,
         },
@@ -287,7 +287,7 @@ export class AllureReporter implements ReporterV2 {
     if (result.stderr.length > 0) {
       this.allureRuntime!.writeAttachment(
         "stderr",
-        Buffer.from(stripAnsi(result.stderr.join("")) as string, "utf-8"),
+        Buffer.from(stripAnsi(result.stderr.join("")), "utf-8"),
         {
           contentType: ContentType.TEXT,
         },
@@ -307,7 +307,7 @@ export class AllureReporter implements ReporterV2 {
 
         return acc;
       }, {});
-      const newLabels = Object.keys(mappedLabels as Record<string, Label[]>).flatMap((labelName) => {
+      const newLabels = Object.keys(mappedLabels).flatMap((labelName) => {
         const labelsGroup = mappedLabels[labelName];
 
         if (
@@ -332,7 +332,7 @@ export class AllureReporter implements ReporterV2 {
     const unprocessedCases = this.suite.allTests().filter(({ title }) => {
       const titleMetadata = extractMetadataFromString(title);
 
-      return !this.startedTestCasesTitlesCache.includes(titleMetadata.cleanTitle as string);
+      return !this.startedTestCasesTitlesCache.includes(titleMetadata.cleanTitle);
     });
 
     for (const testCase of unprocessedCases) {

@@ -174,7 +174,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      this.allureUuidsByTestIds.set(newTestId, testUuid as string);
+      this.allureUuidsByTestIds.set(newTestId, testUuid);
     }
 
     private handleTestStart(test: Circus.TestEntry) {

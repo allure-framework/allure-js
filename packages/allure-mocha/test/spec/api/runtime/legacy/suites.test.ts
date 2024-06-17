@@ -12,7 +12,7 @@ describe("legacy suites API", () => {
       ["legacy", "labels", "suites", "subSuite"],
     );
     for (const testResult of tests) {
-      testMap.set(testResult.name as string, testResult as TestResult);
+      testMap.set(testResult.name as string, testResult);
     }
   });
 

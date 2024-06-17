@@ -1,3 +1,4 @@
+/* eslint-disable id-blacklist */
 module.exports = {
   root: true,
   globals: {
@@ -23,6 +24,12 @@ module.exports = {
   },
   plugins: ["n", "no-null", "prefer-arrow", "import", "jsdoc", "@typescript-eslint"],
   ignorePatterns: ["**/dist/**/*"],
+  overrides: [
+    {
+      extends: ["plugin:@typescript-eslint/disable-type-checked"],
+      files: [".eslintrc.cjs"],
+    }
+  ],
   rules: {
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/adjacent-overload-signatures": "error",
@@ -158,11 +165,11 @@ module.exports = {
     "arrow-body-style": "off",
     "arrow-parens": ["off", "always"],
     "brace-style": ["error", "1tbs"],
-    complexity: "off",
+    "complexity": "off",
     "constructor-super": "error",
-    curly: "error",
+    "curly": "error",
     "eol-last": "error",
-    eqeqeq: ["error", "smart"],
+    "eqeqeq": ["error", "smart"],
     "guard-for-in": "error",
     "id-blacklist": [
       "error",
@@ -220,7 +227,7 @@ module.exports = {
     "prefer-const": "error",
     "prefer-template": "error",
     "quote-props": ["error", "consistent-as-needed"],
-    radix: "error",
+    "radix": "error",
     "space-before-function-paren": [
       "error",
       {

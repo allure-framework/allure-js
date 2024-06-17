@@ -20,7 +20,7 @@ describe("suites", () => {
       ["labels", "suites", "subSuiteNestedScope"],
     );
     for (const testResult of tests) {
-      testMap.set(testResult.name as string, testResult as TestResult);
+      testMap.set(testResult.name as string, testResult);
     }
   });
 

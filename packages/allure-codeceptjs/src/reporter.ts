@@ -39,7 +39,7 @@ export class AllureCodeceptJsReporter {
       }
 
       // @ts-ignore
-      result.parameters!.push({ name: "Repetition", value: `${test.retryNum + 1}` });
+      result.parameters.push({ name: "Repetition", value: `${test.retryNum + 1}` });
     }, this.currentAllureResultUuid);
 
     this.allureRuntime!.stopTest({ uuid: this.currentAllureResultUuid });
@@ -198,28 +198,28 @@ export class AllureCodeceptJsReporter {
       {
         name: `${step.actor} ${step.name}`,
       },
-      this.currentAllureResultUuid!,
+      this.currentAllureResultUuid,
     );
   }
 
   stepFailed() {
     this.allureRuntime!.updateStep((result) => {
       result.status = Status.FAILED;
-    }, this.currentAllureResultUuid!);
+    }, this.currentAllureResultUuid);
     this.closeCurrentAllureStep();
   }
 
   stepComment() {
     this.allureRuntime!.updateStep((result) => {
       result.status = Status.PASSED;
-    }, this.currentAllureResultUuid!);
+    }, this.currentAllureResultUuid);
     this.closeCurrentAllureStep();
   }
 
   stepPassed() {
     this.allureRuntime!.updateStep((result) => {
       result.status = Status.PASSED;
-    }, this.currentAllureResultUuid!);
+    }, this.currentAllureResultUuid);
     this.closeCurrentAllureStep();
   }
 
