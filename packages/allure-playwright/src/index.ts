@@ -114,7 +114,7 @@ export class AllureReporter implements ReporterV2 {
         .map((test) => test.selector.replace(/:\d+$/, ""))
         .map((selector) => escapeRegExp(selector));
 
-      cliArgs.push(...(v2SelectorsArgs));
+      cliArgs.push(...v2SelectorsArgs);
     }
 
     if (v1ReporterTests.length) {
@@ -123,7 +123,7 @@ export class AllureReporter implements ReporterV2 {
         .map((test) => test.selector.split("#")[0])
         .map((selector) => escapeRegExp(selector));
 
-      cliArgs.push(...(v1SelectorsArgs));
+      cliArgs.push(...v1SelectorsArgs);
     }
 
     if (!cliArgs.length) {
