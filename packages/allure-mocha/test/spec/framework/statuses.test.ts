@@ -13,7 +13,7 @@ describe("test status", () => {
       ["plain-mocha", "skippedTest"],
     );
     for (const test of tests) {
-      testMap.set(test.name as string, test as TestResult);
+      testMap.set(test.name as string, test);
     }
   });
 

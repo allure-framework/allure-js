@@ -13,9 +13,9 @@ describe("legacy runtime parameters API", () => {
     );
     for (const testResult of results.tests) {
       if (testMap.has(testResult.name as string)) {
-        testMap.get(testResult.name as string)!.push(testResult as TestResult);
+        testMap.get(testResult.name as string)!.push(testResult);
       } else {
-        testMap.set(testResult.name as string, [testResult as TestResult]);
+        testMap.set(testResult.name as string, [testResult]);
       }
     }
   });

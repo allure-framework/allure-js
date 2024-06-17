@@ -53,7 +53,7 @@ class LegacyAllureApi {
    * @deprecated please use import { parameter } from "allure-js-commons" instead.
    */
   parameter = (name: string, value: any, options?: ParameterOptions) =>
-    Promise.resolve(commons.parameter(name, serialize(value) as string, options));
+    Promise.resolve(commons.parameter(name, serialize(value), options));
   /**
    * @deprecated please use import { link } from "allure-js-commons" instead.
    */

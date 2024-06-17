@@ -290,7 +290,7 @@ export default class AllureCucumberReporter extends Formatter {
 
     const testUuid = this.allureRuntime.startTest(result);
     this.testCaseStartedMap.set(data.id, data);
-    this.allureResultsUuids.set(data.id, testUuid as string);
+    this.allureResultsUuids.set(data.id, testUuid);
     this.allureRuntime.startScope();
 
     if (!scenario?.examples) {

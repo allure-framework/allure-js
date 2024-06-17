@@ -31,10 +31,10 @@ it("reports stdout", async () => {
 
   expect(stdout.name).toBe("stdout");
   expect(stdout.type).toBe(ContentType.TEXT);
-  expect(attachments).toHaveProperty(stdout.source as string);
+  expect(attachments).toHaveProperty(stdout.source);
   expect(stderr.name).toBe("stderr");
   expect(stderr.type).toBe(ContentType.TEXT);
-  expect(attachments).toHaveProperty(stderr.source as string);
+  expect(attachments).toHaveProperty(stderr.source);
   expect(Buffer.from(attachments[stdout.source] as string, "base64").toString("utf-8")).toBe(
     "Test log\nTest log 2\n{ foo: 'bar' }\n[ 1, 2, 3, 'test' ]\nTest nested log\n",
   );

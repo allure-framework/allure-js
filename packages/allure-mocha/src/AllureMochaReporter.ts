@@ -175,7 +175,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   private onHookEnd = (hook: Mocha.Hook) => {
     if (this.runtime.hasFixture()) {
       this.runtime.updateFixture((r) => {
-        const error = hook.error();
+        const error: Error | undefined = hook.error();
         if (error) {
           r.status = getStatusFromError(error);
           r.statusDetails = {

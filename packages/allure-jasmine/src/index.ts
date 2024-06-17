@@ -79,7 +79,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     const allureRuntime = this.allureRuntime;
     const globalJasmine = globalThis.jasmine;
     const currentAllureResultUuidGetter = () => this.currentAllureTestUuid;
-    const currentAllureStepResultGetter = () => this.allureRuntime.getCurrentStep(currentAllureResultUuidGetter()!);
+    const currentAllureStepResultGetter = () => this.allureRuntime.getCurrentStep(currentAllureResultUuidGetter());
     // @ts-ignore
     const originalExpectationHandler = globalJasmine.Spec.prototype.addExpectationResult;
 
@@ -92,7 +92,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
         allureRuntime.updateStep((result) => {
           result.status = Status.FAILED;
           result.stage = Stage.FINISHED;
-        }, currentAllureResultUuidGetter()!);
+        }, currentAllureResultUuidGetter());
       }
 
       originalExpectationHandler.call(this, passed, data, isError);
@@ -156,9 +156,9 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
         result.status = Status.BROKEN;
         return;
       }
-    }, this.currentAllureTestUuid!);
+    }, this.currentAllureTestUuid);
     this.allureRuntime.stopTest({ uuid: this.currentAllureTestUuid! });
-    this.allureRuntime.writeTest(this.currentAllureTestUuid!);
+    this.allureRuntime.writeTest(this.currentAllureTestUuid);
     this.currentAllureTestUuid = undefined;
   }
 

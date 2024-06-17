@@ -23,7 +23,7 @@ describe("step", () => {
       ["steps", "stepReturnsPromise"],
     );
     for (const testResult of results.tests) {
-      testMap.set(testResult.name as string, testResult as TestResult);
+      testMap.set(testResult.name as string, testResult);
     }
     attachments = results.attachments;
   });
