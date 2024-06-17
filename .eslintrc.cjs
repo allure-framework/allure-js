@@ -23,6 +23,12 @@ module.exports = {
   },
   plugins: ["n", "no-null", "prefer-arrow", "import", "jsdoc", "@typescript-eslint"],
   ignorePatterns: ["**/dist/**/*"],
+  overrides: [
+    {
+      extends: ["plugin:@typescript-eslint/disable-type-checked"],
+      files: [".eslintrc.cjs"],
+    }
+  ],
   rules: {
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/adjacent-overload-signatures": "error",
