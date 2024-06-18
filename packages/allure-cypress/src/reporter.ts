@@ -35,28 +35,30 @@ export class AllureCypress {
   attachToCypress(on: Cypress.PluginEvents) {
     on("task", {
       allureReportTest: (messages: CypressRuntimeMessage[]) => {
-        // TODO:
-        let currentTestUuid: string
-        let currentTestStartMessage: CypressTestStartRuntimeMessage
-
-        console.log(messages)
+        let currentTestUuid: string;
+        let currentTestStartMessage: CypressTestStartRuntimeMessage;
 
         messages.forEach((message) => {
           if (message.type === "cypress_suite_start") {
-            this.allureRuntime.startScope()
+            this.allureRuntime.startScope();
             return;
           }
 
           if (message.type === "cypress_suite_end") {
+            const currentScope = this.allureRuntime.getCurrentScope();
+
             message.data.hooks.forEach((hook) => {
               this.allureRuntime.startFixture(hook.type, {
                 name: hook.name,
                 status: hook.status,
                 statusDetails: hook.statusDetails,
-              })
-              this.allureRuntime.writeFixture()
-            })
-            this.allureRuntime.stopScope()
+              });
+              this.allureRuntime.writeFixture();
+            });
+
+            if (currentScope?.parent) {
+              this.allureRuntime.stopScope();
+            }
             return;
           }
 
@@ -86,7 +88,7 @@ export class AllureCypress {
               result.labels.push(...suiteLabels);
               result.labels.push(...titleMetadata.labels);
             });
-            return
+            return;
           }
 
           if (message.type === "cypress_end") {
@@ -103,7 +105,7 @@ export class AllureCypress {
 
             this.allureRuntime.stopTest({ uuid: currentTestUuid!, stop: Date.now() });
 
-            if (currentTestStartMessage!.data.isInteractive!) {
+            if (currentTestStartMessage?.data?.isInteractive) {
               this.allureRuntime.writeTest(currentTestUuid!);
             } else {
               // False positive by eslint (testUuid is string)
@@ -113,10 +115,15 @@ export class AllureCypress {
             return;
           }
 
+          // we can get error when we try to attach screenshot to a failed test because there is no test due to error in hook
+          if (!this.allureRuntime.getCurrentExecutingItem()) {
+            return;
+          }
+
           this.allureRuntime.applyRuntimeMessages([message], {
             testUuid: currentTestUuid!,
           });
-        })
+        });
 
         return null;
       },
@@ -131,21 +138,21 @@ export class AllureCypress {
       return;
     }
 
-    for (const uuid of testUuids) {
-      // TODO add it to spec scope to remove duplicates.
-      if (cypressResult.video) {
-        this.allureRuntime.writeAttachmentFromPath(
-          "Video",
-          cypressResult.video,
-          {
-            contentType: ContentType.MP4,
-          },
-          uuid,
-        );
-      }
+    if (cypressResult.video) {
+      this.allureRuntime.startFixture("after", {
+        name: "Cypress video",
+      });
+      this.allureRuntime.writeAttachmentFromPath("Cypress video", cypressResult.video, {
+        contentType: ContentType.MP4,
+      });
+      this.allureRuntime.writeFixture();
+    }
 
+    for (const uuid of testUuids) {
       this.allureRuntime.writeTest(uuid);
     }
+
+    this.allureRuntime.writeScope();
   }
 }
 

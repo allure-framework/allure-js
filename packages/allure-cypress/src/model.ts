@@ -6,30 +6,30 @@ import type { RuntimeMessage } from "allure-js-commons/sdk";
 export const ALLURE_REPORT_INSTALL_HOOK = "__allure_report_install_hook__";
 
 export type CypressTest = Mocha.Test & {
-  // wallClockDuration?: number
-  wallClockStartedAt?: Date
-}
+  wallClockStartedAt?: Date;
+  hookName?: string;
+};
 
 export type CypressHook = {
   name: string;
-  type: "before" | "after"
+  type: "before" | "after";
   status: Status;
   statusDetails?: StatusDetails;
-}
+};
 
 export type CypressSuiteStartRuntimeMessage = {
-  type: "cypress_suite_start"
+  type: "cypress_suite_start";
   data: {
-    name: string
-  }
-}
+    name: string;
+  };
+};
 
 export type CypressSuiteEndRuntimeMessage = {
-  type: "cypress_suite_end",
+  type: "cypress_suite_end";
   data: {
-    hooks: CypressHook[]
-  }
-}
+    hooks: CypressHook[];
+  };
+};
 
 export type CypressTestStartRuntimeMessage = {
   type: "cypress_start";
