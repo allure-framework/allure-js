@@ -16,6 +16,7 @@ import {
   createStepResult,
   getWorstStepResultStatus,
   md5,
+  applyLinkTemplate,
 } from "allure-js-commons/sdk/reporter";
 import { AllureCucumberWorld } from "./legacy.js";
 import type { AllureCucumberLinkConfig, AllureCucumberReporterConfig, LabelConfig } from "./model.js";
@@ -164,7 +165,7 @@ export default class AllureCucumberReporter extends Formatter {
         const tagValue = tag.name.replace(tagKeyRe, "");
 
         return {
-          url: matcher.urlTemplate.replace(/%s$/, tagValue) || tagValue,
+          url: applyLinkTemplate(matcher.urlTemplate, tagValue) || tagValue,
           type,
         };
       });

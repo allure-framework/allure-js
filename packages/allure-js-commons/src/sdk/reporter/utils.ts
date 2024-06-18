@@ -6,7 +6,7 @@ import process from "node:process";
 import properties from "properties";
 import type { Label, Link, Status, StepResult, TestResult } from "../../model.js";
 import { LabelName, LinkType, StatusByPriority } from "../../model.js";
-import type { LinkConfig } from "./types.js";
+import type { LinkConfig, LinkTemplate } from "./types.js";
 
 export const randomUuid = () => {
   return randomUUID();
@@ -202,7 +202,7 @@ export const escapeRegExp = (value: string): string => {
 export const parseProperties = properties.parse;
 export const stringifyProperties = (data: any): string => properties.stringify(data, { unicode: true }).toString();
 
-// TODO: consider using URL.canParse instead (requires node.js v18.17, v19.9, or higher)
+// TODO: may also use URL.canParse instead (requires node.js v18.17, v19.9, or higher)
 const isUrl = (potentialUrl: string) => {
   // Short-circuits the check for many short URL cases, bypassing the try-catch logic.
   if (potentialUrl.indexOf(":") === -1) {
@@ -219,22 +219,25 @@ const isUrl = (potentialUrl: string) => {
   }
 };
 
+export const applyLinkTemplate = (template: LinkTemplate, value: string) =>
+  typeof template === "string" ? template.replace("%s", value) : template(value);
+
 export const formatLink = (templates: LinkConfig, link: Link) => {
-  const { url, name, type } = link;
-  if (isUrl(url)) {
+  const { url: originalUrl, name, type } = link;
+  if (isUrl(originalUrl)) {
     return link;
   } else {
     const formattedLink = { ...link };
     const { urlTemplate, nameTemplate } = templates[type ?? LinkType.DEFAULT] ?? {};
     if (urlTemplate !== undefined) {
-      formattedLink.url = urlTemplate.replace("%s", url);
+      formattedLink.url = applyLinkTemplate(urlTemplate, originalUrl);
     }
     if (name === undefined && nameTemplate !== undefined) {
-      formattedLink.name = nameTemplate.replace("%s", url);
+      formattedLink.name = applyLinkTemplate(nameTemplate, originalUrl);
     }
     return formattedLink;
   }
 };
 
 export const formatLinks = (templates: LinkConfig, links: readonly Link[]) =>
-  links.map<Link>((link) => formatLink(templates, link));
+  links.map((link) => formatLink(templates, link));

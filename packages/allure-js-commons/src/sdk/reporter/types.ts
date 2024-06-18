@@ -62,9 +62,11 @@ export interface LifecycleListener {
   afterStepStop?: (result: StepResult) => void;
 }
 
+export type LinkTemplate = string | ((url: string) => string);
+
 export type LinkTypeOptions = {
-  urlTemplate: string;
-  nameTemplate?: string;
+  urlTemplate: LinkTemplate;
+  nameTemplate?: LinkTemplate;
 };
 
 export type LinkConfig<TOpts extends LinkTypeOptions = LinkTypeOptions> = Partial<Record<LinkType, TOpts>> &

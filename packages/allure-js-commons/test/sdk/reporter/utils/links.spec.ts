@@ -1,24 +1,25 @@
 import { describe, expect, it } from "vitest";
 import { LinkType } from "../../../../src/model.js";
 import { formatLinks } from "../../../../src/sdk/reporter/utils.js";
+import type { LinkConfig } from "../../../../src/sdk/reporter/types.js";
 
 describe("formatLinks", () => {
-  describe("with no patterns", () => {
+  describe("with no templates", () => {
     it("shouldn't affect any link", () => {
       const links = [{ url: "foo" }, { url: "foo", name: "bar" }, { url: "foo", name: "bar", type: "baz" }];
       expect(formatLinks({}, links)).toEqual(links);
     });
   });
 
-  describe("with the URL-only default link pattern", () => {
-    const patterns = { [LinkType.DEFAULT]: { urlTemplate: "https://qux/%s" } };
+  describe("with a URL-only default link template", () => {
+    const templates: LinkConfig = { [LinkType.DEFAULT]: { urlTemplate: "https://qux/%s" } };
 
-    it("should affect the URL of a link with no type specified", () => {
-      expect(formatLinks(patterns, [{ url: "foo" }])).toEqual([{ url: "https://qux/foo" }]);
+    it("should affect the URL of a link with no type", () => {
+      expect(formatLinks(templates, [{ url: "foo" }])).toEqual([{ url: "https://qux/foo" }]);
     });
 
-    it("should affect the URL of a link with the explicit default type", () => {
-      expect(formatLinks(patterns, [{ url: "foo", type: LinkType.DEFAULT }])).toEqual([
+    it("should affect the URL of a link with the default type", () => {
+      expect(formatLinks(templates, [{ url: "foo", type: LinkType.DEFAULT }])).toEqual([
         { url: "https://qux/foo", type: LinkType.DEFAULT },
       ]);
     });
@@ -28,12 +29,12 @@ describe("formatLinks", () => {
         { url: "foo", type: "bar" },
         { url: "bar", type: "quux" },
       ];
-      expect(formatLinks(patterns, links)).toEqual(links);
+      expect(formatLinks(templates, links)).toEqual(links);
     });
   });
 
-  describe("with the URL and name pattern", () => {
-    const patterns = {
+  describe("with URL and name templates", () => {
+    const templates: LinkConfig = {
       qux: {
         urlTemplate: "https://qux/%s",
         nameTemplate: "qux-%s",
@@ -41,13 +42,13 @@ describe("formatLinks", () => {
     };
 
     it("should affect the name if not set", () => {
-      expect(formatLinks(patterns, [{ url: "foo", type: "qux" }])).toEqual([
+      expect(formatLinks(templates, [{ url: "foo", type: "qux" }])).toEqual([
         { url: "https://qux/foo", name: "qux-foo", type: "qux" },
       ]);
     });
 
     it("shouldn't affect the name if set", () => {
-      expect(formatLinks(patterns, [{ url: "foo", name: "bar", type: "qux" }])).toEqual([
+      expect(formatLinks(templates, [{ url: "foo", name: "bar", type: "qux" }])).toEqual([
         { url: "https://qux/foo", name: "bar", type: "qux" },
       ]);
     });
@@ -60,7 +61,22 @@ describe("formatLinks", () => {
         { url: "file:///foo", type: "qux" },
         { url: "customapp:custompath?foo=bar&baz=qux", type: "qux" },
       ];
-      expect(formatLinks(patterns, links)).toEqual(links);
+      expect(formatLinks(templates, links)).toEqual(links);
+    });
+  });
+
+  describe("with URL and name template functions", () => {
+    const templates: LinkConfig = {
+      qux: {
+        urlTemplate: (v) => `https://qux/${v}`,
+        nameTemplate: (v) => `qux-${v}`,
+      },
+    };
+
+    it("should transform URLs and names with functions", () => {
+      expect(formatLinks(templates, [{ url: "foo", type: "qux" }])).toEqual([
+        { url: "https://qux/foo", name: "qux-foo", type: "qux" },
+      ]);
     });
   });
 });
