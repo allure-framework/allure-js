@@ -2,7 +2,6 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { runVitestInlineTest } from "../utils.js";
 
-
 describe("environment info", () => {
   it("should add environmentInfo", async () => {
     const { envInfo } = await runVitestInlineTest(

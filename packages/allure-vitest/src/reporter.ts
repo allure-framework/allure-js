@@ -82,9 +82,7 @@ export default class AllureVitestReporter implements Reporter {
     }
 
     const suitePath = getSuitePath(task);
-    const normalizedTestPath = normalize(relative(cwd(), task.file!.filepath))
-      .replace(/^\//, "")
-      .split("/");
+    const normalizedTestPath = normalize(relative(cwd(), task.file!.filepath)).replace(/^\//, "").split("/");
     const titleMetadata = extractMetadataFromString(task.name);
     const testDisplayName = titleMetadata.cleanTitle || task.name;
     const testFullname = getTestFullName(task, cwd());
