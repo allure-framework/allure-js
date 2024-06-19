@@ -13,10 +13,10 @@ import {
   FileSystemWriter,
   MessageWriter,
   ReporterRuntime,
+  applyLinkTemplate,
   createStepResult,
   getWorstStepResultStatus,
   md5,
-  applyLinkTemplate,
 } from "allure-js-commons/sdk/reporter";
 import { AllureCucumberWorld } from "./legacy.js";
 import type { AllureCucumberLinkConfig, AllureCucumberReporterConfig, LabelConfig } from "./model.js";
