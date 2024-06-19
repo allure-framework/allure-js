@@ -52,7 +52,7 @@
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "pretest": "run-p clean compile",
-    "test": "vitest run"
+    "test": "vitest run
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"

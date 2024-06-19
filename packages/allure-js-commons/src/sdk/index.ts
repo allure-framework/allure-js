@@ -3,8 +3,6 @@ export type {
   Category,
   EnvironmentInfo,
   ExecutorInfo,
-  ExtensionMessage,
-  Messages,
   RuntimeMessage,
   RuntimeMetadataMessage,
   RuntimeAttachmentContentMessage,

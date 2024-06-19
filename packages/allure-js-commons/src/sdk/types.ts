@@ -1,27 +1,14 @@
-import type {
-  Attachment,
-  Label,
-  Link,
-  Parameter,
-  Stage,
-  Status,
-  StatusDetails,
-  TestResult,
-  TestResultContainer,
-} from "../model.js";
+import type { Label, Link, Parameter, Status, StatusDetails, TestResult, TestResultContainer } from "../model.js";
 
 type RuntimeMessageBase<T extends string> = {
   type: T;
 };
-
-type MessageTypes<T> = T extends RuntimeMessageBase<infer K> ? K : never;
 
 export type RuntimeMetadataMessage = RuntimeMessageBase<"metadata"> & {
   data: {
     labels?: Label[];
     links?: Link[];
     parameters?: Parameter[];
-    attachments?: Attachment[];
     description?: string;
     descriptionHtml?: string;
     testCaseId?: string;
@@ -48,7 +35,6 @@ export type RuntimeStopStepMessage = RuntimeMessageBase<"step_stop"> & {
   data: {
     stop: number;
     status: Status;
-    stage: Stage;
     statusDetails?: StatusDetails;
   };
 };
@@ -61,6 +47,7 @@ export type RuntimeAttachmentContentMessage = RuntimeMessageBase<"attachment_con
     contentType: string;
     fileExtension?: string;
     wrapInStep?: boolean;
+    timestamp?: number;
   };
 };
 
@@ -71,6 +58,7 @@ export type RuntimeAttachmentPathMessage = RuntimeMessageBase<"attachment_path">
     contentType: string;
     fileExtension?: string;
     wrapInStep?: boolean;
+    timestamp?: number;
   };
 };
 
@@ -81,12 +69,6 @@ export type RuntimeMessage =
   | RuntimeStopStepMessage
   | RuntimeAttachmentContentMessage
   | RuntimeAttachmentPathMessage;
-
-// Could be used by adapters to define additional message types
-export type ExtensionMessage<T extends string> = T extends MessageTypes<RuntimeMessage> ? never : RuntimeMessageBase<T>;
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export type Messages<T> = T extends RuntimeMessage | ExtensionMessage<infer _> ? T : never;
 
 export interface TestPlanV1Test {
   id: string | number;
