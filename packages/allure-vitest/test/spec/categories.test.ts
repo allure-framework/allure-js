@@ -1,16 +1,17 @@
 import { join } from "node:path";
-import { expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { runVitestInlineTest } from "../utils.js";
 
-it("should support categories", async () => {
-  const { categories } = await runVitestInlineTest(
-    `
+describe("categories", () => {
+  it("should support categories", async () => {
+    const { categories } = await runVitestInlineTest(
+      `
     import { test } from "vitest";
 
     test("sample test", async () => {
     });
   `,
-    (testDir) => `
+      (testDir) => `
     import { defineConfig } from "vitest/config";
 
     export default defineConfig({
@@ -34,7 +35,8 @@ it("should support categories", async () => {
       },
     });
   `,
-  );
+    );
 
-  expect(categories).toEqual(expect.arrayContaining([({ name: "first" }, { name: "second" })]));
+    expect(categories).toEqual(expect.arrayContaining([{ name: "first" }, { name: "second" }]));
+  });
 });

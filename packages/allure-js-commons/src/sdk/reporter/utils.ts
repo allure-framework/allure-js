@@ -200,4 +200,4 @@ export const escapeRegExp = (value: string): string => {
 };
 
 export const parseProperties = properties.parse;
-export const stringifyProperties = properties.stringify;
+export const stringifyProperties = (data: any): string => properties.stringify(data, { unicode: true }).toString();

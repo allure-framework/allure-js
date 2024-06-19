@@ -1,8 +1,9 @@
-import { expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { runVitestInlineTest } from "../utils.js";
 
-it("handles data table", async () => {
-  const { tests } = await runVitestInlineTest(`
+describe("data tables", () => {
+  it("should support tests with data table", async () => {
+    const { tests } = await runVitestInlineTest(`
     import { test, expect } from "vitest";
     import { label } from "allure-js-commons";
 
@@ -15,8 +16,9 @@ it("handles data table", async () => {
     })
   `);
 
-  expect(tests).toHaveLength(3);
-  expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
-  expect(tests[1].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
-  expect(tests[2].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
+    expect(tests).toHaveLength(3);
+    expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
+    expect(tests[1].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
+    expect(tests[2].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
+  });
 });

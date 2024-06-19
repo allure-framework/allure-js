@@ -25,7 +25,7 @@ export class FileSystemWriter implements Writer {
   }
 
   writeEnvironmentInfo(info: EnvironmentInfo): void {
-    const text = stringifyProperties(info, { unicode: true }).toString();
+    const text = stringifyProperties(info);
     const path = this.buildPath("environment.properties");
 
     writeFileSync(path, text);

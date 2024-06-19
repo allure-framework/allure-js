@@ -1,9 +1,10 @@
-import { expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
 import { runVitestInlineTest } from "../utils.js";
 
-it("reports passed test", async () => {
-  const { tests } = await runVitestInlineTest(`
+describe("test status", () => {
+  it("should report passed test", async () => {
+    const { tests } = await runVitestInlineTest(`
     import { test, expect } from "vitest";
 
     test("sample test", async () => {
@@ -11,12 +12,12 @@ it("reports passed test", async () => {
     });
   `);
 
-  expect(tests).toHaveLength(1);
-  expect(tests[0].status).toBe(Status.PASSED);
-});
+    expect(tests).toHaveLength(1);
+    expect(tests[0].status).toBe(Status.PASSED);
+  });
 
-it("reports failed test", async () => {
-  const { tests } = await runVitestInlineTest(`
+  it("should report failed test", async () => {
+    const { tests } = await runVitestInlineTest(`
     import { test, expect } from "vitest";
 
     test("sample test", async () => {
@@ -24,12 +25,12 @@ it("reports failed test", async () => {
     });
   `);
 
-  expect(tests).toHaveLength(1);
-  expect(tests[0].status).toBe(Status.FAILED);
-});
+    expect(tests).toHaveLength(1);
+    expect(tests[0].status).toBe(Status.FAILED);
+  });
 
-it("reports broken test", async () => {
-  const { tests } = await runVitestInlineTest(`
+  it("should report broken test", async () => {
+    const { tests } = await runVitestInlineTest(`
     import { test, expect } from "vitest";
 
     test("sample test", async () => {
@@ -37,29 +38,29 @@ it("reports broken test", async () => {
     });
   `);
 
-  expect(tests).toHaveLength(1);
-  expect(tests[0].status).toBe(Status.BROKEN);
-});
+    expect(tests).toHaveLength(1);
+    expect(tests[0].status).toBe(Status.BROKEN);
+  });
 
-it("reports manually skipped tests", async () => {
-  const { tests } = await runVitestInlineTest(
-    `
+  it("should report manually skipped tests", async () => {
+    const { tests } = await runVitestInlineTest(
+      `
     import { test } from "vitest";
 
     test("skipped", (ctx) => {
       ctx.skip();
     })
     `,
-  );
+    );
 
-  expect(tests).toHaveLength(1);
-  expect(tests[0].status).toBe(Status.SKIPPED);
-  expect(tests[0].stage).toBe(Stage.PENDING);
-});
+    expect(tests).toHaveLength(1);
+    expect(tests[0].status).toBe(Status.SKIPPED);
+    expect(tests[0].stage).toBe(Stage.PENDING);
+  });
 
-it("doesn't report skipped tests and suites", async () => {
-  const { tests } = await runVitestInlineTest(
-    `
+  it("shouldn't report skipped tests and suites", async () => {
+    const { tests } = await runVitestInlineTest(
+      `
     import { describe, test } from "vitest";
 
     test.skip("skipped", () => {})
@@ -68,7 +69,8 @@ it("doesn't report skipped tests and suites", async () => {
       test("not skipped", () => {})
     })
     `,
-  );
+    );
 
-  expect(tests).toHaveLength(0);
+    expect(tests).toHaveLength(0);
+  });
 });

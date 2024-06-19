@@ -5,12 +5,14 @@ import { getGlobalTestRuntimeWithAutoconfig } from "./sdk/runtime/runtime.js";
 import type { TestRuntime } from "./sdk/runtime/types.js";
 import { isPromise } from "./sdk/utils.js";
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any ? A : never;
-const callRuntimeMethod = <T extends keyof TestRuntime, S extends ArgumentTypes<TestRuntime[T]>>(
+const callRuntimeMethod = <
+  T extends keyof TestRuntime,
+  S extends Parameters<TestRuntime[T]>,
+  R extends ReturnType<TestRuntime[T]>,
+>(
   method: T,
   ...args: S
-) => {
+): R => {
   const runtime = getGlobalTestRuntimeWithAutoconfig();
 
   if (!isPromise(runtime)) {
@@ -21,7 +23,7 @@ const callRuntimeMethod = <T extends keyof TestRuntime, S extends ArgumentTypes<
   return (runtime as Promise<TestRuntime>).then((testRuntime) => {
     // @ts-ignore
     return testRuntime[method](...args);
-  });
+  }) as R;
 };
 
 export const label = (name: LabelName | string, value: string) => {
@@ -96,7 +98,7 @@ const stepContext: () => StepContext = () => ({
   },
 });
 
-export const step = <T = void>(name: string, body: (context: StepContext) => T | PromiseLike<T>) => {
+export const step = <T = void>(name: string, body: (context: StepContext) => T | PromiseLike<T>): PromiseLike<T> => {
   return callRuntimeMethod("step", name, () => body(stepContext()));
 };
 
