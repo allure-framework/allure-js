@@ -268,8 +268,7 @@ export class ReporterRuntime {
     const stepUuid = randomUuid();
     this.state.setStepResult(stepUuid, stepResult);
 
-    // TODO pls think a bit more
-    this.stepStack.addStep(stepUuid, rootUuid);
+    this.stepStack.addStep(rootUuid, stepUuid);
 
     return stepUuid;
   };
@@ -420,16 +419,19 @@ export class ReporterRuntime {
       return;
     }
 
-    const { links, labels, parameters, ...rest } = message;
+    const { links, labels, parameters, displayName, ...rest } = message;
     this.updateTest(rootUuid, (result) => {
       if (links) {
-        result.links.concat(links);
+        result.links = [...result.links, ...links];
       }
       if (labels) {
-        result.labels.concat(labels);
+        result.labels = [...result.labels, ...labels];
       }
       if (parameters) {
-        result.parameters.concat(parameters);
+        result.parameters = [...result.parameters, ...parameters];
+      }
+      if (displayName) {
+        result.name = displayName;
       }
       Object.assign(result, rest);
     });
@@ -472,7 +474,7 @@ export class ReporterRuntime {
     this.stopStep(stepUuid, message.stop);
   };
   #handleAttachmentContentMessage = (rootUuid: string, message: RuntimeAttachmentContentMessage["data"]) => {
-    this.writeAttachment(rootUuid, undefined, message.name, message.content, {
+    this.writeAttachment(rootUuid, undefined, message.name, Buffer.from(message.content, message.encoding), {
       encoding: message.encoding,
       contentType: message.contentType,
       fileExtension: message.fileExtension,

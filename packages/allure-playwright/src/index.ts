@@ -73,7 +73,7 @@ export class AllureReporter implements ReporterV2 {
   private processedDiffs: string[] = [];
   private readonly startedTestCasesTitlesCache: string[] = [];
   private readonly allureResultsUuids: Map<string, string> = new Map();
-  private readonly allureCurrentlyRunningSteps: Map<string, string[]> = new Map();
+  private readonly attachmentSteps: Map<string, (string | undefined)[]> = new Map();
 
   constructor(config: AllurePlaywrightReporterConfig) {
     this.options = { suiteTitle: true, detail: true, ...config };
@@ -193,16 +193,18 @@ export class AllureReporter implements ReporterV2 {
   }
 
   onStepBegin(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
+    const testUuid = this.allureResultsUuids.get(test.id)!;
+
+    if (step.category === "attach") {
+      const currentStep = this.allureRuntime?.currentStep(testUuid);
+      this.attachmentSteps.set(testUuid, [...(this.attachmentSteps.get(testUuid) ?? []), currentStep]);
+      return;
+    }
+
+    // TODO fix the details disable, e.g. only ignore pw:api steps
     if (!this.options.detail && step.category !== "test.step") {
       return;
     }
-
-    // ignore attach steps since attachments are already in the report
-    if (step.category === "attach") {
-      return;
-    }
-
-    const testUuid = this.allureResultsUuids.get(test.id)!;
 
     this.allureRuntime!.startStep(testUuid, undefined, {
       name: step.title.substring(0, stepAttachPrefixLength),
@@ -221,6 +223,7 @@ export class AllureReporter implements ReporterV2 {
     }
 
     const testUuid = this.allureResultsUuids.get(test.id)!;
+
     const currentStep = this.allureRuntime!.currentStep(testUuid);
     if (!currentStep) {
       return;
@@ -271,8 +274,11 @@ export class AllureReporter implements ReporterV2 {
       testResult.stage = Stage.FINISHED;
     });
 
-    for (const attachment of result.attachments) {
-      await this.processAttachment(test.id, attachment);
+    const attachmentSteps = this.attachmentSteps.get(testUuid) ?? [];
+    for (let i = 0; i < result.attachments.length; i++) {
+      const attachment = result.attachments[i];
+      const attachmentStep = attachmentSteps.length > i ? attachmentSteps[i] : undefined;
+      await this.processAttachment(testUuid, attachmentStep, attachment);
     }
 
     if (result.stdout.length > 0) {
@@ -369,7 +375,8 @@ export class AllureReporter implements ReporterV2 {
   }
 
   private async processAttachment(
-    testId: string,
+    testUuid: string,
+    attachmentStepUuid: string | undefined,
     attachment: {
       name: string;
       contentType: string;
@@ -377,8 +384,6 @@ export class AllureReporter implements ReporterV2 {
       body?: Buffer;
     },
   ) {
-    const testUuid = this.allureResultsUuids.get(testId)!;
-
     if (!attachment.body && !attachment.path) {
       return;
     }
@@ -392,19 +397,27 @@ export class AllureReporter implements ReporterV2 {
     if (allureRuntimeMessage) {
       const message = JSON.parse(attachment.body!.toString()) as RuntimeMessage;
 
+      // TODO fix step metadata messages
       this.allureRuntime!.applyRuntimeMessages(testUuid, [message]);
       return;
     }
 
+    const parentUuid = this.allureRuntime!.startStep(testUuid, attachmentStepUuid, { name: attachment.name });
+    // only stop if step is created. Step may not be created only if test with specified uuid doesn't exists.
+    // usually, missing test by uuid means we should completely skip result processing;
+    // the later operations are safe and will only produce console warnings
+    if (parentUuid) {
+      this.allureRuntime!.stopStep(parentUuid, undefined);
+    }
     if (attachment.body) {
-      this.allureRuntime!.writeAttachment(testUuid, undefined, attachment.name, attachment.body, {
+      this.allureRuntime!.writeAttachment(testUuid, parentUuid, attachment.name, attachment.body, {
         contentType: attachment.contentType,
       });
     } else if (!existsSync(attachment.path!)) {
       return;
     } else {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      this.allureRuntime!.writeAttachment(testUuid, undefined, attachment.name, attachment.path!, {
+      this.allureRuntime!.writeAttachment(testUuid, parentUuid, attachment.name, attachment.path!, {
         contentType: attachment.contentType,
       });
     }

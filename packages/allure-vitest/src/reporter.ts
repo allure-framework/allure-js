@@ -88,10 +88,10 @@ export default class AllureVitestReporter implements Reporter {
     const testFullname = getTestFullName(task, cwd());
     const testUuid = this.allureReporterRuntime!.startTest({
       name: testDisplayName,
-      start: task.result!.startTime,
+      start: task.result?.startTime ?? Date.now(),
     });
 
-    this.allureReporterRuntime!.updateTest((result) => {
+    this.allureReporterRuntime!.updateTest(testUuid, (result) => {
       result.fullName = testFullname;
       result.labels.push({
         name: LabelName.FRAMEWORK,
@@ -114,7 +114,7 @@ export default class AllureVitestReporter implements Reporter {
         });
       }
 
-      this.allureReporterRuntime!.applyRuntimeMessages(allureRuntimeMessages, { testUuid });
+      this.allureReporterRuntime!.applyRuntimeMessages(testUuid, allureRuntimeMessages);
 
       switch (task.result?.state) {
         case "fail": {
@@ -140,11 +140,9 @@ export default class AllureVitestReporter implements Reporter {
           break;
         }
       }
-    }, testUuid);
-    this.allureReporterRuntime!.stopTest({
-      uuid: testUuid,
-      stop: (task.result?.startTime || 0) + (task.result?.duration || 0),
     });
+    const stop = task.result?.startTime ? task.result.startTime + (task.result.duration ?? 0) : undefined;
+    this.allureReporterRuntime!.stopTest(testUuid, stop);
     this.allureReporterRuntime!.writeTest(testUuid);
   }
 }

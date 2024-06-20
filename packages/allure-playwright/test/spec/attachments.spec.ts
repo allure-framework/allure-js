@@ -24,13 +24,16 @@ it("doesn't not throw on missing attachment", async () => {
     `,
   });
 
-  expect(tests[0].attachments).toEqual([
+  const [, step] = tests[0].steps;
+
+  expect(step.name).toBe("buffer-attachment");
+  expect(step.attachments).toEqual([
     expect.objectContaining({
       name: "buffer-attachment",
       type: "text/plain",
     }),
   ]);
-  expect(attachments[tests[0].attachments[0].source]).toEqual(Buffer.from("foo").toString("base64"));
+  expect(attachments[step.attachments[0].source]).toEqual(Buffer.from("foo").toString("base64"));
 });
 
 it("adds snapshots correctly and provide a screenshot diff", async () => {

@@ -38,7 +38,7 @@ it("handles single lambda step with attachment", async () => {
 
   expect(tests).toHaveLength(1);
   expect(tests[0].steps).toHaveLength(3);
-  const [step] = tests[0].steps[2].steps;
+  const [step] = tests[0].steps[1].steps;
   expect(step.name).toBe("foo.txt");
 
   const [attachment] = step.attachments;
@@ -66,19 +66,19 @@ it("handles nested lambda steps", async () => {
 
   expect(tests).toHaveLength(1);
   expect(tests[0].steps).toHaveLength(3);
-  expect(tests[0].steps[2]).toMatchObject({
+  expect(tests[0].steps[1]).toMatchObject({
     name: "step 1",
     status: Status.PASSED,
     stage: Stage.FINISHED,
   });
-  expect(tests[0].steps[2].steps).toHaveLength(1);
-  expect(tests[0].steps[2].steps[0]).toMatchObject({
+  expect(tests[0].steps[1].steps).toHaveLength(1);
+  expect(tests[0].steps[1].steps[0]).toMatchObject({
     name: "step 2",
     status: Status.PASSED,
     stage: Stage.FINISHED,
   });
-  expect(tests[0].steps[2].steps[0].steps).toHaveLength(1);
-  expect(tests[0].steps[2].steps[0].steps[0]).toMatchObject({
+  expect(tests[0].steps[1].steps[0].steps).toHaveLength(1);
+  expect(tests[0].steps[1].steps[0].steps[0]).toMatchObject({
     name: "step 3",
     status: Status.PASSED,
     stage: Stage.FINISHED,
