@@ -1,7 +1,8 @@
 import { fork } from "child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { dirname, extname, join } from "node:path";
+import { attachment, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
@@ -34,24 +35,31 @@ export const runPlaywrightInlineTest = async (
   };
   const testDir = join(__dirname, "fixtures", randomUUID());
 
-  await mkdir(testDir, { recursive: true });
+  await step(`create test dir ${testDir}`, async () => {
+    await mkdir(testDir, { recursive: true });
+  });
 
   for (const file of Object.keys(testFiles)) {
-    const filePath = join(testDir, file);
-
-    await mkdir(dirname(filePath), { recursive: true });
-    await writeFile(filePath, testFiles[file as keyof typeof testFiles], "utf8");
+    await step(file, async () => {
+      const filePath = join(testDir, file);
+      await mkdir(dirname(filePath), { recursive: true });
+      const content = testFiles[file as keyof typeof testFiles];
+      await writeFile(filePath, content, "utf8");
+      await attachment(file, content, { contentType: "text/plain", fileExtension: extname(file), encoding: "utf-8" });
+    });
   }
 
   const modulePath = require.resolve("@playwright/test/cli");
   const args = ["test", "-c", "./playwright.config.js", testDir, ...cliArgs];
-  const testProcess = fork(modulePath, args, {
-    env: {
-      ...process.env,
-      ...env,
-    },
-    cwd: testDir,
-    stdio: "pipe",
+  const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
+    return fork(modulePath, args, {
+      env: {
+        ...process.env,
+        ...env,
+      },
+      cwd: testDir,
+      stdio: "pipe",
+    });
   });
 
   const messageReader = new MessageReader();
@@ -69,6 +77,7 @@ export const runPlaywrightInlineTest = async (
     testProcess.on("exit", async () => {
       await rm(testDir, { recursive: true });
 
+      await messageReader.attachResults();
       return resolve(messageReader.results);
     });
   });

@@ -1,8 +1,9 @@
-import { expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { runVitestInlineTest } from "../utils.js";
 
-it("should support fixtures", async () => {
-  const { tests } = await runVitestInlineTest(`
+describe("fixtures", () => {
+  it("should report fixtures", async () => {
+    const { tests } = await runVitestInlineTest(`
     import { afterAll, afterEach, beforeAll, beforeEach, test } from "vitest";
     import { step } from "allure-js-commons";
 
@@ -27,23 +28,24 @@ it("should support fixtures", async () => {
     });
   `);
 
-  expect(tests).toHaveLength(1);
-  const [testResult] = tests;
-  expect(testResult.steps).toEqual([
-    expect.objectContaining({
-      name: "before all step",
-    }),
-    expect.objectContaining({
-      name: "before each step",
-    }),
-    expect.objectContaining({
-      name: "test step",
-    }),
-    expect.objectContaining({
-      name: "after each step",
-    }),
-    expect.objectContaining({
-      name: "after all step",
-    }),
-  ]);
+    expect(tests).toHaveLength(1);
+    const [testResult] = tests;
+    expect(testResult.steps).toEqual([
+      expect.objectContaining({
+        name: "before all step",
+      }),
+      expect.objectContaining({
+        name: "before each step",
+      }),
+      expect.objectContaining({
+        name: "test step",
+      }),
+      expect.objectContaining({
+        name: "after each step",
+      }),
+      expect.objectContaining({
+        name: "after all step",
+      }),
+    ]);
+  });
 });

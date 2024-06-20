@@ -1,11 +1,12 @@
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { runVitestInlineTest } from "../utils.js";
 
-it("supports test plan", async () => {
-  const { tests } = await runVitestInlineTest(
-    `
+describe("test plan", () => {
+  it("should support test plan", async () => {
+    const { tests } = await runVitestInlineTest(
+      `
       import { test, describe } from "vitest";
 
       test("foo", () => {});
@@ -22,33 +23,36 @@ it("supports test plan", async () => {
         });
       });
     `,
-    undefined,
-    async (testDir) => {
-      const testPlanPath = join(testDir, "testplan.json");
+      undefined,
+      async (testDir) => {
+        const testPlanPath = join(testDir, "testplan.json");
 
-      await writeFile(
-        testPlanPath,
-        JSON.stringify({
-          tests: [
-            {
-              selector: "sample.test.ts#baz @allure.id=2",
-            },
-            {
-              id: 3,
-            },
-            {
-              selector: "sample.test.ts#foo bar boop",
-            },
-          ],
-        }),
-      );
+        await writeFile(
+          testPlanPath,
+          JSON.stringify({
+            tests: [
+              {
+                selector: "sample.test.ts#baz @allure.id=2",
+              },
+              {
+                id: 3,
+              },
+              {
+                selector: "sample.test.ts#foo bar boop",
+              },
+            ],
+          }),
+        );
 
-      process.env.ALLURE_TESTPLAN_PATH = testPlanPath;
-    },
-  );
+        process.env.ALLURE_TESTPLAN_PATH = testPlanPath;
+      },
+    );
 
-  expect(tests).toHaveLength(3);
-  expect(tests).toContainEqual(expect.objectContaining({ name: "baz", fullName: "sample.test.ts#baz @allure.id=2" }));
-  expect(tests).toContainEqual(expect.objectContaining({ name: "beep", fullName: "sample.test.ts#beep @allure.id=3" }));
-  expect(tests).toContainEqual(expect.objectContaining({ name: "boop", fullName: "sample.test.ts#foo bar boop" }));
+    expect(tests).toHaveLength(3);
+    expect(tests).toContainEqual(expect.objectContaining({ name: "baz", fullName: "sample.test.ts#baz @allure.id=2" }));
+    expect(tests).toContainEqual(
+      expect.objectContaining({ name: "beep", fullName: "sample.test.ts#beep @allure.id=3" }),
+    );
+    expect(tests).toContainEqual(expect.objectContaining({ name: "boop", fullName: "sample.test.ts#foo bar boop" }));
+  });
 });

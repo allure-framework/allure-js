@@ -13,7 +13,13 @@ export class VitestTestRuntime extends MessageTestRuntime {
     const currentSuite = getCurrentSuite();
     if (currentSuite) {
       currentSuite.tasks.forEach((task) => processTask(task, message));
+      return Promise.resolve();
     }
+    // eslint-disable-next-line no-console
+    console.error(
+      "no vitest context is detected. Please ensure you're using allure API within vitest test (it, test) " +
+        "or setup (beforeAll, beforeEach, afterAll, afterEach) function. Make sure vitest@1.6.0 or above is used",
+    );
     return Promise.resolve();
   }
 }

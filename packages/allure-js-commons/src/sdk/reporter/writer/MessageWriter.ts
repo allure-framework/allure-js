@@ -35,7 +35,7 @@ export class MessageWriter implements Writer {
   }
 
   writeEnvironmentInfo(info: EnvironmentInfo): void {
-    const text = stringifyProperties(info, { unicode: true }).toString();
+    const text = stringifyProperties(info);
 
     this.sendData("environment.properties", "misc", Buffer.from(text, "utf-8"));
   }

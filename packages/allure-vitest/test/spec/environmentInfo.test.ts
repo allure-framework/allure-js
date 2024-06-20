@@ -1,16 +1,17 @@
 import { join } from "node:path";
-import { expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { runVitestInlineTest } from "../utils.js";
 
-it("should support environmentInfo", async () => {
-  const { envInfo } = await runVitestInlineTest(
-    `
+describe("environment info", () => {
+  it("should add environmentInfo", async () => {
+    const { envInfo } = await runVitestInlineTest(
+      `
     import { test } from "vitest";
 
     test("sample test", async () => {
     });
   `,
-    (testDir) => `
+      (testDir) => `
     import { defineConfig } from "vitest/config";
 
     export default defineConfig({
@@ -33,7 +34,8 @@ it("should support environmentInfo", async () => {
       },
     });
   `,
-  );
+    );
 
-  expect(envInfo).toEqual({ "app version": "123.0.1", "some other key": "some other value" });
+    expect(envInfo).toEqual({ "app version": "123.0.1", "some other key": "some other value" });
+  });
 });

@@ -1,4 +1,4 @@
-import { basename, normalize, relative } from "node:path";
+import { normalize, relative } from "node:path";
 import { cwd } from "node:process";
 import type { File, Reporter, Task } from "vitest";
 import { LabelName, Stage, Status } from "allure-js-commons";
@@ -82,10 +82,7 @@ export default class AllureVitestReporter implements Reporter {
     }
 
     const suitePath = getSuitePath(task);
-    const normalizedTestPath = normalize(relative(cwd(), task.file!.filepath))
-      .replace(/^\//, "")
-      .split("/")
-      .filter((item: string) => item !== basename(task.file!.filepath));
+    const normalizedTestPath = normalize(relative(cwd(), task.file!.filepath)).replace(/^\//, "").split("/");
     const titleMetadata = extractMetadataFromString(task.name);
     const testDisplayName = titleMetadata.cleanTitle || task.name;
     const testFullname = getTestFullName(task, cwd());

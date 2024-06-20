@@ -37,10 +37,13 @@
     "dist"
   ],
   "scripts": {
-    "clean": "rimraf ./dist",
+    "allure-report": "allure serve ./out/allure-results",
+    "clean": "rimraf ./dist ./out",
     "compile": "tsc --project ./tsconfig.json",
+    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean --single-file",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
+    "pretest": "run-p clean compile",
     "test": "vitest run"
   },
   "dependencies": {
@@ -52,6 +55,7 @@
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "@vitest/runner": "^1.6.0",
+    "allure-commandline": "^2.29.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.28.1",
