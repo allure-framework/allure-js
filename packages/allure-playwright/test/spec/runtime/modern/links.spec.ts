@@ -27,10 +27,10 @@ it("sets runtime links", async () => {
                testMode: true,
                suiteTitle: true,
                links: {
-                 ${LinkType.ISSUE}: {
+                 issue: {
                    urlTemplate: "https://example.org/issues/%s",
                  },
-                 ${LinkType.TMS}: {
+                 tms: {
                    urlTemplate: "https://example.org/tasks/%s",
                  }
                }
