@@ -24,16 +24,14 @@ it("sets runtime links", async () => {
                resultsDir: "./allure-results",
                testMode: true,
                suiteTitle: true,
-               links: [
-                 {
-                   type: "issue",
+               links: {
+                 issue: {
                    urlTemplate: "https://example.org/issues/%s",
                  },
-                 {
-                   type: "tms",
+                 tms: {
                    urlTemplate: "https://example.org/tasks/%s",
                  }
-               ]
+               }
              },
            ],
            ["dot"],

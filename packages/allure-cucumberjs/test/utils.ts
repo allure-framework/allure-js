@@ -34,18 +34,16 @@ export const runCucumberInlineTest = async (
               name: "severity",
             },
           ],
-          links: [
-            {
+          links: {
+            issue: {
               pattern: [/@issue=(.*)/],
-              type: "issue",
               urlTemplate: "https://example.com/issues/%s",
             },
-            {
+            tms: {
               pattern: [/@tms=(.*)/],
-              type: "tms",
               urlTemplate: "https://example.com/tasks/%s",
             },
-          ],
+          },
         }
       }
     }

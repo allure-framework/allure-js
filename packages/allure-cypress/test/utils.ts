@@ -32,16 +32,14 @@ export const runCypressInlineTest = async (
         viewportWidth: 1240,
         setupNodeEvents: (on, config) => {
           const reporter = allureCypress(on, {
-            links: [
-              {
-                type: "issue",
+            links: {
+              issue: {
                 urlTemplate: "https://allurereport.org/issues/%s"
               },
-              {
-                type: "tms",
+              tms: {
                 urlTemplate: "https://allurereport.org/tasks/%s"
               },
-            ]
+            }
           });
 
           on("after:spec", (spec, result) => {

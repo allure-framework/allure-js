@@ -3,16 +3,14 @@ const fixture = `
 
   const reporter = new AllureJasmineReporter({
     testMode: true,
-    links: [
-      {
-        type: "issue",
+    links: {
+      issue: {
         urlTemplate: "https://example.org/issues/%s",
       },
-      {
-        type: "tms",
+      tms: {
         urlTemplate: "https://example.org/tasks/%s",
       }
-    ],
+    },
     categories: [
       {
         name: "Sad tests",
