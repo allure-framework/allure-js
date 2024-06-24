@@ -1,0 +1,1 @@
+import "allure-vitest/setup";
