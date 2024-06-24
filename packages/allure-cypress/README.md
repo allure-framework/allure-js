@@ -188,3 +188,22 @@ module.exports = {
   },
 };
 ```
+
+## Known issues
+
+### Global hooks reporting
+
+The integration can't report `after` hooks properly defined outside of the `describe` block. 
+If you want to see the hooks in the report wrap your tests into `describe` block and move the hooks inside it:
+
+```js
+// this hook won't be reported
+after(() => {})
+
+describe("suite", () => {
+  // this hook will be reported
+  after(() => {})
+
+  it("test", () => {})
+})
+```

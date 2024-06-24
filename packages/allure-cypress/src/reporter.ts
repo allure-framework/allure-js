@@ -44,11 +44,13 @@ export class AllureCypress {
         let currentTestUuid: string;
         let currentTestStartMessage: CypressTestStartRuntimeMessage;
 
-        this.globalHooksMessages = []
+        this.globalHooksMessages = [];
 
         messages.forEach((message, i) => {
           const previousMessagesSlice = messages.slice(0, i);
-          const lastHookMessage = previousMessagesSlice.toReversed().find(({ type }) => type === "cypress_hook_start" || type === "cypress_hook_end")
+          const lastHookMessage = previousMessagesSlice
+            .toReversed()
+            .find(({ type }) => type === "cypress_hook_start" || type === "cypress_hook_end");
 
           if (message.type === "cypress_suite_start") {
             this.allureRuntime.startScope();
@@ -73,7 +75,11 @@ export class AllureCypress {
             return;
           }
 
-          if (message.type === "cypress_hook_end" && (lastHookMessage as CypressHookStartRuntimeMessage).data?.global && lastHookMessage?.type === "cypress_hook_start") {
+          if (
+            message.type === "cypress_hook_end" &&
+            (lastHookMessage as CypressHookStartRuntimeMessage).data?.global &&
+            lastHookMessage?.type === "cypress_hook_start"
+          ) {
             this.globalHooksMessages.push(message);
             return;
           }
@@ -93,13 +99,14 @@ export class AllureCypress {
           }
 
           if (message.type === "cypress_command_start") {
-            const args = JSON.stringify(message.data.args, null, 2);
-
             this.allureRuntime.startStep({
               name: message.data.name,
-            });
-            this.allureRuntime.writeAttachment("Command arguments", Buffer.from(args, "utf8"), {
-              contentType: ContentType.JSON,
+              parameters: [
+                {
+                  name: "Arguments",
+                  value: JSON.stringify(message.data.args, null, 2),
+                },
+              ],
             });
             return;
           }
@@ -226,7 +233,7 @@ export class AllureCypress {
           });
           this.allureRuntime.writeFixture();
         }
-      })
+      });
     }
 
     for (const uuid of testUuids) {

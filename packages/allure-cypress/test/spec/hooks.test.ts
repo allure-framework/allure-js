@@ -2,24 +2,199 @@ import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils.js";
 
-it("handles hooks", async () => {
+it("reports \"before all\" hook outside suite", async () => {
   const { tests, groups } = await runCypressInlineTest(
     () => `
-    before(() => {
-      console.log("before all");
+    before(() => {});
+
+    it("passed 1", () => {
+      cy.wrap(1).should("eq", 1);
     });
 
-    beforeEach(() => {
-      console.log("before");
+    it("passed 2", () => {
+      cy.wrap(1).should("eq", 1);
+    });
+  `,
+  );
+
+  expect(tests).toHaveLength(2);
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+        name: "passed 1",
+      }),
+      expect.objectContaining({
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+        name: "passed 2",
+      }),
+    ]),
+  );
+
+  const [{ uuid: test1Uuid }, { uuid: test2Uuid }] = tests;
+
+  expect(groups).toHaveLength(1);
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: String.raw`"before all" hook`,
+        children: expect.arrayContaining([test1Uuid, test2Uuid]),
+        befores: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.PASSED,
+            name: String.raw`"before all" hook`,
+          }),
+        ]),
+      }),
+    ]),
+  );
+});
+
+it("doesn't report \"after all\" hook outside suite", async () => {
+  const { tests, groups } = await runCypressInlineTest(
+    () => `
+    after(() => {});
+
+    it("passed 1", () => {
+      cy.wrap(1).should("eq", 1);
     });
 
-    afterEach(() => {
-      console.log("after");
+    it("passed 2", () => {
+      cy.wrap(1).should("eq", 1);
     });
+  `,
+  );
 
-    after(() => {
-      console.log("after all");
+  expect(tests).toHaveLength(2);
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+        name: "passed 1",
+      }),
+      expect.objectContaining({
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+        name: "passed 2",
+      }),
+    ]),
+  );
+  expect(groups).toHaveLength(0);
+});
+
+it("reports \"before all\" hook inside suite", async () => {
+  const { tests, groups } = await runCypressInlineTest(
+    () => `
+    describe("suite", () => {
+      before(() => {});
+
+      it("passed 1", () => {
+        cy.wrap(1).should("eq", 1);
+      });
+
+      it("passed 2", () => {
+        cy.wrap(1).should("eq", 1);
+      });
     });
+  `,
+  );
+
+  expect(tests).toHaveLength(2);
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+        name: "passed 1",
+      }),
+      expect.objectContaining({
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+        name: "passed 2",
+      }),
+    ]),
+  );
+
+  const [{ uuid: test1Uuid }, { uuid: test2Uuid }] = tests;
+
+  expect(groups).toHaveLength(1);
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: String.raw`"before all" hook`,
+        children: expect.arrayContaining([test1Uuid, test2Uuid]),
+        befores: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.PASSED,
+            name: String.raw`"before all" hook`,
+          }),
+        ]),
+      }),
+    ]),
+  );
+});
+
+it("reports \"after all\" hook inside suite", async () => {
+  const { tests, groups } = await runCypressInlineTest(
+    () => `
+    describe("suite", () => {
+      after(() => {});
+
+      it("passed 1", () => {
+        cy.wrap(1).should("eq", 1);
+      });
+
+      it("passed 2", () => {
+        cy.wrap(1).should("eq", 1);
+      });
+    });
+  `,
+  );
+
+  expect(tests).toHaveLength(2);
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+        name: "passed 1",
+      }),
+      expect.objectContaining({
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+        name: "passed 2",
+      }),
+    ]),
+  );
+
+  const [{ uuid: test1Uuid }, { uuid: test2Uuid }] = tests;
+
+  expect(groups).toHaveLength(1);
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: String.raw`"after all" hook`,
+        children: expect.arrayContaining([test1Uuid, test2Uuid]),
+        afters: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.PASSED,
+            name: String.raw`"after all" hook`,
+          }),
+        ]),
+      }),
+    ]),
+  );
+});
+
+it("reports \"before each\" and \"after each\" hooks outside suite", async () => {
+  const { tests, groups } = await runCypressInlineTest(
+    () => `
+    beforeEach(() => {});
+
+    afterEach(() => {});
 
     it("passed", () => {
       cy.wrap(1).should("eq", 1);
@@ -27,9 +202,83 @@ it("handles hooks", async () => {
   `,
   );
 
-  debugger
+  expect(tests).toHaveLength(1);
+  expect(tests[0].status).toBe(Status.PASSED);
+  expect(tests[0].stage).toBe(Stage.FINISHED);
+
+  const [{ uuid: testUuid }] = tests;
+
+  expect(groups).toHaveLength(2);
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: String.raw`"before each" hook`,
+        children: [testUuid],
+        befores: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.PASSED,
+            name: String.raw`"before each" hook`,
+          }),
+        ]),
+      }),
+      expect.objectContaining({
+        name: String.raw`"after each" hook`,
+        children: [testUuid],
+        afters: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.PASSED,
+            name: String.raw`"after each" hook`,
+          }),
+        ]),
+      }),
+    ]),
+  );
+});
+
+it("reports \"before each\" and \"after each\" hooks inside suite", async () => {
+  const { tests, groups } = await runCypressInlineTest(
+    () => `
+    describe("suite", () => {
+      beforeEach(() => {});
+
+      afterEach(() => {});
+
+      it("passed", () => {
+        cy.wrap(1).should("eq", 1);
+      });
+    });
+  `,
+  );
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe(Status.PASSED);
   expect(tests[0].stage).toBe(Stage.FINISHED);
+
+  const [{ uuid: testUuid }] = tests;
+
+  expect(groups).toHaveLength(2);
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: String.raw`"before each" hook`,
+        children: [testUuid],
+        befores: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.PASSED,
+            name: String.raw`"before each" hook`,
+          }),
+        ]),
+      }),
+      expect.objectContaining({
+        name: String.raw`"after each" hook`,
+        children: [testUuid],
+        afters: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.PASSED,
+            name: String.raw`"after each" hook`,
+          }),
+        ]),
+      }),
+    ]),
+  );
 });
