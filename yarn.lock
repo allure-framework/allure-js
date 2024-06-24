@@ -4228,8 +4228,9 @@ __metadata:
     "@types/sinon": "npm:^17.0.0"
     "@typescript-eslint/eslint-plugin": "npm:^7.0.0"
     "@typescript-eslint/parser": "npm:^7.0.0"
+    allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
-    allure-vitest: "workspace:^"
+    allure-vitest: "workspace:*"
     babel-plugin-add-module-exports: "npm:^1.0.4"
     chai: "npm:^4.3.8"
     chai-like: "npm:^1.1.1"
@@ -4246,7 +4247,7 @@ __metadata:
     sinon: "npm:^18.0.0"
     ts-node: "npm:^10.9.1"
     typescript: "npm:^5.2.2"
-    vitest: "npm:^1.4.0"
+    vitest: "npm:^1.6.0"
   languageName: unknown
   linkType: soft
 
@@ -4501,7 +4502,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"allure-vitest@workspace:*, allure-vitest@workspace:^, allure-vitest@workspace:packages/allure-vitest":
+"allure-vitest@workspace:*, allure-vitest@workspace:packages/allure-vitest":
   version: 0.0.0-use.local
   resolution: "allure-vitest@workspace:packages/allure-vitest"
   dependencies:
