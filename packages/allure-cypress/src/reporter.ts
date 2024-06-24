@@ -2,8 +2,8 @@ import type Cypress from "cypress";
 import { ContentType, LabelName, Stage } from "allure-js-commons";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { FileSystemWriter, ReporterRuntime, getSuiteLabels } from "allure-js-commons/sdk/reporter";
-import type { LinkConfig } from "allure-js-commons/sdk/reporter";
 import type { CypressRuntimeMessage, CypressTestStartRuntimeMessage } from "./model.js";
+import type { LinkConfig } from "allure-js-commons/sdk/reporter";
 
 export type AllureCypressConfig = {
   resultsDir?: string;
@@ -29,7 +29,7 @@ export class AllureCypress {
   private pushTestUuid(absolutePath: string, uuid: string) {
     const currentUuids = this.testsUuidsByCypressAbsolutePath.get(absolutePath) || [];
 
-    this.testsUuidsByCypressAbsolutePath.set(absolutePath, [...currentUuids, uuid]);
+    this.testsUuidsByCypressAbsolutePath.set(absolutePath, currentUuids.concat(uuid));
   }
 
   attachToCypress(on: Cypress.PluginEvents) {
@@ -45,20 +45,54 @@ export class AllureCypress {
           }
 
           if (message.type === "cypress_suite_end") {
-            const currentScope = this.allureRuntime.getCurrentScope();
+            this.allureRuntime.stopScope();
+            return;
+          }
 
-            message.data.hooks.forEach((hook) => {
-              this.allureRuntime.startFixture(hook.type, {
-                name: hook.name,
-                status: hook.status,
-                statusDetails: hook.statusDetails,
-              });
-              this.allureRuntime.writeFixture();
+          if (message.type === "cypress_hook_start") {
+            this.allureRuntime.startFixture(message.data.type, {
+              name: message.data.name,
+              start: message.data.start,
             });
+            return;
+          }
 
-            if (currentScope?.parent) {
-              this.allureRuntime.stopScope();
-            }
+          if (message.type === "cypress_hook_end") {
+            this.allureRuntime.updateFixture((r) => {
+              r.stage = message.data.stage;
+              r.status = message.data.status;
+              r.stop = message.data.stop;
+
+              if (message.data.statusDetails) {
+                r.statusDetails = message.data.statusDetails;
+              }
+            });
+            this.allureRuntime.writeFixture();
+            return;
+          }
+
+          if (message.type === "cypress_command_start") {
+            const args = JSON.stringify(message.data.args, null, 2);
+
+            this.allureRuntime.startStep({
+              name: message.data.name,
+            });
+            this.allureRuntime.writeAttachment("Command arguments", Buffer.from(args, "utf8"), {
+              contentType: ContentType.JSON,
+            });
+            return;
+          }
+
+          if (message.type === "cypress_command_end") {
+            this.allureRuntime.updateStep((r) => {
+              r.stage = message.data.stage;
+              r.status = message.data.status;
+
+              if (message.data.statusDetails) {
+                r.statusDetails = message.data.statusDetails;
+              }
+            });
+            this.allureRuntime.stopStep();
             return;
           }
 
@@ -105,7 +139,7 @@ export class AllureCypress {
 
             this.allureRuntime.stopTest({ uuid: currentTestUuid!, stop: Date.now() });
 
-            if (currentTestStartMessage?.data?.isInteractive) {
+            if (currentTestStartMessage!.data.isInteractive) {
               this.allureRuntime.writeTest(currentTestUuid!);
             } else {
               // False positive by eslint (testUuid is string)
@@ -130,19 +164,20 @@ export class AllureCypress {
     });
   }
 
-  endSpec(spec: Cypress.Spec, cypressResult: CypressCommandLine.RunResult) {
+  endSpec(spec: Cypress.Spec, cypressVideoPath?: string) {
     const testUuids = this.testsUuidsByCypressAbsolutePath.get(spec.absolute);
+
     this.testsUuidsByCypressAbsolutePath.delete(spec.absolute);
 
     if (!testUuids) {
       return;
     }
 
-    if (cypressResult.video) {
+    if (cypressVideoPath) {
       this.allureRuntime.startFixture("after", {
         name: "Cypress video",
       });
-      this.allureRuntime.writeAttachmentFromPath("Cypress video", cypressResult.video, {
+      this.allureRuntime.writeAttachmentFromPath("Cypress video", cypressVideoPath, {
         contentType: ContentType.MP4,
       });
       this.allureRuntime.writeFixture();
@@ -161,8 +196,11 @@ export const allureCypress = (on: Cypress.PluginEvents, allureConfig?: AllureCyp
 
   allureCypressReporter.attachToCypress(on);
 
-  on("after:spec", (spec, result) => {
-    allureCypressReporter.endSpec(spec, result);
+  on("after:run", (results) => {
+    // @ts-ignore
+    results.runs.forEach((run) => {
+      allureCypressReporter.endSpec(run.spec, run.video);
+    });
   });
 
   return allureCypressReporter;
