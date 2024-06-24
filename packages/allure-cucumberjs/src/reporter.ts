@@ -1,13 +1,18 @@
 import type { IFormatterOptions, TestCaseHookDefinition } from "@cucumber/cucumber";
 import { Formatter, World } from "@cucumber/cucumber";
 import type * as messages from "@cucumber/messages";
-import { AttachmentContentEncoding, type PickleTag, type Tag, type TestStepResult } from "@cucumber/messages";
-import { TestStepResultStatus } from "@cucumber/messages";
+import {
+  AttachmentContentEncoding,
+  type PickleTag,
+  type Tag,
+  type TestStepResult,
+  TestStepResultStatus,
+} from "@cucumber/messages";
 import os from "node:os";
 import { extname } from "node:path";
 import process from "node:process";
-import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import type { Label, Link, TestResult } from "allure-js-commons";
+import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
   FileSystemWriter,
@@ -308,19 +313,17 @@ export default class AllureCucumberReporter extends Formatter {
 
       const csvDataTable = `${csvDataTableHeader}\n${csvDataTableBody}\n`;
 
-      this.allureRuntime.writeAttachment(
-        "Examples",
-        Buffer.from(csvDataTable, "utf-8"),
-        { contentType: ContentType.CSV, fileExtension: ".csv" },
-        testUuid,
-      );
+      this.allureRuntime.writeAttachment(testUuid, null, "Examples", Buffer.from(csvDataTable, "utf-8"), {
+        contentType: ContentType.CSV,
+        fileExtension: ".csv",
+      });
     });
   }
 
   private onTestCaseFinished(data: messages.TestCaseFinished) {
     const testUuid = this.allureResultsUuids.get(data.testCaseStartedId)!;
 
-    this.allureRuntime.updateTest((result) => {
+    this.allureRuntime.updateTest(testUuid, (result) => {
       result.status = result.steps.length > 0 ? getWorstStepResultStatus(result.steps) : Status.PASSED;
       result.stage = Stage.FINISHED;
 
@@ -329,11 +332,11 @@ export default class AllureCucumberReporter extends Formatter {
           message: "The test doesn't have an implementation.",
         };
       }
-    }, testUuid);
-    this.allureRuntime.stopTest({ uuid: testUuid, stop: Date.now() });
+    });
+    this.allureRuntime.stopTest(testUuid);
     this.allureRuntime.writeTest(testUuid);
 
-    this.allureRuntime.stopScope();
+    // this.allureRuntime.stopScope();
   }
 
   private onTestStepStarted(data: messages.TestStepStarted) {
@@ -347,18 +350,18 @@ export default class AllureCucumberReporter extends Formatter {
     }
 
     if (beforeHook) {
-      this.allureRuntime.startFixture("before", {
-        name: beforeHook.name,
-        stage: Stage.RUNNING,
-      });
+      // this.allureRuntime.startFixture("before", {
+      //   name: beforeHook.name,
+      //   stage: Stage.RUNNING,
+      // });
       return;
     }
 
     if (afterHook) {
-      this.allureRuntime.startFixture("after", {
-        name: afterHook.name,
-        stage: Stage.RUNNING,
-      });
+      // this.allureRuntime.startFixture("after", {
+      //   name: afterHook.name,
+      //   stage: Stage.RUNNING,
+      // });
       return;
     }
 
@@ -377,13 +380,12 @@ export default class AllureCucumberReporter extends Formatter {
         .map((astNodeId) => this.stepMap.get(astNodeId))
         .map((stepAstNode) => stepAstNode?.keyword)
         .find((keyword) => keyword !== undefined) || "";
-    const stepResult = {
+
+    const stepUuid = this.allureRuntime.startStep(testUuid, undefined, {
       ...createStepResult(),
       name: `${stepKeyword}${stepPickle.text}`,
       start: data.timestamp.nanos,
-    };
-
-    this.allureRuntime.startStep(stepResult, testUuid);
+    });
 
     if (!stepPickle.argument?.dataTable) {
       return;
@@ -394,15 +396,10 @@ export default class AllureCucumberReporter extends Formatter {
       "",
     );
 
-    this.allureRuntime.writeAttachment(
-      "Data table",
-      Buffer.from(csvDataTable, "utf-8"),
-      {
-        contentType: ContentType.CSV,
-        fileExtension: ".csv",
-      },
-      testUuid,
-    );
+    this.allureRuntime.writeAttachment(testUuid, stepUuid, "Data table", Buffer.from(csvDataTable, "utf-8"), {
+      contentType: ContentType.CSV,
+      fileExtension: ".csv",
+    });
   }
 
   private onTestStepFinished(data: messages.TestStepFinished) {
@@ -418,29 +415,29 @@ export default class AllureCucumberReporter extends Formatter {
     const stage = status !== Status.SKIPPED ? Stage.FINISHED : Stage.PENDING;
 
     if (beforeHook || afterHook) {
-      this.allureRuntime.updateFixture((r) => {
-        r.stage = stage;
-        r.status = status;
-
-        if (data.testStepResult.exception) {
-          r.statusDetails = {
-            message: data.testStepResult.message,
-            trace: data.testStepResult.exception.stackTrace,
-          };
-        }
-      });
-      this.allureRuntime.writeFixture();
+      // this.allureRuntime.updateFixture((r) => {
+      //   r.stage = stage;
+      //   r.status = status;
+      //
+      //   if (data.testStepResult.exception) {
+      //     r.statusDetails = {
+      //       message: data.testStepResult.message,
+      //       trace: data.testStepResult.exception.stackTrace,
+      //     };
+      //   }
+      // });
+      // this.allureRuntime.writeFixture();
       return;
     }
 
     const testUuid = this.allureResultsUuids.get(data.testCaseStartedId)!;
-    const currentStep = this.allureRuntime.getCurrentStep(testUuid);
+    const currentStep = this.allureRuntime.currentStep(testUuid);
 
     if (!currentStep) {
       return;
     }
 
-    this.allureRuntime.updateStep((r) => {
+    this.allureRuntime.updateStep(currentStep, (r) => {
       r.status = status;
       r.stage = stage;
 
@@ -457,12 +454,10 @@ export default class AllureCucumberReporter extends Formatter {
           trace: data.testStepResult.exception.stackTrace,
         };
       }
-    }, testUuid);
-
-    this.allureRuntime.stopStep({
-      uuid: testUuid,
-      stop: currentStep.start! + data.timestamp.nanos,
     });
+
+    // TODO stop from duration? use data.timestamp.nanos?
+    this.allureRuntime.stopStep(testUuid);
   }
 
   private onAttachment(message: messages.Attachment): void {
@@ -475,29 +470,25 @@ export default class AllureCucumberReporter extends Formatter {
     if (message.mediaType === ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE) {
       const parsedMessage = JSON.parse(message.body);
 
-      this.allureRuntime.applyRuntimeMessages(Array.isArray(parsedMessage) ? parsedMessage : [parsedMessage], {
-        testUuid,
-      });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      this.allureRuntime.applyRuntimeMessages(testUuid, Array.isArray(parsedMessage) ? parsedMessage : [parsedMessage]);
       return;
     }
 
     const encoding: BufferEncoding = message.contentEncoding === AttachmentContentEncoding.BASE64 ? "base64" : "utf-8";
 
-    this.allureRuntime.applyRuntimeMessages(
-      [
-        {
-          type: "attachment_content",
-          data: {
-            name: message.fileName ?? "Attachment",
-            content: Buffer.from(message.body, encoding).toString("base64"),
-            encoding: "base64",
-            contentType: message.mediaType,
-            fileExtension: message.fileName ? extname(message.fileName) : undefined,
-            wrapInStep: true,
-          },
+    this.allureRuntime.applyRuntimeMessages(testUuid, [
+      {
+        type: "attachment_content",
+        data: {
+          name: message.fileName ?? "Attachment",
+          content: Buffer.from(message.body, encoding).toString("base64"),
+          encoding: "base64",
+          contentType: message.mediaType,
+          fileExtension: message.fileName ? extname(message.fileName) : undefined,
+          wrapInStep: true,
         },
-      ],
-      { testUuid },
-    );
+      },
+    ]);
   }
 }
