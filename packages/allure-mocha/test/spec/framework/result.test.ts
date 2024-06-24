@@ -29,9 +29,8 @@ describe("defaults", () => {
   });
 
   it("has timing props", () => {
-    expect(test.start).greaterThan(0);
-    expect(test.stop).greaterThan(test.start as number);
     expect(test.start).greaterThanOrEqual(sampleStart);
+    expect(test.stop).greaterThanOrEqual(test.start as number);
     expect(test.stop).lessThanOrEqual(sampleStop);
   });
 

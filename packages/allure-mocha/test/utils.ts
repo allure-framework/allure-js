@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { appendFileSync } from "node:fs";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import * as path from "node:path";
+import { attachment, attachmentPath, parameter, step } from "allure-js-commons";
 import type { AllureResults, Category } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
@@ -50,6 +51,10 @@ abstract class AllureMochaTestRunner {
   }
 
   run = async (...samples: readonly (string | readonly string[])[]) => {
+    // TODO parameter should accept any type
+    await parameter("parallel", `${RUN_IN_PARALLEL}`);
+    await parameter("module", SPEC_FORMAT);
+
     const testDir = path.join(this.runResultsDir, randomUUID());
 
     const filesToCopy = [...this.getFilesToCopy(testDir)];
@@ -73,49 +78,61 @@ abstract class AllureMochaTestRunner {
     const cmdContent = [scriptPath, ...scriptArgs].join("\n  ");
 
     await mkdir(testDir, { recursive: true });
-    await Promise.all([
-      ...filesToCopy.map(async ([src, dst]) => {
+    for (const [src, dst] of filesToCopy) {
+      const name = path.basename(dst);
+      await step(name, async () => {
         const dstDir = path.dirname(dst);
         await mkdir(dstDir, { recursive: true });
         await copyFile(src, dst);
-      }),
-      ...filesToTransform.map(async ([src, dst, uncomment]) => {
+        await attachmentPath(name, src, { contentType: "text/plain" });
+      });
+    }
+
+    for (const [src, dst, uncomment] of filesToTransform) {
+      const name = path.basename(dst);
+      await step(name, async () => {
         const dstDir = path.dirname(dst);
         const content = await readFile(src, { encoding: "utf-8" });
         await mkdir(dstDir, { recursive: true });
         const uncommentedSample = content.replace(uncomment, "$1");
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        writeFile(dst, uncommentedSample, { encoding: "utf-8" });
-      }),
-      writeFile(cmdPath, cmdContent, "utf-8"),
-    ]);
+        await writeFile(dst, uncommentedSample, { encoding: "utf-8" });
+        await attachment(name, uncommentedSample, { contentType: "text/plain" });
+      });
+    }
+
+    await step(path.basename(cmdPath), async () => {
+      await writeFile(cmdPath, cmdContent, "utf-8");
+    });
 
     if (this.config.testplan) {
       const testplanPath = path.join(testDir, "testplan.json");
       this.config.env ??= {};
       this.config.env.ALLURE_TESTPLAN_PATH = testplanPath;
       const selectorPrefix = path.relative(path.join(__dirname, ".."), testDir);
-      await writeFile(
-        testplanPath,
-        JSON.stringify({
-          version: "1.0",
-          tests: this.config.testplan.map((test) => ({
-            id: test.id,
-            selector: test.selector ? this.resolveTestplanSelector(selectorPrefix, test.selector) : undefined,
-          })),
-        }),
-        { encoding: "utf-8" },
-      );
+      const content = JSON.stringify({
+        version: "1.0",
+        tests: this.config.testplan.map((test) => ({
+          id: test.id,
+          selector: test.selector ? this.resolveTestplanSelector(selectorPrefix, test.selector) : undefined,
+        })),
+      });
+      await writeFile(testplanPath, content, { encoding: "utf-8" });
+      await attachment(path.basename(testplanPath), content, {
+        contentType: "application/json",
+        fileExtension: "json",
+      });
     }
 
-    const testProcess = fork(scriptPath, scriptArgs, {
-      env: {
-        ...process.env,
-        ...this.config.env,
-        ALLURE_MOCHA_TESTHOST_PID: process.pid.toString(),
-      },
-      cwd: testDir,
-      stdio: "pipe",
+    const testProcess = await step(`${scriptPath} ${scriptArgs.join(" ")}`, () => {
+      return fork(scriptPath, scriptArgs, {
+        env: {
+          ...process.env,
+          ...this.config.env,
+          ALLURE_MOCHA_TESTHOST_PID: process.pid.toString(),
+        },
+        cwd: testDir,
+        stdio: "pipe",
+      });
     });
 
     const messageReader = new MessageReader();
@@ -133,7 +150,8 @@ abstract class AllureMochaTestRunner {
     });
 
     return await new Promise<AllureResults>((resolve, reject) => {
-      testProcess.on("exit", (code, signal) => {
+      testProcess.on("exit", async (code, signal) => {
+        await messageReader.attachResults();
         if ((code ?? -1) >= 0 && !signal) {
           resolve(messageReader.results);
         } else if (signal) {
