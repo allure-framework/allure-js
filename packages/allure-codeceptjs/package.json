@@ -27,12 +27,14 @@
     "dist"
   ],
   "scripts": {
+    "allure-report": "allure serve ./out/allure-results",
     "clean": "rimraf ./dist ./out ./test-results",
     "compile": "run-s 'compile:*'",
     "compile:esm": "babel --config-file ./babel.esm.json ./src --out-dir ./dist/esm --extensions '.ts' --source-maps",
     "compile:cjs": "babel --config-file ./babel.cjs.json ./src --out-dir ./dist/cjs --extensions '.ts' --source-maps",
     "compile:types": "tsc",
     "compile:fixup": "node ./scripts/fixup.mjs",
+    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "vitest run"
@@ -55,6 +57,8 @@
     "@types/node": "^20.6.3",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
+    "allure-commandline": "^2.29.0",
+    "allure-vitest": "workspace:*",
     "babel-plugin-add-module-exports": "^1.0.4",
     "codeceptjs": "^3.5.4",
     "eslint": "^8.57.0",
@@ -69,6 +73,6 @@
     "rimraf": "^5.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.2.2",
-    "vitest": "^1.5.0"
+    "vitest": "^1.6.0"
   }
 }
