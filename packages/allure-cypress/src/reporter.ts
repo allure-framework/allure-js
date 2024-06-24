@@ -2,8 +2,12 @@ import type Cypress from "cypress";
 import { ContentType, LabelName, Stage } from "allure-js-commons";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { FileSystemWriter, ReporterRuntime, getSuiteLabels } from "allure-js-commons/sdk/reporter";
-import type { CypressRuntimeMessage, CypressTestStartRuntimeMessage } from "./model.js";
 import type { LinkConfig } from "allure-js-commons/sdk/reporter";
+import type {
+  CypressHookStartRuntimeMessage,
+  CypressRuntimeMessage,
+  CypressTestStartRuntimeMessage
+} from "./model.js";
 
 export type AllureCypressConfig = {
   resultsDir?: string;
@@ -14,6 +18,8 @@ export class AllureCypress {
   allureRuntime: ReporterRuntime;
 
   testsUuidsByCypressAbsolutePath = new Map<string, string[]>();
+
+  globalHooksMessages: CypressRuntimeMessage[] = [];
 
   constructor(config?: AllureCypressConfig) {
     const { resultsDir = "./allure-results", ...rest } = config || {};
@@ -38,7 +44,12 @@ export class AllureCypress {
         let currentTestUuid: string;
         let currentTestStartMessage: CypressTestStartRuntimeMessage;
 
-        messages.forEach((message) => {
+        this.globalHooksMessages = []
+
+        messages.forEach((message, i) => {
+          const previousMessagesSlice = messages.slice(0, i);
+          const lastHookMessage = previousMessagesSlice.toReversed().find(({ type }) => type === "cypress_hook_start" || type === "cypress_hook_end")
+
           if (message.type === "cypress_suite_start") {
             this.allureRuntime.startScope();
             return;
@@ -49,11 +60,21 @@ export class AllureCypress {
             return;
           }
 
+          if (message.type === "cypress_hook_start" && message.data.global) {
+            this.globalHooksMessages.push(message);
+            return;
+          }
+
           if (message.type === "cypress_hook_start") {
             this.allureRuntime.startFixture(message.data.type, {
               name: message.data.name,
               start: message.data.start,
             });
+            return;
+          }
+
+          if (message.type === "cypress_hook_end" && (lastHookMessage as CypressHookStartRuntimeMessage).data?.global && lastHookMessage?.type === "cypress_hook_start") {
+            this.globalHooksMessages.push(message);
             return;
           }
 
@@ -181,6 +202,31 @@ export class AllureCypress {
         contentType: ContentType.MP4,
       });
       this.allureRuntime.writeFixture();
+    }
+
+    if (this.globalHooksMessages.length) {
+      this.globalHooksMessages.forEach((message) => {
+        if (message.type === "cypress_hook_start") {
+          this.allureRuntime.startFixture(message.data.type, {
+            name: message.data.name,
+            start: message.data.start,
+          });
+          return;
+        }
+
+        if (message.type === "cypress_hook_end") {
+          this.allureRuntime.updateFixture((r) => {
+            r.stage = message.data.stage;
+            r.status = message.data.status;
+            r.stop = message.data.stop;
+
+            if (message.data.statusDetails) {
+              r.statusDetails = message.data.statusDetails;
+            }
+          });
+          this.allureRuntime.writeFixture();
+        }
+      })
     }
 
     for (const uuid of testUuids) {

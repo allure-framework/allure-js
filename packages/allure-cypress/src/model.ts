@@ -14,6 +14,7 @@ export type CypressHook = {
   name: string;
   type: "before" | "after";
   start: number;
+  global: boolean;
 };
 
 export type CypressCommand = {

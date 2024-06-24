@@ -217,6 +217,7 @@ const initializeAllure = () => {
           name: hook.title,
           type: /after/.test(hook.title) ? "after" : "before",
           start: Date.now(),
+          global: /(before|after) all/.test(hook.title),
         },
       });
     })
