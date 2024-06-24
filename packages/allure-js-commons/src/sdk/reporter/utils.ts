@@ -219,7 +219,7 @@ const isUrl = (potentialUrl: string) => {
   }
 };
 
-export const applyLinkTemplate = (template: LinkTemplate, value: string) =>
+const applyLinkTemplate = (template: LinkTemplate, value: string) =>
   typeof template === "string" ? template.replace("%s", value) : template(value);
 
 export const formatLink = (templates: LinkConfig, link: Link) => {

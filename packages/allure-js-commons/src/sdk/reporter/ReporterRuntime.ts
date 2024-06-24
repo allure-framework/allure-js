@@ -22,8 +22,8 @@ import type {
 import { LifecycleState } from "./LifecycleState.js";
 import { Notifier } from "./Notifier.js";
 import { createFixtureResult, createStepResult, createTestResult } from "./factory.js";
-import type { Config, FixtureType, FixtureWrapper, TestScope, Writer } from "./types.js";
-import { deepClone, getTestResultHistoryId, getTestResultTestCaseId, randomUuid } from "./utils.js";
+import type { Config, FixtureType, FixtureWrapper, LinkConfig, TestScope, Writer } from "./types.js";
+import { deepClone, formatLinks, getTestResultHistoryId, getTestResultTestCaseId, randomUuid } from "./utils.js";
 import { buildAttachmentFileName } from "./utils/attachments.js";
 import { resolveWriter } from "./writer/loader.js";
 
@@ -91,12 +91,14 @@ export class ReporterRuntime {
   writer: Writer;
   categories?: Category[];
   environmentInfo?: EnvironmentInfo;
+  linkConfig?: LinkConfig;
 
-  constructor({ writer, listeners = [], environmentInfo, categories }: Config) {
+  constructor({ writer, listeners = [], environmentInfo, categories, links }: Config) {
     this.writer = resolveWriter(writer);
     this.notifier = new Notifier({ listeners });
     this.categories = categories;
     this.environmentInfo = environmentInfo;
+    this.linkConfig = links;
   }
 
   startScope = (): string => {
@@ -422,7 +424,7 @@ export class ReporterRuntime {
     const { links, labels, parameters, displayName, ...rest } = message;
     this.updateTest(rootUuid, (result) => {
       if (links) {
-        result.links = [...result.links, ...links];
+        result.links = [...result.links, ...(this.linkConfig ? formatLinks(this.linkConfig, links) : links)];
       }
       if (labels) {
         result.labels = [...result.labels, ...labels];
@@ -453,9 +455,11 @@ export class ReporterRuntime {
       }
     });
   };
+
   #handleStartStepMessage = (rootUuid: string, message: RuntimeStartStepMessage["data"]) => {
     this.startStep(rootUuid, undefined, { ...message });
   };
+
   #handleStopStepMessage = (rootUuid: string, message: RuntimeStopStepMessage["data"]) => {
     const stepUuid = this.currentStep(rootUuid);
     if (!stepUuid) {
@@ -473,6 +477,7 @@ export class ReporterRuntime {
     });
     this.stopStep(stepUuid, message.stop);
   };
+
   #handleAttachmentContentMessage = (rootUuid: string, message: RuntimeAttachmentContentMessage["data"]) => {
     this.writeAttachment(rootUuid, undefined, message.name, Buffer.from(message.content, message.encoding), {
       encoding: message.encoding,
@@ -482,6 +487,7 @@ export class ReporterRuntime {
       timestamp: message.timestamp,
     });
   };
+
   #handleAttachmentPathMessage = (rootUuid: string, message: RuntimeAttachmentPathMessage["data"]) => {
     this.writeAttachment(rootUuid, undefined, message.name, message.path, {
       contentType: message.contentType,
