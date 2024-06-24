@@ -2,6 +2,7 @@ import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve as resolvePath } from "node:path";
+import { attachment, attachmentPath, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
@@ -57,38 +58,70 @@ export const runCucumberInlineTest = async (
     require("allure-cucumberjs");
   `;
 
-  await mkdir(testDir, { recursive: true });
-  await mkdir(supportTempPath, { recursive: true });
-  await writeFile(configFilePath, configContent, "utf8");
-  await writeFile(reporterFilePath, reporterContent, "utf8");
-  await writeFile(worldFilePath, worldContent, "utf8");
+  await step(`create test dir ${testDir}`, async () => {
+    await mkdir(testDir, { recursive: true });
+  });
+  await step(`create support temp dir ${supportTempPath}`, async () => {
+    await mkdir(supportTempPath, { recursive: true });
+  });
+  await step("config.js", async () => {
+    await writeFile(configFilePath, configContent, "utf8");
+    await attachment("config.js", configContent, {
+      contentType: "text/plain",
+      encoding: "utf-8",
+      fileExtension: ".js",
+    });
+  });
+  await step("reporter.js", async () => {
+    await writeFile(reporterFilePath, reporterContent, "utf8");
+    await attachment("reporter.js", reporterContent, {
+      contentType: "text/plain",
+      encoding: "utf-8",
+      fileExtension: ".js",
+    });
+  });
+  await step("world.js", async () => {
+    await writeFile(worldFilePath, worldContent, "utf8");
+    await attachment("world.js", worldContent, {
+      contentType: "text/plain",
+      encoding: "utf-8",
+      fileExtension: ".js",
+    });
+  });
 
-  await Promise.all(
-    features.map(async (feature) => {
+  for (const feature of features) {
+    await step(`features/${feature}.feature`, async () => {
       const featurePath = join(fixturesPath, "features", `${feature}.feature`);
 
       await copyFile(featurePath, join(featuresTempPath, `${feature}.feature`));
-    }),
-  );
-  await Promise.all(
-    stepsDefs.map(async (stepsDef) => {
+      await attachmentPath(`features/${feature}.feature`, featurePath, { contentType: "text/plain" });
+    });
+  }
+
+  for (const stepsDef of stepsDefs) {
+    await step(`support/${stepsDef}.cjs`, async () => {
       const stepsDefPath = join(fixturesPath, "support", `${stepsDef}.cjs`);
       const supportFilePath = join(supportTempPath, `${stepsDef}.js`);
 
       await mkdir(dirname(supportFilePath), { recursive: true });
 
       await copyFile(stepsDefPath, supportFilePath);
-    }),
-  );
+      await attachmentPath(`support/${stepsDef}.cjs`, stepsDefPath, { contentType: "text/plain" });
+    });
+  }
 
-  const modulePath = resolvePath(require.resolve("@cucumber/cucumber"), "../../bin/cucumber-js");
+  const modulePath = await step("resolve @cucumber/cucumber", () => {
+    return resolvePath(require.resolve("@cucumber/cucumber"), "../../bin/cucumber-js");
+  });
   const args = ["--config", "./config.js"];
-  const testProcess = fork(modulePath, args, {
-    env: {
-      ...process.env,
-    },
-    cwd: testDir,
-    stdio: "pipe",
+  const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
+    return fork(modulePath, args, {
+      env: {
+        ...process.env,
+      },
+      cwd: testDir,
+      stdio: "pipe",
+    });
   });
 
   const messageReader = new MessageReader();
@@ -105,7 +138,7 @@ export const runCucumberInlineTest = async (
   return new Promise((resolve) => {
     testProcess.on("exit", async () => {
       await rm(testDir, { recursive: true });
-
+      await messageReader.attachResults();
       return resolve(messageReader.results);
     });
   });
