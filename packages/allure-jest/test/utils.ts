@@ -2,13 +2,16 @@ import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { attachment, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
-export const runJestInlineTest = async (test: string): Promise<AllureResults> => {
+export const runJestInlineTest = async (testContent: string): Promise<AllureResults> => {
   const testDir = join(__dirname, "fixtures", randomUUID());
-  const configFilePath = join(testDir, "jest.config.js");
-  const testFilePath = join(testDir, "sample.test.js");
+  const configFileName = "jest.config.js";
+  const configFilePath = join(testDir, configFileName);
+  const testFileName = "sample.test.js";
+  const testFilePath = join(testDir, testFileName);
   const configContent = `
     const config = {
       testEnvironment: require.resolve("allure-jest/node"),
@@ -28,19 +31,39 @@ export const runJestInlineTest = async (test: string): Promise<AllureResults> =>
     module.exports = config;
   `;
 
-  await mkdir(testDir, { recursive: true });
-  await writeFile(configFilePath, configContent, "utf8");
-  await writeFile(testFilePath, test, "utf8");
+  await step("create test dir", async () => {
+    await mkdir(testDir, { recursive: true });
+  });
+  await step(configFileName, async () => {
+    await writeFile(configFilePath, configContent, "utf8");
+    await attachment(configFileName, configContent, {
+      contentType: "text/plain",
+      encoding: "utf-8",
+      fileExtension: ".js",
+    });
+  });
+  await step(testFileName, async () => {
+    await writeFile(testFilePath, testContent, "utf8");
+    await attachment(testFileName, testContent, {
+      contentType: "text/plain",
+      encoding: "utf-8",
+      fileExtension: ".js",
+    });
+  });
 
-  const modulePath = require.resolve("jest-cli/bin/jest");
+  const modulePath = await step("resolve jest", () => {
+    return require.resolve("jest-cli/bin/jest");
+  });
   const args = ["--config", configFilePath, testDir];
-  const testProcess = fork(modulePath, args, {
-    env: {
-      ...process.env,
-      ALLURE_POST_PROCESSOR_FOR_TEST: String("true"),
-    },
-    cwd: testDir,
-    stdio: "pipe",
+  const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
+    return fork(modulePath, args, {
+      env: {
+        ...process.env,
+        ALLURE_POST_PROCESSOR_FOR_TEST: String("true"),
+      },
+      cwd: testDir,
+      stdio: "pipe",
+    });
   });
 
   const messageReader = new MessageReader();
@@ -57,7 +80,7 @@ export const runJestInlineTest = async (test: string): Promise<AllureResults> =>
   return new Promise((resolve) => {
     testProcess.on("exit", async () => {
       await rm(testDir, { recursive: true });
-
+      await messageReader.attachResults();
       return resolve(messageReader.results);
     });
   });
