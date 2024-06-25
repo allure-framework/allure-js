@@ -1,7 +1,8 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { dirname, extname, join } from "node:path";
+import { attachment, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
@@ -17,20 +18,26 @@ export const runJasmineInlineTest = async (files: Record<string, string>): Promi
   await mkdir(testDir, { recursive: true });
 
   for (const file of Object.keys(testFiles)) {
-    const filePath = join(testDir, file);
+    await step(file, async () => {
+      const filePath = join(testDir, file);
 
-    await mkdir(dirname(filePath), { recursive: true });
-    await writeFile(filePath, testFiles[file as keyof typeof testFiles] as string, "utf8");
+      await mkdir(dirname(filePath), { recursive: true });
+      const content: string = testFiles[file as keyof typeof testFiles];
+      await writeFile(filePath, content, "utf8");
+      await attachment(file, content, { encoding: "utf-8", contentType: "text/plain", fileExtension: extname(file) });
+    });
   }
 
-  const modulePath = require.resolve("jasmine/bin/jasmine");
+  const modulePath = await step("resolve jasmine", () => require.resolve("jasmine/bin/jasmine"));
   const args: string[] = [];
-  const testProcess = fork(modulePath, args, {
-    env: {
-      ...process.env,
-    },
-    cwd: testDir,
-    stdio: "pipe",
+  const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
+    return fork(modulePath, args, {
+      env: {
+        ...process.env,
+      },
+      cwd: testDir,
+      stdio: "pipe",
+    });
   });
 
   const messageReader = new MessageReader();
@@ -47,7 +54,7 @@ export const runJasmineInlineTest = async (files: Record<string, string>): Promi
   return new Promise((resolve) => {
     testProcess.on("exit", async () => {
       await rm(testDir, { recursive: true });
-
+      await messageReader.attachResults();
       return resolve(messageReader.results);
     });
   });
