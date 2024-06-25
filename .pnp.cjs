@@ -6154,7 +6154,7 @@ const RAW_RUNTIME_STATE =
           ["allure-js-commons", "workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:3b04c8c38dde7165df844f9cd74e94cc47d78164564600cf56ba5f8c6011d25ef0d3afc13d610f3da970f6807c830914053ff96a43c86ba17f3ec650dfd687d3#workspace:packages/allure-vitest"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
-          ["cypress", "npm:13.6.6"],\
+          ["cypress", "npm:13.12.0"],\
           ["enquirer", "npm:2.4.1"],\
           ["esbuild", "npm:0.21.4"],\
           ["eslint", "npm:8.57.0"],\
@@ -8582,10 +8582,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["cypress", [\
-      ["npm:13.6.6", {\
-        "packageLocation": "./.yarn/unplugged/cypress-npm-13.6.6-746c2ee2e9/node_modules/cypress/",\
+      ["npm:13.12.0", {\
+        "packageLocation": "./.yarn/unplugged/cypress-npm-13.12.0-e00153819b/node_modules/cypress/",\
         "packageDependencies": [\
-          ["cypress", "npm:13.6.6"],\
+          ["cypress", "npm:13.12.0"],\
           ["@cypress/request", "npm:3.0.1"],\
           ["@cypress/xvfb", "npm:1.2.4"],\
           ["@types/sinonjs__fake-timers", "npm:8.1.1"],\
@@ -8614,7 +8614,7 @@ const RAW_RUNTIME_STATE =
           ["is-ci", "npm:3.0.1"],\
           ["is-installed-globally", "npm:0.4.0"],\
           ["lazy-ass", "npm:1.6.0"],\
-          ["listr2", "virtual:746c2ee2e959566061c1df57b2638a302e551c1b32ffd0373455fe2a957fd5f803ed1d4f89a238e65b1434f970cab323b76c0c230fe502916b0eb3cb83889823#npm:3.14.0"],\
+          ["listr2", "virtual:e00153819bb6939a231acf612ec6916877777a55116d3f57b0912f1efed0bfe1f427d9805420d8f51f4cb2217efddf1e16aa40eb5852cdab74500daa3ae51efb#npm:3.14.0"],\
           ["lodash", "npm:4.17.21"],\
           ["log-symbols", "npm:4.1.0"],\
           ["minimist", "npm:1.2.8"],\
@@ -13173,10 +13173,10 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["virtual:746c2ee2e959566061c1df57b2638a302e551c1b32ffd0373455fe2a957fd5f803ed1d4f89a238e65b1434f970cab323b76c0c230fe502916b0eb3cb83889823#npm:3.14.0", {\
-        "packageLocation": "./.yarn/__virtual__/listr2-virtual-d6c51966d7/0/cache/listr2-npm-3.14.0-446f504112-cebbd69233.zip/node_modules/listr2/",\
+      ["virtual:e00153819bb6939a231acf612ec6916877777a55116d3f57b0912f1efed0bfe1f427d9805420d8f51f4cb2217efddf1e16aa40eb5852cdab74500daa3ae51efb#npm:3.14.0", {\
+        "packageLocation": "./.yarn/__virtual__/listr2-virtual-e4b30c3c27/0/cache/listr2-npm-3.14.0-446f504112-cebbd69233.zip/node_modules/listr2/",\
         "packageDependencies": [\
-          ["listr2", "virtual:746c2ee2e959566061c1df57b2638a302e551c1b32ffd0373455fe2a957fd5f803ed1d4f89a238e65b1434f970cab323b76c0c230fe502916b0eb3cb83889823#npm:3.14.0"],\
+          ["listr2", "virtual:e00153819bb6939a231acf612ec6916877777a55116d3f57b0912f1efed0bfe1f427d9805420d8f51f4cb2217efddf1e16aa40eb5852cdab74500daa3ae51efb#npm:3.14.0"],\
           ["@types/enquirer", null],\
           ["cli-truncate", "npm:2.1.0"],\
           ["colorette", "npm:2.0.20"],\

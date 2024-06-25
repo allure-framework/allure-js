@@ -460,7 +460,7 @@ const initializeAllure = () => {
   after(ALLURE_REPORT_SHUTDOWN_HOOK, () => {
     const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
 
-    cy.task("allureReportTest", runtimeMessages, { log: false });
+    cy.task("allureReportTest", runtimeMessages ?? [], { log: false });
   });
 };
 

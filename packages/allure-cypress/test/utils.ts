@@ -67,7 +67,7 @@ export const runCypressInlineTest = async (
 
   const moduleRootPath = require.resolve("cypress");
   const modulePath = resolvePath(moduleRootPath, "../bin/cypress");
-  const args = ["run", "-s", testFilePath];
+  const args = ["run", "-s", testFilePath, "--browser", "chrome"];
   const testProcess = fork(modulePath, args, {
     env: {
       ...process.env,
