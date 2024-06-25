@@ -3,6 +3,8 @@ import { issue } from "allure-js-commons";
 import { runMochaInlineTest } from "../../utils.js";
 
 it("shouldn't overwrite the result of a dynamically skipped test", async () => {
+  await issue("457");
+
   const { tests } = await runMochaInlineTest(["labels", "skippedAtRuntime"], ["legacy", "labels", "skippedAtRuntime"]);
 
   expect(tests).toHaveLength(2);

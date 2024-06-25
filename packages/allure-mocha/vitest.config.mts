@@ -8,7 +8,16 @@ export default defineConfig({
     hookTimeout: 25000,
     globalSetup: ["./test/setup.ts"],
     setupFiles: ["./vitest-setup.ts"],
-    reporters: ["default", ["allure-vitest/reporter", { resultsDir: "./out/allure-results" }]],
+    reporters: [
+      "default",
+      [
+        "allure-vitest/reporter",
+        {
+          resultsDir: "./out/allure-results",
+          links: { issue: { urlTemplate: "https://github.com/allure-framework/allure-js/issues/%s" } },
+        },
+      ],
+    ],
     typecheck: {
       enabled: true,
       tsconfig: "./tsconfig.test.json",
