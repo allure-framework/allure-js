@@ -2,7 +2,6 @@ import type Cypress from "cypress";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { FileSystemWriter, ReporterRuntime, getSuiteLabels } from "allure-js-commons/sdk/reporter";
-import type { LinkConfig } from "allure-js-commons/sdk/reporter";
 import type {
   CypressHookStartRuntimeMessage,
   CypressRuntimeMessage,
@@ -11,7 +10,6 @@ import type {
 
 export type AllureCypressConfig = {
   resultsDir?: string;
-  links?: LinkConfig;
 };
 
 export class AllureCypress {
