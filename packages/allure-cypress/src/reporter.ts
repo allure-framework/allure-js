@@ -1,5 +1,5 @@
 import type Cypress from "cypress";
-import { ContentType, LabelName, Stage } from "allure-js-commons";
+import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { FileSystemWriter, ReporterRuntime, getSuiteLabels } from "allure-js-commons/sdk/reporter";
 import type { LinkConfig } from "allure-js-commons/sdk/reporter";
@@ -101,12 +101,10 @@ export class AllureCypress {
           if (message.type === "cypress_command_start") {
             this.allureRuntime.startStep({
               name: message.data.name,
-              parameters: [
-                {
-                  name: "Arguments",
-                  value: JSON.stringify(message.data.args, null, 2),
-                },
-              ],
+              parameters: message.data.args.map((arg, j) => ({
+                name: `Argument "${j}"`,
+                value: arg,
+              })),
             });
             return;
           }
@@ -204,6 +202,8 @@ export class AllureCypress {
     if (cypressVideoPath) {
       this.allureRuntime.startFixture("after", {
         name: "Cypress video",
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
       });
       this.allureRuntime.writeAttachmentFromPath("Cypress video", cypressVideoPath, {
         contentType: ContentType.MP4,
@@ -252,6 +252,7 @@ export const allureCypress = (on: Cypress.PluginEvents, allureConfig?: AllureCyp
   on("after:run", (results) => {
     // @ts-ignore
     results.runs.forEach((run) => {
+      // @ts-ignore
       allureCypressReporter.endSpec(run.spec, run.video);
     });
   });

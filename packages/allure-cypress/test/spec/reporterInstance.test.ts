@@ -22,8 +22,10 @@ it("works with the reporter instance", async () => {
 
             allureCypress.attachToCypress(on, config);
 
-            on("after:spec", (spec, result) => {
-              allureCypress.endSpec(spec, result);
+            on("after:run", (results) => {
+              results.runs.forEach((run) => {
+                allureCypress.endSpec(run.spec, run.video);
+              });
             });
 
             return config;

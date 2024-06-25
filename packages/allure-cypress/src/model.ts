@@ -5,6 +5,8 @@ import type { RuntimeMessage } from "allure-js-commons/sdk";
 
 export const ALLURE_REPORT_SHUTDOWN_HOOK = "__allure_report_shutdown_hook__";
 
+export const ALLURE_REPORT_STEP_COMMAND = "__allure_report_step_command__";
+
 export type CypressTest = Mocha.Test & {
   wallClockStartedAt?: Date;
   hookName?: string;
@@ -49,7 +51,7 @@ export type CypressSuiteStartRuntimeMessage = {
 
 export type CypressSuiteEndRuntimeMessage = {
   type: "cypress_suite_end";
-  data: {};
+  data: any;
 };
 
 export type CypressTestStartRuntimeMessage = {

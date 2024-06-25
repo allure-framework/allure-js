@@ -85,7 +85,7 @@ module.exports = {
   // ...
   e2e: {
     setupNodeEvents: (on, config) => {
-      const reporter = allureCypress(on, {
+      allureCypress(on, {
 +        links: [
 +          {
 +            type: "issue",
@@ -102,10 +102,6 @@ module.exports = {
 +          },
 +        ],
 +      });
-
-      on("after:spec", (spec, result) => {
-        reporter.endSpec(spec, result);
-      });
 
       return config;
     },
@@ -162,9 +158,9 @@ it("test with strangeLabel @allure.label.strangeLabel=strangeValue", () => {});
 > Note that changing title can cause creating new testcases in history.
 > To fix this please add `@allure.id={yourTestCaseId}` to the test name if you passing allure metadata from test title
 
-## Using custom `after:spec` hook
+## Using custom `after:run` hook
 
-If you want to use your own `after:spec` hook and keep the Allure reporter working, you should use `AllureCypress` class instead:
+If you want to use your own `after:run` hook and keep the Allure reporter working, you should use `AllureCypress` class instead:
 
 ```diff
 const { AllureCypress } = require("allure-cypress/reporter");
@@ -179,9 +175,11 @@ module.exports = {
 +      
 +      allureCypress.attachToCypress(on, config);
 + 
-+      on("after:spec", (spec, result) => {
-+        allureCypress.endSpec(spec, result);
-+      });     
++      on("after:run", (results) => {
++        results.runs.forEach((run) => {
++          allureCypress.endSpec(run.spec, run.video);
++        });
++      });
 +  
 +      return config;
 +    },

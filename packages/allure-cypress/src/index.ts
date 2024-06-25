@@ -11,8 +11,13 @@ import type {
   CypressTest,
   CypressTestStartRuntimeMessage,
 } from "./model.js";
-import { ALLURE_REPORT_SHUTDOWN_HOOK } from "./model.js";
-import { getSuitePath, normalizeAttachmentContentEncoding, uint8ArrayToBase64 } from "./utils.js";
+import { ALLURE_REPORT_SHUTDOWN_HOOK, ALLURE_REPORT_STEP_COMMAND } from "./model.js";
+import {
+  getSuitePath,
+  isCommandShouldBeSkipped,
+  normalizeAttachmentContentEncoding,
+  uint8ArrayToBase64,
+} from "./utils.js";
 
 export class AllureCypressTestRuntime implements TestRuntime {
   labels(...labels: Label[]) {
@@ -126,7 +131,7 @@ export class AllureCypressTestRuntime implements TestRuntime {
 
   step<T = void>(name: string, body: () => T | PromiseLike<T>) {
     return cy
-      .wrap(null, { log: false })
+      .wrap(ALLURE_REPORT_STEP_COMMAND, { log: false })
       .then(() => {
         this.sendMessage({
           type: "step_start",
@@ -193,6 +198,8 @@ const initializeAllure = () => {
   if (initialized) {
     return;
   }
+
+  Cypress.env("allureInitialized", true);
 
   // @ts-ignore
   Cypress.mocha
@@ -419,9 +426,8 @@ const initializeAllure = () => {
 
     throw err;
   });
-
   Cypress.on("command:start", (command: CypressCommand) => {
-    if (command.attributes.name === "task" && command.attributes.args[0] === "allureReportTest") {
+    if (isCommandShouldBeSkipped(command)) {
       return;
     }
 
@@ -431,14 +437,12 @@ const initializeAllure = () => {
       type: "cypress_command_start",
       data: {
         name: `Command "${command.attributes.name}"`,
-        args: command.attributes.args.map((arg) =>
-          arg instanceof Object ? JSON.stringify(arg, null, 2) : arg.toString(),
-        ),
+        args: command.attributes.args.map((arg) => (typeof arg === "string" ? arg : JSON.stringify(arg, null, 2))),
       },
     });
   });
   Cypress.on("command:end", (command: CypressCommand) => {
-    if (command.attributes.name === "task" && command.attributes.args[0] === "allureReportTest") {
+    if (isCommandShouldBeSkipped(command)) {
       return;
     }
 
@@ -453,14 +457,12 @@ const initializeAllure = () => {
     });
   });
 
-  Cypress.env("allureInitialized", true);
+  after(ALLURE_REPORT_SHUTDOWN_HOOK, () => {
+    const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
+
+    cy.task("allureReportTest", runtimeMessages, { log: false });
+  });
 };
-
-after(ALLURE_REPORT_SHUTDOWN_HOOK, () => {
-  const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
-
-  cy.task("allureReportTest", runtimeMessages, { log: false });
-});
 
 initializeAllure();
 
