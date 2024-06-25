@@ -68,5 +68,8 @@
     "typescript": "^5.2.2",
     "vite": "^5.0.11",
     "vitest": "^1.6.0"
+  },
+  "peerDependencies": {
+    "vitest": "^1.6.0"
   }
 }
