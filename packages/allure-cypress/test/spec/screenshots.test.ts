@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { type Attachment, ContentType, Status } from "allure-js-commons";
+import { ContentType, Status } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils.js";
 
 it("attaches screenshots for failed specs", async () => {
@@ -30,7 +30,7 @@ it("attaches screenshots for failed specs", async () => {
 
   const [attachment] = tests[0].steps[0].attachments;
 
-  expect(attachments).toHaveProperty((attachment as Attachment).source);
+  expect(attachments).toHaveProperty(attachment.source);
 });
 
 it("attaches runtime screenshots", async () => {
@@ -60,5 +60,5 @@ it("attaches runtime screenshots", async () => {
 
   const [attachment] = tests[0].steps[0].attachments;
 
-  expect(attachments).toHaveProperty((attachment as Attachment).source);
+  expect(attachments).toHaveProperty(attachment.source);
 });

@@ -176,9 +176,7 @@ module.exports = {
 +      allureCypress.attachToCypress(on, config);
 + 
 +      on("after:run", (results) => {
-+        results.runs.forEach((run) => {
-+          allureCypress.endSpec(run.spec, run.video);
-+        });
++        allureCypress.endRun(results);
 +      });
 +  
 +      return config;

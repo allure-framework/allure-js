@@ -2,7 +2,7 @@ import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils.js";
 
-it("reports \"before all\" hook outside suite", async () => {
+it("reports before all hook outside suite", async () => {
   const { tests, groups } = await runCypressInlineTest(
     () => `
     before(() => {});
@@ -52,7 +52,7 @@ it("reports \"before all\" hook outside suite", async () => {
   );
 });
 
-it("doesn't report \"after all\" hook outside suite", async () => {
+it("doesn't report after all hook outside suite", async () => {
   const { tests, groups } = await runCypressInlineTest(
     () => `
     after(() => {});
@@ -85,7 +85,7 @@ it("doesn't report \"after all\" hook outside suite", async () => {
   expect(groups).toHaveLength(0);
 });
 
-it("reports \"before all\" hook inside suite", async () => {
+it("reports before all hook inside suite", async () => {
   const { tests, groups } = await runCypressInlineTest(
     () => `
     describe("suite", () => {
@@ -137,7 +137,7 @@ it("reports \"before all\" hook inside suite", async () => {
   );
 });
 
-it("reports \"after all\" hook inside suite", async () => {
+it("reports after all hook inside suite", async () => {
   const { tests, groups } = await runCypressInlineTest(
     () => `
     describe("suite", () => {
@@ -189,7 +189,7 @@ it("reports \"after all\" hook inside suite", async () => {
   );
 });
 
-it("reports \"before each\" and \"after each\" hooks outside suite", async () => {
+it("reports before each and after each hooks outside suite", async () => {
   const { tests, groups } = await runCypressInlineTest(
     () => `
     beforeEach(() => {});
@@ -235,7 +235,7 @@ it("reports \"before each\" and \"after each\" hooks outside suite", async () =>
   );
 });
 
-it("reports \"before each\" and \"after each\" hooks inside suite", async () => {
+it("reports before each and after each hooks inside suite", async () => {
   const { tests, groups } = await runCypressInlineTest(
     () => `
     describe("suite", () => {

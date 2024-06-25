@@ -2,11 +2,7 @@ import type Cypress from "cypress";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { FileSystemWriter, ReporterRuntime, getSuiteLabels } from "allure-js-commons/sdk/reporter";
-import type {
-  CypressHookStartRuntimeMessage,
-  CypressRuntimeMessage,
-  CypressTestStartRuntimeMessage
-} from "./model.js";
+import type { CypressHookStartRuntimeMessage, CypressRuntimeMessage, CypressTestStartRuntimeMessage } from "./model.js";
 
 export type AllureCypressConfig = {
   resultsDir?: string;
@@ -188,6 +184,12 @@ export class AllureCypress {
     });
   }
 
+  endRun(result: CypressCommandLine.CypressRunResult) {
+    result.runs.forEach((run) => {
+      this.endSpec(run.spec, run.video || undefined);
+    });
+  }
+
   endSpec(spec: Cypress.Spec, cypressVideoPath?: string) {
     const testUuids = this.testsUuidsByCypressAbsolutePath.get(spec.absolute);
 
@@ -248,11 +250,7 @@ export const allureCypress = (on: Cypress.PluginEvents, allureConfig?: AllureCyp
   allureCypressReporter.attachToCypress(on);
 
   on("after:run", (results) => {
-    // @ts-ignore
-    results.runs.forEach((run) => {
-      // @ts-ignore
-      allureCypressReporter.endSpec(run.spec, run.video);
-    });
+    allureCypressReporter.endRun(results as CypressCommandLine.CypressRunResult);
   });
 
   return allureCypressReporter;
