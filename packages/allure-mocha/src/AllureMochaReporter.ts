@@ -139,7 +139,9 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
 
   private onPending = (test: Mocha.Test) => {
     if (isIncludedInTestRun(test)) {
-      this.onTest(test);
+      if (!this.runtime.hasTest()) {
+        this.onTest(test);
+      }
       this.runtime.updateTest((r) => {
         r.status = Status.SKIPPED;
         r.statusDetails = {

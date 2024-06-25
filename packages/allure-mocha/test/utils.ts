@@ -54,6 +54,7 @@ abstract class AllureMochaTestRunner {
     // TODO parameter should accept any type
     await parameter("parallel", `${RUN_IN_PARALLEL}`);
     await parameter("module", SPEC_FORMAT);
+    await parameter("runner", RUNNER);
 
     const testDir = path.join(this.runResultsDir, randomUUID());
 
