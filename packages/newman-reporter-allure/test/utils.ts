@@ -6,7 +6,7 @@ import { MessageReader } from "allure-js-commons/sdk/reporter";
 export const runNewmanCollection = async (collection: CollectionDefinition): Promise<AllureResults> => {
   const reader = new MessageReader();
 
-  return new Promise((resolve) => {
+  const allureResults: AllureResults = await new Promise((resolve) => {
     const newmanEmitter = run(
       {
         collection,
@@ -25,4 +25,7 @@ export const runNewmanCollection = async (collection: CollectionDefinition): Pro
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     newmanEmitter.on("allureWriterMessage", reader.handleMessage);
   });
+
+  await reader.attachResults();
+  return allureResults;
 };
