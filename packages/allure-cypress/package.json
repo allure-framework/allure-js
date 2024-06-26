@@ -40,6 +40,7 @@
     "dist"
   ],
   "scripts": {
+    "allure-report": "allure serve ./out/allure-results",
     "clean": "rimraf ./dist ./out",
     "compile": "run-s 'compile:*'",
     "compile:esm-node": "babel --config-file ./babel.esm.json ./src --ignore './src/index.ts' --out-dir ./dist/esm --extensions '.ts' --source-maps",
@@ -48,6 +49,7 @@
     "compile:cjs-browser": "esbuild ./src/index.ts --bundle --minify --sourcemap --format=cjs --outfile=./dist/cjs/index.js --external:allure-playwright",
     "compile:types": "tsc",
     "compile:fixup": "node ./scripts/fixup.mjs",
+    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "vitest run"
@@ -69,6 +71,7 @@
     "@types/node": "^20.6.3",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
+    "allure-commandline": "^2.29.0",
     "allure-vitest": "workspace:*",
     "babel-plugin-add-module-exports": "^1.0.4",
     "cypress": "^13.6.0",

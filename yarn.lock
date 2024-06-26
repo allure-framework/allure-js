@@ -4160,6 +4160,7 @@ __metadata:
     "@types/node": "npm:^20.6.3"
     "@typescript-eslint/eslint-plugin": "npm:^7.0.0"
     "@typescript-eslint/parser": "npm:^7.0.0"
+    allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
     allure-vitest: "workspace:*"
     babel-plugin-add-module-exports: "npm:^1.0.4"
