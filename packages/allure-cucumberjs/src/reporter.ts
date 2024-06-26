@@ -122,6 +122,9 @@ export default class AllureCucumberReporter extends Formatter {
       case !!envelope.testStepFinished:
         this.onTestStepFinished(envelope.testStepFinished);
         break;
+      case !!envelope.testRunFinished:
+        this.onTestRunFinished();
+        break;
     }
   }
 
@@ -526,5 +529,10 @@ export default class AllureCucumberReporter extends Formatter {
         },
       },
     ]);
+  }
+
+  private onTestRunFinished() {
+    this.allureRuntime.writeCategoriesDefinitions();
+    this.allureRuntime.writeEnvironmentInfo();
   }
 }

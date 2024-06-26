@@ -46,6 +46,15 @@ export const runCucumberInlineTest = async (
               urlTemplate: "https://example.com/tasks/%s",
             },
           },
+          environmentInfo: {
+            "app version": "123.0.1",
+            "some other key": "some other value"
+          },
+          categories: [{
+            name: "first"
+          },{
+            name: "second"
+          }],
         }
       }
     }
