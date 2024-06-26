@@ -291,6 +291,34 @@ describe("ReporterRuntime", () => {
         }),
       );
     });
+
+    it("should add step parameters", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const rootUuid = runtime.startTest({});
+
+      const stepUuid = runtime.startStep(rootUuid, undefined, { name: "some name" });
+      runtime.applyRuntimeMessages(rootUuid, [
+        { type: "step_metadata", data: { parameters: [{ name: "p1", value: "v1" }] } },
+      ]);
+      runtime.stopStep(stepUuid!);
+
+      runtime.stopTest(rootUuid);
+      runtime.writeTest(rootUuid);
+
+      const [testResult] = writer.writeResult.mock.calls[0];
+      const [step] = testResult.steps;
+
+      expect(step).toEqual(
+        expect.objectContaining({
+          name: "some name",
+          status: undefined,
+          stage: Stage.FINISHED,
+          parameters: [expect.objectContaining({ name: "p1", value: "v1" })],
+        }),
+      );
+    });
   });
 
   describe("load well-known writers", () => {

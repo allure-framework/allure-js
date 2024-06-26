@@ -446,12 +446,13 @@ export class ReporterRuntime {
       console.error("could not handle step metadata message: no step is running");
       return;
     }
+    const { name, parameters } = message;
     this.updateStep(stepUuid, (stepResult) => {
-      if (message.name) {
-        stepResult.name = message.name;
+      if (name) {
+        stepResult.name = name;
       }
-      if (message.parameters) {
-        stepResult.parameters.concat(message.parameters);
+      if (parameters) {
+        stepResult.parameters = [...stepResult.parameters, ...parameters];
       }
     });
   };

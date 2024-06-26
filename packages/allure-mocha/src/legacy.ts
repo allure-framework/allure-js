@@ -1,6 +1,6 @@
 import * as commons from "allure-js-commons";
 import type { ContentType, ParameterOptions } from "allure-js-commons";
-import { Stage, Status } from "allure-js-commons";
+import { Status } from "allure-js-commons";
 import type { Category } from "allure-js-commons/sdk";
 import { getStatusFromError, isPromise } from "allure-js-commons/sdk";
 import { serialize } from "allure-js-commons/sdk/reporter";
@@ -17,6 +17,7 @@ interface AttachmentOptions {
   fileExtension?: string;
 }
 
+// noinspection JSDeprecatedSymbols
 /**
  * @deprecated please use api exported by "allure-js-commons" instead.
  */
@@ -98,13 +99,13 @@ class LegacyAllureApi {
    * @deprecated please use the `environmentInfo` config option instead.
    */
   writeEnvironmentInfo = (info: Record<string, string>) => {
-    getLegacyApiRuntime()?.writer.writeEnvironmentInfo(info);
+    getLegacyApiRuntime()?.writeEnvironmentInfo(info);
   };
   /**
    * @deprecated please use the `categories` config option instead.
    */
   writeCategoriesDefinitions = (categories: Category[]) => {
-    getLegacyApiRuntime()?.writer.writeCategoriesDefinitions(categories);
+    getLegacyApiRuntime()?.writeCategoriesDefinitions(categories);
   };
   /**
    * @deprecated please use import { attachment } from "allure-js-commons" instead.
@@ -118,26 +119,30 @@ class LegacyAllureApi {
    */
   testAttachment = (name: string, content: Buffer | string, options: ContentType | string | AttachmentOptions) => {
     const runtime = getLegacyApiRuntime();
-    const currentTest = runtime?.getCurrentTest();
-    if (currentTest) {
-      const opts: AttachmentOptions = typeof options === "string" ? { contentType: options } : { ...options };
-      runtime?.writeAttachment(
-        name,
-        Buffer.from(content),
-        {
-          ...opts,
-        },
-        currentTest.uuid,
-      );
-    }
+    runtime.testAttachment(name, content, options);
   };
   /**
    * @deprecated please use import { step } from "allure-js-commons" instead.
    */
   logStep = (name: string, status?: Status) => {
-    this.step(name, () => {
-      getLegacyApiRuntime()?.updateStep((s) => (s.status = status));
-    });
+    const runtime = getLegacyApiRuntime();
+    const timestamp = Date.now();
+    runtime?.applyRuntimeMessages(
+      {
+        type: "step_start",
+        data: {
+          name,
+          start: timestamp,
+        },
+      },
+      {
+        type: "step_stop",
+        data: {
+          status: status ?? Status.PASSED,
+          stop: timestamp,
+        },
+      },
+    );
   };
 
   // It's sync-first. That's why we can't simply reuse commons.step.
@@ -146,15 +151,13 @@ class LegacyAllureApi {
    */
   step = <T>(name: string, body: (step: StepInterface) => T): T => {
     const runtime = getLegacyApiRuntime();
-    runtime?.applyRuntimeMessages([
-      {
-        type: "step_start",
-        data: {
-          name,
-          start: Date.now(),
-        },
+    runtime?.applyRuntimeMessages({
+      type: "step_start",
+      data: {
+        name,
+        start: Date.now(),
       },
-    ]);
+    });
     try {
       const result = body({
         name: this.renameStep,
@@ -181,54 +184,44 @@ class LegacyAllureApi {
   };
 
   private renameStep = (name: string) => {
-    getLegacyApiRuntime()?.applyRuntimeMessages([
-      {
-        type: "step_metadata",
-        data: { name },
-      },
-    ]);
+    getLegacyApiRuntime()?.applyRuntimeMessages({
+      type: "step_metadata",
+      data: { name },
+    });
   };
 
   private addStepParameter = (name: string, value: string) => {
-    getLegacyApiRuntime()?.applyRuntimeMessages([
-      {
-        type: "step_metadata",
-        data: {
-          parameters: [{ name, value }],
-        },
+    getLegacyApiRuntime()?.applyRuntimeMessages({
+      type: "step_metadata",
+      data: {
+        parameters: [{ name, value }],
       },
-    ]);
+    });
   };
 
   private stopStepSuccess = () => {
-    getLegacyApiRuntime()?.applyRuntimeMessages([
-      {
-        type: "step_stop",
-        data: {
-          status: Status.PASSED,
-          stage: Stage.FINISHED,
-          stop: Date.now(),
-        },
+    getLegacyApiRuntime()?.applyRuntimeMessages({
+      type: "step_stop",
+      data: {
+        status: Status.PASSED,
+        stop: Date.now(),
       },
-    ]);
+    });
   };
 
   private stopStepWithError = (error: unknown) => {
     const { message, stack } = error as Error;
-    getLegacyApiRuntime()?.applyRuntimeMessages([
-      {
-        type: "step_stop",
-        data: {
-          status: getStatusFromError(error as Error),
-          stage: Stage.FINISHED,
-          stop: Date.now(),
-          statusDetails: {
-            message,
-            trace: stack,
-          },
+    getLegacyApiRuntime()?.applyRuntimeMessages({
+      type: "step_stop",
+      data: {
+        status: getStatusFromError(error as Error),
+        stop: Date.now(),
+        statusDetails: {
+          message,
+          trace: stack,
         },
       },
-    ]);
+    });
   };
 }
 
