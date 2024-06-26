@@ -2,7 +2,12 @@ import type Cypress from "cypress";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { FileSystemWriter, ReporterRuntime, getSuiteLabels } from "allure-js-commons/sdk/reporter";
-import type { CypressHookStartRuntimeMessage, CypressRuntimeMessage, CypressTestStartRuntimeMessage } from "./model.js";
+import type {
+  CypressHookEndRuntimeMessage,
+  CypressHookStartRuntimeMessage,
+  CypressRuntimeMessage,
+  CypressTestStartRuntimeMessage,
+} from "./model.js";
 
 export type AllureCypressConfig = {
   resultsDir?: string;
@@ -42,9 +47,21 @@ export class AllureCypress {
 
         messages.forEach((message, i) => {
           const previousMessagesSlice = messages.slice(0, i);
-          const lastHookMessage = previousMessagesSlice
-            .toReversed()
-            .find(({ type }) => type === "cypress_hook_start" || type === "cypress_hook_end");
+          let lastHookMessage!: CypressHookStartRuntimeMessage | CypressHookEndRuntimeMessage;
+
+          for (let j = previousMessagesSlice.length - 1; j >= 0; j--) {
+            const previousMessage = previousMessagesSlice[j];
+
+            if (previousMessage.type === "cypress_hook_start") {
+              lastHookMessage = previousMessagesSlice[j] as CypressHookStartRuntimeMessage;
+              break;
+            }
+
+            if (previousMessage.type === "cypress_hook_end") {
+              lastHookMessage = previousMessagesSlice[j] as CypressHookEndRuntimeMessage;
+              break;
+            }
+          }
 
           if (message.type === "cypress_suite_start") {
             this.allureRuntime.startScope();
@@ -71,7 +88,7 @@ export class AllureCypress {
 
           if (
             message.type === "cypress_hook_end" &&
-            (lastHookMessage as CypressHookStartRuntimeMessage).data?.global &&
+            (lastHookMessage as CypressHookStartRuntimeMessage)?.data?.global &&
             lastHookMessage?.type === "cypress_hook_start"
           ) {
             this.globalHooksMessages.push(message);
