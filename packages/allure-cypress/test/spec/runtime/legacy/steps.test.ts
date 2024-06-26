@@ -119,12 +119,25 @@ it("step with screenshot", async () => {
   expect(tests).toHaveLength(1);
   expect(tests[0].attachments).toHaveLength(0);
   expect(tests[0].steps).toHaveLength(1);
-  expect(tests[0].steps).toContainEqual(expect.objectContaining({ name: "foo" }));
+  expect(tests[0].steps[0]).toEqual(
+    expect.objectContaining({
+      name: "foo",
+      steps: expect.arrayContaining([
+        expect.objectContaining({
+          name: String.raw`Command "screenshot"`,
+          attachments: expect.arrayContaining([
+            expect.objectContaining({
+              name: "foo",
+              type: ContentType.PNG,
+            }),
+          ]),
+        }),
+      ]),
+    }),
+  );
 
-  const [attachment] = tests[0].steps[0].attachments;
+  const [attachment] = tests[0].steps[0].steps[0].attachments;
 
-  expect(attachment.name).toBe("foo");
-  expect(attachment.type).toBe(ContentType.PNG);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   expect(attachments).toHaveProperty(attachment.source);
 });

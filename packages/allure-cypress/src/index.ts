@@ -1,11 +1,23 @@
+import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions, StatusDetails } from "allure-js-commons";
 import { ContentType, Stage, Status } from "allure-js-commons";
-import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getUnfinishedStepsMessages, hasStepMessage } from "allure-js-commons/sdk";
 import type { TestRuntime } from "allure-js-commons/sdk/runtime";
 import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
-import type { CypressRuntimeMessage } from "./model.js";
-import { getSuitePath, normalizeAttachmentContentEncoding, uint8ArrayToBase64 } from "./utils.js";
+import type {
+  CypressCommand,
+  CypressHookStartRuntimeMessage,
+  CypressRuntimeMessage,
+  CypressTest,
+  CypressTestStartRuntimeMessage,
+} from "./model.js";
+import { ALLURE_REPORT_SHUTDOWN_HOOK, ALLURE_REPORT_STEP_COMMAND } from "./model.js";
+import {
+  getSuitePath,
+  isCommandShouldBeSkipped,
+  normalizeAttachmentContentEncoding,
+  uint8ArrayToBase64,
+} from "./utils.js";
 
 export class AllureCypressTestRuntime implements TestRuntime {
   labels(...labels: Label[]) {
@@ -119,7 +131,7 @@ export class AllureCypressTestRuntime implements TestRuntime {
 
   step<T = void>(name: string, body: () => T | PromiseLike<T>) {
     return cy
-      .wrap(null, { log: false })
+      .wrap(ALLURE_REPORT_STEP_COMMAND, { log: false })
       .then(() => {
         this.sendMessage({
           type: "step_start",
@@ -164,11 +176,21 @@ export class AllureCypressTestRuntime implements TestRuntime {
 
   sendMessageAsync(message: CypressRuntimeMessage): PromiseLike<void> {
     this.sendMessage(message);
+
     return Cypress.Promise.resolve();
   }
 }
 
-const { EVENT_TEST_BEGIN, EVENT_TEST_FAIL, EVENT_TEST_PASS } = Mocha.Runner.constants;
+const {
+  EVENT_RUN_BEGIN,
+  EVENT_TEST_BEGIN,
+  EVENT_TEST_FAIL,
+  EVENT_TEST_PASS,
+  EVENT_SUITE_BEGIN,
+  EVENT_SUITE_END,
+  EVENT_HOOK_BEGIN,
+  EVENT_HOOK_END,
+} = Mocha.Runner.constants;
 
 const initializeAllure = () => {
   const initialized = Cypress.env("allureInitialized") as boolean;
@@ -177,13 +199,75 @@ const initializeAllure = () => {
     return;
   }
 
+  Cypress.env("allureInitialized", true);
+
   // @ts-ignore
   Cypress.mocha
     .getRunner()
-    .on(EVENT_TEST_BEGIN, (test: Mocha.Test) => {
+    .on(EVENT_RUN_BEGIN, () => {
       const testRuntime = new AllureCypressTestRuntime();
 
       Cypress.env("allureRuntimeMessages", []);
+
+      setGlobalTestRuntime(testRuntime);
+    })
+    .on(EVENT_HOOK_BEGIN, (hook: Mocha.Hook) => {
+      const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
+
+      if (hook.title.includes(ALLURE_REPORT_SHUTDOWN_HOOK)) {
+        return;
+      }
+
+      return testRuntime.sendMessageAsync({
+        type: "cypress_hook_start",
+        data: {
+          name: hook.title,
+          type: /after/.test(hook.title) ? "after" : "before",
+          start: Date.now(),
+          global: /(before|after) all/.test(hook.title),
+        },
+      });
+    })
+    .on(EVENT_HOOK_END, (hook: Mocha.Hook) => {
+      if (hook.title.includes(ALLURE_REPORT_SHUTDOWN_HOOK)) {
+        return;
+      }
+
+      const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
+      const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
+      const hookStartMessage = runtimeMessages
+        .toReversed()
+        .find(({ type }) => type === "cypress_hook_start") as CypressHookStartRuntimeMessage;
+
+      return testRuntime.sendMessageAsync({
+        type: "cypress_hook_end",
+        data: {
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          stop: hookStartMessage.data.start + (hook.duration ?? 0),
+        },
+      });
+    })
+    .on(EVENT_SUITE_BEGIN, (suite: Mocha.Suite) => {
+      const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
+
+      return testRuntime.sendMessageAsync({
+        type: "cypress_suite_start",
+        data: {
+          name: suite.title,
+        },
+      });
+    })
+    .on(EVENT_SUITE_END, () => {
+      const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
+
+      return testRuntime.sendMessageAsync({
+        type: "cypress_suite_end",
+        data: {},
+      });
+    })
+    .on(EVENT_TEST_BEGIN, (test: CypressTest) => {
+      const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
 
       testRuntime.sendMessage({
         type: "cypress_start",
@@ -192,11 +276,9 @@ const initializeAllure = () => {
           absolutePath: Cypress.spec.absolute,
           specPath: getSuitePath(test).concat(test.title),
           filename: Cypress.spec.relative,
-          start: Date.now(),
+          start: test.wallClockStartedAt?.getTime() || Date.now(),
         },
       });
-
-      setGlobalTestRuntime(testRuntime);
     })
     .on(EVENT_TEST_PASS, () => {
       const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
@@ -222,19 +304,74 @@ const initializeAllure = () => {
         },
       });
     })
-    .on(EVENT_TEST_FAIL, (test: Mocha.Test, err: Error) => {
+    .on(EVENT_TEST_FAIL, (test: CypressTest, err: Error) => {
       const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
+      const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
+      const startCommandMessageIdx = runtimeMessages
+        .toReversed()
+        .findIndex(({ type }) => type === "cypress_command_start");
+      const stopCommandMessageIdx = runtimeMessages
+        .toReversed()
+        .findIndex(({ type }) => type === "cypress_command_end");
+      const hasUnfinishedCommand = startCommandMessageIdx > stopCommandMessageIdx;
+      const status = err.constructor.name === "AssertionError" ? Status.FAILED : Status.BROKEN;
+      const statusDetails: StatusDetails = {
+        message: err.message,
+        trace: err.stack,
+      };
+
+      if (hasUnfinishedCommand) {
+        testRuntime.sendMessage({
+          type: "cypress_command_end",
+          data: {
+            status,
+            statusDetails,
+            stage: Stage.FINISHED,
+          },
+        });
+      }
+
+      if (test.hookName) {
+        const hookStartMessage = runtimeMessages
+          .toReversed()
+          .find(({ type }) => type === "cypress_hook_start") as CypressHookStartRuntimeMessage;
+
+        return testRuntime.sendMessageAsync({
+          type: "cypress_hook_end",
+          data: {
+            status,
+            statusDetails,
+            stage: Stage.FINISHED,
+            stop: hookStartMessage.data.start + (test.duration ?? 0),
+          },
+        });
+      }
+
+      // the test hasn't been even started (rather due to hook error), so we need to start it manually
+      if (!test.hookName && test.wallClockStartedAt === undefined) {
+        testRuntime.sendMessage({
+          type: "cypress_start",
+          data: {
+            isInteractive: Cypress.config("isInteractive"),
+            absolutePath: Cypress.spec.absolute,
+            specPath: getSuitePath(test).concat(test.title),
+            filename: Cypress.spec.relative,
+            start: Date.now(),
+          },
+        });
+      }
+
+      const testStartMessage = runtimeMessages
+        .toReversed()
+        .find(({ type }) => type === "cypress_start") as CypressTestStartRuntimeMessage;
 
       testRuntime.sendMessage({
         type: "cypress_end",
         data: {
+          status,
+          statusDetails,
           stage: Stage.FINISHED,
-          status: err.constructor.name === "AssertionError" ? Status.FAILED : Status.BROKEN,
-          statusDetails: {
-            message: err.message,
-            trace: err.stack,
-          },
-          stop: Date.now(),
+          stop: testStartMessage.data.start + (test.duration ?? 0),
         },
       });
     });
@@ -289,14 +426,42 @@ const initializeAllure = () => {
 
     throw err;
   });
+  Cypress.on("command:start", (command: CypressCommand) => {
+    if (isCommandShouldBeSkipped(command)) {
+      return;
+    }
 
-  afterEach(() => {
-    const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
+    const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
 
-    cy.task("allureReportTest", runtimeMessages, { log: false });
+    return testRuntime.sendMessageAsync({
+      type: "cypress_command_start",
+      data: {
+        name: `Command "${command.attributes.name}"`,
+        args: command.attributes.args.map((arg) => (typeof arg === "string" ? arg : JSON.stringify(arg, null, 2))),
+      },
+    });
+  });
+  Cypress.on("command:end", (command: CypressCommand) => {
+    if (isCommandShouldBeSkipped(command)) {
+      return;
+    }
+
+    const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
+
+    return testRuntime.sendMessageAsync({
+      type: "cypress_command_end",
+      data: {
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+      },
+    });
   });
 
-  Cypress.env("allureInitialized", true);
+  after(ALLURE_REPORT_SHUTDOWN_HOOK, () => {
+    const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressRuntimeMessage[];
+
+    cy.task("allureReportTest", runtimeMessages ?? [], { log: false });
+  });
 };
 
 initializeAllure();

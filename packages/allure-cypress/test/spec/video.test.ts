@@ -1,9 +1,9 @@
 import { expect, it } from "vitest";
-import { type Attachment, ContentType } from "allure-js-commons";
+import { ContentType } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils.js";
 
 it("attaches same video to each spec in a test", async () => {
-  const { tests, attachments } = await runCypressInlineTest(
+  const { tests, groups } = await runCypressInlineTest(
     () => `
       it("foo", () => {});
 
@@ -19,7 +19,7 @@ it("attaches same video to each spec in a test", async () => {
           viewportWidth: 1240,
           video: true,
           setupNodeEvents: (on, config) => {
-            const reporter = allureCypress(on, {
+            allureCypress(on, {
               links: [
                 {
                   type: "issue",
@@ -32,10 +32,6 @@ it("attaches same video to each spec in a test", async () => {
               ]
             });
 
-            on("after:spec", (spec, result) => {
-              reporter.endSpec(spec, result);
-            });
-
             return config;
           },
         },
@@ -44,14 +40,22 @@ it("attaches same video to each spec in a test", async () => {
   );
 
   expect(tests).toHaveLength(2);
-
-  const [attachment1]: Attachment[] = tests[0].attachments;
-  expect(attachment1.name).toBe("Video");
-  expect(attachment1.type).toBe(ContentType.MP4);
-  expect(attachments).to.contain.keys(attachment1.source);
-
-  const [attachment2]: Attachment[] = tests[1].attachments;
-  expect(attachment2.name).toBe("Video");
-  expect(attachment2.type).toBe(ContentType.MP4);
-  expect(attachments).to.contain.keys(attachment2.source);
+  expect(groups).toHaveLength(1);
+  expect(groups[0]).toEqual(
+    expect.objectContaining({
+      name: "Cypress video",
+      children: expect.arrayContaining([tests[0].uuid, tests[1].uuid]),
+      afters: [
+        expect.objectContaining({
+          name: "Cypress video",
+          attachments: [
+            expect.objectContaining({
+              name: "Cypress video",
+              type: ContentType.MP4,
+            }),
+          ],
+        }),
+      ],
+    }),
+  );
 });
