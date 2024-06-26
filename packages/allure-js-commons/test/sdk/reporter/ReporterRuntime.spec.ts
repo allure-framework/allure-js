@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type Link, Stage } from "../../../src/model.js";
+import { type Link, Stage, Status } from "../../../src/model.js";
 import { ReporterRuntime } from "../../../src/sdk/reporter/ReporterRuntime.js";
 import { mockWriter } from "../../utils/writer.js";
 
@@ -316,6 +316,32 @@ describe("ReporterRuntime", () => {
           status: undefined,
           stage: Stage.FINISHED,
           parameters: [expect.objectContaining({ name: "p1", value: "v1" })],
+        }),
+      );
+    });
+
+    it("should not override step status on step_stop event", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const rootUuid = runtime.startTest({});
+
+      const stepUuid = runtime.startStep(rootUuid, undefined, { name: "some name" });
+      runtime.updateStep(stepUuid!, (result) => (result.status = Status.BROKEN));
+      runtime.applyRuntimeMessages(rootUuid, [
+        { type: "step_stop", data: { status: Status.PASSED, stop: Date.now() } },
+      ]);
+
+      runtime.stopTest(rootUuid);
+      runtime.writeTest(rootUuid);
+
+      const [testResult] = writer.writeResult.mock.calls[0];
+      const [step] = testResult.steps;
+
+      expect(step).toEqual(
+        expect.objectContaining({
+          name: "some name",
+          status: Status.BROKEN,
         }),
       );
     });

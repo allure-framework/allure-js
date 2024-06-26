@@ -469,7 +469,7 @@ export class ReporterRuntime {
       return;
     }
     this.updateStep(stepUuid, (result) => {
-      if (message.status) {
+      if (message.status && !result.status) {
         result.status = message.status;
       }
       if (message.statusDetails) {
