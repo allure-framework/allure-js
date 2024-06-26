@@ -71,8 +71,8 @@ export type RuntimeMessage =
   | RuntimeAttachmentPathMessage;
 
 export interface TestPlanV1Test {
-  id: string | number;
-  selector: string;
+  id?: string | number;
+  selector?: string;
 }
 
 export interface TestPlanV1 {

@@ -2,7 +2,6 @@ import type { FixtureResult, LinkType, StepResult, TestResult, TestResultContain
 import type { Category, EnvironmentInfo } from "../types.js";
 
 export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
-export const ALLURE_SKIPPED_BY_TEST_PLAN_LABEL = "allure-skipped-by-test-plan";
 export const ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE = "application/vnd.allure.message+json";
 
 export interface LifecycleListener {

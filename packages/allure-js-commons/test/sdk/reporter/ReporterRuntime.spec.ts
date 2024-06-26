@@ -345,6 +345,22 @@ describe("ReporterRuntime", () => {
         }),
       );
     });
+
+    it("should ignore results with ALLURE_TESTPLAN_SKIP label", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const rootUuid = runtime.startTest({});
+
+      runtime.updateTest(rootUuid, (result) => {
+        result.labels.push({ name: "ALLURE_TESTPLAN_SKIP", value: "any" });
+      });
+
+      runtime.stopTest(rootUuid);
+      runtime.writeTest(rootUuid);
+
+      expect(writer.writeResult.mock.calls.length).toBe(0);
+    });
   });
 
   describe("load well-known writers", () => {

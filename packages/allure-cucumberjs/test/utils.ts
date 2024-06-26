@@ -3,13 +3,14 @@ import { randomUUID } from "node:crypto";
 import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve as resolvePath } from "node:path";
 import { attachment, attachmentPath, step } from "allure-js-commons";
-import type { AllureResults } from "allure-js-commons/sdk";
+import type { AllureResults, TestPlanV1 } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
 export const runCucumberInlineTest = async (
   features: string[],
   stepsDefs: string[],
   parallel: boolean = true,
+  testPlan?: TestPlanV1,
 ): Promise<AllureResults> => {
   const fixturesPath = join(__dirname, "fixtures");
   const testDir = join(__dirname, "fixtures/temp", randomUUID());
@@ -110,6 +111,17 @@ export const runCucumberInlineTest = async (
     });
   }
 
+  const env: Record<string, string> = {};
+  if (testPlan) {
+    await step("testplan.json", async () => {
+      const data = JSON.stringify(testPlan);
+      const testPlanPath = join(testDir, "testplan.json");
+      await writeFile(testPlanPath, data, "utf8");
+      env.ALLURE_TESTPLAN_PATH = testPlanPath;
+      await attachment("testplan.json", data, { contentType: "application/json", fileExtension: ".json" });
+    });
+  }
+
   const modulePath = await step("resolve @cucumber/cucumber", () => {
     return resolvePath(require.resolve("@cucumber/cucumber"), "../../bin/cucumber-js");
   });
@@ -118,6 +130,7 @@ export const runCucumberInlineTest = async (
     return fork(modulePath, args, {
       env: {
         ...process.env,
+        ...env,
       },
       cwd: testDir,
       stdio: "pipe",

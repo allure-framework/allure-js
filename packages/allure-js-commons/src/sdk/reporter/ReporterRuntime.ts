@@ -236,6 +236,11 @@ export class ReporterRuntime {
       return;
     }
 
+    if (testResult.labels.find((label) => label.name === "ALLURE_TESTPLAN_SKIP")) {
+      this.state.deleteTestResult(uuid);
+      return;
+    }
+
     this.notifier.beforeTestResultWrite(testResult);
 
     this.writer.writeResult(testResult);

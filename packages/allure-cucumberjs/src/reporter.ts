@@ -369,6 +369,9 @@ export default class AllureCucumberReporter extends Formatter {
         return;
       }
       const name = beforeHook ? beforeHook.name : afterHook ? afterHook.name : "hook";
+      if (name === "ALLURE_FIXTURE_IGNORE") {
+        return;
+      }
 
       const fixtureUuid = this.allureRuntime.startFixture(scopeUuid, type, {
         name,
@@ -484,9 +487,19 @@ export default class AllureCucumberReporter extends Formatter {
       return;
     }
 
-    const rootUuid =
-      this.fixtureUuids.get(message.testCaseStartedId) ?? this.testResultUuids.get(message.testCaseStartedId);
+    const fixtureUuid = this.fixtureUuids.get(message.testCaseStartedId);
+    const testUuid = this.testResultUuids.get(message.testCaseStartedId);
+    const rootUuid = fixtureUuid ?? testUuid;
     if (!rootUuid) {
+      return;
+    }
+
+    if (message.mediaType === "application/vnd.allure.skipcucumber+json") {
+      if (testUuid) {
+        this.allureRuntime.updateTest(testUuid, (result) => {
+          result.labels.push({ name: "ALLURE_TESTPLAN_SKIP", value: "true" });
+        });
+      }
       return;
     }
 
