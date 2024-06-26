@@ -1891,9 +1891,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cucumber/cucumber@npm:^10.4.0":
-  version: 10.4.0
-  resolution: "@cucumber/cucumber@npm:10.4.0"
+"@cucumber/cucumber@npm:^10.8.0":
+  version: 10.8.0
+  resolution: "@cucumber/cucumber@npm:10.8.0"
   dependencies:
     "@cucumber/ci-environment": "npm:10.0.1"
     "@cucumber/cucumber-expressions": "npm:17.1.0"
@@ -1938,7 +1938,7 @@ __metadata:
     yup: "npm:1.2.0"
   bin:
     cucumber-js: bin/cucumber.js
-  checksum: 10/9527f82450d1b3af51d1aa5df4aed3db24c41c9b6587de833f607c2ad9a3832b010d43875e3e6ead3f5801f737d0db62b5cd264a04acb6e963a7083af16634cb
+  checksum: 10/537bd8b89128a00dddee690e2056c3513ec537cc5f45de8f49b231cf7b3219c45e6536a0c1201efef01772a473673fffbe64fe104ee5451ef93bbf1b60b5930f
   languageName: node
   linkType: hard
 
@@ -2021,7 +2021,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cucumber/messages@npm:24.1.0, @cucumber/messages@npm:>=19.1.4 <=24, @cucumber/messages@npm:^24.1.0":
+"@cucumber/messages@npm:24.1.0, @cucumber/messages@npm:>=19.1.4 <=24":
   version: 24.1.0
   resolution: "@cucumber/messages@npm:24.1.0"
   dependencies:
@@ -2042,6 +2042,18 @@ __metadata:
     reflect-metadata: "npm:0.1.13"
     uuid: "npm:9.0.0"
   checksum: 10/09fa7264aa9c53e7a9da3ec752c785ebeeaf98e8e8d4056c7cd6c800a6967b0e9beff0a5b30e3165ff3fe908a9dc9525adae2e28aa02116f7e38b57671e87f52
+  languageName: node
+  linkType: hard
+
+"@cucumber/messages@npm:^25.0.1":
+  version: 25.0.1
+  resolution: "@cucumber/messages@npm:25.0.1"
+  dependencies:
+    "@types/uuid": "npm:9.0.8"
+    class-transformer: "npm:0.5.1"
+    reflect-metadata: "npm:0.2.2"
+    uuid: "npm:9.0.1"
+  checksum: 10/ed3d4554cf540f432622b05e419d310852070437dbb0f0fe030156cefa523015bc5895e4e1660356b0d75c217d4a9e8f62d436ccbba18587b53360af7c42d102
   languageName: node
   linkType: hard
 
@@ -4103,12 +4115,12 @@ __metadata:
     "@babel/plugin-transform-modules-commonjs": "npm:^7.24.6"
     "@babel/preset-env": "npm:^7.24.6"
     "@babel/preset-typescript": "npm:^7.24.6"
-    "@cucumber/cucumber": "npm:^10.4.0"
+    "@cucumber/cucumber": "npm:^10.8.0"
     "@cucumber/gherkin": "npm:^28.0.0"
     "@cucumber/gherkin-streams": "npm:^5.0.1"
     "@cucumber/gherkin-utils": "npm:^9.0.0"
     "@cucumber/message-streams": "npm:^4.0.1"
-    "@cucumber/messages": "npm:^24.1.0"
+    "@cucumber/messages": "npm:^25.0.1"
     "@types/babel__core": "npm:^7"
     "@types/babel__preset-env": "npm:^7"
     "@types/chai": "npm:^4.3.6"
@@ -4140,6 +4152,8 @@ __metadata:
     ts-node: "npm:^10.9.1"
     typescript: "npm:^5.2.2"
     vitest: "npm:^1.6.0"
+  peerDependencies:
+    "@cucumber/cucumber": ^10.1.0
   languageName: unknown
   linkType: soft
 
@@ -12643,6 +12657,13 @@ __metadata:
   version: 0.2.1
   resolution: "reflect-metadata@npm:0.2.1"
   checksum: 10/394b293bd4a538b644ed0e8730c5aeb1e08e78972c915b3d2cf3b302241952cfee8f8bd8a0fdf7d8c7fa78d31d0585489061624692e2577d767abd120cad968c
+  languageName: node
+  linkType: hard
+
+"reflect-metadata@npm:0.2.2":
+  version: 0.2.2
+  resolution: "reflect-metadata@npm:0.2.2"
+  checksum: 10/1c93f9ac790fea1c852fde80c91b2760420069f4862f28e6fae0c00c6937a56508716b0ed2419ab02869dd488d123c4ab92d062ae84e8739ea7417fae10c4745
   languageName: node
   linkType: hard
 
