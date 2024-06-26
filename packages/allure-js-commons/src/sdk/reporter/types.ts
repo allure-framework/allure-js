@@ -1,6 +1,5 @@
 import type { FixtureResult, LinkType, StepResult, TestResult, TestResultContainer } from "../../model.js";
 import type { Category, EnvironmentInfo } from "../types.js";
-import type { AllureContextProvider } from "./context/types.js";
 
 export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
 export const ALLURE_SKIPPED_BY_TEST_PLAN_LABEL = "allure-skipped-by-test-plan";
@@ -49,7 +48,6 @@ export interface Config {
   readonly listeners?: LifecycleListener[];
   readonly environmentInfo?: EnvironmentInfo;
   readonly categories?: Category[];
-  readonly contextProvider?: AllureContextProvider;
 }
 
 export interface Writer {
