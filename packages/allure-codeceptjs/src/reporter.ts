@@ -82,21 +82,23 @@ export class AllureCodeceptJsReporter {
 
   registerEvents() {
     // Hooks
-    event.dispatcher.addListener(event.hook.started, this.hookStarted.bind(this));
-    event.dispatcher.addListener(event.hook.passed, this.hookPassed.bind(this));
+    event.dispatcher.on(event.hook.started, this.hookStarted.bind(this));
+    event.dispatcher.on(event.hook.passed, this.hookPassed.bind(this));
     // Suite
-    event.dispatcher.addListener(event.suite.before, this.suiteBefore.bind(this));
-    event.dispatcher.addListener(event.suite.after, this.suiteAfter.bind(this));
+    event.dispatcher.on(event.suite.before, this.suiteBefore.bind(this));
+    event.dispatcher.on(event.suite.after, this.suiteAfter.bind(this));
     // Test
-    event.dispatcher.addListener(event.test.started, this.testStarted.bind(this));
-    event.dispatcher.addListener(event.test.skipped, this.testSkipped.bind(this));
-    event.dispatcher.addListener(event.test.passed, this.testPassed.bind(this));
-    event.dispatcher.addListener(event.test.failed, this.testFailed.bind(this));
+    event.dispatcher.on(event.test.started, this.testStarted.bind(this));
+    event.dispatcher.on(event.test.skipped, this.testSkipped.bind(this));
+    event.dispatcher.on(event.test.passed, this.testPassed.bind(this));
+    event.dispatcher.on(event.test.failed, this.testFailed.bind(this));
     // Step
-    event.dispatcher.addListener(event.step.started, this.stepStarted.bind(this));
-    event.dispatcher.addListener(event.step.passed, this.stepPassed.bind(this));
-    event.dispatcher.addListener(event.step.failed, this.stepFailed.bind(this));
-    event.dispatcher.addListener(event.step.comment, this.stepComment.bind(this));
+    event.dispatcher.on(event.step.started, this.stepStarted.bind(this));
+    event.dispatcher.on(event.step.passed, this.stepPassed.bind(this));
+    event.dispatcher.on(event.step.failed, this.stepFailed.bind(this));
+    event.dispatcher.on(event.step.comment, this.stepComment.bind(this));
+    // run
+    event.dispatcher.on(event.all.after, this.afterAll.bind(this));
   }
 
   suiteBefore() {
@@ -235,6 +237,11 @@ export class AllureCodeceptJsReporter {
     }
     this.allureRuntime.updateStep(currentStep, updateFunc);
     this.allureRuntime.stopStep(currentStep);
+  }
+
+  afterAll() {
+    this.allureRuntime.writeEnvironmentInfo();
+    this.allureRuntime.writeCategoriesDefinitions();
   }
 
   // TODO: not implemented in the new version at all
