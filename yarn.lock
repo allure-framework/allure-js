@@ -4153,7 +4153,7 @@ __metadata:
     typescript: "npm:^5.2.2"
     vitest: "npm:^1.6.0"
   peerDependencies:
-    "@cucumber/cucumber": ^10.1.0
+    "@cucumber/cucumber": ^10.8.0
   languageName: unknown
   linkType: soft
 
