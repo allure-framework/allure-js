@@ -101,7 +101,8 @@ export class AllureReporter implements ReporterV2 {
     const cliArgs: string[] = [];
 
     testsWithSelectors.forEach((test) => {
-      if (!/#/.test(test.selector)) {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      if (!/#/.test(test.selector!)) {
         v2ReporterTests.push(test);
         return;
       }
@@ -112,7 +113,8 @@ export class AllureReporter implements ReporterV2 {
     if (v2ReporterTests.length) {
       // we need to cut off column because playwright works only with line number
       const v2SelectorsArgs = v2ReporterTests
-        .map((test) => test.selector.replace(/:\d+$/, ""))
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        .map((test) => test.selector!.replace(/:\d+$/, ""))
         .map((selector) => escapeRegExp(selector));
 
       cliArgs.push(...v2SelectorsArgs);
@@ -121,7 +123,8 @@ export class AllureReporter implements ReporterV2 {
     if (v1ReporterTests.length) {
       const v1SelectorsArgs = v1ReporterTests
         // we can filter tests only by absolute path, so we need to cut off test name
-        .map((test) => test.selector.split("#")[0])
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        .map((test) => test.selector!.split("#")[0])
         .map((selector) => escapeRegExp(selector));
 
       cliArgs.push(...v1SelectorsArgs);
