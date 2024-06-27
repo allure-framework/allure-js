@@ -47,12 +47,14 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   private scopesStack: string[] = [];
   private currentTest?: string;
   private currentHook?: string;
+  private readonly isInWorker: boolean;
 
-  constructor(runner: Mocha.Runner, opts: Mocha.MochaOptions) {
+  constructor(runner: Mocha.Runner, opts: Mocha.MochaOptions, isInWorker: boolean = false) {
     super(runner, opts);
 
     const { resultsDir = "allure-results", writer, ...restOptions }: Config = opts.reporterOptions || {};
 
+    this.isInWorker = isInWorker;
     this.runtime = new ReporterRuntime({
       writer: writer || new FileSystemWriter({ resultsDir }),
       ...restOptions,
@@ -83,6 +85,10 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
    */
   writeCategoriesDefinitions = (categories: Category[]) => {
     this.runtime.categories = categories;
+    if (this.isInWorker) {
+      // done is not called in a worker; emit the file immediately
+      this.runtime.writeCategoriesDefinitions();
+    }
   };
 
   /**
@@ -90,6 +96,10 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
    */
   writeEnvironmentInfo = (environmentInfo: Record<string, string>) => {
     this.runtime.environmentInfo = environmentInfo;
+    if (this.isInWorker) {
+      // done is not called in a worker; emit the file immediately
+      this.runtime.writeEnvironmentInfo();
+    }
   };
 
   /**
