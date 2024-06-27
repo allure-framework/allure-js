@@ -149,7 +149,7 @@ it("step with cypress assertion error", async () => {
 
     it("step", () => {
       step("foo", () => {
-        cy.wrap(1).should("eq", 2);
+        expect(1).to.eq(2);
       });
     });
   `,

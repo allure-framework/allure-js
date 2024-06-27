@@ -6,6 +6,7 @@ export type {
   RuntimeMessage,
   RuntimeMetadataMessage,
   RuntimeAttachmentContentMessage,
+  RuntimeAttachmentPathMessage,
   RuntimeStartStepMessage,
   RuntimeStepMetadataMessage,
   RuntimeStopStepMessage,
