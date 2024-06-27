@@ -117,6 +117,9 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         case "test_done":
           this.handleTestDone(event.test);
           break;
+        case "run_finish":
+          this.handleRunFinish();
+          break;
         default:
           break;
       }
@@ -271,6 +274,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       this.runtime.writeTest(testUuid);
       // TODO:
       this.allureUuidsByTestIds.delete(getTestId(getTestPath(test)));
+    }
+
+    private handleRunFinish() {
+      this.runtime.writeEnvironmentInfo();
+      this.runtime.writeCategoriesDefinitions();
     }
   };
 };

@@ -24,7 +24,16 @@ export const runJestInlineTest = async (testContent: string): Promise<AllureResu
           tms: {
             urlTemplate: "https://example.org/tasks/%s",
           }
-        }
+        },
+        environmentInfo: {
+          "app version": "123.0.1",
+          "some other key": "some other value"
+        },
+        categories: [{
+          name: "first"
+        },{
+          name: "second"
+        }]
       },
     };
 
