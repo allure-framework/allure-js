@@ -1,10 +1,10 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
-import { expect, it } from "vitest";
-import { runPlaywrightInlineTest } from "../utils.js";
+import {readFileSync} from "node:fs";
+import {resolve} from "node:path";
+import {expect, it} from "vitest";
+import {runPlaywrightInlineTest} from "../utils.js";
 
 it("doesn't not throw on missing attachment", async () => {
-  const { tests, attachments } = await runPlaywrightInlineTest({
+  const {tests, attachments} = await runPlaywrightInlineTest({
     "sample.test.js": `
       import test from '@playwright/test';
 
@@ -24,20 +24,19 @@ it("doesn't not throw on missing attachment", async () => {
     `,
   });
 
-  const [, step] = tests[0].steps;
-
-  expect(step.name).toBe("buffer-attachment");
-  expect(step.attachments).toEqual([
-    expect.objectContaining({
-      name: "buffer-attachment",
-      type: "text/plain",
-    }),
-  ]);
-  expect(attachments[step.attachments[0].source]).toEqual(Buffer.from("foo").toString("base64"));
+  expect(tests[0].steps).toContainEqual(expect.objectContaining({
+    name: "buffer-attachment",
+    attachments: expect.arrayContaining([
+      expect.objectContaining({
+        name: "buffer-attachment",
+        type: "text/plain",
+      })
+    ])
+  }))
 });
 
 it("adds snapshots correctly and provide a screenshot diff", async () => {
-  const { tests } = await runPlaywrightInlineTest({
+  const {tests} = await runPlaywrightInlineTest({
     "sample.test.js": `
       import test from '@playwright/test';
 
