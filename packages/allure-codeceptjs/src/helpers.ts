@@ -21,7 +21,7 @@ export const extractMeta = (test: CodeceptTest & { tags: string[] }) => {
       return { name, value };
     }
 
-    return { name: LabelName.TAG, value: tag };
+    return { name: LabelName.TAG, value: tag.startsWith("@") ? tag.substring(1) : tag };
   });
 
   return { labels };

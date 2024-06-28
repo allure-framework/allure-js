@@ -6,8 +6,10 @@ export const testPlanFilter = () => {
     return undefined;
   }
 
-  return testPlan.tests.map((testInfo) => {
-    const pattern = testInfo.selector.replace("#", " ");
-    return new RegExp(`\\s${escapeRegExp(pattern)}$`);
-  });
+  return testPlan.tests
+    .flatMap((testInfo) => (testInfo.selector ? [testInfo.selector] : []))
+    .map((selector) => {
+      const pattern = selector.replace("#", " ");
+      return new RegExp(`\\s${escapeRegExp(pattern)}$`);
+    });
 };

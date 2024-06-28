@@ -24,7 +24,7 @@ it("test with cypress command", async () => {
         name: String.raw`Command "log"`,
         parameters: expect.arrayContaining([
           expect.objectContaining({
-            name: String.raw`Argument "0"`,
+            name: String.raw`Argument [0]`,
             value: JSON.stringify(1, null, 2),
           }),
         ]),
@@ -33,7 +33,7 @@ it("test with cypress command", async () => {
         name: String.raw`Command "log"`,
         parameters: expect.arrayContaining([
           expect.objectContaining({
-            name: String.raw`Argument "0"`,
+            name: String.raw`Argument [0]`,
             value: "2",
           }),
         ]),
@@ -42,7 +42,7 @@ it("test with cypress command", async () => {
         name: String.raw`Command "log"`,
         parameters: expect.arrayContaining([
           expect.objectContaining({
-            name: String.raw`Argument "0"`,
+            name: String.raw`Argument [0]`,
             value: JSON.stringify([1, 2, 3], null, 2),
           }),
         ]),
@@ -51,7 +51,7 @@ it("test with cypress command", async () => {
         name: String.raw`Command "log"`,
         parameters: expect.arrayContaining([
           expect.objectContaining({
-            name: String.raw`Argument "0"`,
+            name: String.raw`Argument [0]`,
             value: JSON.stringify({ foo: 1, bar: 2, baz: 3 }, null, 2),
           }),
         ]),

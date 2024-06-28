@@ -24,6 +24,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   private readonly allureRuntime: ReporterRuntime;
   private currentAllureTestUuid?: string;
   private jasmineSuitesStack: jasmine.SuiteResult[] = [];
+  private scopesStack: string[] = [];
 
   constructor(config: AllureJasmineConfig) {
     const { testMode, resultsDir = "./allure-results", ...restConfig } = config || {};
@@ -44,7 +45,8 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     this.installHooks();
 
     // the best place to start global container for hooks and nested suites
-    this.allureRuntime.startScope();
+    const scopeUuid = this.allureRuntime.startScope();
+    this.scopesStack.push(scopeUuid);
   }
 
   private getCurrentSpecPath() {
@@ -72,14 +74,17 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   }
 
   handleAllureRuntimeMessages(message: RuntimeMessage) {
-    this.allureRuntime.applyRuntimeMessages([message], { testUuid: this.currentAllureTestUuid! });
+    if (!this.currentAllureTestUuid) {
+      return;
+    }
+    this.allureRuntime.applyRuntimeMessages(this.currentAllureTestUuid, [message]);
   }
 
   jasmineStarted(): void {
     const allureRuntime = this.allureRuntime;
     const globalJasmine = globalThis.jasmine;
-    const currentAllureResultUuidGetter = () => this.currentAllureTestUuid;
-    const currentAllureStepResultGetter = () => this.allureRuntime.getCurrentStep(currentAllureResultUuidGetter());
+    const currentAllureStepResultGetter = () =>
+      this.currentAllureTestUuid ? this.allureRuntime.currentStep(this.currentAllureTestUuid) : undefined;
     // @ts-ignore
     const originalExpectationHandler = globalJasmine.Spec.prototype.addExpectationResult;
 
@@ -88,11 +93,12 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     globalJasmine.Spec.prototype.addExpectationResult = function (passed, data, isError) {
       const isStepFailed = !passed && !isError;
 
-      if (currentAllureStepResultGetter() && isStepFailed) {
-        allureRuntime.updateStep((result) => {
+      const stepUuid = currentAllureStepResultGetter();
+      if (stepUuid && isStepFailed) {
+        allureRuntime.updateStep(stepUuid, (result) => {
           result.status = Status.FAILED;
           result.stage = Stage.FINISHED;
-        }, currentAllureResultUuidGetter());
+        });
       }
 
       originalExpectationHandler.call(this, passed, data, isError);
@@ -101,27 +107,37 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
   suiteStarted(suite: jasmine.SuiteResult): void {
     this.jasmineSuitesStack.push(suite);
-    this.allureRuntime.startScope();
+    const scopeUuid = this.allureRuntime.startScope();
+    this.scopesStack.push(scopeUuid);
   }
 
   suiteDone(): void {
     this.jasmineSuitesStack.pop();
-    this.allureRuntime.writeScope();
+    const scopeUuid = this.scopesStack.pop();
+    if (scopeUuid) {
+      this.allureRuntime.writeScope(scopeUuid);
+    }
   }
 
   specStarted(spec: jasmine.SpecResult): void {
-    this.currentAllureTestUuid = this.allureRuntime.startTest({
-      name: spec.description,
-      fullName: this.getSpecFullName(spec),
-      stage: Stage.RUNNING,
-    });
+    this.currentAllureTestUuid = this.allureRuntime.startTest(
+      {
+        name: spec.description,
+        fullName: this.getSpecFullName(spec),
+        stage: Stage.RUNNING,
+      },
+      this.scopesStack,
+    );
   }
 
   specDone(spec: jasmine.SpecResult): void {
+    if (!this.currentAllureTestUuid) {
+      return;
+    }
     const specPath = this.getCurrentSpecPath();
     const exceptionInfo = findMessageAboutThrow(spec.failedExpectations) || findAnyError(spec.failedExpectations);
 
-    this.allureRuntime.updateTest((result) => {
+    this.allureRuntime.updateTest(this.currentAllureTestUuid, (result) => {
       const suitesLabels = getSuiteLabels(specPath);
 
       result.labels.push(...suitesLabels);
@@ -156,8 +172,8 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
         result.status = Status.BROKEN;
         return;
       }
-    }, this.currentAllureTestUuid);
-    this.allureRuntime.stopTest({ uuid: this.currentAllureTestUuid! });
+    });
+    this.allureRuntime.stopTest(this.currentAllureTestUuid);
     this.allureRuntime.writeTest(this.currentAllureTestUuid);
     this.currentAllureTestUuid = undefined;
   }
@@ -165,8 +181,11 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   jasmineDone(): void {
     this.allureRuntime.writeEnvironmentInfo();
     this.allureRuntime.writeCategoriesDefinitions();
-    // write global container
-    this.allureRuntime.writeScope();
+    // write global container (or any remaining scopes)
+    this.scopesStack.forEach((scopeUuid) => {
+      this.allureRuntime.writeScope(scopeUuid);
+    });
+    this.scopesStack = [];
   }
 
   private installHooks(): void {
@@ -198,50 +217,69 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
               .then(() => {
                 done();
 
-                this.allureRuntime.startFixture(fixtureType, {
+                const scopeUuid =
+                  this.scopesStack.length > 0 ? this.scopesStack[this.scopesStack.length - 1] : undefined;
+                if (scopeUuid) {
+                  const fixtureUuid = this.allureRuntime.startFixture(scopeUuid, fixtureType, {
+                    name: fixtureName,
+                    stage: Stage.FINISHED,
+                    status: Status.PASSED,
+                    start,
+                  });
+                  if (fixtureUuid) {
+                    this.allureRuntime.stopFixture(fixtureUuid);
+                  }
+                }
+              })
+              .catch((err) => {
+                done.fail(err as Error);
+                const scopeUuid =
+                  this.scopesStack.length > 0 ? this.scopesStack[this.scopesStack.length - 1] : undefined;
+                if (scopeUuid) {
+                  const fixtureUuid = this.allureRuntime.startFixture(scopeUuid, fixtureType, {
+                    name: fixtureName,
+                    stage: Stage.FINISHED,
+                    status: Status.BROKEN,
+                    start,
+                  });
+                  if (fixtureUuid) {
+                    this.allureRuntime.stopFixture(fixtureUuid);
+                  }
+                }
+              });
+          } else {
+            try {
+              done();
+              const scopeUuid = this.scopesStack.length > 0 ? this.scopesStack[this.scopesStack.length - 1] : undefined;
+              if (scopeUuid) {
+                const fixtureUuid = this.allureRuntime.startFixture(scopeUuid, fixtureType, {
                   name: fixtureName,
                   stage: Stage.FINISHED,
                   status: Status.PASSED,
                   start,
                 });
-                this.allureRuntime.stopFixture();
-              })
-              .catch((err) => {
-                done.fail(err as Error);
-
-                this.allureRuntime.startFixture(fixtureType, {
+                if (fixtureUuid) {
+                  this.allureRuntime.stopFixture(fixtureUuid);
+                }
+              }
+            } catch (err) {
+              const { message, stack } = err as Error;
+              const scopeUuid = this.scopesStack.length > 0 ? this.scopesStack[this.scopesStack.length - 1] : undefined;
+              if (scopeUuid) {
+                const fixtureUuid = this.allureRuntime.startFixture(scopeUuid, fixtureType, {
                   name: fixtureName,
                   stage: Stage.FINISHED,
                   status: Status.BROKEN,
+                  statusDetails: {
+                    message,
+                    trace: stack,
+                  },
                   start,
                 });
-                this.allureRuntime.stopFixture();
-              });
-          } else {
-            try {
-              done();
-
-              this.allureRuntime.startFixture(fixtureType, {
-                name: fixtureName,
-                stage: Stage.FINISHED,
-                status: Status.PASSED,
-                start,
-              });
-              this.allureRuntime.stopFixture();
-            } catch (err) {
-              const { message, stack } = err as Error;
-
-              this.allureRuntime.startFixture(fixtureType, {
-                name: fixtureName,
-                stage: Stage.FINISHED,
-                status: Status.BROKEN,
-                statusDetails: {
-                  message,
-                  trace: stack,
-                },
-                start,
-              });
-              this.allureRuntime.stopFixture();
+                if (fixtureUuid) {
+                  this.allureRuntime.stopFixture(fixtureUuid);
+                }
+              }
 
               throw err;
             }

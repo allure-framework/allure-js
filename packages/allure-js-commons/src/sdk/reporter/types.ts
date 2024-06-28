@@ -1,44 +1,8 @@
-import type {
-  FixtureResult,
-  Label,
-  Link,
-  LinkType,
-  Parameter,
-  StepResult,
-  TestResult,
-  TestResultContainer,
-} from "../../model.js";
+import type { FixtureResult, LinkType, StepResult, TestResult, TestResultContainer } from "../../model.js";
 import type { Category, EnvironmentInfo } from "../types.js";
-import type { AllureContextProvider } from "./context/types.js";
 
 export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
-export const ALLURE_SKIPPED_BY_TEST_PLAN_LABEL = "allure-skipped-by-test-plan";
 export const ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE = "application/vnd.allure.message+json";
-
-export interface AttachmentMetadata {
-  name: string;
-  type: string;
-  content: string;
-  encoding: BufferEncoding;
-}
-
-export interface StepMetadata extends Omit<StepResult, "attachments" | "steps"> {
-  steps: StepMetadata[];
-  attachments: AttachmentMetadata[];
-}
-
-export interface MetadataMessage {
-  attachments?: AttachmentMetadata[];
-  displayName?: string;
-  testCaseId?: string;
-  historyId?: string;
-  labels?: Label[];
-  links?: Link[];
-  parameter?: Parameter[];
-  description?: string;
-  descriptionHtml?: string;
-  steps?: StepMetadata[];
-}
 
 export interface LifecycleListener {
   beforeTestResultStart?: (result: TestResult) => void;
@@ -83,7 +47,6 @@ export interface Config {
   readonly listeners?: LifecycleListener[];
   readonly environmentInfo?: EnvironmentInfo;
   readonly categories?: Category[];
-  readonly contextProvider?: AllureContextProvider;
 }
 
 export interface Writer {
@@ -100,15 +63,9 @@ export interface Writer {
   writeCategoriesDefinitions(categories: Category[]): void;
 }
 
-export type WellKnownWriters = {
-  [key: string]: (new (...args: readonly unknown[]) => Writer) | undefined;
-};
-
 export type TestScope = {
   uuid: string;
   tests: string[];
-  parent?: TestScope;
-  subScopes: TestScope[];
   fixtures: FixtureWrapper[];
 };
 
@@ -117,6 +74,5 @@ export type FixtureType = "before" | "after";
 export type FixtureWrapper = {
   uuid: string;
   value: FixtureResult;
-  scope?: TestScope;
   type: FixtureType;
 };

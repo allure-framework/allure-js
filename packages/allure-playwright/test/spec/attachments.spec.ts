@@ -4,7 +4,7 @@ import { expect, it } from "vitest";
 import { runPlaywrightInlineTest } from "../utils.js";
 
 it("doesn't not throw on missing attachment", async () => {
-  const { tests, attachments } = await runPlaywrightInlineTest({
+  const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
       import test from '@playwright/test';
 
@@ -24,13 +24,17 @@ it("doesn't not throw on missing attachment", async () => {
     `,
   });
 
-  expect(tests[0].attachments).toEqual([
+  expect(tests[0].steps).toContainEqual(
     expect.objectContaining({
       name: "buffer-attachment",
-      type: "text/plain",
+      attachments: expect.arrayContaining([
+        expect.objectContaining({
+          name: "buffer-attachment",
+          type: "text/plain",
+        }),
+      ]),
     }),
-  ]);
-  expect(attachments[tests[0].attachments[0].source]).toEqual(Buffer.from("foo").toString("base64"));
+  );
 });
 
 it("adds snapshots correctly and provide a screenshot diff", async () => {

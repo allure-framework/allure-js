@@ -13,6 +13,8 @@ class AllureReporter {
   runningItems: RunningItem[] = [];
   currentCollection: CollectionDefinition;
   pmItemsByAllureUuid: Map<string, PmItem> = new Map();
+  currentTest?: string;
+  currentScope?: string;
 
   constructor(
     emitter: EventEmitter,
@@ -36,65 +38,6 @@ class AllureReporter {
     this.registerEvents(emitter);
   }
 
-  pathToItem(item: Item): string[] {
-    if (!item || !(typeof item.parent === "function") || !(typeof item.forEachParent === "function")) {
-      return [];
-    }
-
-    const chain: string[] = [];
-
-    if (this.currentCollection.name && this.allureConfig.collectionAsParentSuite) {
-      chain.push(this.currentCollection.name);
-    }
-
-    item.forEachParent((parent) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      chain.unshift(parent.name || parent.id);
-    });
-
-    return chain;
-  }
-
-  getFullName(item: Item): string {
-    const chain = this.pathToItem(item);
-
-    return `${chain.join("/")}#${item.name}`;
-  }
-
-  attachString(name: string, value: string | string[]) {
-    const stringToAttach = Array.isArray(value) ? value.join("\n") : value;
-
-    if (!stringToAttach) {
-      return;
-    }
-
-    const content = Buffer.from(stringToAttach, "utf-8");
-
-    this.allureRuntime.writeAttachment(name, content, {
-      contentType: ContentType.TEXT,
-    });
-  }
-
-  headerListToJsonBuffer(headers: HeaderList) {
-    const ret: { [k: string]: any } = {};
-
-    headers.all().forEach((h) => {
-      ret[h.key] = h.value;
-    });
-
-    return Buffer.from(JSON.stringify(ret, null, 4), "utf-8");
-  }
-
-  escape(val: string) {
-    return (
-      val
-        .replace("\n", "")
-        .replace("\r", "")
-        // eslint-disable-next-line @typescript-eslint/quotes
-        .replace('"', '"')
-    );
-  }
-
   registerEvents(emitter: EventEmitter) {
     emitter.on("start", this.onStart.bind(this));
     emitter.on("beforeItem", this.onBeforeItem.bind(this));
@@ -108,7 +51,7 @@ class AllureReporter {
   }
 
   onStart() {
-    this.allureRuntime.startScope();
+    this.currentScope = this.allureRuntime.startScope();
   }
 
   onPrerequest(
@@ -117,13 +60,11 @@ class AllureReporter {
       executions: Event[];
     },
   ) {
-    const currentAllureTest = this.allureRuntime.getCurrentTest();
-
-    if (!currentAllureTest) {
+    if (!this.currentTest) {
       return;
     }
 
-    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid);
+    const currentPmItem = this.pmItemsByAllureUuid.get(this.currentTest);
 
     if (!currentPmItem) {
       return;
@@ -141,12 +82,13 @@ class AllureReporter {
       failedAssertions: [],
       consoleLogs: [],
     };
+
     const itemGroup = args.item.parent();
     const item = args.item;
-    const fullName = this.getFullName(item);
-    const testPath = this.pathToItem(item);
+    const fullName = this.#getFullName(item);
+    const testPath = this.#pathToItem(item);
     const { labels } = extractMeta(args.item.events);
-    const currentTestUuid = this.allureRuntime.startTest({
+    this.currentTest = this.allureRuntime.startTest({
       name: args.item.name,
       fullName,
       stage: Stage.RUNNING,
@@ -158,7 +100,7 @@ class AllureReporter {
       ],
     });
 
-    this.allureRuntime.updateTest((test) => {
+    this.allureRuntime.updateTest(this.currentTest, (test) => {
       const [parentSuite, suite, ...subSuites] = testPath;
 
       if (parentSuite) {
@@ -173,7 +115,7 @@ class AllureReporter {
         test.labels.push({ name: LabelName.SUB_SUITE, value: subSuites.join(" > ") });
       }
     });
-    this.pmItemsByAllureUuid.set(currentTestUuid, pmItem);
+    this.pmItemsByAllureUuid.set(this.currentTest, pmItem);
 
     if (itemGroup && this.currentCollection !== itemGroup) {
       this.currentCollection = itemGroup;
@@ -186,13 +128,11 @@ class AllureReporter {
       item: Item;
     },
   ) {
-    const currentAllureTest = this.allureRuntime.getCurrentTest();
-
-    if (!currentAllureTest) {
+    if (!this.currentTest) {
       return;
     }
 
-    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid);
+    const currentPmItem = this.pmItemsByAllureUuid.get(this.currentTest);
 
     if (!currentPmItem) {
       return;
@@ -207,40 +147,58 @@ class AllureReporter {
     const requestError = currentPmItem.requestError;
 
     if (currentPmItem.prerequest) {
-      this.attachString("PreRequest", currentPmItem.prerequest);
+      this.#attachString("PreRequest", currentPmItem.prerequest);
     }
 
     if (currentPmItem.testScript) {
-      this.attachString("TestScript", currentPmItem.testScript);
+      this.#attachString("TestScript", currentPmItem.testScript);
     }
 
     if (currentPmItem.consoleLogs.length) {
-      this.attachString("ConsoleLogs", currentPmItem.consoleLogs);
+      this.#attachString("ConsoleLogs", currentPmItem.consoleLogs);
     }
 
     if (requestData?.headers && requestData?.headers?.count() > 0) {
-      this.allureRuntime.writeAttachment("Request Headers", this.headerListToJsonBuffer(requestData.headers), {
-        contentType: ContentType.JSON,
-      });
+      this.allureRuntime.writeAttachment(
+        this.currentTest,
+        undefined,
+        "Request Headers",
+        this.#headerListToJsonBuffer(requestData.headers),
+        {
+          contentType: ContentType.JSON,
+        },
+      );
     }
 
     if (requestData?.body?.mode === "raw" && requestData.body.raw) {
-      this.attachString("Request Body", requestData.body.raw);
+      this.#attachString("Request Body", requestData.body.raw);
     }
 
     if (response?.headers && response?.headers?.count() > 0) {
-      this.allureRuntime.writeAttachment("Response Headers", this.headerListToJsonBuffer(response.headers), {
-        contentType: ContentType.JSON,
-      });
+      this.allureRuntime.writeAttachment(
+        this.currentTest,
+        undefined,
+        "Response Headers",
+        this.#headerListToJsonBuffer(response.headers),
+        {
+          contentType: ContentType.JSON,
+        },
+      );
     }
 
     if (response?.body) {
-      this.allureRuntime.writeAttachment("Response Body", Buffer.from(response.body, "utf-8"), {
-        contentType: ContentType.TEXT,
-      });
+      this.allureRuntime.writeAttachment(
+        this.currentTest,
+        undefined,
+        "Response Body",
+        Buffer.from(response.body, "utf-8"),
+        {
+          contentType: ContentType.TEXT,
+        },
+      );
     }
 
-    this.allureRuntime.updateTest((test) => {
+    this.allureRuntime.updateTest(this.currentTest, (test) => {
       if (requestDataURL) {
         test.parameters.push({
           name: "Request",
@@ -265,24 +223,20 @@ class AllureReporter {
     });
 
     if (response && failedAssertions?.length) {
-      if (currentAllureTest.status === Status.FAILED || currentAllureTest.status === Status.BROKEN) {
-        return;
-      }
+      const details = this.#escape(`Response code: ${response.code}, status: ${response.status}`);
 
-      const details = this.escape(`Response code: ${response.code}, status: ${response.status}`);
-
-      this.allureRuntime.updateTest((test) => {
+      this.allureRuntime.updateTest(this.currentTest, (test) => {
         test.status = Status.FAILED;
         test.stage = Stage.FINISHED;
         test.statusDetails = {
-          message: this.escape(failedAssertions.join(", ")),
+          message: this.#escape(failedAssertions.join(", ")),
           trace: details,
         };
       });
     } else if (requestError) {
-      const errorMsg = this.escape(requestError);
+      const errorMsg = this.#escape(requestError);
 
-      this.allureRuntime.updateTest((test) => {
+      this.allureRuntime.updateTest(this.currentTest, (test) => {
         test.status = Status.BROKEN;
         test.stage = Stage.FINISHED;
         test.statusDetails = {
@@ -290,24 +244,22 @@ class AllureReporter {
         };
       });
     } else {
-      this.allureRuntime.updateTest((test) => {
+      this.allureRuntime.updateTest(this.currentTest, (test) => {
         test.status = Status.PASSED;
         test.stage = Stage.FINISHED;
       });
     }
 
-    this.allureRuntime.stopTest();
-    this.allureRuntime.writeTest();
+    this.allureRuntime.stopTest(this.currentTest);
+    this.allureRuntime.writeTest(this.currentTest);
   }
 
   onTest(err: any, args: { executions: Event[] }) {
-    const currentAllureTest = this.allureRuntime.getCurrentTest();
-
-    if (!currentAllureTest) {
+    if (!this.currentTest) {
       return;
     }
 
-    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid);
+    const currentPmItem = this.pmItemsByAllureUuid.get(this.currentTest);
 
     if (!currentPmItem) {
       return;
@@ -331,7 +283,7 @@ class AllureReporter {
     const errName: string = testArgs.error.name;
     const errMsg: string = testArgs.error.message;
 
-    this.allureRuntime.startStep({
+    const stepUuid = this.allureRuntime.startStep(this.currentTest, undefined, {
       name: errName,
       status: Status.FAILED,
       stage: Stage.FINISHED,
@@ -340,19 +292,22 @@ class AllureReporter {
       },
     });
 
-    currentPmItem.failedAssertions.push(errName);
-
-    this.allureRuntime.stopStep();
-  }
-
-  onConsole(err: any, args: ConsoleEvent) {
-    const currentAllureTest = this.allureRuntime.getCurrentTest();
-
-    if (!currentAllureTest) {
+    if (!stepUuid) {
+      // no such test running, ignore reporting
       return;
     }
 
-    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid);
+    currentPmItem.failedAssertions.push(errName);
+
+    this.allureRuntime.stopStep(stepUuid);
+  }
+
+  onConsole(err: any, args: ConsoleEvent) {
+    if (!this.currentTest) {
+      return;
+    }
+
+    const currentPmItem = this.pmItemsByAllureUuid.get(this.currentTest);
 
     if (!currentPmItem || err) {
       return;
@@ -370,13 +325,11 @@ class AllureReporter {
       response: Response;
     },
   ) {
-    const currentAllureTest = this.allureRuntime.getCurrentTest();
-
-    if (!currentAllureTest) {
+    if (!this.currentTest) {
       return;
     }
 
-    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid);
+    const currentPmItem = this.pmItemsByAllureUuid.get(this.currentTest);
 
     if (!currentPmItem) {
       return;
@@ -413,22 +366,25 @@ class AllureReporter {
   }
 
   onAssertion(err: any, args: NewmanRunExecutionAssertion) {
-    const currentAllureTest = this.allureRuntime.getCurrentTest();
-
-    if (!currentAllureTest) {
+    if (!this.currentTest) {
       return;
     }
 
-    const currentPmItem = this.pmItemsByAllureUuid.get(currentAllureTest.uuid);
+    const currentPmItem = this.pmItemsByAllureUuid.get(this.currentTest);
 
     if (!currentPmItem) {
       return;
     }
 
-    this.allureRuntime.startStep({
+    const stepUuid = this.allureRuntime.startStep(this.currentTest, undefined, {
       name: args.assertion,
     });
-    this.allureRuntime.updateStep((step) => {
+    if (!stepUuid) {
+      // no such test running, ignore reporting
+      return;
+    }
+
+    this.allureRuntime.updateStep(stepUuid, (step) => {
       if (err && currentPmItem) {
         currentPmItem.passed = false;
         currentPmItem.failedAssertions.push(args.assertion);
@@ -445,11 +401,73 @@ class AllureReporter {
       step.stage = Stage.FINISHED;
     });
 
-    this.allureRuntime.stopStep();
+    this.allureRuntime.stopStep(stepUuid);
   }
 
   onDone() {
-    this.allureRuntime.writeScope();
+    if (this.currentScope) {
+      this.allureRuntime.writeScope(this.currentScope);
+      this.currentScope = undefined;
+    }
+  }
+
+  #pathToItem(item: Item): string[] {
+    if (!item || !(typeof item.parent === "function") || !(typeof item.forEachParent === "function")) {
+      return [];
+    }
+
+    const chain: string[] = [];
+
+    if (this.currentCollection.name && this.allureConfig.collectionAsParentSuite) {
+      chain.push(this.currentCollection.name);
+    }
+
+    item.forEachParent((parent) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      chain.unshift(parent.name || parent.id);
+    });
+
+    return chain;
+  }
+
+  #getFullName(item: Item): string {
+    const chain = this.#pathToItem(item);
+
+    return `${chain.join("/")}#${item.name}`;
+  }
+
+  #attachString(name: string, value: string | string[]) {
+    const stringToAttach = Array.isArray(value) ? value.join("\n") : value;
+
+    if (!stringToAttach) {
+      return;
+    }
+
+    const content = Buffer.from(stringToAttach, "utf-8");
+
+    this.allureRuntime.writeAttachment(this.currentTest!, undefined, name, content, {
+      contentType: ContentType.TEXT,
+    });
+  }
+
+  #headerListToJsonBuffer(headers: HeaderList) {
+    const ret: { [k: string]: any } = {};
+
+    headers.all().forEach((h) => {
+      ret[h.key] = h.value;
+    });
+
+    return Buffer.from(JSON.stringify(ret, null, 4), "utf-8");
+  }
+
+  #escape(val: string) {
+    return (
+      val
+        .replace("\n", "")
+        .replace("\r", "")
+        // eslint-disable-next-line @typescript-eslint/quotes
+        .replace('"', '"')
+    );
   }
 }
 

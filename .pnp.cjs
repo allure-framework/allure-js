@@ -3399,17 +3399,17 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@cucumber/cucumber", [\
-      ["npm:10.4.0", {\
-        "packageLocation": "./.yarn/cache/@cucumber-cucumber-npm-10.4.0-1fcea15c8b-9527f82450.zip/node_modules/@cucumber/cucumber/",\
+      ["npm:10.8.0", {\
+        "packageLocation": "./.yarn/cache/@cucumber-cucumber-npm-10.8.0-3268c4cd89-537bd8b891.zip/node_modules/@cucumber/cucumber/",\
         "packageDependencies": [\
-          ["@cucumber/cucumber", "npm:10.4.0"],\
+          ["@cucumber/cucumber", "npm:10.8.0"],\
           ["@cucumber/ci-environment", "npm:10.0.1"],\
           ["@cucumber/cucumber-expressions", "npm:17.1.0"],\
           ["@cucumber/gherkin", "npm:28.0.0"],\
-          ["@cucumber/gherkin-streams", "virtual:1fcea15c8bf2089a53fe8bf9ffc837d613c1bc61a4d4dd5395727d0484bd003ca936b69b8a0cf6bdf6c55f3297ae5255818ce58084d2abc55778d09888281fe5#npm:5.0.1"],\
+          ["@cucumber/gherkin-streams", "virtual:3268c4cd897a50f7d745c9b5ef6383f44c00031a87f71b6c38089f845306dc839e91d2bf1684c2453c3aaf0757c557906554dce413a4b62c75d4765ff16f9b77#npm:5.0.1"],\
           ["@cucumber/gherkin-utils", "npm:9.0.0"],\
-          ["@cucumber/html-formatter", "virtual:1fcea15c8bf2089a53fe8bf9ffc837d613c1bc61a4d4dd5395727d0484bd003ca936b69b8a0cf6bdf6c55f3297ae5255818ce58084d2abc55778d09888281fe5#npm:21.3.1"],\
-          ["@cucumber/message-streams", "virtual:1fcea15c8bf2089a53fe8bf9ffc837d613c1bc61a4d4dd5395727d0484bd003ca936b69b8a0cf6bdf6c55f3297ae5255818ce58084d2abc55778d09888281fe5#npm:4.0.1"],\
+          ["@cucumber/html-formatter", "virtual:3268c4cd897a50f7d745c9b5ef6383f44c00031a87f71b6c38089f845306dc839e91d2bf1684c2453c3aaf0757c557906554dce413a4b62c75d4765ff16f9b77#npm:21.3.1"],\
+          ["@cucumber/message-streams", "virtual:3268c4cd897a50f7d745c9b5ef6383f44c00031a87f71b6c38089f845306dc839e91d2bf1684c2453c3aaf0757c557906554dce413a4b62c75d4765ff16f9b77#npm:4.0.1"],\
           ["@cucumber/messages", "npm:24.1.0"],\
           ["@cucumber/tag-expressions", "npm:6.1.0"],\
           ["assertion-error-formatter", "npm:3.0.0"],\
@@ -3492,13 +3492,36 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:1fcea15c8bf2089a53fe8bf9ffc837d613c1bc61a4d4dd5395727d0484bd003ca936b69b8a0cf6bdf6c55f3297ae5255818ce58084d2abc55778d09888281fe5#npm:5.0.1", {\
-        "packageLocation": "./.yarn/__virtual__/@cucumber-gherkin-streams-virtual-db404f246b/0/cache/@cucumber-gherkin-streams-npm-5.0.1-a9097ed93e-d52324a443.zip/node_modules/@cucumber/gherkin-streams/",\
+      ["virtual:3268c4cd897a50f7d745c9b5ef6383f44c00031a87f71b6c38089f845306dc839e91d2bf1684c2453c3aaf0757c557906554dce413a4b62c75d4765ff16f9b77#npm:5.0.1", {\
+        "packageLocation": "./.yarn/__virtual__/@cucumber-gherkin-streams-virtual-f2af7ac6e2/0/cache/@cucumber-gherkin-streams-npm-5.0.1-a9097ed93e-d52324a443.zip/node_modules/@cucumber/gherkin-streams/",\
         "packageDependencies": [\
-          ["@cucumber/gherkin-streams", "virtual:1fcea15c8bf2089a53fe8bf9ffc837d613c1bc61a4d4dd5395727d0484bd003ca936b69b8a0cf6bdf6c55f3297ae5255818ce58084d2abc55778d09888281fe5#npm:5.0.1"],\
+          ["@cucumber/gherkin-streams", "virtual:3268c4cd897a50f7d745c9b5ef6383f44c00031a87f71b6c38089f845306dc839e91d2bf1684c2453c3aaf0757c557906554dce413a4b62c75d4765ff16f9b77#npm:5.0.1"],\
           ["@cucumber/gherkin", "npm:28.0.0"],\
-          ["@cucumber/message-streams", "virtual:1fcea15c8bf2089a53fe8bf9ffc837d613c1bc61a4d4dd5395727d0484bd003ca936b69b8a0cf6bdf6c55f3297ae5255818ce58084d2abc55778d09888281fe5#npm:4.0.1"],\
+          ["@cucumber/message-streams", "virtual:3268c4cd897a50f7d745c9b5ef6383f44c00031a87f71b6c38089f845306dc839e91d2bf1684c2453c3aaf0757c557906554dce413a4b62c75d4765ff16f9b77#npm:4.0.1"],\
           ["@cucumber/messages", "npm:24.1.0"],\
+          ["@types/cucumber__gherkin", null],\
+          ["@types/cucumber__message-streams", null],\
+          ["@types/cucumber__messages", null],\
+          ["commander", "npm:9.1.0"],\
+          ["source-map-support", "npm:0.5.21"]\
+        ],\
+        "packagePeers": [\
+          "@cucumber/gherkin",\
+          "@cucumber/message-streams",\
+          "@cucumber/messages",\
+          "@types/cucumber__gherkin",\
+          "@types/cucumber__message-streams",\
+          "@types/cucumber__messages"\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:5.0.1", {\
+        "packageLocation": "./.yarn/__virtual__/@cucumber-gherkin-streams-virtual-5f00396eed/0/cache/@cucumber-gherkin-streams-npm-5.0.1-a9097ed93e-d52324a443.zip/node_modules/@cucumber/gherkin-streams/",\
+        "packageDependencies": [\
+          ["@cucumber/gherkin-streams", "virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:5.0.1"],\
+          ["@cucumber/gherkin", "npm:28.0.0"],\
+          ["@cucumber/message-streams", "virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:4.0.1"],\
+          ["@cucumber/messages", "npm:25.0.1"],\
           ["@types/cucumber__gherkin", null],\
           ["@types/cucumber__message-streams", null],\
           ["@types/cucumber__messages", null],\
@@ -3538,10 +3561,10 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:1fcea15c8bf2089a53fe8bf9ffc837d613c1bc61a4d4dd5395727d0484bd003ca936b69b8a0cf6bdf6c55f3297ae5255818ce58084d2abc55778d09888281fe5#npm:21.3.1", {\
-        "packageLocation": "./.yarn/__virtual__/@cucumber-html-formatter-virtual-9d579f6350/0/cache/@cucumber-html-formatter-npm-21.3.1-5f1156cb5f-7c67856ab1.zip/node_modules/@cucumber/html-formatter/",\
+      ["virtual:3268c4cd897a50f7d745c9b5ef6383f44c00031a87f71b6c38089f845306dc839e91d2bf1684c2453c3aaf0757c557906554dce413a4b62c75d4765ff16f9b77#npm:21.3.1", {\
+        "packageLocation": "./.yarn/__virtual__/@cucumber-html-formatter-virtual-7c69539e48/0/cache/@cucumber-html-formatter-npm-21.3.1-5f1156cb5f-7c67856ab1.zip/node_modules/@cucumber/html-formatter/",\
         "packageDependencies": [\
-          ["@cucumber/html-formatter", "virtual:1fcea15c8bf2089a53fe8bf9ffc837d613c1bc61a4d4dd5395727d0484bd003ca936b69b8a0cf6bdf6c55f3297ae5255818ce58084d2abc55778d09888281fe5#npm:21.3.1"],\
+          ["@cucumber/html-formatter", "virtual:3268c4cd897a50f7d745c9b5ef6383f44c00031a87f71b6c38089f845306dc839e91d2bf1684c2453c3aaf0757c557906554dce413a4b62c75d4765ff16f9b77#npm:21.3.1"],\
           ["@cucumber/messages", "npm:24.1.0"],\
           ["@types/cucumber__messages", null]\
         ],\
@@ -3560,11 +3583,24 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:1fcea15c8bf2089a53fe8bf9ffc837d613c1bc61a4d4dd5395727d0484bd003ca936b69b8a0cf6bdf6c55f3297ae5255818ce58084d2abc55778d09888281fe5#npm:4.0.1", {\
-        "packageLocation": "./.yarn/__virtual__/@cucumber-message-streams-virtual-16cbcb1c8f/0/cache/@cucumber-message-streams-npm-4.0.1-0c98ff65d5-74080dafde.zip/node_modules/@cucumber/message-streams/",\
+      ["virtual:3268c4cd897a50f7d745c9b5ef6383f44c00031a87f71b6c38089f845306dc839e91d2bf1684c2453c3aaf0757c557906554dce413a4b62c75d4765ff16f9b77#npm:4.0.1", {\
+        "packageLocation": "./.yarn/__virtual__/@cucumber-message-streams-virtual-29ebe08837/0/cache/@cucumber-message-streams-npm-4.0.1-0c98ff65d5-74080dafde.zip/node_modules/@cucumber/message-streams/",\
         "packageDependencies": [\
-          ["@cucumber/message-streams", "virtual:1fcea15c8bf2089a53fe8bf9ffc837d613c1bc61a4d4dd5395727d0484bd003ca936b69b8a0cf6bdf6c55f3297ae5255818ce58084d2abc55778d09888281fe5#npm:4.0.1"],\
+          ["@cucumber/message-streams", "virtual:3268c4cd897a50f7d745c9b5ef6383f44c00031a87f71b6c38089f845306dc839e91d2bf1684c2453c3aaf0757c557906554dce413a4b62c75d4765ff16f9b77#npm:4.0.1"],\
           ["@cucumber/messages", "npm:24.1.0"],\
+          ["@types/cucumber__messages", null]\
+        ],\
+        "packagePeers": [\
+          "@cucumber/messages",\
+          "@types/cucumber__messages"\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:4.0.1", {\
+        "packageLocation": "./.yarn/__virtual__/@cucumber-message-streams-virtual-ea2347b139/0/cache/@cucumber-message-streams-npm-4.0.1-0c98ff65d5-74080dafde.zip/node_modules/@cucumber/message-streams/",\
+        "packageDependencies": [\
+          ["@cucumber/message-streams", "virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:4.0.1"],\
+          ["@cucumber/messages", "npm:25.0.1"],\
           ["@types/cucumber__messages", null]\
         ],\
         "packagePeers": [\
@@ -3604,6 +3640,17 @@ const RAW_RUNTIME_STATE =
           ["@types/uuid", "npm:9.0.8"],\
           ["class-transformer", "npm:0.5.1"],\
           ["reflect-metadata", "npm:0.2.1"],\
+          ["uuid", "npm:9.0.1"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:25.0.1", {\
+        "packageLocation": "./.yarn/cache/@cucumber-messages-npm-25.0.1-a26e036dcc-ed3d4554cf.zip/node_modules/@cucumber/messages/",\
+        "packageDependencies": [\
+          ["@cucumber/messages", "npm:25.0.1"],\
+          ["@types/uuid", "npm:9.0.8"],\
+          ["class-transformer", "npm:0.5.1"],\
+          ["reflect-metadata", "npm:0.2.2"],\
           ["uuid", "npm:9.0.1"]\
         ],\
         "linkType": "HARD"\
@@ -6092,12 +6139,12 @@ const RAW_RUNTIME_STATE =
           ["@babel/plugin-transform-modules-commonjs", "virtual:3b04c8c38dde7165df844f9cd74e94cc47d78164564600cf56ba5f8c6011d25ef0d3afc13d610f3da970f6807c830914053ff96a43c86ba17f3ec650dfd687d3#npm:7.24.6"],\
           ["@babel/preset-env", "virtual:3b04c8c38dde7165df844f9cd74e94cc47d78164564600cf56ba5f8c6011d25ef0d3afc13d610f3da970f6807c830914053ff96a43c86ba17f3ec650dfd687d3#npm:7.24.6"],\
           ["@babel/preset-typescript", "virtual:3b04c8c38dde7165df844f9cd74e94cc47d78164564600cf56ba5f8c6011d25ef0d3afc13d610f3da970f6807c830914053ff96a43c86ba17f3ec650dfd687d3#npm:7.24.6"],\
-          ["@cucumber/cucumber", "npm:10.4.0"],\
+          ["@cucumber/cucumber", "npm:10.8.0"],\
           ["@cucumber/gherkin", "npm:28.0.0"],\
-          ["@cucumber/gherkin-streams", "virtual:1fcea15c8bf2089a53fe8bf9ffc837d613c1bc61a4d4dd5395727d0484bd003ca936b69b8a0cf6bdf6c55f3297ae5255818ce58084d2abc55778d09888281fe5#npm:5.0.1"],\
+          ["@cucumber/gherkin-streams", "virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:5.0.1"],\
           ["@cucumber/gherkin-utils", "npm:9.0.0"],\
-          ["@cucumber/message-streams", "virtual:1fcea15c8bf2089a53fe8bf9ffc837d613c1bc61a4d4dd5395727d0484bd003ca936b69b8a0cf6bdf6c55f3297ae5255818ce58084d2abc55778d09888281fe5#npm:4.0.1"],\
-          ["@cucumber/messages", "npm:24.1.0"],\
+          ["@cucumber/message-streams", "virtual:606d5fd11adc18cba076ddb26a9b3adaf466a45eef985b60ea990c3ead5fe6bcc20990b0ed8d0763c4a8c861cdc2277964415bf12191df7c6923d8e78816abf5#npm:4.0.1"],\
+          ["@cucumber/messages", "npm:25.0.1"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.9.6"],\
           ["@types/chai", "npm:4.3.12"],\
@@ -15816,6 +15863,13 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/reflect-metadata-npm-0.2.1-7f12b5924d-394b293bd4.zip/node_modules/reflect-metadata/",\
         "packageDependencies": [\
           ["reflect-metadata", "npm:0.2.1"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:0.2.2", {\
+        "packageLocation": "./.yarn/cache/reflect-metadata-npm-0.2.2-5e0bfac201-1c93f9ac79.zip/node_modules/reflect-metadata/",\
+        "packageDependencies": [\
+          ["reflect-metadata", "npm:0.2.2"]\
         ],\
         "linkType": "HARD"\
       }]\

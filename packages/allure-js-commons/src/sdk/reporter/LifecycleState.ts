@@ -12,16 +12,16 @@ export class LifecycleState {
 
   getScope = (uuid: string) => this.scopes.get(uuid);
 
-  getWrappedFixture = (uuid: string) => this.fixturesResults.get(uuid);
+  getWrappedFixtureResult = (uuid: string) => this.fixturesResults.get(uuid);
 
-  getFixture = (uuid: string) => this.getWrappedFixture(uuid)?.value;
+  getFixtureResult = (uuid: string) => this.getWrappedFixtureResult(uuid)?.value;
 
-  getTest = (uuid: string) => this.testResults.get(uuid);
+  getTestResult = (uuid: string) => this.testResults.get(uuid);
 
-  getStep = (uuid: string) => this.stepResults.get(uuid);
+  getStepResult = (uuid: string) => this.stepResults.get(uuid);
 
   getExecutionItem = (uuid: string): FixtureResult | TestResult | StepResult | undefined =>
-    this.getFixture(uuid) ?? this.getTest(uuid) ?? this.getStep(uuid);
+    this.getFixtureResult(uuid) ?? this.getTestResult(uuid) ?? this.getStepResult(uuid);
 
   // test results
   setTestResult = (uuid: string, result: TestResult) => {
@@ -61,7 +61,6 @@ export class LifecycleState {
     const scope: TestScope = {
       fixtures: [],
       tests: [],
-      subScopes: [],
       ...data,
       uuid,
     };

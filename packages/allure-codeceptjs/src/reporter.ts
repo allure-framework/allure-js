@@ -1,14 +1,16 @@
 import { event } from "codeceptjs";
 import path from "node:path";
-import { LabelName, Stage, Status } from "allure-js-commons";
+import { LabelName, Stage, Status, type StepResult } from "allure-js-commons";
 import { type RuntimeMessage, extractMetadataFromString, getMessageAndTraceFromError } from "allure-js-commons/sdk";
 import { FileSystemWriter, MessageWriter, ReporterRuntime, md5 } from "allure-js-commons/sdk/reporter";
 import { extractMeta } from "./helpers.js";
 import type { AllureCodeceptJsConfig, CodeceptError, CodeceptHook, CodeceptStep, CodeceptTest } from "./model.js";
 
 export class AllureCodeceptJsReporter {
-  allureRuntime?: ReporterRuntime;
-  currentAllureResultUuid?: string;
+  allureRuntime: ReporterRuntime;
+  currentTestUuid?: string;
+  currentFixtureUuid?: string;
+  scopeUuids: string[] = [];
   currentTest: CodeceptTest | null = null;
   config!: AllureCodeceptJsConfig;
 
@@ -26,11 +28,11 @@ export class AllureCodeceptJsReporter {
   }
 
   private closeCurrentAllureTest(test: CodeceptTest) {
-    if (!this.currentAllureResultUuid) {
+    if (!this.currentTestUuid) {
       return;
     }
 
-    this.allureRuntime!.updateTest((result) => {
+    this.allureRuntime.updateTest(this.currentTestUuid, (result) => {
       result.stage = Stage.FINISHED;
 
       // @ts-ignore
@@ -40,11 +42,11 @@ export class AllureCodeceptJsReporter {
 
       // @ts-ignore
       result.parameters.push({ name: "Repetition", value: `${test.retryNum + 1}` });
-    }, this.currentAllureResultUuid);
+    });
 
-    this.allureRuntime!.stopTest({ uuid: this.currentAllureResultUuid });
-    this.allureRuntime!.writeTest(this.currentAllureResultUuid);
-    this.currentAllureResultUuid = undefined;
+    this.allureRuntime.stopTest(this.currentTestUuid);
+    this.allureRuntime.writeTest(this.currentTestUuid);
+    this.currentTestUuid = undefined;
   }
 
   private startAllureTest(test: CodeceptTest) {
@@ -54,13 +56,16 @@ export class AllureCodeceptJsReporter {
     // @ts-ignore
     const { labels } = extractMeta(test);
 
-    this.currentAllureResultUuid = this.allureRuntime!.startTest({
-      name: titleMetadata.cleanTitle,
-      fullName,
-      testCaseId: md5(fullName),
-    });
+    this.currentTestUuid = this.allureRuntime.startTest(
+      {
+        name: titleMetadata.cleanTitle,
+        fullName,
+        testCaseId: md5(fullName),
+      },
+      this.scopeUuids,
+    );
 
-    this.allureRuntime!.updateTest((result) => {
+    this.allureRuntime.updateTest(this.currentTestUuid, (result) => {
       result.labels.push(...labels);
       result.labels.push(...titleMetadata.labels);
       result.labels.push({ name: LabelName.LANGUAGE, value: "javascript" });
@@ -72,45 +77,40 @@ export class AllureCodeceptJsReporter {
           value: test.parent.title,
         });
       }
-    }, this.currentAllureResultUuid);
-  }
-
-  private closeCurrentAllureStep() {
-    if (!this.currentAllureResultUuid) {
-      return;
-    }
-
-    this.allureRuntime!.updateStep((result) => {
-      result.stage = Stage.FINISHED;
-    }, this.currentAllureResultUuid);
-    this.allureRuntime!.stopStep({ uuid: this.currentAllureResultUuid });
+    });
   }
 
   registerEvents() {
     // Hooks
-    event.dispatcher.addListener(event.hook.started, this.hookStarted.bind(this));
-    event.dispatcher.addListener(event.hook.passed, this.hookPassed.bind(this));
+    event.dispatcher.on(event.hook.started, this.hookStarted.bind(this));
+    event.dispatcher.on(event.hook.passed, this.hookPassed.bind(this));
     // Suite
-    event.dispatcher.addListener(event.suite.before, this.suiteBefore.bind(this));
-    event.dispatcher.addListener(event.suite.after, this.suiteAfter.bind(this));
+    event.dispatcher.on(event.suite.before, this.suiteBefore.bind(this));
+    event.dispatcher.on(event.suite.after, this.suiteAfter.bind(this));
     // Test
-    event.dispatcher.addListener(event.test.started, this.testStarted.bind(this));
-    event.dispatcher.addListener(event.test.skipped, this.testSkipped.bind(this));
-    event.dispatcher.addListener(event.test.passed, this.testPassed.bind(this));
-    event.dispatcher.addListener(event.test.failed, this.testFailed.bind(this));
+    event.dispatcher.on(event.test.started, this.testStarted.bind(this));
+    event.dispatcher.on(event.test.skipped, this.testSkipped.bind(this));
+    event.dispatcher.on(event.test.passed, this.testPassed.bind(this));
+    event.dispatcher.on(event.test.failed, this.testFailed.bind(this));
     // Step
-    event.dispatcher.addListener(event.step.started, this.stepStarted.bind(this));
-    event.dispatcher.addListener(event.step.passed, this.stepPassed.bind(this));
-    event.dispatcher.addListener(event.step.failed, this.stepFailed.bind(this));
-    event.dispatcher.addListener(event.step.comment, this.stepComment.bind(this));
+    event.dispatcher.on(event.step.started, this.stepStarted.bind(this));
+    event.dispatcher.on(event.step.passed, this.stepPassed.bind(this));
+    event.dispatcher.on(event.step.failed, this.stepFailed.bind(this));
+    event.dispatcher.on(event.step.comment, this.stepComment.bind(this));
+    // run
+    event.dispatcher.on(event.all.after, this.afterAll.bind(this));
   }
 
   suiteBefore() {
-    this.allureRuntime!.startScope();
+    const scopeUuid = this.allureRuntime.startScope();
+    this.scopeUuids.push(scopeUuid);
   }
 
   suiteAfter() {
-    this.allureRuntime!.writeScope();
+    const suiteUuid = this.scopeUuids.pop();
+    if (suiteUuid) {
+      this.allureRuntime.writeScope(suiteUuid);
+    }
   }
 
   hookStarted(hook: CodeceptHook) {
@@ -118,7 +118,12 @@ export class AllureCodeceptJsReporter {
     const hookType = currentRunnable!.title.match(/^"(?<hookType>.+)" hook/)!.groups!.hookType;
     const fixtureType = /before/.test(hookType) ? "before" : "after";
 
-    this.allureRuntime!.startFixture(fixtureType, {
+    const scopeUuid = this.scopeUuids.length > 0 ? this.scopeUuids[this.scopeUuids.length - 1] : undefined;
+    if (!scopeUuid) {
+      return;
+    }
+
+    this.currentFixtureUuid = this.allureRuntime.startFixture(scopeUuid, fixtureType, {
       name: currentRunnable!.title,
       stage: Stage.RUNNING,
       start: Date.now(),
@@ -126,19 +131,20 @@ export class AllureCodeceptJsReporter {
   }
 
   hookPassed() {
-    this.allureRuntime!.updateFixture((result) => {
+    if (!this.currentFixtureUuid) {
+      return;
+    }
+    this.allureRuntime.updateFixture(this.currentFixtureUuid, (result) => {
       result.status = Status.PASSED;
       result.stage = Stage.FINISHED;
     });
 
-    const fixtureUuid = this.allureRuntime!.stopFixture({ stop: Date.now() });
-
-    this.allureRuntime!.writeFixture(fixtureUuid);
+    this.allureRuntime.stopFixture(this.currentFixtureUuid);
   }
 
   testStarted(test: CodeceptTest & { tags: string[] }) {
     // test has been already started
-    if (this.currentAllureResultUuid) {
+    if (this.currentTestUuid) {
       return;
     }
 
@@ -146,26 +152,26 @@ export class AllureCodeceptJsReporter {
   }
 
   testFailed(test: CodeceptTest, err: CodeceptError) {
-    if (!this.currentAllureResultUuid) {
+    if (!this.currentTestUuid) {
       return;
     }
 
-    this.allureRuntime!.updateTest((result) => {
+    this.allureRuntime.updateTest(this.currentTestUuid, (result) => {
       result.status = Status.FAILED;
       // @ts-ignore
       result.statusDetails = getMessageAndTraceFromError(err);
-    }, this.currentAllureResultUuid);
+    });
     this.closeCurrentAllureTest(test);
   }
 
   testPassed(test: CodeceptTest) {
-    if (!this.currentAllureResultUuid) {
+    if (!this.currentTestUuid) {
       return;
     }
 
-    this.allureRuntime!.updateTest((result) => {
+    this.allureRuntime.updateTest(this.currentTestUuid, (result) => {
       result.status = Status.PASSED;
-    }, this.currentAllureResultUuid);
+    });
     this.closeCurrentAllureTest(test);
   }
 
@@ -179,48 +185,63 @@ export class AllureCodeceptJsReporter {
       };
     },
   ) {
-    if (!this.currentAllureResultUuid) {
+    if (!this.currentTestUuid) {
       return;
     }
 
-    this.allureRuntime!.updateTest((result) => {
+    this.allureRuntime.updateTest(this.currentTestUuid, (result) => {
       result.status = Status.SKIPPED;
 
       if (test.opts.skipInfo) {
         result.statusDetails = { message: test.opts.skipInfo.message };
       }
-    }, this.currentAllureResultUuid);
+    });
     this.closeCurrentAllureTest(test);
   }
 
   stepStarted(step: CodeceptStep) {
-    this.allureRuntime!.startStep(
-      {
-        name: `${step.actor} ${step.name}`,
-      },
-      this.currentAllureResultUuid,
-    );
+    if (!this.currentTestUuid) {
+      return;
+    }
+    this.allureRuntime.startStep(this.currentTestUuid, undefined, {
+      name: `${step.actor} ${step.name}`,
+    });
   }
 
   stepFailed() {
-    this.allureRuntime!.updateStep((result) => {
+    this.stopCurrentStep((result) => {
       result.status = Status.FAILED;
-    }, this.currentAllureResultUuid);
-    this.closeCurrentAllureStep();
+      result.stage = Stage.FINISHED;
+    });
   }
 
   stepComment() {
-    this.allureRuntime!.updateStep((result) => {
+    this.stopCurrentStep((result) => {
       result.status = Status.PASSED;
-    }, this.currentAllureResultUuid);
-    this.closeCurrentAllureStep();
+      result.stage = Stage.FINISHED;
+    });
   }
 
   stepPassed() {
-    this.allureRuntime!.updateStep((result) => {
+    this.stopCurrentStep((result) => {
       result.status = Status.PASSED;
-    }, this.currentAllureResultUuid);
-    this.closeCurrentAllureStep();
+      result.stage = Stage.FINISHED;
+    });
+  }
+
+  stopCurrentStep(updateFunc: (result: StepResult) => void) {
+    const currentStep = this.currentTestUuid ? this.allureRuntime.currentStep(this.currentTestUuid) : undefined;
+
+    if (!currentStep) {
+      return;
+    }
+    this.allureRuntime.updateStep(currentStep, updateFunc);
+    this.allureRuntime.stopStep(currentStep);
+  }
+
+  afterAll() {
+    this.allureRuntime.writeEnvironmentInfo();
+    this.allureRuntime.writeCategoriesDefinitions();
   }
 
   // TODO: not implemented in the new version at all
@@ -235,6 +256,9 @@ export class AllureCodeceptJsReporter {
   // }
 
   handleRuntimeMessage(message: RuntimeMessage) {
-    this.allureRuntime!.applyRuntimeMessages([message], { testUuid: this.currentAllureResultUuid! });
+    if (!this.currentTestUuid) {
+      return;
+    }
+    this.allureRuntime.applyRuntimeMessages(this.currentTestUuid, [message]);
   }
 }

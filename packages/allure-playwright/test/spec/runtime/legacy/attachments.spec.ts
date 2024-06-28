@@ -205,8 +205,8 @@ it("doesn't not report detail steps for attachments", async () => {
     }),
   );
 
-  const [attachment1] = tests[0].steps[2].steps[0].steps[0].attachments;
-  const [attachment2] = tests[0].steps[3].steps[1].steps[0].attachments;
+  const [attachment1] = tests[0].steps[1].steps[0].steps[0].attachments;
+  const [attachment2] = tests[0].steps[2].steps[1].steps[0].attachments;
 
   expect(attachments).toHaveProperty(attachment1.source);
   expect(attachments).toHaveProperty(attachment2.source);

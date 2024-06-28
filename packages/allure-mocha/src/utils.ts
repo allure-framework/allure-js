@@ -44,8 +44,8 @@ const createTestPlanSelectorIndex = (testplan: TestPlanV1) => createTestPlanInde
 
 const createTestPlanIdIndex = (testplan: TestPlanV1) => createTestPlanIndex((e) => e.id?.toString(), testplan);
 
-const createTestPlanIndex = <T>(keySelector: (entry: TestPlanV1Test) => T, testplan: TestPlanV1) =>
-  new Set(testplan.tests.map((e) => keySelector(e)).filter((v) => v) as readonly T[]);
+const createTestPlanIndex = <T>(keySelector: (entry: TestPlanV1Test) => T | undefined, testplan: TestPlanV1): Set<T> =>
+  new Set(testplan.tests.map((e) => keySelector(e)).filter((v) => v)) as Set<T>;
 
 export type TestPlanIndices = {
   fullNameIndex: ReadonlySet<string>;

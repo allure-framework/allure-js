@@ -56,3 +56,25 @@ export const isCommandShouldBeSkipped = (command: CypressCommand) => {
 
   return false;
 };
+
+export const toReversed = <T = unknown>(arr: T[]): T[] => {
+  const result: T[] = [];
+
+  for (let i = arr.length - 1; i >= 0; i--) {
+    result.push(arr[i]);
+  }
+
+  return result;
+};
+
+export const isGlobalHook = (hookName: string) => {
+  return /(before|after) all/.test(hookName);
+};
+
+export const getHookType = (hookName: string) => {
+  return hookName.includes("before") ? "before" : "after";
+};
+
+export const last = <T = unknown>(arr: T[]): T | undefined => {
+  return arr[arr.length - 1];
+};

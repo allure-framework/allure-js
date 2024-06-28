@@ -32,7 +32,7 @@ export const runVitestInlineTest = async (
       test: {
         setupFiles: ["allure-vitest/setup"],
         reporters: [
-          "default",
+          "verbose",
           new AllureReporter({
             testMode: true,
             links: {

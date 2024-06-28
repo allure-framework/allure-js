@@ -6,7 +6,7 @@ export default defineConfig({
     fileParallelism: false,
     testTimeout: 25000,
     setupFiles: ["./vitest-setup.ts"],
-    reporters: ["default", ["allure-vitest/reporter", { resultsDir: "./out/allure-results" }]],
+    reporters: ["verbose", ["allure-vitest/reporter", { resultsDir: "./out/allure-results" }]],
     typecheck: {
       enabled: true,
       tsconfig: "./tsconfig.test.json",
