@@ -16,7 +16,6 @@ export const runJestInlineTest = async (testContent: string): Promise<AllureResu
     const config = {
       testEnvironment: require.resolve("allure-jest/node"),
       testEnvironmentOptions: {
-        testMode: true,
         links: {
           issue: {
             urlTemplate: "https://example.org/issues/%s",
@@ -69,6 +68,7 @@ export const runJestInlineTest = async (testContent: string): Promise<AllureResu
       env: {
         ...process.env,
         ALLURE_POST_PROCESSOR_FOR_TEST: String("true"),
+        ALLURE_TEST_MODE: "1",
       },
       cwd: testDir,
       stdio: "pipe",

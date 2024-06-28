@@ -16,7 +16,6 @@ it("has environment info", async () => {
              require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
-               testMode: true,
                environmentInfo: {
                  envVar1: "envVar1Value",
                  envVar2: "envVar2Value",

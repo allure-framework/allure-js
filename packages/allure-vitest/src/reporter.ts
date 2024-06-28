@@ -1,5 +1,5 @@
 import { normalize, relative } from "node:path";
-import { cwd } from "node:process";
+import { cwd, env } from "node:process";
 import type { File, Reporter, Task } from "vitest";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
@@ -16,21 +16,17 @@ import {
 } from "allure-js-commons/sdk/reporter";
 import { getSuitePath, getTestFullName } from "./utils.js";
 
-export interface AllureVitestReporterConfig extends Omit<Config, "writer"> {
-  testMode?: boolean;
-}
-
 export default class AllureVitestReporter implements Reporter {
   private allureReporterRuntime?: ReporterRuntime;
-  private config: AllureVitestReporterConfig;
+  private config: Config;
 
-  constructor(config: AllureVitestReporterConfig) {
+  constructor(config: Config) {
     this.config = config;
   }
 
   onInit() {
-    const { listeners, testMode, ...config } = this.config;
-    const writer = testMode
+    const { listeners, ...config } = this.config;
+    const writer = env.ALLURE_TEST_MODE
       ? new MessageWriter()
       : new FileSystemWriter({
           resultsDir: config.resultsDir || "./allure-results",

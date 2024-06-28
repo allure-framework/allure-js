@@ -29,7 +29,6 @@ it("sets runtime links", async () => {
         plugins: {
           allure: {
             require: require.resolve("allure-codeceptjs"),
-            testMode: true,
             enabled: true,
             links: {
               issue: {

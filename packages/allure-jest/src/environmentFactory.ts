@@ -13,7 +13,7 @@ import { AllureJestTestRuntime } from "./AllureJestTestRuntime.js";
 import type { AllureJestConfig, AllureJestEnvironment } from "./model.js";
 import { getTestId, getTestPath } from "./utils.js";
 
-const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
+const { ALLURE_TEST_MODE, ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
 const hostname = os.hostname();
 
 const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
@@ -26,15 +26,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     constructor(config: AllureJestConfig, context: EnvironmentContext) {
       super(config, context);
 
-      const {
-        resultsDir = "allure-results",
-        testMode = false,
-        ...restConfig
-      } = config?.projectConfig?.testEnvironmentOptions || {};
+      const { resultsDir = "allure-results", ...restConfig } = config?.projectConfig?.testEnvironmentOptions || {};
 
       this.runtime = new ReporterRuntime({
         ...restConfig,
-        writer: testMode
+        writer: ALLURE_TEST_MODE
           ? new MessageWriter()
           : new FileSystemWriter({
               resultsDir,

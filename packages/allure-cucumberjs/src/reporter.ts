@@ -27,7 +27,7 @@ import {
 import { AllureCucumberWorld } from "./legacy.js";
 import type { AllureCucumberLinkConfig, AllureCucumberReporterConfig, LabelConfig } from "./model.js";
 
-const { ALLURE_THREAD_NAME } = process.env;
+const { ALLURE_THREAD_NAME, ALLURE_TEST_MODE } = process.env;
 
 export default class AllureCucumberReporter extends Formatter {
   private readonly afterHooks: Record<string, TestCaseHookDefinition> = {};
@@ -54,14 +54,13 @@ export default class AllureCucumberReporter extends Formatter {
 
     const {
       resultsDir = "./allure-results",
-      testMode,
       links,
       labels,
       ...rest
     } = options.parsedArgvOptions as AllureCucumberReporterConfig;
 
     this.allureRuntime = new ReporterRuntime({
-      writer: testMode
+      writer: ALLURE_TEST_MODE
         ? new MessageWriter()
         : new FileSystemWriter({
             resultsDir,
