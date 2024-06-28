@@ -35,7 +35,7 @@ it("adds all the possible labels", async () => {
       tag("foo");
     });
   `,
-});
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));

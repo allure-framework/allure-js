@@ -15,7 +15,7 @@ it("reports before all hook outside suite", async () => {
       cy.wrap(1).should("eq", 1);
     });
   `,
-});
+  });
 
   expect(tests).toHaveLength(2);
   expect(tests).toEqual(
@@ -65,7 +65,7 @@ it("doesn't report after all hook outside suite", async () => {
       cy.wrap(1).should("eq", 1);
     });
   `,
-});
+  });
 
   expect(tests).toHaveLength(2);
   expect(tests).toEqual(
@@ -152,7 +152,7 @@ it("reports after all hook inside suite", async () => {
       });
     });
   `,
-});
+  });
 
   expect(tests).toHaveLength(2);
   expect(tests).toEqual(
@@ -200,7 +200,7 @@ it("reports before each and after each hooks outside suite", async () => {
       cy.wrap(1).should("eq", 1);
     });
   `,
-});
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe(Status.PASSED);
@@ -248,7 +248,7 @@ it("reports before each and after each hooks inside suite", async () => {
       });
     });
   `,
-});
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe(Status.PASSED);

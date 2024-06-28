@@ -4,7 +4,7 @@ import { runCypressInlineTest } from "../../../utils.js";
 
 it("title metadata", async () => {
   const { tests } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js":    ({ allureCommonsModulePath }) => `
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
     import { label } from "${allureCommonsModulePath}";
 
     it("foo @allure.id=1 @allure.label.foo=2", () => {

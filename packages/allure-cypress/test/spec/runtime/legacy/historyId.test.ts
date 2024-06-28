@@ -10,7 +10,7 @@ it("historyId", async () => {
       historyId("foo");
     });
   `,
-});
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].historyId).toBe("foo");

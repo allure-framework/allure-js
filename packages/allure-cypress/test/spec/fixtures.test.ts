@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { ContentType } from "allure-js-commons"
+import { ContentType } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils.js";
 
 it("handles native cypress fixtures with allure attachments inside", async () => {
@@ -17,12 +17,14 @@ it("handles native cypress fixtures with allure attachments inside", async () =>
   });
 
   expect(tests).toHaveLength(1);
-  expect(tests[0]).toEqual(expect.objectContaining({
-    attachments: expect.arrayContaining([
-      expect.objectContaining({
-        name: "foo",
-        type: ContentType.JSON,
-      }),
-    ]),
-  }))
+  expect(tests[0]).toEqual(
+    expect.objectContaining({
+      attachments: expect.arrayContaining([
+        expect.objectContaining({
+          name: "foo",
+          type: ContentType.JSON,
+        }),
+      ]),
+    }),
+  );
 });

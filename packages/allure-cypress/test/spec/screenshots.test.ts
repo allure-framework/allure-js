@@ -40,7 +40,7 @@ it("attaches runtime screenshots", async () => {
       cy.screenshot("foo");
     });
   `,
-});
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].steps).toHaveLength(1);

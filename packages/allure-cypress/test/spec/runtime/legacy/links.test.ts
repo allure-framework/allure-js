@@ -17,7 +17,7 @@ it("adds all the possible links", async () => {
       tms("2", "bar");
     });
     `,
-});
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].links).toContainEqual({

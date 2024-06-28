@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
+import { ContentType } from "allure-js-commons";
 import { runCypressInlineTest } from "../../../utils.js";
-import {ContentType} from "allure-js-commons";
 
 it("text", async () => {
   const { tests, attachments } = await runCypressInlineTest({
@@ -24,7 +24,7 @@ it("text", async () => {
 
 it("json", async () => {
   const { tests, attachments } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js":  ({ allureCommonsModulePath }) => `
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
     import { attachment } from "${allureCommonsModulePath}";
 
     it("json attachment", () => {
@@ -56,7 +56,7 @@ it("cypress read file", async () => {
       });
     `,
     "foo.txt": () => "bar",
-});
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].attachments).toHaveLength(1);
@@ -90,22 +90,24 @@ it("handles allure attachments inside cypress hooks", async () => {
 
   expect(tests).toHaveLength(1);
   expect(groups).toHaveLength(2);
-  expect(groups).toEqual(expect.arrayContaining([
-    expect.objectContaining({
-      afters: [],
-      befores: [
-        expect.objectContaining({
-          attachments: [expect.objectContaining({ name: "foo", type: ContentType.JSON })]
-        })
-      ],
-    }),
-    expect.objectContaining({
-      afters: [
-        expect.objectContaining({
-          attachments: [expect.objectContaining({ name: "bar", type: ContentType.JSON })]
-        })
-      ],
-      befores: [],
-    }),
-  ]))
-})
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        afters: [],
+        befores: [
+          expect.objectContaining({
+            attachments: [expect.objectContaining({ name: "foo", type: ContentType.JSON })],
+          }),
+        ],
+      }),
+      expect.objectContaining({
+        afters: [
+          expect.objectContaining({
+            attachments: [expect.objectContaining({ name: "bar", type: ContentType.JSON })],
+          }),
+        ],
+        befores: [],
+      }),
+    ]),
+  );
+});

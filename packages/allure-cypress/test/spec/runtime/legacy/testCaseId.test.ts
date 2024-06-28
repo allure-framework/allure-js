@@ -10,7 +10,7 @@ it("testCaseId", async () => {
       testCaseId("foo");
     });
   `,
-});
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].testCaseId).toBe("foo");

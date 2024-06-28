@@ -31,7 +31,7 @@ it("works with the reporter instance", async () => {
         },
       };
   `,
-});
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe(Status.PASSED);

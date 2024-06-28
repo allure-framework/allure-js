@@ -10,7 +10,7 @@ it("displayName", async () => {
       displayName("foo");
     });
   `,
-});
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].name).toBe("foo");

@@ -13,7 +13,7 @@ it("parameters", async () => {
       })
     });
     `,
-});
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].parameters).toContainEqual({

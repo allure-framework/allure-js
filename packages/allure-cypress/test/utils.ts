@@ -1,18 +1,16 @@
-import {fork} from "node:child_process";
-import {randomUUID} from "node:crypto";
-import {mkdir, readFile, readdir, rm, writeFile} from "node:fs/promises";
-import {dirname, join, resolve as resolvePath} from "node:path";
-import type {TestResult, TestResultContainer} from "allure-js-commons";
-import type {AllureResults} from "allure-js-commons/sdk";
+import { fork } from "node:child_process";
+import { randomUUID } from "node:crypto";
+import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { dirname, join, resolve as resolvePath } from "node:path";
+import type { TestResult, TestResultContainer } from "allure-js-commons";
+import type { AllureResults } from "allure-js-commons/sdk";
 
-type CypressTestFiles = Record<string, (modulesPaths: {
-  allureCommonsModulePath: string;
-  allureCypressModulePath: string
-}) => string>
+type CypressTestFiles = Record<
+  string,
+  (modulesPaths: { allureCommonsModulePath: string; allureCypressModulePath: string }) => string
+>;
 
-export const runCypressInlineTest = async (
-  testFiles: CypressTestFiles,
-): Promise<AllureResults> => {
+export const runCypressInlineTest = async (testFiles: CypressTestFiles): Promise<AllureResults> => {
   const res: AllureResults = {
     tests: [],
     groups: [],
@@ -51,14 +49,19 @@ export const runCypressInlineTest = async (
       };
     `,
     ...testFiles,
-  }
+  };
 
+  // eslint-disable-next-line guard-for-in
   for (const testFile in testFilesToWrite) {
-    await mkdir(dirname(join(testDir, testFile)), {recursive: true});
-    await writeFile(join(testDir, testFile), testFilesToWrite[testFile]({
-      allureCommonsModulePath,
-      allureCypressModulePath
-    }), "utf8");
+    await mkdir(dirname(join(testDir, testFile)), { recursive: true });
+    await writeFile(
+      join(testDir, testFile),
+      testFilesToWrite[testFile]({
+        allureCommonsModulePath,
+        allureCypressModulePath,
+      }),
+      "utf8",
+    );
   }
 
   const moduleRootPath = require.resolve("cypress");
@@ -104,7 +107,7 @@ export const runCypressInlineTest = async (
           }
         }
 
-        await rm(testDir, {recursive: true});
+        await rm(testDir, { recursive: true });
 
         return resolve(res);
       } catch (err) {

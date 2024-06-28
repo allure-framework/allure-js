@@ -37,7 +37,7 @@ it("attaches same video to each spec in a test", async () => {
         },
       };
     `,
-});
+  });
 
   expect(tests).toHaveLength(2);
   expect(groups).toHaveLength(1);
