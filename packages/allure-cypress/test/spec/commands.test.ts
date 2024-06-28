@@ -3,8 +3,8 @@ import { Stage, Status } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils.js";
 
 it("test with cypress command", async () => {
-  const { tests } = await runCypressInlineTest(
-    () => `
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": () => `
     it("with commands", () => {
       cy.log(1);
       cy.log("2");
@@ -12,7 +12,7 @@ it("test with cypress command", async () => {
       cy.log({ foo: 1, bar: 2, baz: 3 });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe(Status.PASSED);
