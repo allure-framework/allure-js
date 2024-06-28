@@ -22,7 +22,6 @@ describe("environment info", () => {
           [
             "allure-vitest/reporter",
             {
-              testMode: true,
               resultsDir: "${join(testDir, "allure-results")}",
               environmentInfo: {
                 "app version": "123.0.1",

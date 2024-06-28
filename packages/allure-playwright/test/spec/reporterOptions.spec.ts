@@ -51,7 +51,6 @@ it("detail and suiteTitle true", async () => {
              require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
-               testMode: true,
                detail: true,
                suiteTitle: true,
              },
@@ -86,7 +85,6 @@ it("detail and suiteTitle false", async () => {
              require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
-               testMode: true,
                detail: false,
                suiteTitle: false,
              },

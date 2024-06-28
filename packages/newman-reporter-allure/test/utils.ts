@@ -12,9 +12,7 @@ export const runNewmanCollection = async (collection: CollectionDefinition): Pro
         collection,
         reporters: ["allure"],
         reporter: {
-          allure: {
-            testMode: true,
-          },
+          allure: {},
         },
       },
       () => {

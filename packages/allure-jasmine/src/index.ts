@@ -1,12 +1,12 @@
-import { cwd } from "node:process";
+import { cwd, env } from "node:process";
 import * as allure from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { isPromise } from "allure-js-commons/sdk";
-import type { FixtureType } from "allure-js-commons/sdk/reporter";
+import type { Config, FixtureType } from "allure-js-commons/sdk/reporter";
 import { FileSystemWriter, MessageWriter, ReporterRuntime, getSuiteLabels } from "allure-js-commons/sdk/reporter";
 import { MessageTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
-import type { AllureJasmineConfig, JasmineBeforeAfterFn } from "./model.js";
+import type { JasmineBeforeAfterFn } from "./model.js";
 import { findAnyError, findMessageAboutThrow } from "./utils.js";
 
 class AllureJasmineTestRuntime extends MessageTestRuntime {
@@ -20,18 +20,20 @@ class AllureJasmineTestRuntime extends MessageTestRuntime {
   }
 }
 
+const { ALLURE_TEST_MODE } = env;
+
 export default class AllureJasmineReporter implements jasmine.CustomReporter {
   private readonly allureRuntime: ReporterRuntime;
   private currentAllureTestUuid?: string;
   private jasmineSuitesStack: jasmine.SuiteResult[] = [];
   private scopesStack: string[] = [];
 
-  constructor(config: AllureJasmineConfig) {
-    const { testMode, resultsDir = "./allure-results", ...restConfig } = config || {};
+  constructor(config: Config) {
+    const { resultsDir = "./allure-results", ...restConfig } = config || {};
 
     this.allureRuntime = new ReporterRuntime({
       ...restConfig,
-      writer: testMode
+      writer: ALLURE_TEST_MODE
         ? new MessageWriter()
         : new FileSystemWriter({
             resultsDir,

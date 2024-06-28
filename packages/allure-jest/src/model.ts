@@ -8,9 +8,6 @@ export interface AllureJestEnvironment extends JestEnvironment {
 
 export interface AllureJestConfig extends JestEnvironmentConfig {
   projectConfig: JestEnvironmentConfig["projectConfig"] & {
-    testEnvironmentOptions?: JestEnvironmentConfig["projectConfig"]["testEnvironmentOptions"] &
-      Config & {
-        testMode?: boolean;
-      };
+    testEnvironmentOptions?: JestEnvironmentConfig["projectConfig"]["testEnvironmentOptions"] & Config;
   };
 }

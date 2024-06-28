@@ -31,7 +31,6 @@ it("should add attachments into steps", async () => {
              require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
-               testMode: true,
                detail: false,
              },
            ],
@@ -138,7 +137,6 @@ it("doesn't not report detail steps for attachments", async () => {
              require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
-               testMode: true,
                detail: true,
              },
            ],

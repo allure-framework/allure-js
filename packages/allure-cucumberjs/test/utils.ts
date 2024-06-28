@@ -25,7 +25,6 @@ export const runCucumberInlineTest = async (
         ${parallel ? "parallel: 4," : ""}
         format: ["summary", "./reporter.js"],
         formatOptions: {
-          testMode: true,
           labels: [
             {
               pattern: [/@feature:(.*)/],
@@ -140,6 +139,7 @@ export const runCucumberInlineTest = async (
       env: {
         ...process.env,
         ...env,
+        ALLURE_TEST_MODE: "1",
       },
       cwd: testDir,
       stdio: "pipe",

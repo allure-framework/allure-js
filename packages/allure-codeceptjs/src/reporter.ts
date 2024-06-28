@@ -1,10 +1,12 @@
 import { event } from "codeceptjs";
 import path from "node:path";
+import { env } from "node:process";
 import { LabelName, Stage, Status, type StepResult } from "allure-js-commons";
 import { type RuntimeMessage, extractMetadataFromString, getMessageAndTraceFromError } from "allure-js-commons/sdk";
 import { FileSystemWriter, MessageWriter, ReporterRuntime, md5 } from "allure-js-commons/sdk/reporter";
+import type { Config } from "allure-js-commons/sdk/reporter";
 import { extractMeta } from "./helpers.js";
-import type { AllureCodeceptJsConfig, CodeceptError, CodeceptHook, CodeceptStep, CodeceptTest } from "./model.js";
+import type { CodeceptError, CodeceptHook, CodeceptStep, CodeceptTest } from "./model.js";
 
 export class AllureCodeceptJsReporter {
   allureRuntime: ReporterRuntime;
@@ -12,14 +14,14 @@ export class AllureCodeceptJsReporter {
   currentFixtureUuid?: string;
   scopeUuids: string[] = [];
   currentTest: CodeceptTest | null = null;
-  config!: AllureCodeceptJsConfig;
+  config!: Config;
 
-  constructor(config: AllureCodeceptJsConfig) {
+  constructor(config: Config) {
     this.registerEvents();
-    this.config = config || {};
+    this.config = config || ({} as Config);
     this.allureRuntime = new ReporterRuntime({
       ...config,
-      writer: config.testMode
+      writer: env.ALLURE_TEST_MODE
         ? new MessageWriter()
         : new FileSystemWriter({
             resultsDir: config.resultsDir || "./allure-results",

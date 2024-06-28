@@ -130,6 +130,7 @@ abstract class AllureMochaTestRunner {
           ...process.env,
           ...this.config.env,
           ALLURE_MOCHA_TESTHOST_PID: process.pid.toString(),
+          ALLURE_TEST_MODE: "1",
         },
         cwd: testDir,
         stdio: "pipe",

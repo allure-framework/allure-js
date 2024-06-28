@@ -34,6 +34,7 @@ export const runJasmineInlineTest = async (files: Record<string, string>): Promi
     return fork(modulePath, args, {
       env: {
         ...process.env,
+        ALLURE_TEST_MODE: "1",
       },
       cwd: testDir,
       stdio: "pipe",

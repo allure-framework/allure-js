@@ -42,6 +42,7 @@ export const runCodeceptJsInlineTest = async (
       env: {
         ...process.env,
         ...env,
+        ALLURE_TEST_MODE: "1",
       },
       cwd: testDir,
       stdio: "pipe",

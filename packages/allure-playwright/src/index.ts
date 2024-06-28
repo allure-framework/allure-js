@@ -146,7 +146,7 @@ export class AllureReporter implements ReporterV2 {
   onStdOut(): void {}
 
   onBegin(suite: Suite): void {
-    const writer = this.options.testMode
+    const writer = process.env.ALLURE_TEST_MODE
       ? new MessageWriter()
       : new FileSystemWriter({
           resultsDir: this.options.resultsDir || "./allure-results",

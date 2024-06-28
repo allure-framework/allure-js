@@ -2,7 +2,6 @@ import type { HeaderList, RequestBody } from "postman-collection";
 import type { Config } from "allure-js-commons/sdk/reporter";
 
 export interface AllureNewmanConfig extends Omit<Config, "writer"> {
-  testMode?: boolean;
   export: string;
   postProcessorForTest?: any;
   collectionAsParentSuite?: boolean;
