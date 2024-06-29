@@ -21,11 +21,14 @@ import {
   getAllureDisplayName,
   getAllureFullName,
   getAllureMetaLabels,
+  getHookType,
   getInitialLabels,
   getSuitesOfMochaTest,
   getTestCaseId,
+  getTestScope,
   isIncludedInTestRun,
   resolveParallelModeSetupFile,
+  setTestScope,
 } from "./utils.js";
 import type { TestPlanIndices } from "./utils.js";
 
@@ -143,7 +146,8 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     this.scopesStack.push(scopeUuid);
   };
 
-  private onSuiteEnd = () => {
+  private onSuiteEnd = (suite: Mocha.Suite) => {
+    this.writeTestScopes(suite);
     const scopeUuid = this.scopesStack.pop();
     if (scopeUuid) {
       this.runtime.writeScope(scopeUuid);
@@ -163,7 +167,8 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     }
 
     const scopeUuid = this.runtime.startScope();
-    this.scopesStack.push(scopeUuid);
+    setTestScope(test, scopeUuid);
+
     this.currentTest = this.runtime.startTest(
       {
         name: getAllureDisplayName(test),
@@ -172,7 +177,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
         labels,
         testCaseId: getTestCaseId(test),
       },
-      this.scopesStack,
+      [...this.scopesStack, scopeUuid],
     );
   };
 
@@ -225,26 +230,24 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       this.runtime.stopTest(this.currentTest);
       this.runtime.writeTest(this.currentTest);
       this.currentTest = undefined;
-      // finish dedicated scope for test
-      const scopeUuid = this.scopesStack.pop();
-      if (scopeUuid) {
-        this.runtime.writeScope(scopeUuid);
-      }
+
+      // We're writing the test's dedicated scope in onSuiteEnd instead of here
+      // because there might be afterEach hooks, which are reported after
+      // onTestEnd, not before.
     }
   };
 
   private onHookStart = (hook: Mocha.Hook) => {
-    const scopeUuid = this.scopesStack.length > 0 ? this.scopesStack[this.scopesStack.length - 1] : undefined;
+    const [hookCategory, hookScope] = getHookType(hook);
+    const test = hook.ctx?.currentTest;
+    const scopeUuid = hookScope === "each" && test ? getTestScope(test) : this.getCurrentSuiteScope();
     if (!scopeUuid) {
       return;
     }
+
     const name = hook.originalTitle ?? "";
-    // eslint-disable-next-line @typescript-eslint/quotes
-    if (name.startsWith('"before')) {
-      this.currentHook = this.runtime.startFixture(scopeUuid, "before", { name });
-      // eslint-disable-next-line @typescript-eslint/quotes
-    } else if (name.startsWith('"after')) {
-      this.currentHook = this.runtime.startFixture(scopeUuid, "after", { name });
+    if (hookCategory) {
+      this.currentHook = this.runtime.startFixture(scopeUuid, hookCategory, { name });
     }
   };
 
@@ -267,4 +270,16 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     this.runtime.stopFixture(this.currentHook);
     this.currentHook = undefined;
   };
+
+  private writeTestScopes = (suite: Mocha.Suite) => {
+    suite.tests.forEach((test) => {
+      const testScopeUuid = getTestScope(test);
+      if (testScopeUuid) {
+        this.runtime.writeScope(testScopeUuid);
+      }
+    });
+  };
+
+  private getCurrentSuiteScope = () =>
+    this.scopesStack.length > 0 ? this.scopesStack[this.scopesStack.length - 1] : undefined;
 }

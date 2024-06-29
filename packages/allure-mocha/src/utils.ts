@@ -7,17 +7,11 @@ import { LabelName } from "allure-js-commons";
 import type { TestPlanV1, TestPlanV1Test } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { getHostLabel, getRelativePath, getThreadLabel, md5, parseTestPlan } from "allure-js-commons/sdk/reporter";
+import type { AllureMochaTestData, HookCategory, HookScope, HookType } from "./types.js";
 
 const filename = fileURLToPath(import.meta.url);
 
 const allureMochaDataKey = Symbol("Used to access Allure extra data in Mocha objects");
-
-type AllureMochaTestData = {
-  isIncludedInTestRun: boolean;
-  fullName: string;
-  labels: readonly Label[];
-  displayName: string;
-};
 
 const getAllureData = (item: Mocha.Test): AllureMochaTestData => {
   const data = (item as any)[allureMochaDataKey];
@@ -77,6 +71,12 @@ export const getAllureId = (data: AllureMochaTestData) => {
 
 export const getAllureDisplayName = (test: Mocha.Test) => getAllureData(test).displayName;
 
+export const getTestScope = (test: Mocha.Test) => getAllureData(test).scope;
+
+export const setTestScope = (test: Mocha.Test, scope: string) => {
+  getAllureData(test).scope = scope;
+};
+
 export const getSuitesOfMochaTest = (test: Mocha.Test) => test.titlePath().slice(0, -1);
 
 export const resolveParallelModeSetupFile = () =>
@@ -107,4 +107,16 @@ export const applyTestPlan = (ids: ReadonlySet<string>, selectors: ReadonlySet<s
     }
     suiteQueue.push(...s.suites);
   }
+};
+
+const hookTypeRegexp = /^"(before|after) (all|each)"/;
+
+export const getHookType = (hook: Mocha.Hook): HookType => {
+  if (hook.originalTitle) {
+    const match = hookTypeRegexp.exec(hook.originalTitle);
+    if (match) {
+      return [match[1] as HookCategory, match[2] as HookScope];
+    }
+  }
+  return [];
 };
