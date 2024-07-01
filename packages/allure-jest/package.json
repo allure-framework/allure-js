@@ -64,7 +64,7 @@
     "@types/babel__core": "^7",
     "@types/babel__preset-env": "^7",
     "@types/eslint": "^8",
-    "@types/node": "^20.6.3",
+    "@types/node": "20.14.2",
     "@types/source-map-support": "^0.5.7",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
@@ -82,7 +82,7 @@
     "npm-run-all2": "^6.1.2",
     "rimraf": "^5.0.1",
     "source-map-support": "^0.5.21",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "vitest": "^1.6.0"
