@@ -11,8 +11,15 @@ import { existsSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import process from "node:process";
-import type { ImageDiffAttachment, Label, TestResult } from "allure-js-commons";
-import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
+import {
+  ContentType,
+  type ImageDiffAttachment,
+  type Label,
+  LabelName,
+  Stage,
+  Status,
+  type TestResult,
+} from "allure-js-commons";
 import type { RuntimeMessage, TestPlanV1Test } from "allure-js-commons/sdk";
 import { extractMetadataFromString, getMessageAndTraceFromError, hasLabel, stripAnsi } from "allure-js-commons/sdk";
 import {
@@ -163,14 +170,15 @@ export class AllureReporter implements ReporterV2 {
     const suite = test.parent;
     const titleMetadata = extractMetadataFromString(test.title);
     const project = suite.project()!;
-    const relativeFile = path.relative(project?.testDir, test.location.file).split(path.sep).join("/");
+    const pathElements = path.relative(project?.testDir, test.location.file).split(path.sep);
+    const relativeFile = pathElements.join("/");
     // root > project > file path > test.describe...
     const [, , , ...suiteTitles] = suite.titlePath();
     const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
     const testCaseIdBase = `${relativeFile}#${nameSuites}${test.title}`;
     const result: Partial<TestResult> = {
       name: titleMetadata.cleanTitle,
-      labels: titleMetadata.labels,
+      labels: [...titleMetadata.labels],
       links: [],
       parameters: [],
       testCaseId: md5(testCaseIdBase),
@@ -180,6 +188,7 @@ export class AllureReporter implements ReporterV2 {
     result.labels!.push({ name: LabelName.LANGUAGE, value: "JavaScript" });
     result.labels!.push({ name: LabelName.FRAMEWORK, value: "Playwright" });
     result.labels!.push({ name: "titlePath", value: suite.titlePath().join(" > ") });
+    result.labels!.push({ name: LabelName.PACKAGE, value: pathElements.join(".") });
 
     if (project?.name) {
       result.parameters!.push({ name: "Project", value: project.name });
