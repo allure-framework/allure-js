@@ -19,7 +19,6 @@ import {
   getSuitePath,
   isCommandShouldBeSkipped,
   isGlobalHook,
-  normalizeAttachmentContentEncoding,
   toReversed,
   uint8ArrayToBase64,
 } from "./utils.js";
@@ -103,11 +102,11 @@ export class AllureCypressTestRuntime implements TestRuntime {
     });
   }
 
-  attachment(name: string, content: Buffer | string, options: AttachmentOptions) {
+  // @ts-ignore
+  attachment(name: string, content: string, options: AttachmentOptions) {
     // @ts-ignore
     const attachmentRawContent: string | Uint8Array = content?.type === "Buffer" ? content.data : content;
-    const encoding = content instanceof Buffer ? "base64" : "utf-8";
-    const actualEncoding = normalizeAttachmentContentEncoding(attachmentRawContent, encoding);
+    const actualEncoding = typeof attachmentRawContent === "string" ? "utf8" : "base64";
     const attachmentContent = uint8ArrayToBase64(attachmentRawContent);
 
     return this.sendMessageAsync({
@@ -227,6 +226,7 @@ const initializeAllure = () => {
 
       Cypress.env("allureRuntimeMessages", []);
 
+      // @ts-ignore
       setGlobalTestRuntime(testRuntime);
     })
     .on(EVENT_HOOK_BEGIN, (hook: CypressHook) => {

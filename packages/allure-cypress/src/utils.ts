@@ -40,6 +40,10 @@ export const getSuitePath = (test: Mocha.Test): string[] => {
 };
 
 export const isCommandShouldBeSkipped = (command: CypressCommand) => {
+  if (last(command.attributes.args)?.log === false) {
+    return true;
+  }
+
   if (command.attributes.name === "task" && command.attributes.args[0] === "allureReportTest") {
     return true;
   }

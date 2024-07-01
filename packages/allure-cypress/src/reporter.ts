@@ -64,7 +64,7 @@ export class AllureCypress {
   }
 
   endSpec(spec: Cypress.Spec, cypressVideoPath?: string) {
-    const specMessages = this.messagesByAbsolutePath.get(spec.absolute)!;
+    const specMessages = this.messagesByAbsolutePath.get(spec.absolute) ?? [];
     const runContext = this.runContextByAbsolutePath.get(spec.absolute)!;
 
     specMessages.forEach((message, i) => {
