@@ -204,6 +204,7 @@ const {
   EVENT_TEST_BEGIN,
   EVENT_TEST_FAIL,
   EVENT_TEST_PASS,
+  EVENT_TEST_PENDING,
   EVENT_SUITE_BEGIN,
   EVENT_SUITE_END,
   EVENT_HOOK_BEGIN,
@@ -402,6 +403,28 @@ const initializeAllure = () => {
           status,
           statusDetails,
           stop: testStartMessage.data.start + (test.duration ?? 0),
+        },
+      });
+    })
+    .on(EVENT_TEST_PENDING, (test: CypressTest) => {
+      const testRuntime = new AllureCypressTestRuntime();
+
+      testRuntime.sendMessageAsync({
+        type: "cypress_test_start",
+        data: {
+          id: test.id,
+          specPath: getSuitePath(test).concat(test.title),
+          filename: Cypress.spec.relative,
+          start: Date.now(),
+        },
+      });
+
+      return testRuntime.sendMessageAsync({
+        type: "cypress_test_end",
+        data: {
+          id: test.id,
+          status: Status.SKIPPED,
+          stop: Date.now(),
         },
       });
     })
