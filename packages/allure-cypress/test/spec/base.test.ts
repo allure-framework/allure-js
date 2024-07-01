@@ -46,8 +46,8 @@ it("broken test", async () => {
 });
 
 it("skipped tests", async () => {
-  const { tests } = await runCypressInlineTest(
-    () => `
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": () => `
     it.skip("skipped-1", () => {
       cy.wrap(1).should("eq", 1);
     });
@@ -58,15 +58,25 @@ it("skipped tests", async () => {
       cy.wrap(2).should("eq", 2);
     });
   `,
+  });
+
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "passing",
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+      }),
+      expect.objectContaining({
+        name: "skipped-1",
+        status: Status.SKIPPED,
+        stage: Stage.FINISHED,
+      }),
+      expect.objectContaining({
+        name: "skipped-2",
+        status: Status.SKIPPED,
+        stage: Stage.FINISHED,
+      }),
+    ]),
   );
-
-  expect(tests).toHaveLength(3);
-  // The passing test is first, because afterEach hook runs before after hook
-  expect(tests[0].status).toBe(Status.PASSING);
-  expect(tests[0].stage).toBe(Stage.FINISHED);
-
-  expect(tests[1].status).toBe(Status.SKIPPED);
-  expect(tests[1].stage).toBe(Stage.FINISHED);
-  expect(tests[2].status).toBe(Status.SKIPPED);
-  expect(tests[2].stage).toBe(Stage.FINISHED);
 });

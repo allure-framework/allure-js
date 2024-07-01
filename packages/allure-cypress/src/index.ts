@@ -23,7 +23,6 @@ import {
   toReversed,
   uint8ArrayToBase64,
 } from "./utils.js";
-import {CypressTestStartRuntimeMessage} from "../dist/model";
 
 export class AllureCypressTestRuntime implements TestRuntime {
   labels(...labels: Label[]) {
@@ -196,16 +195,6 @@ export class AllureCypressTestRuntime implements TestRuntime {
     });
 
     return Cypress.Promise.resolve();
-  }
-
-  sendSkippedTestMessages(messages: CypressRuntimeMessage[]) {
-    const skippedTestsMessages: CypressRuntimeMessage[][] | undefined = Cypress.env("skippedTestsMessages");
-
-    if (!skippedTestsMessages) {
-      Cypress.env("skippedTestsMessages", [messages]);
-    } else {
-      skippedTestsMessages.push(messages);
-    }
   }
 }
 
@@ -420,7 +409,7 @@ const initializeAllure = () => {
     .on(EVENT_TEST_PENDING, (test: CypressTest) => {
       const testRuntime = new AllureCypressTestRuntime();
 
-      const startMessage: CypressTestStartRuntimeMessage = {
+      testRuntime.sendMessageAsync({
         type: "cypress_test_start",
         data: {
           id: test.id,
@@ -428,20 +417,16 @@ const initializeAllure = () => {
           filename: Cypress.spec.relative,
           start: Date.now(),
         },
-      };
-      const endMessage: CypressTestEndMessage = {
+      });
+
+      return testRuntime.sendMessageAsync({
         type: "cypress_test_end",
         data: {
           id: test.id,
           status: Status.SKIPPED,
           stop: Date.now(),
         },
-      };
-
-      const skippedTestMessages: CypressRuntimeMessage[] = [startMessage, endMessage];
-      testRuntime.sendSkippedTestMessages(skippedTestMessages);
-
-      setGlobalTestRuntime(testRuntime);
+      });
     })
     .on(EVENT_RUN_END, () => {
       // this is the only way to say reporter process messages in interactive mode without data duplication
@@ -529,12 +514,6 @@ const initializeAllure = () => {
         status: Status.PASSED,
       },
     });
-  });
-
-  afterEach(() => {
-    const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressMessage[];
-
-    cy.task("allureReportTest", runtimeMessages, { log: false });
   });
 
   after(ALLURE_REPORT_SHUTDOWN_HOOK, () => {
