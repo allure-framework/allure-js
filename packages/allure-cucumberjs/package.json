@@ -67,7 +67,7 @@
     "@types/chai-things": "^0.0.36",
     "@types/eslint": "^8",
     "@types/glob": "^8.1.0",
-    "@types/node": "20.14.2",
+    "@types/node": "^20.14.2",
     "@types/sinon": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",

@@ -61,7 +61,7 @@
     "@types/babel__preset-env": "^7",
     "@types/eslint": "^8",
     "@types/newman": "^5.3.3",
-    "@types/node": "20.14.2",
+    "@types/node": "^20.14.2",
     "@types/postman-collection": "^3.5.7",
     "@types/source-map-support": "^0.5.7",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
