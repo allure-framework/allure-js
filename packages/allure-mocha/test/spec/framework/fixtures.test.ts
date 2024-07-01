@@ -1,78 +1,110 @@
 /* eslint @typescript-eslint/quotes: off */
 import { beforeAll, describe, expect, it } from "vitest";
-import type { FixtureResult, TestResult, TestResultContainer } from "allure-js-commons";
+import type { Assertion } from "vitest";
+import type { TestResult, TestResultContainer } from "allure-js-commons";
 import { runMochaInlineTest } from "../../utils.js";
 
 describe("fixtures", () => {
-  const testFixtures = new Map<string, [FixtureResult[], FixtureResult[]]>();
   let tests: readonly TestResult[], groups: readonly TestResultContainer[];
+  let testNameToId: Map<string, string>;
   beforeAll(async () => {
     ({ tests, groups } = await runMochaInlineTest(
       ["fixtures", "before"],
       ["fixtures", "after"],
       ["fixtures", "beforeEach"],
       ["fixtures", "afterEach"],
-      ["fixtures", "renamed"],
+      ["fixtures", "scoping"],
     ));
-    const testMap = new Map(tests.map((t) => [t.uuid, t.name!]));
-
-    for (const container of groups) {
-      for (const testUuid of container.children) {
-        const testName = testMap.get(testUuid) as string;
-        const [beforeFixtures = [], afterFixtures = []] = testFixtures.get(testName) ?? [];
-        testFixtures.set(testName, [beforeFixtures.concat(container.befores), afterFixtures.concat(container.afters)]);
-      }
-    }
+    testNameToId = new Map(tests.map((t) => [t.name!, t.uuid]));
   });
+
+  const assertFixture = (
+    assertion: Assertion<readonly TestResultContainer[]>,
+    prop: "befores" | "afters",
+    name: string,
+    ...testNames: readonly string[]
+  ) => {
+    assertion.toContainEqual(
+      expect.objectContaining({
+        [prop]: expect.arrayContaining([expect.objectContaining({ name })]),
+        children: testNames.map((n) => testNameToId.get(n)),
+      }),
+    );
+  };
+
+  const assertBeforeFixture = (name: string, ...testNames: readonly string[]) =>
+    assertFixture(expect(groups), "befores", name, ...testNames);
+  const assertAfterFixture = (name: string, ...testNames: readonly string[]) =>
+    assertFixture(expect(groups), "afters", name, ...testNames);
+  const assertNoBeforeFixture = (name: string, ...testNames: readonly string[]) =>
+    assertFixture(expect(groups).not, "befores", name, ...testNames);
+  const assertNoAfterFixture = (name: string, ...testNames: readonly string[]) =>
+    assertFixture(expect(groups).not, "afters", name, ...testNames);
 
   it("reports each fixture in its own container", () => {
     const totalFixtures = groups.reduce((a, v) => a + v.afters.length + v.befores.length, 0);
     expect(groups).toHaveLength(totalFixtures);
   });
 
-  describe("in suites", () => {
-    const testFixtureNames = new Map<string, { befores: string[]; afters: string[] }>();
-    beforeAll(() => {
-      for (const [testName, [befores, afters]] of testFixtures) {
-        testFixtureNames.set(testName, {
-          befores: befores.map((f) => f.name ?? ""),
-          afters: afters.map((f) => f.name ?? ""),
-        });
-      }
-    });
-
-    it("has a fixture from before that affects a test", () => {
-      expect(testFixtureNames.get("a test affected by before")).toEqual({
-        befores: ['"before all" hook: a before all hook'],
-        afters: [],
-      });
-    });
-
-    it("has a fixture from after that affects a test", () => {
-      expect(testFixtureNames.get("a test affected by after")).toEqual({
-        befores: [],
-        afters: ['"after all" hook: an after all hook'],
-      });
-    });
-
-    it("has a fixture from beforeEach that affects a test", () => {
-      expect(testFixtureNames.get("a test affected by beforeEach")).toEqual({
-        befores: ['"before each" hook: a before each hook'],
-        afters: [],
-      });
-    });
-
-    it("has a fixture from afterEach that affects a test", () => {
-      expect(testFixtureNames.get("a test affected by afterEach")).toEqual({
-        befores: [],
-        afters: ['"after each" hook: an after each hook'],
-      });
-    });
+  it("should support before", () => {
+    assertBeforeFixture('"before all" hook: a before all hook', "a test affected by before");
   });
 
-  it("can be renamed", () => {
-    const [[fixture]] = testFixtures.get("a test affected by a renamed fixture") ?? [[]];
+  it("should support after", () => {
+    assertAfterFixture('"after all" hook: an after all hook', "a test affected by after");
+  });
 
-    expect(fixture).toHaveProperty("name", "a new name");
+  it("should support beforeEach", () => {
+    assertBeforeFixture('"before each" hook: a before each hook', "a test affected by beforeEach");
+  });
+
+  it("should support afterEach", () => {
+    assertAfterFixture('"after each" hook: an after each hook', "a test affected by afterEach");
+  });
+
+  describe("scoping", () => {
+    it("level 1 before should affect two tests", () => {
+      assertBeforeFixture(
+        '"before all" hook: before at level 1',
+        "a test affected by four fixtures",
+        "a test affected by eight fixtures",
+      );
+    });
+
+    it("level 2 before should affect one test", () => {
+      assertBeforeFixture('"before all" hook: before at level 2', "a test affected by eight fixtures");
+    });
+
+    it("level 1 after should affect two tests", () => {
+      assertAfterFixture(
+        '"after all" hook: after at level 1',
+        "a test affected by four fixtures",
+        "a test affected by eight fixtures",
+      );
+    });
+
+    it("level 2 after should affect one test", () => {
+      assertAfterFixture('"after all" hook: after at level 2', "a test affected by eight fixtures");
+    });
+
+    it("level 1 beforeEach should affect two tests", () => {
+      assertBeforeFixture('"before each" hook: beforeEach at level 1', "a test affected by eight fixtures");
+      assertBeforeFixture('"before each" hook: beforeEach at level 1', "a test affected by four fixtures");
+    });
+
+    it("level 2 beforeEach should affect one test", () => {
+      assertBeforeFixture('"before each" hook: beforeEach at level 2', "a test affected by eight fixtures");
+      assertNoBeforeFixture('"before each" hook: beforeEach at level 2', "a test affected by four fixtures");
+    });
+
+    it("level 1 afterEach should affect two tests", () => {
+      assertAfterFixture('"after each" hook: afterEach at level 1', "a test affected by eight fixtures");
+      assertAfterFixture('"after each" hook: afterEach at level 1', "a test affected by four fixtures");
+    });
+
+    it("level 2 afterEach should affect one test", () => {
+      assertAfterFixture('"after each" hook: afterEach at level 2', "a test affected by eight fixtures");
+      assertNoAfterFixture('"after each" hook: afterEach at level 2', "a test affected by four fixtures");
+    });
   });
 });
