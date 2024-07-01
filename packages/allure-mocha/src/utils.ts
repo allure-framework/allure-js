@@ -7,17 +7,11 @@ import { LabelName } from "allure-js-commons";
 import type { TestPlanV1, TestPlanV1Test } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { getHostLabel, getRelativePath, getThreadLabel, md5, parseTestPlan } from "allure-js-commons/sdk/reporter";
+import type { AllureMochaTestData, HookCategory, HookScope, HookType, TestPlanIndices } from "./types.js";
 
 const filename = fileURLToPath(import.meta.url);
 
 const allureMochaDataKey = Symbol("Used to access Allure extra data in Mocha objects");
-
-type AllureMochaTestData = {
-  isIncludedInTestRun: boolean;
-  fullName: string;
-  labels: readonly Label[];
-  displayName: string;
-};
 
 const getAllureData = (item: Mocha.Test): AllureMochaTestData => {
   const data = (item as any)[allureMochaDataKey];
@@ -47,11 +41,6 @@ const createTestPlanIdIndex = (testplan: TestPlanV1) => createTestPlanIndex((e) 
 const createTestPlanIndex = <T>(keySelector: (entry: TestPlanV1Test) => T | undefined, testplan: TestPlanV1): Set<T> =>
   new Set(testplan.tests.map((e) => keySelector(e)).filter((v) => v)) as Set<T>;
 
-export type TestPlanIndices = {
-  fullNameIndex: ReadonlySet<string>;
-  idIndex: ReadonlySet<string>;
-};
-
 export const createTestPlanIndices = (): TestPlanIndices | undefined => {
   const testplan = parseTestPlan();
   if (testplan) {
@@ -76,6 +65,12 @@ export const getAllureId = (data: AllureMochaTestData) => {
 };
 
 export const getAllureDisplayName = (test: Mocha.Test) => getAllureData(test).displayName;
+
+export const getTestScope = (test: Mocha.Test) => getAllureData(test).scope;
+
+export const setTestScope = (test: Mocha.Test, scope: string) => {
+  getAllureData(test).scope = scope;
+};
 
 export const getSuitesOfMochaTest = (test: Mocha.Test) => test.titlePath().slice(0, -1);
 
@@ -107,4 +102,16 @@ export const applyTestPlan = (ids: ReadonlySet<string>, selectors: ReadonlySet<s
     }
     suiteQueue.push(...s.suites);
   }
+};
+
+const hookTypeRegexp = /^"(before|after) (all|each)"/;
+
+export const getHookType = (hook: Mocha.Hook): HookType => {
+  if (hook.originalTitle) {
+    const match = hookTypeRegexp.exec(hook.originalTitle);
+    if (match) {
+      return [match[1] as HookCategory, match[2] as HookScope];
+    }
+  }
+  return [];
 };
