@@ -1,5 +1,10 @@
 import type { Label } from "allure-js-commons";
 
+export type TestPlanIndices = {
+  fullNameIndex: ReadonlySet<string>;
+  idIndex: ReadonlySet<string>;
+};
+
 export type AllureMochaTestData = {
   isIncludedInTestRun: boolean;
   fullName: string;

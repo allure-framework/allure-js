@@ -7,7 +7,7 @@ import { LabelName } from "allure-js-commons";
 import type { TestPlanV1, TestPlanV1Test } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { getHostLabel, getRelativePath, getThreadLabel, md5, parseTestPlan } from "allure-js-commons/sdk/reporter";
-import type { AllureMochaTestData, HookCategory, HookScope, HookType } from "./types.js";
+import type { AllureMochaTestData, HookCategory, HookScope, HookType, TestPlanIndices } from "./types.js";
 
 const filename = fileURLToPath(import.meta.url);
 
@@ -40,11 +40,6 @@ const createTestPlanIdIndex = (testplan: TestPlanV1) => createTestPlanIndex((e) 
 
 const createTestPlanIndex = <T>(keySelector: (entry: TestPlanV1Test) => T | undefined, testplan: TestPlanV1): Set<T> =>
   new Set(testplan.tests.map((e) => keySelector(e)).filter((v) => v)) as Set<T>;
-
-export type TestPlanIndices = {
-  fullNameIndex: ReadonlySet<string>;
-  idIndex: ReadonlySet<string>;
-};
 
 export const createTestPlanIndices = (): TestPlanIndices | undefined => {
   const testplan = parseTestPlan();

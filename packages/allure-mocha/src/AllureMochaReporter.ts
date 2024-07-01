@@ -15,6 +15,7 @@ import {
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { MochaTestRuntime } from "./MochaTestRuntime.js";
 import { setLegacyApiRuntime } from "./legacyUtils.js";
+import type { TestPlanIndices } from "./types.js";
 import {
   applyTestPlan,
   createTestPlanIndices,
@@ -30,7 +31,6 @@ import {
   resolveParallelModeSetupFile,
   setTestScope,
 } from "./utils.js";
-import type { TestPlanIndices } from "./utils.js";
 
 const {
   EVENT_SUITE_BEGIN,
