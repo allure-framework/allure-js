@@ -11,6 +11,10 @@ it("reports programmatically skipped results", async () => {
       test.skip('should be skipped 1', async () => {});
 
       test('should not be skipped', async () => {});
+
+      test('should be skipped 2', async () => {
+        test.skip(true, "runtime skip");
+      });
     `,
   });
 
@@ -20,6 +24,13 @@ it("reports programmatically skipped results", async () => {
         fullName: "sample.test.js:4:12",
         status: Status.SKIPPED,
         testCaseId: md5("sample.test.js#should be skipped 1"),
+      }),
+      expect.objectContaining({
+        status: Status.SKIPPED,
+        testCaseId: md5("sample.test.js#should be skipped 2"),
+        statusDetails: expect.objectContaining({
+          message: "runtime skip",
+        }),
       }),
       expect.objectContaining({
         fullName: "sample.test.js:6:11",
