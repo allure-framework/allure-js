@@ -1,5 +1,6 @@
 import { expect, it } from "vitest";
 import { Status } from "allure-js-commons";
+import { md5 } from "allure-js-commons/sdk/reporter";
 import { runPlaywrightInlineTest } from "../utils.js";
 
 it("reports programmatically skipped results", async () => {
@@ -18,10 +19,12 @@ it("reports programmatically skipped results", async () => {
       expect.objectContaining({
         fullName: "sample.test.js:4:12",
         status: Status.SKIPPED,
+        testCaseId: md5("sample.test.js#should be skipped 1"),
       }),
       expect.objectContaining({
         fullName: "sample.test.js:6:11",
         status: Status.PASSED,
+        testCaseId: md5("sample.test.js#should not be skipped"),
       }),
     ]),
   );
