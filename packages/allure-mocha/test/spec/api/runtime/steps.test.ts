@@ -1,10 +1,11 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
-import type { TestResult } from "allure-js-commons";
+import type { TestResult, TestResultContainer } from "allure-js-commons";
 import { runMochaInlineTest } from "../../../utils.js";
 
 describe("step", () => {
   const testMap = new Map<string, TestResult>();
+  let groups: readonly TestResultContainer[];
   let attachments: Record<string, string | Buffer>;
   beforeAll(async () => {
     const results = await runMochaInlineTest(
@@ -21,11 +22,12 @@ describe("step", () => {
       ["steps", "stepWithHiddenParameter"],
       ["steps", "stepReturnsValue"],
       ["steps", "stepReturnsPromise"],
+      ["steps", "fixtureWithStep"],
     );
     for (const testResult of results.tests) {
       testMap.set(testResult.name as string, testResult);
     }
-    attachments = results.attachments;
+    ({ attachments, groups } = results);
   });
 
   describe("structure", () => {
@@ -162,7 +164,7 @@ describe("step", () => {
       });
     });
 
-    it("may return a promised", () => {
+    it("may return a promise", () => {
       expect(testMap.get("a test with a step that returns a value promise")).toMatchObject({
         status: Status.PASSED,
       });
@@ -177,6 +179,25 @@ describe("step", () => {
         }),
       ],
     });
+  });
+
+  it("fixture may contain steps", () => {
+    expect(groups).toContainEqual(
+      expect.objectContaining({
+        children: [testMap.get("a test with a fixture with a step")!.uuid],
+        befores: [
+          expect.objectContaining({
+            steps: [
+              expect.objectContaining({
+                name: "bar",
+                status: Status.PASSED,
+                stage: Stage.FINISHED,
+              }),
+            ],
+          }),
+        ],
+      }),
+    );
   });
 
   it("may contain an attachment", () => {

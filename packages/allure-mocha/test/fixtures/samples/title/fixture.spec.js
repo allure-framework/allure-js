@@ -3,10 +3,10 @@
 // esm: import { beforeEach, describe, it } from "mocha";
 // esm: import { displayName } from "allure-js-commons";
 
-describe("a suite with before", async () => {
-  beforeEach("an initial name", async () => {
-    await displayName("a new name");
+describe("foo", () => {
+  beforeEach(async () => {
+    await displayName("bar");
   });
 
-  it("a test affected by a renamed fixture", async () => {});
+  it("baz", async () => {});
 });
