@@ -3,9 +3,9 @@ import { ContentType, Status } from "allure-js-commons";
 import { runCypressInlineTest } from "../../../utils.js";
 
 it("single step", async () => {
-  const { tests } = await runCypressInlineTest(
-    ({ allureCypressModulePath }) => `
-    import { label, step } from "${allureCypressModulePath}";
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { label, step } from "${allureCommonsModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -13,7 +13,7 @@ it("single step", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
@@ -22,9 +22,9 @@ it("single step", async () => {
 });
 
 it("multiple steps", async () => {
-  const { tests } = await runCypressInlineTest(
-    ({ allureCypressModulePath }) => `
-    import { label, step } from "${allureCypressModulePath}";
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { label, step } from "${allureCommonsModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -40,7 +40,7 @@ it("multiple steps", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "1" }));
@@ -53,9 +53,9 @@ it("multiple steps", async () => {
 });
 
 it("nested steps", async () => {
-  const { tests } = await runCypressInlineTest(
-    ({ allureCypressModulePath }) => `
-    import { label, step } from "${allureCypressModulePath}";
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { label, step } from "${allureCommonsModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -67,7 +67,7 @@ it("nested steps", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
@@ -80,9 +80,9 @@ it("nested steps", async () => {
 });
 
 it("step with attachments", async () => {
-  const { tests, attachments } = await runCypressInlineTest(
-    ({ allureCypressModulePath }) => `
-    import { attachment, step } from "${allureCypressModulePath}";
+  const { tests, attachments } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { attachment, step } from "${allureCommonsModulePath}";
 
     it("text attachment", () => {
       step("foo", () => {
@@ -90,7 +90,7 @@ it("step with attachments", async () => {
       })
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].attachments).toHaveLength(0);
@@ -104,9 +104,9 @@ it("step with attachments", async () => {
 });
 
 it("step with screenshot", async () => {
-  const { tests, attachments } = await runCypressInlineTest(
-    ({ allureCypressModulePath }) => `
-    import { step } from "${allureCypressModulePath}";
+  const { tests, attachments } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { step } from "${allureCommonsModulePath}";
 
     it("manual", () => {
       step("foo", () => {
@@ -114,7 +114,7 @@ it("step with screenshot", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].attachments).toHaveLength(0);
@@ -143,9 +143,9 @@ it("step with screenshot", async () => {
 });
 
 it("step with cypress assertion error", async () => {
-  const { tests } = await runCypressInlineTest(
-    ({ allureCypressModulePath }) => `
-    import { step } from "${allureCypressModulePath}";
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { step } from "${allureCommonsModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -153,18 +153,23 @@ it("step with cypress assertion error", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe(Status.FAILED);
   expect(tests[0].steps).toHaveLength(1);
-  expect(tests[0].steps).toContainEqual(expect.objectContaining({ name: "foo", status: Status.FAILED }));
+  expect(tests[0].steps).toContainEqual(
+    expect.objectContaining({
+      name: "foo",
+      status: Status.FAILED,
+    }),
+  );
 });
 
 it("step with unexpected error", async () => {
-  const { tests } = await runCypressInlineTest(
-    ({ allureCypressModulePath }) => `
-    import { step } from "${allureCypressModulePath}";
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { step } from "${allureCommonsModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -172,21 +177,26 @@ it("step with unexpected error", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe(Status.BROKEN);
   expect(tests[0].steps).toHaveLength(1);
-  expect(tests[0].steps).toContainEqual(expect.objectContaining({ name: "foo", status: Status.BROKEN }));
+  expect(tests[0].steps).toContainEqual(
+    expect.objectContaining({
+      name: "foo",
+      status: Status.BROKEN,
+    }),
+  );
 });
 
 it("step runtime api", async () => {
-  const { tests } = await runCypressInlineTest(
-    ({ allureCypressModulePath }) => `
-    import { step } from "${allureCypressModulePath}";
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { step } from "${allureCommonsModulePath}";
 
     it("step", () => {
-      step("${allureCypressModulePath}", (ctx) => {
+      step("${allureCommonsModulePath}", (ctx) => {
         ctx.displayName("bar");
         ctx.parameter("p1", "v1");
         ctx.parameter("p2", "v2", "default");
@@ -195,7 +205,7 @@ it("step runtime api", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toEqual("passed");
@@ -213,13 +223,13 @@ it("step runtime api", async () => {
 });
 
 it("promise-step", async () => {
-  const { tests } = await runCypressInlineTest(
-    ({ allureCypressModulePath }) => `
-    import { step, label } from "${allureCypressModulePath}";
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { step, label } from "${allureCommonsModulePath}";
 
     it("step", () => {
       let value = "unset";
-      step("${allureCypressModulePath}", () => {
+      step("${allureCommonsModulePath}", () => {
         return new Cypress.Promise(
           (r) => setTimeout(() => {
             value = "set";
@@ -229,7 +239,7 @@ it("promise-step", async () => {
       }).then(() => label("result", value));
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toEqual("passed");
@@ -238,4 +248,49 @@ it("promise-step", async () => {
   expect(actualStep.status).toEqual("passed");
   expect(tests[0].labels).toHaveLength(3);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "result", value: "set" }));
+});
+
+it("handles allure steps inside cypress hooks", async () => {
+  const { tests, groups } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { step } from "${allureCommonsModulePath}";
+
+    describe("suite", () => {
+      beforeEach(() => {
+        step("before each step", () => {});
+      });
+
+      afterEach(() => {
+        step("after each step", () => {});
+      });
+
+      it("passed", () => {
+        cy.wrap(1).should("eq", 1);
+      });
+    });
+  `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(groups).toHaveLength(2);
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        afters: [
+          expect.objectContaining({
+            steps: [expect.objectContaining({ name: "after each step" })],
+          }),
+        ],
+        befores: [],
+      }),
+      expect.objectContaining({
+        afters: [],
+        befores: [
+          expect.objectContaining({
+            steps: [expect.objectContaining({ name: "before each step" })],
+          }),
+        ],
+      }),
+    ]),
+  );
 });

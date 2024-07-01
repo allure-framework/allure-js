@@ -2,15 +2,15 @@ import { expect, it } from "vitest";
 import { runCypressInlineTest } from "../../../utils.js";
 
 it("historyId", async () => {
-  const { tests } = await runCypressInlineTest(
-    ({ allureCypressModulePath }) => `
-    import { historyId } from "${allureCypressModulePath}";
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { historyId } from "${allureCommonsModulePath}";
 
     it("sample", () => {
       historyId("foo");
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].historyId).toBe("foo");
