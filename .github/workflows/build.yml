@@ -41,6 +41,9 @@ jobs:
       - name: yarn lint
         run: |
           yarn lint
+      - name: yarn dlx sherif
+        run: |
+          yarn dlx sherif
 
   prettier:
     runs-on: ubuntu-latest

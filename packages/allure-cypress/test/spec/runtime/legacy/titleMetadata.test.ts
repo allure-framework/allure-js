@@ -3,15 +3,15 @@ import { LabelName } from "allure-js-commons";
 import { runCypressInlineTest } from "../../../utils.js";
 
 it("title metadata", async () => {
-  const { tests } = await runCypressInlineTest(
-    ({ allureCypressModulePath }) => `
-    import { label } from "${allureCypressModulePath}";
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { label } from "${allureCommonsModulePath}";
 
     it("foo @allure.id=1 @allure.label.foo=2", () => {
       label("bar", "3");
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(

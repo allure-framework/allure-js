@@ -3,13 +3,13 @@ import { ContentType } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils.js";
 
 it("attaches same video to each spec in a test", async () => {
-  const { tests, groups } = await runCypressInlineTest(
-    () => `
+  const { tests, groups } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": () => `
       it("foo", () => {});
 
       it("bar", () => {});
     `,
-    () =>
+    "cypress.config.js": () =>
       `
       const { allureCypress } = require("allure-cypress/reporter");
 
@@ -37,7 +37,7 @@ it("attaches same video to each spec in a test", async () => {
         },
       };
     `,
-  );
+  });
 
   expect(tests).toHaveLength(2);
   expect(groups).toHaveLength(1);

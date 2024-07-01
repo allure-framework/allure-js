@@ -67,7 +67,7 @@
     "@types/chai-things": "^0.0.36",
     "@types/eslint": "^8",
     "@types/glob": "^8.1.0",
-    "@types/node": "^20.6.3",
+    "@types/node": "^20.14.2",
     "@types/sinon": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
@@ -87,7 +87,7 @@
     "npm-run-all2": "^6.1.2",
     "rimraf": "^5.0.1",
     "sinon": "^18.0.0",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.2.2",
     "vitest": "^1.6.0"
   },

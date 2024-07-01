@@ -3,9 +3,9 @@ import { LinkType } from "allure-js-commons";
 import { runCypressInlineTest } from "../../../utils.js";
 
 it("adds all the possible links", async () => {
-  const { tests } = await runCypressInlineTest(
-    ({ allureCypressModulePath }) => `
-    import { link, issue, tms } from "${allureCypressModulePath}";
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { link, issue, tms } from "${allureCommonsModulePath}";
 
     it("links", () => {
       link("https://allurereport.org", "foo", "bar");
@@ -17,7 +17,7 @@ it("adds all the possible links", async () => {
       tms("2", "bar");
     });
     `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].links).toContainEqual({

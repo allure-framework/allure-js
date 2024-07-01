@@ -5,69 +5,68 @@ import { dirname, join, resolve as resolvePath } from "node:path";
 import type { TestResult, TestResultContainer } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 
-export const runCypressInlineTest = async (
-  test: (modulesPaths: { allureCommonsModulePath: string; allureCypressModulePath: string }) => string,
-  externalConfigFactory?: (tempDir: string) => string,
-  beforeTestCb?: (tempDir: string) => Promise<void>,
-): Promise<AllureResults> => {
+type CypressTestFiles = Record<
+  string,
+  (modulesPaths: { allureCommonsModulePath: string; allureCypressModulePath: string }) => string
+>;
+
+export const runCypressInlineTest = async (testFiles: CypressTestFiles): Promise<AllureResults> => {
   const res: AllureResults = {
     tests: [],
     groups: [],
     attachments: {},
   };
   const testDir = join(__dirname, "fixtures", randomUUID());
-  const cypressTestsDir = join(testDir, "cypress/e2e");
-  const cypressSupportDir = join(testDir, "cypress/support");
-  const configFilePath = join(testDir, "cypress.config.js");
-  const supportFilePath = join(cypressSupportDir, "e2e.js");
-  const testFilePath = join(cypressTestsDir, "sample.cy.js");
   const allureCypressModuleBasePath = dirname(require.resolve("allure-cypress"));
   const allureCommonsModulePath = require.resolve("allure-js-commons");
   const allureCypressModulePath = require.resolve("allure-cypress");
-  const configContent = externalConfigFactory
-    ? externalConfigFactory(testDir)
-    : `
-    const { allureCypress } = require("${allureCypressModuleBasePath}/reporter.js");
+  const testFilesToWrite: CypressTestFiles = {
+    "cypress/support/e2e.js": () => `
+      require("${allureCypressModuleBasePath}/index.js");
+    `,
+    "cypress.config.js": () => `
+      const { allureCypress } = require("${allureCypressModuleBasePath}/reporter.js");
 
-    module.exports = {
-      e2e: {
-        baseUrl: "https://allurereport.org",
-        viewportWidth: 1240,
-        setupNodeEvents: (on, config) => {
-          allureCypress(on, {
-            links: {
-              issue: {
-                urlTemplate: "https://allurereport.org/issues/%s"
+      module.exports = {
+        e2e: {
+          baseUrl: "https://allurereport.org",
+          viewportWidth: 1240,
+          setupNodeEvents: (on, config) => {
+            allureCypress(on, {
+              links: {
+                issue: {
+                  urlTemplate: "https://allurereport.org/issues/%s"
+                },
+                tms: {
+                  urlTemplate: "https://allurereport.org/tasks/%s"
+                },
               },
-              tms: {
-                urlTemplate: "https://allurereport.org/tasks/%s"
-              },
-            },
-            resultsDir: "${join(testDir, "./allure-results")}"
-          });
+            });
 
-          return config;
+            return config;
+          },
         },
-      },
-    };
-  `;
-  const supportContent = `
-    require("${allureCypressModuleBasePath}/index.js");
-  `;
+      };
+    `,
+    ...testFiles,
+  };
 
-  await mkdir(cypressTestsDir, { recursive: true });
-  await mkdir(cypressSupportDir, { recursive: true });
-  await writeFile(configFilePath, configContent, "utf8");
-  await writeFile(supportFilePath, supportContent, "utf8");
-  await writeFile(testFilePath, test({ allureCommonsModulePath, allureCypressModulePath }), "utf8");
-
-  if (beforeTestCb) {
-    await beforeTestCb(testDir);
+  // eslint-disable-next-line guard-for-in
+  for (const testFile in testFilesToWrite) {
+    await mkdir(dirname(join(testDir, testFile)), { recursive: true });
+    await writeFile(
+      join(testDir, testFile),
+      testFilesToWrite[testFile]({
+        allureCommonsModulePath,
+        allureCypressModulePath,
+      }),
+      "utf8",
+    );
   }
 
   const moduleRootPath = require.resolve("cypress");
   const modulePath = resolvePath(moduleRootPath, "../bin/cypress");
-  const args = ["run", "-s", testFilePath, "--browser", "chrome", "-q"];
+  const args = ["run", "--browser", "chrome", "-q"];
   const testProcess = fork(modulePath, args, {
     env: {
       ...process.env,
