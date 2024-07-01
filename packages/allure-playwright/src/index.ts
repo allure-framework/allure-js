@@ -166,7 +166,7 @@ export class AllureReporter implements ReporterV2 {
     });
   }
 
-  onTestBegin(test: TestCase) {
+  onTestBegin(test: TestCase & { fn?: { tag?: string | string[] } }) {
     const suite = test.parent;
     const titleMetadata = extractMetadataFromString(test.title);
     const project = suite.project()!;
@@ -189,6 +189,15 @@ export class AllureReporter implements ReporterV2 {
     result.labels!.push({ name: LabelName.FRAMEWORK, value: "Playwright" });
     result.labels!.push({ name: "titlePath", value: suite.titlePath().join(" > ") });
     result.labels!.push({ name: LabelName.PACKAGE, value: pathElements.join(".") });
+
+    // support for earlier playwright versions
+    if ("tags" in test) {
+      const tags: Label[] = test.tags.map((tag) => ({
+        name: LabelName.TAG,
+        value: tag.startsWith("@") ? tag.substring(1) : tag,
+      }));
+      result.labels!.push(...tags);
+    }
 
     if (project?.name) {
       result.parameters!.push({ name: "Project", value: project.name });
