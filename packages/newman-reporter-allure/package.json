@@ -87,5 +87,13 @@
     "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "vitest": "^1.6.0"
+  },
+  "peerDependencies": {
+    "newman": ">=6.1.2"
+  },
+  "peerDependenciesMeta": {
+    "newman": {
+      "optional": true
+    }
   }
 }

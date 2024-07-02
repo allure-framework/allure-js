@@ -92,6 +92,7 @@
     "vitest": "^1.6.0"
   },
   "peerDependencies": {
-    "@cucumber/cucumber": "^10.8.0"
+    "@cucumber/cucumber": "^10.8.0",
+    "@cucumber/messages": "^25.0.1"
   }
 }

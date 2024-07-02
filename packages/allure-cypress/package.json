@@ -90,5 +90,13 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.2.2",
     "vitest": "^1.6.0"
+  },
+  "peerDependencies": {
+    "cypress": "^13.12.0"
+  },
+  "peerDependenciesMeta": {
+    "cypress": {
+      "optional": true
+    }
   }
 }
