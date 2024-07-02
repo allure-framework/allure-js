@@ -56,6 +56,7 @@ export const runPlaywrightInlineTest = async (
         ...process.env,
         ...env,
         ALLURE_TEST_MODE: "1",
+        PW_DISABLE_TS_ESM: "1",
       },
       cwd: testDir,
       stdio: "pipe",
