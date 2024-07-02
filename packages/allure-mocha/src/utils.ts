@@ -107,8 +107,8 @@ export const applyTestPlan = (ids: ReadonlySet<string>, selectors: ReadonlySet<s
 const hookTypeRegexp = /^"(before|after) (all|each)"/;
 
 export const getHookType = (hook: Mocha.Hook): HookType => {
-  if (hook.originalTitle) {
-    const match = hookTypeRegexp.exec(hook.originalTitle);
+  if (hook.title) {
+    const match = hookTypeRegexp.exec(hook.title);
     if (match) {
       return [match[1] as HookCategory, match[2] as HookScope];
     }
