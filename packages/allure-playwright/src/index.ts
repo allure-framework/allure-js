@@ -280,6 +280,13 @@ export class AllureReporter implements ReporterV2 {
 
       if (error) {
         testResult.statusDetails = { ...getMessageAndTraceFromError(error) };
+      } else {
+        const skipReason = test.annotations?.find(
+          (annotation) => annotation.type === "skip" || annotation.type === "fixme",
+        )?.description;
+        if (skipReason) {
+          testResult.statusDetails = { ...testResult.statusDetails, message: skipReason };
+        }
       }
 
       testResult.status = statusToAllureStats(result.status, test.expectedStatus);
