@@ -1,6 +1,6 @@
 {
   "name": "allure-cypress",
-  "version": "3.0.0-beta.3",
+  "version": "3.0.0-beta.4",
   "description": "Allure Cypress integration",
   "keywords": [
     "cypress",
@@ -40,6 +40,7 @@
     "dist"
   ],
   "scripts": {
+    "allure-report": "allure serve ./out/allure-results",
     "clean": "rimraf ./dist ./out",
     "compile": "run-s 'compile:*'",
     "compile:esm-node": "babel --config-file ./babel.esm.json ./src --ignore './src/index.ts' --out-dir ./dist/esm --extensions '.ts' --source-maps",
@@ -48,6 +49,7 @@
     "compile:cjs-browser": "esbuild ./src/index.ts --bundle --minify --sourcemap --format=cjs --outfile=./dist/cjs/index.js --external:allure-playwright",
     "compile:types": "tsc",
     "compile:fixup": "node ./scripts/fixup.mjs",
+    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "test": "vitest run"
@@ -66,14 +68,15 @@
     "@types/eslint": "^8",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
-    "@types/node": "^20.6.3",
+    "@types/node": "^20.14.2",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
+    "allure-commandline": "^2.29.0",
     "allure-vitest": "workspace:*",
     "babel-plugin-add-module-exports": "^1.0.4",
-    "cypress": "^13.6.0",
+    "cypress": "^13.12.0",
     "enquirer": "^2.3.6",
-    "esbuild": "^0.21.4",
+    "esbuild": "^0.22.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-cypress": "^3.0.0",
@@ -82,10 +85,10 @@
     "eslint-plugin-n": "^17.0.0",
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "npm-run-all2": "^6.0.0",
+    "npm-run-all2": "^6.1.2",
     "rimraf": "^5.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.2.2",
-    "vitest": "^1.4.0"
+    "vitest": "^1.6.0"
   }
 }

@@ -24,11 +24,11 @@ it("supports codecept tags", async () => {
       labels: expect.arrayContaining([
         {
           name: LabelName.TAG,
-          value: "@slow",
+          value: "slow",
         },
         {
           name: LabelName.TAG,
-          value: "@important",
+          value: "important",
         },
         {
           name: LabelName.OWNER,

@@ -3,7 +3,8 @@ import { mkdtempSync, writeFileSync } from "fs";
 import os from "os";
 import path from "path";
 import { afterEach, describe, expect, it } from "vitest";
-import { parseTestPlan } from "../../../src/sdk/reporter/testplan.js";
+import { includedInTestPlan, parseTestPlan } from "../../../src/sdk/reporter/testplan.js";
+import type { TestPlanV1 } from "../../../src/sdk/types.js";
 
 const originalEnv = process.env;
 const tmpDir = mkdtempSync(path.join(os.tmpdir(), "test-"));
@@ -62,7 +63,7 @@ describe("parseTestPlan", () => {
     expect(res).toBeUndefined();
   });
 
-  it("should return undefiend if file don't exist", () => {
+  it("should return undefined if file don't exist", () => {
     process.env = {
       ...originalEnv,
       ALLURE_TESTPLAN_PATH: "some-strange-path.json",
@@ -71,5 +72,42 @@ describe("parseTestPlan", () => {
     const res = parseTestPlan();
 
     expect(res).toBeUndefined();
+  });
+});
+
+describe("includedInTestPlan", () => {
+  it("should match @allure.id tag", () => {
+    const exampleTestPlan: TestPlanV1 = {
+      version: "1.0",
+      tests: [
+        {
+          id: 123,
+          selector: "some strange text",
+        },
+      ],
+    };
+
+    const r1 = includedInTestPlan(exampleTestPlan, { tags: ["@allure.id=123"] });
+    expect(r1).toBe(true);
+
+    const r2 = includedInTestPlan(exampleTestPlan, { tags: ["@allure.id=122"] });
+    expect(r2).toBe(false);
+  });
+  it("should match by id", () => {
+    const exampleTestPlan: TestPlanV1 = {
+      version: "1.0",
+      tests: [
+        {
+          id: 123,
+          selector: "some strange text",
+        },
+      ],
+    };
+
+    const r1 = includedInTestPlan(exampleTestPlan, { id: "123", tags: ["@allure.id=133"] });
+    expect(r1).toBe(true);
+
+    const r2 = includedInTestPlan(exampleTestPlan, { id: "442", tags: ["@allure.id=123"] });
+    expect(r2).toBe(false);
   });
 });

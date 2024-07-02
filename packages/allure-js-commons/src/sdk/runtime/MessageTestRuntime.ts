@@ -7,7 +7,7 @@ import type {
   ParameterMode,
   ParameterOptions,
 } from "../../model.js";
-import { Stage, Status } from "../../model.js";
+import { Status } from "../../model.js";
 import type { RuntimeMessage } from "../types.js";
 import { getStatusFromError } from "../utils.js";
 import type { TestRuntime } from "./types.js";
@@ -120,6 +120,7 @@ export abstract class MessageTestRuntime implements TestRuntime {
         contentType: options.contentType,
         fileExtension: options.fileExtension,
         wrapInStep: true,
+        timestamp: Date.now(),
       },
     });
   }
@@ -133,6 +134,7 @@ export abstract class MessageTestRuntime implements TestRuntime {
         contentType: options.contentType,
         fileExtension: options.fileExtension,
         wrapInStep: true,
+        timestamp: Date.now(),
       },
     });
   }
@@ -153,7 +155,6 @@ export abstract class MessageTestRuntime implements TestRuntime {
         type: "step_stop",
         data: {
           status: Status.PASSED,
-          stage: Stage.FINISHED,
           stop: Date.now(),
         },
       });
@@ -166,7 +167,6 @@ export abstract class MessageTestRuntime implements TestRuntime {
         type: "step_stop",
         data: {
           status: getStatusFromError(err as Error),
-          stage: Stage.FINISHED,
           stop: Date.now(),
           statusDetails: {
             message,

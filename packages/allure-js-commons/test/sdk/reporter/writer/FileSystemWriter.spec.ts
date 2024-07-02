@@ -12,31 +12,28 @@ describe("FileSystemWriter", () => {
   it("should save attachment from path", () => {
     const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
     const allureResults = path.join(tmp, "allure-results");
-
     const config: Config = {
       writer: new FileSystemWriter({
         resultsDir: allureResults,
       }),
     };
-
     const runtime = new ReporterRuntime(config);
-
     const from = path.join(tmp, "test-attachment.txt");
     const data = "test content";
 
     writeFileSync(from, data, "utf8");
 
-    runtime.startTest({ name: "test" });
-    runtime.writeAttachmentFromPath("Attachment", from, { contentType: ContentType.TEXT });
-    runtime.stopTest();
-    runtime.writeTest();
+    const testUuid = runtime.startTest({ name: "test" });
+
+    runtime.writeAttachment(testUuid, undefined, "Attachment", from, { contentType: ContentType.TEXT });
+    runtime.stopTest(testUuid);
+    runtime.writeTest(testUuid);
 
     const resultFiles = readdirSync(allureResults);
 
     expect(resultFiles).toHaveLength(2);
 
     const attachmentResultPath = resultFiles.find((file) => file.includes("attachment"))!;
-
     const actualContent = readFileSync(path.join(allureResults, attachmentResultPath));
 
     expect(actualContent.toString("utf8")).toBe(data);
@@ -50,14 +47,15 @@ describe("FileSystemWriter", () => {
       }),
     };
     const runtime = new ReporterRuntime(config);
+    let testUuid = runtime.startTest({});
 
-    runtime.startTest({});
-    runtime.stopTest();
-    runtime.writeTest();
+    runtime.stopTest(testUuid);
+    runtime.writeTest(testUuid);
     rmSync(tmpReportPath, { recursive: true });
-    runtime.startTest({});
-    runtime.stopTest();
-    runtime.writeTest();
+
+    testUuid = runtime.startTest({});
+    runtime.stopTest(testUuid);
+    runtime.writeTest(testUuid);
 
     expect(existsSync(tmpReportPath)).toBe(true);
   });

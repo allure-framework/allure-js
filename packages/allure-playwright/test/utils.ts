@@ -19,7 +19,6 @@ export const runPlaywrightInlineTest = async (
              require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
-               testMode: true,
              },
            ],
            ["dot"],
@@ -56,6 +55,7 @@ export const runPlaywrightInlineTest = async (
       env: {
         ...process.env,
         ...env,
+        ALLURE_TEST_MODE: "1",
       },
       cwd: testDir,
       stdio: "pipe",

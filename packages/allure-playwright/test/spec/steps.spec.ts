@@ -29,7 +29,6 @@ it("reports test steps", async () => {
              require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
-               testMode: true,
                detail: false,
              },
            ],
@@ -102,7 +101,6 @@ it("reports failed test steps", async () => {
              require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
-               testMode: true,
                detail: false,
              },
            ],

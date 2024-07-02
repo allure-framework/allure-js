@@ -17,7 +17,6 @@ it("reports test status details", async () => {
              require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
-               testMode: true,
                detail: false,
              },
            ],

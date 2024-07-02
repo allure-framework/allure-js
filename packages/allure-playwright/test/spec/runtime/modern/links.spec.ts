@@ -24,7 +24,6 @@ it("sets runtime links", async () => {
              require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
-               testMode: true,
                suiteTitle: true,
                links: {
                  issue: {

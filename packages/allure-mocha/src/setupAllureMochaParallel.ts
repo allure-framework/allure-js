@@ -8,6 +8,6 @@ const originalCreateListeners: (runner: Mocha.Runner) => Mocha.reporters.Base =
 
 ParallelBuffered.prototype.createListeners = function (runner: Mocha.Runner) {
   const result = originalCreateListeners.call(this, runner);
-  new AllureMochaReporter(runner, this.options as Mocha.MochaOptions);
+  new AllureMochaReporter(runner, this.options as Mocha.MochaOptions, true);
   return result;
 };

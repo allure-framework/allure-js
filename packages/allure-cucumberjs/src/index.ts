@@ -1,19 +1,29 @@
-import { Before } from "@cucumber/cucumber";
+import { Before, BeforeAll, world } from "@cucumber/cucumber";
+import { includedInTestPlan } from "allure-js-commons/sdk/reporter";
+import { parseTestPlan } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { AllureCucumberWorld } from "./legacy.js";
-import { ALLURE_SETUP_REPORTER_HOOK } from "./model.js";
 import { AllureCucumberTestRuntime } from "./runtime.js";
 
-Before({ name: ALLURE_SETUP_REPORTER_HOOK }, function () {
-  // TODO: we can implement testplan logic there
-  setGlobalTestRuntime(
-    // @ts-ignore
-    new AllureCucumberTestRuntime({
-      attach: this.attach,
-      log: this.log,
-      parameters: this.parameters,
-    }),
-  );
+BeforeAll(() => {
+  setGlobalTestRuntime(new AllureCucumberTestRuntime());
+});
+
+Before({ name: "ALLURE_FIXTURE_IGNORE" }, (scenario) => {
+  const testPlan = parseTestPlan();
+  if (!testPlan) {
+    return;
+  }
+  const pickle = scenario.pickle;
+  const fullName = `${pickle.uri}#${pickle.name}`;
+  const tags = pickle.tags.map((tag) => tag.name);
+
+  if (!includedInTestPlan(testPlan, { fullName, tags })) {
+    // we can't use regular message or Allure facade since we need label to be added
+    // to test, not fixture
+    world.attach(Buffer.from("allure-skip"), "application/vnd.allure.skipcucumber+json");
+    return "skipped";
+  }
 });
 
 export { AllureCucumberTestRuntime, AllureCucumberWorld };

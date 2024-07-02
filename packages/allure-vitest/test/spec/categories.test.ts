@@ -22,7 +22,6 @@ describe("categories", () => {
           [
             "allure-vitest/reporter",
             {
-              testMode: true,
               resultsDir: "${join(testDir, "allure-results")}",
               categories: [{
                 name: "first"

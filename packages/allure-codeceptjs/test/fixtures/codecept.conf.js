@@ -9,8 +9,19 @@ exports.config = {
   plugins: {
     allure: {
       require: require.resolve("allure-codeceptjs"),
-      testMode: true,
       enabled: true,
+      environmentInfo: {
+        "app version": "123.0.1",
+        "some other key": "some other value",
+      },
+      categories: [
+        {
+          name: "first",
+        },
+        {
+          name: "second",
+        },
+      ],
     },
   },
   helpers: {

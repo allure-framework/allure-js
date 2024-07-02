@@ -32,9 +32,8 @@ export const runVitestInlineTest = async (
       test: {
         setupFiles: ["allure-vitest/setup"],
         reporters: [
-          "default",
+          "verbose",
           new AllureReporter({
-            testMode: true,
             links: {
               issue: {
                 urlTemplate: "https://example.org/issue/%s",
@@ -84,6 +83,7 @@ export const runVitestInlineTest = async (
       env: {
         ...process.env,
         ...env,
+        ALLURE_TEST_MODE: "1",
       },
       cwd: testDir,
       stdio: "pipe",

@@ -17,7 +17,6 @@ it("has categories", async () => {
              require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
-               testMode: true,
                categories: [
                  {
                    name: "Sad tests",

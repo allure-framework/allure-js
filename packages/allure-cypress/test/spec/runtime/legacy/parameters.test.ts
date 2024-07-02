@@ -2,9 +2,9 @@ import { expect, it } from "vitest";
 import { runCypressInlineTest } from "../../../utils.js";
 
 it("parameters", async () => {
-  const { tests } = await runCypressInlineTest(
-    ({ allureCypressModulePath }) => `
-    import { parameter } from "${allureCypressModulePath}";
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { parameter } from "${allureCommonsModulePath}";
 
     it("adds parameter", () => {
       parameter("foo", "bar", {
@@ -13,7 +13,7 @@ it("parameters", async () => {
       })
     });
     `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].parameters).toContainEqual({

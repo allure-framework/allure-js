@@ -18,7 +18,6 @@ it("reports a single suite structure", async () => {
              require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
-               testMode: true,
                suiteTitle: true,
              },
            ],
@@ -80,7 +79,6 @@ it("reports a multiple nested suites structure", async () => {
              require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
-               testMode: true,
                suiteTitle: true,
              },
            ],

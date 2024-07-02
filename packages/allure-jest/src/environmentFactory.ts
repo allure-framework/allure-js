@@ -13,7 +13,7 @@ import { AllureJestTestRuntime } from "./AllureJestTestRuntime.js";
 import type { AllureJestConfig, AllureJestEnvironment } from "./model.js";
 import { getTestId, getTestPath } from "./utils.js";
 
-const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
+const { ALLURE_TEST_MODE, ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
 const hostname = os.hostname();
 
 const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
@@ -26,15 +26,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     constructor(config: AllureJestConfig, context: EnvironmentContext) {
       super(config, context);
 
-      const {
-        resultsDir = "allure-results",
-        testMode = false,
-        ...restConfig
-      } = config?.projectConfig?.testEnvironmentOptions || {};
+      const { resultsDir = "allure-results", ...restConfig } = config?.projectConfig?.testEnvironmentOptions || {};
 
       this.runtime = new ReporterRuntime({
         ...restConfig,
-        writer: testMode
+        writer: ALLURE_TEST_MODE
           ? new MessageWriter()
           : new FileSystemWriter({
               resultsDir,
@@ -66,7 +62,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         parent: { name: "ROOT_DESCRIBE_BLOCK" },
       } as Circus.TestEntry)!;
 
-      this.runtime.applyRuntimeMessages([payload.message], { testUuid });
+      this.runtime.applyRuntimeMessages(testUuid, [payload.message]);
     }
 
     private getTestUuid(test: Circus.TestEntry) {
@@ -117,6 +113,9 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         case "test_done":
           this.handleTestDone(event.test);
           break;
+        case "run_finish":
+          this.handleRunFinish();
+          break;
         default:
           break;
       }
@@ -150,7 +149,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         ],
       });
 
-      this.runtime.updateTest((result) => {
+      this.runtime.updateTest(testUuid, (result) => {
         if (threadLabel) {
           result.labels.push({ name: LabelName.THREAD, value: threadLabel });
         }
@@ -160,7 +159,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         }
 
         result.labels.push(...getSuiteLabels(newTestSuitesPath));
-      }, testUuid);
+      });
 
       /**
        * If user have some tests with the same name, reporter will throw an error due the test with
@@ -184,9 +183,9 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      this.runtime.updateTest((result) => {
+      this.runtime.updateTest(testUuid, (result) => {
         result.stage = Stage.RUNNING;
-      }, testUuid);
+      });
     }
 
     private handleTestPass(test: Circus.TestEntry) {
@@ -196,10 +195,10 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      this.runtime.updateTest((result) => {
+      this.runtime.updateTest(testUuid, (result) => {
         result.stage = Stage.FINISHED;
         result.status = Status.PASSED;
-      }, testUuid);
+      });
     }
 
     private handleTestFail(test: Circus.TestEntry) {
@@ -216,13 +215,13 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const details = getMessageAndTraceFromError(firstError);
       const status = getStatusFromError(firstError);
 
-      this.runtime.updateTest((result) => {
+      this.runtime.updateTest(testUuid, (result) => {
         result.stage = Stage.FINISHED;
         result.status = status;
         result.statusDetails = {
           ...details,
         };
-      }, testUuid);
+      });
     }
 
     private handleTestSkip(test: Circus.TestEntry) {
@@ -232,11 +231,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      this.runtime.updateTest((result) => {
+      this.runtime.updateTest(testUuid, (result) => {
         result.stage = Stage.PENDING;
         result.status = Status.SKIPPED;
-      }, testUuid);
-      this.runtime.stopTest({ uuid: testUuid });
+      });
+      this.runtime.stopTest(testUuid);
       this.runtime.writeTest(testUuid);
       // TODO:
       this.allureUuidsByTestIds.delete(getTestId(getTestPath(test)));
@@ -249,7 +248,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      this.runtime.stopTest({ uuid: testUuid });
+      this.runtime.stopTest(testUuid);
       this.runtime.writeTest(testUuid);
       // TODO:
       this.allureUuidsByTestIds.delete(getTestId(getTestPath(test)));
@@ -262,15 +261,20 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      this.runtime.updateTest((result) => {
+      this.runtime.updateTest(testUuid, (result) => {
         result.stage = Stage.PENDING;
         result.status = Status.SKIPPED;
-      }, testUuid);
+      });
 
-      this.runtime.stopTest({ uuid: testUuid });
+      this.runtime.stopTest(testUuid);
       this.runtime.writeTest(testUuid);
       // TODO:
       this.allureUuidsByTestIds.delete(getTestId(getTestPath(test)));
+    }
+
+    private handleRunFinish() {
+      this.runtime.writeEnvironmentInfo();
+      this.runtime.writeCategoriesDefinitions();
     }
   };
 };

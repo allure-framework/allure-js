@@ -1,12 +1,14 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import type { TestResult } from "allure-js-commons";
+import type { TestResult, TestResultContainer } from "allure-js-commons";
 import { runMochaInlineTest } from "../../../utils.js";
 
 describe("test metadata api", () => {
   let tests: TestResult[];
+  let groups: TestResultContainer[];
   beforeAll(async () => {
-    ({ tests } = await runMochaInlineTest(
-      "testDisplayName",
+    ({ tests, groups } = await runMochaInlineTest(
+      ["title", "test"],
+      ["title", "fixture"],
       "description",
       "descriptionHtml",
       ["labels", "owner"],
@@ -24,6 +26,15 @@ describe("test metadata api", () => {
       expect.objectContaining({
         fullName: expect.stringMatching(/a renamed test$/),
         name: "foo",
+      }),
+    );
+  });
+
+  it("can change a fixture's name", () => {
+    expect(groups).toContainEqual(
+      expect.objectContaining({
+        befores: [expect.objectContaining({ name: "bar" })],
+        children: [expect.anything()],
       }),
     );
   });

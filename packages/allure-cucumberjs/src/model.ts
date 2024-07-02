@@ -11,7 +11,6 @@ export type LabelConfig = {
 export type AllureCucumberLinkConfig = LinkConfig<LinkTypeOptions & { pattern: RegExp[] }>;
 
 export interface AllureCucumberReporterConfig extends Omit<Config, "writer" | "links"> {
-  testMode?: boolean;
   links?: AllureCucumberLinkConfig;
   labels?: LabelConfig[];
 }

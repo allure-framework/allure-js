@@ -3,13 +3,13 @@ import { Stage, Status } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils.js";
 
 it("works with the reporter instance", async () => {
-  const { tests } = await runCypressInlineTest(
-    () => `
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": () => `
     it("passed", () => {
       cy.wrap(1).should("eq", 1);
     });
   `,
-    () => `
+    "cypress.config.js": () => `
       const { AllureCypress } = require("allure-cypress/reporter");
 
       module.exports = {
@@ -22,8 +22,8 @@ it("works with the reporter instance", async () => {
 
             allureCypress.attachToCypress(on, config);
 
-            on("after:spec", (spec, result) => {
-              allureCypress.endSpec(spec, result);
+            on("after:run", (results) => {
+              allureCypress.endRun(results);
             });
 
             return config;
@@ -31,7 +31,7 @@ it("works with the reporter instance", async () => {
         },
       };
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe(Status.PASSED);

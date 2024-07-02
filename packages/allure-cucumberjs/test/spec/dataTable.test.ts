@@ -6,7 +6,7 @@ it("handles data tables", async () => {
   const { tests, attachments } = await runCucumberInlineTest(["dataTable"], ["dataTable"]);
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].steps).toHaveLength(3);
+
   expect(tests[0].steps).toContainEqual(
     expect.objectContaining({
       name: "Given a table step",

@@ -1,6 +1,6 @@
 {
   "name": "newman-reporter-allure",
-  "version": "3.0.0-beta.3",
+  "version": "3.0.0-beta.4",
   "description": "Allure Newman integration",
   "keywords": [
     "allure",
@@ -37,15 +37,17 @@
     "dist"
   ],
   "scripts": {
+    "allure-report": "allure serve ./out/allure-results",
     "clean": "rimraf ./dist ./out",
     "compile": "run-s 'compile:*'",
     "compile:esm": "babel --config-file ./babel.esm.json ./src --out-dir ./dist/esm --extensions '.ts' --source-maps",
     "compile:cjs": "babel --config-file ./babel.cjs.json ./src --out-dir ./dist/cjs --extensions '.ts' --source-maps",
     "compile:types": "tsc",
     "compile:fixup": "node ./scripts/fixup.mjs",
+    "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
-    "test": "vitest run"
+    "test": "ALLURE_TEST_MODE=1 vitest run"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
@@ -59,11 +61,13 @@
     "@types/babel__preset-env": "^7",
     "@types/eslint": "^8",
     "@types/newman": "^5.3.3",
-    "@types/node": "20.14.2",
+    "@types/node": "^20.14.2",
     "@types/postman-collection": "^3.5.7",
     "@types/source-map-support": "^0.5.7",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
+    "allure-commandline": "^2.29.0",
+    "allure-vitest": "workspace:*",
     "babel-plugin-add-module-exports": "^1.0.4",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.0.0",
@@ -79,7 +83,7 @@
     "postman-collection": "^4.2.1",
     "rimraf": "^5.0.1",
     "source-map-support": "^0.5.21",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "vitest": "^1.6.0"

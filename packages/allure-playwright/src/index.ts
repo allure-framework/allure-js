@@ -11,8 +11,15 @@ import { existsSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import process from "node:process";
-import type { ImageDiffAttachment, Label, TestResult } from "allure-js-commons";
-import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
+import {
+  ContentType,
+  type ImageDiffAttachment,
+  type Label,
+  LabelName,
+  Stage,
+  Status,
+  type TestResult,
+} from "allure-js-commons";
 import type { RuntimeMessage, TestPlanV1Test } from "allure-js-commons/sdk";
 import { extractMetadataFromString, getMessageAndTraceFromError, hasLabel, stripAnsi } from "allure-js-commons/sdk";
 import {
@@ -73,6 +80,7 @@ export class AllureReporter implements ReporterV2 {
   private processedDiffs: string[] = [];
   private readonly startedTestCasesTitlesCache: string[] = [];
   private readonly allureResultsUuids: Map<string, string> = new Map();
+  private readonly attachmentSteps: Map<string, (string | undefined)[]> = new Map();
 
   constructor(config: AllurePlaywrightReporterConfig) {
     this.options = { suiteTitle: true, detail: true, ...config };
@@ -100,7 +108,8 @@ export class AllureReporter implements ReporterV2 {
     const cliArgs: string[] = [];
 
     testsWithSelectors.forEach((test) => {
-      if (!/#/.test(test.selector)) {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      if (!/#/.test(test.selector!)) {
         v2ReporterTests.push(test);
         return;
       }
@@ -111,7 +120,8 @@ export class AllureReporter implements ReporterV2 {
     if (v2ReporterTests.length) {
       // we need to cut off column because playwright works only with line number
       const v2SelectorsArgs = v2ReporterTests
-        .map((test) => test.selector.replace(/:\d+$/, ""))
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        .map((test) => test.selector!.replace(/:\d+$/, ""))
         .map((selector) => escapeRegExp(selector));
 
       cliArgs.push(...v2SelectorsArgs);
@@ -120,7 +130,8 @@ export class AllureReporter implements ReporterV2 {
     if (v1ReporterTests.length) {
       const v1SelectorsArgs = v1ReporterTests
         // we can filter tests only by absolute path, so we need to cut off test name
-        .map((test) => test.selector.split("#")[0])
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        .map((test) => test.selector!.split("#")[0])
         .map((selector) => escapeRegExp(selector));
 
       cliArgs.push(...v1SelectorsArgs);
@@ -142,7 +153,7 @@ export class AllureReporter implements ReporterV2 {
   onStdOut(): void {}
 
   onBegin(suite: Suite): void {
-    const writer = this.options.testMode
+    const writer = process.env.ALLURE_TEST_MODE
       ? new MessageWriter()
       : new FileSystemWriter({
           resultsDir: this.options.resultsDir || "./allure-results",
@@ -159,14 +170,15 @@ export class AllureReporter implements ReporterV2 {
     const suite = test.parent;
     const titleMetadata = extractMetadataFromString(test.title);
     const project = suite.project()!;
-    const relativeFile = path.relative(project?.testDir, test.location.file).split(path.sep).join("/");
+    const pathElements = path.relative(project?.testDir, test.location.file).split(path.sep);
+    const relativeFile = pathElements.join("/");
     // root > project > file path > test.describe...
     const [, , , ...suiteTitles] = suite.titlePath();
     const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
     const testCaseIdBase = `${relativeFile}#${nameSuites}${test.title}`;
     const result: Partial<TestResult> = {
       name: titleMetadata.cleanTitle,
-      labels: titleMetadata.labels,
+      labels: [...titleMetadata.labels],
       links: [],
       parameters: [],
       testCaseId: md5(testCaseIdBase),
@@ -176,6 +188,7 @@ export class AllureReporter implements ReporterV2 {
     result.labels!.push({ name: LabelName.LANGUAGE, value: "JavaScript" });
     result.labels!.push({ name: LabelName.FRAMEWORK, value: "Playwright" });
     result.labels!.push({ name: "titlePath", value: suite.titlePath().join(" > ") });
+    result.labels!.push({ name: LabelName.PACKAGE, value: pathElements.join(".") });
 
     if (project?.name) {
       result.parameters!.push({ name: "Project", value: project.name });
@@ -192,24 +205,23 @@ export class AllureReporter implements ReporterV2 {
   }
 
   onStepBegin(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
+    const testUuid = this.allureResultsUuids.get(test.id)!;
+
+    if (step.category === "attach") {
+      const currentStep = this.allureRuntime?.currentStep(testUuid);
+      this.attachmentSteps.set(testUuid, [...(this.attachmentSteps.get(testUuid) ?? []), currentStep]);
+      return;
+    }
+
+    // TODO fix the details disable, e.g. only ignore pw:api steps
     if (!this.options.detail && step.category !== "test.step") {
       return;
     }
 
-    // ignore attach steps since attachments are already in the report
-    if (step.category === "attach") {
-      return;
-    }
-
-    const testUuid = this.allureResultsUuids.get(test.id)!;
-
-    this.allureRuntime!.startStep(
-      {
-        name: step.title.substring(0, stepAttachPrefixLength),
-        start: step.startTime.getTime(),
-      },
-      testUuid,
-    );
+    this.allureRuntime!.startStep(testUuid, undefined, {
+      name: step.title.substring(0, stepAttachPrefixLength),
+      start: step.startTime.getTime(),
+    });
   }
 
   onStepEnd(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
@@ -224,15 +236,20 @@ export class AllureReporter implements ReporterV2 {
 
     const testUuid = this.allureResultsUuids.get(test.id)!;
 
-    this.allureRuntime!.updateStep((stepResult) => {
+    const currentStep = this.allureRuntime!.currentStep(testUuid);
+    if (!currentStep) {
+      return;
+    }
+
+    this.allureRuntime!.updateStep(currentStep, (stepResult) => {
       stepResult.status = step.error ? Status.FAILED : Status.PASSED;
       stepResult.stage = Stage.FINISHED;
 
       if (step.error) {
         stepResult.statusDetails = { ...getMessageAndTraceFromError(step.error) };
       }
-    }, testUuid);
-    this.allureRuntime!.stopStep({ uuid: testUuid });
+    });
+    this.allureRuntime!.stopStep(currentStep, step.startTime.getTime() + step.duration);
   }
 
   async onTestEnd(test: TestCase, result: PlaywrightTestResult) {
@@ -245,7 +262,7 @@ export class AllureReporter implements ReporterV2 {
     // only apply default suites if not set by user
     const [, projectSuiteTitle, fileSuiteTitle, ...suiteTitles] = test.parent.titlePath();
 
-    this.allureRuntime!.updateTest((testResult) => {
+    this.allureRuntime!.updateTest(testUuid, (testResult) => {
       testResult.labels.push({ name: LabelName.HOST, value: this.hostname });
       testResult.labels.push({ name: LabelName.THREAD, value: thread });
 
@@ -267,37 +284,42 @@ export class AllureReporter implements ReporterV2 {
 
       testResult.status = statusToAllureStats(result.status, test.expectedStatus);
       testResult.stage = Stage.FINISHED;
-    }, testUuid);
+    });
 
-    for (const attachment of result.attachments) {
-      await this.processAttachment(test.id, attachment);
+    const attachmentSteps = this.attachmentSteps.get(testUuid) ?? [];
+    for (let i = 0; i < result.attachments.length; i++) {
+      const attachment = result.attachments[i];
+      const attachmentStep = attachmentSteps.length > i ? attachmentSteps[i] : undefined;
+      await this.processAttachment(testUuid, attachmentStep, attachment);
     }
 
     if (result.stdout.length > 0) {
       this.allureRuntime!.writeAttachment(
+        testUuid,
+        undefined,
         "stdout",
         Buffer.from(stripAnsi(result.stdout.join("")), "utf-8"),
         {
           contentType: ContentType.TEXT,
         },
-        testUuid,
       );
     }
 
     if (result.stderr.length > 0) {
       this.allureRuntime!.writeAttachment(
+        testUuid,
+        undefined,
         "stderr",
         Buffer.from(stripAnsi(result.stderr.join("")), "utf-8"),
         {
           contentType: ContentType.TEXT,
         },
-        testUuid,
       );
     }
 
     // FIXME: temp logic for labels override, we need it here to keep the reporter compatible with v2 API
     // in next iterations we need to implement the logic for every javascript integration
-    this.allureRuntime!.updateTest((testResult) => {
+    this.allureRuntime!.updateTest(testUuid, (testResult) => {
       const mappedLabels = testResult.labels.reduce<Record<string, Label[]>>((acc, label) => {
         if (!acc[label.name]) {
           acc[label.name] = [];
@@ -322,9 +344,9 @@ export class AllureReporter implements ReporterV2 {
       });
 
       testResult.labels = newLabels;
-    }, testUuid);
+    });
 
-    this.allureRuntime!.stopTest({ uuid: testUuid });
+    this.allureRuntime!.stopTest(testUuid, result.startTime.getTime() + result.duration);
     this.allureRuntime!.writeTest(testUuid);
   }
 
@@ -365,7 +387,8 @@ export class AllureReporter implements ReporterV2 {
   }
 
   private async processAttachment(
-    testId: string,
+    testUuid: string,
+    attachmentStepUuid: string | undefined,
     attachment: {
       name: string;
       contentType: string;
@@ -373,8 +396,6 @@ export class AllureReporter implements ReporterV2 {
       body?: Buffer;
     },
   ) {
-    const testUuid = this.allureResultsUuids.get(testId)!;
-
     if (!attachment.body && !attachment.path) {
       return;
     }
@@ -388,31 +409,29 @@ export class AllureReporter implements ReporterV2 {
     if (allureRuntimeMessage) {
       const message = JSON.parse(attachment.body!.toString()) as RuntimeMessage;
 
-      // TODO: make possible to pass single message and list of them
-      this.allureRuntime!.applyRuntimeMessages([message], { testUuid });
+      // TODO fix step metadata messages
+      this.allureRuntime!.applyRuntimeMessages(testUuid, [message]);
       return;
     }
 
+    const parentUuid = this.allureRuntime!.startStep(testUuid, attachmentStepUuid, { name: attachment.name });
+    // only stop if step is created. Step may not be created only if test with specified uuid doesn't exists.
+    // usually, missing test by uuid means we should completely skip result processing;
+    // the later operations are safe and will only produce console warnings
+    if (parentUuid) {
+      this.allureRuntime!.stopStep(parentUuid, undefined);
+    }
     if (attachment.body) {
-      this.allureRuntime!.writeAttachment(
-        attachment.name,
-        attachment.body,
-        {
-          contentType: attachment.contentType,
-        },
-        testUuid,
-      );
+      this.allureRuntime!.writeAttachment(testUuid, parentUuid, attachment.name, attachment.body, {
+        contentType: attachment.contentType,
+      });
     } else if (!existsSync(attachment.path!)) {
       return;
     } else {
-      this.allureRuntime!.writeAttachmentFromPath(
-        attachment.name,
-        attachment.path!,
-        {
-          contentType: attachment.contentType,
-        },
-        testUuid,
-      );
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      this.allureRuntime!.writeAttachment(testUuid, parentUuid, attachment.name, attachment.path!, {
+        contentType: attachment.contentType,
+      });
     }
 
     if (!attachment.name.match(diffEndRegexp)) {
@@ -431,6 +450,8 @@ export class AllureReporter implements ReporterV2 {
     const diffName = attachment.name.replace(diffEndRegexp, "");
 
     this.allureRuntime!.writeAttachment(
+      testUuid,
+      undefined,
       diffName,
       Buffer.from(
         JSON.stringify({
@@ -445,7 +466,6 @@ export class AllureReporter implements ReporterV2 {
         contentType: ContentType.IMAGEDIFF,
         fileExtension: ".imagediff",
       },
-      testUuid,
     );
 
     this.processedDiffs.push(pathWithoutEnd);

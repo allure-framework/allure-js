@@ -1,5 +1,3 @@
-import type { Config } from "allure-js-commons/sdk/reporter";
-
 export interface CodeceptError {
   params: any;
   template: string;
@@ -24,12 +22,6 @@ export interface CodeceptStep {
   toString: () => string;
 }
 
-export type CodeceptSuite = Mocha.Suite;
-
 export type CodeceptHook = Mocha.Hook;
 
 export type CodeceptTest = Mocha.Runnable;
-
-export interface AllureCodeceptJsConfig extends Config {
-  testMode?: boolean;
-}
