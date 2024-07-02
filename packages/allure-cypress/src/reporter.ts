@@ -64,6 +64,9 @@ export class AllureCypress {
       this.createEmptyRunContext(run.spec.absolute);
       this.endSpec(run.spec, run.video || undefined);
     });
+
+    this.allureRuntime.writeEnvironmentInfo();
+    this.allureRuntime.writeCategoriesDefinitions();
   }
 
   endSpec(spec: Cypress.Spec, cypressVideoPath?: string) {

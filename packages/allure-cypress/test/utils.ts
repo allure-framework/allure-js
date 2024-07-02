@@ -3,12 +3,16 @@ import { randomUUID } from "node:crypto";
 import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve as resolvePath } from "node:path";
 import type { TestResult, TestResultContainer } from "allure-js-commons";
-import type { AllureResults } from "allure-js-commons/sdk";
+import type { AllureResults, EnvironmentInfo } from "allure-js-commons/sdk";
+import { parseProperties } from "allure-js-commons/sdk/reporter";
 
-type CypressTestFiles = Record<
-  string,
-  (modulesPaths: { allureCommonsModulePath: string; allureCypressModulePath: string }) => string
->;
+type CypressModulesPaths = {
+  allureCommonsModulePath: string;
+  allureCypressModulePath: string;
+  allureCypressModuleBasePath: string;
+};
+
+type CypressTestFiles = Record<string, (modulesPaths: CypressModulesPaths) => string>;
 
 export const runCypressInlineTest = async (
   testFiles: CypressTestFiles,
@@ -18,6 +22,8 @@ export const runCypressInlineTest = async (
     tests: [],
     groups: [],
     attachments: {},
+    categories: [],
+    envInfo: undefined,
   };
   const testDir = join(__dirname, "fixtures", randomUUID());
   const allureCypressModuleBasePath = dirname(require.resolve("allure-cypress"));
@@ -62,6 +68,7 @@ export const runCypressInlineTest = async (
       testFilesToWrite[testFile]({
         allureCommonsModulePath,
         allureCypressModulePath,
+        allureCypressModuleBasePath,
       }),
       "utf8",
     );
@@ -93,6 +100,16 @@ export const runCypressInlineTest = async (
         const resultFiles = await readdir(testResultsDir);
 
         for (const resultFile of resultFiles) {
+          if (resultFile === "categories.json") {
+            res.categories = JSON.parse(await readFile(join(testResultsDir, resultFile), "utf8"));
+            continue;
+          }
+
+          if (resultFile === "environment.properties") {
+            res.envInfo = parseProperties(await readFile(join(testResultsDir, resultFile), "utf8")) as EnvironmentInfo;
+            continue;
+          }
+
           if (/-attachment\.\S+$/.test(resultFile)) {
             res.attachments[resultFile] = await readFile(join(testResultsDir, resultFile), "utf8");
             continue;
