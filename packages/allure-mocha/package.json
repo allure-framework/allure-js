@@ -95,6 +95,6 @@
     "vitest": "^1.6.0"
   },
   "peerDependencies": {
-    "mocha": ">=6.2.x"
+    "mocha": ">=6.2.0"
   }
 }
