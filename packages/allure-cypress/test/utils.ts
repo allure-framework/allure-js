@@ -10,7 +10,10 @@ type CypressTestFiles = Record<
   (modulesPaths: { allureCommonsModulePath: string; allureCypressModulePath: string }) => string
 >;
 
-export const runCypressInlineTest = async (testFiles: CypressTestFiles): Promise<AllureResults> => {
+export const runCypressInlineTest = async (
+  testFiles: CypressTestFiles,
+  env?: (testDir: string) => Record<string, string>,
+): Promise<AllureResults> => {
   const res: AllureResults = {
     tests: [],
     groups: [],
@@ -70,6 +73,7 @@ export const runCypressInlineTest = async (testFiles: CypressTestFiles): Promise
   const testProcess = fork(modulePath, args, {
     env: {
       ...process.env,
+      ...env?.(testDir),
     },
     cwd: testDir,
     stdio: "pipe",

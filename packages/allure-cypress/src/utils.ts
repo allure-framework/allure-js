@@ -1,3 +1,6 @@
+import { LabelName } from "allure-js-commons";
+import type { TestPlanV1 } from "allure-js-commons/sdk";
+import { extractMetadataFromString } from "allure-js-commons/sdk";
 import type { CypressCommand } from "./model.js";
 import { ALLURE_REPORT_STEP_COMMAND } from "./model.js";
 
@@ -11,17 +14,6 @@ export const uint8ArrayToBase64 = (data: unknown) => {
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   return btoa(String.fromCharCode.apply(null, data as number[]));
-};
-
-export const normalizeAttachmentContentEncoding = (data: unknown, encoding: BufferEncoding): BufferEncoding => {
-  // @ts-ignore
-  const u8arrayLike = Array.isArray(data) || data.buffer;
-
-  if (u8arrayLike) {
-    return "base64";
-  }
-
-  return encoding;
 };
 
 export const getSuitePath = (test: Mocha.Test): string[] => {
@@ -81,4 +73,24 @@ export const getHookType = (hookName: string) => {
 
 export const last = <T = unknown>(arr: T[]): T | undefined => {
   return arr[arr.length - 1];
+};
+
+export const isTestPresentInTestPlan = (
+  test: {
+    title: string;
+    titlePath: string[];
+  },
+  spec: Cypress.Spec,
+  testPlan: TestPlanV1,
+) => {
+  const testFullName = `${spec.relative}#${test.titlePath.join(" ")}`;
+  const { labels } = extractMetadataFromString(test.title);
+  const allureIdLabel = labels.find(({ name }) => name === LabelName.ALLURE_ID);
+
+  return testPlan.tests.some(({ id, selector = "" }) => {
+    const idMatched = id ? String(id) === allureIdLabel?.value : false;
+    const selectorMatched = selector === testFullName;
+
+    return idMatched || selectorMatched;
+  });
 };
