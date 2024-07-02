@@ -1,6 +1,6 @@
 import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions, StatusDetails } from "allure-js-commons";
 import { ContentType, Status } from "allure-js-commons";
-import type { RuntimeMessage } from "allure-js-commons/sdk";
+import type { RuntimeMessage, TestPlanV1 } from "allure-js-commons/sdk";
 import { getUnfinishedStepsMessages, hasStepMessage } from "allure-js-commons/sdk";
 import type { TestRuntime } from "allure-js-commons/sdk/runtime";
 import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
@@ -13,12 +13,13 @@ import type {
   CypressTest,
   CypressTestStartMessage,
 } from "./model.js";
-import { ALLURE_REPORT_SHUTDOWN_HOOK, ALLURE_REPORT_STEP_COMMAND } from "./model.js";
+import { ALLURE_REPORT_STEP_COMMAND, ALLURE_REPORT_SYSTEM_HOOK } from "./model.js";
 import {
   getHookType,
   getSuitePath,
   isCommandShouldBeSkipped,
   isGlobalHook,
+  isTestPresentInTestPlan,
   toReversed,
   uint8ArrayToBase64,
 } from "./utils.js";
@@ -231,7 +232,7 @@ const initializeAllure = () => {
       setGlobalTestRuntime(testRuntime);
     })
     .on(EVENT_HOOK_BEGIN, (hook: CypressHook) => {
-      if (hook.title.includes(ALLURE_REPORT_SHUTDOWN_HOOK)) {
+      if (hook.title.includes(ALLURE_REPORT_SYSTEM_HOOK)) {
         return;
       }
 
@@ -252,7 +253,7 @@ const initializeAllure = () => {
       });
     })
     .on(EVENT_HOOK_END, (hook: CypressHook) => {
-      if (hook.title.includes(ALLURE_REPORT_SHUTDOWN_HOOK)) {
+      if (hook.title.includes(ALLURE_REPORT_SYSTEM_HOOK)) {
         return;
       }
 
@@ -408,6 +409,11 @@ const initializeAllure = () => {
     })
     .on(EVENT_TEST_PENDING, (test: CypressTest) => {
       const testRuntime = new AllureCypressTestRuntime();
+      const testPlan = Cypress.env("allureTestPlan") as TestPlanV1;
+
+      if (testPlan && !isTestPresentInTestPlan(Cypress.currentTest, Cypress.spec, testPlan)) {
+        return;
+      }
 
       testRuntime.sendMessageAsync({
         type: "cypress_test_start",
@@ -516,7 +522,29 @@ const initializeAllure = () => {
     });
   });
 
-  after(ALLURE_REPORT_SHUTDOWN_HOOK, () => {
+  before(ALLURE_REPORT_SYSTEM_HOOK, () => {
+    cy.task("readAllureTestPlan", {}, { log: false }).then((testPlan) => {
+      if (!testPlan) {
+        return;
+      }
+
+      Cypress.env("allureTestPlan", testPlan);
+    });
+  });
+
+  beforeEach(ALLURE_REPORT_SYSTEM_HOOK, function () {
+    const testPlan = Cypress.env("allureTestPlan") as TestPlanV1;
+
+    if (!testPlan) {
+      return;
+    }
+
+    if (!isTestPresentInTestPlan(Cypress.currentTest, Cypress.spec, testPlan)) {
+      this.skip();
+    }
+  });
+
+  after(ALLURE_REPORT_SYSTEM_HOOK, () => {
     const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressMessage[];
 
     cy.task(

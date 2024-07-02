@@ -1,7 +1,7 @@
 import type { Status, StatusDetails } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 
-export const ALLURE_REPORT_SHUTDOWN_HOOK = "__allure_report_shutdown_hook__";
+export const ALLURE_REPORT_SYSTEM_HOOK = "__allure_report_system_hook__";
 
 export const ALLURE_REPORT_STEP_COMMAND = "__allure_report_step_command__";
 
