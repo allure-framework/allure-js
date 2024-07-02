@@ -63,7 +63,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.24.6",
     "@babel/preset-env": "^7.24.6",
     "@babel/preset-typescript": "^7.24.6",
-    "@playwright/test": "^1.34.1",
+    "@playwright/test": "^1.45.1",
     "@types/babel__core": "^7",
     "@types/babel__preset-env": "^7",
     "@types/eslint": "^8",
