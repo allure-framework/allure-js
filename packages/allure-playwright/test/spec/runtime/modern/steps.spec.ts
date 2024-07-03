@@ -87,3 +87,26 @@ it("handles nested lambda steps", async () => {
     stage: Stage.FINISHED,
   });
 });
+
+it("should support log steps", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.ts": `
+      import { test } from '@playwright/test';
+      import { logStep } from "allure-js-commons";
+
+      test("steps", async () => {
+        await logStep("failed log step", "failed");
+      });
+    `,
+  });
+
+  const [testResult] = tests;
+  expect(testResult.steps).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "failed log step",
+        status: Status.FAILED,
+      }),
+    ]),
+  );
+});

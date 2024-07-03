@@ -14,6 +14,7 @@ export {
   layer,
   link,
   links,
+  logStep,
   owner,
   parameter,
   parentSuite,

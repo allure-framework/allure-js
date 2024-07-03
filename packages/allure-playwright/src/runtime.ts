@@ -1,4 +1,4 @@
-import test from "@playwright/test";
+import { test } from "@playwright/test";
 import type { AttachmentOptions } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/sdk/reporter";
