@@ -76,6 +76,6 @@
     "vitest": "^1.6.0"
   },
   "peerDependencies": {
-    "codeceptjs": "^3.5.4"
+    "codeceptjs": ">=2.3.6"
   }
 }
