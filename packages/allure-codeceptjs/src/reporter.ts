@@ -258,9 +258,10 @@ export class AllureCodeceptJsReporter {
   // }
 
   handleRuntimeMessage(message: RuntimeMessage) {
-    if (!this.currentTestUuid) {
+    const rootUuid = this.currentFixtureUuid ?? this.currentTestUuid;
+    if (!rootUuid) {
       return;
     }
-    this.allureRuntime.applyRuntimeMessages(this.currentTestUuid, [message]);
+    this.allureRuntime.applyRuntimeMessages(rootUuid, [message]);
   }
 }
