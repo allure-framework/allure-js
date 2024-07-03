@@ -42,11 +42,12 @@ export class LifecycleState {
   };
 
   // fixtures
-  setFixtureResult = (uuid: string, type: FixtureType, result: FixtureResult) => {
+  setFixtureResult = (scopeUuid: string, uuid: string, type: FixtureType, result: FixtureResult) => {
     const wrappedResult: FixtureWrapper = {
       uuid,
       type,
       value: result,
+      scopeUuid,
     };
     this.fixturesResults.set(uuid, wrappedResult);
     return wrappedResult;
@@ -59,6 +60,7 @@ export class LifecycleState {
   // test scopes
   setScope = (uuid: string, data: Partial<TestScope> = {}) => {
     const scope: TestScope = {
+      labels: [],
       fixtures: [],
       tests: [],
       ...data,
