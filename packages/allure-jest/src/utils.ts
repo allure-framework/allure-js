@@ -41,3 +41,11 @@ export const getTestId = (path: string[]): string => path.join(" ");
  * @returns
  */
 export const getTestFullName = (path: string[]): string => path.join(" > ");
+
+export const shouldHookBeSkipped = (hook: Circus.Hook): boolean => {
+  const errorFirstLine = hook?.asyncError?.stack?.split("\n")?.[1]?.trim() || "";
+
+  return /^at jestAdapter/i.test(errorFirstLine);
+};
+
+export const last = <T>(array: T[]): T => array[array.length - 1];

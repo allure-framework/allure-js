@@ -2,14 +2,16 @@ import { expect, it } from "vitest";
 import { runJestInlineTest } from "../../../utils.js";
 
 it("sets parameters", async () => {
-  const { tests } = await runJestInlineTest(`
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
       it("parameter", async () => {
         await allure.parameter("param1", "paramValue1");
         await allure.parameter("param2", "paramValue2", {excluded:true});
         await allure.parameter("param3", "paramValue3", {mode:"masked", excluded:true});
         await allure.parameter("param4", "paramValue4", {mode:"hidden"});
       })
-    `);
+    `
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests).toEqual(

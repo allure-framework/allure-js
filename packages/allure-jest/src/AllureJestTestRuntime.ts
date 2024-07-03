@@ -3,6 +3,7 @@ import type { Global } from "@jest/types";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { MessageTestRuntime } from "allure-js-commons/sdk/runtime";
 import type { AllureJestEnvironment } from "./model.js";
+import { getTestId, getTestPath } from "./utils.js";
 
 export class AllureJestTestRuntime extends MessageTestRuntime {
   constructor(
@@ -16,9 +17,13 @@ export class AllureJestTestRuntime extends MessageTestRuntime {
   async sendMessage(message: RuntimeMessage) {
     const { currentTestName, currentConcurrentTestName } = (this.context.expect as JestExpect).getState();
     const testName = currentTestName || currentConcurrentTestName?.();
+    const { currentDescribeBlock } = this.jestEnvironment.jestState!;
+    const currentSuitePath = getTestPath(currentDescribeBlock);
+    const currentSuiteId = getTestId(currentSuitePath);
 
     this.jestEnvironment.handleAllureRuntimeMessage({
-      currentTestName: testName as string,
+      currentTestName: testName,
+      currentSuiteId,
       message,
     });
 

@@ -2,7 +2,8 @@ import { expect, it } from "vitest";
 import { runJestInlineTest } from "../../../utils.js";
 
 it("sets parameters", async () => {
-  const { tests } = await runJestInlineTest(`
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
       const { parameter } = require("allure-js-commons");
 
       it("parameter", async () => {
@@ -11,7 +12,8 @@ it("sets parameters", async () => {
         await parameter("param3", "paramValue3", {mode:"masked", excluded:true});
         await parameter("param4", "paramValue4", {mode:"hidden"});
       })
-    `);
+    `
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests).toEqual(

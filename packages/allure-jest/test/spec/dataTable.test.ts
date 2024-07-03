@@ -3,15 +3,17 @@ import { Stage, Status } from "allure-js-commons";
 import { runJestInlineTest } from "../utils.js";
 
 it("supports test.each", async () => {
-  const { tests } = await runJestInlineTest(`
-    test.each([
-      [1, 2, 3],
-      [2, 3, 5],
-      [3, 4, 7],
-    ])("%i + %i = %i", (a, b, c) => {
-      expect(a + b).toBe(c);
-    });
-  `);
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
+      test.each([
+        [1, 2, 3],
+        [2, 3, 5],
+        [3, 4, 7],
+      ])("%i + %i = %i", (a, b, c) => {
+        expect(a + b).toBe(c);
+      });
+    `
+  });
 
   expect(tests).toHaveLength(3);
   expect(tests).toContainEqual(

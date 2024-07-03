@@ -3,15 +3,15 @@ import { Status } from "allure-js-commons";
 import { runJestInlineTest } from "../../../utils.js";
 
 it("single step", async () => {
-  const { tests } = await runJestInlineTest(
-    `
-    it("step", async () => {
-      await allure.step("foo", async () => {
-        await allure.label("foo", "bar");
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
+      it("step", async () => {
+        await allure.step("foo", async () => {
+          await allure.label("foo", "bar");
+        });
       });
-    });
-  `,
-  );
+    `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
@@ -20,8 +20,8 @@ it("single step", async () => {
 });
 
 it("multiple steps", async () => {
-  const { tests } = await runJestInlineTest(
-    `
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
     it("step", async () => {
       await allure.step("foo", async () => {
         await allure.label("foo", "1");
@@ -36,7 +36,7 @@ it("multiple steps", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "1" }));
@@ -49,19 +49,19 @@ it("multiple steps", async () => {
 });
 
 it("nested steps", async () => {
-  const { tests } = await runJestInlineTest(
-    `
-    it("step", async () => {
-      await allure.step("foo", async () => {
-        await allure.step("bar", async () => {
-           await allure.step("baz", async () => {
-             await allure.label("foo", "bar");
-           });
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
+      it("step", async () => {
+        await allure.step("foo", async () => {
+          await allure.step("bar", async () => {
+             await allure.step("baz", async () => {
+               await allure.label("foo", "bar");
+             });
+          });
         });
       });
-    });
-  `,
-  );
+    `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
@@ -74,15 +74,15 @@ it("nested steps", async () => {
 });
 
 it("step with attachments", async () => {
-  const { tests, attachments } = await runJestInlineTest(
-    `
-    it("text attachment", async () => {
-      await allure.step("foo", async () => {
-        await allure.attachment("foo.txt", "bar", "text/plain");
-      })
-    });
-  `,
-  );
+  const { tests, attachments } = await runJestInlineTest({
+    "sample.test.js": `
+      it("text attachment", async () => {
+        await allure.step("foo", async () => {
+          await allure.attachment("foo.txt", "bar", "text/plain");
+        })
+      });
+    `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].attachments).toHaveLength(0);
@@ -98,15 +98,15 @@ it("step with attachments", async () => {
 });
 
 it("step with assertion error", async () => {
-  const { tests } = await runJestInlineTest(
-    `
-    it("step", async () => {
-      await allure.step("foo", async () => {
-        expect(1).toBe(2);
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
+      it("step", async () => {
+        await allure.step("foo", async () => {
+          expect(1).toBe(2);
+        });
       });
-    });
-  `,
-  );
+    `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe(Status.FAILED);
@@ -120,15 +120,15 @@ it("step with assertion error", async () => {
 });
 
 it("step with unexpected error", async () => {
-  const { tests } = await runJestInlineTest(
-    `
-    it("step", async () => {
-      await allure.step("foo", async () => {
-        throw new Error("foo");
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
+      it("step", async () => {
+        await allure.step("foo", async () => {
+          throw new Error("foo");
+        });
       });
-    });
-  `,
-  );
+    `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe(Status.BROKEN);
@@ -140,19 +140,19 @@ it("step with unexpected error", async () => {
 });
 
 it("step runtime api", async () => {
-  const { tests } = await runJestInlineTest(
-    `
-    it("step", async () => {
-      await allure.step("step", (ctx) => {
-        ctx.displayName("bar");
-        ctx.parameter("p1", "v1");
-        ctx.parameter("p2", "v2", "default");
-        ctx.parameter("p3", "v3", "masked");
-        ctx.parameter("p4", "v4", "hidden");
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
+      it("step", async () => {
+        await allure.step("step", (ctx) => {
+          ctx.displayName("bar");
+          ctx.parameter("p1", "v1");
+          ctx.parameter("p2", "v2", "default");
+          ctx.parameter("p3", "v3", "masked");
+          ctx.parameter("p4", "v4", "hidden");
+        });
       });
-    });
-  `,
-  );
+    `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toEqual("passed");
@@ -167,4 +167,43 @@ it("step runtime api", async () => {
     { name: "p3", value: "v3", mode: "masked" },
     { name: "p4", value: "v4", mode: "hidden" },
   ]);
+});
+
+it("adds steps to fixtures", async () => {
+  const { tests, groups } = await runJestInlineTest({
+    "sample.test.js": `
+      beforeEach(async () => {
+        await allure.step("before each step", () => {});
+      });
+
+      afterEach(async () => {
+        await allure.step("after each step", () => {});
+      });
+
+      it("step", async () => {});
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(groups).toHaveLength(2);
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        afters: [
+          expect.objectContaining({
+            steps: [expect.objectContaining({ name: "after each step" })],
+          }),
+        ],
+        befores: [],
+      }),
+      expect.objectContaining({
+        afters: [],
+        befores: [
+          expect.objectContaining({
+            steps: [expect.objectContaining({ name: "before each step" })],
+          }),
+        ],
+      }),
+    ]),
+  );
 });

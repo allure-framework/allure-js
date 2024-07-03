@@ -3,7 +3,8 @@ import { LabelName } from "allure-js-commons";
 import { runJestInlineTest } from "../../../utils.js";
 
 it("sets labels", async () => {
-  const { tests } = await runJestInlineTest(`
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
       it("label", async () => {
         await allure.label("foo", "bar");
         await allure.allureId("foo");
@@ -19,7 +20,8 @@ it("sets labels", async () => {
         await allure.tag("foo");
         await allure.labels({ name: "test", value: "testValue" }, { name: "test2", value: "testValue2" });
       })
-    `);
+    `
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual({ name: "foo", value: "bar" });

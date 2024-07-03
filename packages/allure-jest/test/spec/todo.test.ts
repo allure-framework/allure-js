@@ -3,9 +3,11 @@ import { Stage, Status } from "allure-js-commons";
 import { runJestInlineTest } from "../utils.js";
 
 it("todo", async () => {
-  const { tests } = await runJestInlineTest(`
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
       it.todo("todo")
-    `);
+    `
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].stage).toBe(Stage.PENDING);

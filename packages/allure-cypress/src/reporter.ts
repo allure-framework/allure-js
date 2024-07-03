@@ -14,10 +14,8 @@ import { last, toReversed } from "./utils.js";
 
 export class AllureCypress {
   allureRuntime: ReporterRuntime;
-
   messagesByAbsolutePath = new Map<string, CypressMessage[]>();
   runContextByAbsolutePath = new Map<string, RunContextByAbsolutePath>();
-
   globalHooksMessages: CypressMessage[] = [];
 
   constructor(config?: Config) {
@@ -76,7 +74,6 @@ export class AllureCypress {
     specMessages.forEach((message, i) => {
       // we add cypressTestId to messages where it's possible because the field is very useful to glue data
       // @ts-ignore
-      // const {cypressTestId} = message.data
       const previousMessagesSlice = specMessages.slice(0, i);
       const lastHookMessage = toReversed(previousMessagesSlice).find(
         ({ type }) => type === "cypress_hook_start" || type === "cypress_hook_end",

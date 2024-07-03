@@ -10,8 +10,8 @@ import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commo
 import { FileSystemWriter, MessageWriter, ReporterRuntime, getSuiteLabels } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { AllureJestTestRuntime } from "./AllureJestTestRuntime.js";
-import type { AllureJestConfig, AllureJestEnvironment } from "./model.js";
-import { getTestId, getTestPath } from "./utils.js";
+import type { AllureJestConfig, AllureJestEnvironment, RunContext } from "./model.js";
+import { getTestId, getTestPath, last, shouldHookBeSkipped } from "./utils.js";
 
 const { ALLURE_TEST_MODE, ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
 const hostname = os.hostname();
@@ -19,13 +19,17 @@ const hostname = os.hostname();
 const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
   // @ts-expect-error (ts(2545)) Incorrect assumption about a mixin class: https://github.com/microsoft/TypeScript/issues/37142
   return class extends Base {
+    jestState?: Circus.State;
     testPath: string;
     runtime: ReporterRuntime;
-    allureUuidsByTestIds: Map<string, string> = new Map();
+    runContext: RunContext = {
+      executables: [],
+      steps: [],
+      scopes: [],
+    };
 
     constructor(config: AllureJestConfig, context: EnvironmentContext) {
       super(config, context);
-
       const { resultsDir = "allure-results", ...restConfig } = config?.projectConfig?.testEnvironmentOptions || {};
 
       this.runtime = new ReporterRuntime({
@@ -55,63 +59,46 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       return super.teardown();
     }
 
-    handleAllureRuntimeMessage(payload: { currentTestName: string; message: RuntimeMessage }) {
-      const testUuid = this.getTestUuid({
-        name: payload.currentTestName,
-        // little hack because first element in the path will be always ommited
-        parent: { name: "ROOT_DESCRIBE_BLOCK" },
-      } as Circus.TestEntry)!;
+    handleAllureRuntimeMessage(payload: { currentTestName?: string; currentSuiteId: string; message: RuntimeMessage }) {
+      const executableUuid = last(this.runContext.executables);
 
-      this.runtime.applyRuntimeMessages(testUuid, [payload.message]);
-    }
-
-    private getTestUuid(test: Circus.TestEntry) {
-      const testPath = getTestPath(test);
-      const currentTestId = getTestId(testPath);
-      const testUuid = this.allureUuidsByTestIds.get(currentTestId);
-
-      if (!testUuid) {
-        // eslint-disable-next-line no-console
-        console.error(`Can't find "${currentTestId}" test while tried to start it!`);
-        return undefined;
-      }
-
-      return testUuid;
+      this.runtime.applyRuntimeMessages(executableUuid, [payload.message]);
     }
 
     handleTestEvent = (event: Circus.Event, state: Circus.State) => {
       switch (event.name) {
-        case "test_retry":
-          this.handleTestAdd({
-            testName: event.test.name,
-            concurrent: event.test.concurrent,
-            state,
-          });
+        case "run_start":
+          this.jestState = state;
           break;
-        case "add_test":
-          this.handleTestAdd({
-            testName: event.testName,
-            concurrent: event.concurrent,
-            state,
-          });
+        case "hook_start":
+          this.handleHookStart(event.hook);
+          break;
+        case "hook_success":
+          this.handleHookPass(event.hook);
+          break;
+        case "hook_failure":
+          this.handleHookFail(event.hook, event.error);
+          break;
+        case "run_describe_start":
+          this.handleSuiteStart();
+          break;
+        case "run_describe_finish":
+          this.handleSuiteEnd();
           break;
         case "test_start":
           this.handleTestStart(event.test);
           break;
         case "test_todo":
-          this.handleTestTodo(event.test);
+          this.handleTestTodo();
           break;
         case "test_fn_success":
-          this.handleTestPass(event.test);
+          this.handleTestPass();
           break;
         case "test_fn_failure":
           this.handleTestFail(event.test);
           break;
         case "test_skip":
-          this.handleTestSkip(event.test);
-          break;
-        case "test_done":
-          this.handleTestDone(event.test);
+          this.handleTestSkip();
           break;
         case "run_finish":
           this.handleRunFinish();
@@ -121,33 +108,93 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       }
     };
 
-    private handleTestAdd(payload: { testName: string; concurrent: boolean; state: Circus.State }) {
-      const { testName, state } = payload;
-      const { currentDescribeBlock } = state;
-      const newTestSuitesPath = getTestPath(currentDescribeBlock);
-      const newTestPath = newTestSuitesPath.concat(testName);
+    private handleSuiteStart() {
+      const scopeUuid = this.runtime.startScope();
+
+      this.runContext.scopes.push(scopeUuid);
+    }
+
+    private handleSuiteEnd() {
+      const scopeUuid = this.runContext.scopes.pop()!;
+
+      this.runtime.writeScope(scopeUuid);
+    }
+
+    private handleHookStart(hook: Circus.Hook) {
+      if (shouldHookBeSkipped(hook)) {
+        return;
+      }
+
+      const scopeUuid = last(this.runContext.scopes);
+      const fixtureUuid = this.runtime.startFixture(scopeUuid, /after/i.test(hook.type) ? "after" : "before", {
+        name: hook.type,
+      })!;
+
+      this.runContext.executables.push(fixtureUuid);
+    }
+
+    private handleHookPass(hook: Circus.Hook) {
+      if (shouldHookBeSkipped(hook)) {
+        return;
+      }
+
+      const fixtureUuid = this.runContext.executables.pop()!;
+
+      this.runtime.updateFixture(fixtureUuid, (r) => {
+        r.status = Status.PASSED;
+        r.stage = Stage.FINISHED;
+      });
+      this.runtime.stopFixture(fixtureUuid);
+    }
+
+    private handleHookFail(hook: Circus.Hook, error: string | Circus.Exception) {
+      if (shouldHookBeSkipped(hook)) {
+        return;
+      }
+
+      const fixtureUuid = this.runContext.executables.pop()!;
+      const status = typeof error === "string" ? Status.BROKEN : getStatusFromError(error as Error);
+
+      this.runtime.updateFixture(fixtureUuid, (r) => {
+        r.status = status;
+        r.statusDetails = {
+          message: typeof error === "string" ? error : error.message,
+          trace: typeof error === "string" ? undefined : error.stack,
+        };
+        r.stage = Stage.FINISHED;
+      });
+      this.runtime.stopFixture(fixtureUuid);
+    }
+
+    private startTest(test: Circus.TestEntry) {
+      const scopeUuid = last(this.runContext.scopes);
+      const newTestSuitePath = getTestPath(test.parent);
+      const newTestPath = newTestSuitePath.concat(test.name);
       const newTestId = getTestId(newTestPath);
       const threadLabel = ALLURE_THREAD_NAME || JEST_WORKER_ID || process.pid.toString();
       const hostLabel = ALLURE_HOST_NAME || hostname;
       const packageLabel = dirname(this.testPath).split(sep).join(".");
-      const testUuid = this.runtime.startTest({
-        name: testName,
-        fullName: newTestId,
-        labels: [
-          {
-            name: LabelName.LANGUAGE,
-            value: "javascript",
-          },
-          {
-            name: LabelName.FRAMEWORK,
-            value: "jest",
-          },
-          {
-            name: LabelName.PACKAGE,
-            value: packageLabel,
-          },
-        ],
-      });
+      const testUuid = this.runtime.startTest(
+        {
+          name: test.name,
+          fullName: newTestId,
+          labels: [
+            {
+              name: LabelName.LANGUAGE,
+              value: "javascript",
+            },
+            {
+              name: LabelName.FRAMEWORK,
+              value: "jest",
+            },
+            {
+              name: LabelName.PACKAGE,
+              value: packageLabel,
+            },
+          ],
+        },
+        [scopeUuid],
+      );
 
       this.runtime.updateTest(testUuid, (result) => {
         if (threadLabel) {
@@ -158,38 +205,33 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
           result.labels.push({ name: LabelName.HOST, value: hostLabel });
         }
 
-        result.labels.push(...getSuiteLabels(newTestSuitesPath));
+        result.labels.push(...getSuiteLabels(newTestSuitePath));
       });
 
-      /**
-       * If user have some tests with the same name, reporter will throw an error due the test with
-       * the same name could be removed from the running tests, so better to throw an explicit error
-       */
-      if (this.allureUuidsByTestIds.has(newTestId)) {
-        // eslint-disable-next-line no-console
-        console.error(
-          `Test "${newTestId}" has been already initialized! To continue with reporting, please rename the test.`,
-        );
-        return;
-      }
+      this.runContext.executables.push(testUuid);
 
-      this.allureUuidsByTestIds.set(newTestId, testUuid);
+      return testUuid;
     }
 
-    private handleTestStart(test: Circus.TestEntry) {
-      const testUuid = this.getTestUuid(test);
-
+    private stopTest(testUuid: string) {
       if (!testUuid) {
         return;
       }
+
+      this.runtime.stopTest(testUuid);
+      this.runtime.writeTest(testUuid);
+    }
+
+    private handleTestStart(test: Circus.TestEntry) {
+      const testUuid = this.startTest(test);
 
       this.runtime.updateTest(testUuid, (result) => {
         result.stage = Stage.RUNNING;
       });
     }
 
-    private handleTestPass(test: Circus.TestEntry) {
-      const testUuid = this.getTestUuid(test);
+    private handleTestPass() {
+      const testUuid = this.runContext.executables.pop();
 
       if (!testUuid) {
         return;
@@ -199,10 +241,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         result.stage = Stage.FINISHED;
         result.status = Status.PASSED;
       });
+      this.stopTest(testUuid);
     }
 
     private handleTestFail(test: Circus.TestEntry) {
-      const testUuid = this.getTestUuid(test);
+      const testUuid = this.runContext.executables.pop();
 
       if (!testUuid) {
         return;
@@ -222,10 +265,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
           ...details,
         };
       });
+      this.stopTest(testUuid);
     }
 
-    private handleTestSkip(test: Circus.TestEntry) {
-      const testUuid = this.getTestUuid(test);
+    private handleTestSkip() {
+      const testUuid = this.runContext.executables.pop();
 
       if (!testUuid) {
         return;
@@ -235,27 +279,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         result.stage = Stage.PENDING;
         result.status = Status.SKIPPED;
       });
-      this.runtime.stopTest(testUuid);
-      this.runtime.writeTest(testUuid);
-      // TODO:
-      this.allureUuidsByTestIds.delete(getTestId(getTestPath(test)));
+      this.stopTest(testUuid);
     }
 
-    private handleTestDone(test: Circus.TestEntry) {
-      const testUuid = this.getTestUuid(test);
-
-      if (!testUuid) {
-        return;
-      }
-
-      this.runtime.stopTest(testUuid);
-      this.runtime.writeTest(testUuid);
-      // TODO:
-      this.allureUuidsByTestIds.delete(getTestId(getTestPath(test)));
-    }
-
-    private handleTestTodo(test: Circus.TestEntry) {
-      const testUuid = this.getTestUuid(test);
+    private handleTestTodo() {
+      const testUuid = this.runContext.executables.pop();
 
       if (!testUuid) {
         return;
@@ -265,11 +293,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         result.stage = Stage.PENDING;
         result.status = Status.SKIPPED;
       });
-
-      this.runtime.stopTest(testUuid);
-      this.runtime.writeTest(testUuid);
-      // TODO:
-      this.allureUuidsByTestIds.delete(getTestId(getTestPath(test)));
+      this.stopTest(testUuid);
     }
 
     private handleRunFinish() {
