@@ -281,13 +281,6 @@ export default class AllureCucumberReporter extends Formatter {
       });
     }
 
-    if (scenario) {
-      result.labels!.push({
-        name: LabelName.SUITE,
-        value: scenario.name,
-      });
-    }
-
     const pickleLabels = this.parsePickleTags(pickle.tags || []);
     const featureLabels = this.parseTagsLabels(doc?.feature?.tags || []);
     const featureLinks = this.parseTagsLinks(doc?.feature?.tags || []);
