@@ -72,7 +72,7 @@
     "vitest": "^1.6.0"
   },
   "peerDependencies": {
-    "jasmine": "^3.4.0"
+    "jasmine": ">=2.7.0"
   },
   "peerDependenciesMeta": {
     "jasmine": {
