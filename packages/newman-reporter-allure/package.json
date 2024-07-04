@@ -89,7 +89,7 @@
     "vitest": "^1.6.0"
   },
   "peerDependencies": {
-    "newman": ">=6.1.2"
+    "newman": ">=3.5.0"
   },
   "peerDependenciesMeta": {
     "newman": {
