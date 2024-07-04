@@ -6,7 +6,7 @@ it("todo", async () => {
   const { tests } = await runJestInlineTest({
     "sample.test.js": `
       it.todo("todo")
-    `
+    `,
   });
 
   expect(tests).toHaveLength(1);

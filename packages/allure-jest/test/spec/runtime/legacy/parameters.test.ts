@@ -10,7 +10,7 @@ it("sets parameters", async () => {
         await allure.parameter("param3", "paramValue3", {mode:"masked", excluded:true});
         await allure.parameter("param4", "paramValue4", {mode:"hidden"});
       })
-    `
+    `,
   });
 
   expect(tests).toHaveLength(1);

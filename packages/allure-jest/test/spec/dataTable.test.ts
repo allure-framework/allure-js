@@ -12,7 +12,7 @@ it("supports test.each", async () => {
       ])("%i + %i = %i", (a, b, c) => {
         expect(a + b).toBe(c);
       });
-    `
+    `,
   });
 
   expect(tests).toHaveLength(3);

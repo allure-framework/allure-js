@@ -20,7 +20,7 @@ it("sets labels", async () => {
         await allure.tag("foo");
         await allure.labels({ name: "test", value: "testValue" }, { name: "test2", value: "testValue2" });
       })
-    `
+    `,
   });
 
   expect(tests).toHaveLength(1);

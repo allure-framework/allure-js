@@ -6,7 +6,7 @@ it("skipped test", async () => {
   const { tests } = await runJestInlineTest({
     "sample.test.js": `
       it.skip("skipped", () => {});
-    `
+    `,
   });
 
   expect(tests).toHaveLength(1);
@@ -20,7 +20,7 @@ it("test inside skipped suite", async () => {
       describe.skip("suite", () => {
         it("skipped", () => {});
       });
-    `
+    `,
   });
 
   expect(tests).toHaveLength(1);

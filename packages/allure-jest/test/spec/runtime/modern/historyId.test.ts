@@ -10,7 +10,7 @@ describe("historyId", () => {
       it("historyId", async () => {
         await historyId("foo");
       })
-    `
+    `,
     });
 
     expect(tests).toHaveLength(1);

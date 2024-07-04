@@ -7,7 +7,7 @@ it("sets description", async () => {
       it("description", async () => {
         await allure.description("foo");
       })
-    `
+    `,
   });
 
   expect(tests).toHaveLength(1);
@@ -20,7 +20,7 @@ it("sets html description", async () => {
       it("descriptionHtml", async () => {
         await allure.descriptionHtml("foo");
       })
-    `
+    `,
   });
 
   expect(tests).toHaveLength(1);

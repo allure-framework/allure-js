@@ -13,7 +13,7 @@ it("should work for test with retries", async () => {
 
         expect(false).toBeTruthy();
       });
-    `
+    `,
   });
 
   expect(tests).toHaveLength(2);

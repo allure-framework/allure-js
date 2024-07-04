@@ -9,7 +9,7 @@ it("sets description", async () => {
       it("description", async () => {
         await description("foo");
       })
-    `
+    `,
   });
 
   expect(tests).toHaveLength(1);
@@ -24,7 +24,7 @@ it("sets html description", async () => {
       it("descriptionHtml", async () => {
         await descriptionHtml("foo");
       })
-    `
+    `,
   });
 
   expect(tests).toHaveLength(1);

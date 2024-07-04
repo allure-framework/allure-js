@@ -8,7 +8,7 @@ describe("testCaseId", () => {
       it("testCaseId", async () => {
         await allure.testCaseId("foo");
       })
-    `
+    `,
     });
 
     expect(tests).toHaveLength(1);

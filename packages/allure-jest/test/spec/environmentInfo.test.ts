@@ -6,7 +6,7 @@ describe("environment info", () => {
     const { envInfo } = await runJestInlineTest({
       "sample.test.js": `
         it("sample test", async () => {});
-      `
+      `,
     });
 
     expect(envInfo).toEqual({ "app version": "123.0.1", "some other key": "some other value" });

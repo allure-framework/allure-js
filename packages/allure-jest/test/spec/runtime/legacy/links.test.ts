@@ -13,7 +13,7 @@ it("sets links", async () => {
         await allure.tms("https://example.org/tasks/2");
         await allure.links(...[{ url:"https://allurereport.org/1" }, { url:"https://allurereport.org/2" }]);
       })
-    `
+    `,
   });
 
   expect(tests).toHaveLength(1);

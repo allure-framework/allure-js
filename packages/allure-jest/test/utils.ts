@@ -9,6 +9,7 @@ import { MessageReader } from "allure-js-commons/sdk/reporter";
 export const runJestInlineTest = async (
   testFiles: Record<string, string>,
   env?: (testDir: string) => Record<string, string>,
+  cliArgs?: string[],
 ): Promise<AllureResults> => {
   const testDir = join(__dirname, "fixtures", randomUUID());
   const configFileName = "jest.config.js";
@@ -66,7 +67,7 @@ export const runJestInlineTest = async (
   const modulePath = await step("resolve jest", () => {
     return require.resolve("jest-cli/bin/jest");
   });
-  const args = ["--config", configFilePath, testDir];
+  const args = ["--config", configFilePath, testDir, ...(cliArgs ?? [])];
   const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
     return fork(modulePath, args, {
       env: {

@@ -7,11 +7,18 @@ import * as allure from "allure-js-commons";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
-import { FileSystemWriter, MessageWriter, ReporterRuntime, getSuiteLabels } from "allure-js-commons/sdk/reporter";
+import type { TestPlanV1 } from "allure-js-commons/sdk";
+import {
+  FileSystemWriter,
+  MessageWriter,
+  ReporterRuntime,
+  getSuiteLabels,
+  parseTestPlan,
+} from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { AllureJestTestRuntime } from "./AllureJestTestRuntime.js";
 import type { AllureJestConfig, AllureJestEnvironment, RunContext } from "./model.js";
-import { getTestId, getTestPath, last, shouldHookBeSkipped } from "./utils.js";
+import { getTestId, getTestPath, isTestPresentInTestPlan, last, shouldHookBeSkipped } from "./utils.js";
 
 const { ALLURE_TEST_MODE, ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
 const hostname = os.hostname();
@@ -19,13 +26,14 @@ const hostname = os.hostname();
 const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
   // @ts-expect-error (ts(2545)) Incorrect assumption about a mixin class: https://github.com/microsoft/TypeScript/issues/37142
   return class extends Base {
-    jestState?: Circus.State;
     testPath: string;
+    testPlan?: TestPlanV1;
     runtime: ReporterRuntime;
     runContext: RunContext = {
       executables: [],
       steps: [],
       scopes: [],
+      skippedTestsFullNamesByTestPlan: [],
     };
 
     constructor(config: AllureJestConfig, context: EnvironmentContext) {
@@ -41,6 +49,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
             }),
       });
       this.testPath = context.testPath.replace(config.globalConfig.rootDir, "").replace(sep, "");
+      this.testPlan = parseTestPlan();
 
       // @ts-ignore
       const testRuntime = new AllureJestTestRuntime(this as AllureJestEnvironment, this.global);
@@ -59,68 +68,73 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       return super.teardown();
     }
 
-    handleAllureRuntimeMessage(payload: { currentTestName?: string; currentSuiteId: string; message: RuntimeMessage }) {
+    handleAllureRuntimeMessage(message: RuntimeMessage) {
       const executableUuid = last(this.runContext.executables);
 
-      this.runtime.applyRuntimeMessages(executableUuid, [payload.message]);
+      this.runtime.applyRuntimeMessages(executableUuid, [message]);
     }
 
-    handleTestEvent = (event: Circus.Event, state: Circus.State) => {
+    handleTestEvent = (event: Circus.Event) => {
       switch (event.name) {
-        case "run_start":
-          this.jestState = state;
-          break;
         case "hook_start":
-          this.handleHookStart(event.hook);
+          this.#handleHookStart(event.hook);
           break;
         case "hook_success":
-          this.handleHookPass(event.hook);
+          this.#handleHookPass(event.hook);
           break;
         case "hook_failure":
-          this.handleHookFail(event.hook, event.error);
+          this.#handleHookFail(event.hook, event.error);
           break;
         case "run_describe_start":
-          this.handleSuiteStart();
+          this.#handleSuiteStart();
           break;
         case "run_describe_finish":
-          this.handleSuiteEnd();
+          this.#handleSuiteEnd();
           break;
         case "test_start":
-          this.handleTestStart(event.test);
+          this.#handleTestStart(event.test);
           break;
         case "test_todo":
-          this.handleTestTodo();
+          this.#handleTestTodo();
           break;
         case "test_fn_success":
-          this.handleTestPass();
+          this.#handleTestPass();
           break;
         case "test_fn_failure":
-          this.handleTestFail(event.test);
+          this.#handleTestFail(event.test);
           break;
         case "test_skip":
-          this.handleTestSkip();
+          this.#handleTestSkip(event.test);
           break;
         case "run_finish":
-          this.handleRunFinish();
+          this.#handleRunFinish();
           break;
         default:
           break;
       }
     };
 
-    private handleSuiteStart() {
+    #getTestFullName(test: Circus.TestEntry) {
+      const newTestSuitePath = getTestPath(test.parent);
+      const newTestPath = newTestSuitePath.concat(test.name);
+      const newTestId = getTestId(newTestPath);
+
+      return `${this.testPath}#${newTestId}`;
+    }
+
+    #handleSuiteStart() {
       const scopeUuid = this.runtime.startScope();
 
       this.runContext.scopes.push(scopeUuid);
     }
 
-    private handleSuiteEnd() {
+    #handleSuiteEnd() {
       const scopeUuid = this.runContext.scopes.pop()!;
 
       this.runtime.writeScope(scopeUuid);
     }
 
-    private handleHookStart(hook: Circus.Hook) {
+    #handleHookStart(hook: Circus.Hook) {
       if (shouldHookBeSkipped(hook)) {
         return;
       }
@@ -133,7 +147,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       this.runContext.executables.push(fixtureUuid);
     }
 
-    private handleHookPass(hook: Circus.Hook) {
+    #handleHookPass(hook: Circus.Hook) {
       if (shouldHookBeSkipped(hook)) {
         return;
       }
@@ -147,7 +161,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       this.runtime.stopFixture(fixtureUuid);
     }
 
-    private handleHookFail(hook: Circus.Hook, error: string | Circus.Exception) {
+    #handleHookFail(hook: Circus.Hook, error: string | Circus.Exception) {
       if (shouldHookBeSkipped(hook)) {
         return;
       }
@@ -166,18 +180,24 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       this.runtime.stopFixture(fixtureUuid);
     }
 
-    private startTest(test: Circus.TestEntry) {
-      const scopeUuid = last(this.runContext.scopes);
+    #startTest(test: Circus.TestEntry) {
       const newTestSuitePath = getTestPath(test.parent);
-      const newTestPath = newTestSuitePath.concat(test.name);
-      const newTestId = getTestId(newTestPath);
+      const newTestFullName = this.#getTestFullName(test);
+
+      if (this.testPlan && !isTestPresentInTestPlan(newTestFullName, this.testPlan)) {
+        test.mode = "skip";
+        this.runContext.skippedTestsFullNamesByTestPlan.push(newTestFullName);
+        return;
+      }
+
+      const scopeUuid = last(this.runContext.scopes);
       const threadLabel = ALLURE_THREAD_NAME || JEST_WORKER_ID || process.pid.toString();
       const hostLabel = ALLURE_HOST_NAME || hostname;
       const packageLabel = dirname(this.testPath).split(sep).join(".");
       const testUuid = this.runtime.startTest(
         {
           name: test.name,
-          fullName: newTestId,
+          fullName: newTestFullName,
           labels: [
             {
               name: LabelName.LANGUAGE,
@@ -213,7 +233,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       return testUuid;
     }
 
-    private stopTest(testUuid: string) {
+    #stopTest(testUuid: string) {
       if (!testUuid) {
         return;
       }
@@ -222,15 +242,19 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       this.runtime.writeTest(testUuid);
     }
 
-    private handleTestStart(test: Circus.TestEntry) {
-      const testUuid = this.startTest(test);
+    #handleTestStart(test: Circus.TestEntry) {
+      const testUuid = this.#startTest(test);
+
+      if (!testUuid) {
+        return;
+      }
 
       this.runtime.updateTest(testUuid, (result) => {
         result.stage = Stage.RUNNING;
       });
     }
 
-    private handleTestPass() {
+    #handleTestPass() {
       const testUuid = this.runContext.executables.pop();
 
       if (!testUuid) {
@@ -241,10 +265,10 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         result.stage = Stage.FINISHED;
         result.status = Status.PASSED;
       });
-      this.stopTest(testUuid);
+      this.#stopTest(testUuid);
     }
 
-    private handleTestFail(test: Circus.TestEntry) {
+    #handleTestFail(test: Circus.TestEntry) {
       const testUuid = this.runContext.executables.pop();
 
       if (!testUuid) {
@@ -265,10 +289,16 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
           ...details,
         };
       });
-      this.stopTest(testUuid);
+      this.#stopTest(testUuid);
     }
 
-    private handleTestSkip() {
+    #handleTestSkip(test: Circus.TestEntry) {
+      const newTestFullName = this.#getTestFullName(test);
+
+      if (this.runContext.skippedTestsFullNamesByTestPlan.includes(newTestFullName)) {
+        return;
+      }
+
       const testUuid = this.runContext.executables.pop();
 
       if (!testUuid) {
@@ -279,10 +309,10 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         result.stage = Stage.PENDING;
         result.status = Status.SKIPPED;
       });
-      this.stopTest(testUuid);
+      this.#stopTest(testUuid);
     }
 
-    private handleTestTodo() {
+    #handleTestTodo() {
       const testUuid = this.runContext.executables.pop();
 
       if (!testUuid) {
@@ -293,10 +323,10 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         result.stage = Stage.PENDING;
         result.status = Status.SKIPPED;
       });
-      this.stopTest(testUuid);
+      this.#stopTest(testUuid);
     }
 
-    private handleRunFinish() {
+    #handleRunFinish() {
       this.runtime.writeEnvironmentInfo();
       this.runtime.writeCategoriesDefinitions();
     }

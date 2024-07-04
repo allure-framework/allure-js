@@ -9,7 +9,7 @@ it("handles json attachment", async () => {
     it("json", async () => {
       await attachment("Request body", JSON.stringify({ foo: "bar" }), "application/json");
     });
-  `
+  `,
   });
 
   expect(tests).toHaveLength(1);
