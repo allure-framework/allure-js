@@ -3,8 +3,8 @@ import { runCypressInlineTest } from "../../../utils.js";
 
 it("description", async () => {
   const { tests } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { description } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { description } from "${allureCommonsModulePath}";
 
     it("markdown", () => {
       description("foo");
@@ -18,8 +18,8 @@ it("description", async () => {
 
 it("descriptionHtml", async () => {
   const { tests } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { descriptionHtml } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { descriptionHtml } from "${allureCommonsModulePath}";
 
     it("html", () => {
       descriptionHtml("foo");

@@ -3,8 +3,8 @@ import { runCypressInlineTest } from "../../../utils.js";
 
 it("displayName", async () => {
   const { tests } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { displayName } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { displayName } from "${allureCommonsModulePath}";
 
     it("sample", () => {
       displayName("foo");

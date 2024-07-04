@@ -4,8 +4,8 @@ import { runCypressInlineTest } from "../../../utils.js";
 
 it("single step", async () => {
   const { tests } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { label, step } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { label, step } from "${allureCommonsModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -23,8 +23,8 @@ it("single step", async () => {
 
 it("multiple steps", async () => {
   const { tests } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { label, step } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { label, step } from "${allureCommonsModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -54,8 +54,8 @@ it("multiple steps", async () => {
 
 it("nested steps", async () => {
   const { tests } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { label, step } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { label, step } from "${allureCommonsModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -81,8 +81,8 @@ it("nested steps", async () => {
 
 it("step with attachments", async () => {
   const { tests, attachments } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { attachment, step } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { attachment, step } from "${allureCommonsModulePath}";
 
     it("text attachment", () => {
       step("foo", () => {
@@ -105,8 +105,8 @@ it("step with attachments", async () => {
 
 it("step with screenshot", async () => {
   const { tests, attachments } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { step } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { step } from "${allureCommonsModulePath}";
 
     it("manual", () => {
       step("foo", () => {
@@ -144,8 +144,8 @@ it("step with screenshot", async () => {
 
 it("step with cypress assertion error", async () => {
   const { tests } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { step } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { step } from "${allureCommonsModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -168,8 +168,8 @@ it("step with cypress assertion error", async () => {
 
 it("step with unexpected error", async () => {
   const { tests } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { step } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { step } from "${allureCommonsModulePath}";
 
     it("step", () => {
       step("foo", () => {
@@ -192,11 +192,11 @@ it("step with unexpected error", async () => {
 
 it("step runtime api", async () => {
   const { tests } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { step } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { step } from "${allureCommonsModulePath}";
 
     it("step", () => {
-      step("${allureCypressModulePath}", (ctx) => {
+      step("${allureCommonsModulePath}", (ctx) => {
         ctx.displayName("bar");
         ctx.parameter("p1", "v1");
         ctx.parameter("p2", "v2", "default");
@@ -224,12 +224,12 @@ it("step runtime api", async () => {
 
 it("promise-step", async () => {
   const { tests } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { step, label } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { step, label } from "${allureCommonsModulePath}";
 
     it("step", () => {
       let value = "unset";
-      step("${allureCypressModulePath}", () => {
+      step("${allureCommonsModulePath}", () => {
         return new Cypress.Promise(
           (r) => setTimeout(() => {
             value = "set";
@@ -252,8 +252,8 @@ it("promise-step", async () => {
 
 it("handles allure steps inside cypress hooks", async () => {
   const { tests, groups } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { step } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { step } from "${allureCommonsModulePath}";
 
     describe("suite", () => {
       beforeEach(() => {
@@ -293,4 +293,20 @@ it("handles allure steps inside cypress hooks", async () => {
       }),
     ]),
   );
+});
+
+it("log step", async () => {
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { label, logStep, Status } from "${allureCommonsModulePath}";
+
+    it("step", () => {
+      logStep("log step hello", Status.FAILED);
+    });
+  `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toHaveLength(1);
+  expect(tests[0].steps).toContainEqual(expect.objectContaining({ name: "log step hello", status: Status.FAILED }));
 });

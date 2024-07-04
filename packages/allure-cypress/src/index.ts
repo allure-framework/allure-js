@@ -1,7 +1,7 @@
 import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions, StatusDetails } from "allure-js-commons";
 import { ContentType, Status } from "allure-js-commons";
 import type { RuntimeMessage, TestPlanV1 } from "allure-js-commons/sdk";
-import { getUnfinishedStepsMessages, hasStepMessage } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, getUnfinishedStepsMessages, hasStepMessage } from "allure-js-commons/sdk";
 import type { TestRuntime } from "allure-js-commons/sdk/runtime";
 import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import type {
@@ -132,6 +132,32 @@ export class AllureCypressTestRuntime implements TestRuntime {
         fileExtension: options.fileExtension,
       },
     });
+  }
+
+  logStep(name: string, status: Status = Status.PASSED, error?: Error) {
+    return cy
+      .wrap(ALLURE_REPORT_STEP_COMMAND, { log: false })
+      .then(() => {
+        this.sendMessage({
+          type: "step_start",
+          data: {
+            name,
+            start: Date.now(),
+          },
+        });
+
+        return Cypress.Promise.resolve();
+      })
+      .then(() => {
+        return this.sendMessageAsync({
+          type: "step_stop",
+          data: {
+            status: status,
+            stop: Date.now(),
+            statusDetails: error ? { ...getMessageAndTraceFromError(error) } : undefined,
+          },
+        });
+      });
   }
 
   step<T = void>(name: string, body: () => T | PromiseLike<T>) {

@@ -4,8 +4,8 @@ import { runCypressInlineTest } from "../../../utils.js";
 
 it("text", async () => {
   const { tests, attachments } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { attachment } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { attachment } from "${allureCommonsModulePath}";
 
     it("text attachment", () => {
       attachment("foo.txt", "bar", "text/plain");
@@ -24,8 +24,8 @@ it("text", async () => {
 
 it("json", async () => {
   const { tests, attachments } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { attachment } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { attachment } from "${allureCommonsModulePath}";
 
     it("json attachment", () => {
       attachment("foo", JSON.stringify({ foo: "bar" }), "application/json");
@@ -46,8 +46,8 @@ it("json", async () => {
 
 it("cypress read file", async () => {
   const { tests, attachments } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-      import { attachment } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+      import { attachment } from "${allureCommonsModulePath}";
 
       it("json attachment", () => {
         cy.readFile("foo.txt", null).then((content) => {
@@ -69,8 +69,8 @@ it("cypress read file", async () => {
 
 it("handles allure attachments inside cypress hooks", async () => {
   const { tests, groups } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
-    import { attachment } from "${allureCypressModulePath}";
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { attachment } from "${allureCommonsModulePath}";
 
     describe("suite", () => {
       beforeEach(() => {
