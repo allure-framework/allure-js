@@ -2,7 +2,7 @@ import type Cypress from "cypress";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
-import { FileSystemWriter, ReporterRuntime, getSuiteLabels, parseTestPlan } from "allure-js-commons/sdk/reporter";
+import { FileSystemWriter, ReporterRuntime, getSuiteLabels, parseTestPlan, getEnvironmentLabels } from "allure-js-commons/sdk/reporter";
 import type { Config } from "allure-js-commons/sdk/reporter";
 import type {
   CypressHookEndMessage,
@@ -154,6 +154,7 @@ export class AllureCypress {
               },
               ...suiteLabels,
               ...titleMetadata.labels,
+              ...getEnvironmentLabels(),
             ],
           },
           runContext.scopes,
