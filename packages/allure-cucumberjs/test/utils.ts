@@ -11,6 +11,7 @@ export const runCucumberInlineTest = async (
   stepsDefs: string[],
   parallel: boolean = true,
   testPlan?: TestPlanV1,
+  env?: Record<string, string>,
 ): Promise<AllureResults> => {
   const fixturesPath = join(__dirname, "fixtures");
   const testDir = join(__dirname, "fixtures/temp", randomUUID());
@@ -119,14 +120,20 @@ export const runCucumberInlineTest = async (
     });
   }
 
-  const env: Record<string, string> = {};
+  const finalEnv: Record<string, string> = {
+    ...env,
+  };
+
   if (testPlan) {
     await step("testplan.json", async () => {
       const data = JSON.stringify(testPlan);
       const testPlanPath = join(testDir, "testplan.json");
       await writeFile(testPlanPath, data, "utf8");
-      env.ALLURE_TESTPLAN_PATH = testPlanPath;
-      await attachment("testplan.json", data, { contentType: "application/json", fileExtension: ".json" });
+      finalEnv.ALLURE_TESTPLAN_PATH = testPlanPath;
+      await attachment("testplan.json", data, {
+        contentType: "application/json",
+        fileExtension: ".json",
+      });
     });
   }
 
@@ -138,7 +145,7 @@ export const runCucumberInlineTest = async (
     return fork(modulePath, args, {
       env: {
         ...process.env,
-        ...env,
+        ...finalEnv,
         ALLURE_TEST_MODE: "1",
       },
       cwd: testDir,

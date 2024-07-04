@@ -22,6 +22,7 @@ import {
   applyLinkTemplate,
   createStepResult,
   getWorstStepResultStatus,
+  getEnvironmentLabels,
   md5,
 } from "allure-js-commons/sdk/reporter";
 import { AllureCucumberWorld } from "./legacy.js";
@@ -255,6 +256,7 @@ export default class AllureCucumberReporter extends Formatter {
       fullName,
     };
 
+    result.labels!.push(...getEnvironmentLabels());
     result.labels!.push(
       {
         name: LabelName.HOST,
