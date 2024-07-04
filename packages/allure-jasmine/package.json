@@ -64,7 +64,7 @@
     "eslint-plugin-n": "^17.0.0",
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "jasmine": "^3.4.0",
+    "jasmine": "^5.1.0",
     "npm-run-all2": "^6.1.2",
     "rimraf": "^5.0.1",
     "typescript": "^5.2.2",
