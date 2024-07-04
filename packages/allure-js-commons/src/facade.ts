@@ -1,4 +1,5 @@
-import type { ContentType } from "./model.js";
+import type { Status } from "./model.js";
+import { type ContentType } from "./model.js";
 import { type AttachmentOptions, type Label, type Link, type ParameterMode, type ParameterOptions } from "./model.js";
 import { LabelName, LinkType } from "./model.js";
 import { getGlobalTestRuntimeWithAutoconfig } from "./sdk/runtime/runtime.js";
@@ -97,6 +98,10 @@ const stepContext: () => StepContext = () => ({
     return callRuntimeMethod("stepParameter", name, value, mode);
   },
 });
+
+export const logStep = (name: string, status?: Status, error?: Error): PromiseLike<void> => {
+  return callRuntimeMethod("logStep", name, status, error);
+};
 
 export const step = <T = void>(name: string, body: (context: StepContext) => T | PromiseLike<T>): PromiseLike<T> => {
   return callRuntimeMethod("step", name, () => body(stepContext()));

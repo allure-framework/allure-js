@@ -1,15 +1,15 @@
-import type {
-  AttachmentOptions,
-  Label,
-  LabelName,
-  Link,
-  LinkType,
-  ParameterMode,
-  ParameterOptions,
+import {
+  type AttachmentOptions,
+  type Label,
+  type LabelName,
+  type Link,
+  type LinkType,
+  type ParameterMode,
+  type ParameterOptions,
+  Status,
 } from "../../model.js";
-import { Status } from "../../model.js";
 import type { RuntimeMessage } from "../types.js";
-import { getStatusFromError } from "../utils.js";
+import { getMessageAndTraceFromError, getStatusFromError } from "../utils.js";
 import type { TestRuntime } from "./types.js";
 
 export abstract class MessageTestRuntime implements TestRuntime {
@@ -135,6 +135,29 @@ export abstract class MessageTestRuntime implements TestRuntime {
         fileExtension: options.fileExtension,
         wrapInStep: true,
         timestamp: Date.now(),
+      },
+    });
+  }
+
+  async logStep(name: string, status: Status = Status.PASSED, error?: Error) {
+    const timestamp = Date.now();
+    await this.sendMessage({
+      type: "step_start",
+      data: {
+        name,
+        start: timestamp,
+      },
+    });
+    await this.sendMessage({
+      type: "step_stop",
+      data: {
+        status: status,
+        stop: timestamp,
+        statusDetails: error
+          ? {
+              ...getMessageAndTraceFromError(error),
+            }
+          : undefined,
       },
     });
   }

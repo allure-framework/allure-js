@@ -1,4 +1,4 @@
-import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions } from "../../model.js";
+import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions, Status } from "../../model.js";
 
 export interface TestRuntime {
   labels: (...labels: Label[]) => PromiseLike<void>;
@@ -20,6 +20,8 @@ export interface TestRuntime {
   attachment: (name: string, content: Buffer | string, options: AttachmentOptions) => PromiseLike<void>;
 
   attachmentFromPath: (name: string, path: string, options: Omit<AttachmentOptions, "encoding">) => PromiseLike<void>;
+
+  logStep: (name: string, status?: Status, error?: Error) => PromiseLike<void>;
 
   step: <T = void>(name: string, body: () => T | PromiseLike<T>) => PromiseLike<T>;
 

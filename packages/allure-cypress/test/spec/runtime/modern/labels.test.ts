@@ -4,7 +4,7 @@ import { runCypressInlineTest } from "../../../utils.js";
 
 it("adds all the possible labels", async () => {
   const { tests } = await runCypressInlineTest({
-    "cypress/e2e/sample.cy.js": ({ allureCypressModulePath }) => `
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
     import {
       label,
       allureId,
@@ -18,7 +18,7 @@ it("adds all the possible labels", async () => {
       severity,
       story,
       tag,
-    } from "${allureCypressModulePath}";
+    } from "${allureCommonsModulePath}";
 
     it("labels", () => {
       label("foo", "bar");

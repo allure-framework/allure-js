@@ -37,6 +37,10 @@ export class NoopTestRuntime implements TestRuntime {
     await this.warning();
   }
 
+  async logStep() {
+    await this.warning();
+  }
+
   async step<T>(name: string, body: () => T | PromiseLike<T>): Promise<T> {
     await this.warning();
     return body();
