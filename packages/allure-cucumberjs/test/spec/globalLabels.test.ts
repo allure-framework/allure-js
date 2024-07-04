@@ -29,8 +29,8 @@ it("sets label from env variables", async () => {
         {
           name: "B",
           value: "b",
-        }
-      ])
+        },
+      ]),
     }),
   );
   expect(tests).toContainEqual(
@@ -57,8 +57,8 @@ it("sets label from env variables", async () => {
         {
           name: "B",
           value: "b",
-        }
-      ])
+        },
+      ]),
     }),
   );
   expect(tests).toContainEqual(
@@ -85,8 +85,8 @@ it("sets label from env variables", async () => {
         {
           name: "B",
           value: "b",
-        }
-      ])
+        },
+      ]),
     }),
   );
 });

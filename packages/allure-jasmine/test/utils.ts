@@ -6,7 +6,10 @@ import { attachment, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
-export const runJasmineInlineTest = async (files: Record<string, string>, env?: Record<string, string>): Promise<AllureResults> => {
+export const runJasmineInlineTest = async (
+  files: Record<string, string>,
+  env?: Record<string, string>,
+): Promise<AllureResults> => {
   const testDir = join(__dirname, "temp", randomUUID());
   const testFiles = {
     "spec/support/jasmine.json": await readFile(join(__dirname, "./fixtures/spec/support/jasmine.json"), "utf8"),

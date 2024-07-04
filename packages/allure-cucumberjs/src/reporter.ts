@@ -21,8 +21,8 @@ import {
   ReporterRuntime,
   applyLinkTemplate,
   createStepResult,
-  getWorstStepResultStatus,
   getEnvironmentLabels,
+  getWorstStepResultStatus,
   md5,
 } from "allure-js-commons/sdk/reporter";
 import { AllureCucumberWorld } from "./legacy.js";
