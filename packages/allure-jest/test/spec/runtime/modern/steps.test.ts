@@ -3,8 +3,8 @@ import { Status } from "allure-js-commons";
 import { runJestInlineTest } from "../../../utils.js";
 
 it("single step", async () => {
-  const { tests } = await runJestInlineTest(
-    `
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
     const { label, step } = require("allure-js-commons");
 
     it("step", async () => {
@@ -13,7 +13,7 @@ it("single step", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
@@ -22,8 +22,8 @@ it("single step", async () => {
 });
 
 it("multiple steps", async () => {
-  const { tests } = await runJestInlineTest(
-    `
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
     const { label, step } = require("allure-js-commons");
 
     it("step", async () => {
@@ -40,7 +40,7 @@ it("multiple steps", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "1" }));
@@ -53,8 +53,8 @@ it("multiple steps", async () => {
 });
 
 it("nested steps", async () => {
-  const { tests } = await runJestInlineTest(
-    `
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
     const { label, step } = require("allure-js-commons");
 
     it("step", async () => {
@@ -67,7 +67,7 @@ it("nested steps", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
@@ -80,8 +80,8 @@ it("nested steps", async () => {
 });
 
 it("step with attachments", async () => {
-  const { tests, attachments } = await runJestInlineTest(
-    `
+  const { tests, attachments } = await runJestInlineTest({
+    "sample.test.js": `
     const { attachment, step } = require("allure-js-commons");
 
     it("text attachment", async () => {
@@ -90,7 +90,7 @@ it("step with attachments", async () => {
       })
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].attachments).toHaveLength(0);
@@ -106,8 +106,8 @@ it("step with attachments", async () => {
 });
 
 it("step with assertion error", async () => {
-  const { tests } = await runJestInlineTest(
-    `
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
     const { step } = require("allure-js-commons");
 
     it("step", async () => {
@@ -116,7 +116,7 @@ it("step with assertion error", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe(Status.FAILED);
@@ -130,8 +130,8 @@ it("step with assertion error", async () => {
 });
 
 it("step with unexpected error", async () => {
-  const { tests } = await runJestInlineTest(
-    `
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
     const { step } = require("allure-js-commons");
 
     it("step", async () => {
@@ -140,7 +140,7 @@ it("step with unexpected error", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe(Status.BROKEN);
@@ -152,8 +152,8 @@ it("step with unexpected error", async () => {
 });
 
 it("step runtime api", async () => {
-  const { tests } = await runJestInlineTest(
-    `
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
     const { step } = require("allure-js-commons");
 
     it("step", async () => {
@@ -166,7 +166,7 @@ it("step runtime api", async () => {
       });
     });
   `,
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toEqual("passed");
@@ -181,4 +181,45 @@ it("step runtime api", async () => {
     { name: "p3", value: "v3", mode: "masked" },
     { name: "p4", value: "v4", mode: "hidden" },
   ]);
+});
+
+it("adds steps to fixtures", async () => {
+  const { tests, groups } = await runJestInlineTest({
+    "sample.test.js": `
+      const { step } = require("allure-js-commons");
+
+      beforeEach(async () => {
+        await step("before each step", () => {});
+      });
+
+      afterEach(async () => {
+        await step("after each step", () => {});
+      });
+
+      it("step", async () => {});
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(groups).toHaveLength(2);
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        afters: [
+          expect.objectContaining({
+            steps: [expect.objectContaining({ name: "after each step" })],
+          }),
+        ],
+        befores: [],
+      }),
+      expect.objectContaining({
+        afters: [],
+        befores: [
+          expect.objectContaining({
+            steps: [expect.objectContaining({ name: "before each step" })],
+          }),
+        ],
+      }),
+    ]),
+  );
 });

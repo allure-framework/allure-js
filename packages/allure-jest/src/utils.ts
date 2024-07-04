@@ -1,4 +1,7 @@
 import type { Circus } from "@jest/types";
+import { LabelName } from "allure-js-commons";
+import { extractMetadataFromString } from "allure-js-commons/sdk";
+import type { TestPlanV1 } from "allure-js-commons/sdk";
 
 /**
  * Returns array of names which represents full test hierarchy
@@ -41,3 +44,23 @@ export const getTestId = (path: string[]): string => path.join(" ");
  * @returns
  */
 export const getTestFullName = (path: string[]): string => path.join(" > ");
+
+export const shouldHookBeSkipped = (hook: Circus.Hook): boolean => {
+  const errorFirstLine = hook?.asyncError?.stack?.split("\n")?.[1]?.trim() || "";
+
+  return /^at jestAdapter/i.test(errorFirstLine);
+};
+
+export const last = <T>(array: T[]): T => array[array.length - 1];
+
+export const isTestPresentInTestPlan = (testFullName: string, testPlan: TestPlanV1) => {
+  const { labels } = extractMetadataFromString(testFullName);
+  const allureIdLabel = labels.find(({ name }) => name === LabelName.ALLURE_ID);
+
+  return testPlan.tests.some(({ id, selector = "" }) => {
+    const idMatched = id ? String(id) === allureIdLabel?.value : false;
+    const selectorMatched = selector === testFullName;
+
+    return idMatched || selectorMatched;
+  });
+};

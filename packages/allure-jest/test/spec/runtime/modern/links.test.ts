@@ -3,7 +3,8 @@ import { LinkType } from "allure-js-commons";
 import { runJestInlineTest } from "../../../utils.js";
 
 it("sets links", async () => {
-  const { tests } = await runJestInlineTest(`
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
       const { link, links, issue, tms } = require('allure-js-commons');
 
       it("link", async () => {
@@ -14,7 +15,8 @@ it("sets links", async () => {
         await tms("https://example.org/tasks/2");
         await links(...[{ url:"https://allurereport.org/1" }, { url:"https://allurereport.org/2" }]);
       })
-    `);
+    `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests).toEqual([

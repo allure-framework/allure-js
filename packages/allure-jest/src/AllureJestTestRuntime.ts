@@ -1,4 +1,3 @@
-import type { JestExpect } from "@jest/expect";
 import type { Global } from "@jest/types";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { MessageTestRuntime } from "allure-js-commons/sdk/runtime";
@@ -14,13 +13,7 @@ export class AllureJestTestRuntime extends MessageTestRuntime {
   }
 
   async sendMessage(message: RuntimeMessage) {
-    const { currentTestName, currentConcurrentTestName } = (this.context.expect as JestExpect).getState();
-    const testName = currentTestName || currentConcurrentTestName?.();
-
-    this.jestEnvironment.handleAllureRuntimeMessage({
-      currentTestName: testName as string,
-      message,
-    });
+    this.jestEnvironment.handleAllureRuntimeMessage(message);
 
     await Promise.resolve();
   }
