@@ -1,5 +1,5 @@
-// cjs: const { it } = require("mocha");
-// esm: import { it } from "mocha";
+// cjs: const { describe, it } = require("mocha");
+// esm: import { describe, it } from "mocha";
 
 describe("foo", async () => {
   describe("bar", async () => {

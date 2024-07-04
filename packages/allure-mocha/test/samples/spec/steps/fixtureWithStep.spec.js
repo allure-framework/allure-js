@@ -1,6 +1,6 @@
-// cjs: const { it, before } = require("mocha");
+// cjs: const { before, describe, it } = require("mocha");
 // cjs: const { step } = require("allure-js-commons");
-// esm: import { it } from "mocha";
+// esm: import { before, describe, it } from "mocha";
 // esm: import { step } from "allure-js-commons";
 
 describe("foo", () => {

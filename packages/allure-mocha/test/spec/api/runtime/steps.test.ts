@@ -119,7 +119,7 @@ describe("step", () => {
         status: Status.FAILED,
         stage: Stage.FINISHED,
         statusDetails: {
-          message: "baz: expected 'foo' to equal 'bar'",
+          message: "bar",
           trace: expect.stringMatching(/.+/),
         },
         steps: [
@@ -127,7 +127,7 @@ describe("step", () => {
             status: Status.FAILED,
             stage: Stage.FINISHED,
             statusDetails: {
-              message: "baz: expected 'foo' to equal 'bar'",
+              message: "bar",
               trace: expect.stringMatching(/.+/),
             },
           }),
