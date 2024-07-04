@@ -2,7 +2,7 @@ import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils.js";
 
-it("passed test", async () => {
+it("sets allure labels from env variables", async () => {
   const { tests } = await runCypressInlineTest(
     {
       "cypress/e2e/sample.cy.js": () => `
