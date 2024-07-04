@@ -12,6 +12,7 @@ import {
   FileSystemWriter,
   MessageWriter,
   ReporterRuntime,
+  getEnvironmentLabels,
   getSuiteLabels,
   parseTestPlan,
 } from "allure-js-commons/sdk/reporter";
@@ -211,6 +212,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
               name: LabelName.PACKAGE,
               value: packageLabel,
             },
+            ...getEnvironmentLabels(),
           ],
         },
         [scopeUuid],
