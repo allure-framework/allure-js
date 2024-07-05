@@ -222,4 +222,68 @@ describe("write video for failed tests only", () => {
       }),
     );
   });
+
+  it("attaches video for all tests in failed file", async () => {
+    const { tests, groups } = await runCypressInlineTest({
+      "cypress/e2e/sample.cy.js": () => `
+        it("foo", () => {
+          cy.wrap(1).eq(1);
+        });
+
+        it("bar", () => {
+          cy.wrap(1).eq(2);
+        });
+      `,
+      "cypress.config.js": () =>
+        `
+          const { allureCypress } = require("allure-cypress/reporter");
+
+          module.exports = {
+            e2e: {
+              baseUrl: "https://allurereport.org",
+              viewportWidth: 1240,
+              video: true,
+              testTimeout: 500,
+              setupNodeEvents: (on, config) => {
+                allureCypress(on, {
+                  videoOnFailOnly: true,
+                  links: [
+                    {
+                      type: "issue",
+                      urlTemplate: "https://allurereport.org/issues/%s"
+                    },
+                    {
+                      type: "tms",
+                      urlTemplate: "https://allurereport.org/tasks/%s"
+                    },
+                  ]
+                });
+
+                return config;
+              },
+            },
+          };
+        `,
+    });
+
+    expect(tests).toHaveLength(2);
+    expect(groups).toHaveLength(1);
+    expect(groups[0]).toEqual(
+      expect.objectContaining({
+        name: "Cypress video",
+        children: [tests[0].uuid, tests[1].uuid],
+        afters: [
+          expect.objectContaining({
+            name: "Cypress video",
+            attachments: [
+              expect.objectContaining({
+                name: "Cypress video",
+                type: ContentType.MP4,
+              }),
+            ],
+          }),
+        ],
+      }),
+    );
+  });
 });
