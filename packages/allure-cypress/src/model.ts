@@ -86,6 +86,7 @@ export type CypressTestEndMessage = {
     status: Status;
     statusDetails?: StatusDetails;
     stop: number;
+    retries: number;
   };
 };
 
