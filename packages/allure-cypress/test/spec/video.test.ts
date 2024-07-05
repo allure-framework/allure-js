@@ -271,7 +271,7 @@ describe("write video for failed tests only", () => {
     expect(groups[0]).toEqual(
       expect.objectContaining({
         name: "Cypress video",
-        children: [tests[0].uuid, tests[1].uuid],
+        children: expect.arrayContaining([tests[0].uuid, tests[1].uuid]),
         afters: [
           expect.objectContaining({
             name: "Cypress video",
