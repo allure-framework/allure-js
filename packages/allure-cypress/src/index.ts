@@ -342,6 +342,8 @@ const initializeAllure = () => {
       const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
       const runtimeMessages = Cypress.env("allureRuntimeMessages") as RuntimeMessage[];
       const unfinishedStepsMessages = getUnfinishedStepsMessages(runtimeMessages);
+      // @ts-ignore
+      const retries = test._retries ?? 0;
 
       unfinishedStepsMessages.forEach(() => {
         testRuntime.sendMessage({
@@ -352,12 +354,14 @@ const initializeAllure = () => {
           },
         });
       });
+
       testRuntime.sendMessage({
         type: "cypress_test_end",
         data: {
           id: test.id,
           status: Status.PASSED,
           stop: Date.now(),
+          retries,
         },
       });
     })
@@ -376,6 +380,8 @@ const initializeAllure = () => {
         message: err.message,
         trace: err.stack,
       };
+      // @ts-ignore
+      const retries = test._retries ?? 0;
 
       if (hasUnfinishedCommand) {
         testRuntime.sendMessage({
@@ -430,6 +436,7 @@ const initializeAllure = () => {
           status,
           statusDetails,
           stop: testStartMessage.data.start + (test.duration ?? 0),
+          retries,
         },
       });
     })
@@ -440,6 +447,9 @@ const initializeAllure = () => {
       if (testPlan && !isTestPresentInTestPlan(Cypress.currentTest, Cypress.spec, testPlan)) {
         return;
       }
+
+      // @ts-ignore
+      const retries = test._retries ?? 0;
 
       testRuntime.sendMessageAsync({
         type: "cypress_test_start",
@@ -457,6 +467,7 @@ const initializeAllure = () => {
           id: test.id,
           status: Status.SKIPPED,
           stop: Date.now(),
+          retries,
         },
       });
     })

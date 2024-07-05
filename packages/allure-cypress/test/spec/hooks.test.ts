@@ -282,3 +282,24 @@ it("reports before each and after each hooks inside suite", async () => {
     ]),
   );
 });
+
+// see: https://github.com/allure-framework/allure-js/issues/930
+it("reports manually skipped tests in hooks", async () => {
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": () => `
+    describe("suite", () => {
+      beforeEach(function () {
+        this.skip();
+      });
+
+      it("skipped", () => {
+        cy.wrap(1).should("eq", 1);
+      });
+    });
+  `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].status).toBe(Status.SKIPPED);
+  expect(tests[0].stage).toBe(Stage.FINISHED);
+});

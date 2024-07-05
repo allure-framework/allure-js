@@ -177,6 +177,13 @@ export class AllureCypress {
           result.stage = Stage.FINISHED;
           result.status = message.data.status;
 
+          if (message.data.retries > 0) {
+            result.parameters.push({
+              name: "Retry",
+              value: message.data.retries.toString(),
+            });
+          }
+
           if (!message.data.statusDetails) {
             return;
           }
