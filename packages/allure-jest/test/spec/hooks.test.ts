@@ -111,6 +111,35 @@ it("reports before and after each hooks", async () => {
   );
 });
 
+it("should report beforeAll/afterAll for tests in sub-suites", async () => {
+  const { tests, groups } = await runJestInlineTest({
+    "sample.test.js": `
+      beforeAll(() => {});
+      afterAll(() => {});
+
+      describe("", () => {
+        it("foo", () => {});
+      });
+    `,
+  });
+
+  const [{ uuid: testUuid }] = tests;
+
+  expect(groups).toHaveLength(2);
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "beforeAll",
+        children: [testUuid],
+      }),
+      expect.objectContaining({
+        name: "afterAll",
+        children: [testUuid],
+      }),
+    ]),
+  );
+});
+
 it("reports failed hooks", async () => {
   const { tests, groups } = await runJestInlineTest({
     "sample.test.js": `

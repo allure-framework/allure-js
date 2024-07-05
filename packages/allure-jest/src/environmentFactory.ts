@@ -191,7 +191,6 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      const scopeUuid = last(this.runContext.scopes);
       const threadLabel = ALLURE_THREAD_NAME || JEST_WORKER_ID || process.pid.toString();
       const hostLabel = ALLURE_HOST_NAME || hostname;
       const packageLabel = dirname(this.testPath).split(sep).join(".");
@@ -216,7 +215,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
             ...getEnvironmentLabels(),
           ],
         },
-        [scopeUuid],
+        this.runContext.scopes,
       );
 
       this.runtime.updateTest(testUuid, (result) => {
