@@ -4,7 +4,13 @@ import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { isPromise } from "allure-js-commons/sdk";
 import type { Config, FixtureType } from "allure-js-commons/sdk/reporter";
-import { FileSystemWriter, MessageWriter, ReporterRuntime, getSuiteLabels } from "allure-js-commons/sdk/reporter";
+import {
+  FileSystemWriter,
+  MessageWriter,
+  ReporterRuntime,
+  getEnvironmentLabels,
+  getSuiteLabels,
+} from "allure-js-commons/sdk/reporter";
 import { MessageTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import type { JasmineBeforeAfterFn } from "./model.js";
 import { findAnyError, findMessageAboutThrow } from "./utils.js";
@@ -143,6 +149,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
       const suitesLabels = getSuiteLabels(specPath);
 
       result.labels.push(...suitesLabels);
+      result.labels.push(...getEnvironmentLabels());
 
       if (spec.status === "pending" || spec.status === "disabled" || spec.status === "excluded") {
         result.status = Status.SKIPPED;

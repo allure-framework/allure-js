@@ -21,6 +21,7 @@ import {
   ReporterRuntime,
   applyLinkTemplate,
   createStepResult,
+  getEnvironmentLabels,
   getWorstStepResultStatus,
   md5,
 } from "allure-js-commons/sdk/reporter";
@@ -255,6 +256,7 @@ export default class AllureCucumberReporter extends Formatter {
       fullName,
     };
 
+    result.labels!.push(...getEnvironmentLabels());
     result.labels!.push(
       {
         name: LabelName.HOST,

@@ -4,7 +4,7 @@ import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
 import { env } from "node:process";
 import type { CollectionDefinition, Event, HeaderList, Item, Request, Response } from "postman-collection";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
-import { FileSystemWriter, MessageWriter, ReporterRuntime } from "allure-js-commons/sdk/reporter";
+import { FileSystemWriter, MessageWriter, ReporterRuntime, getEnvironmentLabels } from "allure-js-commons/sdk/reporter";
 import type { AllureNewmanConfig, PmItem, RunningItem } from "./model.js";
 import { extractMeta } from "./utils.js";
 
@@ -98,6 +98,7 @@ class AllureReporter {
         { name: LabelName.FRAMEWORK, value: "newman" },
         { name: LabelName.HOST, value: "localhost" },
         ...labels,
+        ...getEnvironmentLabels(),
       ],
     });
 

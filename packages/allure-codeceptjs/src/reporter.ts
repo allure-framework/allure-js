@@ -3,7 +3,13 @@ import path from "node:path";
 import { env } from "node:process";
 import { LabelName, Stage, Status, type StepResult } from "allure-js-commons";
 import { type RuntimeMessage, extractMetadataFromString, getMessageAndTraceFromError } from "allure-js-commons/sdk";
-import { FileSystemWriter, MessageWriter, ReporterRuntime, md5 } from "allure-js-commons/sdk/reporter";
+import {
+  FileSystemWriter,
+  MessageWriter,
+  ReporterRuntime,
+  getEnvironmentLabels,
+  md5,
+} from "allure-js-commons/sdk/reporter";
 import type { Config } from "allure-js-commons/sdk/reporter";
 import { extractMeta } from "./helpers.js";
 import type { CodeceptError, CodeceptHook, CodeceptStep, CodeceptTest } from "./model.js";
@@ -72,6 +78,7 @@ export class AllureCodeceptJsReporter {
       result.labels.push(...titleMetadata.labels);
       result.labels.push({ name: LabelName.LANGUAGE, value: "javascript" });
       result.labels.push({ name: LabelName.FRAMEWORK, value: "codeceptjs" });
+      result.labels.push(...getEnvironmentLabels());
 
       if (test?.parent?.title) {
         result.labels.push({

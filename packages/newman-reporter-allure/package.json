@@ -47,7 +47,7 @@
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
-    "test": "ALLURE_TEST_MODE=1 vitest run"
+    "test": "ALLURE_TEST_MODE=1 ALLURE_LABEL_A=a ALLURE_LABEL_B=b vitest run"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"

@@ -28,6 +28,7 @@ import {
   MessageWriter,
   ReporterRuntime,
   escapeRegExp,
+  getEnvironmentLabels,
   md5,
   parseTestPlan,
   readImageAsBase64,
@@ -178,7 +179,7 @@ export class AllureReporter implements ReporterV2 {
     const testCaseIdBase = `${relativeFile}#${nameSuites}${test.title}`;
     const result: Partial<TestResult> = {
       name: titleMetadata.cleanTitle,
-      labels: [...titleMetadata.labels],
+      labels: [...titleMetadata.labels, ...getEnvironmentLabels()],
       links: [],
       parameters: [],
       testCaseId: md5(testCaseIdBase),
