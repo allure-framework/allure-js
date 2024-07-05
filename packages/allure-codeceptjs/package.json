@@ -68,11 +68,12 @@
     "eslint-plugin-n": "^17.0.0",
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "expect": "^29.7.0",
     "npm-run-all2": "^6.1.2",
     "rimraf": "^5.0.1",
-    "ts-node": "^10.9.2",
     "typescript": "^5.2.2",
     "vitest": "^1.6.0"
+  },
+  "peerDependencies": {
+    "codeceptjs": ">=2.3.6"
   }
 }

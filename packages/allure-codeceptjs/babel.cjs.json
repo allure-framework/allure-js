@@ -9,12 +9,12 @@
     [
       "@babel/preset-env",
       {
-        "modules": "commonjs",
+        "modules": "commonjs"
       }
     ]
   ],
   "plugins": [
-    "babel-plugin-add-module-exports",
+    "babel-plugin-add-module-exports"
   ],
   "targets": {
     "esmodules": false,

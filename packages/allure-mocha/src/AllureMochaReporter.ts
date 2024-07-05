@@ -245,7 +245,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       return;
     }
 
-    const name = hook.originalTitle ?? "";
+    const name = hook.originalTitle ?? hook.title ?? "";
     if (hookCategory) {
       this.currentHook = this.runtime.startFixture(scopeUuid, hookCategory, { name });
     }

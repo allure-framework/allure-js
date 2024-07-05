@@ -47,25 +47,20 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@jest/expect": "^29.7.0",
-    "allure-js-commons": "workspace:*",
-    "jest-circus": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
-    "jest-environment-node": "^29.7.0"
+    "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.6",
     "@babel/core": "^7.24.6",
     "@babel/preset-env": "^7.24.6",
     "@babel/preset-typescript": "^7.24.6",
-    "@jest/core": "^29.7.0",
     "@jest/environment": "^29.7.0",
+    "@jest/expect": "^29.7.0",
     "@jest/types": "^29.6.3",
     "@types/babel__core": "^7",
     "@types/babel__preset-env": "^7",
     "@types/eslint": "^8",
     "@types/node": "^20.14.2",
-    "@types/source-map-support": "^0.5.7",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "allure-commandline": "^2.29.0",
@@ -79,12 +74,31 @@
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "jest-cli": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-environment-node": "^29.7.0",
     "npm-run-all2": "^6.1.2",
     "rimraf": "^5.0.1",
-    "source-map-support": "^0.5.21",
-    "ts-node": "^10.9.2",
-    "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "vitest": "^1.6.0"
+  },
+  "peerDependencies": {
+    "jest": ">=28.0.0",
+    "jest-cli": ">=28.0.0",
+    "jest-environment-jsdom": ">=28.0.0",
+    "jest-environment-node": ">=28.0.0"
+  },
+  "peerDependenciesMeta": {
+    "jest": {
+      "optional": true
+    },
+    "jest-cli": {
+      "optional": true
+    },
+    "jest-environment-jsdom": {
+      "optional": true
+    },
+    "jest-environment-node": {
+      "optional": true
+    }
   }
 }

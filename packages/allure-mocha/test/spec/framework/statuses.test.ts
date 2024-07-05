@@ -29,7 +29,7 @@ describe("test status", () => {
       status: Status.FAILED,
       stage: Stage.FINISHED,
       statusDetails: {
-        message: "baz: expected 'foo' to equal 'bar'",
+        message: "foo",
         trace: expect.stringMatching(/.+/),
       },
     });

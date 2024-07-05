@@ -211,7 +211,7 @@ abstract class AllureMochaTestRunner {
 
 class AllureMochaCliTestRunner extends AllureMochaTestRunner {
   getFilesToCopy = (testDir: string) => [this.getCopyEntry("reporter.cjs", testDir)];
-  getScriptPath = () => path.resolve(require.resolve("mocha"), "../bin/mocha.js");
+  getScriptPath = () => this.#resolveMochaScript();
   getScriptArgs = () => {
     const args = ["--no-color", "--reporter", "./reporter.cjs", "**/*.spec.*"];
     if (this.config.environmentInfo) {
@@ -221,6 +221,12 @@ class AllureMochaCliTestRunner extends AllureMochaTestRunner {
       args.push("--reporter-option", `categories=${this.encodeCategories()}`);
     }
     return args;
+  };
+
+  #resolveMochaScript = () => {
+    const mochaPath = path.resolve(require.resolve("mocha"), "../bin/mocha");
+    const versionMatch = /mocha-npm-(\d+)\.\d+.\d+/.exec(mochaPath);
+    return versionMatch && parseInt(versionMatch[1], 10) < 10 ? mochaPath : `${mochaPath}.js`;
   };
 }
 
