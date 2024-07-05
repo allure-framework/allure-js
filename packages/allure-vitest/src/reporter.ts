@@ -84,7 +84,7 @@ export default class AllureVitestReporter implements Reporter {
     const testFullname = getTestFullName(task, cwd());
     const testUuid = this.allureReporterRuntime!.startTest({
       name: testDisplayName,
-      start: task.result?.startTime ?? Date.now(),
+      start: task.result?.startTime,
     });
 
     this.allureReporterRuntime!.updateTest(testUuid, (result) => {
@@ -137,8 +137,7 @@ export default class AllureVitestReporter implements Reporter {
         }
       }
     });
-    const stop = task.result?.startTime ? task.result.startTime + (task.result.duration ?? 0) : undefined;
-    this.allureReporterRuntime!.stopTest(testUuid, stop);
+    this.allureReporterRuntime!.stopTest(testUuid, { duration: task.result?.duration ?? 0 });
     this.allureReporterRuntime!.writeTest(testUuid);
   }
 }

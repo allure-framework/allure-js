@@ -259,7 +259,7 @@ export class AllureReporter implements ReporterV2 {
         stepResult.statusDetails = { ...getMessageAndTraceFromError(step.error) };
       }
     });
-    this.allureRuntime!.stopStep(currentStep, step.startTime.getTime() + step.duration);
+    this.allureRuntime!.stopStep(currentStep, { duration: step.duration });
   }
 
   async onTestEnd(test: TestCase, result: PlaywrightTestResult) {
@@ -363,7 +363,7 @@ export class AllureReporter implements ReporterV2 {
       testResult.labels = newLabels;
     });
 
-    this.allureRuntime!.stopTest(testUuid, result.startTime.getTime() + result.duration);
+    this.allureRuntime!.stopTest(testUuid, { duration: result.duration });
     this.allureRuntime!.writeTest(testUuid);
   }
 

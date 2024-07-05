@@ -252,7 +252,7 @@ export default class AllureCucumberReporter extends Formatter {
       labels: [],
       links: [],
       testCaseId: md5(fullName),
-      start: Date.now(),
+      start: data.timestamp.nanos / 1000,
       fullName,
     };
 
@@ -338,7 +338,7 @@ export default class AllureCucumberReporter extends Formatter {
         };
       }
     });
-    this.allureRuntime.stopTest(testUuid);
+    this.allureRuntime.stopTest(testUuid, { stop: data.timestamp.nanos / 1000 });
     this.allureRuntime.writeTest(testUuid);
     this.testResultUuids.delete(data.testCaseStartedId);
 
@@ -373,6 +373,7 @@ export default class AllureCucumberReporter extends Formatter {
       const fixtureUuid = this.allureRuntime.startFixture(scopeUuid, type, {
         name,
         stage: Stage.RUNNING,
+        start: data.timestamp.nanos / 1000,
       });
       if (fixtureUuid) {
         this.fixtureUuids.set(data.testCaseStartedId, fixtureUuid);
@@ -399,7 +400,7 @@ export default class AllureCucumberReporter extends Formatter {
     const stepUuid = this.allureRuntime.startStep(testUuid, undefined, {
       ...createStepResult(),
       name: `${stepKeyword}${stepPickle.text}`,
-      start: data.timestamp.nanos,
+      start: data.timestamp.nanos / 1000,
     });
 
     if (!stepPickle.argument?.dataTable) {
@@ -443,8 +444,7 @@ export default class AllureCucumberReporter extends Formatter {
           });
         }
       });
-      // TODO stop from duration? use data.timestamp.nanos?
-      this.allureRuntime.stopFixture(fixtureUuid);
+      this.allureRuntime.stopFixture(fixtureUuid, { stop: data.timestamp.nanos / 1000 });
       this.fixtureUuids.delete(data.testCaseStartedId);
       return;
     }
@@ -475,8 +475,7 @@ export default class AllureCucumberReporter extends Formatter {
       }
     });
 
-    // TODO stop from duration? use data.timestamp.nanos?
-    this.allureRuntime.stopStep(currentStep);
+    this.allureRuntime.stopStep(currentStep, { stop: data.timestamp.nanos / 1000 });
   }
 
   private onAttachment(message: messages.Attachment): void {

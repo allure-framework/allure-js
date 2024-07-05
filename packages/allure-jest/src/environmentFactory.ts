@@ -96,10 +96,10 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
           this.#handleTestStart(event.test);
           break;
         case "test_todo":
-          this.#handleTestTodo();
+          this.#handleTestTodo(event.test);
           break;
         case "test_fn_success":
-          this.#handleTestPass();
+          this.#handleTestPass(event.test);
           break;
         case "test_fn_failure":
           this.#handleTestFail(event.test);
@@ -199,6 +199,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         {
           name: test.name,
           fullName: newTestFullName,
+          start: test.startedAt ?? undefined,
           labels: [
             {
               name: LabelName.LANGUAGE,
@@ -235,12 +236,12 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       return testUuid;
     }
 
-    #stopTest(testUuid: string) {
+    #stopTest(testUuid: string, duration: number) {
       if (!testUuid) {
         return;
       }
 
-      this.runtime.stopTest(testUuid);
+      this.runtime.stopTest(testUuid, { duration });
       this.runtime.writeTest(testUuid);
     }
 
@@ -256,7 +257,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       });
     }
 
-    #handleTestPass() {
+    #handleTestPass(test: Circus.TestEntry) {
       const testUuid = this.runContext.executables.pop();
 
       if (!testUuid) {
@@ -267,7 +268,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         result.stage = Stage.FINISHED;
         result.status = Status.PASSED;
       });
-      this.#stopTest(testUuid);
+      this.#stopTest(testUuid, test.duration ?? 0);
     }
 
     #handleTestFail(test: Circus.TestEntry) {
@@ -291,7 +292,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
           ...details,
         };
       });
-      this.#stopTest(testUuid);
+      this.#stopTest(testUuid, test.duration ?? 0);
     }
 
     #handleTestSkip(test: Circus.TestEntry) {
@@ -311,10 +312,10 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         result.stage = Stage.PENDING;
         result.status = Status.SKIPPED;
       });
-      this.#stopTest(testUuid);
+      this.#stopTest(testUuid, test.duration ?? 0);
     }
 
-    #handleTestTodo() {
+    #handleTestTodo(test: Circus.TestEntry) {
       const testUuid = this.runContext.executables.pop();
 
       if (!testUuid) {
@@ -325,7 +326,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         result.stage = Stage.PENDING;
         result.status = Status.SKIPPED;
       });
-      this.#stopTest(testUuid);
+      this.#stopTest(testUuid, test.duration ?? 0);
     }
 
     #handleRunFinish() {
