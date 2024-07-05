@@ -12,11 +12,11 @@ export const runCodeceptJsInlineTest = async (
   env?: Record<string, string>,
 ): Promise<AllureResults> => {
   const testFiles = {
-    "codecept.conf.js": await readFile(resolvePath(__dirname, "./fixtures/codecept.conf.js"), "utf-8"),
-    "helper.js": await readFile(resolvePath(__dirname, "./fixtures/helper.js"), "utf-8"),
+    "codecept.conf.js": await readFile(resolvePath(__dirname, "./samples/codecept.conf.js"), "utf-8"),
+    "helper.js": await readFile(resolvePath(__dirname, "./samples/helper.js"), "utf-8"),
     ...files,
   };
-  const testDir = join(__dirname, "temp", randomUUID());
+  const testDir = join(__dirname, "fixtures", randomUUID());
 
   await step(`create test dir ${testDir}`, async () => {
     await mkdir(testDir, { recursive: true });
@@ -60,13 +60,11 @@ export const runCodeceptJsInlineTest = async (
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   testProcess.on("message", messageReader.handleMessage);
 
-  testProcess.on("close", async () => {
-    await rm(testDir, { recursive: true });
-  });
-
   return new Promise((resolve) => {
-    testProcess.on("exit", () => {
-      messageReader.attachResults();
+    testProcess.on("exit", async () => {
+      await messageReader.attachResults();
+      await rm(testDir, { recursive: true });
+
       return resolve(messageReader.results);
     });
   });

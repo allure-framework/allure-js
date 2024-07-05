@@ -15,7 +15,7 @@ it("single step", async () => {
       });
     });
   `,
-    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../samples/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
@@ -43,7 +43,7 @@ it("multiple steps", async () => {
       });
     });
   `,
-    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../samples/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
@@ -71,7 +71,7 @@ it("nested steps", async () => {
       });
     });
   `,
-    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../samples/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
@@ -95,7 +95,7 @@ it("step with attachments", async () => {
       })
     });
   `,
-    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../samples/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
@@ -129,7 +129,7 @@ it("step with assertion error", async () => {
       });
     });
   `,
-    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../samples/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
@@ -175,7 +175,7 @@ it("step with unexpected error", async () => {
       });
     });
   `,
-    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../samples/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
@@ -219,7 +219,7 @@ it("step runtime api", async () => {
       });
     });
   `,
-    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../samples/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);

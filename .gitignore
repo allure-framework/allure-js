@@ -42,3 +42,5 @@ schema
 build
 **/allure-results
 **/.nyc_output
+**/test/fixtures/
+**/test-results/

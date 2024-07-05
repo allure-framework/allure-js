@@ -12,7 +12,7 @@ it("sets description", async () => {
         await allure.description("foo");
       })
     `,
-    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../samples/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
@@ -28,7 +28,7 @@ it("sets html description", async () => {
         await allure.descriptionHtml("foo");
       })
     `,
-    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../samples/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);

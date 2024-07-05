@@ -13,8 +13,8 @@ export const runCucumberInlineTest = async (
   testPlan?: TestPlanV1,
   env?: Record<string, string>,
 ): Promise<AllureResults> => {
-  const fixturesPath = join(__dirname, "fixtures");
-  const testDir = join(__dirname, "fixtures/temp", randomUUID());
+  const samplesPath = join(__dirname, "samples");
+  const testDir = join(__dirname, "fixtures", randomUUID());
   const configFilePath = join(testDir, "config.js");
   const reporterFilePath = join(testDir, "reporter.js");
   const featuresTempPath = join(testDir, "features");
@@ -101,7 +101,7 @@ export const runCucumberInlineTest = async (
 
   for (const feature of features) {
     await step(`features/${feature}.feature`, async () => {
-      const featurePath = join(fixturesPath, "features", `${feature}.feature`);
+      const featurePath = join(samplesPath, "features", `${feature}.feature`);
 
       await copyFile(featurePath, join(featuresTempPath, `${feature}.feature`));
       await attachmentPath(`features/${feature}.feature`, featurePath, { contentType: "text/plain" });
@@ -110,7 +110,7 @@ export const runCucumberInlineTest = async (
 
   for (const stepsDef of stepsDefs) {
     await step(`support/${stepsDef}.cjs`, async () => {
-      const stepsDefPath = join(fixturesPath, "support", `${stepsDef}.cjs`);
+      const stepsDefPath = join(samplesPath, "support", `${stepsDef}.cjs`);
       const supportFilePath = join(supportTempPath, `${stepsDef}.js`);
 
       await mkdir(dirname(supportFilePath), { recursive: true });

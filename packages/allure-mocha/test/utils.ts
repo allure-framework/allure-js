@@ -1,7 +1,7 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { appendFileSync } from "node:fs";
-import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import * as path from "node:path";
 import { attachment, attachmentPath, parameter, step } from "allure-js-commons";
 import type { AllureResults, Category } from "allure-js-commons/sdk";
@@ -41,13 +41,14 @@ const uncommentPattern = new Map<ModuleFormat, RegExp>([
 ]);
 
 abstract class AllureMochaTestRunner {
-  readonly fixturesPath: string;
   readonly samplesPath: string;
+  readonly specsPath: string;
   readonly runResultsDir: string;
+
   constructor(protected readonly config: MochaRunOptions) {
-    this.fixturesPath = path.join(__dirname, "fixtures");
-    this.samplesPath = path.join(this.fixturesPath, "samples");
-    this.runResultsDir = path.join(this.fixturesPath, "run-results");
+    this.samplesPath = path.join(__dirname, "samples");
+    this.specsPath = path.join(this.samplesPath, "spec");
+    this.runResultsDir = path.join(__dirname, "fixtures");
   }
 
   run = async (...samples: readonly (string | readonly string[])[]) => {
@@ -61,7 +62,7 @@ abstract class AllureMochaTestRunner {
     const filesToCopy = [...this.getFilesToCopy(testDir)];
     const filesToTransform = [
       ...this.getFilesToTransform(testDir),
-      ...samples.map((sample) => this.getSampleEntry(sample, this.samplesPath, testDir)),
+      ...samples.map((sample) => this.getSampleEntry(sample, this.specsPath, testDir)),
     ];
     const scriptArgs = this.getScriptArgs();
 
@@ -154,6 +155,8 @@ abstract class AllureMochaTestRunner {
     return await new Promise<AllureResults>((resolve, reject) => {
       testProcess.on("exit", async (code, signal) => {
         await messageReader.attachResults();
+        await rm(testDir, { recursive: true });
+
         if ((code ?? -1) >= 0 && !signal) {
           resolve(messageReader.results);
         } else if (signal) {
@@ -166,7 +169,7 @@ abstract class AllureMochaTestRunner {
   };
 
   protected getCopyEntry = (name: string, testDir: string): [string, string] => [
-    path.join(this.fixturesPath, name),
+    path.join(this.samplesPath, name),
     path.join(testDir, name),
   ];
 
@@ -174,7 +177,7 @@ abstract class AllureMochaTestRunner {
     name: string,
     format: ModuleFormat,
     testDir: string,
-    srcDir: string = this.fixturesPath,
+    srcDir: string = this.samplesPath,
   ): [string, string, RegExp] => {
     return [
       path.join(srcDir, `${name}.js`),
@@ -228,6 +231,7 @@ class AllureMochaCodeTestRunner extends AllureMochaTestRunner {
   ) {
     super(config);
   }
+
   getFilesToTransform = (testDir: string) => [this.getTransformEntry("runner", this.runnerFormat, testDir)];
   getScriptPath = (testDir: string) => path.join(testDir, `runner${getFormatExt(this.runnerFormat)}`);
   getScriptArgs = () => {
@@ -256,5 +260,6 @@ export const runMochaInlineTest = async (
 
   const runner =
     RUNNER === "cli" ? new AllureMochaCliTestRunner(options) : new AllureMochaCodeTestRunner(options, RUNNER);
+
   return await runner.run(...samples);
 };

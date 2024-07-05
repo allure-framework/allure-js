@@ -10,11 +10,11 @@ export const runJasmineInlineTest = async (
   files: Record<string, string>,
   env?: Record<string, string>,
 ): Promise<AllureResults> => {
-  const testDir = join(__dirname, "temp", randomUUID());
+  const testDir = join(__dirname, "fixtures", randomUUID());
   const testFiles = {
-    "spec/support/jasmine.json": await readFile(join(__dirname, "./fixtures/spec/support/jasmine.json"), "utf8"),
+    "spec/support/jasmine.json": await readFile(join(__dirname, "./samples/spec/support/jasmine.json"), "utf8"),
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    "spec/helpers/allure.js": require("./fixtures/spec/helpers/modern/allure.cjs"),
+    "spec/helpers/allure.js": require("./samples/spec/helpers/modern/allure.cjs"),
     ...files,
   };
 

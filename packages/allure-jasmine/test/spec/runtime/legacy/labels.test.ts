@@ -39,7 +39,7 @@ it("sets labels", async () => {
         await labels({ name: "test", value: "testValue" }, { name: "test2", value: "testValue2" });
       })
     `,
-    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../samples/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);
