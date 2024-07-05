@@ -179,7 +179,7 @@ export class AllureCypress {
 
           if (message.data.retries > 0) {
             result.parameters.push({
-              name: "Retries",
+              name: "Retry",
               value: message.data.retries.toString(),
             });
           }

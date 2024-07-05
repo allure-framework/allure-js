@@ -45,7 +45,7 @@ it("handles tests retries", async () => {
   expect(tests[0].stage).toBe(Stage.FINISHED);
   expect(tests[0].parameters).toContainEqual(
     expect.objectContaining({
-      name: "Retries",
+      name: "Retry",
       value: "2",
     }),
   );
