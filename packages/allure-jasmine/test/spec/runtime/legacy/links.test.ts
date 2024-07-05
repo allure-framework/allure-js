@@ -18,7 +18,7 @@ it("sets links", async () => {
         await links(...[{ url:"https://allurereport.org/1" }, { url:"https://allurereport.org/2" }]);
       })
     `,
-    "spec/helpers/allure.js": require(resolve(__dirname, "../../../fixtures/spec/helpers/legacy/allure.cjs")),
+    "spec/helpers/allure.js": require(resolve(__dirname, "../../../samples/spec/helpers/legacy/allure.cjs")),
   });
 
   expect(tests).toHaveLength(1);

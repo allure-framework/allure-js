@@ -132,6 +132,8 @@ export const runCypressInlineTest = async (
 
         return resolve(res);
       } catch (err) {
+        await rm(testDir, { recursive: true });
+
         return reject(err);
       }
     });

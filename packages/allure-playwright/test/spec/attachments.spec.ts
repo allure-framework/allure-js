@@ -49,7 +49,7 @@ it("adds snapshots correctly and provide a screenshot diff", async () => {
       });
     `,
     "sample.test.js-snapshots/foo-project.png": readFileSync(
-      resolve(__dirname, "../assets/attachment-1-not-expected.png"),
+      resolve(__dirname, "../samples/attachment-1-not-expected.png"),
     ),
   });
 
