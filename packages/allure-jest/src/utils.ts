@@ -45,10 +45,17 @@ export const getTestId = (path: string[]): string => path.join(" ");
  */
 export const getTestFullName = (path: string[]): string => path.join(" > ");
 
-export const shouldHookBeSkipped = (hook: Circus.Hook): boolean => {
-  const errorFirstLine = hook?.asyncError?.stack?.split("\n")?.[1]?.trim() || "";
+const jestHookPattern = /^at jestAdapter/i;
+// A slightly different reference should be used to identify jestAdapter's global hook in some older versions of Jest.
+const jestHookLegacyPattern = /jest-circus\/build\/legacy-code-todo-rewrite\/jestAdapter.js:\d+:\d+$/;
 
-  return /^at jestAdapter/i.test(errorFirstLine);
+export const shouldHookBeSkipped = (hook: Circus.Hook): boolean => {
+  // In older versions of Jest the hook's stack is direcrly in asyncError. In newer ones - in asyncError.stack.
+  const stackOrError: string | Error | undefined = hook?.asyncError;
+  const stack = typeof stackOrError === "string" ? stackOrError : stackOrError?.stack;
+  const errorFirstLine = stack?.split("\n")?.[1]?.trim() || "";
+
+  return jestHookPattern.test(errorFirstLine) || jestHookLegacyPattern.test(errorFirstLine);
 };
 
 export const last = <T>(array: T[]): T => array[array.length - 1];
