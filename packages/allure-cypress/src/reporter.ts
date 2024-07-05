@@ -9,8 +9,8 @@ import {
   getSuiteLabels,
   parseTestPlan,
 } from "allure-js-commons/sdk/reporter";
-import type { Config } from "allure-js-commons/sdk/reporter";
 import type {
+  AllureCypressConfig,
   CypressHookEndMessage,
   CypressHookStartMessage,
   CypressMessage,
@@ -23,10 +23,12 @@ export class AllureCypress {
   messagesByAbsolutePath = new Map<string, CypressMessage[]>();
   runContextByAbsolutePath = new Map<string, RunContextByAbsolutePath>();
   globalHooksMessages: CypressMessage[] = [];
+  videoOnFailOnly: boolean = false;
 
-  constructor(config?: Config) {
-    const { resultsDir = "./allure-results", ...rest } = config || {};
+  constructor(config?: AllureCypressConfig) {
+    const { resultsDir = "./allure-results", videoOnFailOnly = false, ...rest } = config || {};
 
+    this.videoOnFailOnly = videoOnFailOnly;
     this.allureRuntime = new ReporterRuntime({
       writer: new FileSystemWriter({
         resultsDir,
@@ -76,6 +78,12 @@ export class AllureCypress {
   endSpec(spec: Cypress.Spec, cypressVideoPath?: string) {
     const specMessages = this.messagesByAbsolutePath.get(spec.absolute) ?? [];
     const runContext = this.runContextByAbsolutePath.get(spec.absolute)!;
+    const isSpecFailed = specMessages.some(
+      (message) =>
+        message.type === "cypress_test_end" &&
+        (message.data.status === Status.FAILED || message.data.status === Status.BROKEN),
+    );
+    const shouldVideoBeAttached = (!this.videoOnFailOnly || isSpecFailed) && cypressVideoPath;
 
     specMessages.forEach((message, i) => {
       // we add cypressTestId to messages where it's possible because the field is very useful to glue data
@@ -233,7 +241,7 @@ export class AllureCypress {
       this.allureRuntime.applyRuntimeMessages(last(runContext.executables)!, [message] as RuntimeMessage[]);
     });
 
-    if (cypressVideoPath) {
+    if (shouldVideoBeAttached) {
       const fixtureUuid = this.allureRuntime.startFixture(runContext.scopes[0], "after", {
         name: "Cypress video",
         status: Status.PASSED,
@@ -277,7 +285,7 @@ export class AllureCypress {
   }
 }
 
-export const allureCypress = (on: Cypress.PluginEvents, allureConfig?: Config) => {
+export const allureCypress = (on: Cypress.PluginEvents, allureConfig?: AllureCypressConfig) => {
   const allureCypressReporter = new AllureCypress(allureConfig);
 
   allureCypressReporter.attachToCypress(on);

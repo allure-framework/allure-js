@@ -185,6 +185,28 @@ module.exports = {
 };
 ```
 
+## Write video attachments for failed tests only
+
+If you want to see Cypress videos only for failed or broken tests in your Allure report, you can use the `videoOnFailOnly` option:
+
+```diff
+const { allureCypress } = require("allure-cypress/reporter");
+
+module.exports = {
+  // ...
+  e2e: {
++    video: true,
+    setupNodeEvents: (on, config) => {
+      allureCypress(on, {
++        videoOnFailOnly: true,
+      });
+
+      return config;
+    },
+  },
+};
+```
+
 ## Known issues
 
 ### Global hooks reporting
