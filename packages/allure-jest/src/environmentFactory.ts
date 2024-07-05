@@ -95,6 +95,9 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         case "test_start":
           this.#handleTestStart(event.test);
           break;
+        case "test_done":
+          this.#handleTestDone();
+          break;
         case "test_todo":
           this.#handleTestTodo(event.test);
           break;
@@ -124,15 +127,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     }
 
     #handleSuiteStart() {
-      const scopeUuid = this.runtime.startScope();
-
-      this.runContext.scopes.push(scopeUuid);
+      this.#startScope();
     }
 
     #handleSuiteEnd() {
-      const scopeUuid = this.runContext.scopes.pop()!;
-
-      this.runtime.writeScope(scopeUuid);
+      this.#stopScope();
     }
 
     #handleHookStart(hook: Circus.Hook) {
@@ -194,6 +193,8 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const threadLabel = ALLURE_THREAD_NAME || JEST_WORKER_ID || process.pid.toString();
       const hostLabel = ALLURE_HOST_NAME || hostname;
       const packageLabel = dirname(this.testPath).split(sep).join(".");
+
+      this.#startScope();
       const testUuid = this.runtime.startTest(
         {
           name: test.name,
@@ -254,6 +255,22 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       this.runtime.updateTest(testUuid, (result) => {
         result.stage = Stage.RUNNING;
       });
+    }
+
+    #handleTestDone() {
+      this.#stopScope();
+    }
+
+    #startScope() {
+      const scopeUuid = this.runtime.startScope();
+
+      this.runContext.scopes.push(scopeUuid);
+    }
+
+    #stopScope() {
+      const scopeUuid = this.runContext.scopes.pop()!;
+
+      this.runtime.writeScope(scopeUuid);
     }
 
     #handleTestPass(test: Circus.TestEntry) {
