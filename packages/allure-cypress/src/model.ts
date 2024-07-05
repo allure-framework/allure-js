@@ -1,9 +1,14 @@
 import type { Status, StatusDetails } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
+import type { Config } from "allure-js-commons/sdk/reporter";
 
 export const ALLURE_REPORT_SYSTEM_HOOK = "__allure_report_system_hook__";
 
 export const ALLURE_REPORT_STEP_COMMAND = "__allure_report_step_command__";
+
+export type AllureCypressConfig = Config & {
+  videoOnFailOnly?: boolean;
+};
 
 export type CypressTest = Mocha.Test & {
   wallClockStartedAt?: Date;
