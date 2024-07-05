@@ -29,9 +29,13 @@ import { resolveWriter } from "./writer/loader.js";
 
 interface StepStack {
   clear(): void;
+
   removeRoot(rootUuid: string): void;
+
   currentStep(rootUuid: string): string | undefined;
+
   addStep(rootUuid: string, stepUuid: string): void;
+
   removeStep(stepUuid: string): void;
 }
 
@@ -161,7 +165,7 @@ export class ReporterRuntime {
     updateFunc(fixture);
   };
 
-  stopFixture = (uuid: string, stop?: number): void => {
+  stopFixture = (uuid: string, opts?: { stop?: number; duration?: number }): void => {
     const fixture = this.state.getFixtureResult(uuid);
     if (!fixture) {
       // eslint-disable-next-line no-console
@@ -169,7 +173,10 @@ export class ReporterRuntime {
       return;
     }
 
-    fixture.stop = stop ?? Date.now();
+    const startStop = this.#calculateTimings(fixture.start, opts?.stop, opts?.duration);
+    fixture.start = startStop.start;
+    fixture.stop = startStop.stop;
+
     fixture.stage = Stage.FINISHED;
   };
 
@@ -212,7 +219,7 @@ export class ReporterRuntime {
     this.notifier.afterTestResultUpdate(testResult);
   };
 
-  stopTest = (uuid: string, stop?: number) => {
+  stopTest = (uuid: string, opts?: { stop?: number; duration?: number }) => {
     const testResult = this.state.getTestResult(uuid);
     if (!testResult) {
       // eslint-disable-next-line no-console
@@ -223,7 +230,10 @@ export class ReporterRuntime {
     this.notifier.beforeTestResultStop(testResult);
     testResult.testCaseId ??= getTestResultTestCaseId(testResult);
     testResult.historyId ??= getTestResultHistoryId(testResult);
-    testResult.stop = stop ?? Date.now();
+
+    const startStop = this.#calculateTimings(testResult.start, opts?.stop, opts?.duration);
+    testResult.start = startStop.start;
+    testResult.stop = startStop.stop;
 
     this.notifier.afterTestResultStop(testResult);
   };
@@ -291,7 +301,7 @@ export class ReporterRuntime {
     updateFunc(step);
   };
 
-  stopStep = (uuid: string, stop?: number) => {
+  stopStep = (uuid: string, opts?: { stop?: number; duration?: number }) => {
     const step = this.state.getStepResult(uuid);
     if (!step) {
       // eslint-disable-next-line no-console
@@ -301,7 +311,10 @@ export class ReporterRuntime {
 
     this.notifier.beforeStepStop(step);
 
-    step.stop = stop ?? Date.now();
+    const startStop = this.#calculateTimings(step.start, opts?.stop, opts?.duration);
+    step.start = startStop.start;
+    step.stop = startStop.stop;
+
     step.stage = Stage.FINISHED;
 
     this.stepStack.removeStep(uuid);
@@ -481,7 +494,7 @@ export class ReporterRuntime {
         result.statusDetails = { ...result.statusDetails, ...message.statusDetails };
       }
     });
-    this.stopStep(stepUuid, message.stop);
+    this.stopStep(stepUuid, { stop: message.stop });
   };
 
   #handleAttachmentContentMessage = (rootUuid: string, message: RuntimeAttachmentContentMessage["data"]) => {
@@ -546,5 +559,28 @@ export class ReporterRuntime {
       befores,
       afters,
     });
+  };
+
+  #calculateTimings = (start?: number, stop?: number, duration?: number): { start?: number; stop?: number } => {
+    const result: { start?: number; stop?: number } = { start, stop };
+    if (duration) {
+      const normalisedDuration = Math.max(0, duration);
+      if (result.stop !== undefined) {
+        result.start = result.stop - normalisedDuration;
+      } else if (result.start !== undefined) {
+        result.stop = result.start + normalisedDuration;
+      } else {
+        result.stop = Date.now();
+        result.start = result.stop - normalisedDuration;
+      }
+    } else {
+      if (result.stop === undefined) {
+        result.stop = Date.now();
+      }
+      if (result.start === undefined) {
+        result.start = result.stop;
+      }
+    }
+    return result;
   };
 }

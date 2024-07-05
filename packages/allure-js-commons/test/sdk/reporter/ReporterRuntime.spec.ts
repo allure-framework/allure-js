@@ -21,7 +21,55 @@ const fixtures = {
   ] as Link[],
 };
 
+const randomInt = (max: number) => Math.floor(Math.random() * max);
+
 describe("ReporterRuntime", () => {
+  it("should set test stop from duration", () => {
+    const writer = mockWriter();
+    const runtime = new ReporterRuntime({ writer });
+
+    const start = randomInt(10_000_000);
+    const duration = randomInt(100_000);
+    const rootUuid = runtime.startTest({ start });
+    runtime.stopTest(rootUuid, { duration });
+    runtime.writeTest(rootUuid);
+
+    const [testResult] = writer.writeResult.mock.calls[0];
+    expect(testResult.start).toBe(start);
+    expect(testResult.stop).toBe(start + duration);
+  });
+
+  it("should set test stop from stop", () => {
+    const writer = mockWriter();
+    const runtime = new ReporterRuntime({ writer });
+
+    const start = randomInt(10_000_000);
+    const duration = randomInt(100_000);
+    const rootUuid = runtime.startTest({ start });
+    runtime.stopTest(rootUuid, { stop: start + duration });
+    runtime.writeTest(rootUuid);
+
+    const [testResult] = writer.writeResult.mock.calls[0];
+    expect(testResult.start).toBe(start);
+    expect(testResult.stop).toBe(start + duration);
+  });
+
+  it("should update test start from stop and duration", () => {
+    const writer = mockWriter();
+    const runtime = new ReporterRuntime({ writer });
+
+    const start = randomInt(10_000_000);
+    const stop = randomInt(10_000_000);
+    const duration = randomInt(100_000);
+    const rootUuid = runtime.startTest({ start });
+    runtime.stopTest(rootUuid, { stop, duration });
+    runtime.writeTest(rootUuid);
+
+    const [testResult] = writer.writeResult.mock.calls[0];
+    expect(testResult.start).toBe(stop - duration);
+    expect(testResult.stop).toBe(stop);
+  });
+
   it("should start/stop steps", () => {
     const writer = mockWriter();
     const runtime = new ReporterRuntime({ writer });
@@ -60,8 +108,10 @@ describe("ReporterRuntime", () => {
 
     const rootUuid = runtime.startTest({});
 
-    const stepUuid = runtime.startStep(rootUuid, undefined, { name: "some name", start: 123 });
-    runtime.stopStep(stepUuid!, 321);
+    const start = randomInt(10_000_000);
+    const stop = randomInt(10_000_000);
+    const stepUuid = runtime.startStep(rootUuid, undefined, { name: "some name", start });
+    runtime.stopStep(stepUuid!, { stop });
 
     runtime.stopTest(rootUuid);
     runtime.writeTest(rootUuid);
@@ -72,8 +122,34 @@ describe("ReporterRuntime", () => {
     expect(step).toEqual(
       expect.objectContaining({
         name: "some name",
-        start: 123,
-        stop: 321,
+        start,
+        stop,
+      }),
+    );
+  });
+
+  it("should set start/stop time from duration for steps", () => {
+    const writer = mockWriter();
+    const runtime = new ReporterRuntime({ writer });
+
+    const rootUuid = runtime.startTest({});
+
+    const start = randomInt(10_000_000);
+    const duration = randomInt(10_000);
+    const stepUuid = runtime.startStep(rootUuid, undefined, { name: "some name", start });
+    runtime.stopStep(stepUuid!, { duration });
+
+    runtime.stopTest(rootUuid);
+    runtime.writeTest(rootUuid);
+
+    const [testResult] = writer.writeResult.mock.calls[0];
+    const [step] = testResult.steps;
+
+    expect(step).toEqual(
+      expect.objectContaining({
+        name: "some name",
+        start,
+        stop: start + duration,
       }),
     );
   });
