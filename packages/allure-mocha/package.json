@@ -83,7 +83,7 @@
     "glob": "^10.4.1",
     "mocha": "^10.6.0",
     "npm-run-all2": "^6.1.2",
-    "rimraf": "^5.0.1",
+    "rimraf": "^6.0.0",
     "typescript": "^5.2.2",
     "vitest": "^1.6.0"
   },
