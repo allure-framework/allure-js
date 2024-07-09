@@ -1,4 +1,4 @@
-import type { EnvironmentContext, JestEnvironment } from "@jest/environment";
+import type { EnvironmentContext, JestEnvironment, JestEnvironmentConfig } from "@jest/environment";
 import type { Circus } from "@jest/types";
 import os from "node:os";
 import { dirname, sep } from "node:path";
@@ -18,7 +18,7 @@ import {
 } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { AllureJestTestRuntime } from "./AllureJestTestRuntime.js";
-import type { AllureJestConfig, AllureJestEnvironment, RunContext } from "./model.js";
+import type { AllureJestConfig, AllureJestEnvironment, AllureJestProjectConfig, RunContext } from "./model.js";
 import { getTestId, getTestPath, isTestPresentInTestPlan, last, shouldHookBeSkipped } from "./utils.js";
 
 const { ALLURE_TEST_MODE, ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
@@ -37,9 +37,13 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       skippedTestsFullNamesByTestPlan: [],
     };
 
-    constructor(config: AllureJestConfig, context: EnvironmentContext) {
-      super(config, context);
-      const { resultsDir = "allure-results", ...restConfig } = config?.projectConfig?.testEnvironmentOptions || {};
+    // config is AllureJestConfig in Jest v28 or greater. In older versions
+    // it's AllureJestProjectConfig. See https://github.com/jestjs/jest/pull/12461
+    constructor(config: AllureJestConfig | AllureJestProjectConfig, context: EnvironmentContext) {
+      super(config as JestEnvironmentConfig, context);
+
+      const projectConfig = "projectConfig" in config ? config.projectConfig : config;
+      const { resultsDir = "allure-results", ...restConfig } = projectConfig?.testEnvironmentOptions || {};
 
       this.runtime = new ReporterRuntime({
         ...restConfig,
@@ -49,7 +53,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
               resultsDir,
             }),
       });
-      this.testPath = context.testPath.replace(config.globalConfig.rootDir, "").replace(sep, "");
+      this.testPath = context.testPath.replace(projectConfig.rootDir, "").replace(sep, "");
       this.testPlan = parseTestPlan();
 
       // @ts-ignore
