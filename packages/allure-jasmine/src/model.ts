@@ -1,1 +1,1 @@
-export type JasmineBeforeAfterFn = (action: (done: DoneFn) => void, timeout?: number) => void;
+export type JasmineBeforeAfterFn = typeof beforeEach;
