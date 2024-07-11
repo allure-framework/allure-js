@@ -274,7 +274,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
         const maybePromise = reporter.#callHookAndStopFixtureOnSyncError(fixtureUuid, ctxBoundHookImpl);
 
         if (isPromise(maybePromise)) {
-          return reporter.#stopFixtureWhenPromiseIsDone(fixtureUuid, maybePromise as PromiseLike<unknown>);
+          return reporter.#stopFixtureWhenPromiseIsDone(fixtureUuid, maybePromise);
         }
 
         reporter.#stopFixture(fixtureUuid);
