@@ -1,5 +1,5 @@
-import { parseTestPlan } from "allure-js-commons/sdk/reporter";
-import type { TestPlanIndex } from "./model.js";
+import { cwd } from "node:process";
+import { extractMetadataFromString } from "allure-js-commons/sdk";
 
 import FailedExpectation = jasmine.FailedExpectation;
 
@@ -17,20 +17,18 @@ export const findMessageAboutThrow = (expectations?: FailedExpectation[]) => {
 
 export const last = <T>(arr: readonly T[]) => (arr.length ? arr[arr.length - 1] : undefined);
 
-export const getIndexedTestPlan = (): TestPlanIndex | undefined => {
-  const testplan = parseTestPlan();
-  if (testplan) {
-    return {
-      ids: new Set(testplan.tests.filter((e) => e.id).map((e) => e.id!.toString())),
-      fullNames: new Set(testplan.tests.filter((e) => e.selector).map((e) => e.selector!)),
-    };
-  }
-};
+export const getAllureNamesAndLabels = (
+  filename: string | undefined,
+  suites: readonly string[],
+  rawSpecName: string,
+) => {
+  const filePart = (filename || "").replace(cwd(), "").replace(/^[/\\]/, "");
+  const { cleanTitle: specName, labels } = extractMetadataFromString(rawSpecName);
+  const specPart = [...suites, specName].join(" > ");
 
-export const applyTestPlan = (testplan: TestPlanIndex | undefined, fullName: string) => {
-  if (testplan) {
-    if (!testplan.fullNames.has(fullName)) {
-      global.pending("Excluded by the test plan");
-    }
-  }
+  return {
+    name: specName,
+    fullName: `${filePart}#${specPart}`,
+    labels,
+  };
 };
