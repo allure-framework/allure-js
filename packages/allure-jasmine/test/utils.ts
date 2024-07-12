@@ -53,18 +53,30 @@ export const runJasmineInlineTest = async (
 
   const messageReader = new MessageReader();
 
+  const stdout: string[] = [];
+  const stderr: string[] = [];
   testProcess.on("message", messageReader.handleMessage);
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
-    process.stdout.write(String(chunk));
+    const str = String(chunk);
+    process.stdout.write(str);
+    stdout.push(str);
   });
   testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
-    process.stderr.write(String(chunk));
+    const str = String(chunk);
+    process.stderr.write(str);
+    stderr.push(str);
   });
 
   return new Promise((resolve) => {
     testProcess.on("exit", async () => {
       await rm(testDir, { recursive: true });
       await messageReader.attachResults();
+      if (stdout.length) {
+        await attachment("stdout", stdout.join("\n"), { contentType: "text/plain" });
+      }
+      if (stderr.length) {
+        await attachment("stderr", stderr.join("\n"), { contentType: "text/plain" });
+      }
       return resolve(messageReader.results);
     });
   });

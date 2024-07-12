@@ -164,16 +164,16 @@ class LegacyAllureApi {
         parameter: this.addStepParameter,
       });
       if (isPromise(result)) {
-        const promise = result as Promise<any>;
-        return promise
-          .then((v) => {
+        return result.then(
+          (v) => {
             this.stopStepSuccess();
             return v;
-          })
-          .catch((e) => {
+          },
+          (e) => {
             this.stopStepWithError(e);
             throw e;
-          }) as T;
+          },
+        ) as T;
       }
       this.stopStepSuccess();
       return result;

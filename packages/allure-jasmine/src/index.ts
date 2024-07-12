@@ -2,7 +2,7 @@ import { cwd, env } from "node:process";
 import * as allure from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import { isPromise } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, getStatusFromError, isPromise } from "allure-js-commons/sdk";
 import type { Config, FixtureType } from "allure-js-commons/sdk/reporter";
 import {
   FileSystemWriter,
@@ -13,7 +13,7 @@ import {
 } from "allure-js-commons/sdk/reporter";
 import { MessageTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import type { JasmineBeforeAfterFn } from "./model.js";
-import { findAnyError, findMessageAboutThrow } from "./utils.js";
+import { findAnyError, findMessageAboutThrow, last } from "./utils.js";
 
 class AllureJasmineTestRuntime extends MessageTestRuntime {
   constructor(private readonly allureJasmineReporter: AllureJasmineReporter) {
@@ -31,6 +31,7 @@ const { ALLURE_TEST_MODE } = env;
 export default class AllureJasmineReporter implements jasmine.CustomReporter {
   private readonly allureRuntime: ReporterRuntime;
   private currentAllureTestUuid?: string;
+  private currentAllureFixtureUuid?: string;
   private jasmineSuitesStack: jasmine.SuiteResult[] = [];
   private scopesStack: string[] = [];
 
@@ -50,7 +51,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
     setGlobalTestRuntime(testRuntime);
 
-    this.installHooks();
+    this.#enableAllureFixtures();
 
     // the best place to start global container for hooks and nested suites
     const scopeUuid = this.allureRuntime.startScope();
@@ -82,10 +83,11 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   }
 
   handleAllureRuntimeMessages(message: RuntimeMessage) {
-    if (!this.currentAllureTestUuid) {
+    const rootUuid = this.currentAllureFixtureUuid ?? this.currentAllureTestUuid;
+    if (!rootUuid) {
       return;
     }
-    this.allureRuntime.applyRuntimeMessages(this.currentAllureTestUuid, [message]);
+    this.allureRuntime.applyRuntimeMessages(rootUuid, [message]);
   }
 
   jasmineStarted(): void {
@@ -115,19 +117,16 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
   suiteStarted(suite: jasmine.SuiteResult): void {
     this.jasmineSuitesStack.push(suite);
-    const scopeUuid = this.allureRuntime.startScope();
-    this.scopesStack.push(scopeUuid);
+    this.#startScope();
   }
 
   suiteDone(): void {
     this.jasmineSuitesStack.pop();
-    const scopeUuid = this.scopesStack.pop();
-    if (scopeUuid) {
-      this.allureRuntime.writeScope(scopeUuid);
-    }
+    this.#stopScope();
   }
 
   specStarted(spec: jasmine.SpecResult): void {
+    this.#startScope();
     this.currentAllureTestUuid = this.allureRuntime.startTest(
       {
         name: spec.description,
@@ -185,6 +184,8 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     this.allureRuntime.stopTest(this.currentAllureTestUuid);
     this.allureRuntime.writeTest(this.currentAllureTestUuid);
     this.currentAllureTestUuid = undefined;
+
+    this.#stopScope();
   }
 
   jasmineDone(): void {
@@ -197,109 +198,162 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     this.scopesStack = [];
   }
 
-  private installHooks(): void {
+  #startScope = () => {
+    const scopeUuid = this.allureRuntime.startScope();
+    this.scopesStack.push(scopeUuid);
+  };
+
+  #startFixture = (name: string, type: FixtureType) => {
+    const scopeUuid = last(this.scopesStack);
+    if (scopeUuid) {
+      this.currentAllureFixtureUuid = this.allureRuntime.startFixture(scopeUuid, type, {
+        name,
+        stage: Stage.RUNNING,
+      });
+      return this.currentAllureFixtureUuid;
+    }
+  };
+
+  #stopFixture = (uuid: string, error?: Error | string) => {
+    const statusAndDetails = this.#resolveStatusWithDetails(error);
+    this.allureRuntime.updateFixture(uuid, (f) => Object.assign(f, statusAndDetails));
+    this.allureRuntime.stopFixture(uuid);
+    this.currentAllureFixtureUuid = undefined;
+  };
+
+  #stopScope = () => {
+    const scopeUuid = this.scopesStack.pop();
+    if (scopeUuid) {
+      this.allureRuntime.writeScope(scopeUuid);
+    }
+  };
+
+  #enableAllureFixtures(): void {
     const jasmineBeforeAll: JasmineBeforeAfterFn = global.beforeAll;
     const jasmineAfterAll: JasmineBeforeAfterFn = global.afterAll;
     const jasmineBeforeEach: JasmineBeforeAfterFn = global.beforeEach;
     const jasmineAfterEach: JasmineBeforeAfterFn = global.afterEach;
-    const wrapJasmineHook = (original: JasmineBeforeAfterFn, fixtureType: FixtureType, fixtureName: string) => {
-      return (action: (done: DoneFn) => void, timeout?: number): void => {
-        original((done) => {
-          const start = Date.now();
-          let ret;
 
-          if (action.length > 0) {
-            // function takes done callback
-            ret = new Promise((resolve, reject) => {
-              const t: any = resolve;
-
-              t.fail = reject;
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-              action(t);
-            });
-          } else {
-            ret = action(done);
-          }
-
-          if (isPromise(ret)) {
-            (ret as Promise<any>)
-              .then(() => {
-                done();
-
-                const scopeUuid =
-                  this.scopesStack.length > 0 ? this.scopesStack[this.scopesStack.length - 1] : undefined;
-                if (scopeUuid) {
-                  const fixtureUuid = this.allureRuntime.startFixture(scopeUuid, fixtureType, {
-                    name: fixtureName,
-                    stage: Stage.FINISHED,
-                    status: Status.PASSED,
-                    start,
-                  });
-                  if (fixtureUuid) {
-                    this.allureRuntime.stopFixture(fixtureUuid);
-                  }
-                }
-              })
-              .catch((err) => {
-                done.fail(err as Error);
-                const scopeUuid =
-                  this.scopesStack.length > 0 ? this.scopesStack[this.scopesStack.length - 1] : undefined;
-                if (scopeUuid) {
-                  const fixtureUuid = this.allureRuntime.startFixture(scopeUuid, fixtureType, {
-                    name: fixtureName,
-                    stage: Stage.FINISHED,
-                    status: Status.BROKEN,
-                    start,
-                  });
-                  if (fixtureUuid) {
-                    this.allureRuntime.stopFixture(fixtureUuid);
-                  }
-                }
-              });
-          } else {
-            try {
-              done();
-              const scopeUuid = this.scopesStack.length > 0 ? this.scopesStack[this.scopesStack.length - 1] : undefined;
-              if (scopeUuid) {
-                const fixtureUuid = this.allureRuntime.startFixture(scopeUuid, fixtureType, {
-                  name: fixtureName,
-                  stage: Stage.FINISHED,
-                  status: Status.PASSED,
-                  start,
-                });
-                if (fixtureUuid) {
-                  this.allureRuntime.stopFixture(fixtureUuid);
-                }
-              }
-            } catch (err) {
-              const { message, stack } = err as Error;
-              const scopeUuid = this.scopesStack.length > 0 ? this.scopesStack[this.scopesStack.length - 1] : undefined;
-              if (scopeUuid) {
-                const fixtureUuid = this.allureRuntime.startFixture(scopeUuid, fixtureType, {
-                  name: fixtureName,
-                  stage: Stage.FINISHED,
-                  status: Status.BROKEN,
-                  statusDetails: {
-                    message,
-                    trace: stack,
-                  },
-                  start,
-                });
-                if (fixtureUuid) {
-                  this.allureRuntime.stopFixture(fixtureUuid);
-                }
-              }
-
-              throw err;
-            }
-          }
-        }, timeout);
-      };
-    };
-
-    global.beforeAll = wrapJasmineHook(jasmineBeforeAll, "before", "beforeAll");
-    global.beforeEach = wrapJasmineHook(jasmineBeforeEach, "before", "beforeEach");
-    global.afterAll = wrapJasmineHook(jasmineAfterAll, "after", "afterAll");
-    global.afterEach = wrapJasmineHook(jasmineAfterEach, "after", "afterEach");
+    global.beforeAll = this.#injectFixtureSupportToHookFn(jasmineBeforeAll, "before", "beforeAll");
+    global.beforeEach = this.#injectFixtureSupportToHookFn(jasmineBeforeEach, "before", "beforeEach");
+    global.afterAll = this.#injectFixtureSupportToHookFn(jasmineAfterAll, "after", "afterAll");
+    global.afterEach = this.#injectFixtureSupportToHookFn(jasmineAfterEach, "after", "afterEach");
   }
+
+  #injectFixtureSupportToHookFn =
+    (jasmineHookFn: JasmineBeforeAfterFn, fixtureType: FixtureType, fixtureName: string) =>
+    (hookImpl: jasmine.ImplementationCallback, timeout?: number): void =>
+      jasmineHookFn(
+        // We use different wrappers here to keep the original length
+        hookImpl.length === 0
+          ? this.#wrapSyncOrPromiseBasedHookInAllureFixture(
+              fixtureType,
+              fixtureName,
+              hookImpl as () => void | PromiseLike<any>,
+            )
+          : this.#wrapCallbackBasedHookInAllureFixture(fixtureType, fixtureName, hookImpl),
+        timeout,
+      );
+
+  #wrapSyncOrPromiseBasedHookInAllureFixture = (
+    fixtureType: FixtureType,
+    fixtureName: string,
+    hookImpl: () => void | PromiseLike<any>,
+  ) => {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const reporter = this;
+    return function (this: unknown) {
+      // Bind hook impl to propagate UserContext
+      const ctxBoundHookImpl = hookImpl.bind(this);
+
+      const fixtureUuid = reporter.#startFixture(fixtureName, fixtureType);
+      if (!fixtureUuid) {
+        // No scope started; probably an issue in our code. Just call the hook directly
+        return ctxBoundHookImpl();
+      } else {
+        const maybePromise = reporter.#callHookAndStopFixtureOnSyncError(fixtureUuid, ctxBoundHookImpl);
+
+        if (isPromise(maybePromise)) {
+          return reporter.#stopFixtureWhenPromiseIsDone(fixtureUuid, maybePromise);
+        }
+
+        reporter.#stopFixture(fixtureUuid);
+
+        // A sync hook shouldn't return a value. But in case it does, we preserve it and let Jasmine handle it.
+        return maybePromise;
+      }
+    };
+  };
+
+  #wrapCallbackBasedHookInAllureFixture = (
+    fixtureType: FixtureType,
+    fixtureName: string,
+    hookImpl: (done: DoneFn) => void,
+  ) => {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const reporter = this;
+    return function (this: unknown, done: DoneFn) {
+      // Bind hook impl to propagate UserContext
+      const ctxBoundHookImpl = hookImpl.bind(this);
+
+      const fixtureUuid = reporter.#startFixture(fixtureName, fixtureType);
+      if (!fixtureUuid) {
+        // No scope started; probably an issue in our code. Just call the hook directly
+        return ctxBoundHookImpl(done);
+      } else {
+        const stopFixtureAndContinue = reporter.#injectStopFixtureToHookCallback(fixtureUuid, done);
+
+        // A callback-based hook shouldn't return a value. But in case it does, we preserve it and let Jasmine handle it.
+        return reporter.#callHookAndStopFixtureOnSyncError(fixtureUuid, ctxBoundHookImpl, stopFixtureAndContinue);
+      }
+    };
+  };
+
+  #callHookAndStopFixtureOnSyncError = <TArgs extends readonly any[], TResult>(
+    fixtureUuid: string,
+    fn: (...args: TArgs) => TResult,
+    ...args: TArgs
+  ) => {
+    try {
+      return fn(...args);
+    } catch (error) {
+      this.#stopFixture(fixtureUuid, error as Error | string);
+      throw error;
+    }
+  };
+
+  #stopFixtureWhenPromiseIsDone = (fixtureUuid: string, hookPromise: PromiseLike<unknown>) =>
+    hookPromise.then(
+      (value) => {
+        this.#stopFixture(fixtureUuid);
+        return value;
+      },
+      (error) => {
+        this.#stopFixture(fixtureUuid, error as Error | string);
+        throw error;
+      },
+    );
+
+  #injectStopFixtureToHookCallback = (fixtureUuid: string, done: DoneFn): DoneFn => {
+    const stopFixtureAndContinue = (error?: Error | string) => {
+      this.#stopFixture(fixtureUuid, error);
+      // @ts-ignore
+      done(error);
+    };
+    stopFixtureAndContinue.fail = (error?: Error | string) => {
+      this.#stopFixture(fixtureUuid, error ?? "done.fail was called");
+      done.fail(error);
+    };
+    return stopFixtureAndContinue;
+  };
+
+  #resolveStatusWithDetails = (error: Error | string | undefined) => {
+    if (typeof error === "undefined") {
+      return { status: Status.PASSED };
+    } else if (typeof error === "string") {
+      return { status: Status.BROKEN, statusDetails: { message: error } };
+    } else {
+      return { status: getStatusFromError(error), statusDetails: getMessageAndTraceFromError(error) };
+    }
+  };
 }

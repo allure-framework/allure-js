@@ -18,10 +18,10 @@ const callRuntimeMethod = <
 
   if (!isPromise(runtime)) {
     // @ts-ignore
-    return (runtime as TestRuntime)[method](...args);
+    return runtime[method](...args);
   }
 
-  return (runtime as Promise<TestRuntime>).then((testRuntime) => {
+  return runtime.then((testRuntime) => {
     // @ts-ignore
     return testRuntime[method](...args);
   }) as R;

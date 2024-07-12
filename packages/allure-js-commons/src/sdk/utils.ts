@@ -133,5 +133,5 @@ export const getUnfinishedStepsMessages = (messages: RuntimeMessage[]) => {
   return grouppedStepsMessage.filter((step) => step.length === 1);
 };
 
-export const isPromise = (obj: any): boolean =>
+export const isPromise = <T = any>(obj: any): obj is PromiseLike<T> =>
   !!obj && (typeof obj === "object" || typeof obj === "function") && typeof obj.then === "function";
