@@ -2,7 +2,12 @@ import { cwd, env } from "node:process";
 import * as allure from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import { getMessageAndTraceFromError, getStatusFromError, isPromise } from "allure-js-commons/sdk";
+import {
+  extractMetadataFromString,
+  getMessageAndTraceFromError,
+  getStatusFromError,
+  isPromise,
+} from "allure-js-commons/sdk";
 import type { Config, FixtureType } from "allure-js-commons/sdk/reporter";
 import {
   FileSystemWriter,
@@ -72,9 +77,9 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     )[0] as string[];
   }
 
-  private getSpecFullName(spec: jasmine.SpecResult & { filename?: string }) {
+  private getSpecFullName(spec: jasmine.SpecResult & { filename?: string }, title: string) {
     const specFilename = (spec.filename || "").replace(cwd(), "").replace(/^[/\\]/, "");
-    const specPath = this.getCurrentSpecPath().concat(spec.description).join(" > ");
+    const specPath = this.getCurrentSpecPath().concat(title).join(" > ");
 
     return `${specFilename}#${specPath}`;
   }
@@ -127,14 +132,16 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   }
 
   specStarted(spec: jasmine.SpecResult): void {
-    const fullName = this.getSpecFullName(spec);
+    const { cleanTitle: name, labels } = extractMetadataFromString(spec.description);
+    const fullName = this.getSpecFullName(spec, name);
     applyTestPlan(this.testplan, fullName);
 
     this.#startScope();
     this.currentAllureTestUuid = this.allureRuntime.startTest(
       {
-        name: spec.description,
-        fullName: this.getSpecFullName(spec),
+        name,
+        fullName,
+        labels,
         stage: Stage.RUNNING,
       },
       this.scopesStack,
