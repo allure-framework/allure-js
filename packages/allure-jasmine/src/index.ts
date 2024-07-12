@@ -13,7 +13,7 @@ import {
 } from "allure-js-commons/sdk/reporter";
 import { MessageTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import type { JasmineBeforeAfterFn } from "./model.js";
-import { findAnyError, findMessageAboutThrow, last } from "./utils.js";
+import { applyTestPlan, findAnyError, findMessageAboutThrow, getIndexedTestPlan, last } from "./utils.js";
 
 class AllureJasmineTestRuntime extends MessageTestRuntime {
   constructor(private readonly allureJasmineReporter: AllureJasmineReporter) {
@@ -30,6 +30,7 @@ const { ALLURE_TEST_MODE } = env;
 
 export default class AllureJasmineReporter implements jasmine.CustomReporter {
   private readonly allureRuntime: ReporterRuntime;
+  private readonly testplan = getIndexedTestPlan();
   private currentAllureTestUuid?: string;
   private currentAllureFixtureUuid?: string;
   private jasmineSuitesStack: jasmine.SuiteResult[] = [];
@@ -126,6 +127,9 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   }
 
   specStarted(spec: jasmine.SpecResult): void {
+    const fullName = this.getSpecFullName(spec);
+    applyTestPlan(this.testplan, fullName);
+
     this.#startScope();
     this.currentAllureTestUuid = this.allureRuntime.startTest(
       {
