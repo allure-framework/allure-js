@@ -1,3 +1,5 @@
+import type { Label } from "allure-js-commons";
+import { LabelName } from "allure-js-commons";
 import { parseTestPlan } from "allure-js-commons/sdk/reporter";
 import type { TestPlanIndex } from "./model.js";
 
@@ -27,10 +29,13 @@ export const getIndexedTestPlan = (): TestPlanIndex | undefined => {
   }
 };
 
-export const applyTestPlan = (testplan: TestPlanIndex | undefined, fullName: string) => {
+export const applyTestPlan = (testplan: TestPlanIndex | undefined, fullName: string, labels: readonly Label[]) => {
   if (testplan) {
     if (!testplan.fullNames.has(fullName)) {
-      global.pending("Excluded by the test plan");
+      const allureId = labels.find((l) => l.name === LabelName.ALLURE_ID)?.value;
+      if (!allureId || !testplan.ids.has(allureId)) {
+        global.pending("Excluded by the test plan");
+      }
     }
   }
 };

@@ -134,7 +134,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   specStarted(spec: jasmine.SpecResult): void {
     const { cleanTitle: name, labels } = extractMetadataFromString(spec.description);
     const fullName = this.getSpecFullName(spec, name);
-    applyTestPlan(this.testplan, fullName);
+    applyTestPlan(this.testplan, fullName, labels);
 
     this.#startScope();
     this.currentAllureTestUuid = this.allureRuntime.startTest(
