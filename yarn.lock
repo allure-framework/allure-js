@@ -4054,6 +4054,7 @@ __metadata:
     allure-js-commons: "workspace:*"
     allure-vitest: "workspace:*"
     babel-plugin-add-module-exports: "npm:^1.0.4"
+    babel-plugin-transform-import-meta: "npm:^2.2.1"
     eslint: "npm:^8.57.0"
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-import: "npm:^2.28.1"

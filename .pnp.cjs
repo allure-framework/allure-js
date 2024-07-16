@@ -6020,6 +6020,7 @@ const RAW_RUNTIME_STATE =
           ["allure-js-commons", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#workspace:packages/allure-vitest"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
+          ["babel-plugin-transform-import-meta", "virtual:e64d7f26127b0c38f2abe71db23f0a141b0538db2f417ca2c220511e19f5e4f807ad3daa66e38a4a857f9c6bfd539c632538c990ab69f65c09d763e405a3f457#npm:2.2.1"],\
           ["eslint", "npm:8.57.0"],\
           ["eslint-config-prettier", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:9.1.0"],\
           ["eslint-plugin-import", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:2.29.1"],\
@@ -6232,7 +6233,7 @@ const RAW_RUNTIME_STATE =
           ["allure-js-commons", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#workspace:packages/allure-vitest"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
-          ["babel-plugin-transform-import-meta", "virtual:ab27e3168e0bdfb2dc5b30f86375269d7862a0be07fda8f1a257183a90c281219d82f6498de90bd23a4b5fcb916cfc7e850768c6711fc7742befb82622788606#npm:2.2.1"],\
+          ["babel-plugin-transform-import-meta", "virtual:e64d7f26127b0c38f2abe71db23f0a141b0538db2f417ca2c220511e19f5e4f807ad3daa66e38a4a857f9c6bfd539c632538c990ab69f65c09d763e405a3f457#npm:2.2.1"],\
           ["eslint", "npm:8.57.0"],\
           ["eslint-config-prettier", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:9.1.0"],\
           ["eslint-plugin-import", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:2.29.1"],\
@@ -6925,10 +6926,10 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:ab27e3168e0bdfb2dc5b30f86375269d7862a0be07fda8f1a257183a90c281219d82f6498de90bd23a4b5fcb916cfc7e850768c6711fc7742befb82622788606#npm:2.2.1", {\
-        "packageLocation": "./.yarn/__virtual__/babel-plugin-transform-import-meta-virtual-4f7e20a233/0/cache/babel-plugin-transform-import-meta-npm-2.2.1-0927fef047-d6db38b379.zip/node_modules/babel-plugin-transform-import-meta/",\
+      ["virtual:e64d7f26127b0c38f2abe71db23f0a141b0538db2f417ca2c220511e19f5e4f807ad3daa66e38a4a857f9c6bfd539c632538c990ab69f65c09d763e405a3f457#npm:2.2.1", {\
+        "packageLocation": "./.yarn/__virtual__/babel-plugin-transform-import-meta-virtual-fd84808a15/0/cache/babel-plugin-transform-import-meta-npm-2.2.1-0927fef047-d6db38b379.zip/node_modules/babel-plugin-transform-import-meta/",\
         "packageDependencies": [\
-          ["babel-plugin-transform-import-meta", "virtual:ab27e3168e0bdfb2dc5b30f86375269d7862a0be07fda8f1a257183a90c281219d82f6498de90bd23a4b5fcb916cfc7e850768c6711fc7742befb82622788606#npm:2.2.1"],\
+          ["babel-plugin-transform-import-meta", "virtual:e64d7f26127b0c38f2abe71db23f0a141b0538db2f417ca2c220511e19f5e4f807ad3daa66e38a4a857f9c6bfd539c632538c990ab69f65c09d763e405a3f457#npm:2.2.1"],\
           ["@babel/core", "npm:7.24.6"],\
           ["@babel/template", "npm:7.24.7"],\
           ["@types/babel__core", "npm:7.20.5"],\
