@@ -22,6 +22,7 @@ import type {
 import { LifecycleState } from "./LifecycleState.js";
 import { Notifier } from "./Notifier.js";
 import { createFixtureResult, createStepResult, createTestResult } from "./factory.js";
+import { hasSkipLabel } from "./testplan.js";
 import type { Config, FixtureType, FixtureWrapper, LinkConfig, TestScope, Writer } from "./types.js";
 import { deepClone, formatLinks, getTestResultHistoryId, getTestResultTestCaseId, randomUuid } from "./utils.js";
 import { buildAttachmentFileName } from "./utils/attachments.js";
@@ -246,7 +247,7 @@ export class ReporterRuntime {
       return;
     }
 
-    if (testResult.labels.find((label) => label.name === "ALLURE_TESTPLAN_SKIP")) {
+    if (hasSkipLabel(testResult.labels)) {
       this.state.deleteTestResult(uuid);
       return;
     }
