@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import type { Label } from "../../model.js";
 import type { TestPlanV1 } from "../types.js";
 import { allureIdRegexp } from "../utils.js";
 
@@ -39,3 +40,13 @@ export const includedInTestPlan = (
     return idMatched || selectorMatched;
   });
 };
+
+export const addSkipLabel = (labels: Label[]) => {
+  labels.push({ name: "ALLURE_TESTPLAN_SKIP", value: "true" });
+};
+
+export const addSkipLabelAsMeta = (name: string) => {
+  return `${name} @allure.label.ALLURE_TESTPLAN_SKIP:true`;
+};
+
+export const hasSkipLabel = (labels: readonly Label[]) => labels.some(({ name }) => name === "ALLURE_TESTPLAN_SKIP");

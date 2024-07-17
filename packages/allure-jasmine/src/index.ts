@@ -1,4 +1,4 @@
-import { cwd, env } from "node:process";
+import { env } from "node:process";
 import * as allure from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
@@ -10,10 +10,12 @@ import {
   ReporterRuntime,
   getEnvironmentLabels,
   getSuiteLabels,
+  hasSkipLabel,
 } from "allure-js-commons/sdk/reporter";
 import { MessageTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import type { JasmineBeforeAfterFn } from "./model.js";
-import { findAnyError, findMessageAboutThrow, last } from "./utils.js";
+import { enableAllureJasmineTestPlan } from "./testplan.js";
+import { findAnyError, findMessageAboutThrow, getAllureNamesAndLabels, last } from "./utils.js";
 
 class AllureJasmineTestRuntime extends MessageTestRuntime {
   constructor(private readonly allureJasmineReporter: AllureJasmineReporter) {
@@ -51,7 +53,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
     setGlobalTestRuntime(testRuntime);
 
-    this.#enableAllureFixtures();
+    this.#enableAllureFeatures();
 
     // the best place to start global container for hooks and nested suites
     const scopeUuid = this.allureRuntime.startScope();
@@ -69,13 +71,6 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
       },
       [[] as string[], ""],
     )[0] as string[];
-  }
-
-  private getSpecFullName(spec: jasmine.SpecResult & { filename?: string }) {
-    const specFilename = (spec.filename || "").replace(cwd(), "").replace(/^[/\\]/, "");
-    const specPath = this.getCurrentSpecPath().concat(spec.description).join(" > ");
-
-    return `${specFilename}#${specPath}`;
   }
 
   getAllureInterface() {
@@ -125,16 +120,24 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     this.#stopScope();
   }
 
-  specStarted(spec: jasmine.SpecResult): void {
-    this.#startScope();
-    this.currentAllureTestUuid = this.allureRuntime.startTest(
-      {
-        name: spec.description,
-        fullName: this.getSpecFullName(spec),
-        stage: Stage.RUNNING,
-      },
-      this.scopesStack,
+  specStarted(spec: jasmine.SpecResult & { filename?: string }): void {
+    const { fullName, labels, name } = getAllureNamesAndLabels(
+      spec.filename,
+      this.getCurrentSpecPath(),
+      spec.description,
     );
+    if (!hasSkipLabel(labels)) {
+      this.#startScope();
+      this.currentAllureTestUuid = this.allureRuntime.startTest(
+        {
+          name,
+          fullName,
+          labels,
+          stage: Stage.RUNNING,
+        },
+        this.scopesStack,
+      );
+    }
   }
 
   specDone(spec: jasmine.SpecResult): void {
@@ -226,6 +229,11 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     if (scopeUuid) {
       this.allureRuntime.writeScope(scopeUuid);
     }
+  };
+
+  #enableAllureFeatures = () => {
+    this.#enableAllureFixtures();
+    enableAllureJasmineTestPlan();
   };
 
   #enableAllureFixtures(): void {

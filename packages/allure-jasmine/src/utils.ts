@@ -1,4 +1,6 @@
-// eslint-disable-next-line no-undef
+import { cwd } from "node:process";
+import { extractMetadataFromString } from "allure-js-commons/sdk";
+
 import FailedExpectation = jasmine.FailedExpectation;
 
 export const findAnyError = (expectations?: FailedExpectation[]): FailedExpectation | null => {
@@ -14,3 +16,19 @@ export const findMessageAboutThrow = (expectations?: FailedExpectation[]) => {
 };
 
 export const last = <T>(arr: readonly T[]) => (arr.length ? arr[arr.length - 1] : undefined);
+
+export const getAllureNamesAndLabels = (
+  filename: string | undefined,
+  suites: readonly string[],
+  rawSpecName: string,
+) => {
+  const filePart = (filename || "").replace(cwd(), "").replace(/^[/\\]/, "");
+  const { cleanTitle: specName, labels } = extractMetadataFromString(rawSpecName);
+  const specPart = [...suites, specName].join(" > ");
+
+  return {
+    name: specName,
+    fullName: `${filePart}#${specPart}`,
+    labels,
+  };
+};

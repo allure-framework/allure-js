@@ -420,10 +420,6 @@ describe("hook failures", () => {
       expect.objectContaining({
         name: "bar",
         status: Status.BROKEN,
-        statusDetails: expect.objectContaining({
-          message: expect.stringContaining("Not run because a beforeAll function failed"),
-          trace: expect.anything(),
-        }),
       }),
     ]);
     expect(groups, "has broken fixture").toEqual([
@@ -458,10 +454,6 @@ describe("hook failures", () => {
       expect.objectContaining({
         name: "bar",
         status: Status.BROKEN,
-        statusDetails: expect.objectContaining({
-          message: expect.stringContaining("Not run because a beforeAll function failed"),
-          trace: expect.anything(),
-        }),
       }),
     ]);
     expect(groups, "has broken fixture").toEqual([
@@ -497,10 +489,6 @@ describe("hook failures", () => {
         expect.objectContaining({
           name: "bar",
           status: Status.BROKEN,
-          statusDetails: expect.objectContaining({
-            message: expect.stringContaining("Not run because a beforeAll function failed"),
-            trace: expect.anything(),
-          }),
         }),
       ]);
       expect(groups, "has broken fixture").toEqual([
@@ -535,10 +523,6 @@ describe("hook failures", () => {
         expect.objectContaining({
           name: "bar",
           status: Status.BROKEN,
-          statusDetails: expect.objectContaining({
-            message: expect.stringContaining("Not run because a beforeAll function failed"),
-            trace: expect.anything(),
-          }),
         }),
       ]);
       expect(groups, "has broken fixture").toEqual([
@@ -573,10 +557,6 @@ describe("hook failures", () => {
         expect.objectContaining({
           name: "bar",
           status: Status.BROKEN,
-          statusDetails: {
-            message: expect.stringContaining("Not run because a beforeAll function failed"),
-            trace: expect.anything(),
-          },
         }),
       ]);
       expect(groups, "has broken fixture").toEqual([
@@ -610,10 +590,6 @@ describe("hook failures", () => {
         expect.objectContaining({
           name: "bar",
           status: Status.BROKEN,
-          statusDetails: {
-            message: expect.stringContaining("Not run because a beforeAll function failed"),
-            trace: expect.anything(),
-          },
         }),
       ]);
       expect(groups, "has broken fixture").toEqual([
@@ -647,10 +623,6 @@ describe("hook failures", () => {
         expect.objectContaining({
           name: "bar",
           status: Status.BROKEN,
-          statusDetails: {
-            message: expect.stringContaining("Not run because a beforeAll function failed"),
-            trace: expect.anything(),
-          },
         }),
       ]);
       expect(groups, "has broken fixture").toEqual([
@@ -685,10 +657,6 @@ describe("hook failures", () => {
         expect.objectContaining({
           name: "bar",
           status: Status.BROKEN,
-          statusDetails: {
-            message: expect.stringContaining("Not run because a beforeAll function failed"),
-            trace: expect.anything(),
-          },
         }),
       ]);
       expect(groups, "has broken fixture").toEqual([

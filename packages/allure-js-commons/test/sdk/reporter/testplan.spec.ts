@@ -3,7 +3,14 @@ import { mkdtempSync, writeFileSync } from "fs";
 import os from "os";
 import path from "path";
 import { afterEach, describe, expect, it } from "vitest";
-import { includedInTestPlan, parseTestPlan } from "../../../src/sdk/reporter/testplan.js";
+import type { Label } from "../../../src/model.js";
+import {
+  addSkipLabel,
+  addSkipLabelAsMeta,
+  hasSkipLabel,
+  includedInTestPlan,
+  parseTestPlan,
+} from "../../../src/sdk/reporter/testplan.js";
 import type { TestPlanV1 } from "../../../src/sdk/types.js";
 
 const originalEnv = process.env;
@@ -109,5 +116,41 @@ describe("includedInTestPlan", () => {
 
     const r2 = includedInTestPlan(exampleTestPlan, { id: "442", tags: ["@allure.id=123"] });
     expect(r2).toBe(false);
+  });
+});
+
+describe("skip labels", () => {
+  describe("addSkipLabel", () => {
+    it("should add the label", () => {
+      const labels: Label[] = [];
+      addSkipLabel(labels);
+
+      expect(labels).toEqual([{ name: "ALLURE_TESTPLAN_SKIP", value: "true" }]);
+    });
+  });
+
+  describe("addSkipLabelAsMeta", () => {
+    it("should append the label meta to the name", () => {
+      const newName = addSkipLabelAsMeta("name");
+
+      expect(newName).toEqual("name @allure.label.ALLURE_TESTPLAN_SKIP:true");
+    });
+  });
+
+  describe("hasSkipLabel", () => {
+    it("should return true is the label is present", () => {
+      const value = hasSkipLabel([
+        { name: "foo", value: "bar" },
+        { name: "ALLURE_TESTPLAN_SKIP", value: "<not checked>" },
+      ]);
+
+      expect(value).toBe(true);
+    });
+
+    it("should return false is the label is not present", () => {
+      const value = hasSkipLabel([{ name: "foo", value: "bar" }]);
+
+      expect(value).toBe(false);
+    });
   });
 });
