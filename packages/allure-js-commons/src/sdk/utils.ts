@@ -49,9 +49,9 @@ export const getMessageAndTraceFromError = (
   };
 };
 
-export const allureIdRegexp = /@?allure.id[:=](?<id>[^\s]+)/;
+export const allureIdRegexp = /(?:^|\s)@?allure\.id[:=](?<id>[^\s]+)/;
 export const allureIdRegexpGlobal = new RegExp(allureIdRegexp, "g");
-export const allureLabelRegexp = /@?allure.label.(?<name>[^\s]+?)[:=](?<value>[^\s]+)/;
+export const allureLabelRegexp = /(?:^|\s)@?allure\.label\.(?<name>[^:=\s]+)[:=](?<value>[^\s]+)/;
 export const allureLabelRegexpGlobal = new RegExp(allureLabelRegexp, "g");
 
 export const extractMetadataFromString = (
