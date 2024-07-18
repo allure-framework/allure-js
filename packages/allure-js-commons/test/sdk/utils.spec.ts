@@ -232,4 +232,15 @@ describe("extractMetadataFromString", () => {
       ],
     });
   });
+
+  it("should support multiline names", () => {
+    expect(extractMetadataFromString("foo @allure.label.l1=v1\nbar @allure.id:1004 @allure.label.l2:v2 baz")).toEqual({
+      cleanTitle: "foo\nbar baz",
+      labels: [
+        { name: "l1", value: "v1" },
+        { name: "ALLURE_ID", value: "1004" },
+        { name: "l2", value: "v2" },
+      ],
+    });
+  });
 });
