@@ -52,7 +52,7 @@
     "@codeceptjs/helper": "^2.0.4",
     "@types/babel__core": "^7",
     "@types/babel__preset-env": "^7",
-    "@types/eslint": "^8",
+    "@types/eslint": "^9.0.0",
     "@types/jasmine": "^5.1.4",
     "@types/node": "^20.14.2",
     "@typescript-eslint/eslint-plugin": "^7.0.0",

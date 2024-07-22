@@ -3317,13 +3317,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/eslint@npm:^8":
-  version: 8.56.3
-  resolution: "@types/eslint@npm:8.56.3"
+"@types/eslint@npm:^9.0.0":
+  version: 9.6.0
+  resolution: "@types/eslint@npm:9.6.0"
   dependencies:
     "@types/estree": "npm:*"
     "@types/json-schema": "npm:*"
-  checksum: 10/b5a006c24b5d3a2dba5acc12f21f96c960836beb08544cfedbbbd5b7770b6c951b41204d676b73d7d9065bef3435e5b4cb3796c57f66df21c12fd86018993a16
+  checksum: 10/39fc797c671ec9c9184802b4974748cf45ee1b11d7aaaaede44426abcafd07ec7c18eb090e8f5b3387b51637ce3fdf54499472d8dd58a928f0d005cbacb573b4
   languageName: node
   linkType: hard
 
@@ -3921,7 +3921,7 @@ __metadata:
     "@codeceptjs/helper": "npm:^2.0.4"
     "@types/babel__core": "npm:^7"
     "@types/babel__preset-env": "npm:^7"
-    "@types/eslint": "npm:^8"
+    "@types/eslint": "npm:^9.0.0"
     "@types/jasmine": "npm:^5.1.4"
     "@types/node": "npm:^20.14.2"
     "@typescript-eslint/eslint-plugin": "npm:^7.0.0"
@@ -3969,7 +3969,7 @@ __metadata:
     "@cucumber/messages": "npm:^25.0.1"
     "@types/babel__core": "npm:^7"
     "@types/babel__preset-env": "npm:^7"
-    "@types/eslint": "npm:^8"
+    "@types/eslint": "npm:^9.0.0"
     "@types/node": "npm:^20.14.2"
     "@typescript-eslint/eslint-plugin": "npm:^7.0.0"
     "@typescript-eslint/parser": "npm:^7.0.0"
@@ -4005,7 +4005,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.24.6"
     "@types/babel__core": "npm:^7"
     "@types/babel__preset-env": "npm:^7"
-    "@types/eslint": "npm:^8"
+    "@types/eslint": "npm:^9.0.0"
     "@types/node": "npm:^20.14.2"
     "@typescript-eslint/eslint-plugin": "npm:^7.0.0"
     "@typescript-eslint/parser": "npm:^7.0.0"
@@ -4045,7 +4045,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.24.6"
     "@types/babel__core": "npm:^7"
     "@types/babel__preset-env": "npm:^7"
-    "@types/eslint": "npm:^8"
+    "@types/eslint": "npm:^9.0.0"
     "@types/jasmine": "npm:^5.1.4"
     "@types/node": "npm:^20.14.2"
     "@typescript-eslint/eslint-plugin": "npm:^7.0.0"
@@ -4088,7 +4088,7 @@ __metadata:
     "@jest/types": "npm:^29.6.3"
     "@types/babel__core": "npm:^7"
     "@types/babel__preset-env": "npm:^7"
-    "@types/eslint": "npm:^8"
+    "@types/eslint": "npm:^9.0.0"
     "@types/node": "npm:^20.14.2"
     "@typescript-eslint/eslint-plugin": "npm:^7.0.0"
     "@typescript-eslint/parser": "npm:^7.0.0"
@@ -4141,7 +4141,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.24.6"
     "@types/babel__core": "npm:^7"
     "@types/babel__preset-env": "npm:^7"
-    "@types/eslint": "npm:^8"
+    "@types/eslint": "npm:^9.0.0"
     "@types/md5": "npm:^2"
     "@types/node": "npm:^20.14.2"
     "@typescript-eslint/eslint-plugin": "npm:^7.0.0"
@@ -4172,7 +4172,7 @@ __metadata:
   resolution: "allure-js@workspace:."
   dependencies:
     "@trivago/prettier-plugin-sort-imports": "npm:^4.3.0"
-    "@types/eslint": "npm:^8"
+    "@types/eslint": "npm:^9.0.0"
     "@typescript-eslint/eslint-plugin": "npm:^7.0.0"
     "@typescript-eslint/parser": "npm:^7.0.0"
     eslint: "npm:^8.57.0"
@@ -4201,7 +4201,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.24.6"
     "@types/babel__core": "npm:^7"
     "@types/babel__preset-env": "npm:^7"
-    "@types/eslint": "npm:^8"
+    "@types/eslint": "npm:^9.0.0"
     "@types/mocha": "npm:^10.0.1"
     "@types/node": "npm:^20.14.2"
     "@typescript-eslint/eslint-plugin": "npm:^7.0.0"
@@ -4241,7 +4241,7 @@ __metadata:
     "@playwright/test": "npm:^1.45.1"
     "@types/babel__core": "npm:^7"
     "@types/babel__preset-env": "npm:^7"
-    "@types/eslint": "npm:^8"
+    "@types/eslint": "npm:^9.0.0"
     "@types/node": "npm:^20.14.2"
     "@typescript-eslint/eslint-plugin": "npm:^7.0.0"
     "@typescript-eslint/parser": "npm:^7.0.0"
@@ -4268,7 +4268,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-vitest@workspace:packages/allure-vitest"
   dependencies:
-    "@types/eslint": "npm:^8"
+    "@types/eslint": "npm:^9.0.0"
     "@types/node": "npm:^20.14.2"
     "@typescript-eslint/eslint-plugin": "npm:^7.0.0"
     "@typescript-eslint/parser": "npm:^7.0.0"
@@ -11065,7 +11065,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.24.6"
     "@types/babel__core": "npm:^7"
     "@types/babel__preset-env": "npm:^7"
-    "@types/eslint": "npm:^8"
+    "@types/eslint": "npm:^9.0.0"
     "@types/newman": "npm:^5.3.3"
     "@types/node": "npm:^20.14.2"
     "@types/postman-collection": "npm:^3.5.7"
