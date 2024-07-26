@@ -4,7 +4,13 @@ import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
 import { env } from "node:process";
 import type { CollectionDefinition, Event, HeaderList, Item, Request, Response } from "postman-collection";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
-import { FileSystemWriter, MessageWriter, ReporterRuntime, getEnvironmentLabels } from "allure-js-commons/sdk/reporter";
+import {
+  FileSystemWriter,
+  MessageWriter,
+  ReporterRuntime,
+  getEnvironmentLabels,
+  getSuiteLabels,
+} from "allure-js-commons/sdk/reporter";
 import type { AllureNewmanConfig, PmItem, RunningItem } from "./model.js";
 import { extractMeta } from "./utils.js";
 
@@ -105,20 +111,9 @@ class AllureReporter {
     });
 
     this.allureRuntime.updateTest(this.currentTest, (test) => {
-      const [parentSuite, suite, ...subSuites] = testPath;
-
-      if (parentSuite) {
-        test.labels.push({ name: LabelName.PARENT_SUITE, value: parentSuite });
-      }
-
-      if (suite) {
-        test.labels.push({ name: LabelName.SUITE, value: suite });
-      }
-
-      if (subSuites.length) {
-        test.labels.push({ name: LabelName.SUB_SUITE, value: subSuites.join(" > ") });
-      }
+      test.labels.push(...getSuiteLabels(testPath));
     });
+
     this.pmItemsByAllureUuid.set(this.currentTest, pmItem);
 
     if (itemGroup && this.currentCollection !== itemGroup) {
