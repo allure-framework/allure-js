@@ -22,7 +22,7 @@ npm i -D allure-playwright
 
 ## Usage
 
-Just specify `allure-playwright` as the reporter in the Playwright configuration file:
+Add `allure-playwright` as the reporter in the Playwright configuration file:
 
 ```js
 import { defineConfig } from '@playwright/test';
