@@ -4,7 +4,13 @@ import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
 import { env } from "node:process";
 import type { CollectionDefinition, Event, HeaderList, Item, Request, Response } from "postman-collection";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
-import { FileSystemWriter, MessageWriter, ReporterRuntime, getEnvironmentLabels } from "allure-js-commons/sdk/reporter";
+import {
+  FileSystemWriter,
+  MessageWriter,
+  ReporterRuntime,
+  getEnvironmentLabels,
+  getSuiteLabels,
+} from "allure-js-commons/sdk/reporter";
 import type { AllureNewmanConfig, PmItem, RunningItem } from "./model.js";
 import { extractMeta } from "./utils.js";
 
@@ -16,6 +22,7 @@ class AllureReporter {
   pmItemsByAllureUuid: Map<string, PmItem> = new Map();
   currentTest?: string;
   currentScope?: string;
+  rootCollectionName?: string;
 
   constructor(
     emitter: EventEmitter,
@@ -27,6 +34,7 @@ class AllureReporter {
     const { resultsDir = "./allure-results", ...restConfig } = reporterConfig;
 
     this.currentCollection = options.collection;
+    this.rootCollectionName = options.collection.name;
     this.allureConfig = reporterConfig;
     this.allureRuntime = new ReporterRuntime({
       ...restConfig,
@@ -103,20 +111,9 @@ class AllureReporter {
     });
 
     this.allureRuntime.updateTest(this.currentTest, (test) => {
-      const [parentSuite, suite, ...subSuites] = testPath;
-
-      if (parentSuite) {
-        test.labels.push({ name: LabelName.PARENT_SUITE, value: parentSuite });
-      }
-
-      if (suite) {
-        test.labels.push({ name: LabelName.SUITE, value: suite });
-      }
-
-      if (subSuites.length) {
-        test.labels.push({ name: LabelName.SUB_SUITE, value: subSuites.join(" > ") });
-      }
+      test.labels.push(...getSuiteLabels(testPath));
     });
+
     this.pmItemsByAllureUuid.set(this.currentTest, pmItem);
 
     if (itemGroup && this.currentCollection !== itemGroup) {
@@ -420,15 +417,14 @@ class AllureReporter {
 
     const chain: string[] = [];
 
-    if (this.currentCollection.name && this.allureConfig.collectionAsParentSuite) {
-      chain.push(this.currentCollection.name);
-    }
-
     item.forEachParent((parent) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       chain.unshift(parent.name || parent.id);
     });
 
+    if (this.rootCollectionName) {
+      chain.unshift(this.rootCollectionName);
+    }
     return chain;
   }
 
