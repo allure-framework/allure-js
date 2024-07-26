@@ -16,6 +16,7 @@ class AllureReporter {
   pmItemsByAllureUuid: Map<string, PmItem> = new Map();
   currentTest?: string;
   currentScope?: string;
+  rootCollectionName?: string;
 
   constructor(
     emitter: EventEmitter,
@@ -27,6 +28,7 @@ class AllureReporter {
     const { resultsDir = "./allure-results", ...restConfig } = reporterConfig;
 
     this.currentCollection = options.collection;
+    this.rootCollectionName = options.collection.name;
     this.allureConfig = reporterConfig;
     this.allureRuntime = new ReporterRuntime({
       ...restConfig,
@@ -420,15 +422,14 @@ class AllureReporter {
 
     const chain: string[] = [];
 
-    if (this.currentCollection.name && this.allureConfig.collectionAsParentSuite) {
-      chain.push(this.currentCollection.name);
-    }
-
     item.forEachParent((parent) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       chain.unshift(parent.name || parent.id);
     });
 
+    if (this.rootCollectionName) {
+      chain.unshift(this.rootCollectionName);
+    }
     return chain;
   }
 

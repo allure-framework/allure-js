@@ -8,74 +8,76 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-test("complex test overview", async () => {
-  const { tests } = await runNewmanCollection({
-    info: {
-      name: "fff",
-    },
-    item: [
-      {
-        name: "ParentName",
-        item: [
-          {
-            name: "SuiteName",
-            item: [
-              {
-                name: "SubSub1",
-                item: [
-                  {
-                    name: "SubSub1",
-                    item: [
-                      {
-                        name: "testReq",
-                        event: [
-                          {
-                            listen: "test",
-                            script: {
-                              exec: [
-                                "//@allure.id=228",
-                                "//@allure.label.custom=test",
-                                'pm.test("Status code is 200", function () {',
-                                "    pm.response.to.have.status(200);",
-                                "});",
-                              ],
-                              type: "text/javascript",
-                            },
-                          },
-                        ],
-                        request: {
-                          description: "testDescription\n\nmultiline\n\n**somethingBold**",
-                          method: "GET",
-                          header: [],
-                          url: {
-                            host: ["example", "com"],
-                            path: ["test"],
-                            query: [
-                              {
-                                key: "dfgdfg",
-                                value: null,
-                              },
+const collection = {
+  info: {
+    name: "fff",
+  },
+  item: [
+    {
+      name: "ParentName",
+      item: [
+        {
+          name: "SuiteName",
+          item: [
+            {
+              name: "SubSub1",
+              item: [
+                {
+                  name: "SubSub1",
+                  item: [
+                    {
+                      name: "testReq",
+                      event: [
+                        {
+                          listen: "test",
+                          script: {
+                            exec: [
+                              "//@allure.id=228",
+                              "//@allure.label.custom=test",
+                              'pm.test("Status code is 200", function () {',
+                              "    pm.response.to.have.status(200);",
+                              "});",
                             ],
+                            type: "text/javascript",
                           },
                         },
-                        response: [],
+                      ],
+                      request: {
+                        description: "testDescription\n\nmultiline\n\n**somethingBold**",
+                        method: "GET",
+                        header: [],
+                        url: {
+                          host: ["example", "com"],
+                          path: ["test"],
+                          query: [
+                            {
+                              key: "dfgdfg",
+                              value: null,
+                            },
+                          ],
+                        },
                       },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  });
+                      response: [],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+test("complex test overview", async () => {
+  const { tests } = await runNewmanCollection(collection);
 
   expect(tests).toHaveLength(1);
   expect(tests[0]).toEqual(
     expect.objectContaining({
       name: "testReq",
-      fullName: "ParentName/SuiteName/SubSub1/SubSub1#testReq",
+      fullName: "fff/ParentName/SuiteName/SubSub1/SubSub1#testReq",
       status: Status.PASSED,
       stage: Stage.FINISHED,
       description: "testDescription\n\nmultiline\n\n**somethingBold**",
@@ -83,9 +85,9 @@ test("complex test overview", async () => {
       historyId: expect.any(String),
       testCaseId: expect.any(String),
       labels: expect.arrayContaining([
-        { name: LabelName.PARENT_SUITE, value: "ParentName" },
-        { name: LabelName.SUITE, value: "SuiteName" },
-        { name: LabelName.SUB_SUITE, value: "SubSub1 > SubSub1" },
+        { name: LabelName.PARENT_SUITE, value: "fff" },
+        { name: LabelName.SUITE, value: "ParentName" },
+        { name: LabelName.SUB_SUITE, value: "SuiteName > SubSub1 > SubSub1" },
         { name: LabelName.ALLURE_ID, value: "228" },
         { name: "custom", value: "test" },
       ]),
