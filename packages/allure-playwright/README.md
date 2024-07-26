@@ -99,7 +99,7 @@ export default defineConfig({
       "allure-playwright",
       {
         detail: true,
-        outputFolder: "my-allure-results",
+        resultsDir: "my-allure-results",
         suiteTitle: false,
         links: {
           link: {
