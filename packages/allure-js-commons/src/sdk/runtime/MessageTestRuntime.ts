@@ -184,7 +184,7 @@ export abstract class MessageTestRuntime implements TestRuntime {
 
       return result;
     } catch (err) {
-      const { message, stack } = err as Error;
+      const details = getMessageAndTraceFromError(err as Error);
 
       await this.sendMessage({
         type: "step_stop",
@@ -192,8 +192,7 @@ export abstract class MessageTestRuntime implements TestRuntime {
           status: getStatusFromError(err as Error),
           stop: Date.now(),
           statusDetails: {
-            message,
-            trace: stack,
+            ...details,
           },
         },
       });
