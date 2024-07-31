@@ -1,6 +1,6 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { dirname, join, resolve as resolvePath } from "node:path";
 import type { TestResult, TestResultContainer } from "allure-js-commons";
 import type { AllureResults, EnvironmentInfo } from "allure-js-commons/sdk";
@@ -14,16 +14,21 @@ type CypressModulesPaths = {
 
 type CypressTestFiles = Record<string, (modulesPaths: CypressModulesPaths) => string>;
 
+type AllureResultsWithTimestamps = AllureResults & {
+  timestamps: Map<string, Date>;
+};
+
 export const runCypressInlineTest = async (
   testFiles: CypressTestFiles,
   env?: (testDir: string) => Record<string, string>,
-): Promise<AllureResults> => {
-  const res: AllureResults = {
+): Promise<AllureResultsWithTimestamps> => {
+  const res: AllureResultsWithTimestamps = {
     tests: [],
     groups: [],
     attachments: {},
     categories: [],
     envInfo: undefined,
+    timestamps: new Map(),
   };
   const testDir = join(__dirname, "fixtures", randomUUID());
   const allureCypressModuleBasePath = dirname(require.resolve("allure-cypress"));
@@ -97,34 +102,43 @@ export const runCypressInlineTest = async (
     testProcess.on("exit", async () => {
       try {
         const testResultsDir = join(testDir, "allure-results");
-        const resultFiles = await readdir(testResultsDir);
+        try {
+          const resultFiles = await readdir(testResultsDir);
 
-        for (const resultFile of resultFiles) {
-          if (resultFile === "categories.json") {
-            res.categories = JSON.parse(await readFile(join(testResultsDir, resultFile), "utf8"));
-            continue;
+          for (const resultFile of resultFiles) {
+            const fullPath = join(testResultsDir, resultFile);
+
+            if (resultFile === "categories.json") {
+              res.categories = JSON.parse(await readFile(fullPath, "utf8"));
+              continue;
+            }
+
+            if (resultFile === "environment.properties") {
+              res.envInfo = parseProperties(await readFile(fullPath, "utf8")) as EnvironmentInfo;
+              continue;
+            }
+
+            if (/-attachment\.\S+$/.test(resultFile)) {
+              res.attachments[resultFile] = await readFile(fullPath, "utf8");
+              continue;
+            }
+
+            if (/-container\.json$/.test(resultFile)) {
+              res.groups.push(JSON.parse(await readFile(fullPath, "utf8")) as TestResultContainer);
+              continue;
+            }
+
+            if (/-result\.json$/.test(resultFile)) {
+              const testResult = JSON.parse(await readFile(join(testResultsDir, resultFile), "utf8")) as TestResult;
+              res.tests.push(testResult);
+              const fileStat = await stat(fullPath);
+              res.timestamps.set(testResult.uuid, fileStat.ctime);
+              continue;
+            }
           }
-
-          if (resultFile === "environment.properties") {
-            res.envInfo = parseProperties(await readFile(join(testResultsDir, resultFile), "utf8")) as EnvironmentInfo;
-            continue;
-          }
-
-          if (/-attachment\.\S+$/.test(resultFile)) {
-            res.attachments[resultFile] = await readFile(join(testResultsDir, resultFile), "utf8");
-            continue;
-          }
-
-          if (/-container\.json$/.test(resultFile)) {
-            res.groups.push(
-              JSON.parse(await readFile(join(testResultsDir, resultFile), "utf8")) as TestResultContainer,
-            );
-            continue;
-          }
-
-          if (/-result\.json$/.test(resultFile)) {
-            res.tests.push(JSON.parse(await readFile(join(testResultsDir, resultFile), "utf8")) as TestResult);
-            continue;
+        } catch (e) {
+          if (!(e instanceof Error && "code" in e && e.code === "ENOENT")) {
+            throw e;
           }
         }
 

@@ -80,3 +80,19 @@ it("skipped tests", async () => {
     ]),
   );
 });
+
+it("reports a test before the next one starts", async () => {
+  const { tests, timestamps } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": () => `
+      it("foo", () => {});
+
+      it("bar", () => {});
+    `,
+  });
+
+  const [{ uuid: fooUuid }] = tests.filter((t) => t.name === "foo");
+  const [{ start: barStart }] = tests.filter((t) => t.name === "bar");
+  const fooWriteTime = timestamps.get(fooUuid)?.getTime();
+
+  expect(fooWriteTime).toBeLessThanOrEqual(barStart!);
+});
