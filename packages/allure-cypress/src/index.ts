@@ -1,228 +1,25 @@
-import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions, StatusDetails } from "allure-js-commons";
+import type { StatusDetails } from "allure-js-commons";
 import { ContentType, Status } from "allure-js-commons";
 import type { RuntimeMessage, TestPlanV1 } from "allure-js-commons/sdk";
-import { getMessageAndTraceFromError, getUnfinishedStepsMessages, hasStepMessage } from "allure-js-commons/sdk";
-import type { TestRuntime } from "allure-js-commons/sdk/runtime";
-import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
+import { getUnfinishedStepsMessages, hasStepMessage } from "allure-js-commons/sdk";
 import type {
   CypressCommand,
   CypressCommandStartMessage,
   CypressHook,
   CypressHookStartMessage,
-  CypressMessage,
   CypressTest,
   CypressTestStartMessage,
 } from "./model.js";
-import { ALLURE_REPORT_STEP_COMMAND, ALLURE_REPORT_SYSTEM_HOOK } from "./model.js";
+import { ALLURE_REPORT_SYSTEM_HOOK } from "./model.js";
 import {
   getHookType,
   getSuitePath,
-  isCommandShouldBeSkipped,
+  shouldCommandBeSkipped,
   isGlobalHook,
   isTestPresentInTestPlan,
   toReversed,
-  uint8ArrayToBase64,
 } from "./utils.js";
-
-export class AllureCypressTestRuntime implements TestRuntime {
-  labels(...labels: Label[]) {
-    return this.sendMessageAsync({
-      type: "metadata",
-      data: {
-        labels,
-      },
-    });
-  }
-
-  links(...links: Link[]) {
-    return this.sendMessageAsync({
-      type: "metadata",
-      data: {
-        links,
-      },
-    });
-  }
-
-  parameter(name: string, value: string, options?: ParameterOptions) {
-    return this.sendMessageAsync({
-      type: "metadata",
-      data: {
-        parameters: [
-          {
-            name,
-            value,
-            ...options,
-          },
-        ],
-      },
-    });
-  }
-
-  description(markdown: string) {
-    return this.sendMessageAsync({
-      type: "metadata",
-      data: {
-        description: markdown,
-      },
-    });
-  }
-
-  descriptionHtml(html: string) {
-    return this.sendMessageAsync({
-      type: "metadata",
-      data: {
-        descriptionHtml: html,
-      },
-    });
-  }
-
-  displayName(name: string) {
-    return this.sendMessageAsync({
-      type: "metadata",
-      data: {
-        displayName: name,
-      },
-    });
-  }
-
-  historyId(value: string) {
-    return this.sendMessageAsync({
-      type: "metadata",
-      data: {
-        historyId: value,
-      },
-    });
-  }
-
-  testCaseId(value: string) {
-    return this.sendMessageAsync({
-      type: "metadata",
-      data: {
-        testCaseId: value,
-      },
-    });
-  }
-
-  // @ts-ignore
-  attachment(name: string, content: string, options: AttachmentOptions) {
-    // @ts-ignore
-    const attachmentRawContent: string | Uint8Array = content?.type === "Buffer" ? content.data : content;
-    const actualEncoding = typeof attachmentRawContent === "string" ? "utf8" : "base64";
-    const attachmentContent = uint8ArrayToBase64(attachmentRawContent);
-
-    return this.sendMessageAsync({
-      type: "attachment_content",
-      data: {
-        name,
-        content: attachmentContent,
-        encoding: actualEncoding,
-        contentType: options.contentType,
-        fileExtension: options.fileExtension,
-      },
-    });
-  }
-
-  attachmentFromPath(name: string, path: string, options: Omit<AttachmentOptions, "encoding">) {
-    return this.sendMessageAsync({
-      type: "attachment_path",
-      data: {
-        name,
-        path,
-        contentType: options.contentType,
-        fileExtension: options.fileExtension,
-      },
-    });
-  }
-
-  logStep(name: string, status: Status = Status.PASSED, error?: Error) {
-    return cy
-      .wrap(ALLURE_REPORT_STEP_COMMAND, { log: false })
-      .then(() => {
-        this.sendMessage({
-          type: "step_start",
-          data: {
-            name,
-            start: Date.now(),
-          },
-        });
-
-        return Cypress.Promise.resolve();
-      })
-      .then(() => {
-        return this.sendMessageAsync({
-          type: "step_stop",
-          data: {
-            status: status,
-            stop: Date.now(),
-            statusDetails: error ? { ...getMessageAndTraceFromError(error) } : undefined,
-          },
-        });
-      });
-  }
-
-  step<T = void>(name: string, body: () => T | PromiseLike<T>) {
-    return cy
-      .wrap(ALLURE_REPORT_STEP_COMMAND, { log: false })
-      .then(() => {
-        this.sendMessage({
-          type: "step_start",
-          data: {
-            name,
-            start: Date.now(),
-          },
-        });
-
-        return Cypress.Promise.resolve(body());
-      })
-      .then((result) => {
-        return this.sendMessageAsync({
-          type: "step_stop",
-          data: {
-            status: Status.PASSED,
-            stop: Date.now(),
-          },
-        }).then(() => result);
-      });
-  }
-
-  stepDisplayName(name: string) {
-    return this.sendMessageAsync({
-      type: "step_metadata",
-      data: {
-        name,
-      },
-    });
-  }
-
-  stepParameter(name: string, value: string, mode?: ParameterMode) {
-    return this.sendMessageAsync({
-      type: "step_metadata",
-      data: {
-        parameters: [{ name, value, mode }],
-      },
-    });
-  }
-
-  sendMessage(message: CypressMessage) {
-    const messages = Cypress.env("allureRuntimeMessages") || [];
-
-    Cypress.env("allureRuntimeMessages", messages.concat(message));
-  }
-
-  sendMessageAsync({ type, data }: CypressMessage): PromiseLike<void> {
-    this.sendMessage({
-      type,
-      data: {
-        ...data,
-        // a little hack to avoid additional types definition
-        // @ts-ignore
-        cypressTestId: Cypress.state("test")?.id ?? "",
-      },
-    });
-
-    return Cypress.Promise.resolve();
-  }
-}
+import { enqueueRuntimeMessages, getTestRuntime, initTestRuntime, reportRuntimeMessages } from "./runtime.js";
 
 const {
   EVENT_RUN_BEGIN,
@@ -250,23 +47,17 @@ const initializeAllure = () => {
   Cypress.mocha
     .getRunner()
     .on(EVENT_RUN_BEGIN, () => {
-      const testRuntime = new AllureCypressTestRuntime();
-
-      Cypress.env("allureRuntimeMessages", []);
-
-      // @ts-ignore
-      setGlobalTestRuntime(testRuntime);
+      initTestRuntime();
     })
     .on(EVENT_HOOK_BEGIN, (hook: CypressHook) => {
       if (hook.title.includes(ALLURE_REPORT_SYSTEM_HOOK)) {
         return;
       }
 
-      const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
       // @ts-ignore
       const testId: string | undefined = Cypress.state()?.test?.id;
 
-      testRuntime.sendMessageAsync({
+      enqueueRuntimeMessages({
         type: "cypress_hook_start",
         data: {
           id: testId ? `${testId}:${hook.hookId}` : "",
@@ -283,8 +74,8 @@ const initializeAllure = () => {
         return;
       }
 
-      const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
-      const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressMessage[];
+      const testRuntime = getTestRuntime();
+      const runtimeMessages = testRuntime.messages();
       const hookStartMessage = toReversed(runtimeMessages).find(
         ({ type }) => type === "cypress_hook_start",
       ) as CypressHookStartMessage;
@@ -293,7 +84,7 @@ const initializeAllure = () => {
         hookStartMessage.data.id = `${hook.id}:${hook.hookId}`;
       }
 
-      return testRuntime.sendMessageAsync({
+      testRuntime.enqueueMessage({
         type: "cypress_hook_end",
         data: {
           id: hookStartMessage.data.id,
@@ -305,9 +96,7 @@ const initializeAllure = () => {
       });
     })
     .on(EVENT_SUITE_BEGIN, (suite: Mocha.Suite) => {
-      const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
-
-      return testRuntime.sendMessageAsync({
+      enqueueRuntimeMessages({
         type: "cypress_suite_start",
         data: {
           id: suite.titlePath().join(" "),
@@ -316,9 +105,7 @@ const initializeAllure = () => {
       });
     })
     .on(EVENT_SUITE_END, (suite: Mocha.Suite) => {
-      const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
-
-      return testRuntime.sendMessageAsync({
+      enqueueRuntimeMessages({
         type: "cypress_suite_end",
         data: {
           id: suite.titlePath().join(" "),
@@ -326,9 +113,7 @@ const initializeAllure = () => {
       });
     })
     .on(EVENT_TEST_BEGIN, (test: CypressTest) => {
-      const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
-
-      testRuntime.sendMessage({
+      enqueueRuntimeMessages({
         type: "cypress_test_start",
         data: {
           id: test.id,
@@ -339,14 +124,14 @@ const initializeAllure = () => {
       });
     })
     .on(EVENT_TEST_PASS, (test: CypressTest) => {
-      const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
-      const runtimeMessages = Cypress.env("allureRuntimeMessages") as RuntimeMessage[];
+      const testRuntime = getTestRuntime();
+      const runtimeMessages = testRuntime.messages() as RuntimeMessage[];
       const unfinishedStepsMessages = getUnfinishedStepsMessages(runtimeMessages);
       // @ts-ignore
       const retries = test._retries ?? 0;
 
       unfinishedStepsMessages.forEach(() => {
-        testRuntime.sendMessage({
+        testRuntime.enqueueMessage({
           type: "step_stop",
           data: {
             status: Status.PASSED,
@@ -355,7 +140,7 @@ const initializeAllure = () => {
         });
       });
 
-      testRuntime.sendMessage({
+      testRuntime.enqueueMessage({
         type: "cypress_test_end",
         data: {
           id: test.id,
@@ -366,8 +151,8 @@ const initializeAllure = () => {
       });
     })
     .on(EVENT_TEST_FAIL, (test: CypressTest, err: Error) => {
-      const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
-      const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressMessage[];
+      const testRuntime = getTestRuntime();
+      const runtimeMessages = testRuntime.messages();
       const startCommandMessageIdx = runtimeMessages
         .toReversed()
         .findIndex(({ type }) => type === "cypress_command_start");
@@ -384,7 +169,7 @@ const initializeAllure = () => {
       const retries = test._retries ?? 0;
 
       if (hasUnfinishedCommand) {
-        testRuntime.sendMessage({
+        testRuntime.enqueueMessage({
           type: "cypress_command_end",
           data: {
             id: (runtimeMessages[startCommandMessageIdx] as CypressCommandStartMessage).data.id,
@@ -399,7 +184,7 @@ const initializeAllure = () => {
           .toReversed()
           .find(({ type }) => type === "cypress_hook_start") as CypressHookStartMessage;
 
-        return testRuntime.sendMessageAsync({
+        testRuntime.enqueueMessage({
           type: "cypress_hook_end",
           data: {
             id: hookStartMessage.data.id,
@@ -414,7 +199,7 @@ const initializeAllure = () => {
 
       // the test hasn't been even started (rather due to hook error), so we need to start it manually
       if (!test.hookName && test.wallClockStartedAt === undefined) {
-        testRuntime.sendMessage({
+        testRuntime.enqueueMessage({
           type: "cypress_test_start",
           data: {
             id: test.id,
@@ -429,7 +214,7 @@ const initializeAllure = () => {
         ({ type }) => type === "cypress_test_start",
       ) as CypressTestStartMessage;
 
-      testRuntime.sendMessage({
+      testRuntime.enqueueMessage({
         type: "cypress_test_end",
         data: {
           id: test.id,
@@ -441,7 +226,7 @@ const initializeAllure = () => {
       });
     })
     .on(EVENT_TEST_PENDING, (test: CypressTest) => {
-      const testRuntime = new AllureCypressTestRuntime();
+      const testRuntime = getTestRuntime();
       const testPlan = Cypress.env("allureTestPlan") as TestPlanV1;
 
       if (testPlan && !isTestPresentInTestPlan(Cypress.currentTest, Cypress.spec, testPlan)) {
@@ -451,7 +236,7 @@ const initializeAllure = () => {
       // @ts-ignore
       const retries = test._retries ?? 0;
 
-      testRuntime.sendMessageAsync({
+      testRuntime.enqueueMessage({
         type: "cypress_test_start",
         data: {
           id: test.id,
@@ -461,7 +246,7 @@ const initializeAllure = () => {
         },
       });
 
-      return testRuntime.sendMessageAsync({
+      testRuntime.enqueueMessage({
         type: "cypress_test_end",
         data: {
           id: test.id,
@@ -480,9 +265,7 @@ const initializeAllure = () => {
 
   Cypress.Screenshot.defaults({
     onAfterScreenshot: (_, details) => {
-      const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
-
-      return testRuntime.sendMessageAsync({
+      enqueueRuntimeMessages({
         type: "attachment_path",
         data: {
           path: details.path,
@@ -494,8 +277,8 @@ const initializeAllure = () => {
   });
 
   Cypress.on("fail", (err) => {
-    const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
-    const runtimeMessages = Cypress.env("allureRuntimeMessages") as RuntimeMessage[];
+    const testRuntime = getTestRuntime();
+    const runtimeMessages = testRuntime.messages() as RuntimeMessage[];
     const hasSteps = hasStepMessage(runtimeMessages);
 
     // if there is no steps, don't handle the error
@@ -512,7 +295,7 @@ const initializeAllure = () => {
     const failedStepsStatus = err.constructor.name === "AssertionError" ? Status.FAILED : Status.BROKEN;
 
     unfinishedStepsMessages.forEach(() => {
-      testRuntime.sendMessage({
+      testRuntime.enqueueMessage({
         type: "step_stop",
         data: {
           status: failedStepsStatus,
@@ -528,13 +311,11 @@ const initializeAllure = () => {
     throw err;
   });
   Cypress.on("command:start", (command: CypressCommand) => {
-    if (isCommandShouldBeSkipped(command)) {
+    if (shouldCommandBeSkipped(command)) {
       return;
     }
 
-    const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
-
-    return testRuntime.sendMessageAsync({
+    enqueueRuntimeMessages({
       type: "cypress_command_start",
       data: {
         id: command.attributes.id,
@@ -544,13 +325,11 @@ const initializeAllure = () => {
     });
   });
   Cypress.on("command:end", (command: CypressCommand) => {
-    if (isCommandShouldBeSkipped(command)) {
+    if (shouldCommandBeSkipped(command)) {
       return;
     }
 
-    const testRuntime = getGlobalTestRuntime() as AllureCypressTestRuntime;
-
-    return testRuntime.sendMessageAsync({
+    enqueueRuntimeMessages({
       type: "cypress_command_end",
       data: {
         id: command.attributes.id,
@@ -582,13 +361,7 @@ const initializeAllure = () => {
   });
 
   after(ALLURE_REPORT_SYSTEM_HOOK, () => {
-    const runtimeMessages = Cypress.env("allureRuntimeMessages") as CypressMessage[];
-
-    cy.task(
-      "allureReportTest",
-      { absolutePath: Cypress.spec.absolute, messages: runtimeMessages ?? [] },
-      { log: false },
-    );
+    reportRuntimeMessages();
   });
 };
 

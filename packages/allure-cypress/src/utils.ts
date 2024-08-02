@@ -31,7 +31,7 @@ export const getSuitePath = (test: Mocha.Test): string[] => {
   return path;
 };
 
-export const isCommandShouldBeSkipped = (command: CypressCommand) => {
+export const shouldCommandBeSkipped = (command: CypressCommand) => {
   if (last(command.attributes.args)?.log === false) {
     return true;
   }

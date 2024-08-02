@@ -49,7 +49,7 @@ export class AllureCypress {
       readAllureTestPlan: () => {
         return parseTestPlan() ?? null;
       },
-      allureReportTest: ({ messages, absolutePath }: { messages: CypressMessage[]; absolutePath: string }) => {
+      reportAllureRuntimeMessages: ({ messages, absolutePath }: { messages: CypressMessage[]; absolutePath: string }) => {
         this.messagesByAbsolutePath.set(absolutePath, messages);
 
         return null;
