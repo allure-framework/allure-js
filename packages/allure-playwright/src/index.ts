@@ -39,8 +39,6 @@ import { statusToAllureStats } from "./utils.js";
 
 // TODO: move to utils.ts
 const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
-// 12 (allureattach) + 1 (_) + 36 (uuid v4) + 1 (_)
-const stepAttachPrefixLength = 50;
 
 interface ReporterV2 {
   onConfigure(config: FullConfig): void;
@@ -229,7 +227,7 @@ export class AllureReporter implements ReporterV2 {
     }
 
     this.allureRuntime!.startStep(testUuid, undefined, {
-      name: step.title.substring(0, stepAttachPrefixLength),
+      name: step.title,
       start: step.startTime.getTime(),
     });
   }
