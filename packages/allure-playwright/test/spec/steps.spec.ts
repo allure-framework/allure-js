@@ -151,3 +151,49 @@ it("reports failed test steps", async () => {
     }),
   ]);
 });
+
+it("should support steps with names longer then 50 chars", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.js": `
+      import { test, expect } from '@playwright/test';
+
+      test('a test', async ({}) => {
+        await test.step('Check email input field and submit button on password recovery window', async () => {
+        });
+      });
+    `,
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright"),
+             {
+               resultsDir: "./allure-results",
+               detail: false,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests).toEqual([
+    expect.objectContaining({
+      name: "a test",
+      status: Status.PASSED,
+      steps: [
+        expect.objectContaining({
+          name: "Check email input field and submit button on password recovery window",
+          status: Status.PASSED,
+        }),
+      ],
+    }),
+  ]);
+});
