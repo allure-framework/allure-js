@@ -1,4 +1,4 @@
-/* eslint @typescript-eslint/quotes: off */
+/* eslint @stylistic/quotes: off */
 import { beforeAll, describe, expect, it } from "vitest";
 import type { Assertion } from "vitest";
 import type { TestResult, TestResultContainer } from "allure-js-commons";

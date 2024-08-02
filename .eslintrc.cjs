@@ -22,13 +22,13 @@ module.exports = {
     sourceType: "module",
     warnOnUnsupportedTypeScriptVersion: false,
   },
-  plugins: ["n", "no-null", "prefer-arrow", "import", "jsdoc", "@typescript-eslint"],
+  plugins: ["n", "no-null", "prefer-arrow", "import", "jsdoc", "@typescript-eslint", "@stylistic"],
   ignorePatterns: ["**/dist/**/*"],
   overrides: [
     {
       extends: ["plugin:@typescript-eslint/disable-type-checked"],
       files: [".eslintrc.cjs"],
-    }
+    },
   ],
   rules: {
     "@typescript-eslint/ban-ts-comment": "off",
@@ -39,7 +39,7 @@ module.exports = {
         default: "array",
       },
     ],
-    "@typescript-eslint/ban-types": [
+    "@typescript-eslint/no-restricted-types": [
       "error",
       {
         types: {
@@ -88,7 +88,7 @@ module.exports = {
         },
       },
     ],
-    "@typescript-eslint/member-delimiter-style": [
+    "@stylistic/member-delimiter-style": [
       "error",
       {
         multiline: {
@@ -105,6 +105,7 @@ module.exports = {
     "@typescript-eslint/naming-convention": "off",
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-empty-interface": "off",
+    "@typescript-eslint/no-empty-object-type": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-floating-promises": "off",
     "@typescript-eslint/no-inferrable-types": [
@@ -128,14 +129,15 @@ module.exports = {
     "@typescript-eslint/no-unsafe-member-access": "off",
     "@typescript-eslint/no-unsafe-return": "off",
     "@typescript-eslint/no-unused-expressions": "error",
-    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-unused-vars": ["error", { caughtErrors: "none" }],
     "@typescript-eslint/no-use-before-define": "off",
     "@typescript-eslint/no-var-requires": "error",
     "@typescript-eslint/prefer-for-of": "error",
     "@typescript-eslint/prefer-function-type": "error",
     "@typescript-eslint/prefer-namespace-keyword": "error",
     "@typescript-eslint/prefer-regexp-exec": "off",
-    "@typescript-eslint/quotes": ["error", "double"],
+    "@typescript-eslint/prefer-promise-reject-errors": "off",
+    "@stylistic/quotes": ["error", "double"],
     "@typescript-eslint/restrict-template-expressions": [
       "error",
       {
@@ -145,7 +147,7 @@ module.exports = {
         allowNullish: false,
       },
     ],
-    "@typescript-eslint/semi": ["error"],
+    "@stylistic/semi": ["error"],
     "@typescript-eslint/no-shadow": [
       "error",
       {
@@ -160,16 +162,16 @@ module.exports = {
         lib: "always",
       },
     ],
-    "@typescript-eslint/type-annotation-spacing": "error",
+    "@stylistic/type-annotation-spacing": "error",
     "@typescript-eslint/unified-signatures": "error",
     "arrow-body-style": "off",
     "arrow-parens": ["off", "always"],
     "brace-style": ["error", "1tbs"],
-    "complexity": "off",
+    complexity: "off",
     "constructor-super": "error",
-    "curly": "error",
+    curly: "error",
     "eol-last": "error",
-    "eqeqeq": ["error", "smart"],
+    eqeqeq: ["error", "smart"],
     "guard-for-in": "error",
     "id-blacklist": [
       "error",
@@ -227,7 +229,7 @@ module.exports = {
     "prefer-const": "error",
     "prefer-template": "error",
     "quote-props": ["error", "consistent-as-needed"],
-    "radix": "error",
+    radix: "error",
     "space-before-function-paren": [
       "error",
       {

@@ -50,10 +50,11 @@
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
+    "@stylistic/eslint-plugin": "^2.6.1",
     "@types/eslint": "^8",
     "@types/node": "^20.14.2",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
     "@vitest/runner": "^1.6.0",
     "allure-commandline": "^2.29.0",
     "eslint": "^8.57.0",

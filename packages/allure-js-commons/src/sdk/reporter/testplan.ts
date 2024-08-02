@@ -21,6 +21,8 @@ export const parseTestPlan = (): TestPlanV1 | undefined => {
 
     return testPlan;
   } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(`could not parse test plan ${testPlanPath}`, e);
     return undefined;
   }
 };

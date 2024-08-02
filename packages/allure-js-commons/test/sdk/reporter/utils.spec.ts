@@ -58,14 +58,14 @@ describe("getSuiteLabels", () => {
 describe("serialize", () => {
   describe("with object", () => {
     it("returns JSON string", () => {
-      // eslint-disable-next-line @typescript-eslint/quotes
+      // eslint-disable-next-line @stylistic/quotes
       expect(serialize({ foo: "bar" })).toBe('{"foo":"bar"}');
     });
   });
 
   describe("with array", () => {
     it("returns JSON string", () => {
-      // eslint-disable-next-line @typescript-eslint/quotes
+      // eslint-disable-next-line @stylistic/quotes
       expect(serialize(["foo", "bar"])).toBe('["foo","bar"]');
     });
   });
@@ -102,7 +102,7 @@ describe("serialize", () => {
 
   describe("with primitives", () => {
     it("returns stringified value", () => {
-      // eslint-disable-next-line @typescript-eslint/quotes
+      // eslint-disable-next-line @stylistic/quotes
       expect(serialize("foo")).toBe("foo");
       expect(serialize(123)).toBe("123");
       expect(serialize(true)).toBe("true");

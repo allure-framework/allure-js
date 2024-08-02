@@ -463,7 +463,7 @@ class AllureReporter {
       val
         .replace("\n", "")
         .replace("\r", "")
-        // eslint-disable-next-line @typescript-eslint/quotes
+        // eslint-disable-next-line @stylistic/quotes
         .replace('"', '"')
     );
   }
