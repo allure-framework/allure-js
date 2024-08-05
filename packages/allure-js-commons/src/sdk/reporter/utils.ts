@@ -86,6 +86,8 @@ export const readImageAsBase64 = async (filePath: string): Promise<string | unde
 
     return file ? `data:image/png;base64,${file}` : undefined;
   } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(`could not read file ${filePath}`, e);
     return undefined;
   }
 };

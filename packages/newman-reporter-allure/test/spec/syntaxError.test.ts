@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/quotes */
+/* eslint-disable @stylistic/quotes */
 import { afterAll, afterEach, beforeAll, expect, test } from "vitest";
 import { server } from "../mocks/server.js";
 import { runNewmanCollection } from "../utils.js";
