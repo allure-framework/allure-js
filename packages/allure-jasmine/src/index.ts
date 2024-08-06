@@ -3,7 +3,7 @@ import * as allure from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError, isPromise } from "allure-js-commons/sdk";
-import type { Config, FixtureType } from "allure-js-commons/sdk/reporter";
+import type { FixtureType, ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   FileSystemWriter,
   MessageWriter,
@@ -37,7 +37,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   private jasmineSuitesStack: jasmine.SuiteResult[] = [];
   private scopesStack: string[] = [];
 
-  constructor(config: Config) {
+  constructor(config: ReporterConfig) {
     const { resultsDir = "./allure-results", ...restConfig } = config || {};
 
     this.allureRuntime = new ReporterRuntime({

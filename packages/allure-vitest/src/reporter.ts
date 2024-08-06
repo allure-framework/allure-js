@@ -4,7 +4,7 @@ import type { File, Reporter, Task } from "vitest";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
-import type { Config } from "allure-js-commons/sdk/reporter";
+import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   FileSystemWriter,
   MessageWriter,
@@ -18,9 +18,9 @@ import { getSuitePath, getTestFullName } from "./utils.js";
 
 export default class AllureVitestReporter implements Reporter {
   private allureReporterRuntime?: ReporterRuntime;
-  private config: Config;
+  private config: ReporterConfig;
 
-  constructor(config: Config) {
+  constructor(config: ReporterConfig) {
     this.config = config;
   }
 

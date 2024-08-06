@@ -10,7 +10,7 @@ import {
   getEnvironmentLabels,
   md5,
 } from "allure-js-commons/sdk/reporter";
-import type { Config } from "allure-js-commons/sdk/reporter";
+import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import { extractMeta } from "./helpers.js";
 import type { CodeceptError, CodeceptHook, CodeceptStep, CodeceptTest } from "./model.js";
 
@@ -20,11 +20,11 @@ export class AllureCodeceptJsReporter {
   currentFixtureUuid?: string;
   scopeUuids: string[] = [];
   currentTest: CodeceptTest | null = null;
-  config!: Config;
+  config!: ReporterConfig;
 
-  constructor(config: Config) {
+  constructor(config: ReporterConfig) {
     this.registerEvents();
-    this.config = config || ({} as Config);
+    this.config = config || ({} as ReporterConfig);
     this.allureRuntime = new ReporterRuntime({
       ...config,
       writer: env.ALLURE_TEST_MODE

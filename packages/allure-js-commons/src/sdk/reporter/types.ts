@@ -1,5 +1,6 @@
 import type { FixtureResult, LinkType, StepResult, TestResult, TestResultContainer } from "../../model.js";
 import type { Category, EnvironmentInfo } from "../types.js";
+import { ReporterRuntime } from "./ReporterRuntime";
 
 export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
 export const ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE = "application/vnd.allure.message+json";
@@ -38,13 +39,16 @@ export type LinkConfig<TOpts extends LinkTypeOptions = LinkTypeOptions> = Partia
 
 export type WriterDescriptor = [cls: string, ...args: readonly unknown[]] | string;
 
-export interface Config {
+export interface ReporterConfig {
   readonly resultsDir?: string;
-  readonly writer: Writer | WriterDescriptor;
   readonly links?: LinkConfig;
   readonly listeners?: LifecycleListener[];
   readonly environmentInfo?: EnvironmentInfo;
   readonly categories?: Category[];
+}
+
+export interface ReporterRuntimeConfig extends Omit<ReporterConfig, "resultsDir"> {
+  readonly writer: Writer | WriterDescriptor;
 }
 
 export interface Writer {
