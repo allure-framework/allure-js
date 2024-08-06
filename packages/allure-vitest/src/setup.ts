@@ -17,17 +17,17 @@ afterAll(() => {
   globalThis.allureTestPlan = undefined;
 });
 
-beforeEach((ctx) => {
-  (ctx.task as any).meta = {
-    ...ctx.task.meta,
+beforeEach(({ task, skip }) => {
+  (task as any).meta = {
+    ...task.meta,
     VITEST_POOL_ID: process.env.VITEST_POOL_ID,
   };
 
   // @ts-ignore
-  if (!existsInTestPlan(ctx, globalThis.allureTestPlan as TestPlanV1)) {
+  if (!existsInTestPlan(task, globalThis.allureTestPlan as TestPlanV1)) {
     // @ts-ignore
-    ctx.task.meta.allureSkip = true;
-    ctx.skip();
+    task.meta.allureSkip = true;
+    skip();
     return;
   }
 
