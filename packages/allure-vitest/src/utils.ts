@@ -1,6 +1,6 @@
 import { relative } from "node:path";
 import { cwd } from "node:process";
-import type { Suite, Task, TaskContext } from "vitest";
+import type { Suite, Task } from "vitest";
 import { LabelName } from "allure-js-commons";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
@@ -29,13 +29,13 @@ export const getTestFullName = (task: Task, rootDir: string): string => {
   return `${relativeTestPath}#${suitePath.concat(task.name).join(" ")}`;
 };
 
-export const existsInTestPlan = (ctx: TaskContext, testPlan?: TestPlanV1) => {
+export const existsInTestPlan = (task: Task, testPlan?: TestPlanV1) => {
   if (!testPlan) {
     return true;
   }
 
-  const { name: testName } = ctx.task;
-  const testFullName = getTestFullName(ctx.task, cwd());
+  const { name: testName } = task;
+  const testFullName = getTestFullName(task, cwd());
   const { labels } = extractMetadataFromString(testName);
   const allureIdLabel = labels.find(({ name }) => name === LabelName.ALLURE_ID);
 

@@ -22,6 +22,16 @@ describe("test plan", () => {
           test("boop", () => {});
         });
       });
+
+      export const testFixture = test.extend({
+      dummy: async ({}, use) => {
+        await use("fixture data");
+      },
+      });
+
+      testFixture("fixture test", async ({ dummy }) => {
+        await logStep(dummy);
+      });
     `,
       undefined,
       async (testDir) => {
@@ -43,7 +53,6 @@ describe("test plan", () => {
             ],
           }),
         );
-
         process.env.ALLURE_TESTPLAN_PATH = testPlanPath;
       },
     );
