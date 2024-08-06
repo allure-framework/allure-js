@@ -2,7 +2,15 @@ import { event } from "codeceptjs";
 import path from "node:path";
 import { LabelName, Stage, Status, type StepResult } from "allure-js-commons";
 import { type RuntimeMessage, extractMetadataFromString, getMessageAndTraceFromError } from "allure-js-commons/sdk";
-import { ReporterRuntime, createDefaultWriter, getEnvironmentLabels, md5 } from "allure-js-commons/sdk/reporter";
+import {
+  ReporterRuntime,
+  createDefaultWriter,
+  getEnvironmentLabels,
+  getHostLabel,
+  getPackageLabelFromPath,
+  getThreadLabel,
+  md5,
+} from "allure-js-commons/sdk/reporter";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import { extractMeta } from "./helpers.js";
 import type { CodeceptError, CodeceptHook, CodeceptStep, CodeceptTest } from "./model.js";
@@ -52,6 +60,9 @@ export class AllureCodeceptJsReporter {
     const titleMetadata = extractMetadataFromString(test.title);
     // @ts-ignore
     const { labels } = extractMeta(test);
+    const packageLabel = getPackageLabelFromPath(fullName);
+    const hostLabel = getHostLabel();
+    const threadLabel = getThreadLabel();
 
     this.currentTestUuid = this.allureRuntime.startTest(
       {
@@ -67,6 +78,9 @@ export class AllureCodeceptJsReporter {
       result.labels.push(...titleMetadata.labels);
       result.labels.push({ name: LabelName.LANGUAGE, value: "javascript" });
       result.labels.push({ name: LabelName.FRAMEWORK, value: "codeceptjs" });
+      result.labels.push(packageLabel);
+      result.labels.push(hostLabel);
+      result.labels.push(threadLabel);
       result.labels.push(...getEnvironmentLabels());
 
       if (test?.parent?.title) {
