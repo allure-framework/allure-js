@@ -1,5 +1,5 @@
 import * as allure from "allure-js-commons";
-import { Stage, Status } from "allure-js-commons";
+import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError, isPromise } from "allure-js-commons/sdk";
 import type { FixtureType, ReporterConfig } from "allure-js-commons/sdk/reporter";
@@ -7,7 +7,10 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getHostLabel,
+  getPackageLabelFromPath,
   getSuiteLabels,
+  getThreadLabel,
   hasSkipLabel,
 } from "allure-js-commons/sdk/reporter";
 import { MessageTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
@@ -132,7 +135,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     }
   }
 
-  specDone(spec: jasmine.SpecResult): void {
+  specDone(spec: jasmine.SpecResult & { filename: string }): void {
     if (!this.currentAllureTestUuid) {
       return;
     }
@@ -144,6 +147,11 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
       result.labels.push(...suitesLabels);
       result.labels.push(...getEnvironmentLabels());
+      result.labels.push({ name: LabelName.LANGUAGE, value: "javascript" });
+      result.labels.push({ name: LabelName.FRAMEWORK, value: "jasmine" });
+      result.labels.push(getHostLabel());
+      result.labels.push(getPackageLabelFromPath(spec.filename));
+      result.labels.push(getThreadLabel());
 
       if (spec.status === "pending" || spec.status === "disabled" || spec.status === "excluded") {
         result.status = Status.SKIPPED;

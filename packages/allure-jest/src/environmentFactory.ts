@@ -1,7 +1,7 @@
 import type { EnvironmentContext, JestEnvironment, JestEnvironmentConfig } from "@jest/environment";
 import type { Circus } from "@jest/types";
 import os from "node:os";
-import { dirname, sep } from "node:path";
+import { sep } from "node:path";
 import process from "node:process";
 import * as allure from "allure-js-commons";
 import { LabelName, Stage, Status } from "allure-js-commons";
@@ -191,7 +191,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
 
       const threadLabel = ALLURE_THREAD_NAME || JEST_WORKER_ID || process.pid.toString();
       const hostLabel = ALLURE_HOST_NAME || hostname;
-      const packageLabel = dirname(this.testPath).split(sep).join(".");
+      const packageLabel = this.testPath.replace(sep, ".");
 
       this.#startScope();
       const testUuid = this.runtime.startTest(
