@@ -1,6 +1,5 @@
 import type { FixtureResult, LinkType, StepResult, TestResult, TestResultContainer } from "../../model.js";
 import type { Category, EnvironmentInfo } from "../types.js";
-import { ReporterRuntime } from "./ReporterRuntime";
 
 export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
 export const ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE = "application/vnd.allure.message+json";
