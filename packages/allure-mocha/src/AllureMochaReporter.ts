@@ -3,7 +3,7 @@ import type { AttachmentOptions, ContentType, Label } from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
 import { getStatusFromError } from "allure-js-commons/sdk";
-import type { Config } from "allure-js-commons/sdk/reporter";
+import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   FileSystemWriter,
   ReporterRuntime,
@@ -55,11 +55,11 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   constructor(runner: Mocha.Runner, opts: Mocha.MochaOptions, isInWorker: boolean = false) {
     super(runner, opts);
 
-    const { resultsDir = "allure-results", writer, ...restOptions }: Config = opts.reporterOptions || {};
+    const { resultsDir = "allure-results", ...restOptions }: ReporterConfig = opts.reporterOptions || {};
 
     this.isInWorker = isInWorker;
     this.runtime = new ReporterRuntime({
-      writer: writer || new FileSystemWriter({ resultsDir }),
+      writer: new FileSystemWriter({ resultsDir }),
       ...restOptions,
     });
     this.testplan = createTestPlanIndices();

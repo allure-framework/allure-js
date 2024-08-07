@@ -1,7 +1,7 @@
 import type { JestEnvironment, JestEnvironmentConfig } from "@jest/environment";
 import type { Config as JestConfig } from "@jest/types";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import type { Config } from "allure-js-commons/sdk/reporter";
+import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 
 export type RunContext = {
   executables: string[];
@@ -16,7 +16,7 @@ export interface AllureJestEnvironment extends JestEnvironment {
 }
 
 export type AllureJestProjectConfig = JestConfig.ProjectConfig & {
-  testEnvironmentOptions?: JestConfig.ProjectConfig["testEnvironmentOptions"] & Config;
+  testEnvironmentOptions?: JestConfig.ProjectConfig["testEnvironmentOptions"] & ReporterConfig;
 };
 
 export type AllureJestConfig = JestEnvironmentConfig & {

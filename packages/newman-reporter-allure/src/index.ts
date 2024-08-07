@@ -4,6 +4,7 @@ import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
 import { env } from "node:process";
 import type { CollectionDefinition, Event, HeaderList, Item, Request, Response } from "postman-collection";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
+import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   FileSystemWriter,
   MessageWriter,
@@ -11,12 +12,12 @@ import {
   getEnvironmentLabels,
   getSuiteLabels,
 } from "allure-js-commons/sdk/reporter";
-import type { AllureNewmanConfig, PmItem, RunningItem } from "./model.js";
+import type { PmItem, RunningItem } from "./model.js";
 import { extractMeta } from "./utils.js";
 
 class AllureReporter {
   allureRuntime: ReporterRuntime;
-  allureConfig: AllureNewmanConfig;
+  allureConfig: ReporterConfig;
   runningItems: RunningItem[] = [];
   currentCollection: CollectionDefinition;
   pmItemsByAllureUuid: Map<string, PmItem> = new Map();
@@ -26,7 +27,7 @@ class AllureReporter {
 
   constructor(
     emitter: EventEmitter,
-    reporterConfig: AllureNewmanConfig,
+    reporterConfig: ReporterConfig,
     options: {
       collection: CollectionDefinition;
     },

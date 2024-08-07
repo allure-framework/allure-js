@@ -38,13 +38,16 @@ export type LinkConfig<TOpts extends LinkTypeOptions = LinkTypeOptions> = Partia
 
 export type WriterDescriptor = [cls: string, ...args: readonly unknown[]] | string;
 
-export interface Config {
+export interface ReporterConfig {
   readonly resultsDir?: string;
-  readonly writer: Writer | WriterDescriptor;
   readonly links?: LinkConfig;
   readonly listeners?: LifecycleListener[];
   readonly environmentInfo?: EnvironmentInfo;
   readonly categories?: Category[];
+}
+
+export interface ReporterRuntimeConfig extends Omit<ReporterConfig, "resultsDir"> {
+  readonly writer: Writer | WriterDescriptor;
 }
 
 export interface Writer {

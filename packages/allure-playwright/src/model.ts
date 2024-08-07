@@ -1,6 +1,6 @@
-import type { Config } from "allure-js-commons/sdk/reporter";
+import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 
-export interface AllurePlaywrightReporterConfig extends Omit<Config, "writer"> {
+export interface AllurePlaywrightReporterConfig extends ReporterConfig {
   detail?: boolean;
   suiteTitle?: boolean;
 }

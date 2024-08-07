@@ -23,7 +23,7 @@ import { LifecycleState } from "./LifecycleState.js";
 import { Notifier } from "./Notifier.js";
 import { createFixtureResult, createStepResult, createTestResult } from "./factory.js";
 import { hasSkipLabel } from "./testplan.js";
-import type { Config, FixtureType, FixtureWrapper, LinkConfig, TestScope, Writer } from "./types.js";
+import type { FixtureType, FixtureWrapper, LinkConfig, ReporterRuntimeConfig, TestScope, Writer } from "./types.js";
 import { deepClone, formatLinks, getTestResultHistoryId, getTestResultTestCaseId, randomUuid } from "./utils.js";
 import { buildAttachmentFileName } from "./utils/attachments.js";
 import { resolveWriter } from "./writer/loader.js";
@@ -98,7 +98,7 @@ export class ReporterRuntime {
   environmentInfo?: EnvironmentInfo;
   linkConfig?: LinkConfig;
 
-  constructor({ writer, listeners = [], environmentInfo, categories, links }: Config) {
+  constructor({ writer, listeners = [], environmentInfo, categories, links }: ReporterRuntimeConfig) {
     this.writer = resolveWriter(writer);
     this.notifier = new Notifier({ listeners });
     this.categories = categories;
