@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { EventEmitter } from "events";
 import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
-import { env } from "node:process";
 import type { CollectionDefinition, Event, HeaderList, Item, Request, Response } from "postman-collection";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
-  FileSystemWriter,
-  MessageWriter,
   ReporterRuntime,
+  createDefaultWriter,
   getEnvironmentLabels,
   getSuiteLabels,
 } from "allure-js-commons/sdk/reporter";
@@ -32,18 +30,14 @@ class AllureReporter {
       collection: CollectionDefinition;
     },
   ) {
-    const { resultsDir = "./allure-results", ...restConfig } = reporterConfig;
+    const { resultsDir, ...restConfig } = reporterConfig;
 
     this.currentCollection = options.collection;
     this.rootCollectionName = options.collection.name;
     this.allureConfig = reporterConfig;
     this.allureRuntime = new ReporterRuntime({
       ...restConfig,
-      writer: env.ALLURE_TEST_MODE
-        ? new MessageWriter(emitter)
-        : new FileSystemWriter({
-            resultsDir,
-          }),
+      writer: createDefaultWriter({ resultsDir }),
     });
     this.registerEvents(emitter);
   }

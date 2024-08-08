@@ -1,13 +1,11 @@
-import { env } from "node:process";
 import * as allure from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError, isPromise } from "allure-js-commons/sdk";
 import type { FixtureType, ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
-  FileSystemWriter,
-  MessageWriter,
   ReporterRuntime,
+  createDefaultWriter,
   getEnvironmentLabels,
   getSuiteLabels,
   hasSkipLabel,
@@ -28,8 +26,6 @@ class AllureJasmineTestRuntime extends MessageTestRuntime {
   }
 }
 
-const { ALLURE_TEST_MODE } = env;
-
 export default class AllureJasmineReporter implements jasmine.CustomReporter {
   private readonly allureRuntime: ReporterRuntime;
   private currentAllureTestUuid?: string;
@@ -37,16 +33,12 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   private jasmineSuitesStack: jasmine.SuiteResult[] = [];
   private scopesStack: string[] = [];
 
-  constructor(config: ReporterConfig) {
-    const { resultsDir = "./allure-results", ...restConfig } = config || {};
+  constructor(config: ReporterConfig = {}) {
+    const { resultsDir, ...restConfig } = config;
 
     this.allureRuntime = new ReporterRuntime({
       ...restConfig,
-      writer: ALLURE_TEST_MODE
-        ? new MessageWriter()
-        : new FileSystemWriter({
-            resultsDir,
-          }),
+      writer: createDefaultWriter({ resultsDir }),
     });
 
     const testRuntime = new AllureJasmineTestRuntime(this);

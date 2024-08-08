@@ -12,6 +12,7 @@ import {
   FileSystemWriter,
   MessageWriter,
   ReporterRuntime,
+  createDefaultWriter,
   getEnvironmentLabels,
   getSuiteLabels,
   parseTestPlan,
@@ -43,15 +44,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       super(config as JestEnvironmentConfig, context);
 
       const projectConfig = "projectConfig" in config ? config.projectConfig : config;
-      const { resultsDir = "allure-results", ...restConfig } = projectConfig?.testEnvironmentOptions || {};
+      const { resultsDir, ...restConfig } = projectConfig?.testEnvironmentOptions || {};
 
       this.runtime = new ReporterRuntime({
         ...restConfig,
-        writer: ALLURE_TEST_MODE
-          ? new MessageWriter()
-          : new FileSystemWriter({
-              resultsDir,
-            }),
+        writer: createDefaultWriter({ resultsDir }),
       });
       this.testPath = context.testPath.replace(projectConfig.rootDir, "").replace(sep, "");
       this.testPlan = parseTestPlan();

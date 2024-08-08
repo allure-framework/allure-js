@@ -3,8 +3,8 @@ import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import {
-  FileSystemWriter,
   ReporterRuntime,
+  createDefaultWriter,
   getEnvironmentLabels,
   getSuiteLabels,
   parseTestPlan,
@@ -26,13 +26,11 @@ export class AllureCypress {
   videoOnFailOnly: boolean = false;
 
   constructor(config?: AllureCypressConfig) {
-    const { resultsDir = "./allure-results", videoOnFailOnly = false, ...rest } = config || {};
+    const { resultsDir, videoOnFailOnly = false, ...rest } = config || {};
 
     this.videoOnFailOnly = videoOnFailOnly;
     this.allureRuntime = new ReporterRuntime({
-      writer: new FileSystemWriter({
-        resultsDir,
-      }),
+      writer: createDefaultWriter({ resultsDir }),
       ...rest,
     });
   }

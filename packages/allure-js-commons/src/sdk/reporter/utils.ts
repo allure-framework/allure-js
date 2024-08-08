@@ -6,7 +6,9 @@ import process from "node:process";
 import properties from "properties";
 import type { Label, Link, Status, StepResult, TestResult } from "../../model.js";
 import { LabelName, LinkType, StatusByPriority } from "../../model.js";
-import type { LinkConfig, LinkTemplate } from "./types.js";
+import type { LinkConfig, LinkTemplate, ReporterConfig } from "./types.js";
+import { FileSystemWriter } from "./writer/FileSystemWriter.js";
+import { MessageWriter } from "./writer/MessageWriter.js";
 
 export const randomUuid = () => {
   return randomUUID();
@@ -243,3 +245,11 @@ export const formatLink = (templates: LinkConfig, link: Link) => {
 
 export const formatLinks = (templates: LinkConfig, links: readonly Link[]) =>
   links.map((link) => formatLink(templates, link));
+
+export const createDefaultWriter = (config: Pick<ReporterConfig, "resultsDir">) => {
+  return process.env.ALLURE_TEST_MODE
+    ? new MessageWriter()
+    : new FileSystemWriter({
+        resultsDir: config.resultsDir || "./allure-results",
+      });
+};
