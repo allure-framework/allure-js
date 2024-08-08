@@ -37,7 +37,7 @@ class AllureReporter {
     this.allureConfig = reporterConfig;
     this.allureRuntime = new ReporterRuntime({
       ...restConfig,
-      writer: createDefaultWriter({ resultsDir }),
+      writer: createDefaultWriter({ resultsDir, emitter }),
     });
     this.registerEvents(emitter);
   }
