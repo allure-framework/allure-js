@@ -1,5 +1,5 @@
 import * as Mocha from "mocha";
-import type { AttachmentOptions, ContentType, Label } from "allure-js-commons";
+import type { AttachmentOptions, ContentType, Label, Parameter } from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
 import { getStatusFromError } from "allure-js-commons/sdk";
@@ -42,11 +42,13 @@ const {
   EVENT_TEST_PENDING,
   EVENT_HOOK_BEGIN,
   EVENT_HOOK_END,
+  EVENT_TEST_RETRY,
 } = Mocha.Runner.constants;
 
 export class AllureMochaReporter extends Mocha.reporters.Base {
   private readonly runtime: ReporterRuntime;
   private readonly testplan?: TestPlanIndices;
+  private readonly testsMap: Map<string, Mocha.Test> = new Map();
   private scopesStack: string[] = [];
   private currentTest?: string;
   private currentHook?: string;
@@ -132,6 +134,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       .on(EVENT_TEST_BEGIN, this.onTest)
       .on(EVENT_TEST_PASS, this.onPassed)
       .on(EVENT_TEST_FAIL, this.onFailed)
+      .on(EVENT_TEST_RETRY, this.onFailed)
       .on(EVENT_TEST_PENDING, this.onPending)
       .on(EVENT_TEST_END, this.onTestEnd)
       .on(EVENT_HOOK_BEGIN, this.onHookStart)
@@ -155,6 +158,19 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   };
 
   private onTest = (test: Mocha.Test) => {
+    if (this.currentTest) {
+      const retriedTest = this.testsMap.get(this.currentTest);
+      if (retriedTest) {
+        this.onTestEnd(retriedTest);
+        const testScope = getTestScope(retriedTest);
+        if (testScope) {
+          this.runtime.writeScope(testScope);
+        }
+      }
+      this.testsMap.delete(this.currentTest);
+      this.currentTest = undefined;
+    }
+
     const globalLabels = getEnvironmentLabels().filter((label) => !!label.value);
     const initialLabels: Label[] = getInitialLabels();
     const metaLabels = getAllureMetaLabels(test);
@@ -169,6 +185,10 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     const scopeUuid = this.runtime.startScope();
     setTestScope(test, scopeUuid);
 
+    // @ts-ignore
+    const retryNum = "currentRetry" in test ? test.currentRetry() : 0;
+    const parameters: Parameter[] = retryNum ? [{ name: "Retry", value: `${retryNum}`, excluded: true }] : [];
+
     this.currentTest = this.runtime.startTest(
       {
         name: getAllureDisplayName(test),
@@ -176,9 +196,11 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
         fullName: getAllureFullName(test),
         labels,
         testCaseId: getTestCaseId(test),
+        parameters: parameters,
       },
       [...this.scopesStack, scopeUuid],
     );
+    this.testsMap.set(this.currentTest, test);
   };
 
   private onPassed = () => {
@@ -229,6 +251,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       });
       this.runtime.stopTest(this.currentTest);
       this.runtime.writeTest(this.currentTest);
+      this.testsMap.delete(this.currentTest);
       this.currentTest = undefined;
 
       // We're writing the test's dedicated scope in onSuiteEnd instead of here
