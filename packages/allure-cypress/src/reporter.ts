@@ -25,8 +25,8 @@ export class AllureCypress {
   globalHooksMessages: CypressMessage[] = [];
   videoOnFailOnly: boolean = false;
 
-  constructor(config?: AllureCypressConfig) {
-    const { resultsDir, videoOnFailOnly = false, ...rest } = config || {};
+  constructor(config: AllureCypressConfig = {}) {
+    const { resultsDir, videoOnFailOnly = false, ...rest } = config;
 
     this.videoOnFailOnly = videoOnFailOnly;
     this.allureRuntime = new ReporterRuntime({

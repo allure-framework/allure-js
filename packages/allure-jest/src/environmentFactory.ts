@@ -9,8 +9,6 @@ import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import {
-  FileSystemWriter,
-  MessageWriter,
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
@@ -22,7 +20,7 @@ import { AllureJestTestRuntime } from "./AllureJestTestRuntime.js";
 import type { AllureJestConfig, AllureJestEnvironment, AllureJestProjectConfig, RunContext } from "./model.js";
 import { getTestId, getTestPath, isTestPresentInTestPlan, last, shouldHookBeSkipped } from "./utils.js";
 
-const { ALLURE_TEST_MODE, ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
+const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
 const hostname = os.hostname();
 
 const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
