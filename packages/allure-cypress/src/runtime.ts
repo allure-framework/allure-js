@@ -232,6 +232,13 @@ export const flushRuntimeMessages = () => getTestRuntime().flushMessages();
 
 export const flushFinalRuntimeMessages = () => getTestRuntime().flushFinalMessages();
 
+export const reportRunStart = () => {
+  enqueueRuntimeMessage({
+    type: "cypress_run_start",
+    data: {},
+  });
+};
+
 export const reportSuiteStart = (suite: Mocha.Suite) => {
   enqueueRuntimeMessage({
     type: "cypress_suite_start",

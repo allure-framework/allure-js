@@ -10,6 +10,7 @@ import {
   reportCommandStart,
   reportHookEnd,
   reportHookStart,
+  reportRunStart,
   reportScreenshot,
   reportSuiteEnd,
   reportSuiteStart,
@@ -49,6 +50,7 @@ const initializeAllure = () => {
     .getRunner()
     .on(EVENT_RUN_BEGIN, () => {
       initTestRuntime();
+      reportRunStart();
     })
     .on(EVENT_SUITE_BEGIN, (suite: Mocha.Suite) => {
       if (!suite.parent) {

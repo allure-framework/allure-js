@@ -33,19 +33,9 @@ export type CypressCommand = {
   state: "passed" | "failed" | "queued";
 };
 
-export type CypressHookStartMessage = {
-  type: "cypress_hook_start";
-  data: {
-    name: string;
-    start: number;
-  };
-};
-
-export type CypressHookEndMessage = {
-  type: "cypress_hook_end";
-  data: {
-    duration: number;
-  };
+export type CupressRunStart = {
+  type: "cypress_run_start";
+  data: object;
 };
 
 export type CypressSuiteStartMessage = {
@@ -62,6 +52,21 @@ export type CypressSuiteEndMessage = {
   data: {
     root: boolean;
     stop: number;
+  };
+};
+
+export type CypressHookStartMessage = {
+  type: "cypress_hook_start";
+  data: {
+    name: string;
+    start: number;
+  };
+};
+
+export type CypressHookEndMessage = {
+  type: "cypress_hook_end";
+  data: {
+    duration: number;
   };
 };
 
@@ -121,17 +126,18 @@ export type CypressCommandEndMessage = {
 
 export type CypressMessage =
   | RuntimeMessage
-  | CypressTestStartMessage
-  | CypressFailMessage
-  | CypressTestSkipMessage
-  | CypressTestPassMessage
-  | CypressTestEndMessage
-  | CypressHookStartMessage
-  | CypressHookEndMessage
+  | CupressRunStart
   | CypressSuiteStartMessage
   | CypressSuiteEndMessage
+  | CypressHookStartMessage
+  | CypressHookEndMessage
+  | CypressTestStartMessage
   | CypressCommandStartMessage
-  | CypressCommandEndMessage;
+  | CypressCommandEndMessage
+  | CypressTestPassMessage
+  | CypressFailMessage
+  | CypressTestSkipMessage
+  | CypressTestEndMessage;
 
 export type SpecContext = {
   specPath: string;

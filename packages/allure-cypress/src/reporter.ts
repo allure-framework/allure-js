@@ -18,7 +18,6 @@ import type {
   CypressFailMessage,
   CypressHookEndMessage,
   CypressHookStartMessage,
-  CypressMessage,
   CypressSuiteEndMessage,
   CypressSuiteStartMessage,
   CypressTestEndMessage,
@@ -83,12 +82,17 @@ export class AllureCypress {
   };
 
   #applyAllureCypressMessages = ({ messages, absolutePath }: AllureCypressTaskArgs) => {
-    const specContext = this.#getSpecContext(absolutePath);
-    this.#applySpecMessages(specContext, messages);
-  };
-
-  #applySpecMessages = (context: SpecContext, messages: readonly CypressMessage[]) => {
     messages.forEach((message) => {
+      if (message.type === "cypress_run_start") {
+        this.#startRun(absolutePath);
+        return;
+      }
+
+      const context = this.specContextByAbsolutePath.get(absolutePath);
+      if (!context) {
+        return;
+      }
+
       switch (message.type) {
         case "cypress_suite_start":
           this.#startSuite(context, message);
@@ -130,17 +134,26 @@ export class AllureCypress {
     });
   };
 
+  #startRun = (absolutePath: string) => {
+    // This function is executed once on `cypress run`, but it can be executed
+    // multiple times during an interactive session (`cypress open`). Ideally,
+    // in that case, we should remove previous result objects that haven't been
+    // written yet, but it would've required support in ReporterRuntime.
+    // Currently, we're discarding the entire spec context.
+    this.#initializeSpecContext(absolutePath);
+  };
+
   #startSuite = (context: SpecContext, { data: { name, root } }: CypressSuiteStartMessage) => {
-    this.#emitLastTestScope(context);
     const scope = this.allureRuntime.startScope();
     context.suiteScopes.push(scope);
     if (!root) {
+      this.#emitPreviousTestScope(context);
       context.suiteNames.push(name);
     }
   };
 
   #stopSuite = (context: SpecContext, { data: { root } }: CypressSuiteEndMessage) => {
-    this.#emitLastTestScope(context);
+    this.#emitPreviousTestScope(context);
     if (!root) {
       context.suiteNames.pop();
     }
@@ -156,7 +169,7 @@ export class AllureCypress {
       const isEach = hookScopeType === "each";
       const isAfterEach = hookPosition === "after" && isEach;
       if (!isAfterEach) {
-        this.#emitLastTestScope(context);
+        this.#emitPreviousTestScope(context);
       }
 
       const scope = isEach ? context.testScope : last(context.suiteScopes);
@@ -185,7 +198,7 @@ export class AllureCypress {
     context: SpecContext,
     { data: { name, fullName, start, labels: metadataLabels } }: CypressTestStartMessage,
   ) => {
-    this.#emitLastTestScope(context);
+    this.#emitPreviousTestScope(context);
     const testScope = this.allureRuntime.startScope();
     context.testScope = testScope;
     context.test = this.allureRuntime.startTest(
@@ -314,7 +327,7 @@ export class AllureCypress {
    * - when a nested suite starts
    * - when the spec ends
    */
-  #emitLastTestScope = (context: SpecContext) => {
+  #emitPreviousTestScope = (context: SpecContext) => {
     const testScope = context.testScope;
 
     // Checking the test allows us to tell `beforeEach` and `afterEach` apart.
@@ -344,16 +357,13 @@ export class AllureCypress {
   };
 
   #emitRemainingScopes = (context: SpecContext) => {
-    this.#emitLastTestScope(context);
+    this.#emitPreviousTestScope(context);
     context.suiteScopes.forEach((scope) => {
       this.allureRuntime.writeScope(scope);
     });
   };
 
-  #getSpecContext = (absolutePath: string) =>
-    this.specContextByAbsolutePath.get(absolutePath) ?? this.#initializeSpecContext(absolutePath);
-
-  #initializeSpecContext = (absolutePath: string): SpecContext => {
+  #initializeSpecContext = (absolutePath: string) => {
     const specPathElements = path.relative(process.cwd(), absolutePath).split(path.sep);
     const context = {
       specPath: specPathElements.join("/"),
@@ -368,7 +378,6 @@ export class AllureCypress {
       failed: false,
     };
     this.specContextByAbsolutePath.set(absolutePath, context);
-    return context;
   };
 }
 
