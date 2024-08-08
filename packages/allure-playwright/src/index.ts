@@ -24,9 +24,8 @@ import type { RuntimeMessage, TestPlanV1Test } from "allure-js-commons/sdk";
 import { extractMetadataFromString, getMessageAndTraceFromError, hasLabel, stripAnsi } from "allure-js-commons/sdk";
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
-  FileSystemWriter,
-  MessageWriter,
   ReporterRuntime,
+  createDefaultWriter,
   escapeRegExp,
   getEnvironmentLabels,
   md5,
@@ -152,16 +151,10 @@ export class AllureReporter implements ReporterV2 {
   onStdOut(): void {}
 
   onBegin(suite: Suite): void {
-    const writer = process.env.ALLURE_TEST_MODE
-      ? new MessageWriter()
-      : new FileSystemWriter({
-          resultsDir: this.options.resultsDir || "./allure-results",
-        });
-
     this.suite = suite;
     this.allureRuntime = new ReporterRuntime({
       ...this.options,
-      writer,
+      writer: createDefaultWriter({ resultsDir: this.options.resultsDir }),
     });
   }
 

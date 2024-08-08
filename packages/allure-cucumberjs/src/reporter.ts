@@ -16,10 +16,9 @@ import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import { getMessageAndTraceFromError } from "allure-js-commons/sdk";
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
-  FileSystemWriter,
-  MessageWriter,
   ReporterRuntime,
   applyLinkTemplate,
+  createDefaultWriter,
   createStepResult,
   getEnvironmentLabels,
   getWorstStepResultStatus,
@@ -28,7 +27,7 @@ import {
 import { AllureCucumberWorld } from "./legacy.js";
 import type { AllureCucumberLinkConfig, AllureCucumberReporterConfig, LabelConfig } from "./model.js";
 
-const { ALLURE_THREAD_NAME, ALLURE_TEST_MODE } = process.env;
+const { ALLURE_THREAD_NAME } = process.env;
 
 export default class AllureCucumberReporter extends Formatter {
   private readonly afterHooks: Record<string, TestCaseHookDefinition> = {};
@@ -53,19 +52,10 @@ export default class AllureCucumberReporter extends Formatter {
   constructor(options: IFormatterOptions) {
     super(options);
 
-    const {
-      resultsDir = "./allure-results",
-      links,
-      labels,
-      ...rest
-    } = options.parsedArgvOptions as AllureCucumberReporterConfig;
+    const { resultsDir, links, labels, ...rest } = options.parsedArgvOptions as AllureCucumberReporterConfig;
 
     this.allureRuntime = new ReporterRuntime({
-      writer: ALLURE_TEST_MODE
-        ? new MessageWriter()
-        : new FileSystemWriter({
-            resultsDir,
-          }),
+      writer: createDefaultWriter({ resultsDir }),
       links,
       ...rest,
     });

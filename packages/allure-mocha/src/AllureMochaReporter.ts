@@ -5,8 +5,8 @@ import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
 import { getStatusFromError } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
-  FileSystemWriter,
   ReporterRuntime,
+  createDefaultWriter,
   ensureSuiteLabels,
   getEnvironmentLabels,
   getPackageLabelFromPath,
@@ -55,11 +55,11 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   constructor(runner: Mocha.Runner, opts: Mocha.MochaOptions, isInWorker: boolean = false) {
     super(runner, opts);
 
-    const { resultsDir = "allure-results", ...restOptions }: ReporterConfig = opts.reporterOptions || {};
+    const { resultsDir, ...restOptions }: ReporterConfig = opts.reporterOptions || {};
 
     this.isInWorker = isInWorker;
     this.runtime = new ReporterRuntime({
-      writer: new FileSystemWriter({ resultsDir }),
+      writer: createDefaultWriter({ resultsDir }),
       ...restOptions,
     });
     this.testplan = createTestPlanIndices();

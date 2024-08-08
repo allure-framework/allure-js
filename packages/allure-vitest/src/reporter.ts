@@ -1,14 +1,13 @@
 import { normalize, relative } from "node:path";
-import { cwd, env } from "node:process";
+import { cwd } from "node:process";
 import type { File, Reporter, Task } from "vitest";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
-  FileSystemWriter,
-  MessageWriter,
   ReporterRuntime,
+  createDefaultWriter,
   getEnvironmentLabels,
   getHostLabel,
   getSuiteLabels,
@@ -25,16 +24,10 @@ export default class AllureVitestReporter implements Reporter {
   }
 
   onInit() {
-    const { listeners, ...config } = this.config;
-    const writer = env.ALLURE_TEST_MODE
-      ? new MessageWriter()
-      : new FileSystemWriter({
-          resultsDir: config.resultsDir || "./allure-results",
-        });
-
+    const { listeners, resultsDir, ...config } = this.config;
     this.allureReporterRuntime = new ReporterRuntime({
       ...config,
-      writer,
+      writer: createDefaultWriter({ resultsDir }),
       listeners,
     });
   }

@@ -1,5 +1,6 @@
 import { readFile } from "fs/promises";
 import { createHash, randomUUID } from "node:crypto";
+import type { EventEmitter } from "node:events";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
@@ -7,6 +8,8 @@ import properties from "properties";
 import type { Label, Link, Status, StepResult, TestResult } from "../../model.js";
 import { LabelName, LinkType, StatusByPriority } from "../../model.js";
 import type { LinkConfig, LinkTemplate } from "./types.js";
+import { FileSystemWriter } from "./writer/FileSystemWriter.js";
+import { MessageWriter } from "./writer/MessageWriter.js";
 
 export const randomUuid = () => {
   return randomUUID();
@@ -243,3 +246,11 @@ export const formatLink = (templates: LinkConfig, link: Link) => {
 
 export const formatLinks = (templates: LinkConfig, links: readonly Link[]) =>
   links.map((link) => formatLink(templates, link));
+
+export const createDefaultWriter = (config: { resultsDir?: string; emitter?: EventEmitter }) => {
+  return process.env.ALLURE_TEST_MODE
+    ? new MessageWriter(config.emitter)
+    : new FileSystemWriter({
+        resultsDir: config.resultsDir || "./allure-results",
+      });
+};

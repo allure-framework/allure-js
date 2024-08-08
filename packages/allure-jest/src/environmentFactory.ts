@@ -9,9 +9,8 @@ import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import {
-  FileSystemWriter,
-  MessageWriter,
   ReporterRuntime,
+  createDefaultWriter,
   getEnvironmentLabels,
   getSuiteLabels,
   parseTestPlan,
@@ -21,7 +20,7 @@ import { AllureJestTestRuntime } from "./AllureJestTestRuntime.js";
 import type { AllureJestConfig, AllureJestEnvironment, AllureJestProjectConfig, RunContext } from "./model.js";
 import { getTestId, getTestPath, isTestPresentInTestPlan, last, shouldHookBeSkipped } from "./utils.js";
 
-const { ALLURE_TEST_MODE, ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
+const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
 const hostname = os.hostname();
 
 const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
@@ -43,15 +42,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       super(config as JestEnvironmentConfig, context);
 
       const projectConfig = "projectConfig" in config ? config.projectConfig : config;
-      const { resultsDir = "allure-results", ...restConfig } = projectConfig?.testEnvironmentOptions || {};
+      const { resultsDir, ...restConfig } = projectConfig?.testEnvironmentOptions || {};
 
       this.runtime = new ReporterRuntime({
         ...restConfig,
-        writer: ALLURE_TEST_MODE
-          ? new MessageWriter()
-          : new FileSystemWriter({
-              resultsDir,
-            }),
+        writer: createDefaultWriter({ resultsDir }),
       });
       this.testPath = context.testPath.replace(projectConfig.rootDir, "").replace(sep, "");
       this.testPlan = parseTestPlan();
