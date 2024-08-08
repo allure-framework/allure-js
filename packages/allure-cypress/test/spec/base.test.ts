@@ -96,3 +96,58 @@ it("reports tests in real time", async () => {
 
   expect(fooWriteTime).toBeLessThanOrEqual(barStart!);
 });
+
+it("can be used with custom Node events", async () => {
+  const { tests, groups, envInfo } = await runCypressInlineTest({
+    "cypress.config.js": () => `
+      const { defineConfig } = require("cypress");
+      const { allureCypress } = require("allure-cypress/reporter");
+
+      module.exports = defineConfig({
+        e2e: {
+          baseUrl: "https://allurereport.org",
+          viewportWidth: 1240,
+          setupNodeEvents: (on, config) => {
+            const reporter = allureCypress(on, config, {
+              environmentInfo: { foo: "bar" },
+            });
+            on("after:spec", (spec, results) => {
+              reporter.onAfterSpec(spec, results);
+            });
+            on("after:run", (results) => {
+              reporter.onAfterRun(results);
+            });
+            return config;
+          },
+        },
+      });
+    `,
+    "cypress/e2e/sample.cy.js": () => `
+      before(() => {});
+      it("foo", () => {});
+    `,
+  });
+
+  expect(tests).toEqual([
+    expect.objectContaining({
+      name: "foo",
+      status: Status.PASSED,
+    }),
+  ]);
+
+  // Spec-level hooks can't be reported without after:spec forwarding
+  expect(groups).toEqual([
+    expect.objectContaining({
+      children: [tests[0].uuid],
+      befores: [
+        expect.objectContaining({
+          name: String.raw`"before all" hook`,
+          status: Status.PASSED,
+        }),
+      ],
+    }),
+  ]);
+
+  // Environment info can't be reported without after:run forwarding
+  expect(envInfo).toEqual({ foo: "bar" });
+});

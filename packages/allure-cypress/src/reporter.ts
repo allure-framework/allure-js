@@ -54,20 +54,67 @@ export class AllureCypress {
       },
     });
 
-    // Emits the categories and env info. Doesn't work in interactive mode unless
-    // `experimentalInteractiveRunEvents` is set.
-    on("after:run", () => {
-      this.endRun();
-    });
-
     // Emits the remaining fixtures and writes the video of the spec.
     // In interactive mode it's invoked through the `reportFinalAllureCypressSpecMessages` task.
-    on("after:spec", (spec, results) => {
-      this.endSpec(spec.absolute, results.video ?? undefined);
-    });
+    on("after:spec", this.onAfterSpec);
+
+    // Emits the categories and env info. Doesn't work in interactive mode unless
+    // `experimentalInteractiveRunEvents` is set.
+    on("after:run", this.onAfterRun);
+  };
+
+  /**
+   * Forward the `after:spec` event into Allure Cypress using this function if
+   * you need to define your own handler or combine Allure Cypress with other
+   * plugins. More info [here](https://github.com/allure-framework/allure-js/blob/main/packages/allure-cypress/README.md#setupnodeevents-limitations).
+   * @param spec The first argument of the `after:spec` event.
+   * @param results The second argument of the `after:spec` event.
+   * @example
+   * import { defineConfig } from "cypress";
+   * import { allureCypress } from "allure-cypress/reporter";
+   *
+   * export default defineConfig({
+   *   setupNodeEvents: (on, config) => {
+   *     const allureReporter = allureCypress(on, config);
+   *     on("after:spec", (spec, results) => {
+   *       allureReporter.onAfterSpec(spec, results);
+   *     });
+   *     return config;
+   *   }
+   *   // ...
+   * });
+   */
+  onAfterSpec = (spec: Cypress.Spec, results: CypressCommandLine.RunResult) => {
+    this.endSpec(spec.absolute, results.video ?? undefined);
+  };
+
+  /**
+   * Forward the `after:run` event into Allure Cypress using this function if
+   * you need to define your own handler or combine Allure Cypress with other
+   * plugins. More info [here](https://github.com/allure-framework/allure-js/blob/main/packages/allure-cypress/README.md#setupnodeevents-limitations).
+   * @param results The argument of the `after:run` event.
+   * @example
+   * import { defineConfig } from "cypress";
+   * import { allureCypress } from "allure-cypress/reporter";
+   *
+   * export default defineConfig({
+   *   setupNodeEvents: (on, config) => {
+   *     const allureReporter = allureCypress(on, config);
+   *     on("after:run", (results) => {
+   *       allureReporter.onAfterRun(results);
+   *     });
+   *     return config;
+   *   }
+   *   // ...
+   * });
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onAfterRun = (results: CypressCommandLine.CypressFailedRunResult | CypressCommandLine.CypressRunResult) => {
+    this.endRun();
   };
 
   endRun = () => {
+    this.#endAllSpecs();
     this.allureRuntime.writeEnvironmentInfo();
     this.allureRuntime.writeCategoriesDefinitions();
   };
@@ -78,6 +125,12 @@ export class AllureCypress {
       this.#attachSpecVideo(specContext, cypressVideoPath);
       this.#emitRemainingScopes(specContext);
       this.specContextByAbsolutePath.delete(specAbsolutePath);
+    }
+  };
+
+  #endAllSpecs = () => {
+    for (const specAbsolutePath of this.specContextByAbsolutePath.keys()) {
+      this.endSpec(specAbsolutePath);
     }
   };
 
@@ -398,14 +451,14 @@ export const enableTestPlan = (config: Cypress.PluginConfigOptions) => {
 
 /**
  * Sets up Allure Cypress.
- * @param on The function used to subscribe to Cypress Node events (the first argument of `setupNodeEvents`).
+ * @param on The function used to subscribe to Cypress Node events (it's the first argument of `setupNodeEvents`).
  * @param cypressConfig The Cypress configuration (the second argument of `setupNodeEvents`). If provided, the selective run feature will be enabled.
- * @param allureConfig The Allure configuration.
+ * @param allureConfig An Allure configuration object (optional).
  * @example
- * const { defineConfig } = require("cypress");
- * const { allureCypress } = require("allure-cypress/reporter");
+ * import { defineConfig } from "cypress";
+ * import { allureCypress } from "allure-cypress/reporter";
  *
- * module.exports = defineConfig({
+ * export default defineConfig({
  *   e2e: {
  *     setupNodeEvents: (on, config) => {
  *       allureCypress(on, config, { videoOnFailOnly: true });
