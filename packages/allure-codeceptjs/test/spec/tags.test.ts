@@ -19,54 +19,52 @@ it("supports codecept tags", async () => {
   });
 
   expect(tests).toHaveLength(1);
-  expect(tests[0]).toEqual(
-    expect.objectContaining({
-      labels: expect.arrayContaining([
-        {
-          name: LabelName.TAG,
-          value: "slow",
-        },
-        {
-          name: LabelName.TAG,
-          value: "important",
-        },
-        {
-          name: LabelName.OWNER,
-          value: "eroshenkoam",
-        },
-        {
-          name: LabelName.LAYER,
-          value: "UI",
-        },
-        {
-          name: LabelName.ALLURE_ID,
-          value: "228",
-        },
-        {
-          name: LabelName.STORY,
-          value: "aga",
-        },
-        {
-          name: LabelName.EPIC,
-          value: "aga",
-        },
-        {
-          name: LabelName.SEVERITY,
-          value: "critical",
-        },
-        {
-          name: LabelName.LANGUAGE,
-          value: "javascript",
-        },
-        {
-          name: LabelName.FRAMEWORK,
-          value: "codeceptjs",
-        },
-        {
-          name: LabelName.SUITE,
-          value: "tags",
-        },
-      ]),
-    }),
+  expect(tests[0].labels).toEqual(
+    expect.arrayContaining([
+      {
+        name: LabelName.TAG,
+        value: "slow",
+      },
+      {
+        name: LabelName.TAG,
+        value: "important",
+      },
+      {
+        name: LabelName.OWNER,
+        value: "eroshenkoam",
+      },
+      {
+        name: LabelName.LAYER,
+        value: "UI",
+      },
+      {
+        name: LabelName.ALLURE_ID,
+        value: "228",
+      },
+      {
+        name: LabelName.STORY,
+        value: "aga",
+      },
+      {
+        name: LabelName.EPIC,
+        value: "aga",
+      },
+      {
+        name: LabelName.SEVERITY,
+        value: "critical",
+      },
+      {
+        name: LabelName.LANGUAGE,
+        value: "javascript",
+      },
+      {
+        name: LabelName.FRAMEWORK,
+        value: "codeceptjs",
+      },
+      {
+        name: LabelName.SUITE,
+        value: "tags",
+      },
+    ]),
   );
 });

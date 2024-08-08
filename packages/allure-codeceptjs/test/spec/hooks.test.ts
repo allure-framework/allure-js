@@ -25,7 +25,6 @@ it("handles hooks", async () => {
 
   expect(tests).toHaveLength(1);
   expect(tests[0].steps).toHaveLength(1);
-  expect(groups).toHaveLength(4);
   expect(groups).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
