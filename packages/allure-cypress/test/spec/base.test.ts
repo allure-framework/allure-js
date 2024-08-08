@@ -81,7 +81,7 @@ it("skipped tests", async () => {
   );
 });
 
-it("reports a test before the next one starts", async () => {
+it("reports tests in real time", async () => {
   const { tests, timestamps } = await runCypressInlineTest({
     "cypress/e2e/sample.cy.js": () => `
       it("foo", () => {});

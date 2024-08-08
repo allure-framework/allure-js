@@ -3,7 +3,7 @@ import { ContentType } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils.js";
 
 describe("write video for every test", () => {
-  it("attaches same video to each spec in a test", async () => {
+  it("attaches same video to each test in a spec", async () => {
     const { tests, groups } = await runCypressInlineTest({
       "cypress/e2e/sample.cy.js": () => `
         it("foo", () => {});
