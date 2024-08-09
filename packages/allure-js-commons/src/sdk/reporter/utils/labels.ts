@@ -1,5 +1,6 @@
 import { hostname } from "node:os";
 import { env, pid } from "node:process";
+import { isMainThread, threadId } from "node:worker_threads";
 import type { Label } from "../../../model.js";
 import { LabelName } from "../../../model.js";
 
@@ -31,9 +32,12 @@ export const getHostLabel = (): Label => {
   };
 };
 
-export const getThreadLabel = (threadId?: string): Label => {
+export const getThreadLabel = (userProvidedThreadId?: string): Label => {
   return {
     name: LabelName.THREAD,
-    value: env.ALLURE_THREAD_NAME ?? threadId ?? pid.toString(),
+    value:
+      env.ALLURE_THREAD_NAME ??
+      userProvidedThreadId ??
+      `pid-${pid.toString()}-worker-${isMainThread ? "main" : threadId}`,
   };
 };
