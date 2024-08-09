@@ -141,7 +141,7 @@ it("reports suite-level hooks", async () => {
     ]),
   );
 
-  const fooUuid = tests.find(({name}) => name === "foo")?.uuid;
+  const fooUuid = tests.find(({ name }) => name === "foo")?.uuid;
 
   expect(groups).toHaveLength(4);
   expect(groups).toEqual(
@@ -230,8 +230,8 @@ it("should keep hooks from different specs separated", async () => {
     ]),
   );
 
-  const fooUuid = tests.find(({name}) => name === "foo")?.uuid;
-  const barUuid = tests.find(({name}) => name === "bar")?.uuid;
+  const fooUuid = tests.find(({ name }) => name === "foo")?.uuid;
+  const barUuid = tests.find(({ name }) => name === "bar")?.uuid;
 
   expect(groups).toHaveLength(8);
   expect(groups).toEqual(
