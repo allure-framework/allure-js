@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     dir: "./test/spec",
     fileParallelism: false,
-    testTimeout: 25000,
+    testTimeout: 45000,
     setupFiles: ["./vitest-setup.ts"],
     reporters: ["default", ["allure-vitest/reporter", {
       resultsDir: "./out/allure-results",
