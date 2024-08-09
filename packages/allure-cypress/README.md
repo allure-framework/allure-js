@@ -14,214 +14,195 @@
 
 ## Installation
 
-Use your favorite node package manager to install the required packages:
+Use your favorite Node.js package manager to install the required packages:
 
 ```shell
 npm add -D allure-cypress
 ```
 
-Add the following lines to your `cypress.config.js` file to setup the reporter:
-
-```diff
-const { allureCypress } = require("allure-cypress/reporter");
-
-module.exports = {
-  // ...
-  e2e: {
-+    setupNodeEvents: (on, config) => {
-+      allureCypress(on, {
-+        resultsDir: "./allure-results",
-+      });
-+
-+      return config;
-+    },
-  },
-};
-```
-
-Don't forget to add the Allure Cypress commands to your `cypress/support/e2e.js` file to finish 
-the installation:
-
-```diff
-+ import "allure-cypress";
-```
-
-## Use Allure runtime Api
-
-The plugin provides custom commands which allow to add additional info inside your tests:
+Add the following lines to your `cypress.config.js` file:
 
 ```javascript
-import { epic, attachment, parameter } from "allure-js-commons";
+import { defineConfig } from "cypress";
+import { allureCypress } from "allure-cypress/reporter";
 
-it("my test", () => {
-  attachment("Attachment name", "Hello world!", "text/plain");
-  epic("my_epic");
-  parameter("parameter_name", "parameter_value", {
-    mode: "hidden",
-    excluded: false,
-  });
-});
-```
-
-## Links usage
-
-```js
-import { link, issue, tms } from "allure-js-commons";
-
-it("basic test", () => {
-  link("link_type", "https://allurereport.org", "Allure Report");
-  issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
-  tms("Task Name", "https://github.com/allure-framework/allure-js/tasks/352");
-});
-```
-
-You can also configure links formatters to make usage much more convenient. `%s`
-in `urlTemplate` parameter will be replaced by given value.
-
-```diff
-const { allureCypress } = require("allure-cypress/reporter");
-
-module.exports = {
-  // ...
+export default defineConfig({
   e2e: {
     setupNodeEvents: (on, config) => {
-      allureCypress(on, {
-+        links: [
-+          {
-+            type: "issue",
-+            urlTemplate: "https://example.org/issues/%s",
-+            nameTemplate: "Issue: %s",
-+          },
-+          {
-+            type: "tms",
-+            urlTemplate: "https://example.org/tasks/%s"
-+          },
-+          {
-+            type: "custom",
-+            urlTemplate: "https://example.org/custom/%s"
-+          },
-+        ],
-+      });
+      allureCypress(on, config);
 
       return config;
     },
+    // ...
   },
-};
-```
-
-Then you can assign link using shorter notation:
-
-```js
-import { link, issue, tms } from "allure-js-commons";
-
-it("basic test", () => {
-  issue("351");
-  issue("352", "Issue Name");
-  tms("351");
-  tms("352", "Task Name");
-  link("custom", "352");
-  link("custom", "352", "Link name");
 });
 ```
 
-## Steps usage
+Import `allure-cypress` in `cypress/support/e2e.js`:
 
-The integration supports Allure steps, use them in following way:
-
-```js
-import { step } from "allure-js-commons";
-
-it("my test", () => {
-  step("foo", () => {
-    step("bar", () => {
-      step("baz", () => {
-        cy.log("my cypress commands");
-      });
-    });
-  });
-});
+```javascript
+import "allure-cypress";
 ```
 
-## Passing metadata from test title
+Allure Cypress is ready to run now. When the test run completes, the result files
+will be collected in the `./allure-results` directory. If you want to use another
+location, provide it via the `resultsDir` configuration option ([see below](#allure-cypress-options)).
 
-You also can pass allure metadata from test title.
-This is useful when you need to set allureId for the tests with failing before hooks. Just add `@allure.id={idValue}` for the allureId or `@allure.label.{labelName}={labelValue}` for other types of labels.
+### View the report
 
-```ts
-it("test with allureId @allure.id=256", () => {});
-it("tst with severity @allure.label.severity=critical", () => {});
-it("test with epic @allure.label.epic=login", () => {});
-it("test with strangeLabel @allure.label.strangeLabel=strangeValue", () => {});
+> You need Allure Report to generate and open the report from result files. See the [installation instructions](https://allurereport.org/docs/install/) for more details.
+
+Generate Allure Report:
+
+```bash
+allure generate ./allure-results -o ./allure-report
 ```
 
-> **Warning**
-> Note that changing title can cause creating new testcases in history.
-> To fix this please add `@allure.id={yourTestCaseId}` to the test name if you passing allure metadata from test title
+Open Allure Report:
 
-## Using custom `after:run` hook
+```bash
+allure open ./allure-report
+```
 
-If you want to use your own `after:run` hook and keep the Allure reporter working, you should use `AllureCypress` class instead:
+## The documentation
 
-```diff
-const { AllureCypress } = require("allure-cypress/reporter");
+Learn more about Allure Cypress from the official documentation at
+[https://allurereport.org/docs/cypress/](https://allurereport.org/docs/cypress/).
 
-module.exports = {
-  // ...
+
+## Allure Cypress options
+| Option          | Description                                                                                                          | Default            |
+|-----------------|----------------------------------------------------------------------------------------------------------------------|--------------------|
+| resultsDir      | The path of the results folder.                                                                                      | `./allure-results` |
+| videoOnFailOnly | When video capturing is enabled, set this option to `true` to attach the video to failed specs only.                 | `undefined`        |
+| links           | Allure Runtime API link templates.                                                                                   | `undefined`        |
+| environmentInfo | A set of key-value pairs to display in the Environment section of the report                                         | `undefined`        |
+| categories      | An array of category definitions, each describing a [category of defects](https://allurereport.org/docs/categories/) | `undefined`        |
+
+Here is an example of the Allure Cypress configuration:
+
+```javascript
+import { defineConfig } from "cypress";
+import { allureCypress } from "allure-cypress/reporter";
+
+export default defineConfig({
   e2e: {
     setupNodeEvents: (on, config) => {
-+      const allureCypress = new AllureCypress({
-+        resultsDir: "./allure-results",
-+      });
-+      
-+      allureCypress.attachToCypress(on, config);
-+ 
-+      on("after:run", (results) => {
-+        allureCypress.endRun(results);
-+      });
-+  
-+      return config;
-+    },
-  },
-};
-```
-
-## Write video attachments for failed tests only
-
-If you want to see Cypress videos only for failed or broken tests in your Allure report, you can use the `videoOnFailOnly` option:
-
-```diff
-const { allureCypress } = require("allure-cypress/reporter");
-
-module.exports = {
-  // ...
-  e2e: {
-+    video: true,
-    setupNodeEvents: (on, config) => {
-      allureCypress(on, {
-+        videoOnFailOnly: true,
+      allureCypress(on, config, {
+        resultsDir: "my-allure-results",
+        videoOnFailOnly: true,
+        links: {
+          link: {
+            urlTemplate: "https://github.com/allure-framework/allure-js/blob/main/%s",
+          },
+          issue: {
+            urlTemplate: "https://github.com/allure-framework/allure-js/issues/%s",
+            nameTemplate: "ISSUE-%s",
+          },
+        },
+        environmentInfo: {
+          OS: os.platform(),
+          Architecture: os.arch(),
+          NodeVersion: process.version,
+        },
+        categories: [
+          {
+            name: "Missing file errors",
+            messageRegex: /^ENOENT: no such file or directory/,
+          },
+        ],
       });
 
       return config;
     },
+    // other Cypress config properties ...
   },
-};
+});
 ```
 
-## Known issues
+More details about Allure Cypress configuration are available at [https://allurereport.org/docs/cypress-configuration/](https://allurereport.org/docs/cypress-configuration/).
 
-### Global hooks reporting
 
-The integration can't report `after` hooks properly defined outside of the `describe` block. 
-If you want to see the hooks in the report wrap your tests into `describe` block and move the hooks inside it:
+## Combining Allure with other Cypress plugins
 
-```js
-// this hook won't be reported
-after(() => {})
+Use [cypress-on-fix](https://github.com/bahmutov/cypress-on-fix) to enable Allure
+with other Cypress plugins. See more info [here](#setupnodeevents-limitations).
 
-describe("suite", () => {
-  // this hook will be reported
-  after(() => {})
+In the next example, Allure Cypress is enabled together with [@badeball/cypress-cucumber-preprocessor](https://github.com/badeball/cypress-cucumber-preprocessor):
 
-  it("test", () => {})
-})
+```javascript
+import { defineConfig } from "cypress";
+import { allureCypress } from "allure-cypress/reporter";
+import createBundler from "@bahmutov/cypress-esbuild-preprocessor";
+import { addCucumberPreprocessorPlugin } from "@badeball/cypress-cucumber-preprocessor";
+import { createEsbuildPlugin } from "@badeball/cypress-cucumber-preprocessor/esbuild";
+import cypressOnFix from "cypress-on-fix";
+
+export default defineConfig({
+  e2e: {
+    setupNodeEvents = async (on, config) => {
+      on = cypressOnFix(on);
+      await addCucumberPreprocessorPlugin(on, config);
+
+      on("file:preprocessor", createBundler({
+        plugins: [createEsbuildPlugin(config)],
+      }));
+
+      allureCypress(on, config);
+
+      return config;
+    },
+    // ...
+  },
+});
 ```
+
+## Known limitations
+
+### `setupNodeEvents` limitations
+
+Cypress can't compose multiple Node events, which are set in `setupNodeEvents`.
+
+Allure Cypress requires access to the following events:
+
+  - `after:spec`
+  - `after:run`
+
+Otherwise, it may not work as expected.
+
+If you need to define your own handlers of those events, make sure to call the
+corresponding functions of the `allureCypress`s' return value:
+
+```javascript
+import { defineConfig } from "cypress";
+import { allureCypress } from "allure-cypress/reporter";
+
+export default defineConfig({
+  e2e: {
+    setupNodeEvents: (on, config) => {
+      const allurePlugin = allureCypress(on, config);
+
+      on("after:spec", (spec, results) => {
+        allurePlugin.onAfterSpec(spec, results);
+
+        // your code ...
+      });
+
+      on("after:run", (results) => {
+        allurePlugin.onAfterRun(results);
+
+        // your code ...
+      });
+
+      return config;
+    },
+    // ...
+  },
+});
+```
+
+If you want to combine Allure Cypress with other plugins, consider using
+[cypress-on-fix](https://github.com/bahmutov/cypress-on-fix). See the example for
+[the Cypress Cucumber preprocessor](#combining-allure-with-other-cypress-plugins) above.
+
+You may read more details and workarounds in issues [cypress-io/cypress#5240](https://github.com/cypress-io/cypress/issues/5240) and [cypress-io/cypress#22428](https://github.com/cypress-io/cypress/issues/22428).

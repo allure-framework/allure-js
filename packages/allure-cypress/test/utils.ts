@@ -1,8 +1,9 @@
-import { fork } from "node:child_process";
+import { type ChildProcess, fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { dirname, join, resolve as resolvePath } from "node:path";
 import type { TestResult, TestResultContainer } from "allure-js-commons";
+import { ContentType, attachment, step } from "allure-js-commons";
 import type { AllureResults, EnvironmentInfo } from "allure-js-commons/sdk";
 import { parseProperties } from "allure-js-commons/sdk/reporter";
 
@@ -14,16 +15,21 @@ type CypressModulesPaths = {
 
 type CypressTestFiles = Record<string, (modulesPaths: CypressModulesPaths) => string>;
 
+type AllureResultsWithTimestamps = AllureResults & {
+  timestamps: Map<string, Date>;
+};
+
 export const runCypressInlineTest = async (
   testFiles: CypressTestFiles,
   env?: (testDir: string) => Record<string, string>,
-): Promise<AllureResults> => {
-  const res: AllureResults = {
+): Promise<AllureResultsWithTimestamps> => {
+  const res: AllureResultsWithTimestamps = {
     tests: [],
     groups: [],
     attachments: {},
     categories: [],
     envInfo: undefined,
+    timestamps: new Map(),
   };
   const testDir = join(__dirname, "fixtures", randomUUID());
   const allureCypressModuleBasePath = dirname(require.resolve("allure-cypress"));
@@ -41,7 +47,7 @@ export const runCypressInlineTest = async (
           baseUrl: "https://allurereport.org",
           viewportWidth: 1240,
           setupNodeEvents: (on, config) => {
-            allureCypress(on, {
+            allureCypress(on, config, {
               links: {
                 issue: {
                   urlTemplate: "https://allurereport.org/issues/%s"
@@ -60,82 +66,142 @@ export const runCypressInlineTest = async (
     ...testFiles,
   };
 
-  // eslint-disable-next-line guard-for-in
-  for (const testFile in testFilesToWrite) {
-    await mkdir(dirname(join(testDir, testFile)), { recursive: true });
-    await writeFile(
-      join(testDir, testFile),
-      testFilesToWrite[testFile]({
+  await step("Prepare files", async () => {
+    // eslint-disable-next-line guard-for-in
+    for (const testFile in testFilesToWrite) {
+      await mkdir(dirname(join(testDir, testFile)), { recursive: true });
+      const content = testFilesToWrite[testFile]({
         allureCommonsModulePath,
         allureCypressModulePath,
         allureCypressModuleBasePath,
-      }),
-      "utf8",
-    );
-  }
-
-  const moduleRootPath = require.resolve("cypress");
-  const modulePath = resolvePath(moduleRootPath, "../bin/cypress");
-  const args = ["run", "--browser", "chrome", "-q"];
-  const testProcess = fork(modulePath, args, {
-    env: {
-      ...process.env,
-      ...env?.(testDir),
-    },
-    cwd: testDir,
-    stdio: "pipe",
+      });
+      await writeFile(join(testDir, testFile), content, "utf8");
+      await attachment(testFile, content, ContentType.TEXT);
+    }
   });
 
-  testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
-    process.stdout.write(String(chunk));
+  const stdout: string[] = [];
+  const stderr: string[] = [];
+
+  let setTestProcess: (value: ChildProcess | PromiseLike<ChildProcess>) => void;
+  const testProcessPromise = new Promise<ChildProcess>((resolve) => {
+    setTestProcess = resolve;
   });
-  testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
-    process.stderr.write(String(chunk));
-  });
+  const testProcessStep = step("Run Cypress process", async (ctx) => {
+    const moduleRootPath = require.resolve("cypress");
+    const modulePath = resolvePath(moduleRootPath, "../bin/cypress");
+    await ctx.parameter("Module", modulePath);
 
-  return new Promise((resolve, reject) => {
-    testProcess.on("exit", async () => {
-      try {
-        const testResultsDir = join(testDir, "allure-results");
-        const resultFiles = await readdir(testResultsDir);
+    const args = ["run", "--browser", "chrome", "-q"];
+    await ctx.parameter("Arguments", JSON.stringify(args));
 
-        for (const resultFile of resultFiles) {
-          if (resultFile === "categories.json") {
-            res.categories = JSON.parse(await readFile(join(testResultsDir, resultFile), "utf8"));
-            continue;
-          }
+    const envVars = env?.(testDir);
+    if (envVars) {
+      await attachment("Extra environment variables", JSON.stringify(envVars), ContentType.JSON);
+    }
 
-          if (resultFile === "environment.properties") {
-            res.envInfo = parseProperties(await readFile(join(testResultsDir, resultFile), "utf8")) as EnvironmentInfo;
-            continue;
-          }
+    await ctx.parameter("CWD", testDir);
 
-          if (/-attachment\.\S+$/.test(resultFile)) {
-            res.attachments[resultFile] = await readFile(join(testResultsDir, resultFile), "utf8");
-            continue;
-          }
-
-          if (/-container\.json$/.test(resultFile)) {
-            res.groups.push(
-              JSON.parse(await readFile(join(testResultsDir, resultFile), "utf8")) as TestResultContainer,
-            );
-            continue;
-          }
-
-          if (/-result\.json$/.test(resultFile)) {
-            res.tests.push(JSON.parse(await readFile(join(testResultsDir, resultFile), "utf8")) as TestResult);
-            continue;
-          }
-        }
-
-        await rm(testDir, { recursive: true });
-
-        return resolve(res);
-      } catch (err) {
-        await rm(testDir, { recursive: true });
-
-        return reject(err);
-      }
+    const testProcess = fork(modulePath, args, {
+      env: {
+        ...process.env,
+        ...envVars,
+      },
+      cwd: testDir,
+      stdio: "pipe",
     });
+
+    testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
+      stdout.push(String(chunk));
+    });
+    testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
+      stderr.push(String(chunk));
+    });
+
+    setTestProcess(testProcess);
+
+    await new Promise<void>((resolve) =>
+      testProcess.on("exit", async (code, signal) => {
+        if (typeof code === "number") {
+          await ctx.parameter("Exit code", code.toString());
+        }
+        if (signal) {
+          await ctx.parameter("Interrupted by", signal);
+        }
+        await attachment("stdout", stdout.join("\n"), ContentType.TEXT);
+        await attachment("stderr", stderr.join("\n"), ContentType.TEXT);
+        resolve();
+      }),
+    );
   });
+
+  return new Promise((resolve, reject) =>
+    testProcessPromise.then((testProcess) => {
+      testProcess.on("exit", async () => {
+        try {
+          await testProcessStep;
+
+          await step("Parse Allure results", async () => {
+            const testResultsDir = join(testDir, "allure-results");
+            try {
+              const resultFiles = await readdir(testResultsDir);
+
+              for (const resultFile of resultFiles) {
+                const fullPath = join(testResultsDir, resultFile);
+
+                if (resultFile === "categories.json") {
+                  const categories = JSON.parse(await readFile(fullPath, "utf8"));
+                  await attachment(resultFile, JSON.stringify(categories, undefined, 2), ContentType.JSON);
+                  res.categories = categories;
+                  continue;
+                }
+
+                if (resultFile === "environment.properties") {
+                  const content = await readFile(fullPath, "utf8");
+                  await attachment(resultFile, content, ContentType.TEXT);
+                  res.envInfo = parseProperties(content) as EnvironmentInfo;
+                  continue;
+                }
+
+                if (/-attachment\.\S+$/.test(resultFile)) {
+                  const content = await readFile(fullPath, "utf8");
+                  await attachment(resultFile, content, ContentType.TEXT);
+                  res.attachments[resultFile] = content;
+                  continue;
+                }
+
+                if (/-container\.json$/.test(resultFile)) {
+                  const testResultContainer = JSON.parse(await readFile(fullPath, "utf8")) as TestResultContainer;
+                  await attachment(resultFile, JSON.stringify(testResultContainer, undefined, 2), ContentType.JSON);
+                  res.groups.push(testResultContainer);
+                  continue;
+                }
+
+                if (/-result\.json$/.test(resultFile)) {
+                  const testResult = JSON.parse(await readFile(fullPath, "utf8")) as TestResult;
+                  await attachment(resultFile, JSON.stringify(testResult, undefined, 2), ContentType.JSON);
+                  res.tests.push(testResult);
+                  const fileStat = await stat(fullPath);
+                  res.timestamps.set(testResult.uuid, fileStat.ctime);
+                  continue;
+                }
+              }
+            } catch (e) {
+              if (!(e instanceof Error && "code" in e && e.code === "ENOENT")) {
+                throw e;
+              }
+            }
+          });
+
+          await rm(testDir, { recursive: true });
+
+          return resolve(res);
+        } catch (err) {
+          await rm(testDir, { recursive: true });
+
+          return reject(err);
+        }
+      });
+    }),
+  );
 };

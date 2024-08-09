@@ -1,5 +1,5 @@
-import type { Status, StatusDetails } from "allure-js-commons";
-import type { RuntimeMessage } from "allure-js-commons/sdk";
+import type { Label, Status, StatusDetails } from "allure-js-commons";
+import type { RuntimeMessage, TestPlanV1 } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 
 export const ALLURE_REPORT_SYSTEM_HOOK = "__allure_report_system_hook__";
@@ -33,64 +33,75 @@ export type CypressCommand = {
   state: "passed" | "failed" | "queued";
 };
 
-export type CypressHookStartMessage = {
-  type: "cypress_hook_start";
-  data: {
-    id: string;
-    parentId: string;
-    name: string;
-    type: "before" | "after";
-    start: number;
-    global: boolean;
-  };
-};
-
-export type CypressHookEndMessage = {
-  type: "cypress_hook_end";
-  data: {
-    id: string;
-    parentId: string;
-    status: Status;
-    statusDetails?: StatusDetails;
-    stop: number;
-    global: boolean;
-  };
+export type CupressRunStart = {
+  type: "cypress_run_start";
+  data: object;
 };
 
 export type CypressSuiteStartMessage = {
   type: "cypress_suite_start";
   data: {
-    id: string;
     name: string;
-    root?: boolean;
+    root: boolean;
+    start: number;
   };
 };
 
 export type CypressSuiteEndMessage = {
   type: "cypress_suite_end";
   data: {
-    id: string;
-    root?: boolean;
+    root: boolean;
+    stop: number;
+  };
+};
+
+export type CypressHookStartMessage = {
+  type: "cypress_hook_start";
+  data: {
+    name: string;
+    start: number;
+  };
+};
+
+export type CypressHookEndMessage = {
+  type: "cypress_hook_end";
+  data: {
+    duration: number;
   };
 };
 
 export type CypressTestStartMessage = {
   type: "cypress_test_start";
   data: {
-    id: string;
-    specPath: string[];
-    filename: string;
+    name: string;
+    fullName: string;
     start: number;
+    labels: Label[];
   };
+};
+
+export type CypressFailMessage = {
+  type: "cypress_fail";
+  data: {
+    status: Status;
+    statusDetails: StatusDetails;
+  };
+};
+
+export type CypressTestSkipMessage = {
+  type: "cypress_test_skip";
+  data: object;
+};
+
+export type CypressTestPassMessage = {
+  type: "cypress_test_pass";
+  data: object;
 };
 
 export type CypressTestEndMessage = {
   type: "cypress_test_end";
   data: {
-    id: string;
-    status: Status;
-    statusDetails?: StatusDetails;
-    stop: number;
+    duration: number;
     retries: number;
   };
 };
@@ -98,35 +109,68 @@ export type CypressTestEndMessage = {
 export type CypressCommandStartMessage = {
   type: "cypress_command_start";
   data: {
-    id: string;
     name: string;
     args: string[];
+    start: number;
   };
 };
 
 export type CypressCommandEndMessage = {
   type: "cypress_command_end";
   data: {
-    id: string;
     status: Status;
     statusDetails?: StatusDetails;
+    stop: number;
   };
 };
 
 export type CypressMessage =
   | RuntimeMessage
-  | CypressTestStartMessage
-  | CypressTestEndMessage
-  | CypressHookStartMessage
-  | CypressHookEndMessage
+  | CupressRunStart
   | CypressSuiteStartMessage
   | CypressSuiteEndMessage
+  | CypressHookStartMessage
+  | CypressHookEndMessage
+  | CypressTestStartMessage
   | CypressCommandStartMessage
-  | CypressCommandEndMessage;
+  | CypressCommandEndMessage
+  | CypressTestPassMessage
+  | CypressFailMessage
+  | CypressTestSkipMessage
+  | CypressTestEndMessage;
 
-export type RunContextByAbsolutePath = {
-  executables: string[];
-  steps: string[];
-  scopes: string[];
-  globalHooksMessages: (CypressHookStartMessage | CypressHookEndMessage)[];
+export type SpecContext = {
+  specPath: string;
+  package: string;
+  test: string | undefined;
+  fixture: string | undefined;
+  commandSteps: string[];
+  videoScope: string;
+  suiteScopes: string[];
+  testScope: string | undefined;
+  suiteNames: string[];
+  failed: boolean;
 };
+
+export type AllureSpecState = {
+  initialized: boolean;
+  testPlan: TestPlanV1 | null | undefined;
+  messages: CypressMessage[];
+};
+
+export type HookPosition = "before" | "after";
+
+export type HookScopeType = "all" | "each";
+
+export type HookType = [position: HookPosition, scopeType: HookScopeType];
+
+export type AllureCypressTaskArgs = {
+  absolutePath: string;
+  messages: readonly CypressMessage[];
+};
+
+export type CypressSuiteFunction = (
+  title: string,
+  configOrFn?: Cypress.SuiteConfigOverrides | ((this: Mocha.Suite) => void),
+  fn?: (this: Mocha.Suite) => void,
+) => Mocha.Suite;
