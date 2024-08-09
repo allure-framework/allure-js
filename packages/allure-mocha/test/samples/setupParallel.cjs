@@ -15,6 +15,12 @@ const forwardStreamToTestEnv = (files, workerProcess, workerStream, hostStream) 
 
 const forwardMessagesToTestEnv = (workerProcess) => {
   workerProcess.on("message", (msg) => {
+    if (msg?.error) {
+      process.send(JSON.stringify({
+        type: "error",
+        data: msg.error,
+      }));
+    }
     const allureData = msg?.result?.__allure__;
     if (allureData && process.send) {
       for (const allureEvent of allureData) {

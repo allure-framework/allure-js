@@ -1,9 +1,8 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { appendFileSync } from "node:fs";
 import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import * as path from "node:path";
-import { attachment, attachmentPath, parameter, step } from "allure-js-commons";
+import { Status, attachment, attachmentPath, logStep, parameter, step } from "allure-js-commons";
 import type { AllureResults, Category } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
@@ -39,6 +38,26 @@ const uncommentPattern = new Map<ModuleFormat, RegExp>([
   ["cjs", /\/\/ cjs: ([^\r\n]+)/g],
   ["esm", /\/\/ esm: ([^\r\n]+)/g],
 ]);
+
+type MochaError = { message: string; stack: string };
+
+class AllureMochaMessageReader extends MessageReader {
+  private readonly errors: MochaError[] = [];
+  handleCustomMessage = (type: string, data: any) => {
+    if (type === "error") {
+      this.errors.push(data as MochaError);
+    }
+  };
+  attachErrors = async () => {
+    if (this.errors.length) {
+      await step("Errors", async () => {
+        for (const error of this.errors) {
+          await logStep(error.message, Status.FAILED, error as Error);
+        }
+      });
+    }
+  };
+}
 
 abstract class AllureMochaTestRunner {
   readonly samplesPath: string;
@@ -138,22 +157,29 @@ abstract class AllureMochaTestRunner {
       });
     });
 
-    const messageReader = new MessageReader();
+    const messageReader = new AllureMochaMessageReader();
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     testProcess.on("message", messageReader.handleMessage);
 
-    const stdoutPath = path.join(testDir, "stdout.log");
-    const stderrPath = path.join(testDir, "stderr.log");
+    const stdout: string[] = [];
+    const stderr: string[] = [];
     testProcess.stdout?.setEncoding("utf8").on("data", (chunk: Buffer | string) => {
-      appendFileSync(stdoutPath, chunk.toString());
+      stdout.push(chunk.toString());
     });
     testProcess.stderr?.setEncoding("utf8").on("data", (chunk: Buffer | string) => {
-      appendFileSync(stderrPath, chunk.toString());
+      stderr.push(chunk.toString());
     });
 
     return await new Promise<AllureResults>((resolve, reject) => {
       testProcess.on("exit", async (code, signal) => {
+        if (stdout.length) {
+          await attachment("stdout", stdout.join("\n"), "text/plain");
+        }
+        if (stderr.length) {
+          await attachment("stderr", stderr.join("\n"), "text/plain");
+        }
+        await messageReader.attachErrors();
         await messageReader.attachResults();
         await rm(testDir, { recursive: true });
 
