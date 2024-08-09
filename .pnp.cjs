@@ -6424,7 +6424,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-no-null", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.0.2"],\
           ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
           ["glob", "npm:11.0.0"],\
-          ["mocha", "npm:10.5.1"],\
+          ["mocha", "npm:10.7.3"],\
           ["npm-run-all2", "npm:6.1.2"],\
           ["rimraf", "npm:6.0.0"],\
           ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\
@@ -6461,7 +6461,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-no-null", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.0.2"],\
           ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
           ["glob", "npm:11.0.0"],\
-          ["mocha", "npm:10.5.1"],\
+          ["mocha", "npm:10.7.3"],\
           ["npm-run-all2", "npm:6.1.2"],\
           ["rimraf", "npm:6.0.0"],\
           ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\
@@ -8770,6 +8770,20 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
+      ["virtual:245750f15c7a67617f34421f66e3ed44fd56cf1525bfb8ff08c5fe937c01fb60677e769626c4a3d77742f81c7255c3af4da81de7d2bb3d349242cd92efc96986#npm:4.3.5", {\
+        "packageLocation": "./.yarn/__virtual__/debug-virtual-2f1939756f/0/cache/debug-npm-4.3.5-b5001f59b7-cb6eab424c.zip/node_modules/debug/",\
+        "packageDependencies": [\
+          ["debug", "virtual:245750f15c7a67617f34421f66e3ed44fd56cf1525bfb8ff08c5fe937c01fb60677e769626c4a3d77742f81c7255c3af4da81de7d2bb3d349242cd92efc96986#npm:4.3.5"],\
+          ["@types/supports-color", null],\
+          ["ms", "npm:2.1.2"],\
+          ["supports-color", "npm:8.1.1"]\
+        ],\
+        "packagePeers": [\
+          "@types/supports-color",\
+          "supports-color"\
+        ],\
+        "linkType": "HARD"\
+      }],\
       ["virtual:2a426afc4b2eef43db12a540d29c2b5476640459bfcd5c24f86bb401cf8cce97e63bd81794d206a5643057e7f662643afd5ce3dfc4d4bfd8e706006c6309c5fa#npm:3.2.7", {\
         "packageLocation": "./.yarn/__virtual__/debug-virtual-d2345003b7/0/cache/debug-npm-3.2.7-754e818c7a-d86fd7be2b.zip/node_modules/debug/",\
         "packageDependencies": [\
@@ -9107,6 +9121,13 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/diff-npm-5.0.0-ad6900db18-4a179a75b1.zip/node_modules/diff/",\
         "packageDependencies": [\
           ["diff", "npm:5.0.0"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:5.2.0", {\
+        "packageLocation": "./.yarn/cache/diff-npm-5.2.0-f523a581f3-01b7b440f8.zip/node_modules/diff/",\
+        "packageDependencies": [\
+          ["diff", "npm:5.2.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -13974,29 +13995,29 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["npm:10.5.1", {\
-        "packageLocation": "./.yarn/cache/mocha-npm-10.5.1-8ada492894-30f79e33ec.zip/node_modules/mocha/",\
+      ["npm:10.7.3", {\
+        "packageLocation": "./.yarn/cache/mocha-npm-10.7.3-245750f15c-5757aeb320.zip/node_modules/mocha/",\
         "packageDependencies": [\
-          ["mocha", "npm:10.5.1"],\
-          ["ansi-colors", "npm:4.1.1"],\
+          ["mocha", "npm:10.7.3"],\
+          ["ansi-colors", "npm:4.1.3"],\
           ["browser-stdout", "npm:1.3.1"],\
           ["chokidar", "npm:3.6.0"],\
-          ["debug", "virtual:87db25c7c5e6b25bbc12571091cdabc648b79d427ab445d1714ccfdcdfb3265c9de6561ca760cc3de470037cbedf3af4be56ba3b684b3a1c01d4c9c2fd55a741#npm:4.3.4"],\
-          ["diff", "npm:5.0.0"],\
+          ["debug", "virtual:245750f15c7a67617f34421f66e3ed44fd56cf1525bfb8ff08c5fe937c01fb60677e769626c4a3d77742f81c7255c3af4da81de7d2bb3d349242cd92efc96986#npm:4.3.5"],\
+          ["diff", "npm:5.2.0"],\
           ["escape-string-regexp", "npm:4.0.0"],\
           ["find-up", "npm:5.0.0"],\
           ["glob", "npm:8.1.0"],\
           ["he", "npm:1.2.0"],\
           ["js-yaml", "npm:4.1.0"],\
           ["log-symbols", "npm:4.1.0"],\
-          ["minimatch", "npm:5.0.1"],\
+          ["minimatch", "npm:5.1.6"],\
           ["ms", "npm:2.1.3"],\
-          ["serialize-javascript", "npm:6.0.0"],\
+          ["serialize-javascript", "npm:6.0.2"],\
           ["strip-json-comments", "npm:3.1.1"],\
           ["supports-color", "npm:8.1.1"],\
-          ["workerpool", "npm:6.2.1"],\
+          ["workerpool", "npm:6.5.1"],\
           ["yargs", "npm:16.2.0"],\
-          ["yargs-parser", "npm:20.2.4"],\
+          ["yargs-parser", "npm:20.2.9"],\
           ["yargs-unparser", "npm:2.0.0"]\
         ],\
         "linkType": "HARD"\
@@ -16390,6 +16411,14 @@ const RAW_RUNTIME_STATE =
           ["randombytes", "npm:2.1.0"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:6.0.2", {\
+        "packageLocation": "./.yarn/cache/serialize-javascript-npm-6.0.2-cc09461d45-445a420a6f.zip/node_modules/serialize-javascript/",\
+        "packageDependencies": [\
+          ["serialize-javascript", "npm:6.0.2"],\
+          ["randombytes", "npm:2.1.0"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["set-blocking", [\
@@ -18541,6 +18570,13 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/workerpool-npm-6.2.1-1486cb2056-3e637f7632.zip/node_modules/workerpool/",\
         "packageDependencies": [\
           ["workerpool", "npm:6.2.1"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:6.5.1", {\
+        "packageLocation": "./.yarn/cache/workerpool-npm-6.5.1-7e0dd85ca7-b1b00139fe.zip/node_modules/workerpool/",\
+        "packageDependencies": [\
+          ["workerpool", "npm:6.5.1"]\
         ],\
         "linkType": "HARD"\
       }]\
