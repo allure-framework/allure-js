@@ -7,6 +7,7 @@ import {
   extractMetadataFromString,
   getStatusFromError,
   isAnyStepFailed,
+  isMetadataTag,
 } from "../../src/sdk/utils.js";
 
 type Executable = StepResult | TestResult | FixtureResult;
@@ -242,5 +243,26 @@ describe("extractMetadataFromString", () => {
         { name: "l2", value: "v2" },
       ],
     });
+  });
+});
+
+describe("isMetadataTag", () => {
+  it("should not match empty tag", () => {
+    expect(isMetadataTag("")).toBeFalsy();
+  });
+  it("should not match regular tag", () => {
+    expect(isMetadataTag("regular")).toBeFalsy();
+  });
+  it("should not match multi word tag", () => {
+    expect(isMetadataTag("some multi word tag")).toBeFalsy();
+  });
+  it("should match allure.id tag", () => {
+    expect(isMetadataTag("allure.id=123")).toBeTruthy();
+  });
+  it("should match allure.label tag", () => {
+    expect(isMetadataTag("allure.label.x=y")).toBeTruthy();
+  });
+  it("should match @allure.label tag", () => {
+    expect(isMetadataTag("@allure.label.x=y")).toBeTruthy();
   });
 });

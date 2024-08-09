@@ -16,6 +16,7 @@ export type {
 export {
   getStatusFromError,
   getMessageAndTraceFromError,
+  isMetadataTag,
   extractMetadataFromString,
   isAllStepsEnded,
   isAnyStepFailed,

@@ -5,6 +5,14 @@ class MyHelper extends Helper {
     await Promise.resolve();
   }
 
+  async next() {
+    await Promise.resolve();
+  }
+
+  async parameters(page, element) {
+    await Promise.resolve();
+  }
+
   async fail() {
     await Promise.reject(new Error("an error"));
   }

@@ -13,7 +13,6 @@ it("handles hooks", async () => {
       Before(() => {});
       After(() => {});
 
-      // these hooks shouldn't be reported because codeceptjs doesn't provide any information about them
       BeforeSuite(() => {});
       AfterSuite(() => {});
 
@@ -25,46 +24,115 @@ it("handles hooks", async () => {
 
   expect(tests).toHaveLength(1);
   expect(tests[0].steps).toHaveLength(1);
-  expect(groups).toHaveLength(4);
   expect(groups).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
-        name: String.raw`"before all" hook: BeforeSuite for "sample-scenario"`,
+        name: String.raw`"before all" hook: codeceptjs.beforeSuite`,
         befores: expect.arrayContaining([
           expect.objectContaining({
             status: Status.PASSED,
             stage: Stage.FINISHED,
+            name: String.raw`"before all" hook: codeceptjs.beforeSuite`,
           }),
         ]),
         afters: [],
       }),
       expect.objectContaining({
-        name: String.raw`"before each" hook: Before for "sample-scenario"`,
+        name: String.raw`"before all" hook`,
         befores: expect.arrayContaining([
           expect.objectContaining({
             status: Status.PASSED,
             stage: Stage.FINISHED,
+            name: String.raw`"before all" hook`,
           }),
         ]),
         afters: [],
       }),
       expect.objectContaining({
-        name: String.raw`"after each" hook: After for "sample-scenario"`,
+        name: String.raw`"before all" hook: BeforeSuite`,
+        befores: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.PASSED,
+            stage: Stage.FINISHED,
+            name: String.raw`"before all" hook: BeforeSuite`,
+          }),
+        ]),
+        afters: [],
+      }),
+      expect.objectContaining({
+        name: String.raw`"before each" hook: codeceptjs.before`,
+        befores: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.PASSED,
+            stage: Stage.FINISHED,
+            name: String.raw`"before each" hook: codeceptjs.before`,
+          }),
+        ]),
+        afters: [],
+      }),
+      expect.objectContaining({
+        name: String.raw`"before each" hook: Before`,
+        befores: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.PASSED,
+            stage: Stage.FINISHED,
+            name: String.raw`"before each" hook: Before`,
+          }),
+        ]),
+        afters: [],
+      }),
+      expect.objectContaining({
+        name: String.raw`"after each" hook: After`,
         befores: [],
         afters: expect.arrayContaining([
           expect.objectContaining({
             status: Status.PASSED,
             stage: Stage.FINISHED,
+            name: String.raw`"after each" hook: After`,
           }),
         ]),
       }),
       expect.objectContaining({
-        name: String.raw`"after all" hook: AfterSuite for "sample-scenario"`,
+        name: String.raw`"after each" hook: finalize codeceptjs`,
         befores: [],
         afters: expect.arrayContaining([
           expect.objectContaining({
             status: Status.PASSED,
             stage: Stage.FINISHED,
+            name: String.raw`"after each" hook: finalize codeceptjs`,
+          }),
+        ]),
+      }),
+      expect.objectContaining({
+        name: String.raw`"after all" hook`,
+        befores: [],
+        afters: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.PASSED,
+            stage: Stage.FINISHED,
+            name: String.raw`"after all" hook`,
+          }),
+        ]),
+      }),
+      expect.objectContaining({
+        name: String.raw`"after all" hook: AfterSuite`,
+        befores: [],
+        afters: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.PASSED,
+            stage: Stage.FINISHED,
+            name: String.raw`"after all" hook: AfterSuite`,
+          }),
+        ]),
+      }),
+      expect.objectContaining({
+        name: String.raw`"after all" hook: codeceptjs.afterSuite`,
+        befores: [],
+        afters: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.PASSED,
+            stage: Stage.FINISHED,
+            name: String.raw`"after all" hook: codeceptjs.afterSuite`,
           }),
         ]),
       }),
@@ -100,7 +168,7 @@ it("should support steps in before & after hooks", async () => {
   expect(groups).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
-        name: String.raw`"before each" hook: Before for "sample-scenario"`,
+        name: String.raw`"before each" hook: Before`,
         befores: expect.arrayContaining([
           expect.objectContaining({
             status: Status.PASSED,
@@ -120,7 +188,7 @@ it("should support steps in before & after hooks", async () => {
         afters: [],
       }),
       expect.objectContaining({
-        name: String.raw`"after each" hook: After for "sample-scenario"`,
+        name: String.raw`"after each" hook: After`,
         befores: [],
         afters: expect.arrayContaining([
           expect.objectContaining({

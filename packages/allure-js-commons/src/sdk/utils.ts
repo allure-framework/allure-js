@@ -54,6 +54,10 @@ export const allureIdRegexpGlobal = new RegExp(allureIdRegexp, "g");
 export const allureLabelRegexp = /(?:^|\s)@?allure\.label\.(?<name>[^:=\s]+)[:=](?<value>[^\s]+)/;
 export const allureLabelRegexpGlobal = new RegExp(allureLabelRegexp, "g");
 
+export const isMetadataTag = (tag: string) => {
+  return allureIdRegexp.test(tag) || allureLabelRegexp.test(tag);
+};
+
 export const extractMetadataFromString = (
   title: string,
 ): {
