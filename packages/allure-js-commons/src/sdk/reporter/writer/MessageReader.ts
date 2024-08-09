@@ -40,9 +40,13 @@ export class MessageReader {
         }
         return;
       default:
+        this.handleCustomMessage(type, data, path);
         return;
     }
   };
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  handleCustomMessage = (type: string, data: any, path: string) => {};
 
   attachResults = async () => {
     await step("allure-results", async () => {
