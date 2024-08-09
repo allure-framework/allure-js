@@ -6424,7 +6424,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-no-null", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.0.2"],\
           ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
           ["glob", "npm:11.0.0"],\
-          ["mocha", "npm:10.6.0"],\
+          ["mocha", "npm:10.5.1"],\
           ["npm-run-all2", "npm:6.1.2"],\
           ["rimraf", "npm:6.0.0"],\
           ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\

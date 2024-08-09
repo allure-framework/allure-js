@@ -62,8 +62,16 @@ it("supports codecept tags", async () => {
         value: "codeceptjs",
       },
       {
-        name: LabelName.SUITE,
+        name: LabelName.PARENT_SUITE,
         value: "tags",
+      },
+      {
+        name: LabelName.HOST,
+        value: expect.anything(),
+      },
+      {
+        name: LabelName.THREAD,
+        value: expect.anything(),
       },
     ]),
   );

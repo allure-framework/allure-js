@@ -1,7 +1,7 @@
 import { event, recorder } from "codeceptjs";
 import type * as Mocha from "mocha";
-import { Stage, Status, type StepResult } from "allure-js-commons";
-import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
+import { LabelName, Stage, Status, type StepResult } from "allure-js-commons";
+import { getMessageAndTraceFromError, getStatusFromError, isMetadataTag } from "allure-js-commons/sdk";
 import AllureMochaReporter from "allure-mocha";
 import type { CodeceptError, CodeceptStep } from "./model.js";
 
@@ -12,6 +12,8 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
   }
 
   registerEvents() {
+    // Test
+    event.dispatcher.on(event.test.before, this.testStarted.bind(this));
     // Step
     event.dispatcher.on(event.step.started, this.stepStarted.bind(this));
     event.dispatcher.on(event.step.passed, this.stepPassed.bind(this));
@@ -20,6 +22,24 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     recorder.errHandler((...args: any[]) => {
       // eslint-disable-next-line no-console
       console.log(args);
+    });
+  }
+
+  testStarted(test: { tags?: string[] }) {
+    if (!this.currentTest) {
+      return;
+    }
+
+    const tags = test.tags || [];
+    const extraTagLabels = tags
+      .filter((tag) => tag && !isMetadataTag(tag))
+      .map((tag) => (tag.startsWith("@") ? tag.substring(1) : tag))
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0)
+      .map((tag) => ({ name: LabelName.TAG, value: tag }));
+
+    this.runtime.updateTest(this.currentTest, (tr) => {
+      tr.labels.push(...extraTagLabels);
     });
   }
 
