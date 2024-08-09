@@ -1,4 +1,4 @@
-import { event, recorder } from "codeceptjs";
+import { event } from "codeceptjs";
 import type * as Mocha from "mocha";
 import { LabelName, Stage, Status, type StepResult } from "allure-js-commons";
 import { getMessageAndTraceFromError, getStatusFromError, isMetadataTag } from "allure-js-commons/sdk";
@@ -19,10 +19,6 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     event.dispatcher.on(event.step.passed, this.stepPassed.bind(this));
     event.dispatcher.on(event.step.failed, this.stepFailed.bind(this));
     event.dispatcher.on(event.step.comment, this.stepComment.bind(this));
-    recorder.errHandler((...args: any[]) => {
-      // eslint-disable-next-line no-console
-      console.log(args);
-    });
   }
 
   testStarted(test: { tags?: string[] }) {
