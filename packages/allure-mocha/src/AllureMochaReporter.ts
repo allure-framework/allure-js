@@ -1,8 +1,10 @@
 import * as Mocha from "mocha";
-import type { AttachmentOptions, ContentType, Label, Parameter } from "allure-js-commons";
+import { env } from "node:process";
+import { type AttachmentOptions, type ContentType, type Label, LabelName, type Parameter } from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
 import { getStatusFromError } from "allure-js-commons/sdk";
+import { getHostLabel, getThreadLabel } from "allure-js-commons/sdk/reporter";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
@@ -23,7 +25,6 @@ import {
   getAllureFullName,
   getAllureMetaLabels,
   getHookType,
-  getInitialLabels,
   getSuitesOfMochaTest,
   getTestCaseId,
   getTestScope,
@@ -46,12 +47,12 @@ const {
 } = Mocha.Runner.constants;
 
 export class AllureMochaReporter extends Mocha.reporters.Base {
-  private readonly runtime: ReporterRuntime;
-  private readonly testplan?: TestPlanIndices;
-  private readonly testsMap: Map<string, Mocha.Test> = new Map();
-  private scopesStack: string[] = [];
-  private currentTest?: string;
-  private currentHook?: string;
+  protected readonly runtime: ReporterRuntime;
+  protected readonly testplan?: TestPlanIndices;
+  protected readonly testsMap: Map<string, Mocha.Test> = new Map();
+  protected scopesStack: string[] = [];
+  protected currentTest?: string;
+  protected currentHook?: string;
   private readonly isInWorker: boolean;
 
   constructor(runner: Mocha.Runner, opts: Mocha.MochaOptions, isInWorker: boolean = false) {
@@ -172,7 +173,12 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     }
 
     const globalLabels = getEnvironmentLabels().filter((label) => !!label.value);
-    const initialLabels: Label[] = getInitialLabels();
+    const initialLabels: Label[] = [
+      { name: LabelName.LANGUAGE, value: "javascript" },
+      { name: LabelName.FRAMEWORK, value: this.getFrameworkName() },
+      getHostLabel(),
+      getThreadLabel(this.getWorkerId()),
+    ];
     const metaLabels = getAllureMetaLabels(test);
     const labels = globalLabels.concat(initialLabels, metaLabels);
 
@@ -305,4 +311,8 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
 
   private getCurrentSuiteScope = () =>
     this.scopesStack.length > 0 ? this.scopesStack[this.scopesStack.length - 1] : undefined;
+
+  protected getFrameworkName = (): string => "mocha";
+
+  protected getWorkerId = (): string | undefined => env.MOCHA_WORKER_ID;
 }

@@ -40,7 +40,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "allure-js-commons": "workspace:*"
+    "allure-js-commons": "workspace:*",
+    "allure-mocha": "workspace:*"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.6",

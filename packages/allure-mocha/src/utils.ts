@@ -1,12 +1,10 @@
 import type * as Mocha from "mocha";
 import { dirname, extname, join } from "node:path";
-import { env } from "node:process";
 import { fileURLToPath } from "node:url";
-import type { Label } from "allure-js-commons";
 import { LabelName } from "allure-js-commons";
 import type { TestPlanV1, TestPlanV1Test } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
-import { getHostLabel, getRelativePath, getThreadLabel, md5, parseTestPlan } from "allure-js-commons/sdk/reporter";
+import { getRelativePath, md5, parseTestPlan } from "allure-js-commons/sdk/reporter";
 import type { AllureMochaTestData, HookCategory, HookScope, HookType, TestPlanIndices } from "./types.js";
 
 const filename = fileURLToPath(import.meta.url);
@@ -76,13 +74,6 @@ export const getSuitesOfMochaTest = (test: Mocha.Test) => test.titlePath().slice
 
 export const resolveParallelModeSetupFile = () =>
   join(dirname(filename), `setupAllureMochaParallel${extname(filename)}`);
-
-export const getInitialLabels = (): Label[] => [
-  { name: LabelName.LANGUAGE, value: "javascript" },
-  { name: LabelName.FRAMEWORK, value: "mocha" },
-  getHostLabel(),
-  getThreadLabel(env.MOCHA_WORKER_ID),
-];
 
 export const getTestCaseId = (test: Mocha.Test) => {
   const suiteTitles = test.titlePath().slice(0, -1);

@@ -12,6 +12,9 @@ export const runCodeceptJsInlineTest = async (
   env?: Record<string, string>,
 ): Promise<AllureResults> => {
   const testFiles = {
+    // package.json is used to find project root in case of absolute file paths are used
+    // eslint-disable-next-line @stylistic/quotes
+    "package.json": '{ "name": "dummy"}',
     "codecept.conf.js": await readFile(resolvePath(__dirname, "./samples/codecept.conf.js"), "utf-8"),
     "helper.js": await readFile(resolvePath(__dirname, "./samples/helper.js"), "utf-8"),
     ...files,

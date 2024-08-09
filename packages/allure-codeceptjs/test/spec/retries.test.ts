@@ -16,10 +16,15 @@ it("handles retries", async () => {
     expect.arrayContaining([
       expect.objectContaining({
         name: "login-scenario1",
+        parameters: [],
+      }),
+      expect.objectContaining({
+        name: "login-scenario1",
         parameters: expect.arrayContaining([
           {
-            name: "Repetition",
+            name: "Retry",
             value: "1",
+            excluded: true,
           },
         ]),
       }),
@@ -27,17 +32,9 @@ it("handles retries", async () => {
         name: "login-scenario1",
         parameters: expect.arrayContaining([
           {
-            name: "Repetition",
+            name: "Retry",
             value: "2",
-          },
-        ]),
-      }),
-      expect.objectContaining({
-        name: "login-scenario1",
-        parameters: expect.arrayContaining([
-          {
-            name: "Repetition",
-            value: "3",
+            excluded: true,
           },
         ]),
       }),

@@ -4014,6 +4014,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:^8.0.0"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
+    allure-mocha: "workspace:*"
     allure-vitest: "workspace:*"
     babel-plugin-add-module-exports: "npm:^1.0.4"
     codeceptjs: "npm:^3.5.4"
@@ -4283,7 +4284,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"allure-mocha@workspace:packages/allure-mocha":
+"allure-mocha@workspace:*, allure-mocha@workspace:packages/allure-mocha":
   version: 0.0.0-use.local
   resolution: "allure-mocha@workspace:packages/allure-mocha"
   dependencies:

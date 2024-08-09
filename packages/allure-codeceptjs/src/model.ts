@@ -21,7 +21,3 @@ export interface CodeceptStep {
   metaStep: CodeceptStep;
   toString: () => string;
 }
-
-export type CodeceptHook = Mocha.Hook;
-
-export type CodeceptTest = Mocha.Runnable;
