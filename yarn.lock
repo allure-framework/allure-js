@@ -4313,7 +4313,7 @@ __metadata:
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     glob: "npm:^11.0.0"
-    mocha: "npm:10.7.3"
+    mocha: "npm:^10.7.3"
     npm-run-all2: "npm:^6.1.2"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
@@ -10917,7 +10917,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mocha@npm:10.7.3":
+"mocha@npm:^10.7.3":
   version: 10.7.3
   resolution: "mocha@npm:10.7.3"
   dependencies:
