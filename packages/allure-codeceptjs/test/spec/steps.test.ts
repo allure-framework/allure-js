@@ -78,7 +78,7 @@ it("should log failed steps", async () => {
           }),
           expect.objectContaining({
             name: "I fail",
-            status: Status.FAILED,
+            status: Status.BROKEN,
           }),
         ],
       }),
@@ -197,6 +197,9 @@ it("should log expects", async () => {
           expect.objectContaining({
             name: "I expectEqual",
             status: Status.FAILED,
+            statusDetails: expect.objectContaining({
+              message: "expected 1 to equal 2",
+            }),
             parameters: expect.arrayContaining([
               expect.objectContaining({
                 name: "arg0",

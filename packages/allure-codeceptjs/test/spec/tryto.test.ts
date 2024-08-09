@@ -2,8 +2,8 @@ import { expect, it } from "vitest";
 import { Status } from "allure-js-commons";
 import { runCodeceptJsInlineTest } from "../utils.js";
 
-it("should support screenshotOnFail plugin", async () => {
-  const { tests, attachments } = await runCodeceptJsInlineTest({
+it("should support tryTo plugin", async () => {
+  const { tests } = await runCodeceptJsInlineTest({
     "nested/login.test.js": `
         const { container } = require('codeceptjs')
 
@@ -13,7 +13,7 @@ it("should support screenshotOnFail plugin", async () => {
         });
         Scenario("login-scenario2", async ({ I }) => {
           await I.pass();
-          await I.fail();
+          await tryTo(() => I.fail());
         });
       `,
     "codecept.conf.js": `
@@ -30,7 +30,7 @@ it("should support screenshotOnFail plugin", async () => {
               require: require.resolve("allure-codeceptjs"),
               enabled: true,
             },
-            screenshotOnFail: {
+            tryTo: {
               enabled: true
             }
           },
@@ -56,19 +56,11 @@ it("should support screenshotOnFail plugin", async () => {
           async fail() {
             await Promise.reject(new Error("should have failed"));
           }
-
-          async saveScreenshot(fileName) {
-             const outputPath = path.join(global.output_dir, fileName);
-             await writeFile(outputPath, Buffer.from(JSON.stringify(fileName)), "utf-8");
-          }
         }
 
         module.exports = MyHooksHelper;
       `,
   });
-
-  const attachmentSources = Object.keys(attachments);
-  expect(attachmentSources).toHaveLength(1);
 
   expect(tests).toHaveLength(2);
   expect(tests).toEqual(
@@ -83,7 +75,7 @@ it("should support screenshotOnFail plugin", async () => {
         ],
       }),
       expect.objectContaining({
-        status: Status.BROKEN,
+        status: Status.PASSED,
         name: "login-scenario2",
         steps: [
           expect.objectContaining({
@@ -91,16 +83,7 @@ it("should support screenshotOnFail plugin", async () => {
           }),
           expect.objectContaining({
             name: "I fail",
-          }),
-          expect.objectContaining({
-            name: "Main session - Last Seen Screenshot",
-            attachments: [
-              expect.objectContaining({
-                name: "Main session - Last Seen Screenshot",
-                type: "image/png",
-                source: attachmentSources[0],
-              }),
-            ],
+            status: Status.BROKEN,
           }),
         ],
       }),

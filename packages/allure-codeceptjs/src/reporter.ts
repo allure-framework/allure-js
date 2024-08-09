@@ -1,5 +1,6 @@
-import { event } from "codeceptjs";
+import { event, recorder } from "codeceptjs";
 import type * as Mocha from "mocha";
+import { env } from "node:process";
 import { LabelName, Stage, Status, type StepResult } from "allure-js-commons";
 import { getMessageAndTraceFromError, getStatusFromError, isMetadataTag } from "allure-js-commons/sdk";
 import AllureMochaReporter from "allure-mocha";
@@ -59,7 +60,7 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
         result.status = getStatusFromError({ message: error.message } as Error);
         result.statusDetails = getMessageAndTraceFromError(error);
       } else {
-        result.status = Status.FAILED;
+        result.status = env.TRY_TO === "true" ? Status.BROKEN : Status.FAILED;
       }
     });
   }
@@ -85,6 +86,20 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     if (!currentStep) {
       return;
     }
+    const promise = recorder.promise();
+    // @ts-ignore
+    if (promise) {
+      promise.catch((err) => {
+        if (err instanceof Error) {
+          this.runtime.updateStep(currentStep, (step) => {
+            step.status = getStatusFromError(err);
+            step.statusDetails = { ...step.statusDetails, ...getMessageAndTraceFromError(err) };
+          });
+        }
+        return Promise.reject(err);
+      });
+    }
+
     this.runtime.updateStep(currentStep, updateFunc);
     this.runtime.stopStep(currentStep);
   }
