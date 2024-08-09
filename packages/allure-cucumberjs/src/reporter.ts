@@ -8,7 +8,6 @@ import {
   type TestStepResult,
   TestStepResultStatus,
 } from "@cucumber/messages";
-import os from "node:os";
 import { extname } from "node:path";
 import process from "node:process";
 import type { Label, Link, TestResult } from "allure-js-commons";
@@ -21,6 +20,8 @@ import {
   createDefaultWriter,
   createStepResult,
   getEnvironmentLabels,
+  getHostLabel,
+  getPackageLabelFromPath,
   getWorstStepResultStatus,
   md5,
 } from "allure-js-commons/sdk/reporter";
@@ -246,12 +247,11 @@ export default class AllureCucumberReporter extends Formatter {
       fullName,
     };
 
+    const hostLabel = getHostLabel();
+    const packageLabel = getPackageLabelFromPath(fullName);
+
     result.labels!.push(...getEnvironmentLabels());
     result.labels!.push(
-      {
-        name: LabelName.HOST,
-        value: os.hostname(),
-      },
       {
         name: LabelName.LANGUAGE,
         value: "javascript",
@@ -260,6 +260,8 @@ export default class AllureCucumberReporter extends Formatter {
         name: LabelName.FRAMEWORK,
         value: "cucumberjs",
       },
+      packageLabel,
+      hostLabel,
       {
         name: LabelName.THREAD,
         value: data.workerId || ALLURE_THREAD_NAME || process.pid.toString(),

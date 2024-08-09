@@ -177,7 +177,7 @@ export class AllureReporter implements ReporterV2 {
       fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
     };
 
-    result.labels!.push({ name: LabelName.LANGUAGE, value: "JavaScript" });
+    result.labels!.push({ name: LabelName.LANGUAGE, value: "javascript" });
     result.labels!.push({ name: LabelName.FRAMEWORK, value: "Playwright" });
     result.labels!.push({ name: "titlePath", value: suite.titlePath().join(" > ") });
     result.labels!.push({ name: LabelName.PACKAGE, value: pathElements.join(".") });

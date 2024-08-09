@@ -6,7 +6,10 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getHostLabel,
+  getPackageLabelFromPath,
   getSuiteLabels,
+  getThreadLabel,
   parseTestPlan,
 } from "allure-js-commons/sdk/reporter";
 import type {
@@ -164,6 +167,9 @@ export class AllureCypress {
                 name: LabelName.FRAMEWORK,
                 value: "cypress",
               },
+              getHostLabel(),
+              getPackageLabelFromPath(message.data.filename),
+              getThreadLabel(),
               ...suiteLabels,
               ...titleMetadata.labels,
               ...getEnvironmentLabels(),
