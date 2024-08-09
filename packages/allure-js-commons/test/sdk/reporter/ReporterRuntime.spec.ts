@@ -437,6 +437,67 @@ describe("ReporterRuntime", () => {
 
       expect(writer.writeResult.mock.calls.length).toBe(0);
     });
+
+    it("should support metadata messages from before fixtures", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const scopeUuid = runtime.startScope();
+      const fixtureUuid = runtime.startFixture(scopeUuid, "before", {})!;
+      runtime.applyRuntimeMessages(fixtureUuid, [
+        {
+          type: "metadata",
+          data: {
+            labels: [
+              {
+                name: "label 1",
+                value: "value 1",
+              },
+              {
+                name: "label 2",
+                value: "value 2",
+              },
+            ],
+          },
+        },
+      ]);
+      runtime.stopFixture(fixtureUuid);
+      const testUuid = runtime.startTest({}, [scopeUuid]);
+      runtime.applyRuntimeMessages(testUuid, [
+        {
+          type: "metadata",
+          data: {
+            labels: [
+              {
+                name: "label 3",
+                value: "value 3",
+              },
+            ],
+          },
+        },
+      ]);
+      runtime.stopTest(testUuid);
+      runtime.writeTest(testUuid);
+      runtime.writeScope(scopeUuid);
+
+      const [testResult] = writer.writeResult.mock.calls[0];
+      expect(testResult.labels).toEqual(
+        expect.arrayContaining([
+          {
+            name: "label 1",
+            value: "value 1",
+          },
+          {
+            name: "label 2",
+            value: "value 2",
+          },
+          {
+            name: "label 3",
+            value: "value 3",
+          },
+        ]),
+      );
+    });
   });
 
   describe("load well-known writers", () => {

@@ -144,7 +144,7 @@ export class ReporterRuntime {
     }
 
     const uuid = randomUuid();
-    const wrappedFixture = this.state.setFixtureResult(uuid, type, {
+    const wrappedFixture = this.state.setFixtureResult(scopeUuid, uuid, type, {
       ...createFixtureResult(),
       start: Date.now(),
       ...fixtureResult,
@@ -199,6 +199,9 @@ export class ReporterRuntime {
         return;
       }
       scope.tests.push(uuid);
+      if (scope.labels) {
+        testResult.labels = [...testResult.labels, ...scope.labels];
+      }
     });
 
     this.state.setTestResult(uuid, testResult);
@@ -430,13 +433,19 @@ export class ReporterRuntime {
 
   #handleMetadataMessage = (rootUuid: string, message: RuntimeMetadataMessage["data"]) => {
     // only display name could be set to fixture.
-    const fixtureResult = this.state.getFixtureResult(rootUuid);
+    const fixtureResult = this.state.getWrappedFixtureResult(rootUuid);
     if (fixtureResult) {
-      this.updateFixture(rootUuid, (result) => {
-        if (message.displayName) {
-          result.name = message.displayName;
-        }
-      });
+      if (message.displayName) {
+        this.updateFixture(rootUuid, (result) => {
+          result.name = message.displayName!;
+        });
+      }
+
+      if (message.labels) {
+        this.updateScope(fixtureResult.scopeUuid, (scope) => {
+          scope.labels = [...scope.labels, ...message.labels!];
+        });
+      }
       return;
     }
 

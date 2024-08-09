@@ -1,4 +1,4 @@
-import type { FixtureResult, LinkType, StepResult, TestResult, TestResultContainer } from "../../model.js";
+import type { FixtureResult, Label, LinkType, StepResult, TestResult, TestResultContainer } from "../../model.js";
 import type { Category, EnvironmentInfo } from "../types.js";
 
 export const ALLURE_METADATA_CONTENT_TYPE = "application/vnd.allure.metadata+json";
@@ -68,6 +68,7 @@ export type TestScope = {
   uuid: string;
   tests: string[];
   fixtures: FixtureWrapper[];
+  labels: Label[];
 };
 
 export type FixtureType = "before" | "after";
@@ -76,4 +77,5 @@ export type FixtureWrapper = {
   uuid: string;
   value: FixtureResult;
   type: FixtureType;
+  scopeUuid: string;
 };
