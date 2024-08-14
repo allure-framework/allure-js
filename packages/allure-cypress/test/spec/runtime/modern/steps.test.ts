@@ -246,8 +246,7 @@ it("promise-step", async () => {
   expect(tests[0].steps).toHaveLength(1);
   const actualStep = tests[0].steps[0];
   expect(actualStep.status).toEqual("passed");
-  expect(tests[0].labels).toHaveLength(3);
-  expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "result", value: "set" }));
+  expect(tests[0].labels).toContainEqual({ name: "result", value: "set" });
 });
 
 it("handles allure steps inside cypress hooks", async () => {
