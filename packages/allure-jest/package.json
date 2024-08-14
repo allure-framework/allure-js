@@ -44,7 +44,8 @@
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
-    "test": "vitest run"
+    "test": "vitest run",
+    "x": "jest -c /Users/baev/projects/allure-js/packages/allure-jest/test/fixtures/e64b9c9f-51d4-4fce-b100-c8cebfd650b4/jest.config.js"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"

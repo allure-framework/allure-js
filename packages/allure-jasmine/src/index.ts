@@ -8,7 +8,7 @@ import {
   createDefaultWriter,
   getEnvironmentLabels,
   getHostLabel,
-  getPackageLabelFromPath,
+  getPackageLabel,
   getSuiteLabels,
   getThreadLabel,
   hasSkipLabel,
@@ -150,8 +150,8 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
       result.labels.push({ name: LabelName.LANGUAGE, value: "javascript" });
       result.labels.push({ name: LabelName.FRAMEWORK, value: "jasmine" });
       result.labels.push(getHostLabel());
-      result.labels.push(getPackageLabelFromPath(spec.filename));
       result.labels.push(getThreadLabel());
+      result.labels.push(getPackageLabel(spec.filename));
 
       if (spec.status === "pending" || spec.status === "disabled" || spec.status === "excluded") {
         result.status = Status.SKIPPED;

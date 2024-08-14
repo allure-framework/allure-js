@@ -105,4 +105,6 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
   }
 
   protected getFrameworkName = () => "codeceptjs";
+
+  protected getWorkerId = () => undefined;
 }

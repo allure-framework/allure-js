@@ -1,8 +1,7 @@
 import type { EnvironmentContext, JestEnvironment, JestEnvironmentConfig } from "@jest/environment";
 import type { Circus } from "@jest/types";
-import os from "node:os";
 import { sep } from "node:path";
-import process from "node:process";
+import { env } from "node:process";
 import * as allure from "allure-js-commons";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
@@ -14,14 +13,13 @@ import {
   getEnvironmentLabels,
   getSuiteLabels,
   parseTestPlan,
+  getHostLabel,
+  getThreadLabel
 } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { AllureJestTestRuntime } from "./AllureJestTestRuntime.js";
 import type { AllureJestConfig, AllureJestEnvironment, AllureJestProjectConfig, RunContext } from "./model.js";
 import { getTestId, getTestPath, isTestPresentInTestPlan, last, shouldHookBeSkipped } from "./utils.js";
-
-const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
-const hostname = os.hostname();
 
 const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
   // @ts-expect-error (ts(2545)) Incorrect assumption about a mixin class: https://github.com/microsoft/TypeScript/issues/37142
@@ -189,8 +187,6 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      const threadLabel = ALLURE_THREAD_NAME || JEST_WORKER_ID || process.pid.toString();
-      const hostLabel = ALLURE_HOST_NAME || hostname;
       const packageLabel = this.testPath.replace(sep, ".");
 
       this.#startScope();
@@ -212,23 +208,14 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
               name: LabelName.PACKAGE,
               value: packageLabel,
             },
+            getHostLabel(),
+            getThreadLabel(env.JEST_WORKER_ID),
             ...getEnvironmentLabels(),
+            ...getSuiteLabels(newTestSuitePath)
           ],
         },
         this.runContext.scopes,
       );
-
-      this.runtime.updateTest(testUuid, (result) => {
-        if (threadLabel) {
-          result.labels.push({ name: LabelName.THREAD, value: threadLabel });
-        }
-
-        if (hostLabel) {
-          result.labels.push({ name: LabelName.HOST, value: hostLabel });
-        }
-
-        result.labels.push(...getSuiteLabels(newTestSuitePath));
-      });
 
       this.runContext.executables.push(testUuid);
 

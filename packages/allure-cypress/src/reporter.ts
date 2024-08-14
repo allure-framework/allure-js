@@ -1,12 +1,17 @@
 import type Cypress from "cypress";
 import path from "node:path";
-import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
+import { ContentType, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getFrameworkLabel,
+  getHostLabel,
+  getLanguageLabel,
+  getPackageLabel,
   getSuiteLabels,
+  getThreadLabel,
   parseTestPlan,
 } from "allure-js-commons/sdk/reporter";
 import type {
@@ -261,17 +266,15 @@ export class AllureCypress {
         fullName,
         stage: Stage.RUNNING,
         labels: [
-          {
-            name: LabelName.LANGUAGE,
-            value: "javascript",
-          },
-          {
-            name: LabelName.FRAMEWORK,
-            value: "cypress",
-          },
+          getLanguageLabel(),
+          getFrameworkLabel("cypress"),
+
           ...getSuiteLabels(context.suiteNames),
           ...metadataLabels,
           ...getEnvironmentLabels(),
+          getHostLabel(),
+          getThreadLabel(),
+          getPackageLabel(context.specPath),
         ],
       },
       [context.videoScope, ...context.suiteScopes, testScope],

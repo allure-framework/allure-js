@@ -9,4 +9,11 @@ export { InMemoryWriter } from "./writer/InMemoryWriter.js";
 export { FileSystemWriter } from "./writer/FileSystemWriter.js";
 export { MessageWriter } from "./writer/MessageWriter.js";
 export { MessageReader } from "./writer/MessageReader.js";
-export { getEnvironmentLabels, getHostLabel, getThreadLabel } from "./utils/labels.js";
+export {
+  getEnvironmentLabels,
+  getHostLabel,
+  getThreadLabel,
+  getPackageLabel,
+  getLanguageLabel,
+  getFrameworkLabel,
+} from "./utils/labels.js";

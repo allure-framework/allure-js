@@ -11,8 +11,7 @@ import {
   createDefaultWriter,
   ensureSuiteLabels,
   getEnvironmentLabels,
-  getPackageLabelFromPath,
-  getRelativePath,
+  getPackageLabel,
 } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { MochaTestRuntime } from "./MochaTestRuntime.js";
@@ -183,9 +182,8 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     const labels = globalLabels.concat(initialLabels, metaLabels);
 
     if (test.file) {
-      const testPath = getRelativePath(test.file);
-      const packageLabelFromPath: Label = getPackageLabelFromPath(testPath);
-      labels.push(packageLabelFromPath);
+      const packageLabel: Label = getPackageLabel(test.file);
+      labels.push(packageLabel);
     }
 
     const scopeUuid = this.runtime.startScope();

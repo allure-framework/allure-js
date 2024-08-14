@@ -9,7 +9,6 @@ import {
   TestStepResultStatus,
 } from "@cucumber/messages";
 import { extname } from "node:path";
-import process from "node:process";
 import type { Label, Link, TestResult } from "allure-js-commons";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import { getMessageAndTraceFromError } from "allure-js-commons/sdk";
@@ -20,15 +19,16 @@ import {
   createDefaultWriter,
   createStepResult,
   getEnvironmentLabels,
+  getFrameworkLabel,
   getHostLabel,
-  getPackageLabelFromPath,
+  getLanguageLabel,
+  getPackageLabel,
+  getThreadLabel,
   getWorstStepResultStatus,
   md5,
 } from "allure-js-commons/sdk/reporter";
 import { AllureCucumberWorld } from "./legacy.js";
 import type { AllureCucumberLinkConfig, AllureCucumberReporterConfig, LabelConfig } from "./model.js";
-
-const { ALLURE_THREAD_NAME } = process.env;
 
 export default class AllureCucumberReporter extends Formatter {
   private readonly afterHooks: Record<string, TestCaseHookDefinition> = {};
@@ -247,25 +247,13 @@ export default class AllureCucumberReporter extends Formatter {
       fullName,
     };
 
-    const hostLabel = getHostLabel();
-    const packageLabel = getPackageLabelFromPath(fullName);
-
     result.labels!.push(...getEnvironmentLabels());
     result.labels!.push(
-      {
-        name: LabelName.LANGUAGE,
-        value: "javascript",
-      },
-      {
-        name: LabelName.FRAMEWORK,
-        value: "cucumberjs",
-      },
-      packageLabel,
-      hostLabel,
-      {
-        name: LabelName.THREAD,
-        value: data.workerId || ALLURE_THREAD_NAME || process.pid.toString(),
-      },
+      getLanguageLabel(),
+      getFrameworkLabel("cucumberjs"),
+      getPackageLabel(pickle.uri),
+      getHostLabel(),
+      getThreadLabel(data.workerId),
     );
 
     if (doc?.feature) {

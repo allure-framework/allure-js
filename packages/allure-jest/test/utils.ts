@@ -18,7 +18,7 @@ export const runJestInlineTest = async (
     "jest.config.js": `
       const config = {
         bail: false,
-        testEnvironment: require.resolve("allure-jest/node"),
+        testEnvironment: "${require.resolve("allure-jest/node")}",
         testEnvironmentOptions: {
           links: {
             issue: {
@@ -72,7 +72,6 @@ export const runJestInlineTest = async (
     return fork(modulePath, args, {
       env: {
         ...process.env,
-        ALLURE_POST_PROCESSOR_FOR_TEST: String("true"),
         ALLURE_TEST_MODE: "1",
         ...env?.(testDir),
       },

@@ -135,14 +135,6 @@ export const getRelativePath = (filepath: string) => {
   return filepath;
 };
 
-export const getPackageLabelFromPath = (filepath: string): Label => ({
-  name: LabelName.PACKAGE,
-  value: getRelativePath(filepath)
-    .split(path.sep)
-    .filter((v) => v)
-    .join("."),
-});
-
 export const deepClone = <T>(obj: T): T => JSON.parse(JSON.stringify(obj));
 
 export const serialize = (val: unknown): string => {

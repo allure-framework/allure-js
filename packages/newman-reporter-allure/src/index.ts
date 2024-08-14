@@ -2,7 +2,6 @@
 import type { EventEmitter } from "events";
 import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
 import type { CollectionDefinition, Event, HeaderList, Item, Request, Response } from "postman-collection";
-import type { Label } from "allure-js-commons";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
@@ -10,7 +9,6 @@ import {
   createDefaultWriter,
   getEnvironmentLabels,
   getHostLabel,
-  getPackageLabelFromPath,
   getSuiteLabels,
   getThreadLabel,
 } from "allure-js-commons/sdk/reporter";
@@ -95,7 +93,6 @@ class AllureReporter {
     const testPath = this.#pathToItem(item);
     const hostLabel = getHostLabel();
     const threadLabel = getThreadLabel();
-    const packageLabelFromPath: Label = getPackageLabelFromPath("");
 
     const { labels } = extractMeta(args.item.events);
 
@@ -109,7 +106,6 @@ class AllureReporter {
         { name: LabelName.PACKAGE, value: "" },
         hostLabel,
         threadLabel,
-        packageLabelFromPath,
         ...labels,
         ...getEnvironmentLabels(),
       ],
