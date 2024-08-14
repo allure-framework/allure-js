@@ -1,6 +1,6 @@
 import * as Mocha from "mocha";
 import { env } from "node:process";
-import { type AttachmentOptions, type ContentType, type Label, LabelName, type Parameter } from "allure-js-commons";
+import { type AttachmentOptions, type ContentType, type Label, type Parameter } from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
 import { getStatusFromError } from "allure-js-commons/sdk";
@@ -11,6 +11,8 @@ import {
   createDefaultWriter,
   ensureSuiteLabels,
   getEnvironmentLabels,
+  getFrameworkLabel,
+  getLanguageLabel,
   getPackageLabel,
 } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
@@ -173,8 +175,8 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
 
     const globalLabels = getEnvironmentLabels().filter((label) => !!label.value);
     const initialLabels: Label[] = [
-      { name: LabelName.LANGUAGE, value: "javascript" },
-      { name: LabelName.FRAMEWORK, value: this.getFrameworkName() },
+      getLanguageLabel(),
+      getFrameworkLabel(this.getFrameworkName()),
       getHostLabel(),
       getThreadLabel(this.getWorkerId()),
     ];

@@ -2,13 +2,15 @@
 import type { EventEmitter } from "events";
 import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
 import type { CollectionDefinition, Event, HeaderList, Item, Request, Response } from "postman-collection";
-import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
+import { ContentType, Stage, Status } from "allure-js-commons";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getFrameworkLabel,
   getHostLabel,
+  getLanguageLabel,
   getSuiteLabels,
   getThreadLabel,
 } from "allure-js-commons/sdk/reporter";
@@ -101,9 +103,8 @@ class AllureReporter {
       fullName,
       stage: Stage.RUNNING,
       labels: [
-        { name: LabelName.LANGUAGE, value: "javascript" },
-        { name: LabelName.FRAMEWORK, value: "newman" },
-        { name: LabelName.PACKAGE, value: "" },
+        getLanguageLabel(),
+        getFrameworkLabel("newman"),
         hostLabel,
         threadLabel,
         ...labels,

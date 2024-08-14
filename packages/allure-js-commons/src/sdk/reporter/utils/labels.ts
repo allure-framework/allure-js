@@ -58,6 +58,6 @@ export const getLanguageLabel = (): Label => ({
 });
 
 export const getFrameworkLabel = (framework: string): Label => ({
-  name: LabelName.LANGUAGE,
+  name: LabelName.FRAMEWORK,
   value: framework,
 });

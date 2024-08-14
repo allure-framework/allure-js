@@ -1,5 +1,5 @@
 import * as allure from "allure-js-commons";
-import { LabelName, Stage, Status } from "allure-js-commons";
+import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError, isPromise } from "allure-js-commons/sdk";
 import type { FixtureType, ReporterConfig } from "allure-js-commons/sdk/reporter";
@@ -7,7 +7,9 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getFrameworkLabel,
   getHostLabel,
+  getLanguageLabel,
   getPackageLabel,
   getSuiteLabels,
   getThreadLabel,
@@ -147,8 +149,8 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
       result.labels.push(...suitesLabels);
       result.labels.push(...getEnvironmentLabels());
-      result.labels.push({ name: LabelName.LANGUAGE, value: "javascript" });
-      result.labels.push({ name: LabelName.FRAMEWORK, value: "jasmine" });
+      result.labels.push(getLanguageLabel());
+      result.labels.push(getFrameworkLabel("jasmine"));
       result.labels.push(getHostLabel());
       result.labels.push(getThreadLabel());
       result.labels.push(getPackageLabel(spec.filename));

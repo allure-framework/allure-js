@@ -3,7 +3,7 @@ import type { Circus } from "@jest/types";
 import { sep } from "node:path";
 import { env } from "node:process";
 import * as allure from "allure-js-commons";
-import { LabelName, Stage, Status } from "allure-js-commons";
+import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
@@ -11,10 +11,13 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
-  getSuiteLabels,
-  parseTestPlan,
+  getFrameworkLabel,
   getHostLabel,
-  getThreadLabel
+  getLanguageLabel,
+  getPackageLabel,
+  getSuiteLabels,
+  getThreadLabel,
+  parseTestPlan,
 } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { AllureJestTestRuntime } from "./AllureJestTestRuntime.js";
@@ -187,8 +190,6 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      const packageLabel = this.testPath.replace(sep, ".");
-
       this.#startScope();
       const testUuid = this.runtime.startTest(
         {
@@ -196,22 +197,13 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
           fullName: newTestFullName,
           start: test.startedAt ?? undefined,
           labels: [
-            {
-              name: LabelName.LANGUAGE,
-              value: "javascript",
-            },
-            {
-              name: LabelName.FRAMEWORK,
-              value: "jest",
-            },
-            {
-              name: LabelName.PACKAGE,
-              value: packageLabel,
-            },
+            getLanguageLabel(),
+            getFrameworkLabel("jest"),
+            getPackageLabel(this.testPath),
             getHostLabel(),
             getThreadLabel(env.JEST_WORKER_ID),
             ...getEnvironmentLabels(),
-            ...getSuiteLabels(newTestSuitePath)
+            ...getSuiteLabels(newTestSuitePath),
           ],
         },
         this.runContext.scopes,
