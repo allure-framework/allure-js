@@ -1,16 +1,16 @@
 import { type ChildProcess, fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
-import { dirname, join, resolve as resolvePath } from "node:path";
+import { dirname, join, relative, resolve as resolvePath } from "node:path";
 import type { TestResult, TestResultContainer } from "allure-js-commons";
 import { ContentType, attachment, step } from "allure-js-commons";
 import type { AllureResults, EnvironmentInfo } from "allure-js-commons/sdk";
-import { parseProperties } from "allure-js-commons/sdk/reporter";
+import { getPosixPath, parseProperties } from "allure-js-commons/sdk/reporter";
 
 type CypressModulesPaths = {
   allureCommonsModulePath: string;
   allureCypressModulePath: string;
-  allureCypressModuleBasePath: string;
+  allureCypressReporterModulePath: string;
 };
 
 type CypressTestFiles = Record<string, (modulesPaths: CypressModulesPaths) => string>;
@@ -32,15 +32,13 @@ export const runCypressInlineTest = async (
     timestamps: new Map(),
   };
   const testDir = join(__dirname, "fixtures", randomUUID());
-  const allureCypressModuleBasePath = dirname(require.resolve("allure-cypress"));
-  const allureCommonsModulePath = require.resolve("allure-js-commons");
-  const allureCypressModulePath = require.resolve("allure-cypress");
+
   const testFilesToWrite: CypressTestFiles = {
-    "cypress/support/e2e.js": () => `
-      require("${allureCypressModuleBasePath}/index.js");
+    "cypress/support/e2e.js": ({ allureCypressModulePath }) => `
+      require("${allureCypressModulePath}");
     `,
-    "cypress.config.js": () => `
-      const { allureCypress } = require("${allureCypressModuleBasePath}/reporter.js");
+    "cypress.config.js": ({ allureCypressReporterModulePath }) => `
+      const { allureCypress } = require("${allureCypressReporterModulePath}");
 
       module.exports = {
         e2e: {
@@ -67,13 +65,18 @@ export const runCypressInlineTest = async (
   };
 
   await step("Prepare files", async () => {
+    const allureCommonsModulePath = require.resolve("allure-js-commons");
+    const allureCypressModulePath = require.resolve("allure-cypress");
+    const allureCypressReporterModulePath = require.resolve("allure-cypress/reporter");
+
     // eslint-disable-next-line guard-for-in
     for (const testFile in testFilesToWrite) {
-      await mkdir(dirname(join(testDir, testFile)), { recursive: true });
+      const fileDir = dirname(join(testDir, testFile));
+      await mkdir(fileDir, { recursive: true });
       const content = testFilesToWrite[testFile]({
-        allureCommonsModulePath,
-        allureCypressModulePath,
-        allureCypressModuleBasePath,
+        allureCommonsModulePath: getPosixPath(relative(fileDir, allureCommonsModulePath)),
+        allureCypressModulePath: getPosixPath(relative(fileDir, allureCypressModulePath)),
+        allureCypressReporterModulePath: getPosixPath(relative(fileDir, allureCypressReporterModulePath)),
       });
       await writeFile(join(testDir, testFile), content, "utf8");
       await attachment(testFile, content, ContentType.TEXT);
@@ -92,7 +95,7 @@ export const runCypressInlineTest = async (
     const modulePath = resolvePath(moduleRootPath, "../bin/cypress");
     await ctx.parameter("Module", modulePath);
 
-    const args = ["run", "--browser", "chrome", "-q"];
+    const args = ["run", "-q"];
     await ctx.parameter("Arguments", JSON.stringify(args));
 
     const envVars = env?.(testDir);
@@ -122,6 +125,11 @@ export const runCypressInlineTest = async (
 
     await new Promise<void>((resolve) =>
       testProcess.on("exit", async (code, signal) => {
+        if (code !== 0) {
+          stdout.forEach((out) => process.stdout.write(out));
+          stderr.forEach((out) => process.stderr.write(out));
+        }
+
         if (typeof code === "number") {
           await ctx.parameter("Exit code", code.toString());
         }

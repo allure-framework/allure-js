@@ -9,8 +9,8 @@ it("handles tests retries", async () => {
         cy.wrap(1).should("eq", 2);
       });
     `,
-    "cypress.config.js": ({ allureCypressModuleBasePath }) => `
-      const { allureCypress } = require("${allureCypressModuleBasePath}/reporter.js");
+    "cypress.config.js": ({ allureCypressReporterModulePath }) => `
+      const { allureCypress } = require("${allureCypressReporterModulePath}");
 
       module.exports = {
         e2e: {

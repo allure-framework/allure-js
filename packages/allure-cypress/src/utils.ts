@@ -78,7 +78,9 @@ export const getNamesAndLabels = (spec: Cypress.Spec, test: CypressTest) => {
   const rawName = test.title;
   const { cleanTitle: name, labels } = extractMetadataFromString(rawName);
   const suites = test.titlePath().slice(0, -1);
-  const fullName = `${spec.relative}#${[...suites, name].join(" ")}`;
+  const win = Cypress.platform === "win32";
+  const specPath = win ? spec.relative.replaceAll("\\", "/") : spec.relative;
+  const fullName = `${specPath}#${[...suites, name].join(" ")}`;
   return { name, labels, fullName };
 };
 

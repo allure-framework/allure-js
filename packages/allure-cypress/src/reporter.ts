@@ -470,10 +470,10 @@ export class AllureCypress {
   };
 
   #initializeSpecContext = (absolutePath: string) => {
-    const specPathElements = path.relative(process.cwd(), absolutePath).split(path.sep);
+    const specPath = path.relative(process.cwd(), absolutePath);
     const context: SpecContext = {
-      specPath: specPathElements.join("/"),
-      package: specPathElements.join("."),
+      specPath,
+      package: specPath.replaceAll("/", "."),
       test: undefined,
       fixture: undefined,
       commandSteps: [],
