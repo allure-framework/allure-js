@@ -135,6 +135,13 @@ export const getRelativePath = (filepath: string) => {
   return filepath;
 };
 
+export const getPosixPath = (filepath: string) => {
+  if (process.platform === "win32") {
+    return filepath.replaceAll("\\", "/");
+  }
+  return filepath;
+};
+
 export const deepClone = <T>(obj: T): T => JSON.parse(JSON.stringify(obj));
 
 export const getSuiteLabels = (suites: readonly string[]): Label[] => {

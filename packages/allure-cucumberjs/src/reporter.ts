@@ -24,6 +24,7 @@ import {
   getHostLabel,
   getLanguageLabel,
   getPackageLabel,
+  getPosixPath,
   getThreadLabel,
   getWorstStepResultStatus,
   md5,
@@ -237,7 +238,9 @@ export default class AllureCucumberReporter extends Formatter {
     const doc = this.documentMap.get(pickle.uri)!;
     const [scenarioId] = pickle.astNodeIds;
     const scenario = this.scenarioMap.get(scenarioId);
-    const fullName = `${pickle.uri}#${pickle.name}`;
+
+    const posixPath = getPosixPath(pickle.uri);
+    const fullName = `${posixPath}#${pickle.name}`;
     const result: Partial<TestResult> = {
       name: pickle.name,
       description: (scenario?.description || doc?.feature?.description || "").trim(),

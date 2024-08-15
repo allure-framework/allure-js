@@ -1,6 +1,6 @@
 import { Before, BeforeAll, world } from "@cucumber/cucumber";
 import { includedInTestPlan } from "allure-js-commons/sdk/reporter";
-import { parseTestPlan } from "allure-js-commons/sdk/reporter";
+import { getPosixPath, parseTestPlan } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { AllureCucumberWorld } from "./legacy.js";
 import { AllureCucumberTestRuntime } from "./runtime.js";
@@ -15,7 +15,9 @@ Before({ name: "ALLURE_FIXTURE_IGNORE" }, (scenario) => {
     return;
   }
   const pickle = scenario.pickle;
-  const fullName = `${pickle.uri}#${pickle.name}`;
+  const posixPath = getPosixPath(pickle.uri);
+
+  const fullName = `${posixPath}#${pickle.name}`;
   const tags = pickle.tags.map((tag) => tag.name);
 
   if (!includedInTestPlan(testPlan, { fullName, tags })) {
