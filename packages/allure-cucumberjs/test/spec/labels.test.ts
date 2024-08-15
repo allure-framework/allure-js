@@ -2,6 +2,90 @@ import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
 import { runCucumberInlineTest } from "../utils.js";
 
+it("should add thread and host labels", async () => {
+  const { tests } = await runCucumberInlineTest(["simple"], ["simple"]);
+
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "passed",
+        labels: expect.arrayContaining([
+          {
+            name: "host",
+            value: expect.any(String),
+          },
+          {
+            name: "thread",
+            value: expect.any(String),
+          },
+        ]),
+      }),
+      expect.objectContaining({
+        name: "failed",
+        labels: expect.arrayContaining([
+          {
+            name: "host",
+            value: expect.any(String),
+          },
+          {
+            name: "thread",
+            value: expect.any(String),
+          },
+        ]),
+      }),
+      expect.objectContaining({
+        name: "broken",
+        labels: expect.arrayContaining([
+          {
+            name: "host",
+            value: expect.any(String),
+          },
+          {
+            name: "thread",
+            value: expect.any(String),
+          },
+        ]),
+      }),
+    ]),
+  );
+});
+
+it("should add thread package label", async () => {
+  const { tests } = await runCucumberInlineTest(["simple"], ["simple"]);
+
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "passed",
+        labels: expect.arrayContaining([
+          {
+            name: "package",
+            value: "features.simple.feature",
+          },
+        ]),
+      }),
+      expect.objectContaining({
+        name: "failed",
+        labels: expect.arrayContaining([
+          {
+            name: "package",
+            value: "features.simple.feature",
+          },
+        ]),
+      }),
+      expect.objectContaining({
+        name: "broken",
+        labels: expect.arrayContaining([
+          {
+            name: "package",
+            value: "features.simple.feature",
+          },
+        ]),
+      }),
+    ]),
+  );
+});
+
 it("sets label from env variables", async () => {
   const { tests } = await runCucumberInlineTest(["simple"], ["simple"], undefined, undefined, {
     ALLURE_LABEL_A: "a",

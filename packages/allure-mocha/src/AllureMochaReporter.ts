@@ -1,6 +1,6 @@
 import * as Mocha from "mocha";
 import { env } from "node:process";
-import { type AttachmentOptions, type ContentType, type Label, LabelName, type Parameter } from "allure-js-commons";
+import { type AttachmentOptions, type ContentType, type Label, type Parameter } from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
 import { getStatusFromError } from "allure-js-commons/sdk";
@@ -11,8 +11,9 @@ import {
   createDefaultWriter,
   ensureSuiteLabels,
   getEnvironmentLabels,
-  getPackageLabelFromPath,
-  getRelativePath,
+  getFrameworkLabel,
+  getLanguageLabel,
+  getPackageLabel,
 } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { MochaTestRuntime } from "./MochaTestRuntime.js";
@@ -174,8 +175,8 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
 
     const globalLabels = getEnvironmentLabels().filter((label) => !!label.value);
     const initialLabels: Label[] = [
-      { name: LabelName.LANGUAGE, value: "javascript" },
-      { name: LabelName.FRAMEWORK, value: this.getFrameworkName() },
+      getLanguageLabel(),
+      getFrameworkLabel(this.getFrameworkName()),
       getHostLabel(),
       getThreadLabel(this.getWorkerId()),
     ];
@@ -183,9 +184,8 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     const labels = globalLabels.concat(initialLabels, metaLabels);
 
     if (test.file) {
-      const testPath = getRelativePath(test.file);
-      const packageLabelFromPath: Label = getPackageLabelFromPath(testPath);
-      labels.push(packageLabelFromPath);
+      const packageLabel: Label = getPackageLabel(test.file);
+      labels.push(packageLabel);
     }
 
     const scopeUuid = this.runtime.startScope();

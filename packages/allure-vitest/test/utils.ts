@@ -25,15 +25,14 @@ export const runVitestInlineTest = async (
   const configContent = externalConfigFactory
     ? externalConfigFactory(testDir)
     : `
-    import AllureReporter from "allure-vitest/reporter";
     import { defineConfig } from "vitest/config";
 
     export default defineConfig({
       test: {
-        setupFiles: ["allure-vitest/setup"],
+        setupFiles: ["${require.resolve("allure-vitest/setup")}"],
         reporters: [
           "verbose",
-          new AllureReporter({
+          ["${require.resolve("allure-vitest/reporter")}", {
             links: {
               issue: {
                 urlTemplate: "https://example.org/issue/%s",
@@ -43,7 +42,7 @@ export const runVitestInlineTest = async (
               },
             },
             resultsDir: "${join(testDir, "allure-results")}",
-          }),
+          }]
         ],
       },
     });

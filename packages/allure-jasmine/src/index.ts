@@ -7,7 +7,12 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getFrameworkLabel,
+  getHostLabel,
+  getLanguageLabel,
+  getPackageLabel,
   getSuiteLabels,
+  getThreadLabel,
   hasSkipLabel,
 } from "allure-js-commons/sdk/reporter";
 import { MessageTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
@@ -132,7 +137,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     }
   }
 
-  specDone(spec: jasmine.SpecResult): void {
+  specDone(spec: jasmine.SpecResult & { filename: string }): void {
     if (!this.currentAllureTestUuid) {
       return;
     }
@@ -144,6 +149,11 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
       result.labels.push(...suitesLabels);
       result.labels.push(...getEnvironmentLabels());
+      result.labels.push(getLanguageLabel());
+      result.labels.push(getFrameworkLabel("jasmine"));
+      result.labels.push(getHostLabel());
+      result.labels.push(getThreadLabel());
+      result.labels.push(getPackageLabel(spec.filename));
 
       if (spec.status === "pending" || spec.status === "disabled" || spec.status === "excluded") {
         result.status = Status.SKIPPED;

@@ -41,7 +41,8 @@ describe("defaults", () => {
     );
     expect(labels).toContainEqual({ name: "language", value: "javascript" });
     expect(labels).toContainEqual({ name: "framework", value: "mocha" });
-    expect(labels).toContainEqual({ name: "host", value: expect.anything() });
+    expect(labels).toContainEqual({ name: "host", value: expect.any(String) });
+    expect(labels).toContainEqual({ name: "thread", value: expect.any(String) });
     expect(labels).toContainEqual({
       name: "package",
       value: expect.stringMatching(packagePattern),

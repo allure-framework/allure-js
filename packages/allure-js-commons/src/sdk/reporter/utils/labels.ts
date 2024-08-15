@@ -1,8 +1,10 @@
 import { hostname } from "node:os";
+import path from "node:path";
 import { env, pid } from "node:process";
 import { isMainThread, threadId } from "node:worker_threads";
 import type { Label } from "../../../model.js";
 import { LabelName } from "../../../model.js";
+import { getRelativePath } from "../utils.js";
 
 const ENV_LABEL_PREFIX = "ALLURE_LABEL_";
 
@@ -41,3 +43,21 @@ export const getThreadLabel = (userProvidedThreadId?: string): Label => {
       `pid-${pid.toString()}-worker-${isMainThread ? "main" : threadId}`,
   };
 };
+
+export const getPackageLabel = (filepath: string): Label => ({
+  name: LabelName.PACKAGE,
+  value: getRelativePath(filepath)
+    .split(path.sep)
+    .filter((v) => v)
+    .join("."),
+});
+
+export const getLanguageLabel = (): Label => ({
+  name: LabelName.LANGUAGE,
+  value: "javascript",
+});
+
+export const getFrameworkLabel = (framework: string): Label => ({
+  name: LabelName.FRAMEWORK,
+  value: framework,
+});

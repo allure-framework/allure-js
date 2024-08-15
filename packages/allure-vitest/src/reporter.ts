@@ -9,7 +9,9 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getFrameworkLabel,
   getHostLabel,
+  getLanguageLabel,
   getSuiteLabels,
   getThreadLabel,
 } from "allure-js-commons/sdk/reporter";
@@ -82,14 +84,8 @@ export default class AllureVitestReporter implements Reporter {
 
     this.allureReporterRuntime!.updateTest(testUuid, (result) => {
       result.fullName = testFullname;
-      result.labels.push({
-        name: LabelName.FRAMEWORK,
-        value: "vitest",
-      });
-      result.labels.push({
-        name: LabelName.LANGUAGE,
-        value: "javascript",
-      });
+      result.labels.push(getFrameworkLabel("vitest"));
+      result.labels.push(getLanguageLabel());
       result.labels.push(...titleMetadata.labels);
       result.labels.push(...getSuiteLabels(suitePath));
       result.labels.push(...getEnvironmentLabels());

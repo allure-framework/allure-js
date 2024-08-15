@@ -2,13 +2,17 @@
 import type { EventEmitter } from "events";
 import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
 import type { CollectionDefinition, Event, HeaderList, Item, Request, Response } from "postman-collection";
-import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
+import { ContentType, Stage, Status } from "allure-js-commons";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getFrameworkLabel,
+  getHostLabel,
+  getLanguageLabel,
   getSuiteLabels,
+  getThreadLabel,
 } from "allure-js-commons/sdk/reporter";
 import type { PmItem, RunningItem } from "./model.js";
 import { extractMeta } from "./utils.js";
@@ -74,9 +78,7 @@ class AllureReporter {
       return;
     }
 
-    const execScript = args.executions[0]?.script.exec?.join("\n");
-
-    currentPmItem.prerequest = execScript;
+    currentPmItem.prerequest = args.executions[0]?.script.exec?.join("\n");
   }
 
   onBeforeItem(err: any, args: { item: Item; cursor: Cursor }) {
@@ -91,15 +93,20 @@ class AllureReporter {
     const item = args.item;
     const fullName = this.#getFullName(item);
     const testPath = this.#pathToItem(item);
+    const hostLabel = getHostLabel();
+    const threadLabel = getThreadLabel();
+
     const { labels } = extractMeta(args.item.events);
+
     this.currentTest = this.allureRuntime.startTest({
       name: args.item.name,
       fullName,
       stage: Stage.RUNNING,
       labels: [
-        { name: LabelName.LANGUAGE, value: "javascript" },
-        { name: LabelName.FRAMEWORK, value: "newman" },
-        { name: LabelName.HOST, value: "localhost" },
+        getLanguageLabel(),
+        getFrameworkLabel("newman"),
+        hostLabel,
+        threadLabel,
         ...labels,
         ...getEnvironmentLabels(),
       ],

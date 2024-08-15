@@ -8,7 +8,6 @@ import type {
   TestStep,
 } from "@playwright/test/reporter";
 import { existsSync } from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import process from "node:process";
 import {
@@ -28,6 +27,11 @@ import {
   createDefaultWriter,
   escapeRegExp,
   getEnvironmentLabels,
+  getFrameworkLabel,
+  getHostLabel,
+  getLanguageLabel,
+  getPackageLabel,
+  getThreadLabel,
   md5,
   parseTestPlan,
   readImageAsBase64,
@@ -73,7 +77,6 @@ export class AllureReporter implements ReporterV2 {
   options: AllurePlaywrightReporterConfig;
 
   private allureRuntime: ReporterRuntime | undefined;
-  private hostname: string = process.env.ALLURE_HOST_NAME || os.hostname();
   private globalStartTime = new Date();
   private processedDiffs: string[] = [];
   private readonly startedTestCasesTitlesCache: string[] = [];
@@ -162,8 +165,8 @@ export class AllureReporter implements ReporterV2 {
     const suite = test.parent;
     const titleMetadata = extractMetadataFromString(test.title);
     const project = suite.project()!;
-    const pathElements = path.relative(project?.testDir, test.location.file).split(path.sep);
-    const relativeFile = pathElements.join("/");
+    const testFilePath = path.relative(project?.testDir, test.location.file);
+    const relativeFile = testFilePath.split(path.sep).join("/");
     // root > project > file path > test.describe...
     const [, , , ...suiteTitles] = suite.titlePath();
     const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
@@ -177,10 +180,10 @@ export class AllureReporter implements ReporterV2 {
       fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
     };
 
-    result.labels!.push({ name: LabelName.LANGUAGE, value: "JavaScript" });
-    result.labels!.push({ name: LabelName.FRAMEWORK, value: "Playwright" });
+    result.labels!.push(getLanguageLabel());
+    result.labels!.push(getFrameworkLabel("playwright"));
+    result.labels!.push(getPackageLabel(testFilePath));
     result.labels!.push({ name: "titlePath", value: suite.titlePath().join(" > ") });
-    result.labels!.push({ name: LabelName.PACKAGE, value: pathElements.join(".") });
 
     // support for earlier playwright versions
     if ("tags" in test) {
@@ -257,15 +260,14 @@ export class AllureReporter implements ReporterV2 {
     const testUuid = this.allureResultsUuids.get(test.id)!;
     // We need to check parallelIndex first because pw introduced this field only in v1.30.0
     const threadId = result.parallelIndex !== undefined ? result.parallelIndex : result.workerIndex;
-    const thread: string =
-      process.env.ALLURE_THREAD_NAME || `${this.hostname}-${process.pid}-playwright-worker-${threadId}`;
+    const thread = `pid-${process.pid}-worker-${threadId}`;
     const error = result.error;
     // only apply default suites if not set by user
     const [, projectSuiteTitle, fileSuiteTitle, ...suiteTitles] = test.parent.titlePath();
 
     this.allureRuntime!.updateTest(testUuid, (testResult) => {
-      testResult.labels.push({ name: LabelName.HOST, value: this.hostname });
-      testResult.labels.push({ name: LabelName.THREAD, value: thread });
+      testResult.labels.push(getHostLabel());
+      testResult.labels.push(getThreadLabel(thread));
 
       if (projectSuiteTitle && !hasLabel(testResult, LabelName.PARENT_SUITE)) {
         testResult.labels.push({ name: LabelName.PARENT_SUITE, value: projectSuiteTitle });

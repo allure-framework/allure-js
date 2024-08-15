@@ -37,11 +37,11 @@ it("reports a single suite structure", async () => {
     expect.arrayContaining([
       {
         name: LabelName.LANGUAGE,
-        value: "JavaScript",
+        value: "javascript",
       },
       {
         name: LabelName.FRAMEWORK,
-        value: "Playwright",
+        value: "playwright",
       },
       {
         name: LabelName.PARENT_SUITE,
@@ -98,11 +98,11 @@ it("reports a multiple nested suites structure", async () => {
     expect.arrayContaining([
       {
         name: LabelName.LANGUAGE,
-        value: "JavaScript",
+        value: "javascript",
       },
       {
         name: LabelName.FRAMEWORK,
-        value: "Playwright",
+        value: "playwright",
       },
       {
         name: LabelName.PARENT_SUITE,

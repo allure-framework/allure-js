@@ -1,10 +1,9 @@
 import type { EnvironmentContext, JestEnvironment, JestEnvironmentConfig } from "@jest/environment";
 import type { Circus } from "@jest/types";
-import os from "node:os";
-import { dirname, sep } from "node:path";
-import process from "node:process";
+import { sep } from "node:path";
+import { env } from "node:process";
 import * as allure from "allure-js-commons";
-import { LabelName, Stage, Status } from "allure-js-commons";
+import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
@@ -12,16 +11,18 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getFrameworkLabel,
+  getHostLabel,
+  getLanguageLabel,
+  getPackageLabel,
   getSuiteLabels,
+  getThreadLabel,
   parseTestPlan,
 } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { AllureJestTestRuntime } from "./AllureJestTestRuntime.js";
 import type { AllureJestConfig, AllureJestEnvironment, AllureJestProjectConfig, RunContext } from "./model.js";
 import { getTestId, getTestPath, isTestPresentInTestPlan, last, shouldHookBeSkipped } from "./utils.js";
-
-const { ALLURE_HOST_NAME, ALLURE_THREAD_NAME, JEST_WORKER_ID } = process.env;
-const hostname = os.hostname();
 
 const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
   // @ts-expect-error (ts(2545)) Incorrect assumption about a mixin class: https://github.com/microsoft/TypeScript/issues/37142
@@ -189,10 +190,6 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      const threadLabel = ALLURE_THREAD_NAME || JEST_WORKER_ID || process.pid.toString();
-      const hostLabel = ALLURE_HOST_NAME || hostname;
-      const packageLabel = dirname(this.testPath).split(sep).join(".");
-
       this.#startScope();
       const testUuid = this.runtime.startTest(
         {
@@ -200,35 +197,17 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
           fullName: newTestFullName,
           start: test.startedAt ?? undefined,
           labels: [
-            {
-              name: LabelName.LANGUAGE,
-              value: "javascript",
-            },
-            {
-              name: LabelName.FRAMEWORK,
-              value: "jest",
-            },
-            {
-              name: LabelName.PACKAGE,
-              value: packageLabel,
-            },
+            getLanguageLabel(),
+            getFrameworkLabel("jest"),
+            getPackageLabel(this.testPath),
+            getHostLabel(),
+            getThreadLabel(env.JEST_WORKER_ID),
             ...getEnvironmentLabels(),
+            ...getSuiteLabels(newTestSuitePath),
           ],
         },
         this.runContext.scopes,
       );
-
-      this.runtime.updateTest(testUuid, (result) => {
-        if (threadLabel) {
-          result.labels.push({ name: LabelName.THREAD, value: threadLabel });
-        }
-
-        if (hostLabel) {
-          result.labels.push({ name: LabelName.HOST, value: hostLabel });
-        }
-
-        result.labels.push(...getSuiteLabels(newTestSuitePath));
-      });
 
       this.runContext.executables.push(testUuid);
 
