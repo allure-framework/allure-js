@@ -41,7 +41,7 @@ it("reports a single suite structure", async () => {
       },
       {
         name: LabelName.FRAMEWORK,
-        value: "Playwright",
+        value: "playwright",
       },
       {
         name: LabelName.PARENT_SUITE,
