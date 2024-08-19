@@ -22,3 +22,24 @@ it("handles jest tests", async () => {
     ]),
   );
 });
+
+it("should set full name", async () => {
+  const { tests } = await runJestInlineTest({
+    "a/path/to/test/sample.spec.js": `
+      it("should pass", () => {
+        expect(true).toBe(true);
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "should pass",
+        fullName: "a/path/to/test/sample.spec.js#should pass",
+        status: Status.PASSED,
+      }),
+    ]),
+  );
+});
