@@ -279,15 +279,11 @@ export const reportHookEnd = (hook: Mocha.Hook) => {
   });
 };
 
-export const reportTestStart = (test: CypressTest, flag?: string) => {
-  const x = getNamesAndLabels(Cypress.spec, test);
-  if (flag) {
-    x.labels.push({ name: "reported", value: flag });
-  }
+export const reportTestStart = (test: CypressTest) => {
   enqueueRuntimeMessage({
     type: "cypress_test_start",
     data: {
-      ...x,
+      ...getNamesAndLabels(Cypress.spec, test),
       start: test.wallClockStartedAt?.getTime() || Date.now(),
     },
   });
