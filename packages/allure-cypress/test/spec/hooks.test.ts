@@ -349,3 +349,23 @@ it("reports manually skipped tests in hooks", async () => {
   expect(tests[0].status).toBe(Status.SKIPPED);
   expect(tests[0].stage).toBe(Stage.FINISHED);
 });
+
+
+it("should report an error in a beforeEach hook", async () => {
+  await issue("1072");
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": () => `
+      describe("suite", () => {
+        beforeEach(() => {
+          throw new Error();
+        });
+
+        it("foo", () => {});
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].status).toBe(Status.BROKEN);
+  expect(tests[0].stage).toBe(Stage.FINISHED);
+});
