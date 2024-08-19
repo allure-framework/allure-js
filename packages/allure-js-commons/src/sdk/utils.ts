@@ -13,6 +13,7 @@ export const getStatusFromError = (error: Error): Status => {
     case /expectation/gi.test(error.constructor.name):
     case /assert/gi.test(error.name):
     case /assert/gi.test(error.message):
+    case "actual" in error && "expected" in error:
       return Status.FAILED;
     default:
       return Status.BROKEN;
