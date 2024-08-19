@@ -75,6 +75,7 @@ export class AllureCypress {
    * @param spec The first argument of the `after:spec` event.
    * @param results The second argument of the `after:spec` event.
    * @example
+   * ```javascript
    * import { defineConfig } from "cypress";
    * import { allureCypress } from "allure-cypress/reporter";
    *
@@ -88,6 +89,7 @@ export class AllureCypress {
    *   }
    *   // ...
    * });
+   * ```
    */
   onAfterSpec = (spec: Cypress.Spec, results: CypressCommandLine.RunResult) => {
     this.endSpec(spec.absolute, results.video ?? undefined);
@@ -99,6 +101,7 @@ export class AllureCypress {
    * plugins. More info [here](https://github.com/allure-framework/allure-js/blob/main/packages/allure-cypress/README.md#setupnodeevents-limitations).
    * @param results The argument of the `after:run` event.
    * @example
+   * ```javascript
    * import { defineConfig } from "cypress";
    * import { allureCypress } from "allure-cypress/reporter";
    *
@@ -112,6 +115,7 @@ export class AllureCypress {
    *   }
    *   // ...
    * });
+   * ```
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onAfterRun = (results: CypressCommandLine.CypressFailedRunResult | CypressCommandLine.CypressRunResult) => {
@@ -458,6 +462,7 @@ export const enableTestPlan = (config: Cypress.PluginConfigOptions) => {
  * @param cypressConfig The Cypress configuration (the second argument of `setupNodeEvents`). If provided, the selective run feature will be enabled.
  * @param allureConfig An Allure configuration object (optional).
  * @example
+ * ```javascript
  * import { defineConfig } from "cypress";
  * import { allureCypress } from "allure-cypress/reporter";
  *
@@ -470,6 +475,7 @@ export const enableTestPlan = (config: Cypress.PluginConfigOptions) => {
  *     // ...
  *   }
  * });
+ * ```
  */
 export const allureCypress = (
   on: Cypress.PluginEvents,
