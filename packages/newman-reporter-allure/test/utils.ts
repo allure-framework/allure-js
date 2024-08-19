@@ -6,7 +6,7 @@ import { MessageReader } from "allure-js-commons/sdk/reporter";
 export const runNewmanCollection = async (collection: CollectionDefinition): Promise<AllureResults> => {
   const reader = new MessageReader();
 
-  const allureResults: AllureResults = await new Promise((resolve) => {
+  const allureResults: AllureResults = await new Promise((resolve, reject) => {
     const newmanEmitter = run(
       {
         collection,
@@ -15,7 +15,10 @@ export const runNewmanCollection = async (collection: CollectionDefinition): Pro
           allure: {},
         },
       },
-      () => {
+      (err) => {
+        if (err) {
+          return reject(err);
+        }
         return resolve(reader.results);
       },
     );

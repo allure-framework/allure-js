@@ -3024,11 +3024,11 @@ __metadata:
   linkType: hard
 
 "@postman/tunnel-agent@npm:^0.6.3":
-  version: 0.6.3
-  resolution: "@postman/tunnel-agent@npm:0.6.3"
+  version: 0.6.4
+  resolution: "@postman/tunnel-agent@npm:0.6.4"
   dependencies:
     safe-buffer: "npm:^5.0.1"
-  checksum: 10/71ea42fa771e07bbd39820232a2fc79cb83784a3038ac48e1cea17c64ad86385b31d17799d994b8f2d3f776796fb5ce299362342c6a6937245750af1b6e0e983
+  checksum: 10/fcfbd7c61d84d766764ef3c44a65862970ec0a829f8e6ccaea1405fec33c0dcce1ada1e129ff4f89e443fea36bb7fce7280f0af35a9017cdf0e6c8717c8908ff
   languageName: node
   linkType: hard
 
@@ -3506,7 +3506,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/newman@npm:^5.3.3":
+"@types/newman@npm:^5.3.6":
   version: 5.3.6
   resolution: "@types/newman@npm:5.3.6"
   dependencies:
@@ -3541,7 +3541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/postman-collection@npm:*, @types/postman-collection@npm:^3.5.7":
+"@types/postman-collection@npm:*, @types/postman-collection@npm:^3.5.10":
   version: 3.5.10
   resolution: "@types/postman-collection@npm:3.5.10"
   dependencies:
@@ -5677,6 +5677,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cli-table3@npm:0.6.5":
+  version: 0.6.5
+  resolution: "cli-table3@npm:0.6.5"
+  dependencies:
+    "@colors/colors": "npm:1.5.0"
+    string-width: "npm:^4.2.0"
+  dependenciesMeta:
+    "@colors/colors":
+      optional: true
+  checksum: 10/8dca71256f6f1367bab84c33add3f957367c7c43750a9828a4212ebd31b8df76bd7419d386e3391ac7419698a8540c25f1a474584028f35b170841cde2e055c5
+  languageName: node
+  linkType: hard
+
 "cli-truncate@npm:^2.1.0":
   version: 2.1.0
   resolution: "cli-truncate@npm:2.1.0"
@@ -7682,10 +7695,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filesize@npm:10.1.0":
-  version: 10.1.0
-  resolution: "filesize@npm:10.1.0"
-  checksum: 10/e8096a9dd639788d623e4b1c46d6710379d72f5646dbe71dfe0d423c0aa70b549b3b4d8cdd6d18a04d7068f4c257be819e6b1b83ac783d394ba4a3829e611959
+"filesize@npm:10.1.4":
+  version: 10.1.4
+  resolution: "filesize@npm:10.1.4"
+  checksum: 10/ac2b95f4ee8d42ad4b12f8f918baeb1127065dcb319abca30c0d9ef115b602e31a06c8150953b13dc52e52ebb1238e18e6001ab5fca14a10957e788bd6012f1c
   languageName: node
   linkType: hard
 
@@ -11129,9 +11142,9 @@ __metadata:
     "@types/babel__core": "npm:^7"
     "@types/babel__preset-env": "npm:^7"
     "@types/eslint": "npm:^8.56.11"
-    "@types/newman": "npm:^5.3.3"
+    "@types/newman": "npm:^5.3.6"
     "@types/node": "npm:^20.14.2"
-    "@types/postman-collection": "npm:^3.5.7"
+    "@types/postman-collection": "npm:^3.5.10"
     "@typescript-eslint/eslint-plugin": "npm:^8.0.0"
     "@typescript-eslint/parser": "npm:^8.0.0"
     allure-commandline: "npm:^2.29.0"
@@ -11146,7 +11159,7 @@ __metadata:
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     msw: "npm:1"
-    newman: "npm:^6.1.2"
+    newman: "npm:^6.2.1"
     npm-run-all2: "npm:^6.1.2"
     postman-collection: "npm:^4.2.1"
     rimraf: "npm:^6.0.0"
@@ -11160,34 +11173,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"newman@npm:^6.1.2":
-  version: 6.1.2
-  resolution: "newman@npm:6.1.2"
+"newman@npm:^6.2.1":
+  version: 6.2.1
+  resolution: "newman@npm:6.2.1"
   dependencies:
     "@postman/tough-cookie": "npm:4.1.3-postman.1"
     async: "npm:3.2.5"
     chardet: "npm:2.0.0"
     cli-progress: "npm:3.12.0"
-    cli-table3: "npm:0.6.3"
+    cli-table3: "npm:0.6.5"
     colors: "npm:1.4.0"
     commander: "npm:11.1.0"
     csv-parse: "npm:4.16.3"
-    filesize: "npm:10.1.0"
+    filesize: "npm:10.1.4"
     liquid-json: "npm:0.3.1"
     lodash: "npm:4.17.21"
     mkdirp: "npm:3.0.1"
     postman-collection: "npm:4.4.0"
     postman-collection-transformer: "npm:4.1.8"
-    postman-request: "npm:2.88.1-postman.33"
-    postman-runtime: "npm:7.37.1"
+    postman-request: "npm:2.88.1-postman.34"
+    postman-runtime: "npm:7.39.1"
     pretty-ms: "npm:7.0.1"
-    semver: "npm:7.6.0"
+    semver: "npm:7.6.3"
     serialised-error: "npm:1.1.3"
     word-wrap: "npm:1.2.5"
     xmlbuilder: "npm:15.1.1"
   bin:
     newman: bin/newman.js
-  checksum: 10/850f551bb20c9ef34edf19c3b821e184c2b173cb525e0b8d136394f10713b44aeaaaf2ba6046dd73426617d1202976e09b2b754fb1f98cefa0881476ba4e5519
+  checksum: 10/b52282ace59de3d91b0e88cf4c8b5cc29186bd2c14da0af2ceec1ad28cebc5d692095368fae8df82be2e2566d0ca37cf73779ac80ca73efc9cc5e13570f1f7b5
   languageName: node
   linkType: hard
 
@@ -12110,9 +12123,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postman-request@npm:2.88.1-postman.33":
-  version: 2.88.1-postman.33
-  resolution: "postman-request@npm:2.88.1-postman.33"
+"postman-request@npm:2.88.1-postman.34":
+  version: 2.88.1-postman.34
+  resolution: "postman-request@npm:2.88.1-postman.34"
   dependencies:
     "@postman/form-data": "npm:~3.1.1"
     "@postman/tough-cookie": "npm:~4.1.3-postman.1"
@@ -12136,13 +12149,13 @@ __metadata:
     safe-buffer: "npm:^5.1.2"
     stream-length: "npm:^1.0.2"
     uuid: "npm:^8.3.2"
-  checksum: 10/fd747e6e4891bf4e4885da557155e6d127f14af127416274da2bc17f75d01703279daae3b56bdbc94a42e8325429ef7538508101f4f3a0cefe76d71194ff4d61
+  checksum: 10/69a739ef6334637b75a235527c4067dedc3a555804c64ce706395c6589ee5aa2404f6f8df530b58e898e13d197472a308fcd138b957fc25f475a24c64d4d8640
   languageName: node
   linkType: hard
 
-"postman-runtime@npm:7.37.1":
-  version: 7.37.1
-  resolution: "postman-runtime@npm:7.37.1"
+"postman-runtime@npm:7.39.1":
+  version: 7.39.1
+  resolution: "postman-runtime@npm:7.39.1"
   dependencies:
     "@postman/tough-cookie": "npm:4.1.3-postman.1"
     async: "npm:3.2.5"
@@ -12157,25 +12170,25 @@ __metadata:
     node-oauth1: "npm:1.3.0"
     performance-now: "npm:2.1.0"
     postman-collection: "npm:4.4.0"
-    postman-request: "npm:2.88.1-postman.33"
-    postman-sandbox: "npm:4.6.0"
+    postman-request: "npm:2.88.1-postman.34"
+    postman-sandbox: "npm:4.7.1"
     postman-url-encoder: "npm:3.0.5"
     serialised-error: "npm:1.1.3"
     strip-json-comments: "npm:3.1.1"
     uuid: "npm:8.3.2"
-  checksum: 10/ef82c08a34f93519cd279ebd508c40bb0d18e57ba1c1b6f4a086d6c83aadf03661aa578062ebf36a1196baf473151d6fe619b573db45b9c76d46c1eaef3f9ffd
+  checksum: 10/85114d9172b96922e25eda732ec7967e125ed860e1356514bc18c9f7e8cdd5a2d4c419800df2d1dcb0dac161f2f96c40ba5e808502f9bf75d455bc44dabba24d
   languageName: node
   linkType: hard
 
-"postman-sandbox@npm:4.6.0":
-  version: 4.6.0
-  resolution: "postman-sandbox@npm:4.6.0"
+"postman-sandbox@npm:4.7.1":
+  version: 4.7.1
+  resolution: "postman-sandbox@npm:4.7.1"
   dependencies:
     lodash: "npm:4.17.21"
     postman-collection: "npm:4.4.0"
     teleport-javascript: "npm:1.0.0"
     uvm: "npm:2.1.1"
-  checksum: 10/0336242f936671ea1bc442784e9534e17b6f0c704425a903e22d55479d3661402f5fa624d3d3f6b868a25f9b9d5dfd392d26334332e4b5d5dd74bb0c278661c1
+  checksum: 10/23e6d0bba23522eb5665c90aef933bbfa43edb0f3df8df6b636bc2f945580c5d5546c12eed64b468ab1c8927776ebeee6baa0f3c01b557ab012f9f24ee6bfa07
   languageName: node
   linkType: hard
 
@@ -13095,14 +13108,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.6.0, semver@npm:^7.3.5, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0":
-  version: 7.6.0
-  resolution: "semver@npm:7.6.0"
-  dependencies:
-    lru-cache: "npm:^6.0.0"
+"semver@npm:7.6.3, semver@npm:^7.6.3":
+  version: 7.6.3
+  resolution: "semver@npm:7.6.3"
   bin:
     semver: bin/semver.js
-  checksum: 10/1b41018df2d8aca5a1db4729985e8e20428c650daea60fcd16e926e9383217d00f574fab92d79612771884a98d2ee2a1973f49d630829a8d54d6570defe62535
+  checksum: 10/36b1fbe1a2b6f873559cd57b238f1094a053dbfd997ceeb8757d79d1d2089c56d1321b9f1069ce263dc64cfa922fa1d2ad566b39426fe1ac6c723c1487589e10
   languageName: node
   linkType: hard
 
@@ -13115,12 +13126,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.6.3":
-  version: 7.6.3
-  resolution: "semver@npm:7.6.3"
+"semver@npm:^7.3.5, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0":
+  version: 7.6.0
+  resolution: "semver@npm:7.6.0"
+  dependencies:
+    lru-cache: "npm:^6.0.0"
   bin:
     semver: bin/semver.js
-  checksum: 10/36b1fbe1a2b6f873559cd57b238f1094a053dbfd997ceeb8757d79d1d2089c56d1321b9f1069ce263dc64cfa922fa1d2ad566b39426fe1ac6c723c1487589e10
+  checksum: 10/1b41018df2d8aca5a1db4729985e8e20428c650daea60fcd16e926e9383217d00f574fab92d79612771884a98d2ee2a1973f49d630829a8d54d6570defe62535
   languageName: node
   linkType: hard
 

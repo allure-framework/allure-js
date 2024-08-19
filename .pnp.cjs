@@ -4768,10 +4768,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@postman/tunnel-agent", [\
-      ["npm:0.6.3", {\
-        "packageLocation": "./.yarn/cache/@postman-tunnel-agent-npm-0.6.3-0942abdb9d-71ea42fa77.zip/node_modules/@postman/tunnel-agent/",\
+      ["npm:0.6.4", {\
+        "packageLocation": "./.yarn/cache/@postman-tunnel-agent-npm-0.6.4-934a48e21a-fcfbd7c61d.zip/node_modules/@postman/tunnel-agent/",\
         "packageDependencies": [\
-          ["@postman/tunnel-agent", "npm:0.6.3"],\
+          ["@postman/tunnel-agent", "npm:0.6.4"],\
           ["safe-buffer", "npm:5.2.1"]\
         ],\
         "linkType": "HARD"\
@@ -8152,6 +8152,15 @@ const RAW_RUNTIME_STATE =
           ["string-width", "npm:4.2.3"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:0.6.5", {\
+        "packageLocation": "./.yarn/cache/cli-table3-npm-0.6.5-c3f24f9c39-8dca71256f.zip/node_modules/cli-table3/",\
+        "packageDependencies": [\
+          ["cli-table3", "npm:0.6.5"],\
+          ["@colors/colors", "npm:1.5.0"],\
+          ["string-width", "npm:4.2.3"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["cli-truncate", [\
@@ -10431,10 +10440,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["filesize", [\
-      ["npm:10.1.0", {\
-        "packageLocation": "./.yarn/cache/filesize-npm-10.1.0-0e9cf55c42-e8096a9dd6.zip/node_modules/filesize/",\
+      ["npm:10.1.4", {\
+        "packageLocation": "./.yarn/cache/filesize-npm-10.1.4-61ab79250a-ac2b95f4ee.zip/node_modules/filesize/",\
         "packageDependencies": [\
-          ["filesize", "npm:10.1.0"]\
+          ["filesize", "npm:10.1.4"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -14217,37 +14226,37 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["newman", [\
-      ["npm:6.1.2", {\
-        "packageLocation": "./.yarn/cache/newman-npm-6.1.2-33b0e0fda8-850f551bb2.zip/node_modules/newman/",\
+      ["npm:6.2.1", {\
+        "packageLocation": "./.yarn/cache/newman-npm-6.2.1-1ced31ce67-b52282ace5.zip/node_modules/newman/",\
         "packageDependencies": [\
-          ["newman", "npm:6.1.2"]\
+          ["newman", "npm:6.2.1"]\
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:6.1.2", {\
-        "packageLocation": "./.yarn/__virtual__/newman-virtual-595010c8a1/0/cache/newman-npm-6.1.2-33b0e0fda8-850f551bb2.zip/node_modules/newman/",\
+      ["virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:6.2.1", {\
+        "packageLocation": "./.yarn/__virtual__/newman-virtual-9950809672/0/cache/newman-npm-6.2.1-1ced31ce67-b52282ace5.zip/node_modules/newman/",\
         "packageDependencies": [\
-          ["newman", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:6.1.2"],\
+          ["newman", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:6.2.1"],\
           ["@postman/tough-cookie", "npm:4.1.3-postman.1"],\
           ["@types/newman-reporter-allure", null],\
           ["async", "npm:3.2.5"],\
           ["chardet", "npm:2.0.0"],\
           ["cli-progress", "npm:3.12.0"],\
-          ["cli-table3", "npm:0.6.3"],\
+          ["cli-table3", "npm:0.6.5"],\
           ["colors", "npm:1.4.0"],\
           ["commander", "npm:11.1.0"],\
           ["csv-parse", "npm:4.16.3"],\
-          ["filesize", "npm:10.1.0"],\
+          ["filesize", "npm:10.1.4"],\
           ["liquid-json", "npm:0.3.1"],\
           ["lodash", "npm:4.17.21"],\
           ["mkdirp", "npm:3.0.1"],\
           ["newman-reporter-allure", "workspace:packages/newman-reporter-allure"],\
           ["postman-collection", "npm:4.4.0"],\
           ["postman-collection-transformer", "npm:4.1.8"],\
-          ["postman-request", "npm:2.88.1-postman.33"],\
-          ["postman-runtime", "npm:7.37.1"],\
+          ["postman-request", "npm:2.88.1-postman.34"],\
+          ["postman-runtime", "npm:7.39.1"],\
           ["pretty-ms", "npm:7.0.1"],\
-          ["semver", "npm:7.6.0"],\
+          ["semver", "npm:7.6.3"],\
           ["serialised-error", "npm:1.1.3"],\
           ["word-wrap", "npm:1.2.5"],\
           ["xmlbuilder", "npm:15.1.1"]\
@@ -14289,7 +14298,7 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-no-null", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.0.2"],\
           ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
           ["msw", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.3"],\
-          ["newman", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:6.1.2"],\
+          ["newman", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:6.2.1"],\
           ["npm-run-all2", "npm:6.1.2"],\
           ["postman-collection", "npm:4.3.0"],\
           ["rimraf", "npm:6.0.0"],\
@@ -15319,13 +15328,13 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["postman-request", [\
-      ["npm:2.88.1-postman.33", {\
-        "packageLocation": "./.yarn/cache/postman-request-npm-2.88.1-postman.33-2d5f78ca19-fd747e6e48.zip/node_modules/postman-request/",\
+      ["npm:2.88.1-postman.34", {\
+        "packageLocation": "./.yarn/cache/postman-request-npm-2.88.1-postman.34-48f248fd5f-69a739ef63.zip/node_modules/postman-request/",\
         "packageDependencies": [\
-          ["postman-request", "npm:2.88.1-postman.33"],\
+          ["postman-request", "npm:2.88.1-postman.34"],\
           ["@postman/form-data", "npm:3.1.1"],\
           ["@postman/tough-cookie", "npm:4.1.3-postman.1"],\
-          ["@postman/tunnel-agent", "npm:0.6.3"],\
+          ["@postman/tunnel-agent", "npm:0.6.4"],\
           ["aws-sign2", "npm:0.7.0"],\
           ["aws4", "npm:1.13.0"],\
           ["brotli", "npm:1.3.3"],\
@@ -15350,10 +15359,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["postman-runtime", [\
-      ["npm:7.37.1", {\
-        "packageLocation": "./.yarn/cache/postman-runtime-npm-7.37.1-b63d04ecae-ef82c08a34.zip/node_modules/postman-runtime/",\
+      ["npm:7.39.1", {\
+        "packageLocation": "./.yarn/cache/postman-runtime-npm-7.39.1-07a8a58b3e-85114d9172.zip/node_modules/postman-runtime/",\
         "packageDependencies": [\
-          ["postman-runtime", "npm:7.37.1"],\
+          ["postman-runtime", "npm:7.39.1"],\
           ["@postman/tough-cookie", "npm:4.1.3-postman.1"],\
           ["async", "npm:3.2.5"],\
           ["aws4", "npm:1.12.0"],\
@@ -15367,8 +15376,8 @@ const RAW_RUNTIME_STATE =
           ["node-oauth1", "npm:1.3.0"],\
           ["performance-now", "npm:2.1.0"],\
           ["postman-collection", "npm:4.4.0"],\
-          ["postman-request", "npm:2.88.1-postman.33"],\
-          ["postman-sandbox", "npm:4.6.0"],\
+          ["postman-request", "npm:2.88.1-postman.34"],\
+          ["postman-sandbox", "npm:4.7.1"],\
           ["postman-url-encoder", "npm:3.0.5"],\
           ["serialised-error", "npm:1.1.3"],\
           ["strip-json-comments", "npm:3.1.1"],\
@@ -15378,10 +15387,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["postman-sandbox", [\
-      ["npm:4.6.0", {\
-        "packageLocation": "./.yarn/cache/postman-sandbox-npm-4.6.0-02503f857d-0336242f93.zip/node_modules/postman-sandbox/",\
+      ["npm:4.7.1", {\
+        "packageLocation": "./.yarn/cache/postman-sandbox-npm-4.7.1-c39127cbc5-23e6d0bba2.zip/node_modules/postman-sandbox/",\
         "packageDependencies": [\
-          ["postman-sandbox", "npm:4.6.0"],\
+          ["postman-sandbox", "npm:4.7.1"],\
           ["lodash", "npm:4.17.21"],\
           ["postman-collection", "npm:4.4.0"],\
           ["teleport-javascript", "npm:1.0.0"],\
