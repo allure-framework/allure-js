@@ -3,7 +3,7 @@ import { cwd } from "node:process";
 import type { File, Reporter, Task } from "vitest";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import { extractMetadataFromString } from "allure-js-commons/sdk";
+import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
@@ -104,11 +104,10 @@ export default class AllureVitestReporter implements Reporter {
       switch (task.result?.state) {
         case "fail": {
           const [error] = task.result.errors || [];
-          const status = error?.name === "AssertionError" ? Status.FAILED : Status.BROKEN;
+          const status = getStatusFromError(error);
 
           result.statusDetails = {
-            message: error?.message || "",
-            trace: error?.stack || "",
+            ...getMessageAndTraceFromError(error),
           };
           result.status = status;
           result.stage = Stage.FINISHED;
