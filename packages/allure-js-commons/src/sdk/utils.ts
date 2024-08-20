@@ -8,12 +8,13 @@ export const getStatusFromError = (error: Error): Status => {
      * Native `node:assert` and `chai` (`vitest` uses it under the hood) throw `AssertionError`
      * `jest` throws `JestAssertionError` instance
      * `jasmine` throws `ExpectationFailed` instance
+     * `vitest` throws `Error` for extended assertions, so we look into stack
      */
     case /assert/gi.test(error.constructor.name):
     case /expectation/gi.test(error.constructor.name):
     case /assert/gi.test(error.name):
     case /assert/gi.test(error.message):
-    case "actual" in error && "expected" in error:
+    case error.stack && /@vitest\/expect/gi.test(error.stack):
       return Status.FAILED;
     default:
       return Status.BROKEN;
