@@ -1,4 +1,4 @@
-import type { AllureSpecState, CypressMessage } from "./model.js";
+import type { AllureSpecState, CypressMessage, CypressTest } from "./model.js";
 
 export const getAllureState = () => {
   let state = Cypress.env("allure") as AllureSpecState;
@@ -7,6 +7,7 @@ export const getAllureState = () => {
       initialized: false,
       messages: [],
       testPlan: undefined,
+      currentTest: undefined,
     };
     Cypress.env("allure", state);
   }
@@ -30,3 +31,13 @@ export const enqueueRuntimeMessage = (message: CypressMessage) => {
 };
 
 export const getAllureTestPlan = () => getAllureState().testPlan;
+
+export const getCurrentTest = () => getAllureState().currentTest;
+
+export const setCurrentTest = (test: CypressTest) => {
+  getAllureState().currentTest = test;
+};
+
+export const dropCurrentTest = () => {
+  getAllureState().currentTest = undefined;
+};

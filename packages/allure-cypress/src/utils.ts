@@ -1,8 +1,8 @@
 import { LabelName, Status } from "allure-js-commons";
 import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
-import { ALLURE_REPORT_STEP_COMMAND } from "./model.js";
-import type { CypressCommand, HookPosition, HookScopeType, HookType } from "./model.js";
+import { ALLURE_REPORT_STEP_COMMAND, ALLURE_REPORT_SYSTEM_HOOK } from "./model.js";
+import type { CypressCommand, HookPosition, HookScopeType, HookType, CypressTest, CypressHook } from "./model.js";
 import { getAllureTestPlan } from "./state.js";
 
 export const uint8ArrayToBase64 = (data: unknown) => {
@@ -83,11 +83,9 @@ export const getNamesAndLabels = (spec: Cypress.Spec, test: Mocha.Test) => {
 export const applyTestPlan = (spec: Cypress.Spec, root: Mocha.Suite) => {
   const testPlan = getAllureTestPlan();
   if (testPlan) {
-    const suiteQueue = [];
-    for (let s: Mocha.Suite | undefined = root; s; s = suiteQueue.shift()) {
-      const indicesToRemove = getIndicesOfDeselectedTests(testPlan, spec, s.tests);
-      removeSortedIndices(s.tests, indicesToRemove);
-      suiteQueue.push(...s.suites);
+    for (const suite of iterateSuites(root)) {
+      const indicesToRemove = getIndicesOfDeselectedTests(testPlan, spec, suite.tests);
+      removeSortedIndices(suite.tests, indicesToRemove);
     }
   }
 };
@@ -139,3 +137,19 @@ const removeSortedIndices = <T>(arr: T[], indices: readonly number[]) => {
     arr.splice(indices[i], 1);
   }
 };
+
+export const iterateSuites = function * (parent: Mocha.Suite) {
+  const suiteQueue = [];
+  for (let s: Mocha.Suite | undefined = parent; s; s = suiteQueue.shift()) {
+    yield s;
+    suiteQueue.push(...s.suites);
+  }
+};
+
+export const iterateTests = function * (parent: Mocha.Suite) {
+  for (const suite of iterateSuites(parent)) {
+    yield * suite.tests as CypressTest[];
+  }
+};
+
+export const isAllureHook = (hook: CypressHook) => hook.title.includes(ALLURE_REPORT_SYSTEM_HOOK);

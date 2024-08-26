@@ -12,16 +12,12 @@ export type AllureCypressConfig = ReporterConfig & {
 
 export type CypressTest = Mocha.Test & {
   wallClockStartedAt?: Date;
-  hookName?: string;
-  id: string;
 };
 
 export type CypressHook = Mocha.Hook & {
   id: string;
   hookId: string;
-  parent: Mocha.Suite & {
-    id: string;
-  };
+  hookName: string;
 };
 
 export type CypressCommand = {
@@ -98,6 +94,14 @@ export type CypressTestPassMessage = {
   data: object;
 };
 
+export type CypressTestStatusMessage = {
+  type: "cypress_test_status";
+  data: {
+    status: Status;
+    statusDetails?: StatusDetails;
+  };
+};
+
 export type CypressTestEndMessage = {
   type: "cypress_test_end";
   data: {
@@ -137,6 +141,7 @@ export type CypressMessage =
   | CypressTestPassMessage
   | CypressFailMessage
   | CypressTestSkipMessage
+  | CypressTestStatusMessage
   | CypressTestEndMessage;
 
 export type SpecContext = {
@@ -156,6 +161,7 @@ export type AllureSpecState = {
   initialized: boolean;
   testPlan: TestPlanV1 | null | undefined;
   messages: CypressMessage[];
+  currentTest?: CypressTest;
 };
 
 export type HookPosition = "before" | "after";
@@ -174,3 +180,5 @@ export type CypressSuiteFunction = (
   configOrFn?: Cypress.SuiteConfigOverrides | ((this: Mocha.Suite) => void),
   fn?: (this: Mocha.Suite) => void,
 ) => Mocha.Suite;
+
+export type HookImplementation = Mocha.Func | Mocha.AsyncFunc | ((this: Mocha.Context) => void);

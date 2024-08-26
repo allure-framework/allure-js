@@ -27,6 +27,7 @@ import type {
   CypressSuiteStartMessage,
   CypressTestEndMessage,
   CypressTestStartMessage,
+  CypressTestStatusMessage,
   SpecContext,
 } from "./model.js";
 import { getHookType, last } from "./utils.js";
@@ -175,10 +176,13 @@ export class AllureCypress {
           this.#passTest(context);
           break;
         case "cypress_fail":
-          this.#failTestOrHook(context, message);
+          this.#failHookAndTest(context, message);
           break;
         case "cypress_test_skip":
           this.#skipTest(context);
+          break;
+        case "cypress_test_status":
+          this.#assignTestStatus(context, message);
           break;
         case "cypress_test_end":
           this.#stopTest(context, message);
@@ -285,7 +289,7 @@ export class AllureCypress {
     );
   };
 
-  #failTestOrHook = (context: SpecContext, { data: { status, statusDetails } }: CypressFailMessage) => {
+  #failHookAndTest = (context: SpecContext, { data: { status, statusDetails } }: CypressFailMessage) => {
     const setError = (result: object) => Object.assign(result, { status, statusDetails });
 
     const fixtureUuid = context.fixture;
@@ -315,7 +319,19 @@ export class AllureCypress {
     if (testUuid) {
       this.allureRuntime.updateTest(testUuid, (testResult) => {
         testResult.status = Status.SKIPPED;
-        testResult.statusDetails = { message: "The test was skipped" };
+        testResult.statusDetails = { message: "This is a pending test" };
+      });
+    }
+  };
+
+  #assignTestStatus = (context: SpecContext, { data: { status, statusDetails } }: CypressTestStatusMessage) => {
+    const testUuid = context.test;
+    if (testUuid) {
+      this.allureRuntime.updateTest(testUuid, (testResult) => {
+        testResult.status = status;
+        if (statusDetails) {
+          testResult.statusDetails = statusDetails;
+        }
       });
     }
   };
@@ -382,7 +398,7 @@ export class AllureCypress {
    * method in the following cases:
    * - when an `after` hook of the test starts (`after` hooks are called later than `afterEach`)
    * - when a `before` or `beforeEach` hook of the next test starts (in case the next test has `before`/`beforeEach` hooks)
-   * - when the next test start (in case the next test doesn't have `before`/`beforeEach` hooks)
+   * - when the next test starts (in case the next test doesn't have `before`/`beforeEach` hooks)
    * - when the test's suite ends (in case the test is the last one in its suite, including the root suite of the spec)
    * - when a nested suite starts
    * - when the spec ends
