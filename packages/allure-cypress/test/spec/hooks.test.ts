@@ -355,17 +355,56 @@ it("should report an error in a beforeEach hook", async () => {
   await issue("1072");
   const { tests } = await runCypressInlineTest({
     "cypress/e2e/sample.cy.js": () => `
-      describe("suite", () => {
-        beforeEach(() => {
-          throw new Error();
-        });
+      beforeEach(function () {
+        if (this.currentTest.title === "bar") {
+          throw new Error("Lorem Ipsum");
+        }
+      });
 
-        it("foo", () => {});
+      it("foo", () => {});
+      it("bar", () => {});
+      it("baz", () => {});
+      describe("suite", () => {
+        it("qux", () => {});
       });
     `,
   });
 
-  expect(tests).toHaveLength(1);
-  expect(tests[0].status).toBe(Status.BROKEN);
-  expect(tests[0].stage).toBe(Stage.FINISHED);
+  expect(tests).toHaveLength(3);
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "foo",
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+        statusDetails: expect.objectContaining({
+          message: ""
+        }),
+      }),
+      expect.objectContaining({
+        name: "bar",
+        status: Status.BROKEN,
+        stage: Stage.FINISHED,
+        statusDetails: expect.objectContaining({
+          message: expect.stringContaining("Lorem Ipsum"),
+        }),
+      }),
+      expect.objectContaining({
+        name: "baz",
+        status: Status.SKIPPED,
+        stage: Stage.FINISHED,
+        statusDetails: expect.objectContaining({
+          message: expect.stringContaining("Lorem Ipsum"),
+        }),
+      }),
+      expect.objectContaining({
+        name: "qux",
+        status: Status.SKIPPED,
+        stage: Stage.FINISHED,
+        statusDetails: expect.objectContaining({
+          message: expect.stringContaining("Lorem Ipsum"),
+        }),
+      }),
+    ]),
+  );
 });
