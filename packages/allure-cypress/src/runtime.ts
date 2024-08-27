@@ -429,10 +429,9 @@ export const reportTestEnd = (test: CypressTest) => {
 };
 
 export const completeHookErrorReporting = (hook: CypressHook, err: Error) => {
-  const hookName = hook.hookName;
-  const isEachHook = hookName.includes("each");
+  const isEachHook = hook.hookName.includes("each");
   const suite = hook.parent!;
-  const testFailData = getStatusDataOfTestSkippedByHookError(hookName, isEachHook, err, suite);
+  const testFailData = getStatusDataOfTestSkippedByHookError(hook.title, isEachHook, err, suite);
 
   // Cypress doens't emit 'hook end' if the hook has failed.
   reportHookEnd(hook);
@@ -519,7 +518,7 @@ const reportTestsSkippedByHookError = (test: CypressTest, testFailData: CypressF
 };
 
 const getStatusDataOfTestSkippedByHookError = (
-  hookName: string,
+  hookTitle: string,
   isEachHook: boolean,
   err: Error,
   suite: CypressSuite,
@@ -529,15 +528,15 @@ const getStatusDataOfTestSkippedByHookError = (
   return {
     status,
     statusDetails: {
-      message: isEachHook ? getSkipReason(hookName, suite) : message,
+      message: isEachHook ? getSkipReason(hookTitle, suite) : message,
       trace,
     },
   };
 };
 
-const getSkipReason = (hookName: string, suite: Mocha.Suite) => {
-  const suiteName = suite.title ? suite.title : "root";
-  return `'${hookName}' of suite '${suiteName}' failed for one of the previous tests`;
+const getSkipReason = (hookTitle: string, suite: CypressSuite) => {
+  const suiteName = suite.title ? `'${suite.title}'` : "root";
+  return `'${hookTitle}' defined in the ${suiteName} suite has failed`;
 };
 
 const forwardDescribeCall = (target: CypressSuiteFunction, ...args: Parameters<CypressSuiteFunction>) => {
