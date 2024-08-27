@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { LabelName } from "allure-js-commons";
 import type { TestPlanV1, TestPlanV1Test } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
-import { getRelativePath, md5, parseTestPlan } from "allure-js-commons/sdk/reporter";
+import { getPosixPath, getRelativePath, md5, parseTestPlan } from "allure-js-commons/sdk/reporter";
 import type { AllureMochaTestData, HookCategory, HookScope, HookType, TestPlanIndices } from "./types.js";
 
 const filename = fileURLToPath(import.meta.url);
@@ -29,7 +29,7 @@ const getAllureData = (item: Mocha.Test): AllureMochaTestData => {
 
 const createAllureFullName = (test: Mocha.Test) => {
   const titlePath = test.titlePath().join(" > ");
-  return test.file ? `${getRelativePath(test.file)}: ${titlePath}` : titlePath;
+  return test.file ? `${getPosixPath(getRelativePath(test.file))}: ${titlePath}` : titlePath;
 };
 
 const createTestPlanSelectorIndex = (testplan: TestPlanV1) => createTestPlanIndex((e) => e.selector, testplan);

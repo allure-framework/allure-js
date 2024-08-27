@@ -4,7 +4,7 @@ import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import * as path from "node:path";
 import { Status, attachment, attachmentPath, logStep, parameter, step } from "allure-js-commons";
 import type { AllureResults, Category } from "allure-js-commons/sdk";
-import { MessageReader } from "allure-js-commons/sdk/reporter";
+import { MessageReader, getPosixPath } from "allure-js-commons/sdk/reporter";
 
 type MochaRunOptions = {
   env?: { [keys: string]: string };
@@ -226,7 +226,7 @@ abstract class AllureMochaTestRunner {
   };
 
   private resolveTestplanSelector = (prefix: string, [file, name]: TestPlanSelectorEntryFixture) => {
-    return `${path.join(prefix, ...file)}.spec${SPEC_EXT}: ${name}`;
+    return getPosixPath(`${path.join(prefix, ...file)}.spec${SPEC_EXT}: ${name}`);
   };
 
   getFilesToCopy: (testDir: string) => readonly [string, string][] = () => [];
