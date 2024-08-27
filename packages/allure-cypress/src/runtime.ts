@@ -15,8 +15,10 @@ import type {
   CypressFailMessage,
   CypressHook,
   CypressMessage,
+  CypressSuite,
   CypressSuiteFunction,
   CypressTest,
+  DirectHookImplementation,
   HookImplementation,
 } from "./model.js";
 import { ALLURE_REPORT_STEP_COMMAND } from "./model.js";
@@ -261,7 +263,7 @@ export const reportRunStart = () => {
   });
 };
 
-export const reportSuiteStart = (suite: Mocha.Suite) => {
+export const reportSuiteStart = (suite: CypressSuite) => {
   enqueueRuntimeMessage({
     type: "cypress_suite_start",
     data: {
@@ -272,7 +274,7 @@ export const reportSuiteStart = (suite: Mocha.Suite) => {
   });
 };
 
-export const reportSuiteEnd = (suite: Mocha.Suite) => {
+export const reportSuiteEnd = (suite: CypressSuite) => {
   enqueueRuntimeMessage({
     type: "cypress_suite_end",
     data: {
@@ -282,7 +284,7 @@ export const reportSuiteEnd = (suite: Mocha.Suite) => {
   });
 };
 
-export const reportHookStart = (hook: Mocha.Hook, start?: number) => {
+export const reportHookStart = (hook: CypressHook, start?: number) => {
   enqueueRuntimeMessage({
     type: "cypress_hook_start",
     data: {
@@ -440,6 +442,31 @@ export const completeHookErrorReporting = (hook: CypressHook, err: Error) => {
   reportRemainingTests(suite, testFailData);
 };
 
+/**
+ * Patches the `after` function, to inject an extra `after` hook after each spec-level
+ * `after` hook defined by the user.
+ */
+export const enableScopeLevelAfterHookReporting = () => {
+  const [getSuiteDepth, incSuiteDepth, decSuiteDepth] = createSuiteDepthCounterState();
+  patchDescribe(incSuiteDepth, decSuiteDepth);
+  patchAfter(getSuiteDepth);
+};
+
+export const flushRuntimeMessages = () => getTestRuntime().flushAllureMessagesToTask("reportAllureCypressSpecMessages");
+
+export const completeSpec = () =>
+  getTestRuntime().flushAllureMessagesToTaskAsync("reportFinalAllureCypressSpecMessages");
+
+export const completeSpecIfNoAfterHookLeft = (context: Mocha.Context) => {
+  if (isLastRootAfterHook(context)) {
+    const hook = context.test as CypressHook;
+    if (!isAllureHook(hook)) {
+      reportHookEnd(hook);
+    }
+    return completeSpec();
+  }
+};
+
 const completeSpecOnAfterHookFailure = (
   context: Mocha.Context,
   hookError: Error,
@@ -462,7 +489,7 @@ const reportCurrentTestIfAny = () => {
   }
 };
 
-const reportRemainingTests = (suite: Mocha.Suite, testFailData: CypressFailMessage["data"]) => {
+const reportRemainingTests = (suite: CypressSuite, testFailData: CypressFailMessage["data"]) => {
   for (const test of iterateTests(suite)) {
     // Some tests in the suite might've been already reported.
     if (!isTestReported(test)) {
@@ -554,7 +581,7 @@ const createSuiteDepthCounterState = (): [get: () => number, inc: () => void, de
 
 const patchAfter = (getSuiteDepth: () => number) => {
   const originalAfter = globalThis.after;
-  const patchedAfter = (nameOrFn: string | Mocha.Func | Mocha.AsyncFunc, fn?: Mocha.Func | Mocha.AsyncFunc): void => {
+  const patchedAfter = (nameOrFn: string | HookImplementation, fn?: HookImplementation): void => {
     return typeof nameOrFn === "string"
       ? originalAfter(nameOrFn, wrapRootAfterFn(getSuiteDepth, fn))
       : originalAfter(wrapRootAfterFn(getSuiteDepth, nameOrFn)!);
@@ -564,9 +591,7 @@ const patchAfter = (getSuiteDepth: () => number) => {
 
 const wrapRootAfterFn = (getSuiteDepth: () => number, fn?: HookImplementation): HookImplementation | undefined => {
   if (getSuiteDepth() === 0 && fn) {
-    const wrappedFn = fn.length
-      ? wrapAfterFnWithCallback(fn)
-      : wrapAfterFnWithoutArgs(fn as Mocha.AsyncFunc | ((this: Mocha.Context) => void));
+    const wrappedFn = fn.length ? wrapAfterFnWithCallback(fn) : wrapAfterFnWithoutArgs(fn as DirectHookImplementation);
     Object.defineProperty(wrappedFn, "name", { value: fn.name });
     return wrappedFn;
   }
@@ -584,7 +609,7 @@ const wrapAfterFnWithCallback = (fn: Mocha.Func): Mocha.Func => {
       }
 
       try {
-        if (completeSpecIfNoAfterHooksRemain(this)?.then(() => done())) {
+        if (completeSpecIfNoAfterHookLeft(this)?.then(() => done())) {
           return;
         }
       } catch (allureError) {
@@ -598,7 +623,7 @@ const wrapAfterFnWithCallback = (fn: Mocha.Func): Mocha.Func => {
   };
 };
 
-const wrapAfterFnWithoutArgs = (fn: Mocha.AsyncFunc | ((this: Mocha.Context) => void)) => {
+const wrapAfterFnWithoutArgs = (fn: DirectHookImplementation) => {
   return function (this: Mocha.Context) {
     let result;
     let syncError: any;
@@ -613,11 +638,11 @@ const wrapAfterFnWithoutArgs = (fn: Mocha.AsyncFunc | ((this: Mocha.Context) => 
       throwAfterSpecCompletion(this, syncError);
     } else if (isPromise(result)) {
       return result.then(
-        () => completeSpecIfNoAfterHooksRemain(this),
+        () => completeSpecIfNoAfterHookLeft(this),
         (asyncError) => throwAfterSpecCompletion(this, asyncError),
       );
     } else {
-      completeSpecIfNoAfterHooksRemain(this);
+      completeSpecIfNoAfterHookLeft(this);
       return result;
     }
   };
@@ -640,31 +665,6 @@ const logAllureRootAfterError = (context: Mocha.Context, err: unknown) => {
     // eslint-disable-next-line no-console
     console.error(err);
   } catch {}
-};
-
-/**
- * Patches the `after` function, to inject an extra `after` hook after each spec-level
- * `after` hook defined by the user.
- */
-export const enableScopeLevelAfterHookReporting = () => {
-  const [getSuiteDepth, incSuiteDepth, decSuiteDepth] = createSuiteDepthCounterState();
-  patchDescribe(incSuiteDepth, decSuiteDepth);
-  patchAfter(getSuiteDepth);
-};
-
-export const flushRuntimeMessages = () => getTestRuntime().flushAllureMessagesToTask("reportAllureCypressSpecMessages");
-
-export const completeSpec = () =>
-  getTestRuntime().flushAllureMessagesToTaskAsync("reportFinalAllureCypressSpecMessages");
-
-export const completeSpecIfNoAfterHooksRemain = (context: Mocha.Context) => {
-  if (isLastRootAfterHook(context)) {
-    const hook = context.test as CypressHook;
-    if (!isAllureHook(hook)) {
-      reportHookEnd(hook);
-    }
-    return completeSpec();
-  }
 };
 
 const isLastRootAfterHook = (context: Mocha.Context) => {

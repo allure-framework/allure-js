@@ -1,9 +1,9 @@
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import { ALLURE_REPORT_SYSTEM_HOOK } from "./model.js";
-import type { CypressCommand, CypressHook, CypressTest } from "./model.js";
+import type { CypressCommand, CypressHook, CypressSuite, CypressTest } from "./model.js";
 import {
   completeHookErrorReporting,
-  completeSpecIfNoAfterHooksRemain,
+  completeSpecIfNoAfterHookLeft,
   enableScopeLevelAfterHookReporting,
   flushRuntimeMessages,
   initTestRuntime,
@@ -23,7 +23,7 @@ import {
   reportUnfinishedSteps,
 } from "./runtime.js";
 import { isAllureInitialized, setAllureInitialized } from "./state.js";
-import { applyTestPlan, isAllureHook, isTestReported, shouldCommandBeSkipped } from "./utils.js";
+import { applyTestPlan, isAllureHook, isRootAfterAllHook, isTestReported, shouldCommandBeSkipped } from "./utils.js";
 
 const {
   EVENT_RUN_BEGIN,
@@ -52,13 +52,13 @@ const initializeAllure = () => {
       initTestRuntime();
       reportRunStart();
     })
-    .on(EVENT_SUITE_BEGIN, (suite: Mocha.Suite) => {
+    .on(EVENT_SUITE_BEGIN, (suite: CypressSuite) => {
       if (suite.root) {
         applyTestPlan(Cypress.spec, suite);
       }
       reportSuiteStart(suite);
     })
-    .on(EVENT_SUITE_END, (suite: Mocha.Suite) => {
+    .on(EVENT_SUITE_END, (suite: CypressSuite) => {
       reportSuiteEnd(suite);
     })
     .on(EVENT_HOOK_BEGIN, (hook: CypressHook) => {
@@ -87,10 +87,11 @@ const initializeAllure = () => {
     })
     .on(EVENT_TEST_FAIL, (testOrHook: CypressTest | CypressHook, err: Error) => {
       const isHook = "hookName" in testOrHook;
-      if (isHook && testOrHook.parent!.root && testOrHook.hookName === "after all") {
+      if (isHook && isRootAfterAllHook(testOrHook)) {
         // Errors in spec-level 'after all' hooks are handled by Allure wrappers.
         return;
       }
+
       const isAllureHookFailure = isHook && isAllureHook(testOrHook);
 
       if (isAllureHookFailure) {
@@ -148,7 +149,7 @@ const initializeAllure = () => {
 
   after(ALLURE_REPORT_SYSTEM_HOOK, function (this: Mocha.Context) {
     flushRuntimeMessages();
-    completeSpecIfNoAfterHooksRemain(this);
+    completeSpecIfNoAfterHookLeft(this);
   });
 
   enableScopeLevelAfterHookReporting();

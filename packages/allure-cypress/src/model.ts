@@ -10,14 +10,21 @@ export type AllureCypressConfig = ReporterConfig & {
   videoOnFailOnly?: boolean;
 };
 
+export type CypressSuite = Mocha.Suite & {
+  parent: CypressSuite | undefined;
+  tests: CypressTest[];
+  suites: CypressSuite[];
+};
+
 export type CypressTest = Mocha.Test & {
   wallClockStartedAt?: Date;
+  parent: CypressSuite | undefined;
 };
 
 export type CypressHook = Mocha.Hook & {
-  id: string;
   hookId: string;
   hookName: string;
+  parent: CypressSuite | undefined;
 };
 
 export type CypressCommand = {
@@ -180,4 +187,5 @@ export type CypressSuiteFunction = (
   fn?: (this: Mocha.Suite) => void,
 ) => Mocha.Suite;
 
-export type HookImplementation = Mocha.Func | Mocha.AsyncFunc | ((this: Mocha.Context) => void);
+export type DirectHookImplementation = Mocha.AsyncFunc | ((this: Mocha.Context) => void);
+export type HookImplementation = Mocha.Func | DirectHookImplementation;
