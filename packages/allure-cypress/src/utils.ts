@@ -117,10 +117,15 @@ export const markTestAsReported = (test: CypressTest) => {
 export const isTestReported = (test: CypressTest) => (test as any)[testReportedKey] === true;
 
 export const iterateSuites = function* (parent: CypressSuite) {
-  const suiteQueue: CypressSuite[] = [];
-  for (let s: CypressSuite | undefined = parent; s; s = suiteQueue.shift()) {
+  const suiteStack: CypressSuite[] = [];
+  for (let s: CypressSuite | undefined = parent; s; s = suiteStack.pop()) {
     yield s;
-    suiteQueue.push(...s.suites);
+
+    // Pushing in reverse allows us to maintain depth-first pre-order traversal -
+    // the same order as used by Mocha & Cypress.
+    for (let i = s.suites.length - 1; i >= 0; i--) {
+      suiteStack.push(s.suites[i]);
+    }
   }
 };
 
