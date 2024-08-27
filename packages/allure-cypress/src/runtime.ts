@@ -289,6 +289,8 @@ export const reportHookStart = (hook: CypressHook, start?: number) => {
     type: "cypress_hook_start",
     data: {
       name: hook.title,
+      scopeType: hook.hookName.includes("each") ? "each" : "all",
+      position: hook.hookName.includes("before") ? "before" : "after",
       start: start ?? Date.now(),
     },
   });

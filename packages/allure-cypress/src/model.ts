@@ -62,6 +62,8 @@ export type CypressHookStartMessage = {
   type: "cypress_hook_start";
   data: {
     name: string;
+    scopeType: "each" | "all";
+    position: "before" | "after";
     start: number;
   };
 };
@@ -169,12 +171,6 @@ export type AllureSpecState = {
   messages: CypressMessage[];
   currentTest?: CypressTest;
 };
-
-export type HookPosition = "before" | "after";
-
-export type HookScopeType = "all" | "each";
-
-export type HookType = [position: HookPosition, scopeType: HookScopeType];
 
 export type AllureCypressTaskArgs = {
   absolutePath: string;

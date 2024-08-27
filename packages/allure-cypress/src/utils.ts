@@ -2,7 +2,7 @@ import { LabelName, Status } from "allure-js-commons";
 import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import { ALLURE_REPORT_STEP_COMMAND, ALLURE_REPORT_SYSTEM_HOOK } from "./model.js";
-import type { CypressCommand, CypressHook, CypressSuite, CypressTest, HookPosition, HookScopeType, HookType } from "./model.js";
+import type { CypressCommand, CypressHook, CypressSuite, CypressTest } from "./model.js";
 import { getAllureTestPlan } from "./state.js";
 
 export const uint8ArrayToBase64 = (data: unknown) => {
@@ -115,16 +115,6 @@ export const markTestAsReported = (test: CypressTest) => {
 };
 
 export const isTestReported = (test: CypressTest) => (test as any)[testReportedKey] === true;
-
-const hookTypeRegexp = /^"(before|after) (all|each)"/;
-
-export const getHookType = (name: string): HookType | [] => {
-  const match = hookTypeRegexp.exec(name);
-  if (match) {
-    return [match[1] as HookPosition, match[2] as HookScopeType];
-  }
-  return [];
-};
 
 export const iterateSuites = function* (parent: CypressSuite) {
   const suiteQueue: CypressSuite[] = [];

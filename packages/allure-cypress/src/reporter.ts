@@ -32,7 +32,7 @@ import type {
   CypressTestStartMessage,
   SpecContext,
 } from "./model.js";
-import { getHookType, last } from "./utils.js";
+import { last } from "./utils.js";
 
 export class AllureCypress {
   allureRuntime: ReporterRuntime;
@@ -231,23 +231,20 @@ export class AllureCypress {
     }
   };
 
-  #startHook = (context: SpecContext, { data: { name, start } }: CypressHookStartMessage) => {
-    const [hookPosition, hookScopeType] = getHookType(name);
-    if (hookPosition) {
-      const isEach = hookScopeType === "each";
-      const isAfterEach = hookPosition === "after" && isEach;
-      if (!isAfterEach) {
-        this.#emitPreviousTestScope(context);
-      }
+  #startHook = (context: SpecContext, { data: { name, scopeType, position, start } }: CypressHookStartMessage) => {
+    const isEach = scopeType === "each";
+    const isAfterEach = position === "after" && isEach;
+    if (!isAfterEach) {
+      this.#emitPreviousTestScope(context);
+    }
 
-      const scope = isEach ? context.testScope : last(context.suiteScopes);
-      if (scope) {
-        context.fixture = this.allureRuntime.startFixture(scope, hookPosition, {
-          name,
-          start,
-          status: undefined,
-        });
-      }
+    const scope = isEach ? context.testScope : last(context.suiteScopes);
+    if (scope) {
+      context.fixture = this.allureRuntime.startFixture(scope, position, {
+        name,
+        start,
+        status: undefined,
+      });
     }
   };
 
