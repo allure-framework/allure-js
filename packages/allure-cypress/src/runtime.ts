@@ -31,6 +31,7 @@ import {
   setRuntimeMessages,
 } from "./state.js";
 import {
+  getSuites,
   getTestSkipData,
   getTestStartData,
   getTestStopData,
@@ -267,6 +268,7 @@ export const reportSuiteStart = (suite: CypressSuite) => {
   enqueueRuntimeMessage({
     type: "cypress_suite_start",
     data: {
+      id: suite.id,
       name: suite.title,
       root: suite.root,
       start: Date.now(),
@@ -510,6 +512,7 @@ const reportTestsSkippedByHookError = (test: CypressTest, testFailData: CypressF
       ...getTestStartData(test),
       ...testFailData,
       ...getTestStopData(test),
+      suites: getSuites(test).map((s) => s.id),
     },
   });
   markTestAsReported(test);
@@ -519,7 +522,7 @@ const getStatusDataOfTestSkippedByHookError = (
   hookName: string,
   isEachHook: boolean,
   err: Error,
-  suite: Mocha.Suite,
+  suite: CypressSuite,
 ) => {
   const status = isEachHook ? Status.SKIPPED : getStatusFromError(err);
   const { message, trace } = getMessageAndTraceFromError(err);

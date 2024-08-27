@@ -211,13 +211,20 @@ export class AllureCypress {
     this.#initializeSpecContext(absolutePath);
   };
 
-  #startSuite = (context: SpecContext, { data: { name, root } }: CypressSuiteStartMessage) => {
-    const scope = this.allureRuntime.startScope();
-    context.suiteScopes.push(scope);
+  #startSuite = (context: SpecContext, { data: { id, name, root } }: CypressSuiteStartMessage) => {
+    this.#pushNewSuiteScope(context, id);
     if (!root) {
       this.#emitPreviousTestScope(context);
       context.suiteNames.push(name);
     }
+  };
+
+  #pushNewSuiteScope = (context: SpecContext, suiteId: string) => {
+    const scope = this.allureRuntime.startScope();
+    context.suiteScopes.push(scope);
+    context.suiteIdToScope.set(suiteId, scope);
+    context.suiteScopeToId.set(scope, suiteId);
+    return scope;
   };
 
   #stopSuite = (context: SpecContext, { data: { root } }: CypressSuiteEndMessage) => {
@@ -225,8 +232,17 @@ export class AllureCypress {
     if (!root) {
       context.suiteNames.pop();
     }
+    this.#writeLastSuiteScope(context);
+  };
+
+  #writeLastSuiteScope = (context: SpecContext) => {
     const scope = context.suiteScopes.pop();
     if (scope) {
+      const suiteId = context.suiteScopeToId.get(scope);
+      if (suiteId) {
+        context.suiteScopeToId.delete(scope);
+        context.suiteIdToScope.delete(suiteId);
+      }
       this.allureRuntime.writeScope(scope);
     }
   };
@@ -263,17 +279,16 @@ export class AllureCypress {
     this.#emitPreviousTestScope(context);
     const testScope = this.allureRuntime.startScope();
     context.testScope = testScope;
-    context.test = this.#addNewTestResult(context, data, testScope);
+    context.test = this.#addNewTestResult(context, data, [context.videoScope, ...context.suiteScopes, testScope]);
   };
 
   #addNewTestResult = (
     context: SpecContext,
-    { labels: metadataLabels = [], ...data }: Partial<TestResult>,
-    testScope?: string,
+    { labels: metadataLabels = [], ...otherTestData }: Partial<TestResult>,
+    scopes: string[],
   ) =>
     this.allureRuntime.startTest(
       {
-        ...data,
         stage: Stage.RUNNING,
         labels: [
           getLanguageLabel(),
@@ -286,8 +301,9 @@ export class AllureCypress {
           getThreadLabel(),
           getPackageLabel(context.specPath),
         ],
+        ...otherTestData,
       },
-      [context.videoScope, ...context.suiteScopes].concat(testScope ? [testScope] : []),
+      scopes,
     );
 
   #failHookAndTest = (context: SpecContext, { data: { status, statusDetails } }: CypressFailMessage) => {
@@ -327,9 +343,16 @@ export class AllureCypress {
     }
   };
 
-  #addSkippedTest = (context: SpecContext, { data }: CypressSkippedTestMessage) => {
-    const testUuid = this.#addNewTestResult(context, data);
-    this.#stopExistingTestResult(testUuid, data);
+  #addSkippedTest = (
+    context: SpecContext,
+    { data: { suites, duration, retries, ...testResultData } }: CypressSkippedTestMessage,
+  ) => {
+    // Tests skipped because of a hook error may share all suites of the current context
+    // or just a part thereof (if it's from a sibling suite).
+    const scopes = suites.map((s) => context.suiteIdToScope.get(s)).filter((s): s is string => Boolean(s));
+
+    const testUuid = this.#addNewTestResult(context, testResultData, [context.videoScope, ...scopes]);
+    this.#stopExistingTestResult(testUuid, { duration, retries });
     this.allureRuntime.writeTest(testUuid);
   };
 
@@ -449,6 +472,8 @@ export class AllureCypress {
       fixture: undefined,
       commandSteps: [],
       videoScope: this.allureRuntime.startScope(),
+      suiteIdToScope: new Map(),
+      suiteScopeToId: new Map(),
       suiteScopes: [],
       testScope: undefined,
       suiteNames: [],

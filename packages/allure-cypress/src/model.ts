@@ -11,6 +11,7 @@ export type AllureCypressConfig = ReporterConfig & {
 };
 
 export type CypressSuite = Mocha.Suite & {
+  id: string;
   parent: CypressSuite | undefined;
   tests: CypressTest[];
   suites: CypressSuite[];
@@ -44,6 +45,7 @@ export type CupressRunStart = {
 export type CypressSuiteStartMessage = {
   type: "cypress_suite_start";
   data: {
+    id: string;
     name: string;
     root: boolean;
     start: number;
@@ -107,7 +109,11 @@ export type CypressTestPassMessage = {
 
 export type CypressSkippedTestMessage = {
   type: "cypress_skipped_test";
-  data: CypressTestStartMessage["data"] & CypressFailMessage["data"] & CypressTestEndMessage["data"];
+  data: CypressTestStartMessage["data"] &
+    CypressFailMessage["data"] &
+    CypressTestEndMessage["data"] & {
+      suites: string[];
+    };
 };
 
 export type CypressTestEndMessage = {
@@ -159,6 +165,8 @@ export type SpecContext = {
   fixture: string | undefined;
   commandSteps: string[];
   videoScope: string;
+  suiteIdToScope: Map<string, string>;
+  suiteScopeToId: Map<string, string>;
   suiteScopes: string[];
   testScope: string | undefined;
   suiteNames: string[];

@@ -17,20 +17,19 @@ export const uint8ArrayToBase64 = (data: unknown) => {
   return btoa(String.fromCharCode.apply(null, data as number[]));
 };
 
-export const getSuitePath = (test: CypressTest): string[] => {
-  const path: string[] = [];
-  let currentSuite: CypressSuite | undefined = test.parent;
-
-  while (currentSuite) {
-    if (currentSuite.title) {
-      path.unshift(currentSuite.title);
-    }
-
-    currentSuite = currentSuite.parent;
+export const getSuites = (test: CypressTest) => {
+  const suites: CypressSuite[] = [];
+  for (let s: CypressSuite | undefined = test.parent; s; s = s.parent) {
+    suites.push(s);
   }
-
-  return path;
+  suites.reverse();
+  return suites;
 };
+
+export const getSuitePath = (test: CypressTest): string[] =>
+  getSuites(test)
+    .filter((s) => s.title)
+    .map((s) => s.title);
 
 export const shouldCommandBeSkipped = (command: CypressCommand) => {
   if (last(command.attributes.args)?.log === false) {
