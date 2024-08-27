@@ -1,6 +1,7 @@
 import type Cypress from "cypress";
 import path from "node:path";
 import { ContentType, Stage, Status } from "allure-js-commons";
+import type { TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import {
   ReporterRuntime,
@@ -23,11 +24,12 @@ import type {
   CypressFailMessage,
   CypressHookEndMessage,
   CypressHookStartMessage,
+  CypressSkippedTestMessage,
   CypressSuiteEndMessage,
   CypressSuiteStartMessage,
   CypressTestEndMessage,
+  CypressTestSkipMessage,
   CypressTestStartMessage,
-  CypressTestStatusMessage,
   SpecContext,
 } from "./model.js";
 import { getHookType, last } from "./utils.js";
@@ -179,10 +181,10 @@ export class AllureCypress {
           this.#failHookAndTest(context, message);
           break;
         case "cypress_test_skip":
-          this.#skipTest(context);
+          this.#skipTest(context, message);
           break;
-        case "cypress_test_status":
-          this.#assignTestStatus(context, message);
+        case "cypress_skipped_test":
+          this.#addSkippedTest(context, message);
           break;
         case "cypress_test_end":
           this.#stopTest(context, message);
@@ -260,18 +262,21 @@ export class AllureCypress {
     }
   };
 
-  #startTest = (
-    context: SpecContext,
-    { data: { name, fullName, start, labels: metadataLabels } }: CypressTestStartMessage,
-  ) => {
+  #startTest = (context: SpecContext, { data }: CypressTestStartMessage) => {
     this.#emitPreviousTestScope(context);
     const testScope = this.allureRuntime.startScope();
     context.testScope = testScope;
-    context.test = this.allureRuntime.startTest(
+    context.test = this.#addNewTestResult(context, data, testScope);
+  };
+
+  #addNewTestResult = (
+    context: SpecContext,
+    { labels: metadataLabels = [], ...data }: Partial<TestResult>,
+    testScope?: string,
+  ) =>
+    this.allureRuntime.startTest(
       {
-        name,
-        start,
-        fullName,
+        ...data,
         stage: Stage.RUNNING,
         labels: [
           getLanguageLabel(),
@@ -285,9 +290,8 @@ export class AllureCypress {
           getPackageLabel(context.specPath),
         ],
       },
-      [context.videoScope, ...context.suiteScopes, testScope],
+      [context.videoScope, ...context.suiteScopes].concat(testScope ? [testScope] : []),
     );
-  };
 
   #failHookAndTest = (context: SpecContext, { data: { status, statusDetails } }: CypressFailMessage) => {
     const setError = (result: object) => Object.assign(result, { status, statusDetails });
@@ -314,21 +318,11 @@ export class AllureCypress {
     }
   };
 
-  #skipTest = (context: SpecContext) => {
+  #skipTest = (context: SpecContext, { data: { statusDetails } }: CypressTestSkipMessage) => {
     const testUuid = context.test;
     if (testUuid) {
       this.allureRuntime.updateTest(testUuid, (testResult) => {
         testResult.status = Status.SKIPPED;
-        testResult.statusDetails = { message: "This is a pending test" };
-      });
-    }
-  };
-
-  #assignTestStatus = (context: SpecContext, { data: { status, statusDetails } }: CypressTestStatusMessage) => {
-    const testUuid = context.test;
-    if (testUuid) {
-      this.allureRuntime.updateTest(testUuid, (testResult) => {
-        testResult.status = status;
         if (statusDetails) {
           testResult.statusDetails = statusDetails;
         }
@@ -336,23 +330,33 @@ export class AllureCypress {
     }
   };
 
-  #stopTest = (context: SpecContext, { data: { retries, duration } }: CypressTestEndMessage) => {
+  #addSkippedTest = (context: SpecContext, { data }: CypressSkippedTestMessage) => {
+    const testUuid = this.#addNewTestResult(context, data);
+    this.#stopExistingTestResult(testUuid, data);
+    this.allureRuntime.writeTest(testUuid);
+  };
+
+  #stopTest = (context: SpecContext, { data }: CypressTestEndMessage) => {
     const testUuid = context.test;
     if (testUuid) {
-      this.allureRuntime.updateTest(testUuid, (testResult) => {
-        if (retries > 0) {
-          testResult.parameters.push({
-            name: "Retry",
-            value: retries.toString(),
-            excluded: true,
-          });
-        }
-        testResult.stage = Stage.FINISHED;
-      });
-      this.allureRuntime.stopTest(testUuid, { duration });
+      this.#stopExistingTestResult(testUuid, data);
       this.allureRuntime.writeTest(testUuid);
       context.test = undefined;
     }
+  };
+
+  #stopExistingTestResult = (testUuid: string, { retries, duration }: CypressTestEndMessage["data"]) => {
+    this.allureRuntime.updateTest(testUuid, (testResult) => {
+      if (retries > 0) {
+        testResult.parameters.push({
+          name: "Retry",
+          value: retries.toString(),
+          excluded: true,
+        });
+      }
+      testResult.stage = Stage.FINISHED;
+    });
+    this.allureRuntime.stopTest(testUuid, { duration });
   };
 
   #startCommand = (context: SpecContext, { data: { name, args } }: CypressCommandStartMessage) => {

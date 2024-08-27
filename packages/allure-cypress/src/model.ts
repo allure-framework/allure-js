@@ -86,7 +86,9 @@ export type CypressFailMessage = {
 
 export type CypressTestSkipMessage = {
   type: "cypress_test_skip";
-  data: object;
+  data: {
+    statusDetails?: StatusDetails;
+  };
 };
 
 export type CypressTestPassMessage = {
@@ -94,12 +96,9 @@ export type CypressTestPassMessage = {
   data: object;
 };
 
-export type CypressTestStatusMessage = {
-  type: "cypress_test_status";
-  data: {
-    status: Status;
-    statusDetails?: StatusDetails;
-  };
+export type CypressSkippedTestMessage = {
+  type: "cypress_skipped_test";
+  data: CypressTestStartMessage["data"] & CypressFailMessage["data"] & CypressTestEndMessage["data"];
 };
 
 export type CypressTestEndMessage = {
@@ -141,7 +140,7 @@ export type CypressMessage =
   | CypressTestPassMessage
   | CypressFailMessage
   | CypressTestSkipMessage
-  | CypressTestStatusMessage
+  | CypressSkippedTestMessage
   | CypressTestEndMessage;
 
 export type SpecContext = {

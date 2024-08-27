@@ -2,7 +2,7 @@ import { LabelName, Status } from "allure-js-commons";
 import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import { ALLURE_REPORT_STEP_COMMAND, ALLURE_REPORT_SYSTEM_HOOK } from "./model.js";
-import type { CypressCommand, HookPosition, HookScopeType, HookType, CypressTest, CypressHook } from "./model.js";
+import type { CypressCommand, CypressHook, CypressTest, HookPosition, HookScopeType, HookType } from "./model.js";
 import { getAllureTestPlan } from "./state.js";
 
 export const uint8ArrayToBase64 = (data: unknown) => {
@@ -80,6 +80,20 @@ export const getNamesAndLabels = (spec: Cypress.Spec, test: Mocha.Test) => {
   return { name, labels, fullName };
 };
 
+export const getTestStartData = (test: CypressTest) => ({
+  ...getNamesAndLabels(Cypress.spec, test),
+  start: test.wallClockStartedAt?.getTime() || Date.now(),
+});
+
+export const getTestStopData = (test: CypressTest) => ({
+  duration: test.duration ?? 0,
+  retries: (test as any)._retries ?? 0,
+});
+
+export const getTestSkipData = () => ({
+  statusDetails: { message: "This is a pending test" },
+});
+
 export const applyTestPlan = (spec: Cypress.Spec, root: Mocha.Suite) => {
   const testPlan = getAllureTestPlan();
   if (testPlan) {
@@ -138,7 +152,7 @@ const removeSortedIndices = <T>(arr: T[], indices: readonly number[]) => {
   }
 };
 
-export const iterateSuites = function * (parent: Mocha.Suite) {
+export const iterateSuites = function* (parent: Mocha.Suite) {
   const suiteQueue = [];
   for (let s: Mocha.Suite | undefined = parent; s; s = suiteQueue.shift()) {
     yield s;
@@ -146,9 +160,9 @@ export const iterateSuites = function * (parent: Mocha.Suite) {
   }
 };
 
-export const iterateTests = function * (parent: Mocha.Suite) {
+export const iterateTests = function* (parent: Mocha.Suite) {
   for (const suite of iterateSuites(parent)) {
-    yield * suite.tests as CypressTest[];
+    yield* suite.tests as CypressTest[];
   }
 };
 

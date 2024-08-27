@@ -2,7 +2,10 @@ import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commo
 import { ALLURE_REPORT_SYSTEM_HOOK } from "./model.js";
 import type { CypressCommand, CypressHook, CypressTest } from "./model.js";
 import {
+  completeHookErrorReporting,
+  completeSpecIfNoAfterHooksRemain,
   enableScopeLevelAfterHookReporting,
+  flushRuntimeMessages,
   initTestRuntime,
   reportCommandEnd,
   reportCommandStart,
@@ -18,12 +21,9 @@ import {
   reportTestSkip,
   reportTestStart,
   reportUnfinishedSteps,
-  completeHookErrorReporting,
-  flushRuntimeMessages,
-  completeSpecIfNoAfterHooksRemain,
 } from "./runtime.js";
 import { isAllureInitialized, setAllureInitialized } from "./state.js";
-import { applyTestPlan, isTestReported, shouldCommandBeSkipped, isAllureHook } from "./utils.js";
+import { applyTestPlan, isAllureHook, isTestReported, shouldCommandBeSkipped } from "./utils.js";
 
 const {
   EVENT_RUN_BEGIN,

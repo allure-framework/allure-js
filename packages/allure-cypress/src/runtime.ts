@@ -1,29 +1,43 @@
 import { ContentType, Status } from "allure-js-commons";
 import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions, StatusDetails } from "allure-js-commons";
-import { getMessageAndTraceFromError, getStatusFromError, getUnfinishedStepsMessages, isPromise } from "allure-js-commons/sdk";
+import {
+  getMessageAndTraceFromError,
+  getStatusFromError,
+  getUnfinishedStepsMessages,
+  isPromise,
+} from "allure-js-commons/sdk";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import type { TestRuntime } from "allure-js-commons/sdk/runtime";
 import type {
   CypressCommand,
   CypressCommandEndMessage,
-  CypressTestStatusMessage,
+  CypressFailMessage,
+  CypressHook,
   CypressMessage,
   CypressSuiteFunction,
   CypressTest,
-  CypressHook,
   HookImplementation,
 } from "./model.js";
 import { ALLURE_REPORT_STEP_COMMAND } from "./model.js";
 import {
-  enqueueRuntimeMessage,
-  getRuntimeMessages,
-  setRuntimeMessages,
-  setCurrentTest,
   dropCurrentTest,
+  enqueueRuntimeMessage,
   getCurrentTest,
+  getRuntimeMessages,
+  setCurrentTest,
+  setRuntimeMessages,
 } from "./state.js";
-import { isAllureHook, iterateTests, getNamesAndLabels, isTestReported, markTestAsReported, uint8ArrayToBase64 } from "./utils.js";
+import {
+  getTestSkipData,
+  getTestStartData,
+  getTestStopData,
+  isAllureHook,
+  isTestReported,
+  iterateTests,
+  markTestAsReported,
+  uint8ArrayToBase64,
+} from "./utils.js";
 
 export class AllureCypressTestRuntime implements TestRuntime {
   constructor() {
@@ -291,10 +305,7 @@ export const reportTestStart = (test: CypressTest) => {
   setCurrentTest(test);
   enqueueRuntimeMessage({
     type: "cypress_test_start",
-    data: {
-      ...getNamesAndLabels(Cypress.spec, test),
-      start: test.wallClockStartedAt?.getTime() || Date.now(),
-    },
+    data: getTestStartData(test),
   });
   markTestAsReported(test);
 };
@@ -333,7 +344,7 @@ export const reportTestSkip = (test: CypressTest) => {
 
   enqueueRuntimeMessage({
     type: "cypress_test_skip",
-    data: {},
+    data: getTestSkipData(),
   });
 };
 
@@ -415,7 +426,7 @@ export const completeHookErrorReporting = (hook: CypressHook, err: Error) => {
   const hookName = hook.hookName;
   const isEachHook = hookName.includes("each");
   const suite = hook.parent!;
-  const data = getTestStatusMessageData(hookName, isEachHook, err, suite);
+  const testFailData = getStatusDataOfTestSkippedByHookError(hookName, isEachHook, err, suite);
 
   // Cypress doens't emit 'hook end' if the hook has failed.
   reportHookEnd(hook);
@@ -426,10 +437,13 @@ export const completeHookErrorReporting = (hook: CypressHook, err: Error) => {
 
   // Cypress skips the remaining tests in the suite of a failed hook.
   // We should include them to the report manually.
-  reportRemainingTests(suite, data);
+  reportRemainingTests(suite, testFailData);
 };
 
-const completeSpecOnAfterHookFailure = (context: Mocha.Context, hookError: Error): Cypress.Chainable<unknown> | undefined => {
+const completeSpecOnAfterHookFailure = (
+  context: Mocha.Context,
+  hookError: Error,
+): Cypress.Chainable<unknown> | undefined => {
   try {
     reportTestOrHookFail(hookError);
     completeHookErrorReporting(context.test as CypressHook, hookError);
@@ -448,21 +462,36 @@ const reportCurrentTestIfAny = () => {
   }
 };
 
-const reportRemainingTests = (suite: Mocha.Suite, data: CypressTestStatusMessage["data"]) => {
+const reportRemainingTests = (suite: Mocha.Suite, testFailData: CypressFailMessage["data"]) => {
   for (const test of iterateTests(suite)) {
-    if (!isTestReported(test)) { // Some tests in the suite might've been already reported.
-      if (test.pending) {
-        reportTestSkip(test); // Includes the test start message.
-      } else {
-        reportTestStart(test);
-        reportTestStatus(data);
-      }
-      reportTestEnd(test);
+    // Some tests in the suite might've been already reported.
+    if (!isTestReported(test)) {
+      reportTestsSkippedByHookError(
+        test,
+        test.pending ? { ...getTestSkipData(), status: Status.SKIPPED } : testFailData,
+      );
     }
   }
 };
 
-const getTestStatusMessageData = (hookName: string, isEachHook: boolean, err: Error, suite: Mocha.Suite) => {
+const reportTestsSkippedByHookError = (test: CypressTest, testFailData: CypressFailMessage["data"]) => {
+  enqueueRuntimeMessage({
+    type: "cypress_skipped_test",
+    data: {
+      ...getTestStartData(test),
+      ...testFailData,
+      ...getTestStopData(test),
+    },
+  });
+  markTestAsReported(test);
+};
+
+const getStatusDataOfTestSkippedByHookError = (
+  hookName: string,
+  isEachHook: boolean,
+  err: Error,
+  suite: Mocha.Suite,
+) => {
   const status = isEachHook ? Status.SKIPPED : getStatusFromError(err);
   const { message, trace } = getMessageAndTraceFromError(err);
   return {
@@ -476,14 +505,7 @@ const getTestStatusMessageData = (hookName: string, isEachHook: boolean, err: Er
 
 const getSkipReason = (hookName: string, suite: Mocha.Suite) => {
   const suiteName = suite.title ? suite.title : "root";
-  return `The test was skipped because a '${hookName}' hook of a previous test in the '${suiteName}' suite has failed`;
-};
-
-const reportTestStatus = (data: CypressTestStatusMessage["data"]) => {
-  enqueueRuntimeMessage({
-    type: "cypress_test_status",
-    data: data,
-  });
+  return `'${hookName}' of suite '${suiteName}' failed for one of the previous tests`;
 };
 
 const forwardDescribeCall = (target: CypressSuiteFunction, ...args: Parameters<CypressSuiteFunction>) => {
@@ -542,7 +564,9 @@ const patchAfter = (getSuiteDepth: () => number) => {
 
 const wrapRootAfterFn = (getSuiteDepth: () => number, fn?: HookImplementation): HookImplementation | undefined => {
   if (getSuiteDepth() === 0 && fn) {
-    const wrappedFn =  fn.length ? wrapAfterFnWithCallback(fn) : wrapAfterFnWithoutArgs(fn as Mocha.AsyncFunc | ((this: Mocha.Context) => void));
+    const wrappedFn = fn.length
+      ? wrapAfterFnWithCallback(fn)
+      : wrapAfterFnWithoutArgs(fn as Mocha.AsyncFunc | ((this: Mocha.Context) => void));
     Object.defineProperty(wrappedFn, "name", { value: fn.name });
     return wrappedFn;
   }
@@ -600,11 +624,9 @@ const wrapAfterFnWithoutArgs = (fn: Mocha.AsyncFunc | ((this: Mocha.Context) => 
 };
 
 const throwAfterSpecCompletion = (context: Mocha.Context, err: any) => {
-  const chain = completeSpecOnAfterHookFailure(context, err as Error)?.then(
-    () => {
-      throw err;
-    },
-  );
+  const chain = completeSpecOnAfterHookFailure(context, err as Error)?.then(() => {
+    throw err;
+  });
   if (!chain) {
     throw err;
   }
@@ -630,13 +652,10 @@ export const enableScopeLevelAfterHookReporting = () => {
   patchAfter(getSuiteDepth);
 };
 
-export const flushRuntimeMessages = () => getTestRuntime().flushAllureMessagesToTask(
-  "reportAllureCypressSpecMessages"
-);
+export const flushRuntimeMessages = () => getTestRuntime().flushAllureMessagesToTask("reportAllureCypressSpecMessages");
 
-export const completeSpec = () => getTestRuntime().flushAllureMessagesToTaskAsync(
-  "reportFinalAllureCypressSpecMessages"
-);
+export const completeSpec = () =>
+  getTestRuntime().flushAllureMessagesToTaskAsync("reportFinalAllureCypressSpecMessages");
 
 export const completeSpecIfNoAfterHooksRemain = (context: Mocha.Context) => {
   if (isLastRootAfterHook(context)) {
@@ -655,4 +674,3 @@ const isLastRootAfterHook = (context: Mocha.Context) => {
   const lastAfterAll = hooks.findLast((h) => h.hookName === "after all");
   return lastAfterAll?.hookId === currentAfterAll.hookId;
 };
-
