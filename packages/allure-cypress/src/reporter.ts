@@ -57,7 +57,11 @@ export class AllureCypress {
       },
       reportFinalAllureCypressSpecMessages: (args: AllureCypressTaskArgs) => {
         this.#applyAllureCypressMessages(args);
-        this.endSpec(args.absolutePath);
+        if (args.isInteractive) {
+          // In non-interactive mode the spec is ended via the 'after:spec' event instead
+          // to get the spec's video.
+          this.endSpec(args.absolutePath);
+        }
         return null;
       },
     });
@@ -76,7 +80,7 @@ export class AllureCypress {
    * you need to define your own handler or combine Allure Cypress with other
    * plugins. More info [here](https://github.com/allure-framework/allure-js/blob/main/packages/allure-cypress/README.md#setupnodeevents-limitations).
    * @param spec The first argument of the `after:spec` event.
-   * @param results The second argument of the `after:spec` event.
+   * @param results The second argument of the `after:spec` event. It's `undefined` in interactive mode.
    * @example
    * ```javascript
    * import { defineConfig } from "cypress";
@@ -94,15 +98,15 @@ export class AllureCypress {
    * });
    * ```
    */
-  onAfterSpec = (spec: Cypress.Spec, results: CypressCommandLine.RunResult) => {
-    this.endSpec(spec.absolute, results.video ?? undefined);
+  onAfterSpec = (spec: Cypress.Spec, results: CypressCommandLine.RunResult | undefined) => {
+    this.endSpec(spec.absolute, results?.video ?? undefined);
   };
 
   /**
    * Forward the `after:run` event into Allure Cypress using this function if
    * you need to define your own handler or combine Allure Cypress with other
    * plugins. More info [here](https://github.com/allure-framework/allure-js/blob/main/packages/allure-cypress/README.md#setupnodeevents-limitations).
-   * @param results The argument of the `after:run` event.
+   * @param results The argument of the `after:run` event. It's `undefined` in interactive mode.
    * @example
    * ```javascript
    * import { defineConfig } from "cypress";
@@ -120,8 +124,10 @@ export class AllureCypress {
    * });
    * ```
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onAfterRun = (results: CypressCommandLine.CypressFailedRunResult | CypressCommandLine.CypressRunResult) => {
+  onAfterRun = (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    results: CypressCommandLine.CypressFailedRunResult | CypressCommandLine.CypressRunResult | undefined,
+  ) => {
     this.endRun();
   };
 

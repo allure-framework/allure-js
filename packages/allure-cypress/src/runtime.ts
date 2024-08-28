@@ -10,6 +10,7 @@ import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import type { TestRuntime } from "allure-js-commons/sdk/runtime";
 import type {
+  AllureCypressTaskArgs,
   CypressCommand,
   CypressCommandEndMessage,
   CypressFailMessage,
@@ -235,7 +236,12 @@ export class AllureCypressTestRuntime implements TestRuntime {
   flushAllureMessagesToTaskAsync = (taskName: string): Cypress.Chainable<unknown> | undefined => {
     const messages = this.#dequeueAllMessages();
     if (messages.length) {
-      return cy.task(taskName, { absolutePath: Cypress.spec.absolute, messages }, { log: false });
+      const args: AllureCypressTaskArgs = {
+        absolutePath: Cypress.spec.absolute,
+        messages,
+        isInteractive: Cypress.config("isInteractive"),
+      };
+      return cy.task(taskName, args, { log: false });
     }
   };
 

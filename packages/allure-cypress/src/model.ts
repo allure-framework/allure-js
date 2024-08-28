@@ -183,6 +183,7 @@ export type AllureSpecState = {
 export type AllureCypressTaskArgs = {
   absolutePath: string;
   messages: readonly CypressMessage[];
+  isInteractive: boolean;
 };
 
 export type CypressSuiteFunction = (
