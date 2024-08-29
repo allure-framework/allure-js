@@ -401,6 +401,57 @@ it("should support steps in beforeEach hooks", async () => {
   );
 });
 
+it("should support labels in beforeEach hooks", async () => {
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
+      const { label } = require("allure-js-commons");
+
+      beforeEach(async () => {
+        await label("feature", "value 1");
+        await label("story", "value 2");
+      });
+
+      it("passed 1", () => {});
+
+      it("passed 2", () => {});
+    `,
+  });
+
+  expect(tests).toHaveLength(2);
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        status: Status.PASSED,
+        name: "passed 1",
+        labels: expect.arrayContaining([
+          {
+            name: "feature",
+            value: "value 1",
+          },
+          {
+            name: "story",
+            value: "value 2",
+          },
+        ]),
+      }),
+      expect.objectContaining({
+        status: Status.PASSED,
+        name: "passed 2",
+        labels: expect.arrayContaining([
+          {
+            name: "feature",
+            value: "value 1",
+          },
+          {
+            name: "story",
+            value: "value 2",
+          },
+        ]),
+      }),
+    ]),
+  );
+});
+
 it("should support steps in afterEach hooks", async () => {
   const { tests, groups } = await runJestInlineTest({
     "sample.test.js": `

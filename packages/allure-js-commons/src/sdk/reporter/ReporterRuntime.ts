@@ -23,7 +23,14 @@ import { LifecycleState } from "./LifecycleState.js";
 import { Notifier } from "./Notifier.js";
 import { createFixtureResult, createStepResult, createTestResult } from "./factory.js";
 import { hasSkipLabel } from "./testplan.js";
-import type { FixtureType, FixtureWrapper, LinkConfig, ReporterRuntimeConfig, TestScope, Writer } from "./types.js";
+import type {
+  FixtureResultWrapper,
+  FixtureType,
+  LinkConfig,
+  ReporterRuntimeConfig,
+  TestScope,
+  Writer,
+} from "./types.js";
 import { deepClone, formatLinks, getTestResultHistoryId, getTestResultTestCaseId, randomUuid } from "./utils.js";
 import { buildAttachmentFileName } from "./utils/attachments.js";
 import { resolveWriter } from "./writer/loader.js";
@@ -199,12 +206,9 @@ export class ReporterRuntime {
         return;
       }
       scope.tests.push(uuid);
-      if (scope.labels) {
-        testResult.labels = [...testResult.labels, ...scope.labels];
-      }
     });
 
-    this.state.setTestResult(uuid, testResult);
+    this.state.setTestResult(uuid, testResult, scopeUuids);
     this.notifier.afterTestResultStart(testResult);
     return uuid;
   };
@@ -224,12 +228,14 @@ export class ReporterRuntime {
   };
 
   stopTest = (uuid: string, opts?: { stop?: number; duration?: number }) => {
-    const testResult = this.state.getTestResult(uuid);
-    if (!testResult) {
+    const wrapped = this.state.getWrappedTestResult(uuid);
+    if (!wrapped) {
       // eslint-disable-next-line no-console
       console.error(`could not stop test result: no test with uuid ${uuid}) is found`);
       return;
     }
+
+    const testResult = wrapped.value;
 
     this.notifier.beforeTestResultStop(testResult);
     testResult.testCaseId ??= getTestResultTestCaseId(testResult);
@@ -239,11 +245,19 @@ export class ReporterRuntime {
     testResult.start = startStop.start;
     testResult.stop = startStop.stop;
 
+    const scopeUuids = wrapped.scopeUuids;
+    scopeUuids.forEach((scopeUuid) => {
+      const scope = this.state.getScope(scopeUuid);
+      if (scope?.labels) {
+        testResult.labels = [...testResult.labels, ...scope.labels];
+      }
+    });
+
     this.notifier.afterTestResultStop(testResult);
   };
 
   writeTest = (uuid: string) => {
-    const testResult = this.state.testResults.get(uuid);
+    const testResult = this.state.getTestResult(uuid);
     if (!testResult) {
       // eslint-disable-next-line no-console
       console.error(`could not write test result: no test with uuid ${uuid} is found`);
@@ -434,22 +448,56 @@ export class ReporterRuntime {
   #handleMetadataMessage = (rootUuid: string, message: RuntimeMetadataMessage["data"]) => {
     // only display name could be set to fixture.
     const fixtureResult = this.state.getWrappedFixtureResult(rootUuid);
+    const { links, labels, parameters, displayName, testCaseId, historyId, description, descriptionHtml } = message;
+
     if (fixtureResult) {
-      if (message.displayName) {
+      if (displayName) {
         this.updateFixture(rootUuid, (result) => {
-          result.name = message.displayName!;
+          result.name = displayName;
         });
       }
 
-      if (message.labels) {
+      if (historyId) {
+        // eslint-disable-next-line no-console
+        console.error("historyId can't be changed within test fixtures");
+      }
+      if (testCaseId) {
+        // eslint-disable-next-line no-console
+        console.error("testCaseId can't be changed within test fixtures");
+      }
+
+      if (links || labels || parameters || description || descriptionHtml) {
+        // in some frameworks, afterEach methods can be executed before test stop event, while
+        // in others after. To remove the possible undetermined behaviour we only allow
+        // using runtime metadata API in before hooks.
+        if (fixtureResult.type === "after") {
+          // eslint-disable-next-line no-console
+          console.error("metadata messages isn't supported for after test fixtures");
+          return;
+        }
+
         this.updateScope(fixtureResult.scopeUuid, (scope) => {
-          scope.labels = [...scope.labels, ...message.labels!];
+          if (links) {
+            scope.links = [...scope.links, ...(this.linkConfig ? formatLinks(this.linkConfig, links) : links)];
+          }
+          if (labels) {
+            scope.labels = [...scope.labels, ...labels];
+          }
+          if (parameters) {
+            scope.parameters = [...scope.parameters, ...parameters];
+          }
+          if (description) {
+            scope.description = description;
+          }
+          if (descriptionHtml) {
+            scope.descriptionHtml = descriptionHtml;
+          }
         });
       }
+
       return;
     }
 
-    const { links, labels, parameters, displayName, ...rest } = message;
     this.updateTest(rootUuid, (result) => {
       if (links) {
         result.links = [...result.links, ...(this.linkConfig ? formatLinks(this.linkConfig, links) : links)];
@@ -463,7 +511,18 @@ export class ReporterRuntime {
       if (displayName) {
         result.name = displayName;
       }
-      Object.assign(result, rest);
+      if (testCaseId) {
+        result.testCaseId = testCaseId;
+      }
+      if (historyId) {
+        result.historyId = historyId;
+      }
+      if (description) {
+        result.description = description;
+      }
+      if (descriptionHtml) {
+        result.descriptionHtml = descriptionHtml;
+      }
     });
   };
 
@@ -558,7 +617,7 @@ export class ReporterRuntime {
     }
   };
 
-  #writeContainer = (tests: string[], wrappedFixture: FixtureWrapper) => {
+  #writeContainer = (tests: string[], wrappedFixture: FixtureResultWrapper) => {
     const fixture = wrappedFixture.value;
     const befores = wrappedFixture.type === "before" ? [wrappedFixture.value] : [];
     const afters = wrappedFixture.type === "after" ? [wrappedFixture.value] : [];
