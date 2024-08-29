@@ -1,8 +1,8 @@
 import { LabelName, Status } from "allure-js-commons";
 import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
-import { ALLURE_REPORT_STEP_COMMAND } from "./model.js";
-import type { CypressCommand, HookPosition, HookScopeType, HookType } from "./model.js";
+import { ALLURE_REPORT_STEP_COMMAND, ALLURE_REPORT_SYSTEM_HOOK } from "./model.js";
+import type { CypressCommand, CypressHook, CypressSuite, CypressTest } from "./model.js";
 import { getAllureTestPlan } from "./state.js";
 
 export const uint8ArrayToBase64 = (data: unknown) => {
@@ -17,20 +17,19 @@ export const uint8ArrayToBase64 = (data: unknown) => {
   return btoa(String.fromCharCode.apply(null, data as number[]));
 };
 
-export const getSuitePath = (test: Mocha.Test): string[] => {
-  const path: string[] = [];
-  let currentSuite: Mocha.Suite | undefined = test.parent;
-
-  while (currentSuite) {
-    if (currentSuite.title) {
-      path.unshift(currentSuite.title);
-    }
-
-    currentSuite = currentSuite.parent;
+export const getSuites = (test: CypressTest) => {
+  const suites: CypressSuite[] = [];
+  for (let s: CypressSuite | undefined = test.parent; s; s = s.parent) {
+    suites.push(s);
   }
-
-  return path;
+  suites.reverse();
+  return suites;
 };
+
+export const getSuitePath = (test: CypressTest): string[] =>
+  getSuites(test)
+    .filter((s) => s.title)
+    .map((s) => s.title);
 
 export const shouldCommandBeSkipped = (command: CypressCommand) => {
   if (last(command.attributes.args)?.log === false) {
@@ -64,15 +63,11 @@ export const toReversed = <T = unknown>(arr: T[]): T[] => {
   return result;
 };
 
-export const isGlobalHook = (hookName: string) => {
-  return /(before|after) all/.test(hookName);
-};
-
 export const last = <T = unknown>(arr: T[]): T | undefined => {
   return arr[arr.length - 1];
 };
 
-export const getNamesAndLabels = (spec: Cypress.Spec, test: Mocha.Test) => {
+export const getNamesAndLabels = (spec: Cypress.Spec, test: CypressTest) => {
   const rawName = test.title;
   const { cleanTitle: name, labels } = extractMetadataFromString(rawName);
   const suites = test.titlePath().slice(0, -1);
@@ -80,14 +75,26 @@ export const getNamesAndLabels = (spec: Cypress.Spec, test: Mocha.Test) => {
   return { name, labels, fullName };
 };
 
-export const applyTestPlan = (spec: Cypress.Spec, root: Mocha.Suite) => {
+export const getTestStartData = (test: CypressTest) => ({
+  ...getNamesAndLabels(Cypress.spec, test),
+  start: test.wallClockStartedAt?.getTime() || Date.now(),
+});
+
+export const getTestStopData = (test: CypressTest) => ({
+  duration: test.duration ?? 0,
+  retries: (test as any)._retries ?? 0,
+});
+
+export const getTestSkipData = () => ({
+  statusDetails: { message: "This is a pending test" },
+});
+
+export const applyTestPlan = (spec: Cypress.Spec, root: CypressSuite) => {
   const testPlan = getAllureTestPlan();
   if (testPlan) {
-    const suiteQueue = [];
-    for (let s: Mocha.Suite | undefined = root; s; s = suiteQueue.shift()) {
-      const indicesToRemove = getIndicesOfDeselectedTests(testPlan, spec, s.tests);
-      removeSortedIndices(s.tests, indicesToRemove);
-      suiteQueue.push(...s.suites);
+    for (const suite of iterateSuites(root)) {
+      const indicesToRemove = getIndicesOfDeselectedTests(testPlan, spec, suite.tests);
+      removeSortedIndices(suite.tests, indicesToRemove);
     }
   }
 };
@@ -102,26 +109,39 @@ export const resolveStatusWithDetails = (error: Error | undefined) =>
 
 const testReportedKey = Symbol("The test was reported to Allure");
 
-export const markTestAsReported = (test: Mocha.Test) => {
+export const markTestAsReported = (test: CypressTest) => {
   (test as any)[testReportedKey] = true;
 };
 
-export const isTestReported = (test: Mocha.Test) => (test as any)[testReportedKey] === true;
+export const isTestReported = (test: CypressTest) => (test as any)[testReportedKey] === true;
 
-const hookTypeRegexp = /^"(before|after) (all|each)"/;
+export const iterateSuites = function* (parent: CypressSuite) {
+  const suiteStack: CypressSuite[] = [];
+  for (let s: CypressSuite | undefined = parent; s; s = suiteStack.pop()) {
+    yield s;
 
-export const getHookType = (name: string): HookType | [] => {
-  const match = hookTypeRegexp.exec(name);
-  if (match) {
-    return [match[1] as HookPosition, match[2] as HookScopeType];
+    // Pushing in reverse allows us to maintain depth-first pre-order traversal -
+    // the same order as used by Mocha & Cypress.
+    for (let i = s.suites.length - 1; i >= 0; i--) {
+      suiteStack.push(s.suites[i]);
+    }
   }
-  return [];
 };
+
+export const iterateTests = function* (parent: CypressSuite) {
+  for (const suite of iterateSuites(parent)) {
+    yield* suite.tests;
+  }
+};
+
+export const isAllureHook = (hook: CypressHook) => hook.title.includes(ALLURE_REPORT_SYSTEM_HOOK);
+
+export const isRootAfterAllHook = (hook: CypressHook) => hook.parent!.root && hook.hookName === "after all";
 
 const includedInTestPlan = (testPlan: TestPlanV1, fullName: string, allureId: string | undefined): boolean =>
   testPlan.tests.some((test) => (allureId && test.id?.toString() === allureId) || test.selector === fullName);
 
-const getIndicesOfDeselectedTests = (testPlan: TestPlanV1, spec: Cypress.Spec, tests: readonly Mocha.Test[]) => {
+const getIndicesOfDeselectedTests = (testPlan: TestPlanV1, spec: Cypress.Spec, tests: readonly CypressTest[]) => {
   const indicesToRemove: number[] = [];
   tests.forEach((test, index) => {
     const { fullName, labels } = getNamesAndLabels(spec, test);

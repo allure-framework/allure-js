@@ -10,18 +10,22 @@ export type AllureCypressConfig = ReporterConfig & {
   videoOnFailOnly?: boolean;
 };
 
+export type CypressSuite = Mocha.Suite & {
+  id: string;
+  parent: CypressSuite | undefined;
+  tests: CypressTest[];
+  suites: CypressSuite[];
+};
+
 export type CypressTest = Mocha.Test & {
   wallClockStartedAt?: Date;
-  hookName?: string;
-  id: string;
+  parent: CypressSuite | undefined;
 };
 
 export type CypressHook = Mocha.Hook & {
-  id: string;
   hookId: string;
-  parent: Mocha.Suite & {
-    id: string;
-  };
+  hookName: string;
+  parent: CypressSuite | undefined;
 };
 
 export type CypressCommand = {
@@ -41,6 +45,7 @@ export type CupressRunStart = {
 export type CypressSuiteStartMessage = {
   type: "cypress_suite_start";
   data: {
+    id: string;
     name: string;
     root: boolean;
     start: number;
@@ -59,6 +64,8 @@ export type CypressHookStartMessage = {
   type: "cypress_hook_start";
   data: {
     name: string;
+    scopeType: "each" | "all";
+    position: "before" | "after";
     start: number;
   };
 };
@@ -90,12 +97,23 @@ export type CypressFailMessage = {
 
 export type CypressTestSkipMessage = {
   type: "cypress_test_skip";
-  data: object;
+  data: {
+    statusDetails?: StatusDetails;
+  };
 };
 
 export type CypressTestPassMessage = {
   type: "cypress_test_pass";
   data: object;
+};
+
+export type CypressSkippedTestMessage = {
+  type: "cypress_skipped_test";
+  data: CypressTestStartMessage["data"] &
+    CypressFailMessage["data"] &
+    CypressTestEndMessage["data"] & {
+      suites: string[];
+    };
 };
 
 export type CypressTestEndMessage = {
@@ -137,6 +155,7 @@ export type CypressMessage =
   | CypressTestPassMessage
   | CypressFailMessage
   | CypressTestSkipMessage
+  | CypressSkippedTestMessage
   | CypressTestEndMessage;
 
 export type SpecContext = {
@@ -146,6 +165,8 @@ export type SpecContext = {
   fixture: string | undefined;
   commandSteps: string[];
   videoScope: string;
+  suiteIdToScope: Map<string, string>;
+  suiteScopeToId: Map<string, string>;
   suiteScopes: string[];
   testScope: string | undefined;
   suiteNames: string[];
@@ -156,17 +177,13 @@ export type AllureSpecState = {
   initialized: boolean;
   testPlan: TestPlanV1 | null | undefined;
   messages: CypressMessage[];
+  currentTest?: CypressTest;
 };
-
-export type HookPosition = "before" | "after";
-
-export type HookScopeType = "all" | "each";
-
-export type HookType = [position: HookPosition, scopeType: HookScopeType];
 
 export type AllureCypressTaskArgs = {
   absolutePath: string;
   messages: readonly CypressMessage[];
+  isInteractive: boolean;
 };
 
 export type CypressSuiteFunction = (
@@ -174,3 +191,6 @@ export type CypressSuiteFunction = (
   configOrFn?: Cypress.SuiteConfigOverrides | ((this: Mocha.Suite) => void),
   fn?: (this: Mocha.Suite) => void,
 ) => Mocha.Suite;
+
+export type DirectHookImplementation = Mocha.AsyncFunc | ((this: Mocha.Context) => void);
+export type HookImplementation = Mocha.Func | DirectHookImplementation;

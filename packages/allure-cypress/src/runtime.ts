@@ -1,19 +1,47 @@
 import { ContentType, Status } from "allure-js-commons";
 import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions, StatusDetails } from "allure-js-commons";
-import { getMessageAndTraceFromError, getStatusFromError, getUnfinishedStepsMessages } from "allure-js-commons/sdk";
+import {
+  getMessageAndTraceFromError,
+  getStatusFromError,
+  getUnfinishedStepsMessages,
+  isPromise,
+} from "allure-js-commons/sdk";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import type { TestRuntime } from "allure-js-commons/sdk/runtime";
 import type {
+  AllureCypressTaskArgs,
   CypressCommand,
   CypressCommandEndMessage,
+  CypressFailMessage,
+  CypressHook,
   CypressMessage,
+  CypressSuite,
   CypressSuiteFunction,
   CypressTest,
+  DirectHookImplementation,
+  HookImplementation,
 } from "./model.js";
-import { ALLURE_REPORT_STEP_COMMAND, ALLURE_REPORT_SYSTEM_HOOK } from "./model.js";
-import { enqueueRuntimeMessage, getRuntimeMessages, setRuntimeMessages } from "./state.js";
-import { getNamesAndLabels, isTestReported, markTestAsReported, uint8ArrayToBase64 } from "./utils.js";
+import { ALLURE_REPORT_STEP_COMMAND } from "./model.js";
+import {
+  dropCurrentTest,
+  enqueueRuntimeMessage,
+  getCurrentTest,
+  getRuntimeMessages,
+  setCurrentTest,
+  setRuntimeMessages,
+} from "./state.js";
+import {
+  getSuites,
+  getTestSkipData,
+  getTestStartData,
+  getTestStopData,
+  isAllureHook,
+  isTestReported,
+  iterateTests,
+  markTestAsReported,
+  uint8ArrayToBase64,
+} from "./utils.js";
 
 export class AllureCypressTestRuntime implements TestRuntime {
   constructor() {
@@ -198,16 +226,23 @@ export class AllureCypressTestRuntime implements TestRuntime {
     });
   }
 
-  flushMessages = (): PromiseLike<void> => this.#moveMessagesToAllureCypressTask("reportAllureCypressSpecMessages");
-
-  flushFinalMessages = (): PromiseLike<void> =>
-    this.#moveMessagesToAllureCypressTask("reportFinalAllureCypressSpecMessages");
-
-  #moveMessagesToAllureCypressTask = (taskName: string) => {
+  flushAllureMessagesToTask = (taskName: string) => {
     const messages = this.#dequeueAllMessages();
-    return messages.length
-      ? cy.task(taskName, { absolutePath: Cypress.spec.absolute, messages }, { log: false })
-      : Cypress.Promise.resolve();
+    if (messages.length) {
+      cy.task(taskName, { absolutePath: Cypress.spec.absolute, messages }, { log: false });
+    }
+  };
+
+  flushAllureMessagesToTaskAsync = (taskName: string): Cypress.Chainable<unknown> | undefined => {
+    const messages = this.#dequeueAllMessages();
+    if (messages.length) {
+      const args: AllureCypressTaskArgs = {
+        absolutePath: Cypress.spec.absolute,
+        messages,
+        isInteractive: Cypress.config("isInteractive"),
+      };
+      return cy.task(taskName, args, { log: false });
+    }
   };
 
   #resetMessages = () => setRuntimeMessages([]);
@@ -228,10 +263,6 @@ export const initTestRuntime = () => setGlobalTestRuntime(new AllureCypressTestR
 
 export const getTestRuntime = () => getGlobalTestRuntime() as AllureCypressTestRuntime;
 
-export const flushRuntimeMessages = () => getTestRuntime().flushMessages();
-
-export const flushFinalRuntimeMessages = () => getTestRuntime().flushFinalMessages();
-
 export const reportRunStart = () => {
   enqueueRuntimeMessage({
     type: "cypress_run_start",
@@ -239,38 +270,41 @@ export const reportRunStart = () => {
   });
 };
 
-export const reportSuiteStart = (suite: Mocha.Suite) => {
+export const reportSuiteStart = (suite: CypressSuite) => {
   enqueueRuntimeMessage({
     type: "cypress_suite_start",
     data: {
+      id: suite.id,
       name: suite.title,
-      root: !suite.parent,
+      root: suite.root,
       start: Date.now(),
     },
   });
 };
 
-export const reportSuiteEnd = (suite: Mocha.Suite) => {
+export const reportSuiteEnd = (suite: CypressSuite) => {
   enqueueRuntimeMessage({
     type: "cypress_suite_end",
     data: {
-      root: !suite.parent,
+      root: suite.root,
       stop: Date.now(),
     },
   });
 };
 
-export const reportHookStart = (hook: Mocha.Hook) => {
+export const reportHookStart = (hook: CypressHook, start?: number) => {
   enqueueRuntimeMessage({
     type: "cypress_hook_start",
     data: {
       name: hook.title,
-      start: Date.now(),
+      scopeType: hook.hookName.includes("each") ? "each" : "all",
+      position: hook.hookName.includes("before") ? "before" : "after",
+      start: start ?? Date.now(),
     },
   });
 };
 
-export const reportHookEnd = (hook: Mocha.Hook) => {
+export const reportHookEnd = (hook: CypressHook) => {
   enqueueRuntimeMessage({
     type: "cypress_hook_end",
     data: {
@@ -279,17 +313,11 @@ export const reportHookEnd = (hook: Mocha.Hook) => {
   });
 };
 
-export const reportTestStart = (test: CypressTest, flag?: string) => {
-  const x = getNamesAndLabels(Cypress.spec, test);
-  if (flag) {
-    x.labels.push({ name: "reported", value: flag });
-  }
+export const reportTestStart = (test: CypressTest) => {
+  setCurrentTest(test);
   enqueueRuntimeMessage({
     type: "cypress_test_start",
-    data: {
-      ...x,
-      start: test.wallClockStartedAt?.getTime() || Date.now(),
-    },
+    data: getTestStartData(test),
   });
   markTestAsReported(test);
 };
@@ -328,7 +356,7 @@ export const reportTestSkip = (test: CypressTest) => {
 
   enqueueRuntimeMessage({
     type: "cypress_test_skip",
-    data: {},
+    data: getTestSkipData(),
   });
 };
 
@@ -403,6 +431,118 @@ export const reportTestEnd = (test: CypressTest) => {
       retries: (test as any)._retries ?? 0,
     },
   });
+  dropCurrentTest();
+};
+
+export const completeHookErrorReporting = (hook: CypressHook, err: Error) => {
+  const isEachHook = hook.hookName.includes("each");
+  const suite = hook.parent!;
+  const testFailData = getStatusDataOfTestSkippedByHookError(hook.title, isEachHook, err, suite);
+
+  // Cypress doens't emit 'hook end' if the hook has failed.
+  reportHookEnd(hook);
+
+  // Cypress doens't emit 'test end' if the hook has failed.
+  // We must report the test's end manualy in case of a 'before each' hook.
+  reportCurrentTestIfAny();
+
+  // Cypress skips the remaining tests in the suite of a failed hook.
+  // We should include them to the report manually.
+  reportRemainingTests(suite, testFailData);
+};
+
+/**
+ * Patches the `after` function, to inject an extra `after` hook after each spec-level
+ * `after` hook defined by the user.
+ */
+export const enableScopeLevelAfterHookReporting = () => {
+  const [getSuiteDepth, incSuiteDepth, decSuiteDepth] = createSuiteDepthCounterState();
+  patchDescribe(incSuiteDepth, decSuiteDepth);
+  patchAfter(getSuiteDepth);
+};
+
+export const flushRuntimeMessages = () => getTestRuntime().flushAllureMessagesToTask("reportAllureCypressSpecMessages");
+
+export const completeSpec = () =>
+  getTestRuntime().flushAllureMessagesToTaskAsync("reportFinalAllureCypressSpecMessages");
+
+export const completeSpecIfNoAfterHookLeft = (context: Mocha.Context) => {
+  if (isLastRootAfterHook(context)) {
+    const hook = context.test as CypressHook;
+    if (!isAllureHook(hook)) {
+      reportHookEnd(hook);
+    }
+    return completeSpec();
+  }
+};
+
+const completeSpecOnAfterHookFailure = (
+  context: Mocha.Context,
+  hookError: Error,
+): Cypress.Chainable<unknown> | undefined => {
+  try {
+    reportTestOrHookFail(hookError);
+    completeHookErrorReporting(context.test as CypressHook, hookError);
+
+    // cy.task's then doesn't have onrejected, that's why we don't log async Allure errors here.
+    return completeSpec();
+  } catch (allureError) {
+    logAllureRootAfterError(context, allureError);
+  }
+};
+
+const reportCurrentTestIfAny = () => {
+  const currentTest = getCurrentTest();
+  if (currentTest) {
+    reportTestEnd(currentTest);
+  }
+};
+
+const reportRemainingTests = (suite: CypressSuite, testFailData: CypressFailMessage["data"]) => {
+  for (const test of iterateTests(suite)) {
+    // Some tests in the suite might've been already reported.
+    if (!isTestReported(test)) {
+      reportTestsSkippedByHookError(
+        test,
+        test.pending ? { ...getTestSkipData(), status: Status.SKIPPED } : testFailData,
+      );
+    }
+  }
+};
+
+const reportTestsSkippedByHookError = (test: CypressTest, testFailData: CypressFailMessage["data"]) => {
+  enqueueRuntimeMessage({
+    type: "cypress_skipped_test",
+    data: {
+      ...getTestStartData(test),
+      ...testFailData,
+      ...getTestStopData(test),
+      suites: getSuites(test).map((s) => s.id),
+    },
+  });
+  markTestAsReported(test);
+};
+
+const getStatusDataOfTestSkippedByHookError = (
+  hookTitle: string,
+  isEachHook: boolean,
+  err: Error,
+  suite: CypressSuite,
+) => {
+  const status = isEachHook ? Status.SKIPPED : getStatusFromError(err);
+  const { message, trace } = getMessageAndTraceFromError(err);
+  return {
+    status,
+    statusDetails: {
+      message: isEachHook ? getSkipReason(hookTitle, suite) : message,
+      trace,
+    },
+  };
+};
+
+const getSkipReason = (hookTitle: string, suite: CypressSuite) => {
+  const suiteName = suite.title ? `'${suite.title}'` : "root";
+  return `'${hookTitle}' defined in the ${suiteName} suite has failed`;
 };
 
 const forwardDescribeCall = (target: CypressSuiteFunction, ...args: Parameters<CypressSuiteFunction>) => {
@@ -451,26 +591,96 @@ const createSuiteDepthCounterState = (): [get: () => number, inc: () => void, de
 
 const patchAfter = (getSuiteDepth: () => number) => {
   const originalAfter = globalThis.after;
-  const patchedAfter = (nameOrFn: string | Mocha.Func | Mocha.AsyncFunc, fn?: Mocha.Func | Mocha.AsyncFunc): void => {
-    try {
-      return typeof nameOrFn === "string" ? originalAfter(nameOrFn, fn) : originalAfter(nameOrFn);
-    } finally {
-      if (getSuiteDepth() === 0) {
-        originalAfter(ALLURE_REPORT_SYSTEM_HOOK, () => {
-          flushRuntimeMessages();
-        });
-      }
-    }
+  const patchedAfter = (nameOrFn: string | HookImplementation, fn?: HookImplementation): void => {
+    return typeof nameOrFn === "string"
+      ? originalAfter(nameOrFn, wrapRootAfterFn(getSuiteDepth, fn))
+      : originalAfter(wrapRootAfterFn(getSuiteDepth, nameOrFn)!);
   };
   globalThis.after = patchedAfter;
 };
 
-/**
- * Patches the `after` function, to inject an extra `after` hook after each spec-level
- * `after` hook defined by the user.
- */
-export const enableScopeLevelAfterHookReporting = () => {
-  const [getSuiteDepth, incSuiteDepth, decSuiteDepth] = createSuiteDepthCounterState();
-  patchDescribe(incSuiteDepth, decSuiteDepth);
-  patchAfter(getSuiteDepth);
+const wrapRootAfterFn = (getSuiteDepth: () => number, fn?: HookImplementation): HookImplementation | undefined => {
+  if (getSuiteDepth() === 0 && fn) {
+    const wrappedFn = fn.length ? wrapAfterFnWithCallback(fn) : wrapAfterFnWithoutArgs(fn as DirectHookImplementation);
+    Object.defineProperty(wrappedFn, "name", { value: fn.name });
+    return wrappedFn;
+  }
+  return fn;
+};
+
+const wrapAfterFnWithCallback = (fn: Mocha.Func): Mocha.Func => {
+  return function (this: Mocha.Context, done: Mocha.Done) {
+    const wrappedDone = (hookError?: Error) => {
+      if (hookError) {
+        if (!completeSpecOnAfterHookFailure(this, hookError)?.then(() => done(hookError))) {
+          done(hookError);
+        }
+        return;
+      }
+
+      try {
+        if (completeSpecIfNoAfterHookLeft(this)?.then(() => done())) {
+          return;
+        }
+      } catch (allureError) {
+        done(allureError);
+        return;
+      }
+
+      done();
+    };
+    return fn.bind(this)(wrappedDone);
+  };
+};
+
+const wrapAfterFnWithoutArgs = (fn: DirectHookImplementation) => {
+  return function (this: Mocha.Context) {
+    let result;
+    let syncError: any;
+
+    try {
+      result = fn.bind(this)();
+    } catch (e) {
+      syncError = e;
+    }
+
+    if (syncError) {
+      throwAfterSpecCompletion(this, syncError);
+    } else if (isPromise(result)) {
+      return result.then(
+        () => completeSpecIfNoAfterHookLeft(this),
+        (asyncError) => throwAfterSpecCompletion(this, asyncError),
+      );
+    } else {
+      completeSpecIfNoAfterHookLeft(this);
+      return result;
+    }
+  };
+};
+
+const throwAfterSpecCompletion = (context: Mocha.Context, err: any) => {
+  const chain = completeSpecOnAfterHookFailure(context, err as Error)?.then(() => {
+    throw err;
+  });
+  if (!chain) {
+    throw err;
+  }
+};
+
+const logAllureRootAfterError = (context: Mocha.Context, err: unknown) => {
+  // We play safe and swallow errors here to keep the original 'after all' error.
+  try {
+    // eslint-disable-next-line no-console
+    console.error(`Unexpected error when reporting the failure of ${context.test?.title ?? "'after all'"}`);
+    // eslint-disable-next-line no-console
+    console.error(err);
+  } catch {}
+};
+
+const isLastRootAfterHook = (context: Mocha.Context) => {
+  const currentAfterAll = context.test as CypressHook;
+  const rootSuite = (context.test as CypressHook).parent!;
+  const hooks = (rootSuite as any).hooks as CypressHook[];
+  const lastAfterAll = hooks.findLast((h) => h.hookName === "after all");
+  return lastAfterAll?.hookId === currentAfterAll.hookId;
 };

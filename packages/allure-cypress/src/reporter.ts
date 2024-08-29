@@ -1,6 +1,7 @@
 import type Cypress from "cypress";
 import path from "node:path";
 import { ContentType, Stage, Status } from "allure-js-commons";
+import type { TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import {
   ReporterRuntime,
@@ -23,13 +24,15 @@ import type {
   CypressFailMessage,
   CypressHookEndMessage,
   CypressHookStartMessage,
+  CypressSkippedTestMessage,
   CypressSuiteEndMessage,
   CypressSuiteStartMessage,
   CypressTestEndMessage,
+  CypressTestSkipMessage,
   CypressTestStartMessage,
   SpecContext,
 } from "./model.js";
-import { getHookType, last } from "./utils.js";
+import { last } from "./utils.js";
 
 export class AllureCypress {
   allureRuntime: ReporterRuntime;
@@ -54,7 +57,11 @@ export class AllureCypress {
       },
       reportFinalAllureCypressSpecMessages: (args: AllureCypressTaskArgs) => {
         this.#applyAllureCypressMessages(args);
-        this.endSpec(args.absolutePath);
+        if (args.isInteractive) {
+          // In non-interactive mode the spec is ended via the 'after:spec' event instead
+          // to get the spec's video.
+          this.endSpec(args.absolutePath);
+        }
         return null;
       },
     });
@@ -73,8 +80,9 @@ export class AllureCypress {
    * you need to define your own handler or combine Allure Cypress with other
    * plugins. More info [here](https://github.com/allure-framework/allure-js/blob/main/packages/allure-cypress/README.md#setupnodeevents-limitations).
    * @param spec The first argument of the `after:spec` event.
-   * @param results The second argument of the `after:spec` event.
+   * @param results The second argument of the `after:spec` event. It's `undefined` in interactive mode.
    * @example
+   * ```javascript
    * import { defineConfig } from "cypress";
    * import { allureCypress } from "allure-cypress/reporter";
    *
@@ -88,17 +96,19 @@ export class AllureCypress {
    *   }
    *   // ...
    * });
+   * ```
    */
-  onAfterSpec = (spec: Cypress.Spec, results: CypressCommandLine.RunResult) => {
-    this.endSpec(spec.absolute, results.video ?? undefined);
+  onAfterSpec = (spec: Cypress.Spec, results: CypressCommandLine.RunResult | undefined) => {
+    this.endSpec(spec.absolute, results?.video ?? undefined);
   };
 
   /**
    * Forward the `after:run` event into Allure Cypress using this function if
    * you need to define your own handler or combine Allure Cypress with other
    * plugins. More info [here](https://github.com/allure-framework/allure-js/blob/main/packages/allure-cypress/README.md#setupnodeevents-limitations).
-   * @param results The argument of the `after:run` event.
+   * @param results The argument of the `after:run` event. It's `undefined` in interactive mode.
    * @example
+   * ```javascript
    * import { defineConfig } from "cypress";
    * import { allureCypress } from "allure-cypress/reporter";
    *
@@ -112,9 +122,12 @@ export class AllureCypress {
    *   }
    *   // ...
    * });
+   * ```
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onAfterRun = (results: CypressCommandLine.CypressFailedRunResult | CypressCommandLine.CypressRunResult) => {
+  onAfterRun = (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    results: CypressCommandLine.CypressFailedRunResult | CypressCommandLine.CypressRunResult | undefined,
+  ) => {
     this.endRun();
   };
 
@@ -171,10 +184,13 @@ export class AllureCypress {
           this.#passTest(context);
           break;
         case "cypress_fail":
-          this.#failTestOrHook(context, message);
+          this.#failHookAndTest(context, message);
           break;
         case "cypress_test_skip":
-          this.#skipTest(context);
+          this.#skipTest(context, message);
+          break;
+        case "cypress_skipped_test":
+          this.#addSkippedTest(context, message);
           break;
         case "cypress_test_end":
           this.#stopTest(context, message);
@@ -201,13 +217,20 @@ export class AllureCypress {
     this.#initializeSpecContext(absolutePath);
   };
 
-  #startSuite = (context: SpecContext, { data: { name, root } }: CypressSuiteStartMessage) => {
-    const scope = this.allureRuntime.startScope();
-    context.suiteScopes.push(scope);
+  #startSuite = (context: SpecContext, { data: { id, name, root } }: CypressSuiteStartMessage) => {
+    this.#pushNewSuiteScope(context, id);
     if (!root) {
       this.#emitPreviousTestScope(context);
       context.suiteNames.push(name);
     }
+  };
+
+  #pushNewSuiteScope = (context: SpecContext, suiteId: string) => {
+    const scope = this.allureRuntime.startScope();
+    context.suiteScopes.push(scope);
+    context.suiteIdToScope.set(suiteId, scope);
+    context.suiteScopeToId.set(scope, suiteId);
+    return scope;
   };
 
   #stopSuite = (context: SpecContext, { data: { root } }: CypressSuiteEndMessage) => {
@@ -215,29 +238,35 @@ export class AllureCypress {
     if (!root) {
       context.suiteNames.pop();
     }
+    this.#writeLastSuiteScope(context);
+  };
+
+  #writeLastSuiteScope = (context: SpecContext) => {
     const scope = context.suiteScopes.pop();
     if (scope) {
+      const suiteId = context.suiteScopeToId.get(scope);
+      if (suiteId) {
+        context.suiteScopeToId.delete(scope);
+        context.suiteIdToScope.delete(suiteId);
+      }
       this.allureRuntime.writeScope(scope);
     }
   };
 
-  #startHook = (context: SpecContext, { data: { name, start } }: CypressHookStartMessage) => {
-    const [hookPosition, hookScopeType] = getHookType(name);
-    if (hookPosition) {
-      const isEach = hookScopeType === "each";
-      const isAfterEach = hookPosition === "after" && isEach;
-      if (!isAfterEach) {
-        this.#emitPreviousTestScope(context);
-      }
+  #startHook = (context: SpecContext, { data: { name, scopeType, position, start } }: CypressHookStartMessage) => {
+    const isEach = scopeType === "each";
+    const isAfterEach = position === "after" && isEach;
+    if (!isAfterEach) {
+      this.#emitPreviousTestScope(context);
+    }
 
-      const scope = isEach ? context.testScope : last(context.suiteScopes);
-      if (scope) {
-        context.fixture = this.allureRuntime.startFixture(scope, hookPosition, {
-          name,
-          start,
-          status: undefined,
-        });
-      }
+    const scope = isEach ? context.testScope : last(context.suiteScopes);
+    if (scope) {
+      context.fixture = this.allureRuntime.startFixture(scope, position, {
+        name,
+        start,
+        status: undefined,
+      });
     }
   };
 
@@ -252,18 +281,20 @@ export class AllureCypress {
     }
   };
 
-  #startTest = (
-    context: SpecContext,
-    { data: { name, fullName, start, labels: metadataLabels } }: CypressTestStartMessage,
-  ) => {
+  #startTest = (context: SpecContext, { data }: CypressTestStartMessage) => {
     this.#emitPreviousTestScope(context);
     const testScope = this.allureRuntime.startScope();
     context.testScope = testScope;
-    context.test = this.allureRuntime.startTest(
+    context.test = this.#addNewTestResult(context, data, [context.videoScope, ...context.suiteScopes, testScope]);
+  };
+
+  #addNewTestResult = (
+    context: SpecContext,
+    { labels: metadataLabels = [], ...otherTestData }: Partial<TestResult>,
+    scopes: string[],
+  ) =>
+    this.allureRuntime.startTest(
       {
-        name,
-        start,
-        fullName,
         stage: Stage.RUNNING,
         labels: [
           getLanguageLabel(),
@@ -276,12 +307,12 @@ export class AllureCypress {
           getThreadLabel(),
           getPackageLabel(context.specPath),
         ],
+        ...otherTestData,
       },
-      [context.videoScope, ...context.suiteScopes, testScope],
+      scopes,
     );
-  };
 
-  #failTestOrHook = (context: SpecContext, { data: { status, statusDetails } }: CypressFailMessage) => {
+  #failHookAndTest = (context: SpecContext, { data: { status, statusDetails } }: CypressFailMessage) => {
     const setError = (result: object) => Object.assign(result, { status, statusDetails });
 
     const fixtureUuid = context.fixture;
@@ -306,33 +337,52 @@ export class AllureCypress {
     }
   };
 
-  #skipTest = (context: SpecContext) => {
+  #skipTest = (context: SpecContext, { data: { statusDetails } }: CypressTestSkipMessage) => {
     const testUuid = context.test;
     if (testUuid) {
       this.allureRuntime.updateTest(testUuid, (testResult) => {
         testResult.status = Status.SKIPPED;
-        testResult.statusDetails = { message: "The test was skipped" };
+        if (statusDetails) {
+          testResult.statusDetails = statusDetails;
+        }
       });
     }
   };
 
-  #stopTest = (context: SpecContext, { data: { retries, duration } }: CypressTestEndMessage) => {
+  #addSkippedTest = (
+    context: SpecContext,
+    { data: { suites, duration, retries, ...testResultData } }: CypressSkippedTestMessage,
+  ) => {
+    // Tests skipped because of a hook error may share all suites of the current context
+    // or just a part thereof (if it's from a sibling suite).
+    const scopes = suites.map((s) => context.suiteIdToScope.get(s)).filter((s): s is string => Boolean(s));
+
+    const testUuid = this.#addNewTestResult(context, testResultData, [context.videoScope, ...scopes]);
+    this.#stopExistingTestResult(testUuid, { duration, retries });
+    this.allureRuntime.writeTest(testUuid);
+  };
+
+  #stopTest = (context: SpecContext, { data }: CypressTestEndMessage) => {
     const testUuid = context.test;
     if (testUuid) {
-      this.allureRuntime.updateTest(testUuid, (testResult) => {
-        if (retries > 0) {
-          testResult.parameters.push({
-            name: "Retry",
-            value: retries.toString(),
-            excluded: true,
-          });
-        }
-        testResult.stage = Stage.FINISHED;
-      });
-      this.allureRuntime.stopTest(testUuid, { duration });
+      this.#stopExistingTestResult(testUuid, data);
       this.allureRuntime.writeTest(testUuid);
       context.test = undefined;
     }
+  };
+
+  #stopExistingTestResult = (testUuid: string, { retries, duration }: CypressTestEndMessage["data"]) => {
+    this.allureRuntime.updateTest(testUuid, (testResult) => {
+      if (retries > 0) {
+        testResult.parameters.push({
+          name: "Retry",
+          value: retries.toString(),
+          excluded: true,
+        });
+      }
+      testResult.stage = Stage.FINISHED;
+    });
+    this.allureRuntime.stopTest(testUuid, { duration });
   };
 
   #startCommand = (context: SpecContext, { data: { name, args } }: CypressCommandStartMessage) => {
@@ -378,7 +428,7 @@ export class AllureCypress {
    * method in the following cases:
    * - when an `after` hook of the test starts (`after` hooks are called later than `afterEach`)
    * - when a `before` or `beforeEach` hook of the next test starts (in case the next test has `before`/`beforeEach` hooks)
-   * - when the next test start (in case the next test doesn't have `before`/`beforeEach` hooks)
+   * - when the next test starts (in case the next test doesn't have `before`/`beforeEach` hooks)
    * - when the test's suite ends (in case the test is the last one in its suite, including the root suite of the spec)
    * - when a nested suite starts
    * - when the spec ends
@@ -421,13 +471,15 @@ export class AllureCypress {
 
   #initializeSpecContext = (absolutePath: string) => {
     const specPathElements = path.relative(process.cwd(), absolutePath).split(path.sep);
-    const context = {
+    const context: SpecContext = {
       specPath: specPathElements.join("/"),
       package: specPathElements.join("."),
       test: undefined,
       fixture: undefined,
       commandSteps: [],
       videoScope: this.allureRuntime.startScope(),
+      suiteIdToScope: new Map(),
+      suiteScopeToId: new Map(),
       suiteScopes: [],
       testScope: undefined,
       suiteNames: [],
@@ -458,6 +510,7 @@ export const enableTestPlan = (config: Cypress.PluginConfigOptions) => {
  * @param cypressConfig The Cypress configuration (the second argument of `setupNodeEvents`). If provided, the selective run feature will be enabled.
  * @param allureConfig An Allure configuration object (optional).
  * @example
+ * ```javascript
  * import { defineConfig } from "cypress";
  * import { allureCypress } from "allure-cypress/reporter";
  *
@@ -470,6 +523,7 @@ export const enableTestPlan = (config: Cypress.PluginConfigOptions) => {
  *     // ...
  *   }
  * });
+ * ```
  */
 export const allureCypress = (
   on: Cypress.PluginEvents,
