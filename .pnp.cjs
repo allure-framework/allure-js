@@ -3599,14 +3599,14 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["npm:25.0.1", {\
-        "packageLocation": "./.yarn/cache/@cucumber-messages-npm-25.0.1-a26e036dcc-ed3d4554cf.zip/node_modules/@cucumber/messages/",\
+      ["npm:26.0.0", {\
+        "packageLocation": "./.yarn/cache/@cucumber-messages-npm-26.0.0-2a3a1e5b4e-3518b38c0a.zip/node_modules/@cucumber/messages/",\
         "packageDependencies": [\
-          ["@cucumber/messages", "npm:25.0.1"],\
-          ["@types/uuid", "npm:9.0.8"],\
+          ["@cucumber/messages", "npm:26.0.0"],\
+          ["@types/uuid", "npm:10.0.0"],\
           ["class-transformer", "npm:0.5.1"],\
           ["reflect-metadata", "npm:0.2.2"],\
-          ["uuid", "npm:9.0.1"]\
+          ["uuid", "npm:10.0.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -5480,6 +5480,13 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@types/uuid", [\
+      ["npm:10.0.0", {\
+        "packageLocation": "./.yarn/cache/@types-uuid-npm-10.0.0-9ac1066765-e3958f8b0f.zip/node_modules/@types/uuid/",\
+        "packageDependencies": [\
+          ["@types/uuid", "npm:10.0.0"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
       ["npm:9.0.1", {\
         "packageLocation": "./.yarn/cache/@types-uuid-npm-9.0.1-b44e45eb8a-c472b8a77c.zip/node_modules/@types/uuid/",\
         "packageDependencies": [\
@@ -6109,7 +6116,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/preset-env", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:7.24.6"],\
           ["@babel/preset-typescript", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:7.24.6"],\
           ["@cucumber/cucumber", "npm:10.8.0"],\
-          ["@cucumber/messages", "npm:25.0.1"],\
+          ["@cucumber/messages", "npm:26.0.0"],\
           ["@stylistic/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:2.6.1"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.9.6"],\
@@ -18130,6 +18137,13 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["uuid", [\
+      ["npm:10.0.0", {\
+        "packageLocation": "./.yarn/cache/uuid-npm-10.0.0-4872b46ff8-35aa606148.zip/node_modules/uuid/",\
+        "packageDependencies": [\
+          ["uuid", "npm:10.0.0"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
       ["npm:3.4.0", {\
         "packageLocation": "./.yarn/cache/uuid-npm-3.4.0-4fd8ef88ad-4f2b86432b.zip/node_modules/uuid/",\
         "packageDependencies": [\
