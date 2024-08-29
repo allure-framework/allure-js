@@ -78,7 +78,7 @@ class AllureReporter {
       return;
     }
 
-    currentPmItem.prerequest = args.executions[0]?.script.exec?.join("\n");
+    currentPmItem.prerequest = args.executions[0]?.script?.exec?.join("\n");
   }
 
   onBeforeItem(err: any, args: { item: Item; cursor: Cursor }) {
@@ -266,7 +266,7 @@ class AllureReporter {
       return;
     }
 
-    const execScript = args.executions[0]?.script.exec?.join("\n");
+    const execScript = args.executions[0]?.script?.exec?.join("\n");
 
     if (!execScript) {
       return;
