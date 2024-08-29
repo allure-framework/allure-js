@@ -1,6 +1,7 @@
 import type { IFormatterOptions, TestCaseHookDefinition } from "@cucumber/cucumber";
 import { Formatter, World } from "@cucumber/cucumber";
 import type * as messages from "@cucumber/messages";
+import { TimeConversion } from "@cucumber/messages";
 import {
   AttachmentContentEncoding,
   type PickleTag,
@@ -243,7 +244,7 @@ export default class AllureCucumberReporter extends Formatter {
       labels: [],
       links: [],
       testCaseId: md5(fullName),
-      start: data.timestamp.nanos / 1000,
+      start: TimeConversion.timestampToMillisecondsSinceEpoch(data.timestamp),
       fullName,
     };
 
@@ -318,7 +319,7 @@ export default class AllureCucumberReporter extends Formatter {
         };
       }
     });
-    this.allureRuntime.stopTest(testUuid, { stop: data.timestamp.nanos / 1000 });
+    this.allureRuntime.stopTest(testUuid, { stop: TimeConversion.timestampToMillisecondsSinceEpoch(data.timestamp) });
     this.allureRuntime.writeTest(testUuid);
     this.testResultUuids.delete(data.testCaseStartedId);
 
@@ -353,7 +354,7 @@ export default class AllureCucumberReporter extends Formatter {
       const fixtureUuid = this.allureRuntime.startFixture(scopeUuid, type, {
         name,
         stage: Stage.RUNNING,
-        start: data.timestamp.nanos / 1000,
+        start: TimeConversion.timestampToMillisecondsSinceEpoch(data.timestamp),
       });
       if (fixtureUuid) {
         this.fixtureUuids.set(data.testCaseStartedId, fixtureUuid);
@@ -380,7 +381,7 @@ export default class AllureCucumberReporter extends Formatter {
     const stepUuid = this.allureRuntime.startStep(testUuid, undefined, {
       ...createStepResult(),
       name: `${stepKeyword}${stepPickle.text}`,
-      start: data.timestamp.nanos / 1000,
+      start: TimeConversion.timestampToMillisecondsSinceEpoch(data.timestamp),
     });
 
     if (!stepPickle.argument?.dataTable) {
@@ -424,7 +425,9 @@ export default class AllureCucumberReporter extends Formatter {
           });
         }
       });
-      this.allureRuntime.stopFixture(fixtureUuid, { stop: data.timestamp.nanos / 1000 });
+      this.allureRuntime.stopFixture(fixtureUuid, {
+        stop: TimeConversion.timestampToMillisecondsSinceEpoch(data.timestamp),
+      });
       this.fixtureUuids.delete(data.testCaseStartedId);
       return;
     }
@@ -455,7 +458,9 @@ export default class AllureCucumberReporter extends Formatter {
       }
     });
 
-    this.allureRuntime.stopStep(currentStep, { stop: data.timestamp.nanos / 1000 });
+    this.allureRuntime.stopStep(currentStep, {
+      stop: TimeConversion.timestampToMillisecondsSinceEpoch(data.timestamp),
+    });
   }
 
   private onAttachment(message: messages.Attachment): void {
