@@ -26,6 +26,7 @@ import { ALLURE_REPORT_STEP_COMMAND } from "./model.js";
 import {
   dropCurrentTest,
   enqueueRuntimeMessage,
+  getConfig,
   getCurrentTest,
   getRuntimeMessages,
   setCurrentTest,
@@ -40,6 +41,7 @@ import {
   isTestReported,
   iterateTests,
   markTestAsReported,
+  stringifyCommandArgument,
   uint8ArrayToBase64,
 } from "./utils.js";
 
@@ -361,11 +363,12 @@ export const reportTestSkip = (test: CypressTest) => {
 };
 
 export const reportCommandStart = (command: CypressCommand) => {
+  const { maxArgumentDepth, maxArgumentLength } = getConfig().stepsFromCommands;
   enqueueRuntimeMessage({
     type: "cypress_command_start",
     data: {
       name: `Command "${command.attributes.name}"`,
-      args: command.attributes.args.map((arg) => (typeof arg === "string" ? arg : JSON.stringify(arg, null, 2))),
+      args: command.attributes.args.map((arg) => stringifyCommandArgument(arg, maxArgumentLength, maxArgumentDepth)),
       start: Date.now(),
     },
   });
