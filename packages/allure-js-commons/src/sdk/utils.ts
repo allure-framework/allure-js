@@ -141,3 +141,15 @@ export const getUnfinishedStepsMessages = (messages: RuntimeMessage[]) => {
 
 export const isPromise = <T = any>(obj: any): obj is PromiseLike<T> =>
   !!obj && (typeof obj === "object" || typeof obj === "function") && typeof obj.then === "function";
+
+export const serialize = (val: unknown): string => {
+  if (typeof val === "object" && !(val instanceof Map || val instanceof Set)) {
+    return JSON.stringify(val);
+  }
+
+  if (val === undefined) {
+    return "undefined";
+  }
+
+  return (val as any).toString();
+};

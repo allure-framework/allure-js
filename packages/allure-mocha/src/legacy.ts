@@ -3,7 +3,7 @@ import type { ContentType, ParameterOptions } from "allure-js-commons";
 import { Status } from "allure-js-commons";
 import type { Category } from "allure-js-commons/sdk";
 import { getStatusFromError, isPromise } from "allure-js-commons/sdk";
-import { serialize } from "allure-js-commons/sdk/reporter";
+import { serialize } from "allure-js-commons/sdk";
 import { getLegacyApiRuntime } from "./legacyUtils.js";
 
 interface StepInterface {

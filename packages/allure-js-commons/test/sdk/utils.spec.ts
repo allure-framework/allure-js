@@ -8,6 +8,7 @@ import {
   getStatusFromError,
   isAnyStepFailed,
   isMetadataTag,
+  serialize,
 } from "../../src/sdk/utils.js";
 
 type Executable = StepResult | TestResult | FixtureResult;
@@ -264,5 +265,60 @@ describe("isMetadataTag", () => {
   });
   it("should match @allure.label tag", () => {
     expect(isMetadataTag("@allure.label.x=y")).toBeTruthy();
+  });
+});
+
+describe("serialize", () => {
+  describe("with object", () => {
+    it("returns JSON string", () => {
+      // eslint-disable-next-line @stylistic/quotes
+      expect(serialize({ foo: "bar" })).toBe('{"foo":"bar"}');
+    });
+  });
+
+  describe("with array", () => {
+    it("returns JSON string", () => {
+      // eslint-disable-next-line @stylistic/quotes
+      expect(serialize(["foo", "bar"])).toBe('["foo","bar"]');
+    });
+  });
+
+  describe("with map", () => {
+    it("returns JSON string", () => {
+      expect(serialize(new Map([["foo", "bar"]]))).toBe("[object Map]");
+    });
+  });
+
+  describe("with set", () => {
+    it("returns JSON string", () => {
+      expect(serialize(new Set(["foo", "bar"]))).toBe("[object Set]");
+    });
+  });
+
+  describe("with undefined", () => {
+    it("returns undefined string", () => {
+      expect(serialize(undefined)).toBe("undefined");
+    });
+  });
+
+  describe("with null", () => {
+    it("returns null string", () => {
+      expect(serialize(null)).toBe("null");
+    });
+  });
+
+  describe("with function", () => {
+    it("returns function string", () => {
+      expect(serialize(() => {})).toBe("() => {\n      }");
+    });
+  });
+
+  describe("with primitives", () => {
+    it("returns stringified value", () => {
+      // eslint-disable-next-line @stylistic/quotes
+      expect(serialize("foo")).toBe("foo");
+      expect(serialize(123)).toBe("123");
+      expect(serialize(true)).toBe("true");
+    });
   });
 });
