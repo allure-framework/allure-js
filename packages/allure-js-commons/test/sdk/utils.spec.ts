@@ -269,56 +269,87 @@ describe("isMetadataTag", () => {
 });
 
 describe("serialize", () => {
-  describe("with object", () => {
-    it("returns JSON string", () => {
-      // eslint-disable-next-line @stylistic/quotes
-      expect(serialize({ foo: "bar" })).toBe('{"foo":"bar"}');
+  describe("called with a primitive", () => {
+    describe("undefined", () => {
+      it("should return the 'undefined' constant", () => {
+        expect(serialize(undefined)).toBe("undefined");
+      });
+    });
+
+    describe("null", () => {
+      it("should return the 'null' constant", () => {
+        expect(serialize(null)).toBe("null");
+      });
+    });
+
+    describe("symbol", () => {
+      it("should return the same value as .toString()", () => {
+        const symbol = Symbol("foo");
+        expect(serialize(symbol)).toBe(symbol.toString());
+      });
+    });
+
+    describe("number", () => {
+      it("should return the text of the number", () => {
+        expect(serialize(1)).toBe("1");
+        expect(serialize(1.5)).toBe("1.5");
+      });
+    });
+
+    describe("bigint", () => {
+      it("should return the text of the bit int", () => {
+        expect(serialize(BigInt(1000000000000000) * BigInt(1000000000000000))).toBe("1000000000000000000000000000000");
+      });
+    });
+
+    describe("boolean", () => {
+      it("should return the 'true' or 'false' constant", () => {
+        expect(serialize(true)).toBe("true");
+        expect(serialize(false)).toBe("false");
+      });
+    });
+
+    describe("string", () => {
+      it("should return the string itself", () => {
+        expect(serialize("")).toBe("");
+        expect(serialize("foo")).toBe("foo");
+      });
     });
   });
 
-  describe("with array", () => {
-    it("returns JSON string", () => {
-      // eslint-disable-next-line @stylistic/quotes
-      expect(serialize(["foo", "bar"])).toBe('["foo","bar"]');
+  describe("called with an object", () => {
+    it("should return the same serialized object as JSON.stringify", () => {
+      expect(serialize({})).toBe(JSON.stringify({}));
+      expect(serialize({ foo: "bar" })).toBe(JSON.stringify({ foo: "bar" }));
+      expect(serialize({ foo: "bar", baz: "qux" })).toBe(JSON.stringify({ foo: "bar", baz: "qux" }));
+      expect(serialize({ foo: {bar: "qux"} })).toBe(JSON.stringify({ foo: {bar: "qux"} }));
     });
-  });
 
-  describe("with map", () => {
-    it("returns JSON string", () => {
-      expect(serialize(new Map([["foo", "bar"]]))).toBe("[object Map]");
+    describe("of type Array", () => {
+      it("should return the same serialized array as JSON.stringify", () => {
+        expect(serialize([])).toBe(JSON.stringify([]));
+        expect(serialize([1])).toBe(JSON.stringify([1]));
+        expect(serialize([1, "foo"])).toBe(JSON.stringify([1, "foo"]));
+        expect(serialize([1, "foo", [2, {bar: "baz"}]])).toBe(JSON.stringify([1, "foo", [2, {bar: "baz"}]]));
+      });
     });
-  });
 
-  describe("with set", () => {
-    it("returns JSON string", () => {
-      expect(serialize(new Set(["foo", "bar"]))).toBe("[object Set]");
+    describe("of type Map", () => {
+      it("should return array of the key-value pairs", () => {
+        expect(serialize(new Map())).toBe("[]");
+        expect(serialize(new Map([]))).toBe("[]");
+        expect(serialize(new Map([["foo", "bar"]]))).toBe(String.raw`[["foo","bar"]]`);
+        expect(serialize(new Map([[1, "foo"], [2, "bar"]]))).toBe(String.raw`[[1,"foo"],[2,"bar"]]`);
+      });
     });
-  });
 
-  describe("with undefined", () => {
-    it("returns undefined string", () => {
-      expect(serialize(undefined)).toBe("undefined");
-    });
-  });
-
-  describe("with null", () => {
-    it("returns null string", () => {
-      expect(serialize(null)).toBe("null");
-    });
-  });
-
-  describe("with function", () => {
-    it("returns function string", () => {
-      expect(serialize(() => {})).toBe("() => {\n      }");
-    });
-  });
-
-  describe("with primitives", () => {
-    it("returns stringified value", () => {
-      // eslint-disable-next-line @stylistic/quotes
-      expect(serialize("foo")).toBe("foo");
-      expect(serialize(123)).toBe("123");
-      expect(serialize(true)).toBe("true");
+    describe("of type Set", () => {
+      it("should return array of the set elements", () => {
+        expect(serialize(new Set())).toBe("[]");
+        expect(serialize(new Set([]))).toBe("[]");
+        expect(serialize(new Set([1]))).toBe("[1]");
+        expect(serialize(new Set([1, "foo", 2]))).toBe(String.raw`[1,"foo",2]`);
+      });
     });
   });
 });

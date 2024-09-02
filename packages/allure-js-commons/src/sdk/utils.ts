@@ -143,7 +143,10 @@ export const isPromise = <T = any>(obj: any): obj is PromiseLike<T> =>
   !!obj && (typeof obj === "object" || typeof obj === "function") && typeof obj.then === "function";
 
 export const serialize = (val: unknown): string => {
-  if (typeof val === "object" && !(val instanceof Map || val instanceof Set)) {
+  if (typeof val === "object") {
+    if (val instanceof Map || val instanceof Set) {
+      val = Array.from(val);
+    }
     return JSON.stringify(val);
   }
 
