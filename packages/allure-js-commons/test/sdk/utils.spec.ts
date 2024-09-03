@@ -355,6 +355,14 @@ describe("serialize", () => {
       const obj6: any = [1, "Lorem", ["Ipsum"]];
       obj6[2].push(obj6);
       expect(serialize(obj6)).toBe(JSON.stringify([1, "Lorem", ["Ipsum", null]]));
+
+      const obj7: Map<number, any> = new Map();
+      obj7.set(1, obj7);
+      expect(serialize(obj7)).toBe(JSON.stringify([[1, null]]));
+
+      const obj8: Set<any> = new Set();
+      obj8.add(obj8);
+      expect(serialize(obj8)).toBe(JSON.stringify([null]));
     });
 
     it("should limit the maximum size of the serialized object", () => {
@@ -371,6 +379,26 @@ describe("serialize", () => {
             // only primitives are included
             qux: 2,
           },
+        }),
+      );
+    });
+
+    it("should replace nested maps and sets with arrays", () => {
+      expect(
+        serialize({
+          foo: new Map([
+            [1, "a"],
+            [2, "b"],
+          ]),
+          bar: new Set([1, 2]),
+        }),
+      ).toBe(
+        JSON.stringify({
+          foo: [
+            [1, "a"],
+            [2, "b"],
+          ],
+          bar: [1, 2],
         }),
       );
     });

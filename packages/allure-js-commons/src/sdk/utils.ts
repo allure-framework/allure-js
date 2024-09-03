@@ -144,33 +144,43 @@ export const isPromise = <T = any>(obj: any): obj is PromiseLike<T> =>
 
 export const serialize = (value: any, { maxDepth = 0, maxLength = 0 }: SerializeOptions = {}): string =>
   limitString(
-    typeof value === "object"
-      ? JSON.stringify(
-          value instanceof Map || value instanceof Set ? Array.from(value) : value,
-          createSerializeReplacer(maxDepth),
-        )
-      : String(value),
+    typeof value === "object" ? JSON.stringify(value, createSerializeReplacer(maxDepth)) : String(value),
     maxLength,
   );
 
 const createSerializeReplacer = (maxDepth: number) => {
   const parents: any[] = [];
-  return function (this: any, _: string, v: unknown) {
-    if (typeof v !== "object" || v === null) {
-      return v;
+  return function (this: any, _: string, value: unknown) {
+    if (typeof value !== "object" || value === null) {
+      return value;
     }
 
     while (parents.length > 0 && !Object.is(parents.at(-1), this)) {
       parents.pop();
     }
 
-    if ((maxDepth && parents.length >= maxDepth) || parents.includes(v)) {
+    if ((maxDepth && parents.length >= maxDepth) || parents.includes(value)) {
       return undefined;
     }
 
-    parents.push(v);
-    return v;
+    parents.push(value);
+
+    return value instanceof Map
+      ? excludeCircularRefsFromMap(parents, value)
+      : value instanceof Set
+        ? excludeCircularRefsFromSet(parents, value)
+        : value;
   };
+};
+
+const excludeCircularRefsFromMap = (parents: any[], map: Map<any, any>) => {
+  return Array.from(map)
+    .filter(([k]) => !parents.includes(k))
+    .map(([k, v]) => [k, parents.includes(v) ? undefined : v]);
+};
+
+const excludeCircularRefsFromSet = (parents: any[], set: Set<any>) => {
+  return Array.from(set).map((v) => (parents.includes(v) ? undefined : v));
 };
 
 const limitString = (value: string, maxLength: number) =>
