@@ -166,33 +166,3 @@ const removeSortedIndices = <T>(arr: T[], indices: readonly number[]) => {
     arr.splice(indices[i], 1);
   }
 };
-
-export const stringifyCommandArgument = (value: any, maxLength: number, maxDepth: number) => {
-  if (typeof value === "string") {
-    return limitString(value, maxLength);
-  }
-
-  const parents: object[] = [];
-  const circularReferenceRemover = function (this: object, _: string, v: unknown) {
-    if (typeof v !== "object" || v === null) {
-      return v;
-    }
-
-    while (parents.length > 0 && !Object.is(parents.at(-1), this)) {
-      parents.pop();
-    }
-
-    if (parents.length >= maxDepth + 1 || parents.includes(v)) {
-      return undefined;
-    }
-
-    parents.push(v);
-    return v;
-  };
-
-  const argumentText = JSON.stringify(value, circularReferenceRemover);
-  return limitString(argumentText, maxLength);
-};
-
-const limitString = (value: string, maxLength: number) =>
-  value.length <= maxLength ? value : `${value.substring(0, maxLength)}...`;

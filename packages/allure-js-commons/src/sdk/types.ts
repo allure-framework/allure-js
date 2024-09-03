@@ -110,3 +110,8 @@ export interface AllureResults {
   envInfo?: EnvironmentInfo;
   categories?: Category[];
 }
+
+export type SerializeOptions = {
+  maxDepth?: number;
+  maxLength?: number;
+};

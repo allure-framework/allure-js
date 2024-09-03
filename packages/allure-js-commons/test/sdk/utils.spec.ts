@@ -314,6 +314,10 @@ describe("serialize", () => {
         expect(serialize("")).toBe("");
         expect(serialize("foo")).toBe("foo");
       });
+
+      it("should limit the maximum length of the serialized string", () => {
+        expect(serialize("foobar".repeat(2), { maxLength: 5 })).toBe("fooba...");
+      });
     });
   });
 
@@ -322,7 +326,53 @@ describe("serialize", () => {
       expect(serialize({})).toBe(JSON.stringify({}));
       expect(serialize({ foo: "bar" })).toBe(JSON.stringify({ foo: "bar" }));
       expect(serialize({ foo: "bar", baz: "qux" })).toBe(JSON.stringify({ foo: "bar", baz: "qux" }));
-      expect(serialize({ foo: {bar: "qux"} })).toBe(JSON.stringify({ foo: {bar: "qux"} }));
+      expect(serialize({ foo: { bar: "qux" } })).toBe(JSON.stringify({ foo: { bar: "qux" } }));
+    });
+
+    it("should preclude circular references", () => {
+      const obj1: any = {};
+      obj1.ref = obj1; // a reference to the direct parent
+      expect(serialize(obj1)).toBe(JSON.stringify({}));
+
+      const obj2: any = {};
+      obj2.ref = { ref: obj2 }; // a reference to the parent of the parent
+      expect(serialize(obj2)).toBe(JSON.stringify({ ref: {} }));
+
+      const sharedObject = { baz: "qux" };
+      const obj3 = { foo: sharedObject, bar: sharedObject }; // diamond-shaped refs; no cycles though
+      expect(serialize(obj3)).toBe(JSON.stringify({ foo: { baz: "qux" }, bar: { baz: "qux" } }));
+
+      const obj4: any = { foo: "Lorem", bar: { baz: "Ipsum" } };
+      obj4.bar.ref = obj4.bar; // A reference to the parent, but the node also has another property
+      expect(serialize(obj4)).toBe(JSON.stringify({ foo: "Lorem", bar: { baz: "Ipsum" } }));
+
+      // Arrays adhere to the same rules (but 'null' is inserted for each excluded circular reference;
+      // otherwise the result may be confusing)
+      const obj5: any[] = [];
+      obj5.push(obj5);
+      expect(serialize(obj5)).toBe(JSON.stringify([null]));
+
+      const obj6: any = [1, "Lorem", ["Ipsum"]];
+      obj6[2].push(obj6);
+      expect(serialize(obj6)).toBe(JSON.stringify([1, "Lorem", ["Ipsum", null]]));
+    });
+
+    it("should limit the maximum size of the serialized object", () => {
+      expect(serialize(Array(1000).fill(1), { maxLength: 5 })).toBe("[1,1,...");
+    });
+
+    it("should limit the maximum nesting level of the object", () => {
+      expect(serialize({ foo: 1, bar: { baz: {}, qux: 2 } }, { maxDepth: 2 })).toBe(
+        JSON.stringify({
+          // this is nesting level 1
+          foo: 1,
+          bar: {
+            // this is nesting level 2
+            // only primitives are included
+            qux: 2,
+          },
+        }),
+      );
     });
 
     describe("of type Array", () => {
@@ -330,7 +380,7 @@ describe("serialize", () => {
         expect(serialize([])).toBe(JSON.stringify([]));
         expect(serialize([1])).toBe(JSON.stringify([1]));
         expect(serialize([1, "foo"])).toBe(JSON.stringify([1, "foo"]));
-        expect(serialize([1, "foo", [2, {bar: "baz"}]])).toBe(JSON.stringify([1, "foo", [2, {bar: "baz"}]]));
+        expect(serialize([1, "foo", [2, { bar: "baz" }]])).toBe(JSON.stringify([1, "foo", [2, { bar: "baz" }]]));
       });
     });
 
@@ -339,7 +389,14 @@ describe("serialize", () => {
         expect(serialize(new Map())).toBe("[]");
         expect(serialize(new Map([]))).toBe("[]");
         expect(serialize(new Map([["foo", "bar"]]))).toBe(String.raw`[["foo","bar"]]`);
-        expect(serialize(new Map([[1, "foo"], [2, "bar"]]))).toBe(String.raw`[[1,"foo"],[2,"bar"]]`);
+        expect(
+          serialize(
+            new Map([
+              [1, "foo"],
+              [2, "bar"],
+            ]),
+          ),
+        ).toBe(String.raw`[[1,"foo"],[2,"bar"]]`);
       });
     });
 

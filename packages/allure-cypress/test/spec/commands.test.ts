@@ -97,7 +97,7 @@ it("should impose limits on command arguments", async () => {
 
         cy.wrap("A".repeat(1000)); // should truncate string values
         cy.wrap(Array(1000).fill("A")); // should truncate objects
-        cy.wrap({ foo: { bar: { baz: { qux: {}, qut: 10 } } } }) // should remove 'qux' at nesting level 4 but keep 'qut'
+        cy.wrap({ foo: { bar: { baz: {}, qux: "qut" } } }) // should remove 'baz' because it creates nesting level 4
       });
     `,
   });
@@ -149,7 +149,7 @@ it("should impose limits on command arguments", async () => {
           parameters: [
             {
               name: "Argument [0]",
-              value: JSON.stringify({ foo: { bar: { baz: { qut: 10 } } } }),
+              value: JSON.stringify({ foo: { bar: { qux: "qut" } } }),
             },
           ],
         }),
@@ -165,7 +165,7 @@ it("should take the limits from the config", async () => {
       it("foo", () => {
         cy.wrap("A".repeat(100)); // should truncate string values
         cy.wrap(Array(100).fill("A")); // should truncate objects
-        cy.wrap({ foo: { bar: { }, baz: "qux" } }) // should remove 'bar' at nesting level 2 but keep 'baz'
+        cy.wrap({ foo: { bar: { }, baz: "qux" } }) // should remove 'bar' that creates nesting level 3 but keep 'baz'
       });
     `,
     "cypress.config.js": ({ allureCypressModuleBasePath }) => `
@@ -179,7 +179,7 @@ it("should take the limits from the config", async () => {
             allureCypress(on, config, {
               stepsFromCommands: {
                 maxArgumentLength: 25,
-                maxArgumentDepth: 1,
+                maxArgumentDepth: 2,
               }
             });
 

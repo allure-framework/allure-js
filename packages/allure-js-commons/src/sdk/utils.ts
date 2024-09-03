@@ -1,6 +1,6 @@
 import type { FixtureResult, Label, StatusDetails, StepResult, TestResult } from "../model.js";
 import { LabelName, Status } from "../model.js";
-import type { RuntimeMessage } from "./types.js";
+import type { RuntimeMessage, SerializeOptions } from "./types.js";
 
 export const getStatusFromError = (error: Error): Status => {
   switch (true) {
@@ -142,17 +142,36 @@ export const getUnfinishedStepsMessages = (messages: RuntimeMessage[]) => {
 export const isPromise = <T = any>(obj: any): obj is PromiseLike<T> =>
   !!obj && (typeof obj === "object" || typeof obj === "function") && typeof obj.then === "function";
 
-export const serialize = (val: unknown): string => {
-  if (typeof val === "object") {
-    if (val instanceof Map || val instanceof Set) {
-      val = Array.from(val);
+export const serialize = (value: any, { maxDepth = 0, maxLength = 0 }: SerializeOptions = {}): string =>
+  limitString(
+    typeof value === "object"
+      ? JSON.stringify(
+          value instanceof Map || value instanceof Set ? Array.from(value) : value,
+          createSerializeReplacer(maxDepth),
+        )
+      : String(value),
+    maxLength,
+  );
+
+const createSerializeReplacer = (maxDepth: number) => {
+  const parents: any[] = [];
+  return function (this: any, _: string, v: unknown) {
+    if (typeof v !== "object" || v === null) {
+      return v;
     }
-    return JSON.stringify(val);
-  }
 
-  if (val === undefined) {
-    return "undefined";
-  }
+    while (parents.length > 0 && !Object.is(parents.at(-1), this)) {
+      parents.pop();
+    }
 
-  return (val as any).toString();
+    if ((maxDepth && parents.length >= maxDepth) || parents.includes(v)) {
+      return undefined;
+    }
+
+    parents.push(v);
+    return v;
+  };
 };
+
+const limitString = (value: string, maxLength: number) =>
+  maxLength && value.length > maxLength ? `${value.substring(0, maxLength)}...` : value;

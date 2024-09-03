@@ -5,6 +5,7 @@ import {
   getStatusFromError,
   getUnfinishedStepsMessages,
   isPromise,
+  serialize,
 } from "allure-js-commons/sdk";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
@@ -41,7 +42,6 @@ import {
   isTestReported,
   iterateTests,
   markTestAsReported,
-  stringifyCommandArgument,
   uint8ArrayToBase64,
 } from "./utils.js";
 
@@ -368,7 +368,9 @@ export const reportCommandStart = (command: CypressCommand) => {
     type: "cypress_command_start",
     data: {
       name: `Command "${command.attributes.name}"`,
-      args: command.attributes.args.map((arg) => stringifyCommandArgument(arg, maxArgumentLength, maxArgumentDepth)),
+      args: command.attributes.args.map((arg) =>
+        serialize(arg, { maxDepth: maxArgumentDepth, maxLength: maxArgumentLength }),
+      ),
       start: Date.now(),
     },
   });
