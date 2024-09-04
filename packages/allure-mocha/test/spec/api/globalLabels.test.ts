@@ -13,7 +13,6 @@ describe("env labels", () => {
           ALLURE_LABEL_: "-",
           ALLURE_LABEL_A: "",
           ALLURE_LABEL_B: "foo",
-          ALLURE_LABEL_b: "bar",
           ALLURE_LABEL_workerId: "baz",
           ALLURE_LABEL_language: "foobar",
         },

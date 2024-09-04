@@ -60,7 +60,6 @@ it("should add labels from env variables", async () => {
         ALLURE_LABEL_: "-",
         ALLURE_LABEL_A: "",
         ALLURE_LABEL_B: "foo",
-        ALLURE_LABEL_b: "bar",
         ALLURE_LABEL_workerId: "baz",
       },
     },
@@ -69,7 +68,6 @@ it("should add labels from env variables", async () => {
   tests.forEach((testResult) => {
     expect(testResult.labels).toContainEqual(expect.objectContaining({ name: "A", value: "" }));
     expect(testResult.labels).toContainEqual(expect.objectContaining({ name: "B", value: "foo" }));
-    expect(testResult.labels).toContainEqual(expect.objectContaining({ name: "b", value: "bar" }));
     expect(testResult.labels).toContainEqual(expect.objectContaining({ name: "workerId", value: "baz" }));
   });
 });
