@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, extname, join } from "node:path";
 import { fileURLToPath } from "url";
-import { attachment, step } from "allure-js-commons";
+import { attachment, logStep, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
@@ -90,17 +90,27 @@ export const runVitestInlineTest = async (
   });
 
   const messageReader = new MessageReader();
+  const stdout: string[] = [];
+  const stderr: string[] = [];
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   testProcess.on("message", messageReader.handleMessage);
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
-    process.stdout.write(String(chunk));
+    stdout.push(String(chunk));
   });
   testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
-    process.stderr.write(String(chunk));
+    stderr.push(String(chunk));
   });
 
   return new Promise((resolve) => {
-    testProcess.on("exit", async () => {
+    testProcess.on("exit", async (code, signal) => {
+      if (signal) {
+        await logStep(`Interrupted with ${signal}`);
+      }
+      if (code) {
+        await logStep(`Exit code: ${code}`);
+      }
+      await attachment("stdout", stdout.join("\n"), "text/plain");
+      await attachment("stderr", stderr.join("\n"), "text/plain");
       await rm(testDir, { recursive: true });
 
       await messageReader.attachResults();
