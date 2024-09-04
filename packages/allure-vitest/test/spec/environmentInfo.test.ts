@@ -1,4 +1,3 @@
-import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { runVitestInlineTest } from "../utils.js";
 
@@ -11,7 +10,7 @@ describe("environment info", () => {
     test("sample test", async () => {
     });
   `,
-      (testDir) => `
+      () => `
     import { defineConfig } from "vitest/config";
 
     export default defineConfig({
@@ -22,7 +21,7 @@ describe("environment info", () => {
           [
             "allure-vitest/reporter",
             {
-              resultsDir: "${join(testDir, "allure-results")}",
+              resultsDir: "allure-results",
               environmentInfo: {
                 "app version": "123.0.1",
                 "some other key": "some other value"
