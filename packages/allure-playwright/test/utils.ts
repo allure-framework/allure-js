@@ -16,7 +16,7 @@ export const runPlaywrightInlineTest = async (
        module.exports = {
          reporter: [
            [
-             require.resolve("allure-playwright"),
+             "allure-playwright",
              {
                resultsDir: "./allure-results",
              },
@@ -49,7 +49,7 @@ export const runPlaywrightInlineTest = async (
   }
 
   const modulePath = require.resolve("@playwright/test/cli");
-  const args = ["test", "-c", "./playwright.config.js", testDir, ...cliArgs];
+  const args = ["test", "-c", "./playwright.config.js", ...cliArgs];
   const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
     return fork(modulePath, args, {
       env: {
