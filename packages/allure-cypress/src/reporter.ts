@@ -490,13 +490,13 @@ export class AllureCypress {
 }
 
 const createRuntimeState = (allureConfig?: AllureCypressConfig): AllureSpecState => ({
-  config: applyDefaultsToRuntimeConfig(allureConfig),
+  config: getRuntimeConfigDefaults(allureConfig),
   initialized: false,
   messages: [],
   testPlan: parseTestPlan(),
 });
 
-const applyDefaultsToRuntimeConfig = ({
+const getRuntimeConfigDefaults = ({
   stepsFromCommands: {
     maxArgumentLength = defaultRuntimeConfig.stepsFromCommands.maxArgumentLength,
     maxArgumentDepth = defaultRuntimeConfig.stepsFromCommands.maxArgumentDepth,
