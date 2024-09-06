@@ -363,7 +363,9 @@ export const reportTestSkip = (test: CypressTest) => {
 };
 
 export const reportCommandStart = (command: CypressCommand) => {
-  const { maxArgumentDepth, maxArgumentLength } = getConfig().stepsFromCommands;
+  const {
+    stepsFromCommands: { maxArgumentDepth, maxArgumentLength },
+  } = getConfig();
   enqueueRuntimeMessage({
     type: "cypress_command_start",
     data: {
