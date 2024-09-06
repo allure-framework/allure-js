@@ -8,6 +8,7 @@ import {
   getStatusFromError,
   isAnyStepFailed,
   isMetadataTag,
+  serialize,
 } from "../../src/sdk/utils.js";
 
 type Executable = StepResult | TestResult | FixtureResult;
@@ -264,5 +265,176 @@ describe("isMetadataTag", () => {
   });
   it("should match @allure.label tag", () => {
     expect(isMetadataTag("@allure.label.x=y")).toBeTruthy();
+  });
+});
+
+describe("serialize", () => {
+  describe("called with a primitive", () => {
+    describe("undefined", () => {
+      it("should return the 'undefined' constant", () => {
+        expect(serialize(undefined)).toBe("undefined");
+      });
+    });
+
+    describe("null", () => {
+      it("should return the 'null' constant", () => {
+        expect(serialize(null)).toBe("null");
+      });
+    });
+
+    describe("symbol", () => {
+      it("should return the same value as .toString()", () => {
+        const symbol = Symbol("foo");
+        expect(serialize(symbol)).toBe(symbol.toString());
+      });
+    });
+
+    describe("number", () => {
+      it("should return the text of the number", () => {
+        expect(serialize(1)).toBe("1");
+        expect(serialize(1.5)).toBe("1.5");
+      });
+    });
+
+    describe("bigint", () => {
+      it("should return the text of the bit int", () => {
+        expect(serialize(BigInt(1000000000000000) * BigInt(1000000000000000))).toBe("1000000000000000000000000000000");
+      });
+    });
+
+    describe("boolean", () => {
+      it("should return the 'true' or 'false' constant", () => {
+        expect(serialize(true)).toBe("true");
+        expect(serialize(false)).toBe("false");
+      });
+    });
+
+    describe("string", () => {
+      it("should return the string itself", () => {
+        expect(serialize("")).toBe("");
+        expect(serialize("foo")).toBe("foo");
+      });
+
+      it("should limit the maximum length of the serialized string", () => {
+        expect(serialize("foobar".repeat(2), { maxLength: 5 })).toBe("fooba...");
+      });
+    });
+  });
+
+  describe("called with an object", () => {
+    it("should return the same serialized object as JSON.stringify", () => {
+      expect(serialize({})).toBe(JSON.stringify({}));
+      expect(serialize({ foo: "bar" })).toBe(JSON.stringify({ foo: "bar" }));
+      expect(serialize({ foo: "bar", baz: "qux" })).toBe(JSON.stringify({ foo: "bar", baz: "qux" }));
+      expect(serialize({ foo: { bar: "qux" } })).toBe(JSON.stringify({ foo: { bar: "qux" } }));
+    });
+
+    it("should preclude circular references", () => {
+      const obj1: any = {};
+      obj1.ref = obj1; // a reference to the direct parent
+      expect(serialize(obj1)).toBe(JSON.stringify({}));
+
+      const obj2: any = {};
+      obj2.ref = { ref: obj2 }; // a reference to the parent of the parent
+      expect(serialize(obj2)).toBe(JSON.stringify({ ref: {} }));
+
+      const sharedObject = { baz: "qux" };
+      const obj3 = { foo: sharedObject, bar: sharedObject }; // diamond-shaped refs; no cycles though
+      expect(serialize(obj3)).toBe(JSON.stringify({ foo: { baz: "qux" }, bar: { baz: "qux" } }));
+
+      const obj4: any = { foo: "Lorem", bar: { baz: "Ipsum" } };
+      obj4.bar.ref = obj4.bar; // A reference to the parent, but the node also has another property
+      expect(serialize(obj4)).toBe(JSON.stringify({ foo: "Lorem", bar: { baz: "Ipsum" } }));
+
+      // Arrays adhere to the same rules (but 'null' is inserted for each excluded circular reference;
+      // otherwise the result may be confusing)
+      const obj5: any[] = [];
+      obj5.push(obj5);
+      expect(serialize(obj5)).toBe(JSON.stringify([null]));
+
+      const obj6: any = [1, "Lorem", ["Ipsum"]];
+      obj6[2].push(obj6);
+      expect(serialize(obj6)).toBe(JSON.stringify([1, "Lorem", ["Ipsum", null]]));
+
+      const obj7: Map<number, any> = new Map();
+      obj7.set(1, obj7);
+      expect(serialize(obj7)).toBe(JSON.stringify([[1, null]]));
+
+      const obj8: Set<any> = new Set();
+      obj8.add(obj8);
+      expect(serialize(obj8)).toBe(JSON.stringify([null]));
+    });
+
+    it("should limit the maximum size of the serialized object", () => {
+      expect(serialize(Array(1000).fill(1), { maxLength: 5 })).toBe("[1,1,...");
+    });
+
+    it("should limit the maximum nesting level of the object", () => {
+      expect(serialize({ foo: 1, bar: { baz: {}, qux: 2 } }, { maxDepth: 2 })).toBe(
+        JSON.stringify({
+          // this is nesting level 1
+          foo: 1,
+          bar: {
+            // this is nesting level 2
+            // only primitives are included
+            qux: 2,
+          },
+        }),
+      );
+    });
+
+    it("should replace nested maps and sets with arrays", () => {
+      expect(
+        serialize({
+          foo: new Map([
+            [1, "a"],
+            [2, "b"],
+          ]),
+          bar: new Set([1, 2]),
+        }),
+      ).toBe(
+        JSON.stringify({
+          foo: [
+            [1, "a"],
+            [2, "b"],
+          ],
+          bar: [1, 2],
+        }),
+      );
+    });
+
+    describe("of type Array", () => {
+      it("should return the same serialized array as JSON.stringify", () => {
+        expect(serialize([])).toBe(JSON.stringify([]));
+        expect(serialize([1])).toBe(JSON.stringify([1]));
+        expect(serialize([1, "foo"])).toBe(JSON.stringify([1, "foo"]));
+        expect(serialize([1, "foo", [2, { bar: "baz" }]])).toBe(JSON.stringify([1, "foo", [2, { bar: "baz" }]]));
+      });
+    });
+
+    describe("of type Map", () => {
+      it("should return array of the key-value pairs", () => {
+        expect(serialize(new Map())).toBe("[]");
+        expect(serialize(new Map([]))).toBe("[]");
+        expect(serialize(new Map([["foo", "bar"]]))).toBe(String.raw`[["foo","bar"]]`);
+        expect(
+          serialize(
+            new Map([
+              [1, "foo"],
+              [2, "bar"],
+            ]),
+          ),
+        ).toBe(String.raw`[[1,"foo"],[2,"bar"]]`);
+      });
+    });
+
+    describe("of type Set", () => {
+      it("should return array of the set elements", () => {
+        expect(serialize(new Set())).toBe("[]");
+        expect(serialize(new Set([]))).toBe("[]");
+        expect(serialize(new Set([1]))).toBe("[1]");
+        expect(serialize(new Set([1, "foo", 2]))).toBe(String.raw`[1,"foo",2]`);
+      });
+    });
   });
 });

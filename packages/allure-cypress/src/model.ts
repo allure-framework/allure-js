@@ -8,6 +8,7 @@ export const ALLURE_REPORT_STEP_COMMAND = "__allure_report_step_command__";
 
 export type AllureCypressConfig = ReporterConfig & {
   videoOnFailOnly?: boolean;
+  stepsFromCommands?: Partial<AllureSpecState["config"]["stepsFromCommands"]>;
 };
 
 export type CypressSuite = Mocha.Suite & {
@@ -174,6 +175,12 @@ export type SpecContext = {
 };
 
 export type AllureSpecState = {
+  config: {
+    stepsFromCommands: {
+      maxArgumentLength: number;
+      maxArgumentDepth: number;
+    };
+  };
   initialized: boolean;
   testPlan: TestPlanV1 | null | undefined;
   messages: CypressMessage[];

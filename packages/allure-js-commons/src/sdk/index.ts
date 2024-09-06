@@ -25,4 +25,5 @@ export {
   isPromise,
   hasLabel,
   stripAnsi,
+  serialize,
 } from "./utils.js";

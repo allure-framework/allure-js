@@ -71,13 +71,30 @@ Learn more about Allure Cypress from the official documentation at
 
 
 ## Allure Cypress options
-| Option          | Description                                                                                                          | Default            |
-|-----------------|----------------------------------------------------------------------------------------------------------------------|--------------------|
-| resultsDir      | The path of the results folder.                                                                                      | `./allure-results` |
-| videoOnFailOnly | When video capturing is enabled, set this option to `true` to attach the video to failed specs only.                 | `undefined`        |
-| links           | Allure Runtime API link templates.                                                                                   | `undefined`        |
-| environmentInfo | A set of key-value pairs to display in the Environment section of the report                                         | `undefined`        |
-| categories      | An array of category definitions, each describing a [category of defects](https://allurereport.org/docs/categories/) | `undefined`        |
+
+Customize Allure Cypress by providing a configuration object as the third argument
+of `allureCypress`.
+
+The following options are supported:
+
+| Option            | Description                                                                                                          | Default                         |
+|-------------------|----------------------------------------------------------------------------------------------------------------------|---------------------------------|
+| resultsDir        | The path of the results folder.                                                                                      | `./allure-results`              |
+| videoOnFailOnly   | When video capturing is enabled, set this option to `true` to attach the video to failed specs only.                 | `false`                         |
+| links             | Allure Runtime API link templates.                                                                                   | `undefined`                     |
+| stepsFromCommands | Options that affect how Allure creates steps from Cypress commands                                                   | See [below](#stepsfromcommands) |
+| environmentInfo   | A set of key-value pairs to display in the Environment section of the report                                         | `undefined`                     |
+| categories        | An array of category definitions, each describing a [category of defects](https://allurereport.org/docs/categories/) | `undefined`                     |
+
+### stepsFromCommands
+
+| Property          | Description                                                                                                                                 | Default |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| maxArgumentLength | The maximum length of the parameter value created from Cypress command argument. The rest of the characters are replaces with `...`.        | 128     |
+| maxArgumentDepth  | The maximum depth of the Cypress command argument (an array or an object) that will be converted to the corresponding step parameter value. | 3       |
+
+
+### Example
 
 Here is an example of the Allure Cypress configuration:
 
@@ -99,6 +116,10 @@ export default defineConfig({
             urlTemplate: "https://github.com/allure-framework/allure-js/issues/%s",
             nameTemplate: "ISSUE-%s",
           },
+        },
+        stepsFromCommands: {
+          maxArgumentLength: 64,
+          maxArgumentDepth: 5,
         },
         environmentInfo: {
           OS: os.platform(),
@@ -157,7 +178,39 @@ export default defineConfig({
 });
 ```
 
-## Known limitations
+## Common issues
+
+### The test plan feature doesn't work
+
+Make sure you pass the Cypress config as the second argument of `allureCypress`.
+
+Correct:
+
+```javascript
+allureCypress(on, config);
+```
+
+Also correct:
+
+```javascript
+allureCypress(on, config, {
+  resultsDir: "output",
+});
+```
+
+Incorrect (the test plan won't work):
+
+```javascript
+allureCypress(on);
+```
+
+Also incorrect (the legacy style; the test plan won't work either):
+
+```javascript
+allureCypress(on, {
+  resultsDir: "output",
+});
+```
 
 ### `setupNodeEvents` limitations
 

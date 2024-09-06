@@ -5,6 +5,7 @@ import {
   getStatusFromError,
   getUnfinishedStepsMessages,
   isPromise,
+  serialize,
 } from "allure-js-commons/sdk";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
@@ -26,6 +27,7 @@ import { ALLURE_REPORT_STEP_COMMAND } from "./model.js";
 import {
   dropCurrentTest,
   enqueueRuntimeMessage,
+  getConfig,
   getCurrentTest,
   getRuntimeMessages,
   setCurrentTest,
@@ -361,11 +363,16 @@ export const reportTestSkip = (test: CypressTest) => {
 };
 
 export const reportCommandStart = (command: CypressCommand) => {
+  const {
+    stepsFromCommands: { maxArgumentDepth, maxArgumentLength },
+  } = getConfig();
   enqueueRuntimeMessage({
     type: "cypress_command_start",
     data: {
       name: `Command "${command.attributes.name}"`,
-      args: command.attributes.args.map((arg) => (typeof arg === "string" ? arg : JSON.stringify(arg, null, 2))),
+      args: command.attributes.args.map((arg) =>
+        serialize(arg, { maxDepth: maxArgumentDepth, maxLength: maxArgumentLength }),
+      ),
       start: Date.now(),
     },
   });

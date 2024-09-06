@@ -32,7 +32,7 @@ import type {
   CypressTestStartMessage,
   SpecContext,
 } from "./model.js";
-import { last } from "./utils.js";
+import { DEFAULT_RUNTIME_CONFIG, last } from "./utils.js";
 
 export class AllureCypress {
   allureRuntime: ReporterRuntime;
@@ -489,19 +489,28 @@ export class AllureCypress {
   };
 }
 
-const getInitialSpecState = (): AllureSpecState => ({
+const createRuntimeState = (allureConfig?: AllureCypressConfig): AllureSpecState => ({
+  config: getRuntimeConfigDefaults(allureConfig),
   initialized: false,
   messages: [],
   testPlan: parseTestPlan(),
 });
 
-/**
- * Explicitly enables the selective run feature.
- * @param config The Cypress configuration.
- */
-export const enableTestPlan = (config: Cypress.PluginConfigOptions) => {
-  config.env.allure = getInitialSpecState();
-  return config;
+const getRuntimeConfigDefaults = ({
+  stepsFromCommands: {
+    maxArgumentLength = DEFAULT_RUNTIME_CONFIG.stepsFromCommands.maxArgumentLength,
+    maxArgumentDepth = DEFAULT_RUNTIME_CONFIG.stepsFromCommands.maxArgumentDepth,
+  } = DEFAULT_RUNTIME_CONFIG.stepsFromCommands,
+}: AllureCypressConfig = DEFAULT_RUNTIME_CONFIG): AllureSpecState["config"] => ({
+  stepsFromCommands: {
+    maxArgumentDepth,
+    maxArgumentLength,
+  },
+});
+
+const initializeRuntimeState = (cypressConfig: Cypress.PluginConfigOptions, allureConfig?: AllureCypressConfig) => {
+  cypressConfig.env.allure = createRuntimeState(allureConfig);
+  return cypressConfig;
 };
 
 /**
@@ -539,7 +548,7 @@ export const allureCypress = (
   allureCypressReporter.attachToCypress(on);
 
   if (cypressConfig && "env" in cypressConfig) {
-    enableTestPlan(cypressConfig);
+    initializeRuntimeState(cypressConfig, allureConfig);
   }
 
   return allureCypressReporter;

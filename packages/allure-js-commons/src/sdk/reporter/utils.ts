@@ -137,18 +137,6 @@ export const getRelativePath = (filepath: string) => {
 
 export const deepClone = <T>(obj: T): T => JSON.parse(JSON.stringify(obj));
 
-export const serialize = (val: unknown): string => {
-  if (typeof val === "object" && !(val instanceof Map || val instanceof Set)) {
-    return JSON.stringify(val);
-  }
-
-  if (val === undefined) {
-    return "undefined";
-  }
-
-  return (val as any).toString();
-};
-
 export const getSuiteLabels = (suites: readonly string[]): Label[] => {
   if (suites.length === 0) {
     return [];
