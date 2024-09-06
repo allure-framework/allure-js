@@ -5,7 +5,7 @@ import { ALLURE_REPORT_STEP_COMMAND, ALLURE_REPORT_SYSTEM_HOOK } from "./model.j
 import type { CypressCommand, CypressHook, CypressSuite, CypressTest } from "./model.js";
 import { getAllureTestPlan } from "./state.js";
 
-export const defaultRuntimeConfig = {
+export const DEFAULT_RUNTIME_CONFIG = {
   stepsFromCommands: {
     maxArgumentLength: 128,
     maxArgumentDepth: 3,

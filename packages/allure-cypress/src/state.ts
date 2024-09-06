@@ -1,11 +1,11 @@
 import type { AllureSpecState, CypressMessage, CypressTest } from "./model.js";
-import { defaultRuntimeConfig } from "./utils.js";
+import { DEFAULT_RUNTIME_CONFIG } from "./utils.js";
 
 export const getAllureState = () => {
   let state = Cypress.env("allure") as AllureSpecState;
   if (!state) {
     state = {
-      config: defaultRuntimeConfig,
+      config: DEFAULT_RUNTIME_CONFIG,
       initialized: false,
       messages: [],
       testPlan: undefined,

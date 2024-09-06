@@ -32,7 +32,7 @@ import type {
   CypressTestStartMessage,
   SpecContext,
 } from "./model.js";
-import { defaultRuntimeConfig, last } from "./utils.js";
+import { DEFAULT_RUNTIME_CONFIG, last } from "./utils.js";
 
 export class AllureCypress {
   allureRuntime: ReporterRuntime;
@@ -498,10 +498,10 @@ const createRuntimeState = (allureConfig?: AllureCypressConfig): AllureSpecState
 
 const getRuntimeConfigDefaults = ({
   stepsFromCommands: {
-    maxArgumentLength = defaultRuntimeConfig.stepsFromCommands.maxArgumentLength,
-    maxArgumentDepth = defaultRuntimeConfig.stepsFromCommands.maxArgumentDepth,
-  } = defaultRuntimeConfig.stepsFromCommands,
-}: AllureCypressConfig = defaultRuntimeConfig): AllureSpecState["config"] => ({
+    maxArgumentLength = DEFAULT_RUNTIME_CONFIG.stepsFromCommands.maxArgumentLength,
+    maxArgumentDepth = DEFAULT_RUNTIME_CONFIG.stepsFromCommands.maxArgumentDepth,
+  } = DEFAULT_RUNTIME_CONFIG.stepsFromCommands,
+}: AllureCypressConfig = DEFAULT_RUNTIME_CONFIG): AllureSpecState["config"] => ({
   stepsFromCommands: {
     maxArgumentDepth,
     maxArgumentLength,
