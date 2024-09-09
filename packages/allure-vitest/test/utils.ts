@@ -5,6 +5,7 @@ import { basename, dirname, extname, join } from "node:path";
 import { fileURLToPath } from "url";
 import { attachment, logStep, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
+import { stripAnsi } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
 type Opts = {
@@ -95,10 +96,10 @@ export const runVitestInlineTest = async (
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   testProcess.on("message", messageReader.handleMessage);
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
-    stdout.push(String(chunk));
+    stdout.push(stripAnsi(String(chunk)));
   });
   testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
-    stderr.push(String(chunk));
+    stderr.push(stripAnsi(String(chunk)));
   });
 
   return new Promise((resolve) => {
