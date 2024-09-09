@@ -23,6 +23,7 @@ export const runVitestInlineTest = async (
   const testDir = join(fileDirname, "fixtures", randomUUID());
   const configFilePath = join(testDir, "vitest.config.ts");
   const testFilePath = join(testDir, "sample.test.ts");
+
   const configContent = externalConfigFactory
     ? externalConfigFactory(testDir)
     : `
@@ -30,10 +31,10 @@ export const runVitestInlineTest = async (
 
     export default defineConfig({
       test: {
-        setupFiles: ["${require.resolve("allure-vitest/setup")}"],
+        setupFiles: ["allure-vitest/setup"],
         reporters: [
           "verbose",
-          ["${require.resolve("allure-vitest/reporter")}", {
+          ["allure-vitest/reporter", {
             links: {
               issue: {
                 urlTemplate: "https://example.org/issue/%s",
@@ -42,7 +43,7 @@ export const runVitestInlineTest = async (
                 urlTemplate: "https://example.org/tms/%s",
               },
             },
-            resultsDir: "${join(testDir, "allure-results")}",
+            resultsDir: "allure-results",
           }]
         ],
       },
