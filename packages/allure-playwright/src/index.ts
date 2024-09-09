@@ -118,12 +118,15 @@ export class AllureReporter implements ReporterV2 {
       v1ReporterTests.push(test);
     });
 
+    // The path needs to be specific to the current OS. Otherwise, it may not match against the test file.
+    const selectorToGrepPattern = (selector: string) => escapeRegExp(path.normalize(`/${selector}`));
+
     if (v2ReporterTests.length) {
       // we need to cut off column because playwright works only with line number
       const v2SelectorsArgs = v2ReporterTests
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         .map((test) => test.selector!.replace(/:\d+$/, ""))
-        .map((selector) => escapeRegExp(selector));
+        .map(selectorToGrepPattern);
 
       cliArgs.push(...v2SelectorsArgs);
     }
@@ -133,7 +136,7 @@ export class AllureReporter implements ReporterV2 {
         // we can filter tests only by absolute path, so we need to cut off test name
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         .map((test) => test.selector!.split("#")[0])
-        .map((selector) => escapeRegExp(selector));
+        .map(selectorToGrepPattern);
 
       cliArgs.push(...v1SelectorsArgs);
     }
@@ -142,7 +145,7 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    configElement.cliArgs = cliArgs.map((selector) => `/${selector}`);
+    configElement.cliArgs = cliArgs;
   }
 
   onError(): void {}
