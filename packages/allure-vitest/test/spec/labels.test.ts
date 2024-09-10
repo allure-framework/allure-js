@@ -53,8 +53,6 @@ it("should add labels from env variables", async () => {
       test("foo", () => {});
       test("bar", () => {});
     `,
-    undefined,
-    undefined,
     {
       env: {
         ALLURE_LABEL_: "-",

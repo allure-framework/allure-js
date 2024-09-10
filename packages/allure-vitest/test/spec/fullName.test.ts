@@ -13,7 +13,6 @@ describe("full name", () => {
         })
       })
     `,
-      undefined,
     );
 
     expect(tests).toHaveLength(1);

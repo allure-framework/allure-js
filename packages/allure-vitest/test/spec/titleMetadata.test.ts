@@ -10,7 +10,6 @@ describe("title metadata", () => {
 
       test("foo @allure.id=1 @allure.label.foo=2", () => {});
     `,
-      undefined,
     );
 
     expect(tests).toHaveLength(1);

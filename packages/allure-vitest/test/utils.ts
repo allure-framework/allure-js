@@ -4,28 +4,29 @@ import { mkdir, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, extname, join } from "node:path";
 import { fileURLToPath } from "url";
 import { attachment, logStep, step } from "allure-js-commons";
-import type { AllureResults } from "allure-js-commons/sdk";
+import type { AllureResults, TestPlanV1 } from "allure-js-commons/sdk";
 import { stripAnsi } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
 type Opts = {
   env?: Record<string, string>;
+  specPath?: string;
+  testplan?: TestPlanV1;
+  configFactory?: (tempDir: string) => string;
 };
 
 const fileDirname = dirname(fileURLToPath(import.meta.url));
 
 export const runVitestInlineTest = async (
   test: string,
-  externalConfigFactory?: (tempDir: string) => string,
-  beforeTestCb?: (tempDir: string) => Promise<void>,
-  opts: Opts = {},
+  { env = {}, specPath = "sample.test.ts", testplan, configFactory }: Opts = {},
 ): Promise<AllureResults> => {
   const testDir = join(fileDirname, "fixtures", randomUUID());
   const configFilePath = join(testDir, "vitest.config.ts");
-  const testFilePath = join(testDir, "sample.test.ts");
+  const testFilePath = join(testDir, specPath);
 
-  const configContent = externalConfigFactory
-    ? externalConfigFactory(testDir)
+  const configContent = configFactory
+    ? configFactory(testDir)
     : `
     import { defineConfig } from "vitest/config";
 
@@ -62,7 +63,17 @@ export const runVitestInlineTest = async (
     });
   });
 
+  if (testplan) {
+    await step("write testplan.json", async () => {
+      const testPlanPath = join(testDir, "testplan.json");
+      await writeFile(testPlanPath, JSON.stringify(testplan));
+      env.ALLURE_TESTPLAN_PATH = testPlanPath;
+    });
+  }
+
   await step(`write test file ${testFilePath}`, async () => {
+    const specDir = dirname(testFilePath);
+    await mkdir(specDir, { recursive: true });
     await writeFile(testFilePath, test, "utf8");
     await attachment(basename(testFilePath), test, {
       contentType: "text/plain",
@@ -70,12 +81,6 @@ export const runVitestInlineTest = async (
       encoding: "utf-8",
     });
   });
-
-  if (beforeTestCb) {
-    await beforeTestCb(testDir);
-  }
-
-  const { env = {} } = opts;
 
   const modulePath = require.resolve("vitest/dist/cli-wrapper.js");
   const args = ["run", "--config", configFilePath, "--dir", testDir];

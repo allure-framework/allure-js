@@ -1,5 +1,3 @@
-import { writeFile } from "node:fs/promises";
-import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { runVitestInlineTest } from "../utils.js";
 
@@ -33,27 +31,21 @@ describe("test plan", () => {
         await logStep(dummy);
       });
     `,
-      undefined,
-      async (testDir) => {
-        const testPlanPath = join(testDir, "testplan.json");
-
-        await writeFile(
-          testPlanPath,
-          JSON.stringify({
-            tests: [
-              {
-                selector: "sample.test.ts#baz @allure.id=2",
-              },
-              {
-                id: 3,
-              },
-              {
-                selector: "sample.test.ts#foo bar boop",
-              },
-            ],
-          }),
-        );
-        process.env.ALLURE_TESTPLAN_PATH = testPlanPath;
+      {
+        testplan: {
+          version: "1.0",
+          tests: [
+            {
+              selector: "sample.test.ts#baz @allure.id=2",
+            },
+            {
+              id: 3,
+            },
+            {
+              selector: "sample.test.ts#foo bar boop",
+            },
+          ],
+        },
       },
     );
 
