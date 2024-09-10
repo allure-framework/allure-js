@@ -45,6 +45,27 @@ it("should add package label", async () => {
   );
 });
 
+it("should add package label for tests in directories", async () => {
+  const { tests } = await runVitestInlineTest(
+    `
+      import { test } from "vitest";
+
+      test("qux", async () => {});
+    `,
+    { specPath: "foo/bar/baz.test.ts" },
+  );
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].labels).toEqual(
+    expect.arrayContaining([
+      {
+        name: "package",
+        value: "foo.bar.baz.test.ts",
+      },
+    ]),
+  );
+});
+
 it("should add labels from env variables", async () => {
   const { tests } = await runVitestInlineTest(
     `

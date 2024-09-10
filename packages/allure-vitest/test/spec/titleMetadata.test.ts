@@ -8,12 +8,16 @@ describe("title metadata", () => {
       `
       import { test } from "vitest";
 
-      test("foo @allure.id=1 @allure.label.foo=2", () => {});
+      test("foo @allure.id=1 @allure.label.bar=2", () => {});
     `,
     );
 
     expect(tests).toHaveLength(1);
     expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: LabelName.ALLURE_ID, value: "1" }));
-    expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "2" }));
+    expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "bar", value: "2" }));
+    expect(tests[0]).toMatchObject({
+      name: "foo",
+      fullName: "sample.test.ts#foo",
+    });
   });
 });

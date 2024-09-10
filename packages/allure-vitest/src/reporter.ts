@@ -1,9 +1,7 @@
-import { normalize, relative } from "node:path";
-import { cwd } from "node:process";
 import type { File, Reporter, Task } from "vitest";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
@@ -15,7 +13,7 @@ import {
   getSuiteLabels,
   getThreadLabel,
 } from "allure-js-commons/sdk/reporter";
-import { getSuitePath, getTestFullName } from "./utils.js";
+import { getTestMetadata } from "./utils.js";
 
 export default class AllureVitestReporter implements Reporter {
   private allureReporterRuntime?: ReporterRuntime;
@@ -72,30 +70,26 @@ export default class AllureVitestReporter implements Reporter {
       return;
     }
 
-    const suitePath = getSuitePath(task);
-    const normalizedTestPath = normalize(relative(cwd(), task.file!.filepath)).replace(/^\//, "").split("/");
-    const titleMetadata = extractMetadataFromString(task.name);
-    const testDisplayName = titleMetadata.cleanTitle || task.name;
-    const testFullname = getTestFullName(task, cwd());
+    const { specPath, fullName, name, suitePath, labels: metadataLabels } = getTestMetadata(task);
     const testUuid = this.allureReporterRuntime!.startTest({
-      name: testDisplayName,
+      name,
       start: task.result?.startTime,
     });
 
     this.allureReporterRuntime!.updateTest(testUuid, (result) => {
-      result.fullName = testFullname;
+      result.fullName = fullName;
       result.labels.push(getFrameworkLabel("vitest"));
       result.labels.push(getLanguageLabel());
-      result.labels.push(...titleMetadata.labels);
+      result.labels.push(...metadataLabels);
       result.labels.push(...getSuiteLabels(suitePath));
       result.labels.push(...getEnvironmentLabels());
       result.labels.push(getHostLabel());
       result.labels.push(getThreadLabel(VITEST_POOL_ID && `vitest-worker-${VITEST_POOL_ID}`));
 
-      if (normalizedTestPath.length) {
+      if (specPath) {
         result.labels.push({
           name: LabelName.PACKAGE,
-          value: normalizedTestPath.join("."),
+          value: specPath.replaceAll("/", "."),
         });
       }
 
