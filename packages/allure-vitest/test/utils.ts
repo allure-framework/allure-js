@@ -6,24 +6,30 @@ import { fileURLToPath } from "url";
 import { attachment, logStep, step } from "allure-js-commons";
 import type { AllureResults, TestPlanV1 } from "allure-js-commons/sdk";
 import { stripAnsi } from "allure-js-commons/sdk";
-import { MessageReader } from "allure-js-commons/sdk/reporter";
+import { MessageReader, getPosixPath } from "allure-js-commons/sdk/reporter";
 
 type Opts = {
   env?: Record<string, string>;
   specPath?: string;
   testplan?: TestPlanV1;
   configFactory?: (tempDir: string) => string;
+  cwd?: string;
 };
 
 const fileDirname = dirname(fileURLToPath(import.meta.url));
 
 export const runVitestInlineTest = async (
   test: string,
-  { env = {}, specPath = "sample.test.ts", testplan, configFactory }: Opts = {},
+  { env = {}, specPath = "sample.test.ts", testplan, configFactory, cwd }: Opts = {},
 ): Promise<AllureResults> => {
   const testDir = join(fileDirname, "fixtures", randomUUID());
   const configFilePath = join(testDir, "vitest.config.ts");
   const testFilePath = join(testDir, specPath);
+
+  // getPosixPath allows us to interpolate such paths without escaping
+  const setupModulePath = getPosixPath(require.resolve("allure-vitest/setup"));
+  const reporterModulePath = getPosixPath(require.resolve("allure-vitest/reporter"));
+  const allureResultsPath = getPosixPath(join(testDir, "allure-results"));
 
   const configContent = configFactory
     ? configFactory(testDir)
@@ -32,10 +38,10 @@ export const runVitestInlineTest = async (
 
     export default defineConfig({
       test: {
-        setupFiles: ["allure-vitest/setup"],
+        setupFiles: ["${setupModulePath}"],
         reporters: [
           "verbose",
-          ["allure-vitest/reporter", {
+          ["${reporterModulePath}", {
             links: {
               issue: {
                 urlTemplate: "https://example.org/issue/%s",
@@ -44,7 +50,7 @@ export const runVitestInlineTest = async (
                 urlTemplate: "https://example.org/tms/%s",
               },
             },
-            resultsDir: "allure-results",
+            resultsDir: "${allureResultsPath}",
           }]
         ],
       },
@@ -53,6 +59,7 @@ export const runVitestInlineTest = async (
 
   await step("create testDir", async () => {
     await mkdir(testDir, { recursive: true });
+    await writeFile(join(testDir, "package.json"), String.raw`{ "name": "dummy" }`);
   });
   await step(`write config file ${configFilePath}`, async () => {
     await writeFile(configFilePath, configContent, "utf8");
@@ -91,7 +98,7 @@ export const runVitestInlineTest = async (
         ...env,
         ALLURE_TEST_MODE: "1",
       },
-      cwd: testDir,
+      cwd: cwd ? join(testDir, cwd) : testDir,
       stdio: "pipe",
     });
   });

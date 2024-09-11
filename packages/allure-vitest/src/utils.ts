@@ -1,10 +1,8 @@
-import { relative } from "node:path";
-import { cwd } from "node:process";
 import type { Suite, Task } from "vitest";
 import { LabelName } from "allure-js-commons";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
-import { getPosixPath, includedInTestPlan } from "allure-js-commons/sdk/reporter";
+import { getPosixPath, getRelativePath, includedInTestPlan } from "allure-js-commons/sdk/reporter";
 
 export const getSuitePath = (task: Task): string[] => {
   const path = [];
@@ -25,7 +23,7 @@ export const getSuitePath = (task: Task): string[] => {
 
 export const getTestMetadata = (task: Task) => {
   const suitePath = getSuitePath(task);
-  const relativeTestPath = getPosixPath(relative(cwd(), task.file!.filepath));
+  const relativeTestPath = getPosixPath(getRelativePath(task.file!.filepath));
 
   const { cleanTitle, labels } = extractMetadataFromString(task.name);
 
