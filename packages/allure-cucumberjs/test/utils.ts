@@ -2,7 +2,7 @@ import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve as resolvePath } from "node:path";
-import { attachment, attachmentPath, step } from "allure-js-commons";
+import { attachment, attachmentPath, step, logStep } from "allure-js-commons";
 import type { AllureResults, TestPlanV1 } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
@@ -155,17 +155,32 @@ export const runCucumberInlineTest = async (
 
   const messageReader = new MessageReader();
 
+  const stdout: string[] = [];
+  const stderr: string[] = [];
+
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   testProcess.on("message", messageReader.handleMessage);
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
-    process.stdout.write(String(chunk));
+    const line = String(chunk);
+    process.stdout.write(line);
+    stdout.push(line);
   });
   testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
-    process.stderr.write(String(chunk));
+    const line = String(chunk);
+    process.stderr.write(line);
+    stderr.push(line);
   });
 
   return new Promise((resolve) => {
-    testProcess.on("exit", async () => {
+    testProcess.on("exit", async (code, signal) => {
+      if (signal) {
+        await logStep(`Interrupted with ${signal}`);
+      }
+      if (code) {
+        await logStep(`Exit code: ${code}`);
+      }
+      await attachment("stdout", stdout.join("\n"), "text/plain");
+      await attachment("stderr", stderr.join("\n"), "text/plain");
       await rm(testDir, { recursive: true });
       await messageReader.attachResults();
       return resolve(messageReader.results);
