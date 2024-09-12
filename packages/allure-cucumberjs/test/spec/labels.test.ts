@@ -86,6 +86,42 @@ it("should add package label", async () => {
   );
 });
 
+it("should calculate package label in a CWD-independent manner", async () => {
+  const { tests } = await runCucumberInlineTest(["nested/simple"], ["simple"], { cwd: "features/nested" });
+
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "passed",
+        labels: expect.arrayContaining([
+          {
+            name: "package",
+            value: "features.nested.simple.feature",
+          },
+        ]),
+      }),
+      expect.objectContaining({
+        name: "failed",
+        labels: expect.arrayContaining([
+          {
+            name: "package",
+            value: "features.nested.simple.feature",
+          },
+        ]),
+      }),
+      expect.objectContaining({
+        name: "broken",
+        labels: expect.arrayContaining([
+          {
+            name: "package",
+            value: "features.nested.simple.feature",
+          },
+        ]),
+      }),
+    ]),
+  );
+});
+
 it("sets label from env variables", async () => {
   const { tests } = await runCucumberInlineTest(["simple"], ["simple"], {
     env: {
