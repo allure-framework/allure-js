@@ -3,7 +3,7 @@ import { LabelName, Stage, Status } from "allure-js-commons";
 import { runCucumberInlineTest } from "../../../utils.js";
 
 it("handles runtime steps", async () => {
-  const { tests } = await runCucumberInlineTest(["steps"], ["runtime/legacy/steps"], false);
+  const { tests } = await runCucumberInlineTest(["steps"], ["runtime/legacy/steps"], { parallel: false });
   expect(tests).toHaveLength(2);
 
   const test1 = tests.find((test) => test.name === "succeed");

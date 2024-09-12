@@ -50,7 +50,7 @@ it("should add thread and host labels", async () => {
   );
 });
 
-it("should add thread package label", async () => {
+it("should add package label", async () => {
   const { tests } = await runCucumberInlineTest(["simple"], ["simple"]);
 
   expect(tests).toEqual(
@@ -87,9 +87,11 @@ it("should add thread package label", async () => {
 });
 
 it("sets label from env variables", async () => {
-  const { tests } = await runCucumberInlineTest(["simple"], ["simple"], undefined, undefined, {
-    ALLURE_LABEL_A: "a",
-    ALLURE_LABEL_B: "b",
+  const { tests } = await runCucumberInlineTest(["simple"], ["simple"], {
+    env: {
+      ALLURE_LABEL_A: "a",
+      ALLURE_LABEL_B: "b",
+    },
   });
 
   expect(tests).toHaveLength(3);

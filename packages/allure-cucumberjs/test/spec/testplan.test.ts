@@ -19,7 +19,7 @@ it("should skip tests based on test plan", async () => {
     ],
   };
 
-  const { tests } = await runCucumberInlineTest(["testplan1", "testplan2"], ["testplan"], true, testPlan);
+  const { tests } = await runCucumberInlineTest(["testplan1", "testplan2"], ["testplan"], { testPlan });
 
   expect(tests).not.toContainEqual(
     expect.objectContaining({

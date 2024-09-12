@@ -1,17 +1,23 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
-import { dirname, join, resolve as resolvePath } from "node:path";
-import { attachment, attachmentPath, step, logStep } from "allure-js-commons";
+import { dirname, join, relative, resolve as resolvePath } from "node:path";
+import { pathToFileURL } from "node:url";
+import { attachment, attachmentPath, logStep, step } from "allure-js-commons";
 import type { AllureResults, TestPlanV1 } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
+
+type CucumberRunOptions = {
+  parallel?: boolean;
+  testPlan?: TestPlanV1;
+  env?: Record<string, string>;
+  cwd?: string;
+};
 
 export const runCucumberInlineTest = async (
   features: string[],
   stepsDefs: string[],
-  parallel: boolean = true,
-  testPlan?: TestPlanV1,
-  env?: Record<string, string>,
+  { parallel = true, testPlan, env, cwd }: CucumberRunOptions = {},
 ): Promise<AllureResults> => {
   const samplesPath = join(__dirname, "samples");
   const testDir = join(__dirname, "fixtures", randomUUID());
@@ -23,8 +29,9 @@ export const runCucumberInlineTest = async (
   const configContent = `
     module.exports = {
       default: {
+        paths: ["./**/*.feature"],
         ${parallel ? "parallel: 4," : ""}
-        format: ["summary", "./reporter.js"],
+        format: ["summary", '"${pathToFileURL(reporterFilePath).toString()}"'],
         formatOptions: {
           labels: [
             {
@@ -82,6 +89,7 @@ export const runCucumberInlineTest = async (
       fileExtension: ".js",
     });
   });
+  await writeFile(join(testDir, "package.json"), String.raw`{"name": "dummy"}`, "utf8");
   await step("reporter.js", async () => {
     await writeFile(reporterFilePath, reporterContent, "utf8");
     await attachment("reporter.js", reporterContent, {
@@ -101,10 +109,13 @@ export const runCucumberInlineTest = async (
 
   for (const feature of features) {
     await step(`features/${feature}.feature`, async () => {
-      const featurePath = join(samplesPath, "features", `${feature}.feature`);
+      const featureSrcPath = join(samplesPath, "features", `${feature}.feature`);
+      const featureDstPath = join(featuresTempPath, `${feature}.feature`);
+      const featureDstDir = dirname(featureDstPath);
 
-      await copyFile(featurePath, join(featuresTempPath, `${feature}.feature`));
-      await attachmentPath(`features/${feature}.feature`, featurePath, { contentType: "text/plain" });
+      await mkdir(featureDstDir, { recursive: true });
+      await copyFile(featureSrcPath, featureDstPath);
+      await attachmentPath(`features/${feature}.feature`, featureSrcPath, { contentType: "text/plain" });
     });
   }
 
@@ -140,7 +151,8 @@ export const runCucumberInlineTest = async (
   const modulePath = await step("resolve @cucumber/cucumber", () => {
     return resolvePath(require.resolve("@cucumber/cucumber"), "../../bin/cucumber-js");
   });
-  const args = ["--config", "./config.js"];
+  const processCwd = cwd ? join(testDir, cwd) : testDir;
+  const args = ["--config", relative(processCwd, configFilePath)];
   const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
     return fork(modulePath, args, {
       env: {
@@ -148,7 +160,7 @@ export const runCucumberInlineTest = async (
         ...finalEnv,
         ALLURE_TEST_MODE: "1",
       },
-      cwd: testDir,
+      cwd: processCwd,
       stdio: "pipe",
     });
   });

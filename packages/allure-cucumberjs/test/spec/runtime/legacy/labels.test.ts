@@ -3,7 +3,7 @@ import { LabelName } from "allure-js-commons";
 import { runCucumberInlineTest } from "../../../utils.js";
 
 it("handles runtime labels", async () => {
-  const { tests } = await runCucumberInlineTest(["labels"], ["runtime/legacy/labels"], false);
+  const { tests } = await runCucumberInlineTest(["labels"], ["runtime/legacy/labels"], { parallel: false });
 
   expect(tests).toHaveLength(3);
   expect(tests).toContainEqual(
