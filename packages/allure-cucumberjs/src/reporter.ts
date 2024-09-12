@@ -24,13 +24,13 @@ import {
   getHostLabel,
   getLanguageLabel,
   getPackageLabel,
-  getPosixPath,
   getThreadLabel,
   getWorstStepResultStatus,
   md5,
 } from "allure-js-commons/sdk/reporter";
 import { AllureCucumberWorld } from "./legacy.js";
 import type { AllureCucumberLinkConfig, AllureCucumberReporterConfig, LabelConfig } from "./model.js";
+import { getPathRelativeToProjectRoot, getPosixPathRelativeToProjectRoot } from "./utils.js";
 
 export default class AllureCucumberReporter extends Formatter {
   private readonly afterHooks: Record<string, TestCaseHookDefinition> = {};
@@ -239,7 +239,7 @@ export default class AllureCucumberReporter extends Formatter {
     const [scenarioId] = pickle.astNodeIds;
     const scenario = this.scenarioMap.get(scenarioId);
 
-    const posixPath = getPosixPath(pickle.uri);
+    const posixPath = getPosixPathRelativeToProjectRoot(pickle);
     const fullName = `${posixPath}#${pickle.name}`;
     const result: Partial<TestResult> = {
       name: pickle.name,
@@ -255,7 +255,7 @@ export default class AllureCucumberReporter extends Formatter {
     result.labels!.push(
       getLanguageLabel(),
       getFrameworkLabel("cucumberjs"),
-      getPackageLabel(pickle.uri),
+      getPackageLabel(getPathRelativeToProjectRoot(pickle)),
       getHostLabel(),
       getThreadLabel(data.workerId),
     );
