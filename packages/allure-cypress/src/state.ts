@@ -10,6 +10,7 @@ export const getAllureState = () => {
       messages: [],
       testPlan: undefined,
       currentTest: undefined,
+      projectDir: undefined,
     };
     Cypress.env("allure", state);
   }
@@ -33,6 +34,8 @@ export const enqueueRuntimeMessage = (message: CypressMessage) => {
 };
 
 export const getAllureTestPlan = () => getAllureState().testPlan;
+
+export const getProjectDir = () => getAllureState().projectDir;
 
 export const getCurrentTest = () => getAllureState().currentTest;
 

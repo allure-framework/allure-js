@@ -82,7 +82,7 @@ export type CypressTestStartMessage = {
   type: "cypress_test_start";
   data: {
     name: string;
-    fullName: string;
+    fullNameSuffix: string;
     start: number;
     labels: Label[];
   };
@@ -161,7 +161,6 @@ export type CypressMessage =
 
 export type SpecContext = {
   specPath: string;
-  package: string;
   test: string | undefined;
   fixture: string | undefined;
   commandSteps: string[];
@@ -183,6 +182,7 @@ export type AllureSpecState = {
   };
   initialized: boolean;
   testPlan: TestPlanV1 | null | undefined;
+  projectDir?: string;
   messages: CypressMessage[];
   currentTest?: CypressTest;
 };

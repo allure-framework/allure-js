@@ -95,7 +95,7 @@ export const readImageAsBase64 = async (filePath: string): Promise<string | unde
   }
 };
 
-const getProjectRoot = (() => {
+export const getProjectRoot = (() => {
   let cachedProjectRoot: string | null = null;
 
   const resolveProjectRootByPath = () => {

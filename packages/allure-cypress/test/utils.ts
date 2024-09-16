@@ -7,21 +7,29 @@ import { ContentType, attachment, step } from "allure-js-commons";
 import type { AllureResults, EnvironmentInfo } from "allure-js-commons/sdk";
 import { getPosixPath, parseProperties } from "allure-js-commons/sdk/reporter";
 
-type CypressModulesPaths = {
+type AllureCypressPaths = {
   allureCommonsModulePath: string;
   allureCypressModulePath: string;
   allureCypressReporterModulePath: string;
+  supportFilePath: string;
+  specPattern: string;
+  allureDirPath: string;
 };
 
-type CypressTestFiles = Record<string, (modulesPaths: CypressModulesPaths) => string>;
+type CypressTestFiles = Record<string, (modulesPaths: AllureCypressPaths) => string>;
 
 type AllureResultsWithTimestamps = AllureResults & {
   timestamps: Map<string, Date>;
 };
 
+type CypressRunOptions = {
+  env?: (testDir: string) => Record<string, string>;
+  cwd?: string;
+};
+
 export const runCypressInlineTest = async (
   testFiles: CypressTestFiles,
-  env?: (testDir: string) => Record<string, string>,
+  { env, cwd }: CypressRunOptions = {},
 ): Promise<AllureResultsWithTimestamps> => {
   const res: AllureResultsWithTimestamps = {
     tests: [],
@@ -32,20 +40,26 @@ export const runCypressInlineTest = async (
     timestamps: new Map(),
   };
   const testDir = join(__dirname, "fixtures", randomUUID());
+  const processCwd = cwd ? join(testDir, cwd) : testDir;
+  const configFilePath = relative(processCwd, join(testDir, "cypress.config.js"));
 
   const testFilesToWrite: CypressTestFiles = {
+    "package.json": () => String.raw`{"name": "dummy"}`,
     "cypress/support/e2e.js": ({ allureCypressModulePath }) => `
       require("${allureCypressModulePath}");
     `,
-    "cypress.config.js": ({ allureCypressReporterModulePath }) => `
+    "cypress.config.js": ({ allureCypressReporterModulePath, supportFilePath, specPattern, allureDirPath }) => `
       const { allureCypress } = require("${allureCypressReporterModulePath}");
 
       module.exports = {
         e2e: {
           baseUrl: "https://allurereport.org",
+          supportFile: "${supportFilePath}",
+          specPattern: "${specPattern}",
           viewportWidth: 1240,
           setupNodeEvents: (on, config) => {
             allureCypress(on, config, {
+              resultsDir: "${allureDirPath}",
               links: {
                 issue: {
                   urlTemplate: "https://allurereport.org/issues/%s"
@@ -77,6 +91,9 @@ export const runCypressInlineTest = async (
         allureCommonsModulePath: getPosixPath(relative(fileDir, allureCommonsModulePath)),
         allureCypressModulePath: getPosixPath(relative(fileDir, allureCypressModulePath)),
         allureCypressReporterModulePath: getPosixPath(relative(fileDir, allureCypressReporterModulePath)),
+        supportFilePath: getPosixPath(relative(processCwd, join(testDir, "cypress/support/e2e.js"))),
+        specPattern: getPosixPath(relative(processCwd, join(testDir, "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}"))),
+        allureDirPath: getPosixPath(join(testDir, "allure-results")),
       });
       await writeFile(join(testDir, testFile), content, "utf8");
       await attachment(testFile, content, ContentType.TEXT);
@@ -95,7 +112,7 @@ export const runCypressInlineTest = async (
     const modulePath = resolvePath(moduleRootPath, "../bin/cypress");
     await ctx.parameter("Module", modulePath);
 
-    const args = ["run", "-q"];
+    const args = ["run", "-q", "--config-file", configFilePath];
     await ctx.parameter("Arguments", JSON.stringify(args));
 
     const envVars = env?.(testDir);
@@ -103,14 +120,14 @@ export const runCypressInlineTest = async (
       await attachment("Extra environment variables", JSON.stringify(envVars), ContentType.JSON);
     }
 
-    await ctx.parameter("CWD", testDir);
+    await ctx.parameter("CWD", processCwd);
 
     const testProcess = fork(modulePath, args, {
       env: {
         ...process.env,
         ...envVars,
       },
-      cwd: testDir,
+      cwd: processCwd,
       stdio: "pipe",
     });
 
