@@ -197,3 +197,26 @@ it("should support steps with names longer then 50 chars", async () => {
     }),
   ]);
 });
+
+it("should ignore route.continue() steps", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.js": `
+      import { test, expect } from '@playwright/test';
+
+      test('a test', async ({ page }) => {
+        await page.route('**/*', (route) => {
+          route.continue();
+        });
+        await page.goto("https://allurereport.org");
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  const [tr] = tests;
+  expect(tr.steps).not.toContainEqual(
+    expect.objectContaining({
+      name: "route.continue()",
+    }),
+  );
+});
