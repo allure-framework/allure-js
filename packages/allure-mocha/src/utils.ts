@@ -76,8 +76,9 @@ export const resolveParallelModeSetupFile = () =>
   join(dirname(filename), `setupAllureMochaParallel${extname(filename)}`);
 
 export const getTestCaseId = (test: Mocha.Test) => {
+  const testFilePath = test.file ? getPosixPath(getRelativePath(test.file)) : "";
   const suiteTitles = test.titlePath().slice(0, -1);
-  return md5(JSON.stringify([...suiteTitles, getAllureDisplayName(test)]));
+  return md5(JSON.stringify([testFilePath, ...suiteTitles, getAllureDisplayName(test)]));
 };
 
 export const applyTestPlan = (ids: ReadonlySet<string>, selectors: ReadonlySet<string>, rootSuite: Mocha.Suite) => {
