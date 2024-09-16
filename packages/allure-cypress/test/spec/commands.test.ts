@@ -168,8 +168,8 @@ it("should take the limits from the config", async () => {
         cy.wrap({ foo: { bar: { }, baz: "qux" } }) // should remove 'bar' that creates nesting level 3 but keep 'baz'
       });
     `,
-    "cypress.config.js": ({ allureCypressModuleBasePath }) => `
-      const { allureCypress } = require("${allureCypressModuleBasePath}/reporter.js");
+    "cypress.config.js": ({ allureCypressReporterModulePath }) => `
+      const { allureCypress } = require("${allureCypressReporterModulePath}");
 
       module.exports = {
         e2e: {

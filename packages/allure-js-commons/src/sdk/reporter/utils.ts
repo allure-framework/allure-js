@@ -95,7 +95,7 @@ export const readImageAsBase64 = async (filePath: string): Promise<string | unde
   }
 };
 
-const getProjectRoot = (() => {
+export const getProjectRoot = (() => {
   let cachedProjectRoot: string | null = null;
 
   const resolveProjectRootByPath = () => {
@@ -131,6 +131,13 @@ export const getRelativePath = (filepath: string) => {
   if (path.isAbsolute(filepath)) {
     const projectRoot = getProjectRoot();
     filepath = path.relative(projectRoot, filepath);
+  }
+  return filepath;
+};
+
+export const getPosixPath = (filepath: string) => {
+  if (process.platform === "win32") {
+    return filepath.replaceAll("\\", "/");
   }
   return filepath;
 };

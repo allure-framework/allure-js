@@ -19,7 +19,7 @@ it("should skip tests based on test plan", async () => {
     ],
   };
 
-  const { tests } = await runCucumberInlineTest(["testplan1", "testplan2"], ["testplan"], true, testPlan);
+  const { tests } = await runCucumberInlineTest(["testplan1", "testplan2"], ["testplan"], { testPlan });
 
   expect(tests).not.toContainEqual(
     expect.objectContaining({
@@ -56,4 +56,23 @@ it("should skip tests based on test plan", async () => {
       name: "test 6",
     }),
   );
+});
+
+it("should not depend on CWD", async () => {
+  const testPlan: TestPlanV1 = {
+    version: "1.0",
+    tests: [
+      {
+        selector: "features/nested/simple.feature#passed",
+      },
+    ],
+  };
+
+  const { tests } = await runCucumberInlineTest(["nested/simple"], ["simple"], { testPlan, cwd: "features/nested" });
+
+  expect(tests).toHaveLength(1);
+
+  expect(tests[0]).toMatchObject({
+    name: "passed",
+  });
 });

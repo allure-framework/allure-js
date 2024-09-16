@@ -6,8 +6,8 @@ it("has environment info", async () => {
     "cypress/e2e/sample.cy.js": () => `
       it('sample test', () => {});
      `,
-    "cypress.config.js": ({ allureCypressModuleBasePath }) => `
-      const { allureCypress } = require("${allureCypressModuleBasePath}/reporter.js");
+    "cypress.config.js": ({ allureCypressReporterModulePath }) => `
+      const { allureCypress } = require("${allureCypressReporterModulePath}");
 
       module.exports = {
         e2e: {

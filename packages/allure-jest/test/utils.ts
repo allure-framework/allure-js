@@ -1,10 +1,10 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
-import { basename, dirname, join } from "node:path";
+import { dirname, extname, join, relative } from "node:path";
 import { attachment, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
-import { MessageReader } from "allure-js-commons/sdk/reporter";
+import { MessageReader, getPosixPath } from "allure-js-commons/sdk/reporter";
 
 export const runJestInlineTest = async (
   testFiles: Record<string, string>,
@@ -14,11 +14,14 @@ export const runJestInlineTest = async (
   const testDir = join(__dirname, "fixtures", randomUUID());
   const configFileName = "jest.config.js";
   const configFilePath = join(testDir, configFileName);
+
+  const allureJestNode = require.resolve("allure-jest/node");
+  const allureJestNodePath = getPosixPath(relative(testDir, allureJestNode));
   const testFilesToWrite: Record<string, string> = {
     "jest.config.js": `
       const config = {
         bail: false,
-        testEnvironment: "${require.resolve("allure-jest/node")}",
+        testEnvironment: "${allureJestNodePath}",
         testEnvironmentOptions: {
           links: {
             issue: {
@@ -59,7 +62,7 @@ export const runJestInlineTest = async (
       await attachment(testFile, testFilesToWrite[testFile], {
         contentType: "text/plain",
         encoding: "utf-8",
-        fileExtension: basename(testFile).split(".").pop() || "",
+        fileExtension: extname(testFile),
       });
     });
   }
@@ -67,7 +70,7 @@ export const runJestInlineTest = async (
   const modulePath = await step("resolve jest", () => {
     return require.resolve("jest-cli/bin/jest");
   });
-  const args = ["--config", configFilePath, testDir, ...(cliArgs ?? [])];
+  const args = ["--config", configFilePath, "--roots", testDir, ...(cliArgs ?? [])];
   const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
     return fork(modulePath, args, {
       env: {

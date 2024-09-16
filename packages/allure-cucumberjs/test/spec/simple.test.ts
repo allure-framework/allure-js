@@ -84,3 +84,30 @@ it("should set full name", async () => {
     }),
   );
 });
+
+it("should calculate fullName in a CWD-independent manner", async () => {
+  const { tests } = await runCucumberInlineTest(["nested/simple"], ["simple"], { cwd: "features/nested" });
+
+  expect(tests).toHaveLength(3);
+  expect(tests).toContainEqual(
+    expect.objectContaining({
+      name: "passed",
+      fullName: "features/nested/simple.feature#passed",
+      status: Status.PASSED,
+    }),
+  );
+  expect(tests).toContainEqual(
+    expect.objectContaining({
+      name: "failed",
+      fullName: "features/nested/simple.feature#failed",
+      status: Status.FAILED,
+    }),
+  );
+  expect(tests).toContainEqual(
+    expect.objectContaining({
+      name: "broken",
+      fullName: "features/nested/simple.feature#broken",
+      status: Status.BROKEN,
+    }),
+  );
+});

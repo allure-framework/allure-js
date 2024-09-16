@@ -68,9 +68,11 @@ it("respects testplan", async () => {
          });
        `,
     },
-    (testDir) => ({
-      ALLURE_TESTPLAN_PATH: join(testDir, testPlanFilename),
-    }),
+    {
+      env: (testDir) => ({
+        ALLURE_TESTPLAN_PATH: join(testDir, testPlanFilename),
+      }),
+    },
   );
 
   expect(tests).toHaveLength(3);
@@ -121,9 +123,11 @@ it("should deselect all tests not in test plan", async () => {
         it('test 2', () => {});
       `,
     },
-    (testDir) => ({
-      ALLURE_TESTPLAN_PATH: join(testDir, testPlanFilename),
-    }),
+    {
+      env: (testDir) => ({
+        ALLURE_TESTPLAN_PATH: join(testDir, testPlanFilename),
+      }),
+    },
   );
 
   expect(tests).toEqual([]);
@@ -156,9 +160,11 @@ it("should not trigger hooks", async () => {
         it("bar", () => {});
       `,
     },
-    (testDir) => ({
-      ALLURE_TESTPLAN_PATH: join(testDir, testPlanFilename),
-    }),
+    {
+      env: (testDir) => ({
+        ALLURE_TESTPLAN_PATH: join(testDir, testPlanFilename),
+      }),
+    },
   );
 
   expect(tests).toEqual([

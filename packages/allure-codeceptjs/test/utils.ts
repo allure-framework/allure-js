@@ -10,6 +10,7 @@ import { MessageReader } from "allure-js-commons/sdk/reporter";
 export const runCodeceptJsInlineTest = async (
   files: Record<string, string | Buffer>,
   env?: Record<string, string>,
+  cwd?: string,
 ): Promise<AllureResults> => {
   const testFiles = {
     // package.json is used to find project root in case of absolute file paths are used
@@ -47,7 +48,7 @@ export const runCodeceptJsInlineTest = async (
         ...env,
         ALLURE_TEST_MODE: "1",
       },
-      cwd: testDir,
+      cwd: cwd ? join(testDir, cwd) : testDir,
       stdio: "pipe",
     });
   });

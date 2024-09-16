@@ -9,7 +9,7 @@ export default defineConfig({
     reporters: ["verbose", ["allure-vitest/reporter", { resultsDir: "./out/allure-results" }]],
     typecheck: {
       enabled: true,
-      tsconfig: "./tsconfig.test.json",
+      tsconfig: "./test/tsconfig.json",
     },
   },
 });

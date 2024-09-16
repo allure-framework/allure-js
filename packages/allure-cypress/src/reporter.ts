@@ -1,5 +1,4 @@
 import type Cypress from "cypress";
-import path from "node:path";
 import { ContentType, Stage, Status } from "allure-js-commons";
 import type { TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
@@ -11,6 +10,9 @@ import {
   getHostLabel,
   getLanguageLabel,
   getPackageLabel,
+  getPosixPath,
+  getProjectRoot,
+  getRelativePath,
   getSuiteLabels,
   getThreadLabel,
   parseTestPlan,
@@ -281,15 +283,20 @@ export class AllureCypress {
     }
   };
 
-  #startTest = (context: SpecContext, { data }: CypressTestStartMessage) => {
+  #startTest = (context: SpecContext, { data: { fullNameSuffix, ...testResultData } }: CypressTestStartMessage) => {
     this.#emitPreviousTestScope(context);
     const testScope = this.allureRuntime.startScope();
     context.testScope = testScope;
-    context.test = this.#addNewTestResult(context, data, [context.videoScope, ...context.suiteScopes, testScope]);
+    context.test = this.#addNewTestResult(context, fullNameSuffix, testResultData, [
+      context.videoScope,
+      ...context.suiteScopes,
+      testScope,
+    ]);
   };
 
   #addNewTestResult = (
     context: SpecContext,
+    fullNameSuffix: string,
     { labels: metadataLabels = [], ...otherTestData }: Partial<TestResult>,
     scopes: string[],
   ) =>
@@ -299,7 +306,6 @@ export class AllureCypress {
         labels: [
           getLanguageLabel(),
           getFrameworkLabel("cypress"),
-
           ...getSuiteLabels(context.suiteNames),
           ...metadataLabels,
           ...getEnvironmentLabels(),
@@ -307,6 +313,7 @@ export class AllureCypress {
           getThreadLabel(),
           getPackageLabel(context.specPath),
         ],
+        fullName: `${getPosixPath(context.specPath)}#${fullNameSuffix}`,
         ...otherTestData,
       },
       scopes,
@@ -351,13 +358,13 @@ export class AllureCypress {
 
   #addSkippedTest = (
     context: SpecContext,
-    { data: { suites, duration, retries, ...testResultData } }: CypressSkippedTestMessage,
+    { data: { fullNameSuffix, suites, duration, retries, ...testResultData } }: CypressSkippedTestMessage,
   ) => {
     // Tests skipped because of a hook error may share all suites of the current context
     // or just a part thereof (if it's from a sibling suite).
     const scopes = suites.map((s) => context.suiteIdToScope.get(s)).filter((s): s is string => Boolean(s));
 
-    const testUuid = this.#addNewTestResult(context, testResultData, [context.videoScope, ...scopes]);
+    const testUuid = this.#addNewTestResult(context, fullNameSuffix, testResultData, [context.videoScope, ...scopes]);
     this.#stopExistingTestResult(testUuid, { duration, retries });
     this.allureRuntime.writeTest(testUuid);
   };
@@ -470,10 +477,9 @@ export class AllureCypress {
   };
 
   #initializeSpecContext = (absolutePath: string) => {
-    const specPathElements = path.relative(process.cwd(), absolutePath).split(path.sep);
+    const specPath = getRelativePath(absolutePath);
     const context: SpecContext = {
-      specPath: specPathElements.join("/"),
-      package: specPathElements.join("."),
+      specPath,
       test: undefined,
       fixture: undefined,
       commandSteps: [],
@@ -494,6 +500,7 @@ const createRuntimeState = (allureConfig?: AllureCypressConfig): AllureSpecState
   initialized: false,
   messages: [],
   testPlan: parseTestPlan(),
+  projectDir: getProjectRoot(),
 });
 
 const getRuntimeConfigDefaults = ({
@@ -544,10 +551,12 @@ export const allureCypress = (
     allureConfig = cypressConfig as AllureCypressConfig;
   }
 
+  const hasCypressConfig = cypressConfig && "env" in cypressConfig;
+
   const allureCypressReporter = new AllureCypress(allureConfig);
   allureCypressReporter.attachToCypress(on);
 
-  if (cypressConfig && "env" in cypressConfig) {
+  if (hasCypressConfig) {
     initializeRuntimeState(cypressConfig, allureConfig);
   }
 

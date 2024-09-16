@@ -3,7 +3,7 @@ import { LinkType } from "allure-js-commons";
 import { runCucumberInlineTest } from "../../../utils.js";
 
 it("handles runtime links", async () => {
-  const { tests } = await runCucumberInlineTest(["links"], ["runtime/legacy/links"], false);
+  const { tests } = await runCucumberInlineTest(["links"], ["runtime/legacy/links"], { parallel: false });
 
   expect(tests).toHaveLength(5);
   expect(tests).toContainEqual(

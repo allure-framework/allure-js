@@ -65,12 +65,15 @@ const getIndexedTestPlan = (): TestPlanIndex | undefined => {
   }
 };
 
-const isInTestPlan = (testplan: TestPlanIndex | undefined, fullName: string, labels: readonly Label[]) => {
-  if (testplan && !testplan.fullNames.has(fullName)) {
-    const allureId = labels.find((l) => l.name === LabelName.ALLURE_ID)?.value;
-    return allureId && testplan.ids.has(allureId);
+const isInTestPlan = (testplan: TestPlanIndex | undefined, fullName: string | undefined, labels: readonly Label[]) => {
+  if (!testplan) {
+    return true;
   }
-  return true;
+  if (fullName && testplan.fullNames.has(fullName)) {
+    return true;
+  }
+  const allureId = labels.find((l) => l.name === LabelName.ALLURE_ID)?.value;
+  return allureId && testplan.ids.has(allureId);
 };
 
 export const enableAllureJasmineTestPlan = () => {

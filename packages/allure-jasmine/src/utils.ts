@@ -1,5 +1,5 @@
-import { cwd } from "node:process";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
+import { getPosixPath, getRelativePath } from "allure-js-commons/sdk/reporter";
 
 import FailedExpectation = jasmine.FailedExpectation;
 
@@ -22,13 +22,13 @@ export const getAllureNamesAndLabels = (
   suites: readonly string[],
   rawSpecName: string,
 ) => {
-  const filePart = (filename || "").replace(cwd(), "").replace(/^[/\\]/, "");
+  const filePart = filename ? getPosixPath(getRelativePath(filename)) : undefined;
   const { cleanTitle: specName, labels } = extractMetadataFromString(rawSpecName);
   const specPart = [...suites, specName].join(" > ");
 
   return {
     name: specName,
-    fullName: `${filePart}#${specPart}`,
+    fullName: filePart ? `${filePart}#${specPart}` : undefined,
     labels,
   };
 };

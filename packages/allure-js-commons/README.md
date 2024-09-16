@@ -25,5 +25,5 @@ Using `ALLURE_LABEL_{{labelName}}={{labelValue}}` syntax you can set common labe
 #### Examples
 
 ```bash
-ALLURE_LABEL_EPIC="Story 1" npm test
+ALLURE_LABEL_epic="Story 1" npm test
 ```

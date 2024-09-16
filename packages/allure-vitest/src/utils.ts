@@ -1,9 +1,8 @@
-import { relative } from "node:path";
-import { cwd } from "node:process";
 import type { Suite, Task } from "vitest";
 import { LabelName } from "allure-js-commons";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
+import { getPosixPath, getRelativePath, includedInTestPlan } from "allure-js-commons/sdk/reporter";
 
 export const getSuitePath = (task: Task): string[] => {
   const path = [];
@@ -22,11 +21,19 @@ export const getSuitePath = (task: Task): string[] => {
   return path;
 };
 
-export const getTestFullName = (task: Task, rootDir: string): string => {
+export const getTestMetadata = (task: Task) => {
   const suitePath = getSuitePath(task);
-  const relativeTestPath = relative(rootDir, task.file!.filepath);
+  const relativeTestPath = getPosixPath(getRelativePath(task.file!.filepath));
 
-  return `${relativeTestPath}#${suitePath.concat(task.name).join(" ")}`;
+  const { cleanTitle, labels } = extractMetadataFromString(task.name);
+
+  return {
+    specPath: relativeTestPath,
+    name: cleanTitle || task.name,
+    suitePath,
+    fullName: `${relativeTestPath}#${suitePath.concat(cleanTitle).join(" ")}`,
+    labels,
+  };
 };
 
 export const existsInTestPlan = (task: Task, testPlan?: TestPlanV1) => {
@@ -34,15 +41,7 @@ export const existsInTestPlan = (task: Task, testPlan?: TestPlanV1) => {
     return true;
   }
 
-  const { name: testName } = task;
-  const testFullName = getTestFullName(task, cwd());
-  const { labels } = extractMetadataFromString(testName);
-  const allureIdLabel = labels.find(({ name }) => name === LabelName.ALLURE_ID);
-
-  return testPlan.tests.some(({ id, selector = "" }) => {
-    const idMatched = id ? String(id) === allureIdLabel?.value : false;
-    const selectorMatched = selector === testFullName;
-
-    return idMatched || selectorMatched;
-  });
+  const { fullName, labels } = getTestMetadata(task);
+  const { value: id } = labels.find(({ name }) => name === LabelName.ALLURE_ID) ?? {};
+  return includedInTestPlan(testPlan, { fullName, id });
 };

@@ -62,21 +62,14 @@ jobs:
 
   build:
     name: "Build"
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         node-version: [18, 20]
+        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
-
-      - uses: browser-actions/setup-chrome@v1
-        with:
-          chrome-version: stable
-        id: setup-chrome
-      - run: |
-          echo Installed chromium version: ${{ steps.setup-chrome.outputs.chrome-version }}
-          ${{ steps.setup-chrome.outputs.chrome-path }} --version
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -88,7 +81,8 @@ jobs:
         run: |
           yarn install --immutable --immutable-cache
 
-      - run: yarn workspace allure-playwright playwright install chromium --with-deps
+      - name: "Playwright install chromium"
+        run: yarn workspace allure-playwright playwright install chromium --with-deps
 
       - name: yarn build
         run: |

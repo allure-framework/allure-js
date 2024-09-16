@@ -3,7 +3,7 @@ import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromEr
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import { ALLURE_REPORT_STEP_COMMAND, ALLURE_REPORT_SYSTEM_HOOK } from "./model.js";
 import type { CypressCommand, CypressHook, CypressSuite, CypressTest } from "./model.js";
-import { getAllureTestPlan } from "./state.js";
+import { getAllureTestPlan, getProjectDir } from "./state.js";
 
 export const DEFAULT_RUNTIME_CONFIG = {
   stepsFromCommands: {
@@ -74,12 +74,19 @@ export const last = <T = unknown>(arr: T[]): T | undefined => {
   return arr[arr.length - 1];
 };
 
+const resolveSpecRelativePath = (spec: Cypress.Spec) => {
+  const projectDir = getProjectDir();
+  const specPath = projectDir ? spec.absolute.substring(projectDir.length + 1) : spec.relative;
+  const win = Cypress.platform === "win32";
+  return win ? specPath.replaceAll("\\", "/") : specPath;
+};
+
 export const getNamesAndLabels = (spec: Cypress.Spec, test: CypressTest) => {
   const rawName = test.title;
   const { cleanTitle: name, labels } = extractMetadataFromString(rawName);
   const suites = test.titlePath().slice(0, -1);
-  const fullName = `${spec.relative}#${[...suites, name].join(" ")}`;
-  return { name, labels, fullName };
+  const fullNameSuffix = `${[...suites, name].join(" ")}`;
+  return { name, labels, fullNameSuffix };
 };
 
 export const getTestStartData = (test: CypressTest) => ({
@@ -99,8 +106,9 @@ export const getTestSkipData = () => ({
 export const applyTestPlan = (spec: Cypress.Spec, root: CypressSuite) => {
   const testPlan = getAllureTestPlan();
   if (testPlan) {
+    const specPath = resolveSpecRelativePath(spec);
     for (const suite of iterateSuites(root)) {
-      const indicesToRemove = getIndicesOfDeselectedTests(testPlan, spec, suite.tests);
+      const indicesToRemove = getIndicesOfDeselectedTests(testPlan, spec, specPath, suite.tests);
       removeSortedIndices(suite.tests, indicesToRemove);
     }
   }
@@ -148,10 +156,16 @@ export const isRootAfterAllHook = (hook: CypressHook) => hook.parent!.root && ho
 const includedInTestPlan = (testPlan: TestPlanV1, fullName: string, allureId: string | undefined): boolean =>
   testPlan.tests.some((test) => (allureId && test.id?.toString() === allureId) || test.selector === fullName);
 
-const getIndicesOfDeselectedTests = (testPlan: TestPlanV1, spec: Cypress.Spec, tests: readonly CypressTest[]) => {
+const getIndicesOfDeselectedTests = (
+  testPlan: TestPlanV1,
+  spec: Cypress.Spec,
+  specPath: string,
+  tests: readonly CypressTest[],
+) => {
   const indicesToRemove: number[] = [];
   tests.forEach((test, index) => {
-    const { fullName, labels } = getNamesAndLabels(spec, test);
+    const { fullNameSuffix, labels } = getNamesAndLabels(spec, test);
+    const fullName = `${specPath}#${fullNameSuffix}`;
     const allureId = labels.find(({ name }) => name === LabelName.ALLURE_ID)?.value;
 
     if (!includedInTestPlan(testPlan, fullName, allureId)) {

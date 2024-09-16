@@ -1,6 +1,6 @@
 import type { EnvironmentContext, JestEnvironment, JestEnvironmentConfig } from "@jest/environment";
 import type { Circus } from "@jest/types";
-import { sep } from "node:path";
+import { relative } from "node:path";
 import { env } from "node:process";
 import * as allure from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
@@ -15,6 +15,7 @@ import {
   getHostLabel,
   getLanguageLabel,
   getPackageLabel,
+  getPosixPath,
   getSuiteLabels,
   getThreadLabel,
   parseTestPlan,
@@ -49,7 +50,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         ...restConfig,
         writer: createDefaultWriter({ resultsDir }),
       });
-      this.testPath = context.testPath.replace(projectConfig.rootDir, "").replace(sep, "");
+      this.testPath = relative(projectConfig.rootDir, context.testPath);
       this.testPlan = parseTestPlan();
 
       // @ts-ignore
@@ -123,7 +124,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const newTestPath = newTestSuitePath.concat(test.name);
       const newTestId = getTestId(newTestPath);
 
-      return `${this.testPath}#${newTestId}`;
+      return `${getPosixPath(this.testPath)}#${newTestId}`;
     }
 
     #handleSuiteStart() {

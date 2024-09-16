@@ -60,8 +60,11 @@ describe("logStep", () => {
     expect(messageTestRuntime.sendMessage).toBeCalledTimes(2);
 
     const [[message1], [message2]] = messageTestRuntime.sendMessage.mock.calls;
+    // @ts-ignore
     expect(message1.data.start).toBeGreaterThanOrEqual(before);
+    // @ts-ignore
     expect(message1.data.start).toBeLessThanOrEqual(after);
+    // @ts-ignore
     expect(message1.data.start).toEqual(message2.data.stop);
   });
 });

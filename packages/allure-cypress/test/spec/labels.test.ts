@@ -48,10 +48,12 @@ it("should add labels from env variables", async () => {
     });
   `,
     },
-    () => ({
-      ALLURE_LABEL_A: "a",
-      ALLURE_LABEL_B: "b",
-    }),
+    {
+      env: () => ({
+        ALLURE_LABEL_A: "a",
+        ALLURE_LABEL_B: "b",
+      }),
+    },
   );
 
   expect(tests).toHaveLength(1);

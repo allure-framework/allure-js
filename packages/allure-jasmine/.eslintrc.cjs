@@ -5,7 +5,7 @@ module.exports = {
   },
   parserOptions: {
     tsconfigRootDir: __dirname,
-    project: ["./tsconfig.json", "./tsconfig.test.json"],
+    project: ["./tsconfig.json", "./test/tsconfig.json"],
   },
   overrides: [
     {

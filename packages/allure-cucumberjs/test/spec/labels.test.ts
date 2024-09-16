@@ -50,7 +50,7 @@ it("should add thread and host labels", async () => {
   );
 });
 
-it("should add thread package label", async () => {
+it("should add package label", async () => {
   const { tests } = await runCucumberInlineTest(["simple"], ["simple"]);
 
   expect(tests).toEqual(
@@ -86,10 +86,48 @@ it("should add thread package label", async () => {
   );
 });
 
+it("should calculate package label in a CWD-independent manner", async () => {
+  const { tests } = await runCucumberInlineTest(["nested/simple"], ["simple"], { cwd: "features/nested" });
+
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "passed",
+        labels: expect.arrayContaining([
+          {
+            name: "package",
+            value: "features.nested.simple.feature",
+          },
+        ]),
+      }),
+      expect.objectContaining({
+        name: "failed",
+        labels: expect.arrayContaining([
+          {
+            name: "package",
+            value: "features.nested.simple.feature",
+          },
+        ]),
+      }),
+      expect.objectContaining({
+        name: "broken",
+        labels: expect.arrayContaining([
+          {
+            name: "package",
+            value: "features.nested.simple.feature",
+          },
+        ]),
+      }),
+    ]),
+  );
+});
+
 it("sets label from env variables", async () => {
-  const { tests } = await runCucumberInlineTest(["simple"], ["simple"], undefined, undefined, {
-    ALLURE_LABEL_A: "a",
-    ALLURE_LABEL_B: "b",
+  const { tests } = await runCucumberInlineTest(["simple"], ["simple"], {
+    env: {
+      ALLURE_LABEL_A: "a",
+      ALLURE_LABEL_B: "b",
+    },
   });
 
   expect(tests).toHaveLength(3);

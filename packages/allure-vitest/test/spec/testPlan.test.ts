@@ -1,5 +1,3 @@
-import { writeFile } from "node:fs/promises";
-import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { runVitestInlineTest } from "../utils.js";
 
@@ -33,35 +31,20 @@ describe("test plan", () => {
         await logStep(dummy);
       });
     `,
-      undefined,
-      async (testDir) => {
-        const testPlanPath = join(testDir, "testplan.json");
-
-        await writeFile(
-          testPlanPath,
-          JSON.stringify({
-            tests: [
-              {
-                selector: "sample.test.ts#baz @allure.id=2",
-              },
-              {
-                id: 3,
-              },
-              {
-                selector: "sample.test.ts#foo bar boop",
-              },
-            ],
-          }),
-        );
-        process.env.ALLURE_TESTPLAN_PATH = testPlanPath;
+      {
+        testplan: {
+          version: "1.0",
+          tests: [{ selector: "foo/sample.test.ts#baz" }, { id: 3 }, { selector: "foo/sample.test.ts#foo bar boop" }],
+        },
+        specPath: "foo/sample.test.ts",
       },
     );
 
     expect(tests).toHaveLength(3);
-    expect(tests).toContainEqual(expect.objectContaining({ name: "baz", fullName: "sample.test.ts#baz @allure.id=2" }));
+    expect(tests).toContainEqual(expect.objectContaining({ name: "baz", fullName: "foo/sample.test.ts#baz" }));
+    expect(tests).toContainEqual(expect.objectContaining({ name: "beep", fullName: "foo/sample.test.ts#beep" }));
     expect(tests).toContainEqual(
-      expect.objectContaining({ name: "beep", fullName: "sample.test.ts#beep @allure.id=3" }),
+      expect.objectContaining({ name: "boop", fullName: "foo/sample.test.ts#foo bar boop" }),
     );
-    expect(tests).toContainEqual(expect.objectContaining({ name: "boop", fullName: "sample.test.ts#foo bar boop" }));
   });
 });

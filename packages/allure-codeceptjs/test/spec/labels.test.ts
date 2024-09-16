@@ -89,6 +89,49 @@ it("should add package label", async () => {
   );
 });
 
+it("should not depend on CWD", async () => {
+  const { tests } = await runCodeceptJsInlineTest(
+    {
+      "nested/login.test.js": `
+        Feature("login-feature");
+        Scenario("failed-scenario", async ({ I }) => {
+          I.fail();
+        });
+        Scenario("passed-scenario", async ({ I }) => {
+          I.pass();
+        });
+      `,
+    },
+    {},
+    "nested",
+  );
+
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "failed-scenario",
+        fullName: "nested/login.test.js: login-feature > failed-scenario",
+        labels: expect.arrayContaining([
+          {
+            name: "package",
+            value: "nested.login.test.js",
+          },
+        ]),
+      }),
+      expect.objectContaining({
+        name: "passed-scenario",
+        fullName: "nested/login.test.js: login-feature > passed-scenario",
+        labels: expect.arrayContaining([
+          {
+            name: "package",
+            value: "nested.login.test.js",
+          },
+        ]),
+      }),
+    ]),
+  );
+});
+
 it("should add labels from env variables", async () => {
   const { tests } = await runCodeceptJsInlineTest(
     {
