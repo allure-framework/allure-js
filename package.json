@@ -1,6 +1,6 @@
 {
   "name": "allure-js",
-  "version": "3.0.0-beta.12",
+  "version": "3.0.0",
   "private": true,
   "workspaces": [
     "packages/*"

@@ -1,6 +1,6 @@
 {
   "name": "allure-codeceptjs",
-  "version": "3.0.0-beta.12",
+  "version": "3.0.0",
   "description": "Allure codeceptjs integration",
   "keywords": [
     "codeceptjs",
