@@ -211,6 +211,19 @@ export class AllureReporter implements ReporterV2 {
     this.startedTestCasesTitlesCache.push(titleMetadata.cleanTitle);
   }
 
+  #shouldIgnoreStep(step: TestStep) {
+    if (!this.options.detail && step.category !== "test.step") {
+      return true;
+    }
+
+    // ignore noisy route.continue()
+    if (step.category === "pw:api" && step.title === "route.continue()") {
+      return true;
+    }
+
+    return false;
+  }
+
   onStepBegin(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
     const testUuid = this.allureResultsUuids.get(test.id)!;
 
@@ -220,8 +233,7 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    // TODO fix the details disable, e.g. only ignore pw:api steps
-    if (!this.options.detail && step.category !== "test.step") {
+    if (this.#shouldIgnoreStep(step)) {
       return;
     }
 
@@ -232,7 +244,7 @@ export class AllureReporter implements ReporterV2 {
   }
 
   onStepEnd(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
-    if (!this.options.detail && step.category !== "test.step") {
+    if (this.#shouldIgnoreStep(step)) {
       return;
     }
 
