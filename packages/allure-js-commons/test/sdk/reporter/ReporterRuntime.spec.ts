@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { describe, expect, it } from "vitest";
 import { type Link, Stage, Status } from "../../../src/model.js";
 import { ReporterRuntime } from "../../../src/sdk/reporter/ReporterRuntime.js";
@@ -497,6 +498,202 @@ describe("ReporterRuntime", () => {
           },
         ]),
       );
+    });
+
+    it("should support links metadata messages from before fixtures", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const scopeUuid = runtime.startScope();
+      const fixtureUuid = runtime.startFixture(scopeUuid, "before", {})!;
+      runtime.applyRuntimeMessages(fixtureUuid, [
+        {
+          type: "metadata",
+          data: {
+            links: [
+              {
+                name: "link 1",
+                url: "https://example.com/link1",
+              },
+              {
+                name: "link 2",
+                url: "https://example.com/link2",
+              },
+            ],
+          },
+        },
+      ]);
+      runtime.stopFixture(fixtureUuid);
+      const testUuid = runtime.startTest({}, [scopeUuid]);
+      runtime.applyRuntimeMessages(testUuid, [
+        {
+          type: "metadata",
+          data: {
+            links: [
+              {
+                name: "link 3",
+                url: "https://example.com/link3",
+              },
+            ],
+          },
+        },
+      ]);
+      runtime.stopTest(testUuid);
+      runtime.writeTest(testUuid);
+      runtime.writeScope(scopeUuid);
+
+      const [testResult] = writer.writeResult.mock.calls[0];
+      expect(testResult.links).toEqual(
+        expect.arrayContaining([
+          {
+            name: "link 1",
+            url: "https://example.com/link1",
+          },
+          {
+            name: "link 2",
+            url: "https://example.com/link2",
+          },
+          {
+            name: "link 3",
+            url: "https://example.com/link3",
+          },
+        ]),
+      );
+    });
+
+    it("should support parameters metadata messages from before fixtures", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const scopeUuid = runtime.startScope();
+      const fixtureUuid = runtime.startFixture(scopeUuid, "before", {})!;
+      runtime.applyRuntimeMessages(fixtureUuid, [
+        {
+          type: "metadata",
+          data: {
+            parameters: [
+              {
+                name: "name 1",
+                value: "value 1",
+              },
+              {
+                name: "name 2",
+                value: "value 2",
+              },
+            ],
+          },
+        },
+      ]);
+      runtime.stopFixture(fixtureUuid);
+      const testUuid = runtime.startTest({}, [scopeUuid]);
+      runtime.applyRuntimeMessages(testUuid, [
+        {
+          type: "metadata",
+          data: {
+            parameters: [
+              {
+                name: "name 3",
+                value: "value 3",
+              },
+            ],
+          },
+        },
+      ]);
+      runtime.stopTest(testUuid);
+      runtime.writeTest(testUuid);
+      runtime.writeScope(scopeUuid);
+
+      const [testResult] = writer.writeResult.mock.calls[0];
+      expect(testResult.parameters).toEqual(
+        expect.arrayContaining([
+          {
+            name: "name 1",
+            value: "value 1",
+          },
+          {
+            name: "name 2",
+            value: "value 2",
+          },
+          {
+            name: "name 3",
+            value: "value 3",
+          },
+        ]),
+      );
+    });
+
+    it("should support description metadata messages from before fixtures", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const scopeUuid = runtime.startScope();
+      const fixtureUuid = runtime.startFixture(scopeUuid, "before", {})!;
+      runtime.applyRuntimeMessages(fixtureUuid, [
+        {
+          type: "metadata",
+          data: {
+            description: "from hook",
+          },
+        },
+      ]);
+      runtime.stopFixture(fixtureUuid);
+      const test1Uuid = runtime.startTest({}, [scopeUuid]);
+      runtime.applyRuntimeMessages(test1Uuid, [
+        {
+          type: "metadata",
+          data: {
+            description: "from test",
+          },
+        },
+      ]);
+      runtime.stopTest(test1Uuid);
+      runtime.writeTest(test1Uuid);
+
+      const test2Uuid = runtime.startTest({}, [scopeUuid]);
+      runtime.stopTest(test2Uuid);
+      runtime.writeTest(test2Uuid);
+      runtime.writeScope(scopeUuid);
+
+      const [[tr1], [tr2]] = writer.writeResult.mock.calls;
+      expect(tr1.description).toEqual("from test");
+      expect(tr2.description).toEqual("from hook");
+    });
+
+    it("should support descriptionHtml metadata messages from before fixtures", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const scopeUuid = runtime.startScope();
+      const fixtureUuid = runtime.startFixture(scopeUuid, "before", {})!;
+      runtime.applyRuntimeMessages(fixtureUuid, [
+        {
+          type: "metadata",
+          data: {
+            descriptionHtml: "from hook",
+          },
+        },
+      ]);
+      runtime.stopFixture(fixtureUuid);
+      const test1Uuid = runtime.startTest({}, [scopeUuid]);
+      runtime.applyRuntimeMessages(test1Uuid, [
+        {
+          type: "metadata",
+          data: {
+            descriptionHtml: "from test",
+          },
+        },
+      ]);
+      runtime.stopTest(test1Uuid);
+      runtime.writeTest(test1Uuid);
+
+      const test2Uuid = runtime.startTest({}, [scopeUuid]);
+      runtime.stopTest(test2Uuid);
+      runtime.writeTest(test2Uuid);
+      runtime.writeScope(scopeUuid);
+
+      const [[tr1], [tr2]] = writer.writeResult.mock.calls;
+      expect(tr1.descriptionHtml).toEqual("from test");
+      expect(tr2.descriptionHtml).toEqual("from hook");
     });
   });
 

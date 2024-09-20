@@ -251,6 +251,18 @@ export class ReporterRuntime {
       if (scope?.labels) {
         testResult.labels = [...testResult.labels, ...scope.labels];
       }
+      if (scope?.links) {
+        testResult.links = [...testResult.links, ...scope.links];
+      }
+      if (scope?.parameters) {
+        testResult.parameters = [...testResult.parameters, ...scope.parameters];
+      }
+      if (scope?.description) {
+        testResult.description = testResult.description ?? scope.description;
+      }
+      if (scope?.descriptionHtml) {
+        testResult.descriptionHtml = testResult.descriptionHtml ?? scope.descriptionHtml;
+      }
     });
 
     this.notifier.afterTestResultStop(testResult);
