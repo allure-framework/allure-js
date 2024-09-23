@@ -22,7 +22,7 @@ export const runCucumberInlineTest = async (
   const samplesPath = join(__dirname, "samples");
   const testDir = join(__dirname, "fixtures", randomUUID());
   const configFilePath = join(testDir, "config.js");
-  const reporterFilePath = join(testDir, "reporter.js");
+  const reporterFilePath = require.resolve("allure-cucumberjs/reporter");
   const featuresTempPath = join(testDir, "features");
   const supportTempPath = join(testDir, "features/support");
   const worldFilePath = join(supportTempPath, "world.js");
@@ -31,7 +31,7 @@ export const runCucumberInlineTest = async (
       default: {
         paths: ["./**/*.feature"],
         ${parallel ? "parallel: 4," : ""}
-        format: ["summary", '"${pathToFileURL(reporterFilePath).toString()}"'],
+        format: ["summary", '"${pathToFileURL(reporterFilePath).toString()}":"ignore.txt"'],
         formatOptions: {
           labels: [
             {
@@ -66,11 +66,6 @@ export const runCucumberInlineTest = async (
       }
     }
   `;
-  const reporterContent = `
-    const AllureCucumberReporter = require("allure-cucumberjs/reporter");
-
-    module.exports = AllureCucumberReporter;
-  `;
   const worldContent = `
     require("allure-cucumberjs");
   `;
@@ -90,14 +85,6 @@ export const runCucumberInlineTest = async (
     });
   });
   await writeFile(join(testDir, "package.json"), String.raw`{"name": "dummy"}`, "utf8");
-  await step("reporter.js", async () => {
-    await writeFile(reporterFilePath, reporterContent, "utf8");
-    await attachment("reporter.js", reporterContent, {
-      contentType: "text/plain",
-      encoding: "utf-8",
-      fileExtension: ".js",
-    });
-  });
   await step("world.js", async () => {
     await writeFile(worldFilePath, worldContent, "utf8");
     await attachment("world.js", worldContent, {

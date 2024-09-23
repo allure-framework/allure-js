@@ -236,18 +236,19 @@ export default class AllureCucumberReporter extends Formatter {
     const testCase = this.testCaseMap.get(data.testCaseId)!;
     const pickle = this.pickleMap.get(testCase.pickleId)!;
     const doc = this.documentMap.get(pickle.uri)!;
-    const [scenarioId] = pickle.astNodeIds;
+    const [scenarioId, ...astIds] = pickle.astNodeIds;
     const scenario = this.scenarioMap.get(scenarioId);
 
     const posixPath = getPosixPathRelativeToProjectRoot(pickle);
     const fullName = `${posixPath}#${pickle.name}`;
+    const testCaseId = md5(`${posixPath}#${scenario?.name ?? pickle.name}`);
     const result: Partial<TestResult> = {
       name: pickle.name,
       description: (scenario?.description || doc?.feature?.description || "").trim(),
       labels: [],
       links: [],
-      testCaseId: md5(fullName),
       start: TimeConversion.timestampToMillisecondsSinceEpoch(data.timestamp),
+      testCaseId,
       fullName,
     };
 
@@ -288,22 +289,39 @@ export default class AllureCucumberReporter extends Formatter {
       return;
     }
 
-    scenario.examples.forEach((example) => {
-      const csvDataTableHeader = example?.tableHeader?.cells.map((cell) => cell.value).join(",") || "";
+    for (const example of scenario.examples) {
+      const exampleName = example?.name ? `Examples: ${example.name}` : "Examples";
+      const parameterNames = example?.tableHeader?.cells.map((cell) => cell.value);
+      const csvDataTableHeader = parameterNames?.join(",") || "";
+
+      const currentRow = example?.tableBody?.find((tb) => astIds.includes(tb.id));
+      if (currentRow) {
+        const parameters = currentRow.cells.map((cell, index) => {
+          const paramName = parameterNames && parameterNames.length > index ? parameterNames[index] : `arg${index}`;
+          const paramValue = cell.value;
+          return {
+            name: paramName,
+            value: paramValue,
+          };
+        });
+
+        this.allureRuntime.updateTest(testUuid, (tr) => (tr.parameters = [...tr.parameters, ...parameters]));
+      }
+
       const csvDataTableBody =
         example?.tableBody.map((row) => row.cells.map((cell) => cell.value).join(",")).join("\n") || "";
 
       if (!csvDataTableHeader && !csvDataTableBody) {
-        return;
+        continue;
       }
 
       const csvDataTable = `${csvDataTableHeader}\n${csvDataTableBody}\n`;
 
-      this.allureRuntime.writeAttachment(testUuid, null, "Examples", Buffer.from(csvDataTable, "utf-8"), {
+      this.allureRuntime.writeAttachment(testUuid, null, exampleName, Buffer.from(csvDataTable, "utf-8"), {
         contentType: ContentType.CSV,
         fileExtension: ".csv",
       });
-    });
+    }
   }
 
   private onTestCaseFinished(data: messages.TestCaseFinished) {
