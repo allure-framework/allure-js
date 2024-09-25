@@ -3,7 +3,7 @@ import type { Circus } from "@jest/types";
 import { relative } from "node:path";
 import { env } from "node:process";
 import * as allure from "allure-js-commons";
-import { Stage, Status } from "allure-js-commons";
+import { Stage, Status, type StatusDetails, type TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
@@ -94,13 +94,10 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
           this.#handleSuiteEnd();
           break;
         case "test_start":
+          this.#handleTestScopeStart();
+          break;
+        case "test_fn_start":
           this.#handleTestStart(event.test);
-          break;
-        case "test_done":
-          this.#handleTestDone();
-          break;
-        case "test_todo":
-          this.#handleTestTodo(event.test);
           break;
         case "test_fn_success":
           this.#handleTestPass(event.test);
@@ -108,8 +105,14 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         case "test_fn_failure":
           this.#handleTestFail(event.test);
           break;
+        case "test_done":
+          this.#handleTestScopeStop(event.test);
+          break;
         case "test_skip":
           this.#handleTestSkip(event.test);
+          break;
+        case "test_todo":
+          this.#handleTestTodo(event.test);
           break;
         case "run_finish":
           this.#handleRunFinish();
@@ -181,7 +184,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       this.runtime.stopFixture(fixtureUuid);
     }
 
-    #startTest(test: Circus.TestEntry) {
+    #handleTestStart(test: Circus.TestEntry) {
       const newTestSuitePath = getTestPath(test.parent);
       const newTestFullName = this.#getTestFullName(test);
 
@@ -191,12 +194,12 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      this.#startScope();
       const testUuid = this.runtime.startTest(
         {
           name: test.name,
           fullName: newTestFullName,
           start: test.startedAt ?? undefined,
+          stage: Stage.RUNNING,
           labels: [
             getLanguageLabel(),
             getFrameworkLabel("jest"),
@@ -215,28 +218,34 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       return testUuid;
     }
 
-    #stopTest(testUuid: string, duration: number) {
-      if (!testUuid) {
-        return;
-      }
-
-      this.runtime.stopTest(testUuid, { duration });
-      this.runtime.writeTest(testUuid);
+    #handleTestScopeStart() {
+      this.#startScope();
     }
 
-    #handleTestStart(test: Circus.TestEntry) {
-      const testUuid = this.#startTest(test);
+    #handleTestScopeStop(test: Circus.TestEntry) {
+      const testUuid = this.runContext.executables.pop();
 
-      if (!testUuid) {
-        return;
+      if (testUuid) {
+        const { details } = this.#statusAndDetails(test.errors);
+        let tr: TestResult | undefined;
+        this.runtime.updateTest(testUuid, (result) => {
+          tr = result;
+        });
+        // hook failure, finish as skipped
+        if (tr?.status === undefined && tr?.stage === Stage.RUNNING) {
+          this.runtime.updateTest(testUuid, (result) => {
+            result.stage = Stage.FINISHED;
+            result.status = Status.SKIPPED;
+            result.statusDetails = {
+              ...result.statusDetails,
+              ...details,
+            };
+          });
+        }
+
+        this.runtime.writeTest(testUuid);
       }
 
-      this.runtime.updateTest(testUuid, (result) => {
-        result.stage = Stage.RUNNING;
-      });
-    }
-
-    #handleTestDone() {
       this.#stopScope();
     }
 
@@ -247,47 +256,54 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     }
 
     #stopScope() {
-      const scopeUuid = this.runContext.scopes.pop()!;
+      const scopeUuid = this.runContext.scopes.pop();
+      if (!scopeUuid) {
+        return;
+      }
 
       this.runtime.writeScope(scopeUuid);
     }
 
     #handleTestPass(test: Circus.TestEntry) {
-      const testUuid = this.runContext.executables.pop();
+      const testUuid = this.#currentExecutable();
 
       if (!testUuid) {
         return;
       }
+      // @ts-ignore
+      const { suppressedErrors = [] } = this.global.expect.getState();
+      const statusAndDetails = this.#statusAndDetails(suppressedErrors as Circus.TestError[]);
 
       this.runtime.updateTest(testUuid, (result) => {
         result.stage = Stage.FINISHED;
-        result.status = Status.PASSED;
+        result.status = statusAndDetails.status;
+        result.statusDetails = {
+          ...result.statusDetails,
+          ...statusAndDetails.details,
+        };
       });
-      this.#stopTest(testUuid, test.duration ?? 0);
+
+      this.runtime.stopTest(testUuid, { duration: test.duration ?? 0 });
     }
 
     #handleTestFail(test: Circus.TestEntry) {
-      const testUuid = this.runContext.executables.pop();
+      const testUuid = this.#currentExecutable();
 
       if (!testUuid) {
         return;
       }
 
-      // jest collects all errors, but we need to report the first one because it's a reason why the test has been failed
-      const [error] = test.errors;
-      const hasMultipleErrors = Array.isArray(error);
-      const firstError: Error = hasMultipleErrors ? error[0] : error;
-      const details = getMessageAndTraceFromError(firstError);
-      const status = getStatusFromError(firstError);
+      const { status, details } = this.#statusAndDetails(test.errors);
 
       this.runtime.updateTest(testUuid, (result) => {
         result.stage = Stage.FINISHED;
         result.status = status;
         result.statusDetails = {
+          ...result.statusDetails,
           ...details,
         };
       });
-      this.#stopTest(testUuid, test.duration ?? 0);
+      this.runtime.stopTest(testUuid, { duration: test.duration ?? 0 });
     }
 
     #handleTestSkip(test: Circus.TestEntry) {
@@ -297,36 +313,65 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         return;
       }
 
-      const testUuid = this.runContext.executables.pop();
+      // noinspection JSPotentiallyInvalidUsageOfThis
+      const testUuid = this.#handleTestStart(test);
 
       if (!testUuid) {
         return;
       }
 
       this.runtime.updateTest(testUuid, (result) => {
-        result.stage = Stage.PENDING;
+        result.stage = Stage.FINISHED;
         result.status = Status.SKIPPED;
       });
-      this.#stopTest(testUuid, test.duration ?? 0);
+      // noinspection JSPotentiallyInvalidUsageOfThis
+      this.#handleTestScopeStop(test);
     }
 
     #handleTestTodo(test: Circus.TestEntry) {
-      const testUuid = this.runContext.executables.pop();
-
+      // noinspection JSPotentiallyInvalidUsageOfThis
+      const testUuid = this.#handleTestStart(test);
       if (!testUuid) {
         return;
       }
 
       this.runtime.updateTest(testUuid, (result) => {
-        result.stage = Stage.PENDING;
+        result.stage = Stage.FINISHED;
         result.status = Status.SKIPPED;
+        result.statusDetails = {
+          message: "TODO",
+        };
       });
-      this.#stopTest(testUuid, test.duration ?? 0);
+      // noinspection JSPotentiallyInvalidUsageOfThis
+      this.#handleTestScopeStop(test);
     }
 
     #handleRunFinish() {
       this.runtime.writeEnvironmentInfo();
       this.runtime.writeCategoriesDefinitions();
+    }
+
+    #currentExecutable() {
+      if (this.runContext.executables.length === 0) {
+        return undefined;
+      }
+      return this.runContext.executables[this.runContext.executables.length - 1];
+    }
+
+    #statusAndDetails(errors: Circus.TestError[]): { status: Status; details: Partial<StatusDetails> } {
+      if (errors.length === 0) {
+        return {
+          status: Status.PASSED,
+          details: {},
+        };
+      }
+      // jest collects all errors, but we need to report the first one because it's a reason why the test has been failed
+      const [error] = errors;
+      const hasMultipleErrors = Array.isArray(error);
+      const firstError: Error = hasMultipleErrors ? error[0] : error;
+      const details = getMessageAndTraceFromError(firstError);
+      const status = getStatusFromError(firstError);
+      return { status, details };
     }
   };
 };
