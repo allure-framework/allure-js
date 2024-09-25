@@ -176,18 +176,43 @@ it("should report beforeAll/afterAll for tests in sub-suites", async () => {
   );
 });
 
-it("reports failed hooks", async () => {
+it("should report failed beforeAll hooks", async () => {
   const { tests, groups } = await runJestInlineTest({
     "sample.test.js": `
       beforeAll(() => {
         throw new Error("foo");
       });
 
-      it("passed", () => {});
+      it("test 1", () => {});
+      it("test 2", () => {});
     `,
   });
 
-  expect(tests).toHaveLength(0);
+  expect(tests).toHaveLength(2);
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "test 1",
+        status: Status.SKIPPED,
+        stage: Stage.FINISHED,
+        statusDetails: expect.objectContaining({
+          message: "foo",
+          trace: expect.any(String),
+        }),
+      }),
+
+      expect.objectContaining({
+        name: "test 2",
+        status: Status.SKIPPED,
+        stage: Stage.FINISHED,
+        statusDetails: expect.objectContaining({
+          message: "foo",
+          trace: expect.any(String),
+        }),
+      }),
+    ]),
+  );
+
   expect(groups).toHaveLength(1);
   expect(groups).toEqual(
     expect.arrayContaining([
@@ -204,6 +229,140 @@ it("reports failed hooks", async () => {
           }),
         ]),
         afters: [],
+        children: expect.arrayContaining(tests.map((t) => t.uuid)),
+      }),
+    ]),
+  );
+});
+
+it("should report failed beforeEach hooks", async () => {
+  const { tests, groups } = await runJestInlineTest({
+    "sample.test.js": `
+      beforeEach(() => {
+        throw new Error("foo");
+      });
+
+      it("sample test", () => {});
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  const [testResult] = tests;
+  expect(testResult).toEqual(
+    expect.objectContaining({
+      name: "sample test",
+      status: Status.SKIPPED,
+      stage: Stage.FINISHED,
+      statusDetails: expect.objectContaining({
+        message: "foo",
+        trace: expect.any(String),
+      }),
+    }),
+  );
+
+  expect(groups).toHaveLength(1);
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "beforeEach",
+        befores: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.BROKEN,
+            statusDetails: expect.objectContaining({
+              message: "foo",
+              trace: expect.any(String),
+            }),
+            name: "beforeEach",
+          }),
+        ]),
+        afters: [],
+        children: [testResult.uuid],
+      }),
+    ]),
+  );
+});
+
+it("should report failed afterEach hooks", async () => {
+  const { tests, groups } = await runJestInlineTest({
+    "sample.test.js": `
+      afterEach(() => {
+        throw new Error("foo");
+      });
+
+      it("sample test", () => {});
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  const [testResult] = tests;
+  expect(testResult).toEqual(
+    expect.objectContaining({
+      name: "sample test",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+    }),
+  );
+
+  expect(groups).toHaveLength(1);
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "afterEach",
+        afters: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.BROKEN,
+            statusDetails: expect.objectContaining({
+              message: "foo",
+              trace: expect.any(String),
+            }),
+            name: "afterEach",
+          }),
+        ]),
+        befores: [],
+        children: [testResult.uuid],
+      }),
+    ]),
+  );
+});
+
+it("should report failed afterAll hooks", async () => {
+  const { tests, groups } = await runJestInlineTest({
+    "sample.test.js": `
+      afterAll(() => {
+        throw new Error("foo");
+      });
+
+      it("sample test", () => {});
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  const [testResult] = tests;
+  expect(testResult).toEqual(
+    expect.objectContaining({
+      name: "sample test",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+    }),
+  );
+
+  expect(groups).toHaveLength(1);
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "afterAll",
+        afters: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.BROKEN,
+            statusDetails: expect.objectContaining({
+              message: "foo",
+              trace: expect.any(String),
+            }),
+            name: "afterAll",
+          }),
+        ]),
+        befores: [],
+        children: [testResult.uuid],
       }),
     ]),
   );

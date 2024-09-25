@@ -10,8 +10,14 @@ it("skipped test", async () => {
   });
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].stage).toBe(Stage.PENDING);
-  expect(tests[0].status).toBe(Status.SKIPPED);
+  const [tr] = tests;
+
+  expect(tr).toEqual(
+    expect.objectContaining({
+      stage: Stage.FINISHED,
+      status: Status.SKIPPED,
+    }),
+  );
 });
 
 it("test inside skipped suite", async () => {
@@ -24,6 +30,12 @@ it("test inside skipped suite", async () => {
   });
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].stage).toBe(Stage.PENDING);
-  expect(tests[0].status).toBe(Status.SKIPPED);
+  const [tr] = tests;
+
+  expect(tr).toEqual(
+    expect.objectContaining({
+      stage: Stage.FINISHED,
+      status: Status.SKIPPED,
+    }),
+  );
 });

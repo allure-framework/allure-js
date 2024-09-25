@@ -10,6 +10,15 @@ it("todo", async () => {
   });
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].stage).toBe(Stage.PENDING);
-  expect(tests[0].status).toBe(Status.SKIPPED);
+  const [tr] = tests;
+
+  expect(tr).toEqual(
+    expect.objectContaining({
+      stage: Stage.FINISHED,
+      status: Status.SKIPPED,
+      statusDetails: expect.objectContaining({
+        message: "TODO",
+      }),
+    }),
+  );
 });
