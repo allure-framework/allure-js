@@ -15,6 +15,8 @@ export const getStatusFromError = (error: Error): Status => {
     case /assert/gi.test(error.name):
     case /assert/gi.test(error.message):
     case error.stack && /@vitest\/expect/gi.test(error.stack):
+    case error.stack && /playwright\/lib\/matchers\/expect\.js/gi.test(error.stack):
+    case "matcherResult" in error:
       return Status.FAILED;
     default:
       return Status.BROKEN;
