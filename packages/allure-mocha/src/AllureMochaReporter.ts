@@ -3,7 +3,7 @@ import { env } from "node:process";
 import { type AttachmentOptions, type ContentType, type Label, type Parameter } from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
-import { getStatusFromError } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import { getHostLabel, getThreadLabel } from "allure-js-commons/sdk/reporter";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
@@ -225,8 +225,8 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     this.runtime.updateTest(this.currentTest, (r) => {
       r.status = getStatusFromError(error);
       r.statusDetails = {
-        message: error.message,
-        trace: error.stack,
+        ...r.statusDetails,
+        ...getMessageAndTraceFromError(error),
       };
     });
   };
@@ -289,8 +289,8 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       if (error) {
         r.status = getStatusFromError(error);
         r.statusDetails = {
-          message: error.message,
-          trace: error.stack,
+          ...r.statusDetails,
+          ...getMessageAndTraceFromError(error),
         };
       } else {
         r.status = Status.PASSED;
