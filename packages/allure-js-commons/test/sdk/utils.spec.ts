@@ -171,6 +171,56 @@ describe("getStatusFromError", () => {
     });
   });
 
+  describe("with any error with matcherResult field", () => {
+    class CustomError extends Error {
+      matcherResult = {};
+    }
+
+    it("returns failed", () => {
+      try {
+        throw new CustomError("something");
+      } catch (err) {
+        expect(getStatusFromError(err as Error)).toBe(Status.FAILED);
+      }
+    });
+  });
+
+  describe("with any error with playwright expect stack", () => {
+    it("returns failed", () => {
+      try {
+        // eslint-disable-next-line no-throw-literal
+        throw {
+          message: "some message",
+          stack:
+            "    at Proxy.<anonymous> (node_modules/playwright/lib/matchers/expect.js:198:37)\n" +
+            "    at Context.<anonymous> (test/spec/sample.js:6:13)\n" +
+            "    at process.processImmediate (node:internal/timers:476:21)\n" +
+            "    at process.callbackTrampoline (node:internal/async_hooks:130:17)",
+        } as Error;
+      } catch (err) {
+        expect(getStatusFromError(err as Error)).toBe(Status.FAILED);
+      }
+    });
+  });
+
+  describe("with any error with vitest expect stack", () => {
+    it("returns failed", () => {
+      try {
+        // eslint-disable-next-line no-throw-literal
+        throw {
+          message: "some message",
+          stack:
+            "    at Proxy.<anonymous> (node_modules/@vitest/expect)\n" +
+            "    at Context.<anonymous> (test/spec/sample.js:6:13)\n" +
+            "    at process.processImmediate (node:internal/timers:476:21)\n" +
+            "    at process.callbackTrampoline (node:internal/async_hooks:130:17)",
+        } as Error;
+      } catch (err) {
+        expect(getStatusFromError(err as Error)).toBe(Status.FAILED);
+      }
+    });
+  });
+
   describe("with any not-assertion error", () => {
     it("returns broken", () => {
       try {
