@@ -1,7 +1,7 @@
-import { readFile } from "fs/promises";
 import { createHash, randomUUID } from "node:crypto";
 import type { EventEmitter } from "node:events";
 import fs from "node:fs";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import properties from "properties";
@@ -44,43 +44,18 @@ export const getTestResultTestCaseId = (result: TestResult) => {
   return result.fullName ? md5(result.fullName) : undefined;
 };
 
-export const getWorstStepResultStatusPriority = (steps: StepResult[], priority?: number): number | undefined => {
-  let worstStatusPriority = priority;
-
-  steps.forEach((step) => {
-    if (step.steps?.length) {
-      worstStatusPriority = getWorstStepResultStatusPriority(step.steps, worstStatusPriority);
-    }
-
-    const stepStatusPriority = step.status ? StatusByPriority.indexOf(step.status) : undefined;
-
-    if (stepStatusPriority === undefined) {
-      return;
-    }
-
-    if (worstStatusPriority === undefined) {
-      worstStatusPriority = stepStatusPriority;
-      return;
-    }
-
-    if (stepStatusPriority >= worstStatusPriority) {
-      return;
-    }
-
-    worstStatusPriority = stepStatusPriority;
-  });
-
-  return worstStatusPriority;
+const statusToPriority = (status: Status | undefined) => {
+  if (!status) {
+    return -1;
+  }
+  return StatusByPriority.indexOf(status);
 };
 
-export const getWorstStepResultStatus = (steps: StepResult[]): Status | undefined => {
-  const worstStatusPriority = getWorstStepResultStatusPriority(steps);
-
-  if (worstStatusPriority === undefined) {
-    return undefined;
+export const getWorstTestStepResult = (steps: StepResult[]): StepResult | undefined => {
+  if (steps.length === 0) {
+    return;
   }
-
-  return StatusByPriority[worstStatusPriority];
+  return [...steps].sort((a, b) => statusToPriority(a.status) - statusToPriority(b.status))[0];
 };
 
 export const readImageAsBase64 = async (filePath: string): Promise<string | undefined> => {

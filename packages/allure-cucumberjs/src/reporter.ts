@@ -12,7 +12,7 @@ import {
 import { extname } from "node:path";
 import type { Label, Link, TestResult } from "allure-js-commons";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
-import { getMessageAndTraceFromError } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
   ReporterRuntime,
@@ -25,7 +25,7 @@ import {
   getLanguageLabel,
   getPackageLabel,
   getThreadLabel,
-  getWorstStepResultStatus,
+  getWorstTestStepResult,
   md5,
 } from "allure-js-commons/sdk/reporter";
 import { AllureCucumberWorld } from "./legacy.js";
@@ -180,11 +180,10 @@ export default class AllureCucumberReporter extends Formatter {
   }
 
   private parseStatus(stepResult: TestStepResult): Status | undefined {
-    const containsAssertionError = /assertion/i.test(stepResult?.exception?.type || "");
-
+    const error = this.exceptionToError(stepResult.message, stepResult.exception);
     switch (stepResult.status) {
       case TestStepResultStatus.FAILED:
-        return containsAssertionError ? Status.FAILED : Status.BROKEN;
+        return error ? getStatusFromError(error) : Status.FAILED;
       case TestStepResultStatus.PASSED:
         return Status.PASSED;
       case TestStepResultStatus.SKIPPED:
@@ -331,13 +330,21 @@ export default class AllureCucumberReporter extends Formatter {
     }
 
     this.allureRuntime.updateTest(testUuid, (result) => {
-      result.status = result.steps.length > 0 ? getWorstStepResultStatus(result.steps) : Status.PASSED;
+      const step = getWorstTestStepResult(result.steps);
+      result.status = step?.status ?? Status.PASSED;
       result.stage = Stage.FINISHED;
 
-      if (result.status === undefined) {
-        result.statusDetails = {
-          message: "The test doesn't have an implementation.",
-        };
+      if (step) {
+        if (step.status === undefined) {
+          result.statusDetails = {
+            message: "The test doesn't have an implementation.",
+          };
+        } else {
+          result.statusDetails = {
+            ...result.statusDetails,
+            ...step.statusDetails,
+          };
+        }
       }
     });
     this.allureRuntime.stopTest(testUuid, { stop: TimeConversion.timestampToMillisecondsSinceEpoch(data.timestamp) });
@@ -428,6 +435,7 @@ export default class AllureCucumberReporter extends Formatter {
 
     const status = this.parseStatus(data.testStepResult);
     const stage = status !== Status.SKIPPED ? Stage.FINISHED : Stage.PENDING;
+    const error = this.exceptionToError(data.testStepResult.message, data.testStepResult.exception);
 
     if (step.hookId) {
       const fixtureUuid = this.fixtureUuids.get(data.testCaseStartedId);
@@ -439,11 +447,11 @@ export default class AllureCucumberReporter extends Formatter {
         r.stage = stage;
         r.status = status;
 
-        if (data.testStepResult.exception) {
-          r.statusDetails = getMessageAndTraceFromError({
-            message: data.testStepResult.message,
-            stack: data.testStepResult.exception.stackTrace,
-          });
+        if (error) {
+          r.statusDetails = {
+            ...r.statusDetails,
+            ...getMessageAndTraceFromError(error),
+          };
         }
       });
       this.allureRuntime.stopFixture(fixtureUuid, {
@@ -471,10 +479,10 @@ export default class AllureCucumberReporter extends Formatter {
         return;
       }
 
-      if (data.testStepResult.exception) {
+      if (error) {
         r.statusDetails = {
-          message: data.testStepResult.message,
-          trace: data.testStepResult.exception.stackTrace,
+          ...r.statusDetails,
+          ...getMessageAndTraceFromError(error),
         };
       }
     });
@@ -533,5 +541,16 @@ export default class AllureCucumberReporter extends Formatter {
   private onTestRunFinished() {
     this.allureRuntime.writeCategoriesDefinitions();
     this.allureRuntime.writeEnvironmentInfo();
+  }
+
+  private exceptionToError(message?: string, exception?: messages.Exception): Error | undefined {
+    if (!exception) {
+      return;
+    }
+    return {
+      message: message ?? exception.message,
+      stack: exception.stackTrace,
+      name: exception.type,
+    } as Error;
   }
 }
