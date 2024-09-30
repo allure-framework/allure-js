@@ -166,7 +166,7 @@ export const escapeRegExp = (value: string): string => {
   return reHasRegExpChar.test(value) ? value.replace(reRegExpChar, "\\$&") : value;
 };
 
-export const parseProperties = properties.parse;
+export const parseProperties: (input: string) => object | undefined = (...args) => properties.parse(...args);
 export const stringifyProperties = (data: any): string => properties.stringify(data, { unicode: true }).toString();
 
 // TODO: may also use URL.canParse instead (requires node.js v18.17, v19.9, or higher)
