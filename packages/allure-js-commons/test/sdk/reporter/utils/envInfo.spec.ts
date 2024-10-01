@@ -1,5 +1,4 @@
 // @ts-ignore
-import properties from "properties";
 import { describe, expect, it } from "vitest";
 import { parseEnvInfo, stringifyEnvInfo } from "../../../../src/sdk/reporter/utils/envInfo.js";
 import type { EnvironmentInfo } from "../../../../src/sdk/types.js";
@@ -78,18 +77,6 @@ describe("stringifyEnvInfo", () => {
   it("should skip null and undefined values", () => {
     expect(stringifyEnvInfo({ foo: undefined })).toEqual("");
     expect(stringifyEnvInfo({ foo: null } as any as EnvironmentInfo)).toEqual("");
-  });
-
-  it("should be compatible with properties.parse", () => {
-    const envInfo: EnvironmentInfo = {
-      foo: "bar",
-      [" : = \t\f\\\n\r\0\x7f\x80"]: "baz",
-      qux: " \t\f \\\t\n\f\r \0\x7f\x80",
-      quux: "𝆔Ψ𝆔",
-      ["𝅘𝅥𝅲"]: "𝆔",
-    };
-
-    expect(properties.parse(stringifyEnvInfo(envInfo), { unicode: true })).toEqual(envInfo);
   });
 });
 

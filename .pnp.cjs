@@ -6317,7 +6317,6 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
           ["md5", "npm:2.3.0"],\
           ["npm-run-all2", "npm:6.1.2"],\
-          ["properties", "npm:1.2.1"],\
           ["rimraf", "npm:6.0.0"],\
           ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\
           ["vitest", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:1.6.0"]\
@@ -6356,7 +6355,6 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
           ["md5", "npm:2.3.0"],\
           ["npm-run-all2", "npm:6.1.2"],\
-          ["properties", "npm:1.2.1"],\
           ["rimraf", "npm:6.0.0"],\
           ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\
           ["vitest", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:1.6.0"]\
@@ -6393,7 +6391,6 @@ const RAW_RUNTIME_STATE =
           ["eslint-plugin-prefer-arrow", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.2.3"],\
           ["md5", "npm:2.3.0"],\
           ["npm-run-all2", "npm:6.1.2"],\
-          ["properties", "npm:1.2.1"],\
           ["rimraf", "npm:6.0.0"],\
           ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\
           ["vitest", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:1.6.0"]\
@@ -15573,15 +15570,6 @@ const RAW_RUNTIME_STATE =
           ["graceful-fs", "npm:4.2.11"],\
           ["retry", "npm:0.12.0"],\
           ["signal-exit", "npm:3.0.7"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
-    ["properties", [\
-      ["npm:1.2.1", {\
-        "packageLocation": "./.yarn/cache/properties-npm-1.2.1-f3483bd75a-f8a4b4210a.zip/node_modules/properties/",\
-        "packageDependencies": [\
-          ["properties", "npm:1.2.1"]\
         ],\
         "linkType": "HARD"\
       }]\
