@@ -9,7 +9,7 @@ export const stringifyEnvInfo = (envInfo: EnvironmentInfo) => {
     if (value !== null && value !== undefined) {
       const escapedKey = escapeKey(key);
       const escapedValue = escapeValue(value ?? "");
-      lines.push(`${escapedKey} = ${escapedValue}`);
+      lines.push(`${escapedKey}=${escapedValue}`);
     }
   }
 
