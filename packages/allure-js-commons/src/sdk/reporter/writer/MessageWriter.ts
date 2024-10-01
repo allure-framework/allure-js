@@ -4,7 +4,7 @@ import process from "process";
 import type { TestResult, TestResultContainer } from "../../../model.js";
 import type { Category, EnvironmentInfo } from "../../types.js";
 import type { Writer } from "../types.js";
-import { stringifyProperties } from "../utils.js";
+import { stringifyEnvInfo } from "../utils/envInfo.js";
 
 type EventType = "result" | "container" | "attachment" | "misc";
 
@@ -35,7 +35,7 @@ export class MessageWriter implements Writer {
   }
 
   writeEnvironmentInfo(info: EnvironmentInfo): void {
-    const text = stringifyProperties(info);
+    const text = stringifyEnvInfo(info);
 
     this.sendData("environment.properties", "misc", Buffer.from(text, "utf-8"));
   }

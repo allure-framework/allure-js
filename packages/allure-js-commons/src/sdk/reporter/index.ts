@@ -17,3 +17,4 @@ export {
   getLanguageLabel,
   getFrameworkLabel,
 } from "./utils/labels.js";
+export { parseEnvInfo, stringifyEnvInfo } from "./utils/envInfo.js";
