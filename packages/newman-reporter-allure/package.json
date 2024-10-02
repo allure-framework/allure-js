@@ -1,6 +1,6 @@
 {
   "name": "newman-reporter-allure",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Allure Newman integration",
   "keywords": [
     "allure",

@@ -1,6 +1,6 @@
 {
   "name": "allure-cucumberjs",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Allure Cucumber.JS integration",
   "homepage": "https://allurereport.org/",
   "repository": {
