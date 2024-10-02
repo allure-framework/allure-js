@@ -3,7 +3,7 @@ import { join } from "node:path";
 import type { TestResult, TestResultContainer } from "../../../model.js";
 import type { Category, EnvironmentInfo } from "../../types.js";
 import type { Writer } from "../types.js";
-import { stringifyProperties } from "../utils.js";
+import { stringifyEnvInfo } from "../utils/envInfo.js";
 
 const writeJson = (path: string, data: unknown): void => {
   writeFileSync(path, JSON.stringify(data), "utf-8");
@@ -25,7 +25,7 @@ export class FileSystemWriter implements Writer {
   }
 
   writeEnvironmentInfo(info: EnvironmentInfo): void {
-    const text = stringifyProperties(info);
+    const text = stringifyEnvInfo(info);
     const path = this.buildPath("environment.properties");
 
     writeFileSync(path, text);

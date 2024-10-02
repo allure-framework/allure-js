@@ -4254,7 +4254,6 @@ __metadata:
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     md5: "npm:^2.3.0"
     npm-run-all2: "npm:^6.1.2"
-    properties: "npm:^1.2.1"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^1.6.0"
@@ -12339,13 +12338,6 @@ __metadata:
     retry: "npm:^0.12.0"
     signal-exit: "npm:^3.0.2"
   checksum: 10/5025248895fbd69f115cdfe9a5cd63627357eefe67aa95d95175d87249dd5fe34a116bcc1d8b7cd126b24c8e4c875777f48ccdb5d2962079ee09a6e50f6ace72
-  languageName: node
-  linkType: hard
-
-"properties@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "properties@npm:1.2.1"
-  checksum: 10/f8a4b4210a834e45a4b1af493b87955af8aff1245721a1806bb12e17c7bee0cff4ab5e8d2f96714379d156dce4e89f6ed23d685fb8f53a869a433166e3f12fd6
   languageName: node
   linkType: hard
 

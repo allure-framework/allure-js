@@ -1,7 +1,7 @@
 import { attachment, step } from "../../../facade.js";
 import type { TestResult, TestResultContainer } from "../../../model.js";
-import type { AllureResults, EnvironmentInfo } from "../../types.js";
-import { parseProperties, stringifyProperties } from "../utils.js";
+import type { AllureResults } from "../../types.js";
+import { parseEnvInfo, stringifyEnvInfo } from "../utils/envInfo.js";
 
 const parseJsonResult = <T>(data: string) => {
   return JSON.parse(Buffer.from(data, "base64").toString("utf-8")) as T;
@@ -30,7 +30,7 @@ export class MessageReader {
       case "misc":
         switch (path) {
           case "environment.properties":
-            this.results.envInfo = parseProperties(Buffer.from(data, "base64").toString()) as EnvironmentInfo;
+            this.results.envInfo = parseEnvInfo(Buffer.from(data, "base64").toString());
             break;
           case "categories.json":
             this.results.categories = parseJsonResult(data);
@@ -54,7 +54,7 @@ export class MessageReader {
         await attachment("categories.json", JSON.stringify(this.results.categories), "application/json");
       }
       if (this.results.envInfo) {
-        await attachment("environment.properties", stringifyProperties(this.results.envInfo), "text/plain");
+        await attachment("environment.properties", stringifyEnvInfo(this.results.envInfo), "text/plain");
       }
       if (this.results.attachments) {
         for (const key of Object.keys(this.results.attachments)) {

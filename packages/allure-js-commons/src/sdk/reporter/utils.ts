@@ -4,7 +4,6 @@ import fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
-import properties from "properties";
 import type { Label, Link, Status, StepResult, TestResult } from "../../model.js";
 import { LabelName, LinkType, StatusByPriority } from "../../model.js";
 import type { LinkConfig, LinkTemplate } from "./types.js";
@@ -165,9 +164,6 @@ const reRegExpChar = /[\\^$.*+?()[\]{}|]/g,
 export const escapeRegExp = (value: string): string => {
   return reHasRegExpChar.test(value) ? value.replace(reRegExpChar, "\\$&") : value;
 };
-
-export const parseProperties = properties.parse;
-export const stringifyProperties = (data: any): string => properties.stringify(data, { unicode: true }).toString();
 
 // TODO: may also use URL.canParse instead (requires node.js v18.17, v19.9, or higher)
 const isUrl = (potentialUrl: string) => {

@@ -4,8 +4,8 @@ import { mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises"
 import { dirname, join, relative, resolve as resolvePath } from "node:path";
 import type { TestResult, TestResultContainer } from "allure-js-commons";
 import { ContentType, attachment, step } from "allure-js-commons";
-import type { AllureResults, EnvironmentInfo } from "allure-js-commons/sdk";
-import { getPosixPath, parseProperties } from "allure-js-commons/sdk/reporter";
+import type { AllureResults } from "allure-js-commons/sdk";
+import { getPosixPath, parseEnvInfo } from "allure-js-commons/sdk/reporter";
 
 type AllureCypressPaths = {
   allureCommonsModulePath: string;
@@ -184,7 +184,7 @@ export const runCypressInlineTest = async (
                 if (resultFile === "environment.properties") {
                   const content = await readFile(fullPath, "utf8");
                   await attachment(resultFile, content, ContentType.TEXT);
-                  res.envInfo = parseProperties(content) as EnvironmentInfo;
+                  res.envInfo = parseEnvInfo(content);
                   continue;
                 }
 
