@@ -3,8 +3,14 @@
   "version": "3.0.5",
   "description": "Allure Playwright integration",
   "keywords": [
+    "allure",
     "playwright",
-    "allure"
+    "html",
+    "test",
+    "report",
+    "reporter",
+    "testing",
+    "testops"
   ],
   "homepage": "https://allurereport.org/",
   "repository": {

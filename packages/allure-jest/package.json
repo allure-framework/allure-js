@@ -3,10 +3,16 @@
   "version": "3.0.5",
   "description": "Allure Jest integration",
   "keywords": [
+    "allure",
     "jest",
     "circus",
-    "typescript",
-    "allure"
+    "jasmine",
+    "html",
+    "test",
+    "report",
+    "reporter",
+    "testing",
+    "testops"
   ],
   "homepage": "https://allurereport.org/",
   "repository": {

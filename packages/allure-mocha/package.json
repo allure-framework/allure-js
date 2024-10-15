@@ -3,9 +3,14 @@
   "version": "3.0.5",
   "description": "Allure Mocha integration",
   "keywords": [
+    "allure",
     "mocha",
-    "typescript",
-    "allure"
+    "html",
+    "test",
+    "report",
+    "reporter",
+    "testing",
+    "testops"
   ],
   "homepage": "https://allurereport.org/",
   "repository": {

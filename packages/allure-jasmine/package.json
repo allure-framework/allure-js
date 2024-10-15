@@ -2,6 +2,16 @@
   "name": "allure-jasmine",
   "version": "3.0.5",
   "description": "Allure Jasmine integration",
+  "keywords": [
+    "allure",
+    "jasmine",
+    "html",
+    "test",
+    "report",
+    "reporter",
+    "testing",
+    "testops"
+  ],
   "homepage": "https://allurereport.org/",
   "repository": {
     "type": "git",

@@ -5,11 +5,14 @@
   "keywords": [
     "allure",
     "newman",
-    "reporter",
-    "reports",
-    "api",
     "postman",
-    "tests"
+    "api",
+    "html",
+    "test",
+    "report",
+    "reporter",
+    "testing",
+    "testops"
   ],
   "homepage": "https://allurereport.org/",
   "repository": {
