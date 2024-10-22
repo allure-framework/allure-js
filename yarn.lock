@@ -4032,7 +4032,7 @@ __metadata:
     eslint-plugin-n: "npm:^17.10.1"
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
-    npm-run-all2: "npm:^6.1.2"
+    npm-run-all2: "npm:^7.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^1.6.0"
@@ -4079,7 +4079,7 @@ __metadata:
     eslint-plugin-n: "npm:^17.10.1"
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
-    npm-run-all2: "npm:^6.1.2"
+    npm-run-all2: "npm:^7.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^1.6.0"
@@ -4119,7 +4119,7 @@ __metadata:
     eslint-plugin-n: "npm:^17.10.1"
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
-    npm-run-all2: "npm:^6.1.2"
+    npm-run-all2: "npm:^7.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^1.6.0"
@@ -4160,7 +4160,7 @@ __metadata:
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     jasmine: "npm:^5.1.0"
-    npm-run-all2: "npm:^6.1.2"
+    npm-run-all2: "npm:^7.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^1.6.0"
@@ -4204,7 +4204,7 @@ __metadata:
     jest-cli: "npm:^29.7.0"
     jest-environment-jsdom: "npm:^29.7.0"
     jest-environment-node: "npm:^29.7.0"
-    npm-run-all2: "npm:^6.1.2"
+    npm-run-all2: "npm:^7.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^1.6.0"
@@ -4253,7 +4253,7 @@ __metadata:
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     md5: "npm:^2.3.0"
-    npm-run-all2: "npm:^6.1.2"
+    npm-run-all2: "npm:^7.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^1.6.0"
@@ -4320,7 +4320,7 @@ __metadata:
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     glob: "npm:^11.0.0"
     mocha: "npm:^10.7.3"
-    npm-run-all2: "npm:^6.1.2"
+    npm-run-all2: "npm:^7.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^1.6.0"
@@ -4356,7 +4356,7 @@ __metadata:
     eslint-plugin-n: "npm:^17.10.1"
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
-    npm-run-all2: "npm:^6.1.2"
+    npm-run-all2: "npm:^7.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^1.6.0"
@@ -4384,7 +4384,7 @@ __metadata:
     eslint-plugin-n: "npm:^17.10.1"
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
-    npm-run-all2: "npm:^6.1.2"
+    npm-run-all2: "npm:^7.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^1.6.0"
@@ -9981,10 +9981,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-parse-even-better-errors@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "json-parse-even-better-errors@npm:3.0.1"
-  checksum: 10/bf74fa3f715e56699ccd68b80a7d20908de432a3fae2d5aa2ed530a148e9d9ccdf8e6983b93d9966a553aa70dcf003ce3a7ffec2c0ce74d2a6173e3691a426f0
+"json-parse-even-better-errors@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "json-parse-even-better-errors@npm:4.0.0"
+  checksum: 10/da1ae7ef0cc9db02972a06a71322f26bdcda5d7f648c23b28ce7f158ba35707461bcbd91945d8aace10d8d79c383b896725c65ffa410242352692328aa9b5edf
   languageName: node
   linkType: hard
 
@@ -10704,7 +10704,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^10.0.0":
+"minimatch@npm:^10.0.0, minimatch@npm:^10.0.1":
   version: 10.0.1
   resolution: "minimatch@npm:10.0.1"
   dependencies:
@@ -10722,7 +10722,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^9.0.0, minimatch@npm:^9.0.1":
+"minimatch@npm:^9.0.1":
   version: 9.0.3
   resolution: "minimatch@npm:9.0.3"
   dependencies:
@@ -11173,7 +11173,7 @@ __metadata:
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     msw: "npm:1"
     newman: "npm:^6.2.1"
-    npm-run-all2: "npm:^6.1.2"
+    npm-run-all2: "npm:^7.0.0"
     postman-collection: "npm:^4.2.1"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
@@ -11344,30 +11344,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-normalize-package-bin@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "npm-normalize-package-bin@npm:3.0.1"
-  checksum: 10/de416d720ab22137a36292ff8a333af499ea0933ef2320a8c6f56a73b0f0448227fec4db5c890d702e26d21d04f271415eab6580b5546456861cc0c19498a4bf
+"npm-normalize-package-bin@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "npm-normalize-package-bin@npm:4.0.0"
+  checksum: 10/e1a0971e5640bc116c5197f9707d86dc404b6d8e13da2c7ea82baa5583b8da279a3c8607234aa1d733c2baac3b3eba87b156f021f20ae183dc4806530e61675d
   languageName: node
   linkType: hard
 
-"npm-run-all2@npm:^6.1.2":
-  version: 6.1.2
-  resolution: "npm-run-all2@npm:6.1.2"
+"npm-run-all2@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "npm-run-all2@npm:7.0.0"
   dependencies:
     ansi-styles: "npm:^6.2.1"
     cross-spawn: "npm:^7.0.3"
     memorystream: "npm:^0.3.1"
-    minimatch: "npm:^9.0.0"
+    minimatch: "npm:^10.0.1"
     pidtree: "npm:^0.6.0"
-    read-package-json-fast: "npm:^3.0.2"
+    read-package-json-fast: "npm:^4.0.0"
     shell-quote: "npm:^1.7.3"
+    which: "npm:^5.0.0"
   bin:
     npm-run-all: bin/npm-run-all/index.js
     npm-run-all2: bin/npm-run-all/index.js
     run-p: bin/run-p/index.js
     run-s: bin/run-s/index.js
-  checksum: 10/b031f409a8c7144cd4dc6ef7cbe6007c9c78b1df38e32d2b5049e697f204d13145dcd419656f313a5afce44c9148a77ed87cf050ff98ceff75cc3553d031b896
+  checksum: 10/8e5626220e580de667963bc2713a2fd99eafbd0ccad0d36e5040e37b20c27963d16149a87f6de5931235368907a08b2f6ebf951b2df5e7e2ee4202e983d388c3
   languageName: node
   linkType: hard
 
@@ -12509,13 +12510,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"read-package-json-fast@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "read-package-json-fast@npm:3.0.2"
+"read-package-json-fast@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "read-package-json-fast@npm:4.0.0"
   dependencies:
-    json-parse-even-better-errors: "npm:^3.0.0"
-    npm-normalize-package-bin: "npm:^3.0.0"
-  checksum: 10/8d406869f045f1d76e2a99865a8fd1c1af9c1dc06200b94d2b07eef87ed734b22703a8d72e1cd36ea36cc48e22020bdd187f88243c7dd0563f72114d38c17072
+    json-parse-even-better-errors: "npm:^4.0.0"
+    npm-normalize-package-bin: "npm:^4.0.0"
+  checksum: 10/bf0becd7d0b652dcc5874b466d1dbd98313180e89505c072f35ff48a1ad6bdaf2427143301e1924d64e4af5064cda8be5df16f14de882f03130e29051bbaab87
   languageName: node
   linkType: hard
 
@@ -15076,6 +15077,17 @@ __metadata:
   bin:
     node-which: bin/which.js
   checksum: 10/f17e84c042592c21e23c8195108cff18c64050b9efb8459589116999ea9da6dd1509e6a1bac3aeebefd137be00fabbb61b5c2bc0aa0f8526f32b58ee2f545651
+  languageName: node
+  linkType: hard
+
+"which@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "which@npm:5.0.0"
+  dependencies:
+    isexe: "npm:^3.1.1"
+  bin:
+    node-which: bin/which.js
+  checksum: 10/6ec99e89ba32c7e748b8a3144e64bfc74aa63e2b2eacbb61a0060ad0b961eb1a632b08fb1de067ed59b002cec3e21de18299216ebf2325ef0f78e0f121e14e90
   languageName: node
   linkType: hard
 
