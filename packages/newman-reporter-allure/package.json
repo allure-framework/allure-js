@@ -81,7 +81,7 @@
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "msw": "1",
     "newman": "^6.2.1",
-    "npm-run-all2": "^6.1.2",
+    "npm-run-all2": "^7.0.0",
     "postman-collection": "^4.2.1",
     "rimraf": "^6.0.0",
     "typescript": "^5.2.2",
