@@ -14,108 +14,66 @@
 
 ## Installation
 
-Use your favorite node package manager to install required packages:
+Intall `allure-jasmine` using a package manager of your choice. For example:
 
 ```bash
-npm add -D allure-jasmine
+npm install -D allure-jasmine
 ```
 
-Create `spec/helpers/setup.ts` file with following content:
+## Usage
+
+Create a helper file (e.g., `helpers/setup.js` or `helpers/setup.ts`) and initialize the jasmine environment in it:
 
 ```ts
-const AllureJasmineReporter = require("allure-jasmine");
+import AllureJasmineReporter from "allure-jasmine";
 
-const reporter = new AllureJasmineReporter();
-
-jasmine.getEnv().addReporter(reporter);
+jasmine.getEnv().addReporter(
+  new AllureJasmineReporter(),
+);
 ```
 
-Check that the helper matches with `helper` field in your `spec/support/jasmine.json` file.
+> Make sure the helper file is matched against the `helper` regular expression in `spec/support/jasmine.json`.
 
-## Use Allure runtime Api
+Optionally, specify [the configuration properties](https://allurereport.org/docs/jasmine-configuration/).
 
-The plugin provides custom commands which allow to add additional info inside your tests:
+When the test run completes, the result files will be generated in the `./allure-results` directory. If you want to use another location, provide it via the [`resultsDir`](https://allurereport.org/docs/jasmine-configuration/#resultsdir) configuration option.
 
-```javascript
-import { epic, attachment, parameter } from "allure-js-commons";
+### View the report
+
+> You need Allure Report to generate and open the report from the result files. See the [installation instructions](https://allurereport.org/docs/install/) for more details.
+
+Generate Allure Report after the tests are executed:
+
+```bash
+allure generate ./allure-results -o ./allure-report
+```
+
+Open the generated report:
+
+```bash
+allure open ./allure-report
+```
+
+## Allure Runtime API
+
+Enhance the report by utilizing the runtime API:
+
+```js
+import * as allure from "allure-js-commons";
 
 it("my test", async () => {
-  await attachment("Attachment name", "Hello world!", "text/plain");
-  await epic("my_epic");
-  await parameter("parameter_name", "parameter_value", {
-    mode: "hidden",
-    excluded: false,
+  await allure.step("a step", async () => {
+    await allure.label("name", "value");
+    await allure.tags("tag1", "tag2");
+    await allure.issue("https://github.com/allure-framework/allure-js/issues/1", "ISSUE-1");
+    await allure.owner("eroshenkoam");
+    await allure.layer("UI");
+    await allure.description("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
+    await allure.attachment("data.txt", "some data", "text/plain");
   });
 });
 ```
 
-## Links usage
+## The documentation
 
-```js
-import { link, issue, tms } from "allure-js-commons";
-
-it("basic test", async () => {
-  await link("https://allurereport.org", "link type", "Allure Report");
-  await issue("https://github.com/allure-framework/allure-js/issues/352", "Issue Name", );
-  await tms("https://github.com/allure-framework/allure-js/tasks/352", "Task Name");
-});
-```
-
-You can also configure links formatters to make usage much more convenient. `%s`
-in `urlTemplate` parameter will be replaced by given value.
-
-```diff
-```ts
-const AllureJasmineReporter = require("allure-jasmine");
-
-const reporter = new AllureJasmineReporter({
-+  links: [
-+    {
-+      type: "issue",
-+      urlTemplate: "https://example.org/issues/%s",
-+      nameTemplate: "Issue: %s",
-+    },
-+    {
-+      type: "tms",
-+      urlTemplate: "https://example.org/tasks/%s"
-+    },
-+    {
-+      type: "custom",
-+      urlTemplate: "https://example.org/custom/%s"
-+    },
-+  ],
-});
-
-jasmine.getEnv().addReporter(reporter);
-```
-
-Then you can assign link using shorter notation:
-
-```js
-import { link, issue, tms } from "allure-js-commons";
-
-it("basic test", async () => {
-  await issue("351");
-  await issue("352", "Issue Name");
-  await tms("351");
-  await tms("352", "Task Name");
-  await link("custom", "352");
-  await link("custom", "352", "Link name");
-});
-```
-
-## Steps usage
-
-The integration supports Allure steps, use them in following way:
-
-```js
-import { step } from "allure-js-commons";
-
-it("my test", async () => {
-  await step("foo", async () => {
-    await step("bar", async () => {
-      await step("baz", async () => {});
-    });
-  });
-});
-```
+Learn more about Allure Jasmine from the official documentation at [https://allurereport.org/docs/jasmine/](https://allurereport.org/docs/jasmine/).
