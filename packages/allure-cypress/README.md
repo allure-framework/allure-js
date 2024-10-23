@@ -14,10 +14,10 @@
 
 ## Installation
 
-Use your favorite Node.js package manager to install the required packages:
+Intall `allure-cypress` using a package manager of your choice. For example:
 
 ```shell
-npm add -D allure-cypress
+npm install -D allure-cypress
 ```
 
 ## Usage
