@@ -20,6 +20,8 @@ Use your favorite Node.js package manager to install the required packages:
 npm add -D allure-cypress
 ```
 
+## Usage
+
 Add the following lines to your `cypress.config.js` file:
 
 ```javascript
@@ -62,6 +64,26 @@ Open Allure Report:
 
 ```bash
 allure open ./allure-report
+```
+
+## Allure Runtime API
+
+Enhance the report by utilizing the runtime API:
+
+```js
+import * as allure from "allure-js-commons";
+
+it("my test", () => {
+  allure.step("a substep", () => {
+    allure.label("name", "value");
+    allure.tags("tag1", "tag2");
+    allure.issue("https://github.com/allure-framework/allure-js/issues/900", "ISSUE-900");
+    allure.owner("eroshenkoam");
+    allure.layer("UI");
+    allure.description("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
+    allure.attachment("data.txt", "some data", "text/plain");
+  });
+});
 ```
 
 ## The documentation
