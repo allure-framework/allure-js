@@ -12,15 +12,21 @@
 
 ---
 
+## The documentation
+
+The docs for Allure Cypress are available at [https://allurereport.org/docs/cypress/](https://allurereport.org/docs/cypress/).
+
 ## Installation
 
-Use your favorite Node.js package manager to install the required packages:
+Install `allure-cypress` using a package manager of your choice. For example:
 
 ```shell
-npm add -D allure-cypress
+npm install -D allure-cypress
 ```
 
-Add the following lines to your `cypress.config.js` file:
+## Usage
+
+Call `allureCypress` to initialize the plugin from the `setupNodeEvents` function in `cypress.config.js`:
 
 ```javascript
 import { defineConfig } from "cypress";
@@ -44,13 +50,13 @@ Import `allure-cypress` in `cypress/support/e2e.js`:
 import "allure-cypress";
 ```
 
-Allure Cypress is ready to run now. When the test run completes, the result files
-will be collected in the `./allure-results` directory. If you want to use another
-location, provide it via the `resultsDir` configuration option ([see below](#allure-cypress-options)).
+When the test run completes, the result files will be generated in the `./allure-results` directory.
+
+You may select another location, or further customize the plugin's behavior with [the configuration options](https://allurereport.org/docs/cypress-configuration/).
 
 ### View the report
 
-> You need Allure Report to generate and open the report from result files. See the [installation instructions](https://allurereport.org/docs/install/) for more details.
+> You need Allure Report to be installed on your machine to generate and open the report from the result files. See the [installation instructions](https://allurereport.org/docs/install/) on how to get it.
 
 Generate Allure Report:
 
@@ -64,85 +70,56 @@ Open Allure Report:
 allure open ./allure-report
 ```
 
-## The documentation
+## Allure API
 
-Learn more about Allure Cypress from the official documentation at
-[https://allurereport.org/docs/cypress/](https://allurereport.org/docs/cypress/).
+Enhance the report by utilizing the Allure API:
 
+```js
+import * as allure from "allure-js-commons";
 
-## Allure Cypress options
+describe("signing in with a password", () => {
+  it("should sign in with a valid password", () => {
+    allure.description("The test checks if an active user with a valid password can sign in to the app.");
+    allure.epic("Signing in");
+    allure.feature("Sign in with a password");
+    allure.story("As an active user, I want to successfully sign in using a valid password");
+    allure.tags("signin", "ui", "positive");
+    allure.issue("https://github.com/allure-framework/allure-js/issues/900", "ISSUE-900");
+    allure.owner("eroshenkoam");
+    allure.parameter("browser", Cypress.browser.family);
 
-Customize Allure Cypress by providing a configuration object as the third argument
-of `allureCypress`.
+    allure.step("Prepare the user", () => {
+      return createAnActiveUserInDb();
+    }).then((user) => {
+      allure.step("Make a sign-in attempt", () => {
+        allure.step("Navigate to the sign-in page", () => {
+          // ...
+        });
 
-The following options are supported:
+        allure.step("Fill the sign-in form", (stepContext) => {
+          stepContext.parameter("login", user.login);
+          stepContext.parameter("password", user.password, "masked");
 
-| Option            | Description                                                                                                          | Default                         |
-|-------------------|----------------------------------------------------------------------------------------------------------------------|---------------------------------|
-| resultsDir        | The path of the results folder.                                                                                      | `./allure-results`              |
-| videoOnFailOnly   | When video capturing is enabled, set this option to `true` to attach the video to failed specs only.                 | `false`                         |
-| links             | Allure Runtime API link templates.                                                                                   | `undefined`                     |
-| stepsFromCommands | Options that affect how Allure creates steps from Cypress commands                                                   | See [below](#stepsfromcommands) |
-| environmentInfo   | A set of key-value pairs to display in the Environment section of the report                                         | `undefined`                     |
-| categories        | An array of category definitions, each describing a [category of defects](https://allurereport.org/docs/categories/) | `undefined`                     |
+          // ...
+        });
 
-### stepsFromCommands
+        allure.step("Submit the form", () => {
+          // ...
 
-| Property          | Description                                                                                                                                 | Default |
-|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| maxArgumentLength | The maximum length of the parameter value created from Cypress command argument. The rest of the characters are replaces with `...`.        | 128     |
-| maxArgumentDepth  | The maximum depth of the Cypress command argument (an array or an object) that will be converted to the corresponding step parameter value. | 3       |
-
-
-### Example
-
-Here is an example of the Allure Cypress configuration:
-
-```javascript
-import { defineConfig } from "cypress";
-import { allureCypress } from "allure-cypress/reporter";
-
-export default defineConfig({
-  e2e: {
-    setupNodeEvents: (on, config) => {
-      allureCypress(on, config, {
-        resultsDir: "my-allure-results",
-        videoOnFailOnly: true,
-        links: {
-          link: {
-            urlTemplate: "https://github.com/allure-framework/allure-js/blob/main/%s",
-          },
-          issue: {
-            urlTemplate: "https://github.com/allure-framework/allure-js/issues/%s",
-            nameTemplate: "ISSUE-%s",
-          },
-        },
-        stepsFromCommands: {
-          maxArgumentLength: 64,
-          maxArgumentDepth: 5,
-        },
-        environmentInfo: {
-          OS: os.platform(),
-          Architecture: os.arch(),
-          NodeVersion: process.version,
-        },
-        categories: [
-          {
-            name: "Missing file errors",
-            messageRegex: /^ENOENT: no such file or directory/,
-          },
-        ],
+          allure.attachment("cookies", JSON.stringify(cy.getCookies()), { contentType: "application/json" });
+        });
       });
+      
 
-      return config;
-    },
-    // other Cypress config properties ...
-  },
+      allure.step("Assert the signed-in state", () => {
+        // ...
+      });
+    });
+  });
 });
 ```
 
-More details about Allure Cypress configuration are available at [https://allurereport.org/docs/cypress-configuration/](https://allurereport.org/docs/cypress-configuration/).
-
+More details about the API are available at [https://allurereport.org/docs/cypress-reference/](https://allurereport.org/docs/cypress-reference/).
 
 ## Combining Allure with other Cypress plugins
 
@@ -223,8 +200,7 @@ Allure Cypress requires access to the following events:
 
 Otherwise, it may not work as expected.
 
-If you need to define your own handlers of those events, make sure to call the
-corresponding functions of the `allureCypress`s' return value:
+If you need to define your own handlers of those events, make sure to call the corresponding functions of the `allureCypress`s' return value:
 
 ```javascript
 import { defineConfig } from "cypress";
@@ -255,7 +231,6 @@ export default defineConfig({
 ```
 
 If you want to combine Allure Cypress with other plugins, consider using
-[cypress-on-fix](https://github.com/bahmutov/cypress-on-fix). See the example for
-[the Cypress Cucumber preprocessor](#combining-allure-with-other-cypress-plugins) above.
+[cypress-on-fix](https://github.com/bahmutov/cypress-on-fix). See the example for [the Cypress Cucumber preprocessor](#combining-allure-with-other-cypress-plugins) above.
 
 You may read more details and workarounds in issues [cypress-io/cypress#5240](https://github.com/cypress-io/cypress/issues/5240) and [cypress-io/cypress#22428](https://github.com/cypress-io/cypress/issues/22428).
