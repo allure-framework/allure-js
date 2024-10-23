@@ -13,117 +13,112 @@
 ---
 
 > **Warning**
-> If you are using `jest@<27.0.0` use [`allure-jasmine` package][allure-jasmine]
-> or consider to use `jest-circus` as a test runner with this package.
->
-> The integration doesn't work with custom runners. If you want to use the
-> integration use `jest-circus` as a test runner.
+> This package only works with the [`jest-circus`](https://www.npmjs.com/package/jest-circus) test runner for Jest. That's the default for Jest since 27.0.0. If you use `jest@<27.0.0`, you should install `jest-circus` manually and set the [`testRunner`](https://jestjs.io/docs/configuration#testrunner-string) Jest option to `"jest-circus/runner"`.
+> If you're a [`jest-jasmine2`](https://www.npmjs.com/package/jest-jasmine2) user, consider switching to `jest-circus`. If that's not an option for you, please use [allure-jasmine](https://allurereport.org/docs/jasmine/) instead.
+
+## The documentation and examples
+
+The docs for Allure Jest are available at [https://allurereport.org/docs/jest/](https://allurereport.org/docs/jest/).
+
+Also, check out the examples at [github.com/allure-examples](https://github.com/orgs/allure-examples/repositories?q=visibility%3Apublic+archived%3Afalse+topic%3Aexample+topic%3Ajest).
 
 ## Installation
 
-Use your favorite node package manager to install the package:
+Intall `allure-jest` using a package manager of your choice. For example:
 
 ```shell
-npm add -D allure-jest
+npm install -D allure-jest
 ```
 
-If you're using `jest` for testing `node` add following line to your `jest.config.js` file:
+> If you're a **Yarn PnP** user, you should also explicitly install the Jest environment package and the `allure-js-commons` packages. For example:
+> ```shell
+> yarn add --dev jest-environment-node allure-js-commons
+> ```
 
-```diff
-/** @type {import('jest').Config} */
+## Usage
+
+Set the [`testEnvironment`](https://jestjs.io/docs/configuration#testenvironment-string) Jest option according to your needs:
+
+  - If you need access to DOM, set it to `"allure-jest/jsdom"` (make sure [jest-environment-jsdom](https://www.npmjs.com/package/jest-environment-jsdom) is installed).
+  - If you don't need access to DOM, set it to `"allure-jest/node"`.
+
+Example:
+
+```js
 const config = {
-+  testEnvironment: "allure-jest/node",
-+  testEnvironmentOptions: {
-+    resultsDir: "./allure-results"
-+  }
-}
+  testEnvironment: "allure-jest/jsdom",
+};
 
-module.exports = config
+export default config;
 ```
 
-If you're using `jest` for testing browser code (`jsdom`) add next to your `jest.config.js` file:
+When the test run completes, the result files will be generated in the `./allure-results` directory.
 
-```diff
-/** @type {import('jest').Config} */
-const config = {
-+  testEnvironment: "allure-jest/jsdom",
-+  testEnvironmentOptions: {
-+    resultsDir: "./allure-results"
-+  }
-}
+You may select another location, or further customize the behavior of Allure Jest with [the configuration options](https://allurereport.org/docs/jest-configuration/).
 
-module.exports = config
+### View the report
+
+> You need Allure Report to be installed on your machine to generate and open the report from the result files. See the [installation instructions](https://allurereport.org/docs/install/) on how to get it.
+
+Generate Allure Report after the tests are executed:
+
+```bash
+allure generate ./allure-results -o ./allure-report
 ```
 
-## Use Allure runtime Api
+Open the generated report:
 
-The plugin provides custom global commands which allow to add additional info
-inside your tests:
+```bash
+allure open ./allure-report
+```
 
-```javascript
-import { attachment, epic, parameter } from "allure-js-commons";
+## Allure API
 
-it("my test", async () => {
-  await attachment(currentTest.id(), screenshot, "image/png");
-  await epic(currentTest.id(), "my_epic");
-  await parameter(currentTest.id(), "parameter_name", "parameter_value", {
-    mode: "hidden",
-    excluded: false,
+Enhance the report by utilizing the runtime API:
+
+```js
+import * as allure from "allure-js-commons";
+
+describe("signing in with a password", () => {
+  it("should sign in with a valid password", async () => {
+    await allure.description("The test checks if an active user with a valid password can sign in to the app.");
+    await allure.epic("Signing in");
+    await allure.feature("Sign in with a password");
+    await allure.story("As an active user, I want to successfully sign in using a valid password");
+    await allure.tags("signin", "ui", "positive");
+    await allure.issue("https://github.com/allure-framework/allure-js/issues/4", "ISSUE-4");
+    await allure.owner("eroshenkoam");
+    await allure.parameter("browser", "chrome");
+
+    const user = await allure.step("Prepare the user", async () => {
+      return await createAnActiveUserInDb();
+    });
+
+    await allure.step("Make a sign-in attempt", async () => {
+      await allure.step("Navigate to the sign in page", async () => {
+        // ...
+      });
+
+      await allure.step("Fill the sign-in form", async (stepContext) => {
+        await stepContext.parameter("login", user.login);
+        await stepContext.parameter("password", user.password, "masked");
+
+        // ...
+      });
+
+      await allure.step("Submit the form", async () => {
+        // ...
+        // const responseData = ...
+
+        await allure.attachment("response", JSON.stringify(responseData), { contentType: "application/json" });
+      });
+    });
+
+    await allure.step("Assert the signed-in state", async () => {
+        // ...
+    });
   });
 });
 ```
 
-## Links usage
-
-```js
-import { link, issue } from "allure-js-commons";
-
-it("basic test", async () => {
-  await link("https://allurereport.org", "Allure Report"); // link with name
-  await issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
-});
-```
-
-You can also configure links formatters to make usage much more convenient. `%s`
-in `urlTemplate` parameter will be replaced by given value.
-
-```diff
-/** @type {import('jest').Config} */
-const config = {
-  testEnvironment: "allure-jest/node",
-  testEnvironmentOptions: {
-    resultsDir: "./allure-results",
-+    links: [
-+      {
-+        type: "issue",
-+        urlTemplate: "https://example.org/issues/%s",
-+        nameTemplate: "Issue: %s",
-+      },
-+      {
-+        type: "tms",
-+        urlTemplate: "https://example.org/tasks/%s"
-+      },
-+      {
-+        type: "custom",
-+        urlTemplate: "https://example.org/custom/%s"
-+      },
-+    ]
-  }
-}
-
-module.exports = config
-```
-
-Then you can assign link using shorter notation:
-
-```js
-import { issue, tms, link } from "allure-js-commons";
-
-it("basic test", async () => {
-  await issue("Issue Name", "352");
-  await tms("Task Name", "352");
-  await link("352", "Link name", "custom");
-});
-```
-
-[allure-jasmine]: https://github.com/allure-framework/allure-js/tree/master/packages/allure-jasmine
+More details about the API are available at [https://allurereport.org/docs/jest-reference/](https://allurereport.org/docs/jest-reference/).
