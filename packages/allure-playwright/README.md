@@ -12,12 +12,18 @@
 
 ---
 
+## The documentation and examples
+
+The docs for Allure Playwright are available at [https://allurereport.org/docs/playwright/](https://allurereport.org/docs/playwright/).
+
+Also, check out the examples at [github.com/allure-examples](https://github.com/orgs/allure-examples/repositories?q=visibility%3Apublic+archived%3Afalse+topic%3Aexample+topic%3Aplaywright).
+
 ## Installation
 
-Use your favorite node package manager to install the package:
+Intall `allure-playwright` using a package manager of your choice. For example:
 
-```bash
-npm i -D allure-playwright
+```shell
+npm install -D allure-playwright
 ```
 
 ## Usage
@@ -49,82 +55,74 @@ npx playwright test --reporter=line,allure-playwright
 ```
 
 When the test run completes, the result files will be generated in the `./allure-results`
-directory. If you want to use another location, provide it via the `resultsDir`
-reporter option ([see below](#allure-playwright-options)).
+directory.
+
+You may select another location, or further customize the reporter's behavior with [the configuration options](https://allurereport.org/docs/playwright-configuration/).
 
 ### View the report
 
-> [!NOTE]
-> You need Allure Report to generate and open the report from the result files. See the [installation instructions](https://allurereport.org/docs/install/) for more details.
+> You need Allure Report to be installed on your machine to generate and open the report from the result files. See the [installation instructions](https://allurereport.org/docs/install/) on how to get it.
 
-Generate Allure Report:
+Generate Allure Report after the tests are executed:
 
 ```bash
 allure generate ./allure-results -o ./allure-report
 ```
 
-Open Allure Report:
+Open the generated report:
 
 ```bash
 allure open ./allure-report
 ```
 
-## The documentation
+## Allure API
 
-Learn more about Allure Playwright from the official documentation at
-[https://allurereport.org/docs/playwright/](https://allurereport.org/docs/playwright/).
-
-## Allure Playwright options
-
-Use following options to configure Allure Playwright:
-
-| Option          | Description                                                                                                          | Default            |
-|-----------------|----------------------------------------------------------------------------------------------------------------------|--------------------|
-| resultsDir      | The path of the results folder.                                                                                      | `./allure-results` |
-| detail          | Hide the `pw:api` and `hooks` steps in report.                                                                       | `true`             |
-| suiteTitle      | Use test title instead of `allure.suite()`.                                                                          | `true`             |
-| links           | Allure Runtime API link templates.                                                                                   | `undefined`        |
-| environmentInfo | A set of key-value pairs to display in the Environment section of the report                                         | `undefined`        |
-| categories      | An array of category definitions, each describing a [category of defects](https://allurereport.org/docs/categories/) | `undefined`        |
-
-Here is an example of the reporter configuration:
+Enhance the report by utilizing the runtime API:
 
 ```js
-import { defineConfig } from '@playwright/test';
-import os from "node:os";
+import { describe, test } from "playwright";
+import * as allure from "allure-js-commons";
 
-export default defineConfig({
-  reporter: [
-    [
-      "allure-playwright",
-      {
-        detail: true,
-        resultsDir: "my-allure-results",
-        suiteTitle: false,
-        links: {
-          link: {
-            urlTemplate: "https://github.com/allure-framework/allure-js/blob/main/%s",
-          },
-          issue: {
-            urlTemplate: "https://github.com/allure-framework/allure-js/issues/%s",
-            nameTemplate: "ISSUE-%s",
-          },
-        },
-        environmentInfo: {
-          OS: os.platform(),
-          Architecture: os.arch(),
-          NodeVersion: process.version,
-        },
-        categories: [
-          {
-            name: "Missing file errors",
-            messageRegex: /^ENOENT: no such file or directory/,
-          },
-        ],
-      },
-    ],
-  ],
+describe("signing in with a password", () => {
+  test("sign in with a valid password", async () => {
+    await allure.description("The test checks if an active user with a valid password can sign in to the app.");
+    await allure.epic("Signing in");
+    await allure.feature("Sign in with a password");
+    await allure.story("As an active user, I want to successfully sign in using a valid password");
+    await allure.tags("signin", "ui", "positive");
+    await allure.issue("https://github.com/allure-framework/allure-js/issues/331", "ISSUE-331");
+    await allure.owner("eroshenkoam");
+    await allure.parameter("browser", "chrome");
+
+    const user = await allure.step("Prepare the user", async () => {
+      return await createAnActiveUserInDb();
+    });
+
+    await allure.step("Make a sign-in attempt", async () => {
+      await allure.step("Navigate to the sign in page", async () => {
+        // ...
+      });
+
+      await allure.step("Fill the sign-in form", async (stepContext) => {
+        await stepContext.parameter("login", user.login);
+        await stepContext.parameter("password", user.password, "masked");
+
+        // ...
+      });
+
+      await allure.step("Submit the form", async () => {
+        // ...
+        // const responseData = ...
+
+        await allure.attachment("response", JSON.stringify(responseData), { contentType: "application/json" });
+      });
+    });
+
+    await allure.step("Assert the signed-in state", async () => {
+        // ...
+    });
+  });
 });
 ```
 
-More details about Allure Playwright configuration are available at [https://allurereport.org/docs/playwright-configuration/](https://allurereport.org/docs/playwright-configuration/).
+More details about the API are available at [https://allurereport.org/docs/playwright-reference/](https://allurereport.org/docs/playwright-reference/).
