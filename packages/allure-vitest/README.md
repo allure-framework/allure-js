@@ -26,11 +26,11 @@ Install `allure-vitest` using a package manager of your choice. For example:
 npm install -D allure-vitest
 ```
 
-> If you're a **Yarn PnP** user, you should also install `@vitest/runner` and `allure-js-commons`:
+> If you're a **Yarn PnP** user, you must also explicitly install `@vitest/runner` and `allure-js-commons`:
+> ```shell
+> yarn add --dev @vitest/runner allure-js-commons
 > ```
-> yarn add -D @vitest/runner allure-js-commons
-> ```
-> Make sure that `@vitest/runner`'s version matches `vitest`'s one, and `allure-js-commons`'s version matches `allure-vitest`'s one.
+> Keep in mind, that `allure-js-commons` and `allure-vitest` must have the same version. The same goes for `vitest` and `@vitest/runner`. Use [`yarn info`](https://yarnpkg.com/cli/info) to check the versions.
 
 ## Usage
 

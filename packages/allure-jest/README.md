@@ -13,7 +13,7 @@
 ---
 
 > **Warning**
-> This package only works with the [`jest-circus`](https://www.npmjs.com/package/jest-circus) test runner for Jest. That's the default for Jest since 27.0.0. If you use `jest@<27.0.0`, you should install `jest-circus` manually and set the [`testRunner`](https://jestjs.io/docs/configuration#testrunner-string) Jest option to `"jest-circus/runner"`.
+> This package only works with the [`jest-circus`](https://www.npmjs.com/package/jest-circus) test runner for Jest. It's the default runner for Jest starting from 27.0.0. If you use `jest@<27.0.0`, you should install `jest-circus` manually and set the [`testRunner`](https://jestjs.io/docs/configuration#testrunner-string) Jest option to `"jest-circus/runner"`.
 > If you're a [`jest-jasmine2`](https://www.npmjs.com/package/jest-jasmine2) user, consider switching to `jest-circus`. If that's not an option for you, please use [allure-jasmine](https://allurereport.org/docs/jasmine/) instead.
 
 ## The documentation and examples
@@ -30,10 +30,11 @@ Install `allure-jest` using a package manager of your choice. For example:
 npm install -D allure-jest
 ```
 
-> If you're a **Yarn PnP** user, you should also explicitly install the Jest environment package and the `allure-js-commons` packages. For example:
+> If you're a **Yarn PnP** user, you must also explicitly install the Jest environment package and `allure-js-commons`. For example:
 > ```shell
 > yarn add --dev jest-environment-node allure-js-commons
 > ```
+> Keep in mind, that `allure-js-commons` and `allure-jest` must have the same version. The same goes for all Jest packages (`jest`, `jest-circus`, `jest-environment-node`, etc). Use [`yarn info`](https://yarnpkg.com/cli/info) to check the versions.
 
 ## Usage
 
