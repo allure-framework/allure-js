@@ -20,7 +20,7 @@ Also, check out the examples at [github.com/allure-examples](https://github.com/
 
 ## Installation
 
-Intall `allure-vitest` using a package manager of your choice. For example:
+Install `allure-vitest` using a package manager of your choice. For example:
 
 ```shell
 npm install -D allure-vitest

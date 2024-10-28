@@ -20,7 +20,7 @@ Also, check out the examples at [github.com/allure-examples](https://github.com/
 
 ## Installation
 
-Intall `allure-mocha` using a package manager of your choice. For example:
+Install `allure-mocha` using a package manager of your choice. For example:
 
 ```shell
 npm install -D allure-mocha
