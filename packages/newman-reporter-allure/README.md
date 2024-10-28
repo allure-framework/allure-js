@@ -12,100 +12,67 @@
 
 ---
 
+## The documentation and examples
+
+The docs for Allure Newman are available at [https://allurereport.org/docs/newman/](https://allurereport.org/docs/newman/).
+
+Also, check out the examples at [github.com/allure-examples](https://github.com/orgs/allure-examples/repositories?q=visibility%3Apublic+archived%3Afalse+topic%3Aexample+topic%3Anewman).
+
 ## Installation
 
-```console
-$ npm install -g newman-reporter-allure
+Intall `newman-reporter-allure` using a package manager of your choice. For example:
+
+```shell
+npm install -D newman-reporter-allure
 ```
 
 ## Usage
 
-To generate Allure results, specify `allure` in Newman's `-r` or `--reporters` option.
+Enable the `allure` reporter via the CLI:
 
-```console
-$ newman run <Collection> -e <Environment> -r allure
-$ newman run <Collection> -e <Environment> -r allure --reporter-allure-resultsDir <allure-results-out-dir>
+```shell
+$ newman run "<Collection>" -e "<Environment>" -r allure
 ```
 
-Use the option `--reporter-allure-collection-as-parent-suite` to use the collection name as the parent suite title under the _Suites_ view. This helps when you run multiple collections and want to aggregate them in a single report.
+You may combine `allure` with other reporters:
 
-## Metadata
+```shell
+$ newman run "<Collection>" -e "<Environment>" -r cli,allure
+```
 
-You can add allure labels by passing javascript comments in the test field of postman request declaration
+When the test run completes, the result files will be generated in the `./allure-results` directory.
 
-### Id
+You may select another location, or further customize the reporter's behavior with [the configuration options](https://allurereport.org/docs/newman-configuration/).
 
-```javascript
-// @allure.id=228
+### View the report
 
-pm.test("Status code is 200", function () {
-  pm.response.to.be.ok;
+> You need Allure Report to be installed on your machine to generate and open the report from the result files. See the [installation instructions](https://allurereport.org/docs/install/) on how to get it.
+
+Generate Allure Report after the tests are executed:
+
+```bash
+allure generate ./allure-results -o ./allure-report
+```
+
+Open the generated report:
+
+```bash
+allure open ./allure-report
+```
+
+## Allure API
+
+Enhance the report by utilizing the Allure API:
+
+```js
+// @allure.label.epic:Authorization
+// @allure.label.feature:BearerAuthorization
+// @allure.label.story:ValidBearerToken
+// @allure.label.tag:api
+// @allure.label.owner:eroshenkoam
+pm.test("Test Authentication", function () {
+  // ...
 });
 ```
 
-### Label
-
-```javascript
-// @allure.label.{{labelName}}={{labelValue}}
-
-pm.test("Status code is 200", function () {
-  pm.response.to.be.ok;
-});
-```
-
-### Story
-
-```javascript
-// @allure.label.story=storyName
-
-pm.test("Status code is 200", function () {
-  pm.response.to.be.ok;
-});
-```
-
-### Suite
-
-```javascript
-// @allure.label.suite=suiteName
-
-pm.test("Status code is 200", function () {
-  pm.response.to.be.ok;
-});
-```
-
-### Owner
-
-```javascript
-// @allure.label.owner=ownerName
-
-pm.test("Status code is 200", function () {
-  pm.response.to.be.ok;
-});
-```
-
-### Tag
-
-```javascript
-// @allure.label.tag=tagName
-
-pm.test("Status code is 200", function () {
-  pm.response.to.be.ok;
-});
-```
-
-## Generating and Serving Allure report
-
-Allure results will be generated under folder "allure-results" in the root location.
-Use allure-commandline to serve the report locally.
-
-```console
-$ allure serve
-```
-
-Generate the static report web-application folder using allure-commandline
-
-```console
- $ allure generate --clean
-```
-
-Report will be generated under folder "allure-report" in the root location.
+More details about the API are available at [https://allurereport.org/docs/newman-reference/](https://allurereport.org/docs/newman-reference/).
