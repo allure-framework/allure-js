@@ -5,17 +5,27 @@ import * as path from "node:path";
 import { Status, attachment, attachmentPath, logStep, parameter, step } from "allure-js-commons";
 import type { AllureResults, Category } from "allure-js-commons/sdk";
 import { MessageReader, getPosixPath } from "allure-js-commons/sdk/reporter";
+import type { AllureMochaReporterConfig } from "../src/types.js";
 
 type MochaRunOptions = {
   env?: { [keys: string]: string };
   testplan?: readonly TestPlanEntryFixture[];
   environmentInfo?: { [keys: string]: string };
   categories?: readonly Category[];
+  extraReporters?: AllureMochaReporterConfig["extraReporters"];
+  outputFiles?: Record<string, string>;
 };
 
 type TestPlanEntryFixture = {
   id?: string | number;
   selector?: TestPlanSelectorEntryFixture;
+};
+
+type AllureMochaRunResults = AllureResults & {
+  outputFiles: Map<string, Buffer>;
+  exitCode: number;
+  stdout: string[];
+  stderr: string[];
 };
 
 type TestPlanSelectorEntryFixture = [file: readonly string[], name: string];
@@ -81,7 +91,7 @@ abstract class AllureMochaTestRunner {
     const filesToCopy = [...this.getFilesToCopy(testDir)];
     const filesToTransform = [
       ...this.getFilesToTransform(testDir),
-      ...samples.map((sample) => this.getSampleEntry(sample, this.specsPath, testDir)),
+      ...samples.map((sample) => this.#getSampleEntry(sample, this.specsPath, testDir)),
     ];
     const scriptArgs = this.getScriptArgs();
 
@@ -134,7 +144,7 @@ abstract class AllureMochaTestRunner {
         version: "1.0",
         tests: this.config.testplan.map((test) => ({
           id: test.id,
-          selector: test.selector ? this.resolveTestplanSelector(selectorPrefix, test.selector) : undefined,
+          selector: test.selector ? this.#resolveTestplanSelector(selectorPrefix, test.selector) : undefined,
         })),
       });
       await writeFile(testplanPath, content, { encoding: "utf-8" });
@@ -171,7 +181,7 @@ abstract class AllureMochaTestRunner {
       stderr.push(chunk.toString());
     });
 
-    return await new Promise<AllureResults>((resolve, reject) => {
+    return await new Promise<AllureMochaRunResults>((resolve, reject) => {
       testProcess.on("exit", async (code, signal) => {
         if (stdout.length) {
           await attachment("stdout", stdout.join("\n"), "text/plain");
@@ -181,10 +191,19 @@ abstract class AllureMochaTestRunner {
         }
         await messageReader.attachErrors();
         await messageReader.attachResults();
+
+        const outputFiles = await this.#reportOtherOutputFiles(testDir);
+
         await rm(testDir, { recursive: true });
 
         if ((code ?? -1) >= 0 && !signal) {
-          resolve(messageReader.results);
+          resolve({
+            ...messageReader.results,
+            outputFiles,
+            exitCode: code as number,
+            stdout,
+            stderr,
+          });
         } else if (signal) {
           reject(new Error(`mocha was interrupted with ${signal}`));
         } else {
@@ -216,17 +235,37 @@ abstract class AllureMochaTestRunner {
 
   protected encodeCategories = () => this.toBase64Url(this.config.categories);
 
+  protected encodeExtraReporters = () => this.toBase64Url(this.config.extraReporters);
+
   protected toBase64Url = (value: any) => Buffer.from(JSON.stringify(value)).toString("base64url");
 
-  private getSampleEntry = (name: string | readonly string[], samplesDir: string, testDir: string) => {
+  #getSampleEntry = (name: string | readonly string[], samplesDir: string, testDir: string) => {
     if (name instanceof Array) {
       name = path.join(...name);
     }
     return this.getTransformEntry(`${name}.spec`, SPEC_FORMAT, testDir, samplesDir);
   };
 
-  private resolveTestplanSelector = (prefix: string, [file, name]: TestPlanSelectorEntryFixture) => {
+  #resolveTestplanSelector = (prefix: string, [file, name]: TestPlanSelectorEntryFixture) => {
     return getPosixPath(`${path.join(prefix, ...file)}.spec${SPEC_EXT}: ${name}`);
+  };
+
+  #reportOtherOutputFiles = async (testDir: string) => {
+    if (!this.config.outputFiles) {
+      return new Map<string, Buffer>();
+    }
+
+    return await step("other output files", async () => {
+      const outputFiles = new Map<string, Buffer>();
+      for (const [file, contentType] of Object.entries(this.config.outputFiles ?? {})) {
+        try {
+          const content = await readFile(path.join(testDir, file));
+          outputFiles.set(file, content);
+          await attachment(file, content, { contentType, fileExtension: path.extname(file) });
+        } catch {}
+      }
+      return outputFiles;
+    });
   };
 
   getFilesToCopy: (testDir: string) => readonly [string, string][] = () => [];
@@ -245,6 +284,9 @@ class AllureMochaCliTestRunner extends AllureMochaTestRunner {
     }
     if (this.config.categories) {
       args.push("--reporter-option", `categories=${this.encodeCategories()}`);
+    }
+    if (this.config.extraReporters) {
+      args.push("--reporter-option", `extraReporters=${this.encodeExtraReporters()}`);
     }
     return args;
   };
@@ -273,6 +315,9 @@ class AllureMochaCodeTestRunner extends AllureMochaTestRunner {
     }
     if (this.config.categories) {
       args.push("--categories", this.encodeCategories());
+    }
+    if (this.config.extraReporters) {
+      args.push("--extra-reporters", this.encodeExtraReporters());
     }
     return args;
   };
