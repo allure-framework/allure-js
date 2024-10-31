@@ -14,6 +14,23 @@ describe("mocha reporters", () => {
     expect(stdout.join("").split("\n")).toEqual(expect.arrayContaining([expect.stringMatching(/^foo --/)]));
   });
 
+  it("cli --steps should work out-of-box", async () => {
+    const { tests, stdout } = await runCodeceptJsInlineTest(
+      {
+        "foo.test.js": `
+          Feature("foo")
+          Scenario('bar', () => {});
+          `,
+      },
+      { args: ["--steps"] },
+    );
+
+    expect(tests).toEqual([expect.objectContaining({ name: "bar" })]);
+    expect(stdout.join("").split("\n")).toEqual(
+      expect.arrayContaining([expect.stringMatching(/^foo --/), expect.stringMatching(/^ {2}bar/)]),
+    );
+  });
+
   it("should support Mocha's built-in reporters", async () => {
     const { tests, stdout } = await runCodeceptJsInlineTest({
       "foo.test.js": `
