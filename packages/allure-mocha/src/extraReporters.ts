@@ -1,10 +1,14 @@
 import * as Mocha from "mocha";
+import { createRequire } from "node:module";
 import path from "node:path";
 import type { ReporterDoneFn, ReporterEntry, ReporterModuleOrCtor, ReporterOptions } from "./types.js";
 
 type CanonicalReporterEntry = readonly [ReporterModuleOrCtor, ReporterOptions];
 type ShortReporterEntry = readonly [ReporterModuleOrCtor];
 type LoadedReporterEntry = readonly [Mocha.ReporterConstructor, ReporterOptions];
+
+// There is no global require in ESM, and we can't use dynamic import (which returns a promise) because it's called from the reporter's constructor; therefore, it must be synchronous.
+const localRequire = typeof require === "function" ? require : createRequire(import.meta.url);
 
 export const enableExtraReporters = (
   runner: Mocha.Runner,
@@ -107,8 +111,7 @@ const loadReporterModule = (moduleOrCtor: ReporterModuleOrCtor) => {
 
     const reporterModulePath = getReporterModulePath(moduleOrCtor);
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
-      return require(reporterModulePath) as Mocha.ReporterConstructor;
+      return localRequire(reporterModulePath) as Mocha.ReporterConstructor;
     } catch (e: any) {
       throw new Error(`Can't load the '${moduleOrCtor}' reporter from ${reporterModulePath}: ${e.message}`);
     }
@@ -123,7 +126,7 @@ const loadReporterModule = (moduleOrCtor: ReporterModuleOrCtor) => {
 
 const getReporterModulePath = (module: string) => {
   try {
-    return require.resolve(module);
+    return localRequire.resolve(module);
   } catch (e) {}
 
   try {
