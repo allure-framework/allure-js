@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { issue } from "allure-js-commons";
 import { runCodeceptJsInlineTest } from "../utils.js";
 
 describe("mocha reporters", () => {
@@ -15,6 +16,8 @@ describe("mocha reporters", () => {
   });
 
   it("cli --steps should work out-of-box", async () => {
+    await issue("1167");
+
     const { tests, stdout } = await runCodeceptJsInlineTest(
       {
         "foo.test.js": `
@@ -143,4 +146,4 @@ describe("mocha reporters", () => {
     expect(tests).toEqual([expect.objectContaining({ name: "bar" })]);
     expect(stdoutLines).toEqual(expect.arrayContaining([String.raw`{"foo":{"bar":"baz"}}`]));
   });
-  });
+});
