@@ -206,6 +206,34 @@ describe("extra reporters", () => {
     });
   });
 
+  describe("local reporter", () => {
+    test("local reporter without options", async () => {
+      const { tests, stdout } = await runMochaInlineTest(
+        {
+          extraReporters: "./customReporter.cjs",
+          inputFiles: ["customReporter.cjs"],
+        },
+        "plain-mocha/testInSuite",
+      );
+
+      expect(tests).toEqual([expect.objectContaining({ name: "a test in a suite" })]);
+      expect(JSON.parse(stdout.join(""))).toEqual({});
+    });
+
+    test("local reporter with options", async () => {
+      const { tests, stdout } = await runMochaInlineTest(
+        {
+          extraReporters: ["./customReporter.cjs", { foo: "bar" }],
+          inputFiles: ["customReporter.cjs"],
+        },
+        "plain-mocha/testInSuite",
+      );
+
+      expect(tests).toEqual([expect.objectContaining({ name: "a test in a suite" })]);
+      expect(JSON.parse(stdout.join(""))).toEqual({ foo: "bar" });
+    });
+  });
+
   describe("errors", () => {
     test("a reporter must be a string", async () => {
       const { exitCode, stderr } = await runMochaInlineTest(

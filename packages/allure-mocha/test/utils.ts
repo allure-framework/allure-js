@@ -13,6 +13,7 @@ type MochaRunOptions = {
   environmentInfo?: { [keys: string]: string };
   categories?: readonly Category[];
   extraReporters?: AllureMochaReporterConfig["extraReporters"];
+  inputFiles?: string[];
   outputFiles?: Record<string, string>;
 };
 
@@ -88,7 +89,10 @@ abstract class AllureMochaTestRunner {
 
     const testDir = path.join(this.runResultsDir, randomUUID());
 
-    const filesToCopy = [...this.getFilesToCopy(testDir)];
+    const filesToCopy = [
+      ...this.getFilesToCopy(testDir),
+      ...(this.config.inputFiles?.map((f) => this.getCopyEntry(f, testDir)) ?? []),
+    ];
     const filesToTransform = [
       ...this.getFilesToTransform(testDir),
       ...samples.map((sample) => this.#getSampleEntry(sample, this.specsPath, testDir)),
