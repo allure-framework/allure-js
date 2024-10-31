@@ -12,110 +12,99 @@
 
 ---
 
+## The documentation
+
+The docs for Allure Jasmine are available at [https://allurereport.org/docs/jasmine/](https://allurereport.org/docs/jasmine/).
+
 ## Installation
 
-Use your favorite node package manager to install required packages:
+Install `allure-jasmine` using a package manager of your choice. For example:
 
 ```bash
-npm add -D allure-jasmine
+npm install -D allure-jasmine
 ```
 
-Create `spec/helpers/setup.ts` file with following content:
+## Usage
+
+Create a helper file (e.g., `helpers/setup.js` or `helpers/setup.ts`) and set up the Allure reporter in it:
 
 ```ts
-const AllureJasmineReporter = require("allure-jasmine");
+import AllureJasmineReporter from "allure-jasmine";
 
-const reporter = new AllureJasmineReporter();
-
-jasmine.getEnv().addReporter(reporter);
+jasmine.getEnv().addReporter(
+  new AllureJasmineReporter(),
+);
 ```
 
-Check that the helper matches with `helper` field in your `spec/support/jasmine.json` file.
+> Make sure the helper file is matched against the `helpers` regular expression in [`spec/support/jasmine.json`](https://jasmine.github.io/setup/nodejs.html#configuration).
 
-## Use Allure runtime Api
+When the test run completes, the result files will be generated in the `./allure-results` directory.
 
-The plugin provides custom commands which allow to add additional info inside your tests:
+You may select another location, or further customize the reporter's behavior with [the configuration options](https://allurereport.org/docs/jasmine-configuration/).
 
-```javascript
-import { epic, attachment, parameter } from "allure-js-commons";
+### View the report
 
-it("my test", async () => {
-  await attachment("Attachment name", "Hello world!", "text/plain");
-  await epic("my_epic");
-  await parameter("parameter_name", "parameter_value", {
-    mode: "hidden",
-    excluded: false,
-  });
-});
+> You need Allure Report to be installed on your machine to generate and open the report from the result files. See the [installation instructions](https://allurereport.org/docs/install/) on how to get it.
+
+Generate Allure Report after the tests are executed:
+
+```bash
+allure generate ./allure-results -o ./allure-report
 ```
 
-## Links usage
+Open the generated report:
+
+```bash
+allure open ./allure-report
+```
+
+## Allure API
+
+Enhance the report by utilizing the runtime API:
 
 ```js
-import { link, issue, tms } from "allure-js-commons";
+import * as allure from "allure-js-commons";
 
-it("basic test", async () => {
-  await link("https://allurereport.org", "link type", "Allure Report");
-  await issue("https://github.com/allure-framework/allure-js/issues/352", "Issue Name", );
-  await tms("https://github.com/allure-framework/allure-js/tasks/352", "Task Name");
-});
-```
+describe("signing in with a password", () => {
+  it("should sign in with a valid password", async () => {
+    await allure.description("The test checks if an active user with a valid password can sign in to the app.");
+    await allure.epic("Signing in");
+    await allure.feature("Sign in with a password");
+    await allure.story("As an active user, I want to successfully sign in using a valid password");
+    await allure.tags("signin", "ui", "positive");
+    await allure.issue("https://github.com/allure-framework/allure-js/issues/1", "ISSUE-1");
+    await allure.owner("eroshenkoam");
+    await allure.parameter("browser", "chrome");
 
-You can also configure links formatters to make usage much more convenient. `%s`
-in `urlTemplate` parameter will be replaced by given value.
+    const user = await allure.step("Prepare the user", async () => {
+      return await createAnActiveUserInDb();
+    });
 
-```diff
-```ts
-const AllureJasmineReporter = require("allure-jasmine");
+    await allure.step("Make a sign-in attempt", async () => {
+      await allure.step("Navigate to the sign in page", async () => {
+        // ...
+      });
 
-const reporter = new AllureJasmineReporter({
-+  links: [
-+    {
-+      type: "issue",
-+      urlTemplate: "https://example.org/issues/%s",
-+      nameTemplate: "Issue: %s",
-+    },
-+    {
-+      type: "tms",
-+      urlTemplate: "https://example.org/tasks/%s"
-+    },
-+    {
-+      type: "custom",
-+      urlTemplate: "https://example.org/custom/%s"
-+    },
-+  ],
-});
+      await allure.step("Fill the sign-in form", async (stepContext) => {
+        await stepContext.parameter("login", user.login);
+        await stepContext.parameter("password", user.password, "masked");
 
-jasmine.getEnv().addReporter(reporter);
-```
+        // ...
+      });
 
-Then you can assign link using shorter notation:
+      await allure.step("Submit the form", async () => {
+        // ...
+        // const responseData = ...
 
-```js
-import { link, issue, tms } from "allure-js-commons";
+        await allure.attachment("response", JSON.stringify(responseData), { contentType: "application/json" });
+      });
+    });
 
-it("basic test", async () => {
-  await issue("351");
-  await issue("352", "Issue Name");
-  await tms("351");
-  await tms("352", "Task Name");
-  await link("custom", "352");
-  await link("custom", "352", "Link name");
-});
-```
-
-## Steps usage
-
-The integration supports Allure steps, use them in following way:
-
-```js
-import { step } from "allure-js-commons";
-
-it("my test", async () => {
-  await step("foo", async () => {
-    await step("bar", async () => {
-      await step("baz", async () => {});
+    await allure.step("Assert the signed-in state", async () => {
+        // ...
     });
   });
 });
 ```
+
+More details about the API are available at [https://allurereport.org/docs/jasmine-reference/](https://allurereport.org/docs/jasmine-reference/).

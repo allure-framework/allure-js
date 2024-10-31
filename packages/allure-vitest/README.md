@@ -12,146 +12,113 @@
 
 ---
 
+## The documentation and examples
+
+The docs for Allure Vitest are available at [https://allurereport.org/docs/vitest/](https://allurereport.org/docs/vitest/).
+
+Also, check out the examples at [github.com/allure-examples](https://github.com/orgs/allure-examples/repositories?q=visibility%3Apublic+archived%3Afalse+topic%3Aexample+topic%3Avitest).
+
 ## Installation
 
-Use your favorite node package manager to install the package:
+Install `allure-vitest` using a package manager of your choice. For example:
 
-```bash
-npm i -D allure-vitest
+```shell
+npm install -D allure-vitest
 ```
 
-## Configuration
+> If you're a **Yarn PnP** user, you must also explicitly install `@vitest/runner` and `allure-js-commons`:
+> ```shell
+> yarn add --dev @vitest/runner allure-js-commons
+> ```
+> Keep in mind, that `allure-js-commons` and `allure-vitest` must have the same version. The same goes for `vitest` and `@vitest/runner`. Use [`yarn info`](https://yarnpkg.com/cli/info) to check the versions.
 
-Add instance of the reporter to the [`reporters` section](https://vitest.dev/config/#reporters) of your Vitest config:
+## Usage
+
+Add `"allure-vitest/setup"` to `setupFiles` and `"allure-vitest/reporter"` to `reporters`:
 
 ```js
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    // add setup file to be able to use Allure API via `global.allure` in your tests and to get test plan support
     setupFiles: ["allure-vitest/setup"],
     reporters: [
-      // do not forget to keep the "default" if you want to see something in the console
       "default",
-      ["allure-vitest/reporter", { resultsDir: "./out/allure-results" }],
+      "allure-vitest/reporter",
     ],
   },
 });
 ```
 
-## Reporter options
 
-Some reporter settings can set by following options:
+When the test run completes, the result files will be generated in the `./allure-results` directory.
 
-| Option     | Description                                           | Default            |
-| ---------- | ----------------------------------------------------- | ------------------ |
-| resultsDir | Path to results folder                                | `./allure-results` |
-| links      | Links templates to make runtime methods calls simpler | `undefined`        |
+You may select another location, or further customize the reporter's behavior with [the configuration options](https://allurereport.org/docs/vitest-configuration/).
 
-## Runtime API
+### View the report
 
-Use functions provided by `allure-js-commons` package to call Allure Runtime API methods:
+> You need Allure Report to be installed on your machine to generate and open the report from the result files. See the [installation instructions](https://allurereport.org/docs/install/) on how to get it.
+
+Generate Allure Report after the tests are executed:
+
+```bash
+allure generate ./allure-results -o ./allure-report
+```
+
+Open the generated report:
+
+```bash
+allure open ./allure-report
+```
+
+## Allure API
+
+Enhance the report by utilizing the runtime API:
 
 ```js
-import { test } from "vitest";
+import { describe, it } from "vitest";
 import * as allure from "allure-js-commons";
 
-test("sample test", async (context) => {
-  await allure.label(context, "foo", "bar");
-  await allure.attachment("Attachment name", "Attachment content", "text/plain");
-  await allure.step("my step", async () => {
-    await allure.step("another step", async () => {
-      await allure.label("foo", "bar");
+describe("signing in with a password", () => {
+  it("should sign in with a valid password", async () => {
+    await allure.description("The test checks if an active user with a valid password can sign in to the app.");
+    await allure.epic("Signing in");
+    await allure.feature("Sign in with a password");
+    await allure.story("As an active user, I want to successfully sign in using a valid password");
+    await allure.tags("signin", "ui", "positive");
+    await allure.issue("https://github.com/allure-framework/allure-js/issues/1", "ISSUE-1");
+    await allure.owner("eroshenkoam");
+    await allure.parameter("browser", "chrome");
+
+    const user = await allure.step("Prepare the user", async () => {
+      return await createAnActiveUserInDb();
+    });
+
+    await allure.step("Make a sign-in attempt", async () => {
+      await allure.step("Navigate to the sign in page", async () => {
+        // ...
+      });
+
+      await allure.step("Fill the sign-in form", async (stepContext) => {
+        await stepContext.parameter("login", user.login);
+        await stepContext.parameter("password", user.password, "masked");
+
+        // ...
+      });
+
+      await allure.step("Submit the form", async () => {
+        // ...
+        // const responseData = ...
+
+        await allure.attachment("response", JSON.stringify(responseData), { contentType: "application/json" });
+      });
+    });
+
+    await allure.step("Assert the signed-in state", async () => {
+        // ...
     });
   });
 });
 ```
 
-## Links usage
-
-```js
-import { it } from "vitest";
-import { link, issue } from "allure-js-commons";
-
-it("basic test", async () => {
-  await link("https://allurereport.org", "Allure Report"); // link with name
-  await issue("https://github.com/allure-framework/allure-js/issues/352", "Issue Name");
-});
-```
-
-You can also configure links formatters to make usage much more convenient. `%s`
-in `urlTemplate` parameter will be replaced by given value.
-
-```diff
-import { defineConfig } from "vitest/config";
-
-export default defineConfig({
-  test: {
-    setupFiles: ["allure-vitest/setup"],
-    reporters: [
-      "default",
-      ["allure-vitest/reporter", {
-        resultsDir: "./allure-results",
-+       links: [
-+         {
-+           type: "issue",
-+           urlTemplate: "https://example.org/issues/%s",
-+           nameTemplate: "Issue: %s",
-+         },
-+         {
-+           type: "tms",
-+           urlTemplate: "https://example.org/tasks/%s"
-+         },
-+         {
-+           type: "custom",
-+           urlTemplate: "https://example.org/custom/%s"
-+         },
-+       ]
-      }],
-    ],
-  },
-});
-```
-
-Then you can assign link using shorter notation:
-
-```js
-import { it } from "vitest";
-import { issue, tms, link } from "allure-js-commons";
-
-it("basic test", async () => {
-  await issue("352", "Issue Name");
-  await tms("352", "Task Name");
-  await link("352", "Link name", "custom");
-});
-```
-
-## Selective test execution
-
-Allure allow you to execute only a subset of tests. This is useful when you want 
-to run only a specific test or a group of tests.
-
-It works out of the box if you add `allure-vitest/setup` to your `setupFiles` 
-config option.
-
-Allure will read `ALLURE_TESTPLAN_PATH` environment variable and read testplan 
-from the specified file.
-
-## Passing metadata from test title
-
-You also can pass allure metadata from test title.
-This is useful when you need to set allureId for the tests with failing before hooks. Just add `@allure.id={idValue}` for the allureId or `@allure.label.{labelName}={labelValue}` for other types of labels.
-
-```ts
-import { test } from "vitest";
-
-test("test with allureId @allure.id=256", () => {});
-test("tst with severity @allure.label.severity=critical", () => {});
-test("test with epic @allure.label.epic=login", () => {});
-test("test with strangeLabel @allure.label.strangeLabel=strangeValue", () => {});
-```
-
-> **Warning**
-> Note that changing title can cause creating new testcases in history.
-> To fix this please add `@allure.id={yourTestCaseId}` to the test name if you passing allure metadata from test title
+More details about the API are available at [https://allurereport.org/docs/vitest-reference/](https://allurereport.org/docs/vitest-reference/).
