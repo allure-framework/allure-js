@@ -7,11 +7,21 @@ import { attachment, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
+type RunOptions = {
+  env?: Record<string, string>;
+  cwd?: string;
+  args?: string[];
+};
+
+type RunResult = AllureResults & {
+  stdout: string[];
+  stderr: string[];
+};
+
 export const runCodeceptJsInlineTest = async (
   files: Record<string, string | Buffer>,
-  env?: Record<string, string>,
-  cwd?: string,
-): Promise<AllureResults> => {
+  { env, cwd, args: extraCliArgs = [] }: RunOptions = {},
+): Promise<RunResult> => {
   const testFiles = {
     // package.json is used to find project root in case of absolute file paths are used
     // eslint-disable-next-line @stylistic/quotes
@@ -40,7 +50,7 @@ export const runCodeceptJsInlineTest = async (
   const modulePath = await step("resolve codeceptjs", () => {
     return require.resolve("codeceptjs/bin/codecept.js");
   });
-  const args = ["run", "-c", testDir];
+  const args = ["run", "-c", testDir, ...extraCliArgs];
   const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
     return fork(modulePath, args, {
       env: {
@@ -53,23 +63,31 @@ export const runCodeceptJsInlineTest = async (
     });
   });
 
+  const stdout: string[] = [];
+  const stderr: string[] = [];
+
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
-    process.stdout.write(String(chunk));
+    stdout.push(String(chunk));
   });
   testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
-    process.stderr.write(String(chunk));
+    stderr.push(String(chunk));
   });
   const messageReader = new MessageReader();
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   testProcess.on("message", messageReader.handleMessage);
 
   return new Promise((resolve) => {
     testProcess.on("exit", async () => {
       await messageReader.attachResults();
+      if (stdout.length) {
+        await attachment("stdout", stdout.join("\n"), { contentType: "text/plain" });
+      }
+      if (stderr.length) {
+        await attachment("stderr", stderr.join("\n"), { contentType: "text/plain" });
+      }
       await rm(testDir, { recursive: true });
 
-      return resolve(messageReader.results);
+      return resolve({ ...messageReader.results, stdout, stderr });
     });
   });
 };
