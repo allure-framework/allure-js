@@ -169,7 +169,6 @@ abstract class AllureMochaTestRunner {
 
     const messageReader = new AllureMochaMessageReader();
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     testProcess.on("message", messageReader.handleMessage);
 
     const stdout: string[] = [];
