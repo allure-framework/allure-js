@@ -37,7 +37,7 @@ it("should support test plan", async () => {
       [testPlanFilename]: `${JSON.stringify(exampleTestPlan)}`,
     },
     {
-      ALLURE_TESTPLAN_PATH: `./${testPlanFilename}`,
+      env: { ALLURE_TESTPLAN_PATH: `./${testPlanFilename}` },
     },
   );
 

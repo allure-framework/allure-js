@@ -102,8 +102,7 @@ it("should not depend on CWD", async () => {
         });
       `,
     },
-    {},
-    "nested",
+    { cwd: "nested" },
   );
 
   expect(tests).toEqual(
@@ -141,8 +140,10 @@ it("should add labels from env variables", async () => {
       `,
     },
     {
-      ALLURE_LABEL_A: "a",
-      ALLURE_LABEL_B: "b",
+      env: {
+        ALLURE_LABEL_A: "a",
+        ALLURE_LABEL_B: "b",
+      },
     },
   );
 
