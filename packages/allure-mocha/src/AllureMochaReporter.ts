@@ -5,7 +5,6 @@ import { Stage, Status } from "allure-js-commons";
 import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import { getHostLabel, getThreadLabel } from "allure-js-commons/sdk/reporter";
-import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
   createDefaultWriter,
@@ -17,8 +16,9 @@ import {
 } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { MochaTestRuntime } from "./MochaTestRuntime.js";
+import { doneAll, enableExtraReporters } from "./extraReporters.js";
 import { setLegacyApiRuntime } from "./legacyUtils.js";
-import type { TestPlanIndices } from "./types.js";
+import type { AllureMochaReporterConfig, TestPlanIndices } from "./types.js";
 import {
   applyTestPlan,
   createTestPlanIndices,
@@ -55,11 +55,13 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   protected currentTest?: string;
   protected currentHook?: string;
   private readonly isInWorker: boolean;
+  readonly #extraReporters: Mocha.reporters.Base[] = [];
 
   constructor(runner: Mocha.Runner, opts: Mocha.MochaOptions, isInWorker: boolean = false) {
     super(runner, opts);
 
-    const { resultsDir, ...restOptions }: ReporterConfig = opts.reporterOptions || {};
+    const allureConfig: AllureMochaReporterConfig = opts.reporterOptions ?? {};
+    const { resultsDir, extraReporters, ...restOptions } = allureConfig;
 
     this.isInWorker = isInWorker;
     this.runtime = new ReporterRuntime({
@@ -77,6 +79,10 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       opts.require = [...(opts.require ?? []), resolveParallelModeSetupFile()];
     } else {
       this.applyListeners();
+    }
+
+    if (!isInWorker && extraReporters) {
+      this.#extraReporters = enableExtraReporters(runner, opts, extraReporters);
     }
   }
 
@@ -123,10 +129,10 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     this.runtime.writeAttachment(root, null, name, buffer, { ...opts, wrapInStep: false });
   };
 
-  override done(failures: number, fn?: ((failures: number) => void) | undefined): void {
+  override done(failures: number, fn?: ((failures: number) => void) | undefined) {
     this.runtime.writeEnvironmentInfo();
     this.runtime.writeCategoriesDefinitions();
-    return fn?.(failures);
+    doneAll(this.#extraReporters, failures, fn);
   }
 
   private applyListeners = () => {

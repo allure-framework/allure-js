@@ -35,6 +35,9 @@ for (let i = 0; i < args.length; i++) {
     case "--categories":
       reporterOptions.categories = JSON.parse(Buffer.from(args[++i], "base64url").toString());
       break;
+    case "--extra-reporters":
+      reporterOptions.extraReporters = JSON.parse(Buffer.from(args[++i], "base64url").toString());
+      break;
   }
 }
 
