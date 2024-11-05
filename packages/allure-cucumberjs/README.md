@@ -50,7 +50,7 @@ Enable the `allure-cucumberjs/reporter` formatter in [the Cucumber.js configurat
 
 When the test run completes, the result files will be generated in the `./allure-results` directory.
 
-IYou may select another location, or further customize the formatter's behavior with [the configuration options](https://allurereport.org/docs/cucumberjs-configuration/).
+You may select another location, or further customize the formatter's behavior with [the configuration options](https://allurereport.org/docs/cucumberjs-configuration/).
 
 ### View the report
 
