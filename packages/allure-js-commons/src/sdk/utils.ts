@@ -2,7 +2,7 @@ import type { FixtureResult, Label, StatusDetails, StepResult, TestResult } from
 import { LabelName, Status } from "../model.js";
 import type { RuntimeMessage, SerializeOptions } from "./types.js";
 
-export const getStatusFromError = (error: Error): Status => {
+export const getStatusFromError = (error: Partial<Error>): Status => {
   switch (true) {
     /**
      * Native `node:assert` and `chai` (`vitest` uses it under the hood) throw `AssertionError`
@@ -12,8 +12,8 @@ export const getStatusFromError = (error: Error): Status => {
      */
     case /assert/gi.test(error.constructor.name):
     case /expectation/gi.test(error.constructor.name):
-    case /assert/gi.test(error.name):
-    case /assert/gi.test(error.message):
+    case error.name && /assert/gi.test(error.name):
+    case error.message && /assert/gi.test(error.message):
     case error.stack && /@vitest\/expect/gi.test(error.stack):
     case error.stack && /playwright\/lib\/matchers\/expect\.js/gi.test(error.stack):
     case "matcherResult" in error:

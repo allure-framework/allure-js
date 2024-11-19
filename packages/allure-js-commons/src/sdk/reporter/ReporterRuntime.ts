@@ -662,6 +662,9 @@ export class ReporterRuntime {
         result.start = result.stop;
       }
     }
-    return result;
+    return {
+      start: result.start ? Math.round(result.start) : undefined,
+      stop: result.stop ? Math.round(result.stop) : undefined,
+    };
   };
 }
