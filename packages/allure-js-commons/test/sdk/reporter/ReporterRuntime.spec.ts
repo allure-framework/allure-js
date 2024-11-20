@@ -39,6 +39,20 @@ describe("ReporterRuntime", () => {
     expect(testResult.start).toBe(start);
     expect(testResult.stop).toBe(start + duration);
   });
+  it("should round timings after stop", () => {
+    const writer = mockWriter();
+    const runtime = new ReporterRuntime({ writer });
+
+    const start = randomInt(10_000_000) + 0.23;
+    const duration = randomInt(100_000) + 0.43;
+    const rootUuid = runtime.startTest({ start });
+    runtime.stopTest(rootUuid, { duration });
+    runtime.writeTest(rootUuid);
+
+    const [testResult] = writer.writeResult.mock.calls[0];
+    expect(testResult.start).toBe(Math.round(start));
+    expect(testResult.stop).toBe(Math.round(start + duration));
+  });
 
   it("should set test stop from stop", () => {
     const writer = mockWriter();

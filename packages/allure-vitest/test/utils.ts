@@ -89,7 +89,7 @@ export const runVitestInlineTest = async (
     });
   });
 
-  const modulePath = require.resolve("vitest/dist/cli-wrapper.js");
+  const modulePath = require.resolve("vitest/dist/cli.js");
   const args = ["run", "--config", configFilePath, "--dir", testDir];
   const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
     return fork(modulePath, args, {
