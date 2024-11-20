@@ -74,7 +74,7 @@
     "@types/babel__core": "^7",
     "@types/babel__preset-env": "^7",
     "@types/eslint": "^8.56.11",
-    "@types/node": "^20.14.2",
+    "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "allure-commandline": "^2.29.0",
