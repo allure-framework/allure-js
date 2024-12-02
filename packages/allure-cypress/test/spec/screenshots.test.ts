@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { ContentType, Status } from "allure-js-commons";
+import { ContentType, Stage, Status } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils.js";
 
 it("attaches screenshots for failed specs", async () => {
@@ -11,26 +11,42 @@ it("attaches screenshots for failed specs", async () => {
   `,
   });
 
-  expect(tests).toHaveLength(1);
-  expect(tests[0].steps).toHaveLength(1);
-  expect(tests[0].steps).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining({
-        name: String.raw`Command "wrap"`,
-        status: Status.FAILED,
-        attachments: [
-          expect.objectContaining({
-            name: "Screenshot",
-            type: ContentType.PNG,
-          }),
-        ],
-      }),
-    ]),
-  );
+  expect(tests).toEqual([
+    expect.objectContaining({
+      name: "failed",
+      status: Status.FAILED,
+      stage: Stage.FINISHED,
+      steps: [
+        expect.objectContaining({
+          name: "wrap 1",
+          status: Status.FAILED,
+          stage: Stage.FINISHED,
+          parameters: [],
+          steps: [
+            expect.objectContaining({
+              name: "assert expected 1 to equal 2",
+              status: Status.FAILED,
+              stage: Stage.FINISHED,
+              parameters: [
+                { name: "actual", value: "1" },
+                { name: "expected", value: "2" },
+              ],
+            }),
+          ],
+        }),
+      ],
+      attachments: [
+        expect.objectContaining({
+          name: "failed (failed).png",
+          type: ContentType.PNG,
+        }),
+      ],
+    }),
+  ]);
 
-  const [attachment] = tests[0].steps[0].attachments;
+  const source = tests[0].attachments[0].source;
 
-  expect(attachments).toHaveProperty(attachment.source);
+  expect(attachments).toHaveProperty(source);
 });
 
 it("attaches runtime screenshots", async () => {
@@ -38,27 +54,58 @@ it("attaches runtime screenshots", async () => {
     "cypress/e2e/sample.cy.js": () => `
     it("manual", () => {
       cy.screenshot("foo");
+      cy.screenshot();
     });
   `,
   });
 
-  expect(tests).toHaveLength(1);
-  expect(tests[0].steps).toHaveLength(1);
-  expect(tests[0].steps).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining({
-        name: String.raw`Command "screenshot"`,
-        attachments: [
-          expect.objectContaining({
-            name: "foo",
-            type: ContentType.PNG,
-          }),
-        ],
-      }),
-    ]),
-  );
+  expect(tests).toEqual([
+    expect.objectContaining({
+      name: "manual",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      steps: [
+        expect.objectContaining({
+          name: "foo",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          steps: [],
+          attachments: [
+            expect.objectContaining({
+              name: "foo",
+              type: ContentType.PNG,
+            }),
+          ],
+        }),
+        expect.objectContaining({
+          name: "manual.png",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          steps: [],
+          attachments: [
+            expect.objectContaining({
+              name: "manual.png",
+              type: ContentType.PNG,
+            }),
+          ],
+        }),
+      ],
+    }),
+  ]);
 
-  const [attachment] = tests[0].steps[0].attachments;
+  const [
+    {
+      steps: [
+        {
+          attachments: [{ source: source1 }],
+        },
+        {
+          attachments: [{ source: source2 }],
+        },
+      ],
+    },
+  ] = tests;
 
-  expect(attachments).toHaveProperty(attachment.source);
+  expect(attachments).toHaveProperty(source1);
+  expect(attachments).toHaveProperty(source2);
 });

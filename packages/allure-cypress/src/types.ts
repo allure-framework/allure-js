@@ -1,10 +1,11 @@
-import type { Label, Status, StatusDetails } from "allure-js-commons";
-import type { RuntimeMessage, TestPlanV1 } from "allure-js-commons/sdk";
+import type { Label, Parameter, Status, StatusDetails } from "allure-js-commons";
+import type {
+  RuntimeMessage,
+  RuntimeStartStepMessage,
+  RuntimeStopStepMessage,
+  TestPlanV1,
+} from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
-
-export const ALLURE_REPORT_SYSTEM_HOOK = "__allure_report_system_hook__";
-
-export const ALLURE_REPORT_STEP_COMMAND = "__allure_report_step_command__";
 
 export type AllureCypressConfig = ReporterConfig & {
   videoOnFailOnly?: boolean;
@@ -36,6 +37,31 @@ export type CypressCommand = {
     args: any[];
   };
   state: "passed" | "failed" | "queued";
+};
+
+export type CypressLogEntry = ReturnType<typeof Cypress.log> & {
+  attributes: {
+    id: string;
+    error?: Error;
+    name: string;
+    message: string;
+    displayName?: string;
+    event: boolean;
+    type: string;
+    instrument: string;
+    groupStart: boolean;
+    createdAtTimestamp: number;
+    updatedAtTimestamp: number;
+    end?: boolean;
+    renderProps: () => {
+      message: string;
+    };
+    consoleProps: () => {
+      name: string;
+      props: Record<string, unknown>;
+    };
+  };
+  endGroup: () => unknown;
 };
 
 export type CupressRunStart = {
@@ -125,34 +151,46 @@ export type CypressTestEndMessage = {
   };
 };
 
-export type CypressCommandStartMessage = {
-  type: "cypress_command_start";
+export type CypressStepStartMessage = {
+  type: "cypress_step_start";
   data: {
+    id: string;
     name: string;
-    args: string[];
     start: number;
   };
 };
 
-export type CypressCommandEndMessage = {
-  type: "cypress_command_end";
+export type CypressStepStopMessage = {
+  type: "cypress_step_stop";
   data: {
+    id: string;
     status: Status;
     statusDetails?: StatusDetails;
     stop: number;
   };
 };
 
+export type CypressStepFinalizeMessage = {
+  type: "cypress_step_finalize";
+  data: {
+    id: string;
+    name?: string;
+    parameters?: Parameter[];
+    statusDetails?: StatusDetails;
+  };
+};
+
 export type CypressMessage =
-  | RuntimeMessage
+  | Exclude<RuntimeMessage, RuntimeStartStepMessage | RuntimeStopStepMessage>
   | CupressRunStart
   | CypressSuiteStartMessage
   | CypressSuiteEndMessage
   | CypressHookStartMessage
   | CypressHookEndMessage
   | CypressTestStartMessage
-  | CypressCommandStartMessage
-  | CypressCommandEndMessage
+  | CypressStepStartMessage
+  | CypressStepStopMessage
+  | CypressStepFinalizeMessage
   | CypressTestPassMessage
   | CypressFailMessage
   | CypressTestSkipMessage
@@ -163,7 +201,7 @@ export type SpecContext = {
   specPath: string;
   test: string | undefined;
   fixture: string | undefined;
-  commandSteps: string[];
+  stepsByFrontEndId: Map<string, string>;
   videoScope: string;
   suiteIdToScope: Map<string, string>;
   suiteScopeToId: Map<string, string>;
@@ -172,6 +210,25 @@ export type SpecContext = {
   suiteNames: string[];
   failed: boolean;
 };
+
+type StepDescriptorBase = {
+  id: string;
+  error?: Error;
+};
+
+export type LogStepDescriptor = StepDescriptorBase & {
+  type: "log";
+  attachmentName?: string;
+  log: CypressLogEntry;
+};
+
+export type ApiStepDescriptor = StepDescriptorBase & {
+  type: "api";
+};
+
+export type StepDescriptor = LogStepDescriptor | ApiStepDescriptor;
+
+export type StepFinalizer = (message: CypressStepFinalizeMessage["data"]) => void;
 
 export type AllureSpecState = {
   config: {
@@ -185,6 +242,9 @@ export type AllureSpecState = {
   projectDir?: string;
   messages: CypressMessage[];
   currentTest?: CypressTest;
+  stepStack: StepDescriptor[];
+  stepsToFinalize: [step: StepDescriptor, finalizer: StepFinalizer | undefined][];
+  nextApiStepId: number;
 };
 
 export type AllureCypressTaskArgs = {

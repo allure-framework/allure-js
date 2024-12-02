@@ -1,10 +1,3 @@
-import { LabelName, Status } from "allure-js-commons";
-import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
-import type { TestPlanV1 } from "allure-js-commons/sdk";
-import { ALLURE_REPORT_STEP_COMMAND, ALLURE_REPORT_SYSTEM_HOOK } from "./model.js";
-import type { CypressCommand, CypressHook, CypressSuite, CypressTest } from "./model.js";
-import { getAllureTestPlan, getProjectDir } from "./state.js";
-
 export const DEFAULT_RUNTIME_CONFIG = {
   stepsFromCommands: {
     maxArgumentLength: 128,
@@ -12,59 +5,24 @@ export const DEFAULT_RUNTIME_CONFIG = {
   },
 };
 
-export const uint8ArrayToBase64 = (data: unknown) => {
-  // @ts-ignore
-  const u8arrayLike = Array.isArray(data) || data.buffer;
-
-  if (!u8arrayLike) {
-    return data as string;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  return btoa(String.fromCharCode.apply(null, data as number[]));
-};
-
-export const getSuites = (test: CypressTest) => {
-  const suites: CypressSuite[] = [];
-  for (let s: CypressSuite | undefined = test.parent; s; s = s.parent) {
-    suites.push(s);
-  }
-  suites.reverse();
-  return suites;
-};
-
-export const getSuitePath = (test: CypressTest): string[] =>
-  getSuites(test)
-    .filter((s) => s.title)
-    .map((s) => s.title);
-
-export const shouldCommandBeSkipped = (command: CypressCommand) => {
-  if (last(command.attributes.args)?.log === false) {
-    return true;
-  }
-
-  if (command.attributes.name === "task" && command.attributes.args[0] === "reportAllureRuntimeMessages") {
-    return true;
-  }
-
-  // we don't need to report then commands because it's just a promise handle
-  if (command.attributes.name === "then") {
-    return true;
-  }
-
-  // we should skip artificial wrap from allure steps
-  if (command.attributes.name === "wrap" && command.attributes.args[0] === ALLURE_REPORT_STEP_COMMAND) {
-    return true;
-  }
-
-  return false;
+/**
+ * Pops items from an array into a new one. The item that matches the predicate is the last item to pop.
+ * If there is no such item in the array, the array is left unmodified.
+ * @param items An array to pop the items from.
+ * @param pred A predicate that defines the last item to pop.
+ * @returns An array of popped items. The first popped item becomes the first element of this array.
+ */
+export const popUntilFindIncluded = <T>(items: T[], pred: (value: T) => boolean) => {
+  const index = items.findIndex(pred);
+  return index !== -1 ? toReversed(items.splice(index)) : [];
 };
 
 export const toReversed = <T = unknown>(arr: T[]): T[] => {
-  const result: T[] = [];
+  const len = arr.length;
+  const result: T[] = new Array(len);
 
-  for (let i = arr.length - 1; i >= 0; i--) {
-    result.push(arr[i]);
+  for (let i = 0; i < len; i++) {
+    result[len - i - 1] = arr[i];
   }
 
   return result;
@@ -74,109 +32,4 @@ export const last = <T = unknown>(arr: T[]): T | undefined => {
   return arr[arr.length - 1];
 };
 
-const resolveSpecRelativePath = (spec: Cypress.Spec) => {
-  const projectDir = getProjectDir();
-  const specPath = projectDir ? spec.absolute.substring(projectDir.length + 1) : spec.relative;
-  const win = Cypress.platform === "win32";
-  return win ? specPath.replaceAll("\\", "/") : specPath;
-};
-
-export const getNamesAndLabels = (spec: Cypress.Spec, test: CypressTest) => {
-  const rawName = test.title;
-  const { cleanTitle: name, labels } = extractMetadataFromString(rawName);
-  const suites = test.titlePath().slice(0, -1);
-  const fullNameSuffix = `${[...suites, name].join(" ")}`;
-  return { name, labels, fullNameSuffix };
-};
-
-export const getTestStartData = (test: CypressTest) => ({
-  ...getNamesAndLabels(Cypress.spec, test),
-  start: test.wallClockStartedAt?.getTime() || Date.now(),
-});
-
-export const getTestStopData = (test: CypressTest) => ({
-  duration: test.duration ?? 0,
-  retries: (test as any)._retries ?? 0,
-});
-
-export const getTestSkipData = () => ({
-  statusDetails: { message: "This is a pending test" },
-});
-
-export const applyTestPlan = (spec: Cypress.Spec, root: CypressSuite) => {
-  const testPlan = getAllureTestPlan();
-  if (testPlan) {
-    const specPath = resolveSpecRelativePath(spec);
-    for (const suite of iterateSuites(root)) {
-      const indicesToRemove = getIndicesOfDeselectedTests(testPlan, spec, specPath, suite.tests);
-      removeSortedIndices(suite.tests, indicesToRemove);
-    }
-  }
-};
-
-export const resolveStatusWithDetails = (error: Error | undefined) =>
-  error
-    ? {
-        status: getStatusFromError(error),
-        statusDetails: getMessageAndTraceFromError(error),
-      }
-    : { status: Status.PASSED };
-
-const testReportedKey = Symbol("The test was reported to Allure");
-
-export const markTestAsReported = (test: CypressTest) => {
-  (test as any)[testReportedKey] = true;
-};
-
-export const isTestReported = (test: CypressTest) => (test as any)[testReportedKey] === true;
-
-export const iterateSuites = function* (parent: CypressSuite) {
-  const suiteStack: CypressSuite[] = [];
-  for (let s: CypressSuite | undefined = parent; s; s = suiteStack.pop()) {
-    yield s;
-
-    // Pushing in reverse allows us to maintain depth-first pre-order traversal -
-    // the same order as used by Mocha & Cypress.
-    for (let i = s.suites.length - 1; i >= 0; i--) {
-      suiteStack.push(s.suites[i]);
-    }
-  }
-};
-
-export const iterateTests = function* (parent: CypressSuite) {
-  for (const suite of iterateSuites(parent)) {
-    yield* suite.tests;
-  }
-};
-
-export const isAllureHook = (hook: CypressHook) => hook.title.includes(ALLURE_REPORT_SYSTEM_HOOK);
-
-export const isRootAfterAllHook = (hook: CypressHook) => hook.parent!.root && hook.hookName === "after all";
-
-const includedInTestPlan = (testPlan: TestPlanV1, fullName: string, allureId: string | undefined): boolean =>
-  testPlan.tests.some((test) => (allureId && test.id?.toString() === allureId) || test.selector === fullName);
-
-const getIndicesOfDeselectedTests = (
-  testPlan: TestPlanV1,
-  spec: Cypress.Spec,
-  specPath: string,
-  tests: readonly CypressTest[],
-) => {
-  const indicesToRemove: number[] = [];
-  tests.forEach((test, index) => {
-    const { fullNameSuffix, labels } = getNamesAndLabels(spec, test);
-    const fullName = `${specPath}#${fullNameSuffix}`;
-    const allureId = labels.find(({ name }) => name === LabelName.ALLURE_ID)?.value;
-
-    if (!includedInTestPlan(testPlan, fullName, allureId)) {
-      indicesToRemove.push(index);
-    }
-  });
-  return indicesToRemove;
-};
-
-const removeSortedIndices = <T>(arr: T[], indices: readonly number[]) => {
-  for (let i = indices.length - 1; i >= 0; i--) {
-    arr.splice(indices[i], 1);
-  }
-};
+export const isDefined = <T>(value: T | undefined): value is T => typeof value !== "undefined";

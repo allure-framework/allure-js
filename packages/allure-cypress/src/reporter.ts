@@ -1,6 +1,6 @@
 import type Cypress from "cypress";
 import { ContentType, Stage, Status } from "allure-js-commons";
-import type { TestResult } from "allure-js-commons";
+import type { FixtureResult, TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import {
   ReporterRuntime,
@@ -21,19 +21,20 @@ import type {
   AllureCypressConfig,
   AllureCypressTaskArgs,
   AllureSpecState,
-  CypressCommandEndMessage,
-  CypressCommandStartMessage,
   CypressFailMessage,
   CypressHookEndMessage,
   CypressHookStartMessage,
   CypressSkippedTestMessage,
+  CypressStepFinalizeMessage,
+  CypressStepStartMessage,
+  CypressStepStopMessage,
   CypressSuiteEndMessage,
   CypressSuiteStartMessage,
   CypressTestEndMessage,
   CypressTestSkipMessage,
   CypressTestStartMessage,
   SpecContext,
-} from "./model.js";
+} from "./types.js";
 import { DEFAULT_RUNTIME_CONFIG, last } from "./utils.js";
 
 export class AllureCypress {
@@ -197,11 +198,14 @@ export class AllureCypress {
         case "cypress_test_end":
           this.#stopTest(context, message);
           break;
-        case "cypress_command_start":
-          this.#startCommand(context, message);
+        case "cypress_step_start":
+          this.#startStep(context, message.data);
           break;
-        case "cypress_command_end":
-          this.#stopCommand(context, message);
+        case "cypress_step_stop":
+          this.#stopStep(context, message.data);
+          break;
+        case "cypress_step_finalize":
+          this.#finalizeStep(context, message.data);
           break;
         default:
           this.#applyRuntimeApiMessages(context, message);
@@ -279,6 +283,7 @@ export class AllureCypress {
         fixture.status ??= Status.PASSED;
       });
       this.allureRuntime.stopFixture(fixtureUuid, { duration });
+      this.#fixFixtureStepStops(fixtureUuid);
       context.fixture = undefined;
     }
   };
@@ -390,35 +395,61 @@ export class AllureCypress {
       testResult.stage = Stage.FINISHED;
     });
     this.allureRuntime.stopTest(testUuid, { duration });
+    this.#fixTestStepStops(testUuid);
   };
 
-  #startCommand = (context: SpecContext, { data: { name, args } }: CypressCommandStartMessage) => {
-    const rootUuid = this.#resolveRootUuid(context);
-    if (rootUuid) {
-      const stepUuid = this.allureRuntime.startStep(rootUuid, undefined, {
-        name,
-        parameters: args.map((arg, j) => ({
-          name: `Argument [${j}]`,
-          value: arg,
-        })),
-      });
-      if (stepUuid) {
-        context.commandSteps.push(stepUuid);
+  #fixTestStepStops = (testUuid: string) => {
+    this.allureRuntime.updateTest(testUuid, this.#fixStepStops);
+  };
+
+  #fixFixtureStepStops = (fixtureUuid: string) => {
+    this.allureRuntime.updateFixture(fixtureUuid, this.#fixStepStops);
+  };
+
+  #fixStepStops = ({ stop, steps = [] }: TestResult | FixtureResult) => {
+    if (stop) {
+      // In some circumstances, steps becomes dangling and are stopped at the test end/hook end events, which happen
+      // chronologically after the test or fixture ends. This leads to the steps' stop time being greater than the one
+      // of the test/fixture.
+      // The only steps that may be affected are the rightmost descendants of the test/fixture.
+      for (let step = steps.at(-1); step; step = step.steps.at(-1)) {
+        if (step.stop && step.stop > stop) {
+          step.stop = stop;
+        } else {
+          // Steps are always stopped child-to-parent. If a step's stop time is OK, its substeps are also correct.
+          return;
+        }
       }
     }
   };
 
-  #stopCommand = (context: SpecContext, { data: { status, statusDetails, stop } }: CypressCommandEndMessage) => {
-    const stepUuid = context.commandSteps.pop();
+  #startStep = (context: SpecContext, { id, ...properties }: CypressStepStartMessage["data"]) => {
+    const rootUuid = this.#resolveRootUuid(context);
+    if (rootUuid) {
+      const stepUuid = this.allureRuntime.startStep(rootUuid, undefined, properties);
+      if (stepUuid) {
+        context.stepsByFrontEndId.set(id, stepUuid);
+      }
+    }
+  };
+
+  #stopStep = (context: SpecContext, { id, stop, ...properties }: CypressStepStopMessage["data"]) => {
+    const stepUuid = context.stepsByFrontEndId.get(id);
     if (stepUuid) {
       this.allureRuntime.updateStep(stepUuid, (r) => {
-        r.status = status;
-
-        if (statusDetails) {
-          r.statusDetails = statusDetails;
-        }
+        Object.assign(r, properties);
       });
       this.allureRuntime.stopStep(stepUuid, { stop });
+    }
+  };
+
+  #finalizeStep = (context: SpecContext, { id, ...properties }: CypressStepFinalizeMessage["data"]) => {
+    const stepUuid = context.stepsByFrontEndId.get(id);
+    if (stepUuid) {
+      this.allureRuntime.updateStep(stepUuid, (r) => {
+        Object.assign(r, properties);
+      });
+      context.stepsByFrontEndId.delete(id);
     }
   };
 
@@ -482,7 +513,7 @@ export class AllureCypress {
       specPath,
       test: undefined,
       fixture: undefined,
-      commandSteps: [],
+      stepsByFrontEndId: new Map(),
       videoScope: this.allureRuntime.startScope(),
       suiteIdToScope: new Map(),
       suiteScopeToId: new Map(),
@@ -501,6 +532,9 @@ const createRuntimeState = (allureConfig?: AllureCypressConfig): AllureSpecState
   messages: [],
   testPlan: parseTestPlan(),
   projectDir: getProjectRoot(),
+  stepStack: [],
+  stepsToFinalize: [],
+  nextApiStepId: 0,
 });
 
 const getRuntimeConfigDefaults = ({

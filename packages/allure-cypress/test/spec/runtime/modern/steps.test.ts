@@ -110,7 +110,7 @@ it("step with screenshot", async () => {
 
     it("manual", () => {
       step("foo", () => {
-        cy.screenshot("foo");
+        cy.screenshot("bar");
       });
     });
   `,
@@ -124,10 +124,10 @@ it("step with screenshot", async () => {
       name: "foo",
       steps: expect.arrayContaining([
         expect.objectContaining({
-          name: String.raw`Command "screenshot"`,
+          name: "bar",
           attachments: expect.arrayContaining([
             expect.objectContaining({
-              name: "foo",
+              name: "bar",
               type: ContentType.PNG,
             }),
           ]),

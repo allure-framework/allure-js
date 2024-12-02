@@ -83,11 +83,10 @@ export const runCypressInlineTest = async (
     const allureCypressModulePath = require.resolve("allure-cypress");
     const allureCypressReporterModulePath = require.resolve("allure-cypress/reporter");
 
-    // eslint-disable-next-line guard-for-in
-    for (const testFile in testFilesToWrite) {
+    for (const [testFile, getContent] of Object.entries(testFilesToWrite)) {
       const fileDir = dirname(join(testDir, testFile));
       await mkdir(fileDir, { recursive: true });
-      const content = testFilesToWrite[testFile]({
+      const content = getContent({
         allureCommonsModulePath: getPosixPath(relative(fileDir, allureCommonsModulePath)),
         allureCypressModulePath: getPosixPath(relative(fileDir, allureCypressModulePath)),
         allureCypressReporterModulePath: getPosixPath(relative(fileDir, allureCypressReporterModulePath)),
