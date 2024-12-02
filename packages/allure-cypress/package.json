@@ -26,13 +26,21 @@
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
+      "node": {
+        "import": "./dist/esm/reporter.js",
+        "require": "./dist/cjs/reporter.js"
+      },
+      "browser": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/cjs/index.js"
+      }
     },
     "./reporter": {
       "types": "./dist/types/reporter.d.ts",
-      "import": "./dist/esm/reporter.js",
-      "require": "./dist/cjs/reporter.js"
+      "node": {
+        "import": "./dist/esm/reporter.js",
+        "require": "./dist/cjs/reporter.js"
+      }
     }
   },
   "main": "./dist/cjs/index.js",
