@@ -1,6 +1,6 @@
 import type { FixtureResult, Label, StatusDetails, StepResult, TestResult } from "../model.js";
 import { LabelName, Status } from "../model.js";
-import type { RuntimeMessage, SerializeOptions } from "./types.js";
+import type { RuntimeMessage, SerializeOptions, SerializerReplacerFunc } from "./types.js";
 
 export const getStatusFromError = (error: Partial<Error>): Status => {
   switch (true) {
@@ -144,15 +144,15 @@ export const getUnfinishedStepsMessages = (messages: RuntimeMessage[]) => {
 export const isPromise = <T = any>(obj: any): obj is PromiseLike<T> =>
   !!obj && (typeof obj === "object" || typeof obj === "function") && typeof obj.then === "function";
 
-export const serialize = (value: any, { maxDepth = 0, maxLength = 0 }: SerializeOptions = {}): string =>
+export const serialize = (value: any, { maxDepth = 0, maxLength = 0, replacer }: SerializeOptions = {}): string =>
   limitString(
-    typeof value === "object" ? JSON.stringify(value, createSerializeReplacer(maxDepth)) : String(value),
+    typeof value === "object" ? JSON.stringify(value, createSerializeReplacer(maxDepth, replacer)) : String(value),
     maxLength,
   );
 
-const createSerializeReplacer = (maxDepth: number) => {
-  const parents: any[] = [];
-  return function (this: any, _: string, value: unknown) {
+const createSerializeReplacer = (maxDepth: number, userDefinedReplacer: SerializeOptions["replacer"]) => {
+  const parents: unknown[] = [];
+  const limitingReplacer = function (this: unknown, _: string, value: unknown) {
     if (typeof value !== "object" || value === null) {
       return value;
     }
@@ -173,7 +173,13 @@ const createSerializeReplacer = (maxDepth: number) => {
         ? excludeCircularRefsFromSet(parents, value)
         : value;
   };
+  return userDefinedReplacer ? composeReplacers(userDefinedReplacer, limitingReplacer) : limitingReplacer;
 };
+
+const composeReplacers = (first: SerializerReplacerFunc, second: SerializerReplacerFunc): SerializerReplacerFunc =>
+  function (k, v) {
+    return second.call(this, k, first.call(this, k, v));
+  };
 
 const excludeCircularRefsFromMap = (parents: any[], map: Map<any, any>) => {
   return Array.from(map)

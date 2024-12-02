@@ -111,7 +111,10 @@ export interface AllureResults {
   categories?: Category[];
 }
 
+export type SerializerReplacerFunc = (this: unknown, key: string, value: unknown) => unknown;
+
 export type SerializeOptions = {
   maxDepth?: number;
   maxLength?: number;
+  replacer?: SerializerReplacerFunc;
 };

@@ -487,4 +487,21 @@ describe("serialize", () => {
       });
     });
   });
+
+  describe("with a user-defined replacer", () => {
+    it("should call the user-defined replacer before its own", () => {
+      const calls: [any, string, any][] = [];
+      const replacer = function (this: any, k: string, v: any) {
+        calls.push([this, k, v]);
+        return k ? 1 : v;
+      };
+
+      const obj = { foo: "bar" };
+      expect(serialize(obj, { replacer })).toBe(String.raw`{"foo":1}`);
+      expect(calls).toStrictEqual([
+        [{ "": obj }, "", obj],
+        [obj, "foo", "bar"],
+      ]);
+    });
+  });
 });
