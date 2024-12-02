@@ -27,13 +27,13 @@
   "type": "module",
   "exports": {
     "./reporter": {
-      "import": "./dist/reporter.js",
       "types": "./dist/reporter.d.ts",
+      "import": "./dist/reporter.js",
       "default": "./dist/reporter.js"
     },
     "./setup": {
-      "import": "./dist/setup.js",
       "types": "./dist/setup.d.ts",
+      "import": "./dist/setup.js",
       "default": "./dist/setup.js"
     }
   },

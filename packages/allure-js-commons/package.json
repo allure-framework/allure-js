@@ -34,27 +34,27 @@
   },
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js",
-      "types": "./dist/types/index.d.ts",
       "default": "./dist/cjs/index.js"
     },
     "./sdk": {
+      "types": "./dist/types/sdk/index.d.ts",
       "import": "./dist/esm/sdk/index.js",
       "require": "./dist/cjs/sdk/index.js",
-      "types": "./dist/types/sdk/index.d.ts",
       "default": "./dist/cjs/sdk/index.js"
     },
     "./sdk/reporter": {
+      "types": "./dist/types/sdk/reporter/index.d.ts",
       "import": "./dist/esm/sdk/reporter/index.js",
       "require": "./dist/cjs/sdk/reporter/index.js",
-      "types": "./dist/types/sdk/reporter/index.d.ts",
       "default": "./dist/cjs/sdk/reporter/index.js"
     },
     "./sdk/runtime": {
+      "types": "./dist/types/sdk/runtime/index.d.ts",
       "import": "./dist/esm/sdk/runtime/index.js",
       "require": "./dist/cjs/sdk/runtime/index.js",
-      "types": "./dist/types/sdk/runtime/index.d.ts",
       "default": "./dist/cjs/sdk/runtime/index.js"
     }
   },

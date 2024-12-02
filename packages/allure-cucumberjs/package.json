@@ -27,14 +27,14 @@
   },
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/types/index.d.ts"
+      "require": "./dist/cjs/index.js"
     },
     "./reporter": {
+      "types": "./dist/types/reporter.d.ts",
       "import": "./dist/esm/reporter.js",
-      "require": "./dist/cjs/reporter.js",
-      "types": "./dist/types/reporter.d.ts"
+      "require": "./dist/cjs/reporter.js"
     }
   },
   "main": "./dist/cjs/index.js",

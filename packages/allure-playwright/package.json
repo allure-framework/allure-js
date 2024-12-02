@@ -26,18 +26,18 @@
   },
   "exports": {
     ".": {
-      "require": "./dist/cjs/index.js",
       "types": "./dist/types/index.d.ts",
+      "require": "./dist/cjs/index.js",
       "default": "./dist/cjs/index.js"
     },
     "./testplan": {
-      "require": "./dist/cjs/testplan.js",
       "types": "./dist/types/testplan.d.ts",
+      "require": "./dist/cjs/testplan.js",
       "default": "./dist/cjs/testplan.js"
     },
     "./autoconfig": {
-      "require": "./dist/cjs/autoconfig.js",
       "types": "./dist/types/autoconfig.d.ts",
+      "require": "./dist/cjs/autoconfig.js",
       "default": "./dist/cjs/autoconfig.js"
     }
   },
