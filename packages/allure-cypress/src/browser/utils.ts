@@ -6,6 +6,8 @@ import { ALLURE_REPORT_SYSTEM_HOOK } from "./events/mocha.js";
 import { getAllureState, getProjectDir } from "./state.js";
 import { resolveStepStatus } from "./steps.js";
 
+const IS_WIN = Cypress.platform === "win32";
+
 export const getFileNameFromPath = (path: string) => path.substring(path.lastIndexOf(IS_WIN ? "\\" : "/") + 1);
 
 export const resolveSpecRelativePath = (spec: Cypress.Spec) => {
@@ -136,5 +138,3 @@ const getSkipReason = (hookTitle: string, suite: CypressSuite) => {
   const suiteName = suite.title ? `'${suite.title}'` : "root";
   return `'${hookTitle}' defined in the ${suiteName} suite has failed`;
 };
-
-const IS_WIN = Cypress.platform === "win32";
