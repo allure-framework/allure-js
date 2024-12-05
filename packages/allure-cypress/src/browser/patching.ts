@@ -6,38 +6,44 @@ import {
   throwAfterSpecCompletion,
 } from "./lifecycle.js";
 
+type SuiteDepthCounter = {
+  getSuiteDepth: () => number;
+  incrementSuiteDepth: () => void;
+  decrementSuiteDepth: () => void;
+};
+
 /**
  * Patches the `after` function, to inject reporting of spec-level
  * `after` hooks defined by the user.
  */
 export const enableScopeLevelAfterHookReporting = () => {
-  const [getSuiteDepth, incSuiteDepth, decSuiteDepth] = createSuiteDepthCounterState();
-  patchDescribe(incSuiteDepth, decSuiteDepth);
-  patchAfter(getSuiteDepth);
+  const suiteDepthCounter = createSuiteDepthCounterState();
+  patchDescribe(suiteDepthCounter);
+  patchAfter(suiteDepthCounter);
 };
 
-const createSuiteDepthCounterState = (): [get: () => number, inc: () => void, dec: () => void] => {
+const createSuiteDepthCounterState = (): SuiteDepthCounter => {
   let suiteDepth = 0;
-  return [
-    () => suiteDepth,
-    () => {
+  return {
+    getSuiteDepth: () => suiteDepth,
+    incrementSuiteDepth: () => {
       suiteDepth++;
     },
-    () => {
+    decrementSuiteDepth: () => {
       suiteDepth--;
     },
-  ];
+  };
 };
 
-const patchDescribe = (incSuiteDepth: () => void, decSuiteDepth: () => void) => {
+const patchDescribe = ({ incrementSuiteDepth, decrementSuiteDepth }: SuiteDepthCounter) => {
   const patchDescribeFn =
     (target: CypressSuiteFunction): CypressSuiteFunction =>
     (title, configOrFn, fn) => {
-      incSuiteDepth();
+      incrementSuiteDepth();
       try {
         return forwardDescribeCall(target, title, configOrFn, fn);
       } finally {
-        decSuiteDepth();
+        decrementSuiteDepth();
       }
     };
   const originalDescribeFn: Mocha.SuiteFunction = globalThis.describe;
@@ -49,7 +55,7 @@ const patchDescribe = (incSuiteDepth: () => void, decSuiteDepth: () => void) => 
   globalThis.describe = patchedDescribe;
 };
 
-const patchAfter = (getSuiteDepth: () => number) => {
+const patchAfter = ({ getSuiteDepth }: SuiteDepthCounter) => {
   const originalAfter = globalThis.after;
   const patchedAfter = (nameOrFn: string | HookImplementation, fn?: HookImplementation): void => {
     return typeof nameOrFn === "string"
