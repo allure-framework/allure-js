@@ -78,7 +78,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./",\
         "packageDependencies": [\
           ["@stylistic/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:2.6.1"],\
-          ["@trivago/prettier-plugin-sort-imports", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:4.3.0"],\
+          ["@trivago/prettier-plugin-sort-imports", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:5.0.1"],\
           ["@types/eslint", "npm:8.56.11"],\
           ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:8.0.0"],\
           ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:8.0.0"],\
@@ -186,6 +186,16 @@ const RAW_RUNTIME_STATE =
           ["picocolors", "npm:1.0.0"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:7.26.2", {\
+        "packageLocation": "./.yarn/cache/@babel-code-frame-npm-7.26.2-4902b56813-db2c2122af.zip/node_modules/@babel/code-frame/",\
+        "packageDependencies": [\
+          ["@babel/code-frame", "npm:7.26.2"],\
+          ["@babel/helper-validator-identifier", "npm:7.25.9"],\
+          ["js-tokens", "npm:4.0.0"],\
+          ["picocolors", "npm:1.0.0"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["@babel/compat-data", [\
@@ -251,16 +261,6 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@babel/generator", [\
-      ["npm:7.17.7", {\
-        "packageLocation": "./.yarn/cache/@babel-generator-npm-7.17.7-43f079aca0-3303afa2b1.zip/node_modules/@babel/generator/",\
-        "packageDependencies": [\
-          ["@babel/generator", "npm:7.17.7"],\
-          ["@babel/types", "npm:7.23.9"],\
-          ["jsesc", "npm:2.5.2"],\
-          ["source-map", "npm:0.5.7"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:7.23.6", {\
         "packageLocation": "./.yarn/cache/@babel-generator-npm-7.23.6-817ef5e591-864090d512.zip/node_modules/@babel/generator/",\
         "packageDependencies": [\
@@ -280,6 +280,18 @@ const RAW_RUNTIME_STATE =
           ["@jridgewell/gen-mapping", "npm:0.3.5"],\
           ["@jridgewell/trace-mapping", "npm:0.3.25"],\
           ["jsesc", "npm:2.5.2"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:7.26.3", {\
+        "packageLocation": "./.yarn/cache/@babel-generator-npm-7.26.3-b055e513c1-c1d8710cc1.zip/node_modules/@babel/generator/",\
+        "packageDependencies": [\
+          ["@babel/generator", "npm:7.26.3"],\
+          ["@babel/parser", "npm:7.26.3"],\
+          ["@babel/types", "npm:7.26.3"],\
+          ["@jridgewell/gen-mapping", "npm:0.3.5"],\
+          ["@jridgewell/trace-mapping", "npm:0.3.25"],\
+          ["jsesc", "npm:3.0.2"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -708,6 +720,13 @@ const RAW_RUNTIME_STATE =
           ["@babel/helper-string-parser", "npm:7.24.7"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:7.25.9", {\
+        "packageLocation": "./.yarn/cache/@babel-helper-string-parser-npm-7.25.9-eade578078-c28656c52b.zip/node_modules/@babel/helper-string-parser/",\
+        "packageDependencies": [\
+          ["@babel/helper-string-parser", "npm:7.25.9"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["@babel/helper-validator-identifier", [\
@@ -729,6 +748,13 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/@babel-helper-validator-identifier-npm-7.24.7-748889c8d2-86875063f5.zip/node_modules/@babel/helper-validator-identifier/",\
         "packageDependencies": [\
           ["@babel/helper-validator-identifier", "npm:7.24.7"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:7.25.9", {\
+        "packageLocation": "./.yarn/cache/@babel-helper-validator-identifier-npm-7.25.9-2634b947a4-3f9b649be0.zip/node_modules/@babel/helper-validator-identifier/",\
+        "packageDependencies": [\
+          ["@babel/helper-validator-identifier", "npm:7.25.9"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -838,6 +864,14 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@babel/parser", "npm:7.24.7"],\
           ["@babel/types", "npm:7.23.9"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:7.26.3", {\
+        "packageLocation": "./.yarn/cache/@babel-parser-npm-7.26.3-552f4dcfdb-e7e3814b2d.zip/node_modules/@babel/parser/",\
+        "packageDependencies": [\
+          ["@babel/parser", "npm:7.26.3"],\
+          ["@babel/types", "npm:7.26.3"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -3193,26 +3227,19 @@ const RAW_RUNTIME_STATE =
           ["@babel/types", "npm:7.24.7"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:7.25.9", {\
+        "packageLocation": "./.yarn/cache/@babel-template-npm-7.25.9-d903b7b6d5-e861180881.zip/node_modules/@babel/template/",\
+        "packageDependencies": [\
+          ["@babel/template", "npm:7.25.9"],\
+          ["@babel/code-frame", "npm:7.26.2"],\
+          ["@babel/parser", "npm:7.26.3"],\
+          ["@babel/types", "npm:7.26.3"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["@babel/traverse", [\
-      ["npm:7.23.2", {\
-        "packageLocation": "./.yarn/cache/@babel-traverse-npm-7.23.2-4758feee42-e4fcb8f839.zip/node_modules/@babel/traverse/",\
-        "packageDependencies": [\
-          ["@babel/traverse", "npm:7.23.2"],\
-          ["@babel/code-frame", "npm:7.23.5"],\
-          ["@babel/generator", "npm:7.23.6"],\
-          ["@babel/helper-environment-visitor", "npm:7.22.20"],\
-          ["@babel/helper-function-name", "npm:7.23.0"],\
-          ["@babel/helper-hoist-variables", "npm:7.22.5"],\
-          ["@babel/helper-split-export-declaration", "npm:7.22.6"],\
-          ["@babel/parser", "npm:7.23.9"],\
-          ["@babel/types", "npm:7.23.9"],\
-          ["debug", "virtual:1ff4b5f90832ba0a9c93ba1223af226e44ba70c1126a3740d93562b97bc36544e896a5e95908196f7458713e6a6089a34bfc67362fc6df7fa093bd06c878be47#npm:4.3.4"],\
-          ["globals", "npm:11.12.0"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:7.23.9", {\
         "packageLocation": "./.yarn/cache/@babel-traverse-npm-7.23.9-5506c369f7-e2bb845f7f.zip/node_modules/@babel/traverse/",\
         "packageDependencies": [\
@@ -3246,18 +3273,23 @@ const RAW_RUNTIME_STATE =
           ["globals", "npm:11.12.0"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:7.26.3", {\
+        "packageLocation": "./.yarn/cache/@babel-traverse-npm-7.26.3-f0a5f233c4-64f89f48a9.zip/node_modules/@babel/traverse/",\
+        "packageDependencies": [\
+          ["@babel/traverse", "npm:7.26.3"],\
+          ["@babel/code-frame", "npm:7.26.2"],\
+          ["@babel/generator", "npm:7.26.3"],\
+          ["@babel/parser", "npm:7.26.3"],\
+          ["@babel/template", "npm:7.25.9"],\
+          ["@babel/types", "npm:7.26.3"],\
+          ["debug", "virtual:1ff4b5f90832ba0a9c93ba1223af226e44ba70c1126a3740d93562b97bc36544e896a5e95908196f7458713e6a6089a34bfc67362fc6df7fa093bd06c878be47#npm:4.3.4"],\
+          ["globals", "npm:11.12.0"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["@babel/types", [\
-      ["npm:7.17.0", {\
-        "packageLocation": "./.yarn/cache/@babel-types-npm-7.17.0-3c936b54e4-535ccef360.zip/node_modules/@babel/types/",\
-        "packageDependencies": [\
-          ["@babel/types", "npm:7.17.0"],\
-          ["@babel/helper-validator-identifier", "npm:7.22.20"],\
-          ["to-fast-properties", "npm:2.0.0"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:7.23.9", {\
         "packageLocation": "./.yarn/cache/@babel-types-npm-7.23.9-c32aeb5f36-bed9634e5f.zip/node_modules/@babel/types/",\
         "packageDependencies": [\
@@ -3285,6 +3317,15 @@ const RAW_RUNTIME_STATE =
           ["@babel/helper-string-parser", "npm:7.24.7"],\
           ["@babel/helper-validator-identifier", "npm:7.24.7"],\
           ["to-fast-properties", "npm:2.0.0"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:7.26.3", {\
+        "packageLocation": "./.yarn/cache/@babel-types-npm-7.26.3-348c6bde15-c31d054963.zip/node_modules/@babel/types/",\
+        "packageDependencies": [\
+          ["@babel/types", "npm:7.26.3"],\
+          ["@babel/helper-string-parser", "npm:7.25.9"],\
+          ["@babel/helper-validator-identifier", "npm:7.25.9"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -5154,33 +5195,41 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@trivago/prettier-plugin-sort-imports", [\
-      ["npm:4.3.0", {\
-        "packageLocation": "./.yarn/cache/@trivago-prettier-plugin-sort-imports-npm-4.3.0-622c28680b-eb25cbeeaf.zip/node_modules/@trivago/prettier-plugin-sort-imports/",\
+      ["npm:5.0.1", {\
+        "packageLocation": "./.yarn/cache/@trivago-prettier-plugin-sort-imports-npm-5.0.1-16e5bbe6cd-1aa279b7b0.zip/node_modules/@trivago/prettier-plugin-sort-imports/",\
         "packageDependencies": [\
-          ["@trivago/prettier-plugin-sort-imports", "npm:4.3.0"]\
+          ["@trivago/prettier-plugin-sort-imports", "npm:5.0.1"]\
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:4.3.0", {\
-        "packageLocation": "./.yarn/__virtual__/@trivago-prettier-plugin-sort-imports-virtual-dc1dbcdcf8/0/cache/@trivago-prettier-plugin-sort-imports-npm-4.3.0-622c28680b-eb25cbeeaf.zip/node_modules/@trivago/prettier-plugin-sort-imports/",\
+      ["virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:5.0.1", {\
+        "packageLocation": "./.yarn/__virtual__/@trivago-prettier-plugin-sort-imports-virtual-2f046eb93c/0/cache/@trivago-prettier-plugin-sort-imports-npm-5.0.1-16e5bbe6cd-1aa279b7b0.zip/node_modules/@trivago/prettier-plugin-sort-imports/",\
         "packageDependencies": [\
-          ["@trivago/prettier-plugin-sort-imports", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:4.3.0"],\
-          ["@babel/generator", "npm:7.17.7"],\
-          ["@babel/parser", "npm:7.23.9"],\
-          ["@babel/traverse", "npm:7.23.2"],\
-          ["@babel/types", "npm:7.17.0"],\
+          ["@trivago/prettier-plugin-sort-imports", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:5.0.1"],\
+          ["@babel/generator", "npm:7.26.3"],\
+          ["@babel/parser", "npm:7.26.3"],\
+          ["@babel/traverse", "npm:7.26.3"],\
+          ["@babel/types", "npm:7.26.3"],\
           ["@types/prettier", null],\
+          ["@types/prettier-plugin-svelte", null],\
+          ["@types/svelte", null],\
           ["@types/vue__compiler-sfc", null],\
           ["@vue/compiler-sfc", null],\
           ["javascript-natural-sort", "npm:0.7.1"],\
           ["lodash", "npm:4.17.21"],\
-          ["prettier", "npm:3.2.5"]\
+          ["prettier", "npm:3.2.5"],\
+          ["prettier-plugin-svelte", null],\
+          ["svelte", null]\
         ],\
         "packagePeers": [\
+          "@types/prettier-plugin-svelte",\
           "@types/prettier",\
+          "@types/svelte",\
           "@types/vue__compiler-sfc",\
           "@vue/compiler-sfc",\
-          "prettier"\
+          "prettier-plugin-svelte",\
+          "prettier",\
+          "svelte"\
         ],\
         "linkType": "HARD"\
       }]\
@@ -6312,7 +6361,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["allure-js", "workspace:."],\
           ["@stylistic/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:2.6.1"],\
-          ["@trivago/prettier-plugin-sort-imports", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:4.3.0"],\
+          ["@trivago/prettier-plugin-sort-imports", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:5.0.1"],\
           ["@types/eslint", "npm:8.56.11"],\
           ["@typescript-eslint/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:8.0.0"],\
           ["@typescript-eslint/parser", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:8.0.0"],\
@@ -13016,6 +13065,13 @@ const RAW_RUNTIME_STATE =
           ["jsesc", "npm:2.5.2"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:3.0.2", {\
+        "packageLocation": "./.yarn/cache/jsesc-npm-3.0.2-3b3b74ec0d-8e5a7de6b7.zip/node_modules/jsesc/",\
+        "packageDependencies": [\
+          ["jsesc", "npm:3.0.2"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["json-buffer", [\
@@ -16718,13 +16774,6 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["source-map", [\
-      ["npm:0.5.7", {\
-        "packageLocation": "./.yarn/cache/source-map-npm-0.5.7-7c3f035429-9b4ac749ec.zip/node_modules/source-map/",\
-        "packageDependencies": [\
-          ["source-map", "npm:0.5.7"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:0.6.1", {\
         "packageLocation": "./.yarn/cache/source-map-npm-0.6.1-1a3621db16-59ef7462f1.zip/node_modules/source-map/",\
         "packageDependencies": [\
