@@ -1882,16 +1882,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cucumber/cucumber@npm:^10.8.0":
-  version: 10.8.0
-  resolution: "@cucumber/cucumber@npm:10.8.0"
+"@cucumber/cucumber@npm:^11.0.0":
+  version: 11.0.1
+  resolution: "@cucumber/cucumber@npm:11.0.1"
   dependencies:
     "@cucumber/ci-environment": "npm:10.0.1"
     "@cucumber/cucumber-expressions": "npm:17.1.0"
     "@cucumber/gherkin": "npm:28.0.0"
     "@cucumber/gherkin-streams": "npm:5.0.1"
     "@cucumber/gherkin-utils": "npm:9.0.0"
-    "@cucumber/html-formatter": "npm:21.3.1"
+    "@cucumber/html-formatter": "npm:21.6.0"
     "@cucumber/message-streams": "npm:4.0.1"
     "@cucumber/messages": "npm:24.1.0"
     "@cucumber/tag-expressions": "npm:6.1.0"
@@ -1912,6 +1912,7 @@ __metadata:
     lodash.merge: "npm:^4.6.2"
     lodash.mergewith: "npm:^4.6.2"
     luxon: "npm:3.2.1"
+    mime: "npm:^3.0.0"
     mkdirp: "npm:^2.1.5"
     mz: "npm:^2.7.0"
     progress: "npm:^2.0.3"
@@ -1929,7 +1930,7 @@ __metadata:
     yup: "npm:1.2.0"
   bin:
     cucumber-js: bin/cucumber.js
-  checksum: 10/537bd8b89128a00dddee690e2056c3513ec537cc5f45de8f49b231cf7b3219c45e6536a0c1201efef01772a473673fffbe64fe104ee5451ef93bbf1b60b5930f
+  checksum: 10/e22209fad87ca5dd5ff75d6defdc4f2e2f137844e7738f1f5fccb80ffe94bc19271ae93208403ac0ea292cb4f3959dee37831448dfa3a55f3c40ca9b5c3f707c
   languageName: node
   linkType: hard
 
@@ -1982,12 +1983,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cucumber/html-formatter@npm:21.3.1":
-  version: 21.3.1
-  resolution: "@cucumber/html-formatter@npm:21.3.1"
+"@cucumber/html-formatter@npm:21.6.0":
+  version: 21.6.0
+  resolution: "@cucumber/html-formatter@npm:21.6.0"
   peerDependencies:
     "@cucumber/messages": ">=18"
-  checksum: 10/7c67856ab185e691fea5a44a89f5c4033924a523c83ec24ac872c2284395d8204e9e6a61e4d2a7264a2556d5cfcf800c67627ff8713e82b3fccba1707e29aed4
+  checksum: 10/aff5e9326308ba12e9639dbaf171a020cb8bc3b68a981ba3646f85e9eeaef78944c80561a9c76c33097094897976d9f688eeeeba2109260f79eb0e7762331a86
   languageName: node
   linkType: hard
 
@@ -4093,7 +4094,7 @@ __metadata:
     "@babel/plugin-transform-modules-commonjs": "npm:^7.24.6"
     "@babel/preset-env": "npm:^7.24.6"
     "@babel/preset-typescript": "npm:^7.24.6"
-    "@cucumber/cucumber": "npm:^10.8.0"
+    "@cucumber/cucumber": "npm:^11.0.0"
     "@cucumber/messages": "npm:^26.0.0"
     "@stylistic/eslint-plugin": "npm:^2.6.1"
     "@types/babel__core": "npm:^7"
@@ -10676,6 +10677,15 @@ __metadata:
   dependencies:
     mime-db: "npm:1.52.0"
   checksum: 10/89aa9651b67644035de2784a6e665fc685d79aba61857e02b9c8758da874a754aed4a9aced9265f5ed1171fd934331e5516b84a7f0218031b6fa0270eca1e51a
+  languageName: node
+  linkType: hard
+
+"mime@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "mime@npm:3.0.0"
+  bin:
+    mime: cli.js
+  checksum: 10/b2d31580deb58be89adaa1877cbbf152b7604b980fd7ef8f08b9e96bfedf7d605d9c23a8ba62aa12c8580b910cd7c1d27b7331d0f40f7a14e17d5a0bbec3b49f
   languageName: node
   linkType: hard
 
