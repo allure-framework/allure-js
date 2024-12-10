@@ -47,8 +47,7 @@
   },
   "dependencies": {
     "allure-js-commons": "workspace:*",
-    "allure-mocha": "workspace:*",
-    "invisi-data": "^1.1.2"
+    "allure-mocha": "workspace:*"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.6",
