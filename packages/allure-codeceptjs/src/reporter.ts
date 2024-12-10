@@ -49,10 +49,9 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     }
     this.runtime.startStep(root, undefined, {
       name: `${step.actor} ${step.name}`,
-      // @ts-ignore
       parameters: step.args?.map((arg, index) => ({
         name: `arg${index}`,
-        value: `${global.maskSensitiveData ? maskSensitiveData(JSON.stringify(arg)) : JSON.stringify(arg)}`,
+        value: `${(global as any).maskSensitiveData ? maskSensitiveData(JSON.stringify(arg)) : JSON.stringify(arg)}`,
       })),
     });
   }
