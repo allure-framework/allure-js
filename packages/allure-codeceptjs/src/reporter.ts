@@ -1,4 +1,6 @@
 import { event, recorder } from "codeceptjs";
+// @ts-ignore
+import { maskSensitiveData } from "invisi-data";
 import type * as Mocha from "mocha";
 import { env } from "node:process";
 import { LabelName, Stage, Status, type StepResult } from "allure-js-commons";
@@ -47,7 +49,10 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     }
     this.runtime.startStep(root, undefined, {
       name: `${step.actor} ${step.name}`,
-      parameters: step.args?.map((arg, index) => ({ name: `arg${index}`, value: `${arg}` })),
+      parameters: step.args?.map((arg, index) => ({
+        name: `arg${index}`,
+        value: `${(global as any).maskSensitiveData ? maskSensitiveData(JSON.stringify(arg)) : JSON.stringify(arg)}`,
+      })),
     });
   }
 
