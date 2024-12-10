@@ -5,6 +5,7 @@ import { LabelName, Stage, Status, type StepResult } from "allure-js-commons";
 import { getMessageAndTraceFromError, getStatusFromError, isMetadataTag } from "allure-js-commons/sdk";
 import AllureMochaReporter from "allure-mocha";
 import type { CodeceptError, CodeceptStep } from "./model.js";
+import { maskSensitiveData } from "invisi-data";
 
 export class AllureCodeceptJsReporter extends AllureMochaReporter {
   constructor(runner: Mocha.Runner, opts: Mocha.MochaOptions, isInWorker: boolean) {
@@ -47,7 +48,8 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     }
     this.runtime.startStep(root, undefined, {
       name: `${step.actor} ${step.name}`,
-      parameters: step.args?.map((arg, index) => ({ name: `arg${index}`, value: `${arg}` })),
+      // @ts-ignore
+      parameters: step.args?.map((arg, index) => ({ name: `arg${index}`, value: `${ global.maskSensitiveData ? maskSensitiveData(JSON.stringify(arg)) : JSON.stringify(arg)}` })),
     });
   }
 
