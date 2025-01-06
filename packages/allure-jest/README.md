@@ -123,3 +123,14 @@ describe("signing in with a password", () => {
 ```
 
 More details about the API are available at [https://allurereport.org/docs/jest-reference/](https://allurereport.org/docs/jest-reference/).
+
+## Using Allure-Jest with custom environment
+
+To use Allure-Jest with custom environments, you can use the `createJestEnvironment` helper function:
+
+```js
+import CustomTestEnvironment from "jest-environment-custom";
+import { createJestEnvironment } from "allure-jest/factory";
+
+export default createJestEnvironment(CustomTestEnvironment);
+```

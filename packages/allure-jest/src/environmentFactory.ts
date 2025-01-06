@@ -376,4 +376,4 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
   };
 };
 
-export default createJestEnvironment;
+export { createJestEnvironment };
