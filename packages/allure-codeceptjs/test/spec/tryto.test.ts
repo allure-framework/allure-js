@@ -38,7 +38,7 @@ it("should support tryTo plugin", async () => {
             Playwright: {
               require: "./helper.js",
             },
-            Expect: {},
+            ExpectHelper: {},
           },
         };
       `,

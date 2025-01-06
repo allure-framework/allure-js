@@ -38,7 +38,7 @@ it("should support screenshotOnFail plugin", async () => {
             Playwright: {
               require: "./helper.js",
             },
-            Expect: {},
+            ExpectHelper: {},
           },
         };
       `,

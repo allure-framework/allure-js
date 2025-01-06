@@ -108,18 +108,39 @@ it("should log steps with parameters", async () => {
             status: Status.PASSED,
           }),
           expect.objectContaining({
-            name: "I parameters",
+            name: 'I parameters "https://example.com/", "#header"',
             status: Status.PASSED,
-            parameters: expect.arrayContaining([
-              expect.objectContaining({
-                name: "arg0",
-                value: "https://example.com/",
-              }),
-              expect.objectContaining({
-                name: "arg1",
-                value: "#header",
-              }),
-            ]),
+          }),
+        ],
+      }),
+    ]),
+  );
+});
+
+it("should support secret step parameters", async () => {
+  const { tests } = await runCodeceptJsInlineTest({
+    "steps.test.js": `
+        Feature("a feature");
+        Scenario("scenario 1", async ({ I }) => {
+          await I.pass();
+          await I.parameters("https://example.com/", secret("#header"));
+        });
+      `,
+  });
+
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        status: Status.PASSED,
+        name: "scenario 1",
+        steps: [
+          expect.objectContaining({
+            name: "I pass",
+            status: Status.PASSED,
+          }),
+          expect.objectContaining({
+            name: 'I parameters "https://example.com/", *****',
+            status: Status.PASSED,
           }),
         ],
       }),
@@ -150,24 +171,12 @@ it("should log comments", async () => {
             status: Status.PASSED,
           }),
           expect.objectContaining({
-            name: "I say",
+            name: 'I say "hi"',
             status: Status.PASSED,
-            parameters: expect.arrayContaining([
-              expect.objectContaining({
-                name: "arg0",
-                value: "hi",
-              }),
-            ]),
           }),
           expect.objectContaining({
-            name: "I say",
+            name: 'I say "bye"',
             status: Status.PASSED,
-            parameters: expect.arrayContaining([
-              expect.objectContaining({
-                name: "arg0",
-                value: "bye",
-              }),
-            ]),
           }),
         ],
       }),
@@ -195,21 +204,11 @@ it("should log expects", async () => {
         }),
         steps: [
           expect.objectContaining({
-            name: "I expectEqual",
+            name: "I expect equal 1, 2",
             status: Status.FAILED,
             statusDetails: expect.objectContaining({
               message: "expected 1 to equal 2",
             }),
-            parameters: expect.arrayContaining([
-              expect.objectContaining({
-                name: "arg0",
-                value: "1",
-              }),
-              expect.objectContaining({
-                name: "arg1",
-                value: "2",
-              }),
-            ]),
           }),
         ],
       }),
