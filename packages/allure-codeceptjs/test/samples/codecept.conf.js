@@ -28,6 +28,6 @@ exports.config = {
     CustomHelper: {
       require: "./helper.js",
     },
-    Expect: {},
+    ExpectHelper: {},
   },
 };
