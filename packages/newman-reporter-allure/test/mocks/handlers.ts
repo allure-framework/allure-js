@@ -5,6 +5,10 @@ export const handlers = [
     return res(ctx.status(200));
   }),
 
+  rest.get("http://example.com:9999/port", (req, res, ctx) => {
+    return res(ctx.status(200));
+  }),
+
   rest.get("http://example.com/headers", (req, res, ctx) => {
     return res(
       ctx.set("Content-Type", "text/plain"),
