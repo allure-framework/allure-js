@@ -461,12 +461,7 @@ class AllureReporter {
   }
 
   #escape(val: string) {
-    return (
-      val
-        .replace("\n", "")
-        .replace("\r", "")
-        .replace('"', '"')
-    );
+    return val.replace("\n", "").replace("\r", "").replace('"', '"');
   }
 }
 
