@@ -108,7 +108,7 @@ it("should log steps with parameters", async () => {
             status: Status.PASSED,
           }),
           expect.objectContaining({
-            name: "I parameters \"https://example.com/\", \"#header\"",
+            name: 'I parameters "https://example.com/", "#header"',
             status: Status.PASSED,
           }),
         ],
@@ -139,7 +139,7 @@ it("should support secret step parameters", async () => {
             status: Status.PASSED,
           }),
           expect.objectContaining({
-            name: "I parameters \"https://example.com/\", *****",
+            name: 'I parameters "https://example.com/", *****',
             status: Status.PASSED,
           }),
         ],
@@ -171,11 +171,11 @@ it("should log comments", async () => {
             status: Status.PASSED,
           }),
           expect.objectContaining({
-            name: "I say \"hi\"",
+            name: 'I say "hi"',
             status: Status.PASSED,
           }),
           expect.objectContaining({
-            name: "I say \"bye\"",
+            name: 'I say "bye"',
             status: Status.PASSED,
           }),
         ],
