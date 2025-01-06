@@ -1,4 +1,3 @@
-/* eslint-disable @stylistic/quotes */
 import { afterAll, afterEach, beforeAll, expect, test } from "vitest";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import { server } from "../mocks/server.js";
