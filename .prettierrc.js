@@ -9,4 +9,5 @@ module.exports = {
   importOrderSeparation: false,
   importOrderSortSpecifiers: true,
   importOrderParserPlugins: ["typescript", "decorators-legacy"],
+  quoteProps: "consistent",
 };

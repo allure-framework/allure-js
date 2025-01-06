@@ -72,7 +72,7 @@ const instantiateReporters = (
       ...options,
       reporterOptions,
       // eslint-disable-next-line quote-props
-      reporterOption: reporterOptions,
+      "reporterOption": reporterOptions,
       "reporter-option": reporterOptions,
     };
     reporters.push(new Reporter(runner, optionsForReporter));

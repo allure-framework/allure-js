@@ -13,7 +13,6 @@ export const runJasmineInlineTest = async (
   const testDir = path.join(__dirname, "fixtures", randomUUID());
   const testFiles = {
     // package.json is used to find project root in case of absolute file paths are used
-    // eslint-disable-next-line @stylistic/quotes
     "package.json": '{ "name": "dummy"}',
     "spec/support/jasmine.json": await readFile(path.join(__dirname, "./samples/spec/support/jasmine.json"), "utf8"),
     // eslint-disable-next-line @typescript-eslint/no-require-imports

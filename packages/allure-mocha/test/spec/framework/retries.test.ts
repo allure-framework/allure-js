@@ -148,7 +148,6 @@ describe("retries", () => {
       expect(befores).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            // eslint-disable-next-line @stylistic/quotes
             name: '"before each" hook',
             steps: expect.arrayContaining([
               expect.objectContaining({
@@ -164,7 +163,6 @@ describe("retries", () => {
       expect(afters).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            // eslint-disable-next-line @stylistic/quotes
             name: '"after each" hook',
             steps: expect.arrayContaining([
               expect.objectContaining({

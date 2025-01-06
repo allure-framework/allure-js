@@ -461,13 +461,7 @@ class AllureReporter {
   }
 
   #escape(val: string) {
-    return (
-      val
-        .replace("\n", "")
-        .replace("\r", "")
-        // eslint-disable-next-line @stylistic/quotes
-        .replace('"', '"')
-    );
+    return val.replace("\n", "").replace("\r", "").replace('"', '"');
   }
 }
 
