@@ -46,8 +46,7 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
       return;
     }
     this.runtime.startStep(root, undefined, {
-      name: `${step.actor} ${step.name}`,
-      parameters: step.args?.map((arg, index) => ({ name: `arg${index}`, value: `${arg}` })),
+      name: step.toString().trim(),
     });
   }
 
