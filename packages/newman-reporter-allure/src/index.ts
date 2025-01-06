@@ -337,7 +337,7 @@ class AllureReporter {
     }
 
     const req = args.request;
-    const url = `${req.url.protocol || ""}://${args.request.url.getHost()}${req.url.getPathWithQuery()}`;
+    const url = req.url.toString(true);
 
     currentPmItem.requestData = {
       url: url,
