@@ -27,6 +27,11 @@
     "url": "https://qameta.io/"
   },
   "exports": {
+    "./factory": {
+      "types": "./dist/types/environmentFactory.d.ts",
+      "import": "./dist/esm/environmentFactory.js",
+      "require": "./dist/cjs/environmentFactory.js"
+    },
     "./node": {
       "types": "./dist/types/node.d.ts",
       "import": "./dist/esm/node.js",
