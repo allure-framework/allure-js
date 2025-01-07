@@ -17,6 +17,7 @@ export const getStatusFromError = (error: Partial<Error>): Status => {
     case error.stack && /@vitest\/expect/gi.test(error.stack):
     case error.stack && /playwright\/lib\/matchers\/expect\.js/gi.test(error.stack):
     case "matcherResult" in error:
+    case "inspect" in error && typeof error.inspect === "function":
       return Status.FAILED;
     default:
       return Status.BROKEN;
