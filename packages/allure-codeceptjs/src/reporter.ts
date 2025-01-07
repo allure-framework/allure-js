@@ -89,10 +89,14 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     // @ts-ignore
     if (promise) {
       promise.catch((err) => {
-        if (err instanceof Error) {
+        if (!err.message && typeof err.inspect === "function") {
+          // AssertionFailedError doesn't set message attribute
+          err.message = err.inspect();
+        }
+        if (err instanceof Error || err.constructor.name === "Error") {
           this.runtime.updateStep(currentStep, (step) => {
-            step.status = getStatusFromError(err);
-            step.statusDetails = { ...step.statusDetails, ...getMessageAndTraceFromError(err) };
+            step.status = getStatusFromError(err as Error);
+            step.statusDetails = { ...step.statusDetails, ...getMessageAndTraceFromError(err as Error) };
           });
         }
         return Promise.reject(err);
