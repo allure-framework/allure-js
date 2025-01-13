@@ -531,6 +531,13 @@ describe("getMessageAndTraceFromError", () => {
     });
   });
 
+  it("should ignore undefined actual value", () => {
+    const error: Error & { actual?: string } = new Error("some message");
+    error.actual = undefined;
+    const result = getMessageAndTraceFromError(error);
+    expect(result).not.toHaveProperty("actual");
+  });
+
   it("should return expected from error", () => {
     const error: Error & { expected?: string } = new Error("some message");
     error.expected = "some expected value";
@@ -538,5 +545,12 @@ describe("getMessageAndTraceFromError", () => {
     expect(result).toMatchObject({
       expected: "some expected value",
     });
+  });
+
+  it("should ignore undefined expected value", () => {
+    const error: Error & { expected?: string } = new Error("some message");
+    error.expected = undefined;
+    const result = getMessageAndTraceFromError(error);
+    expect(result).not.toHaveProperty("expected");
   });
 });
