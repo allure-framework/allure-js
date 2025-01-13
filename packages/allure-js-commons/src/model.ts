@@ -35,6 +35,8 @@ export type ParameterOptions = Pick<Parameter, "mode" | "excluded">;
 export interface StatusDetails {
   message?: string;
   trace?: string;
+  actual?: string;
+  expected?: string;
 }
 
 // don't use the interface as is, use Results types instead

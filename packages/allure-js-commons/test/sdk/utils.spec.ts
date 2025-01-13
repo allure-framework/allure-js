@@ -5,6 +5,7 @@ import type { FixtureResult, StepResult, TestResult } from "../../src/model.js";
 import {
   allureLabelRegexp,
   extractMetadataFromString,
+  getMessageAndTraceFromError,
   getStatusFromError,
   isAnyStepFailed,
   isMetadataTag,
@@ -502,6 +503,40 @@ describe("serialize", () => {
         [{ "": obj }, "", obj],
         [obj, "foo", "bar"],
       ]);
+    });
+  });
+});
+
+describe("getMessageAndTraceFromError", () => {
+  it("should return message from error", () => {
+    const result = getMessageAndTraceFromError(new Error("some message"));
+    expect(result).toMatchObject({
+      message: "some message",
+    });
+  });
+
+  it("should return trace from error", () => {
+    const result = getMessageAndTraceFromError(new Error("some message"));
+    expect(result).toMatchObject({
+      trace: expect.stringContaining("allure-js-commons/test/sdk/utils.spec.ts"),
+    });
+  });
+
+  it("should return actual from error", () => {
+    const error: Error & { actual?: string } = new Error("some message");
+    error.actual = "some actual value";
+    const result = getMessageAndTraceFromError(error);
+    expect(result).toMatchObject({
+      actual: "some actual value",
+    });
+  });
+
+  it("should return expected from error", () => {
+    const error: Error & { expected?: string } = new Error("some message");
+    error.expected = "some expected value";
+    const result = getMessageAndTraceFromError(error);
+    expect(result).toMatchObject({
+      expected: "some expected value",
     });
   });
 });

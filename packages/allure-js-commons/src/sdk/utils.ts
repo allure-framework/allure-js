@@ -44,13 +44,15 @@ export const stripAnsi = (str: string): string => {
   return str.replace(regex, "");
 };
 
-export const getMessageAndTraceFromError = (
-  error: Error | { message?: string; stack?: string },
-): Pick<StatusDetails, "message" | "trace"> => {
+export const getMessageAndTraceFromError = (error: Error | { message?: string; stack?: string }): StatusDetails => {
   const { message, stack } = error;
+  const actual = "actual" in error ? serialize(error.actual) : undefined;
+  const expected = "expected" in error ? serialize(error.expected) : undefined;
   return {
     message: message ? stripAnsi(message) : undefined,
     trace: stack ? stripAnsi(stack) : undefined,
+    actual,
+    expected,
   };
 };
 
