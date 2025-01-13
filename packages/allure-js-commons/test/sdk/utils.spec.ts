@@ -518,7 +518,7 @@ describe("getMessageAndTraceFromError", () => {
   it("should return trace from error", () => {
     const result = getMessageAndTraceFromError(new Error("some message"));
     expect(result).toMatchObject({
-      trace: expect.stringContaining("allure-js-commons/test/sdk/utils.spec.ts"),
+      trace: expect.stringMatching(/allure-js-commons.test.sdk.utils\.spec\.ts/),
     });
   });
 
