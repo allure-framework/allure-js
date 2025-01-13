@@ -6,18 +6,21 @@ import { attachment, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader, getPosixPath } from "allure-js-commons/sdk/reporter";
 
+type TestFileWriter = (opts: { allureJestNodePath: string }) => string;
+
+type TestFiles = Record<string, string | TestFileWriter>;
+
 export const runJestInlineTest = async (
-  testFiles: Record<string, string>,
+  testFiles: TestFiles,
   env?: (testDir: string) => Record<string, string>,
   cliArgs?: string[],
 ): Promise<AllureResults> => {
   const testDir = join(__dirname, "fixtures", randomUUID());
   const configFileName = "jest.config.js";
   const configFilePath = join(testDir, configFileName);
-
   const allureJestNode = require.resolve("allure-jest/node");
   const allureJestNodePath = getPosixPath(relative(testDir, allureJestNode));
-  const testFilesToWrite: Record<string, string> = {
+  const testFilesToWrite: TestFiles = {
     "jest.config.js": `
       const config = {
         bail: false,
@@ -56,10 +59,19 @@ export const runJestInlineTest = async (
   for (const testFile in testFilesToWrite) {
     await step(testFile, async () => {
       const testFilePath = join(testDir, testFile);
+      let testFileContent: string;
+
+      if (typeof testFilesToWrite[testFile] === "string") {
+        testFileContent = testFilesToWrite[testFile] as string;
+      } else {
+        testFileContent = (testFilesToWrite[testFile] as TestFileWriter)({
+          allureJestNodePath,
+        });
+      }
 
       await mkdir(dirname(testFilePath), { recursive: true });
-      await writeFile(join(testDir, testFile), testFilesToWrite[testFile], "utf8");
-      await attachment(testFile, testFilesToWrite[testFile], {
+      await writeFile(join(testDir, testFile), testFileContent, "utf8");
+      await attachment(testFile, testFileContent, {
         contentType: "text/plain",
         encoding: "utf-8",
         fileExtension: extname(testFile),
