@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
 import { runJasmineInlineTest } from "../utils.js";
 
-it("should add suite labels", async () => {
+it("should handle global labels", async () => {
   const { tests } = await runJasmineInlineTest({
     "spec/sample.spec.js": `
     it("should pass 1", () => {

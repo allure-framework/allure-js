@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
 import { runCypressInlineTest } from "../utils.js";
 
-it("handles global labels", async () => {
+it("should handle global labels", async () => {
   const { tests } = await runCypressInlineTest({
     "cypress/e2e/sample.cy.js": () => `
     it("passed", () => {

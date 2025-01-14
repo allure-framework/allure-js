@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
 import { runJestInlineTest } from "../utils.js";
 
-it("handle global labels", async () => {
+it("should handle global labels", async () => {
   const { tests } = await runJestInlineTest({
     "sample.spec.js": `
       it("should pass", () => {

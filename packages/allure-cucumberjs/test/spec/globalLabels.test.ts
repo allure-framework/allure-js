@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
 import { runCucumberInlineTest } from "../utils.js";
 
-it("handles global labels", async () => {
+it("should handle global labels", async () => {
   const { tests } = await runCucumberInlineTest(
     ["examples"],
     ["examples"],

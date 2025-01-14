@@ -19,7 +19,7 @@ describe("global labels", () => {
     );
   });
 
-  it("handles global labels", () => {
+  it("should handle global labels", () => {
     expect(results.tests).toHaveLength(1);
     expect(results.tests[0].labels[0]).toEqual({
       name: "foo",

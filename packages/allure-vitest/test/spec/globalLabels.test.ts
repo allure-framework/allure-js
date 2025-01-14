@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { runVitestInlineTest } from "../utils.js";
 
 describe("global labels", () => {
-  it("handles global labels", async () => {
+  it("should handle global labels", async () => {
     const { tests } = await runVitestInlineTest(
       `
         import { test } from "vitest";

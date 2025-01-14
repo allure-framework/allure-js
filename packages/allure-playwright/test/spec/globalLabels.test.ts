@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
 import { runPlaywrightInlineTest } from "../utils.js";
 
-it("has environment info", async () => {
+it("should handle global labels", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "a.test.ts": `
        import { test, expect } from '@playwright/test';
