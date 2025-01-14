@@ -1,4 +1,4 @@
-import type { Suite, Task } from "vitest";
+import type { RunnerTestSuite as Suite, RunnerTask as Task } from "vitest";
 import { LabelName } from "allure-js-commons";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
