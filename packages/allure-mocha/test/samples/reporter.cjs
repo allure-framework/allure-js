@@ -6,7 +6,7 @@ class ProcessMessageAllureReporter extends AllureMochaReporter {
     if (opts.reporterOptions?.emitFiles !== "true") {
       (opts.reporterOptions ??= {}).writer = "MessageWriter";
     }
-    for (const key of ["environmentInfo", "categories", "extraReporters"]) {
+    for (const key of ["environmentInfo", "categories", "extraReporters", "globalLabels"]) {
       if (typeof opts.reporterOptions?.[key] === "string") {
         opts.reporterOptions[key] = JSON.parse(Buffer.from(opts.reporterOptions[key], "base64Url").toString());
       }
