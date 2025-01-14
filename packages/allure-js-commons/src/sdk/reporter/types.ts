@@ -50,6 +50,7 @@ export type WriterDescriptor = [cls: string, ...args: readonly unknown[]] | stri
 export interface ReporterConfig {
   readonly resultsDir?: string;
   readonly links?: LinkConfig;
+  readonly globalLabels?: Label[];
   readonly listeners?: LifecycleListener[];
   readonly environmentInfo?: EnvironmentInfo;
   readonly categories?: Category[];

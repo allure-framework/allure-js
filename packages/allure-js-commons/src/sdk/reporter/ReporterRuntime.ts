@@ -4,6 +4,7 @@ import {
   type Attachment,
   type AttachmentOptions,
   type FixtureResult,
+  type Label,
   Stage,
   type StepResult,
   type TestResult,
@@ -104,13 +105,15 @@ export class ReporterRuntime {
   categories?: Category[];
   environmentInfo?: EnvironmentInfo;
   linkConfig?: LinkConfig;
+  globalLabels: Label[] = [];
 
-  constructor({ writer, listeners = [], environmentInfo, categories, links }: ReporterRuntimeConfig) {
+  constructor({ writer, listeners = [], environmentInfo, categories, links, globalLabels }: ReporterRuntimeConfig) {
     this.writer = resolveWriter(writer);
     this.notifier = new Notifier({ listeners });
     this.categories = categories;
     this.environmentInfo = environmentInfo;
     this.linkConfig = links;
+    this.globalLabels = globalLabels ?? [];
   }
 
   startScope = (): string => {
@@ -238,32 +241,42 @@ export class ReporterRuntime {
     const testResult = wrapped.value;
 
     this.notifier.beforeTestResultStop(testResult);
+
     testResult.testCaseId ??= getTestResultTestCaseId(testResult);
     testResult.historyId ??= getTestResultHistoryId(testResult);
 
     const startStop = this.#calculateTimings(testResult.start, opts?.stop, opts?.duration);
+
     testResult.start = startStop.start;
     testResult.stop = startStop.stop;
 
     const scopeUuids = wrapped.scopeUuids;
+
     scopeUuids.forEach((scopeUuid) => {
       const scope = this.state.getScope(scopeUuid);
+
       if (scope?.labels) {
         testResult.labels = [...testResult.labels, ...scope.labels];
       }
+
       if (scope?.links) {
         testResult.links = [...testResult.links, ...scope.links];
       }
+
       if (scope?.parameters) {
         testResult.parameters = [...testResult.parameters, ...scope.parameters];
       }
+
       if (scope?.description) {
         testResult.description = testResult.description ?? scope.description;
       }
+
       if (scope?.descriptionHtml) {
         testResult.descriptionHtml = testResult.descriptionHtml ?? scope.descriptionHtml;
       }
     });
+
+    testResult.labels = [...this.globalLabels, ...testResult.labels];
 
     this.notifier.afterTestResultStop(testResult);
   };
@@ -642,7 +655,14 @@ export class ReporterRuntime {
     });
   };
 
-  #calculateTimings = (start?: number, stop?: number, duration?: number): { start?: number; stop?: number } => {
+  #calculateTimings = (
+    start?: number,
+    stop?: number,
+    duration?: number,
+  ): {
+    start?: number;
+    stop?: number;
+  } => {
     const result: { start?: number; stop?: number } = { start, stop };
     if (duration) {
       const normalisedDuration = Math.max(0, duration);

@@ -2,7 +2,7 @@ import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import * as path from "node:path";
-import { Status, attachment, attachmentPath, logStep, parameter, step } from "allure-js-commons";
+import { type Label, Status, attachment, attachmentPath, logStep, parameter, step } from "allure-js-commons";
 import type { AllureResults, Category } from "allure-js-commons/sdk";
 import { MessageReader, getPosixPath } from "allure-js-commons/sdk/reporter";
 import type { AllureMochaReporterConfig } from "../src/types.js";
@@ -15,6 +15,7 @@ type MochaRunOptions = {
   extraReporters?: AllureMochaReporterConfig["extraReporters"];
   inputFiles?: string[];
   outputFiles?: Record<string, string>;
+  globalLabels?: Label[];
 };
 
 type TestPlanEntryFixture = {
@@ -240,6 +241,8 @@ abstract class AllureMochaTestRunner {
 
   protected encodeExtraReporters = () => this.toBase64Url(this.config.extraReporters);
 
+  protected encodeGlobalLabels = () => this.toBase64Url(this.config.globalLabels);
+
   protected toBase64Url = (value: any) => Buffer.from(JSON.stringify(value)).toString("base64url");
 
   #getSampleEntry = (name: string | readonly string[], samplesDir: string, testDir: string) => {
@@ -282,15 +285,23 @@ class AllureMochaCliTestRunner extends AllureMochaTestRunner {
   getScriptPath = () => this.#resolveMochaScript();
   getScriptArgs = () => {
     const args = ["--no-color", "--reporter", "./reporter.cjs", "**/*.spec.*"];
+
     if (this.config.environmentInfo) {
       args.push("--reporter-option", `environmentInfo=${this.encodeEnvironmentInfo()}`);
     }
+
     if (this.config.categories) {
       args.push("--reporter-option", `categories=${this.encodeCategories()}`);
     }
+
     if (this.config.extraReporters) {
       args.push("--reporter-option", `extraReporters=${this.encodeExtraReporters()}`);
     }
+
+    if (this.config.globalLabels) {
+      args.push("--reporter-option", `globalLabels=${this.encodeGlobalLabels()}`);
+    }
+
     return args;
   };
 
@@ -313,15 +324,23 @@ class AllureMochaCodeTestRunner extends AllureMochaTestRunner {
   getScriptPath = (testDir: string) => path.join(testDir, `runner${getFormatExt(this.runnerFormat)}`);
   getScriptArgs = () => {
     const args = ["--"];
+
     if (this.config.environmentInfo) {
       args.push("--environment-info", this.encodeEnvironmentInfo());
     }
+
     if (this.config.categories) {
       args.push("--categories", this.encodeCategories());
     }
+
     if (this.config.extraReporters) {
       args.push("--extra-reporters", this.encodeExtraReporters());
     }
+
+    if (this.config.globalLabels) {
+      args.push("--global-labels", this.encodeGlobalLabels());
+    }
+
     return args;
   };
 }

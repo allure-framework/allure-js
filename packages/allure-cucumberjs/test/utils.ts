@@ -18,20 +18,23 @@ export const runCucumberInlineTest = async (
   features: string[],
   stepsDefs: string[],
   { parallel = true, testPlan, env, cwd }: CucumberRunOptions = {},
+  configFactory?: (reporterPath: string) => string,
 ): Promise<AllureResults> => {
   const samplesPath = join(__dirname, "samples");
   const testDir = join(__dirname, "fixtures", randomUUID());
   const configFilePath = join(testDir, "config.js");
-  const reporterFilePath = require.resolve("allure-cucumberjs/reporter");
+  const reporterFilePath = pathToFileURL(require.resolve("allure-cucumberjs/reporter")).toString();
   const featuresTempPath = join(testDir, "features");
   const supportTempPath = join(testDir, "features/support");
   const worldFilePath = join(supportTempPath, "world.js");
-  const configContent = `
+  const configContent = configFactory
+    ? configFactory(reporterFilePath)
+    : `
     module.exports = {
       default: {
         paths: ["./**/*.feature"],
         ${parallel ? "parallel: 4," : ""}
-        format: ["summary", '"${pathToFileURL(reporterFilePath).toString()}":"ignore.txt"'],
+        format: ["summary", '"${reporterFilePath}":"ignore.txt"'],
         formatOptions: {
           labels: [
             {
@@ -57,11 +60,14 @@ export const runCucumberInlineTest = async (
             "app version": "123.0.1",
             "some other key": "some other value"
           },
-          categories: [{
-            name: "first"
-          },{
-            name: "second"
-          }],
+          categories: [
+            {
+              name: "first"
+            },
+            {
+              name: "second"
+            }
+          ],
         }
       }
     }
