@@ -27,7 +27,9 @@ export const runCucumberInlineTest = async (
   const featuresTempPath = join(testDir, "features");
   const supportTempPath = join(testDir, "features/support");
   const worldFilePath = join(supportTempPath, "world.js");
-  const configContent = configFactory ? configFactory(reporterFilePath) : `
+  const configContent = configFactory
+    ? configFactory(reporterFilePath)
+    : `
     module.exports = {
       default: {
         paths: ["./**/*.feature"],
