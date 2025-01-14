@@ -1,4 +1,5 @@
-import type { File, Reporter, Task } from "vitest";
+import type { RunnerTestFile as File, RunnerTask as Task } from "vitest";
+import type { Reporter } from "vitest/reporters";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";

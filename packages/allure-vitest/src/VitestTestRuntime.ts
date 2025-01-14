@@ -1,5 +1,5 @@
 import { getCurrentSuite, getCurrentTest } from "@vitest/runner";
-import type { SuiteCollector, Task, TaskMeta } from "vitest";
+import type { SuiteCollector, RunnerTask as Task, TaskMeta } from "vitest";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { MessageTestRuntime } from "allure-js-commons/sdk/runtime";
 
