@@ -1,6 +1,6 @@
 {
   "name": "allure-vitest",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "description": "Allure Vitest integration",
   "keywords": [
     "allure",
