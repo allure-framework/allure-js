@@ -41,3 +41,52 @@ it("should handle global labels", async () => {
     value: "bar",
   });
 });
+
+it("should handle global labels as map", async () => {
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": () => `
+    it("passed", () => {
+      cy.wrap(1).should("eq", 1);
+    });
+  `,
+    "cypress.config.js": ({ allureCypressReporterModulePath, supportFilePath, specPattern, allureDirPath }) => `
+      const { allureCypress } = require("${allureCypressReporterModulePath}");
+
+      module.exports = {
+        e2e: {
+          baseUrl: "https://allurereport.org",
+          supportFile: "${supportFilePath}",
+          specPattern: "${specPattern}",
+          viewportWidth: 1240,
+          setupNodeEvents: (on, config) => {
+            allureCypress(on, config, {
+              resultsDir: "${allureDirPath}",
+              globalLabels: {
+                foo: "bar",
+                bar: ["beep", "boop"],
+              }
+            });
+
+            return config;
+          },
+        },
+      };
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].labels).toEqual(expect.arrayContaining([
+    {
+      name: "foo",
+      value: "bar",
+    },
+    {
+      name: "bar",
+      value: "beep",
+    },
+    {
+      name: "bar",
+      value: "boop",
+    },
+  ]));
+});

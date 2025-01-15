@@ -4,7 +4,6 @@ import {
   type Attachment,
   type AttachmentOptions,
   type FixtureResult,
-  type Label,
   Stage,
   type StepResult,
   type TestResult,
@@ -27,6 +26,7 @@ import { hasSkipLabel } from "./testplan.js";
 import type {
   FixtureResultWrapper,
   FixtureType,
+  GlobalLabelsConfig,
   LinkConfig,
   ReporterRuntimeConfig,
   TestScope,
@@ -105,7 +105,7 @@ export class ReporterRuntime {
   categories?: Category[];
   environmentInfo?: EnvironmentInfo;
   linkConfig?: LinkConfig;
-  globalLabels: Label[] = [];
+  globalLabels: ReporterRuntimeConfig["globalLabels"] = [];
 
   constructor({ writer, listeners = [], environmentInfo, categories, links, globalLabels }: ReporterRuntimeConfig) {
     this.writer = resolveWriter(writer);
@@ -113,7 +113,7 @@ export class ReporterRuntime {
     this.categories = categories;
     this.environmentInfo = environmentInfo;
     this.linkConfig = links;
-    this.globalLabels = globalLabels ?? [];
+    this.globalLabels = globalLabels ?? {};
   }
 
   startScope = (): string => {
@@ -276,7 +276,22 @@ export class ReporterRuntime {
       }
     });
 
-    testResult.labels = [...this.globalLabels, ...testResult.labels];
+    if (this.globalLabels && Array.isArray(this.globalLabels)) {
+      testResult.labels = [...this.globalLabels, ...testResult.labels];
+    } else if (Object.keys(this.globalLabels as GlobalLabelsConfig).length) {
+      const newLabels = Object.entries(this.globalLabels as GlobalLabelsConfig).flatMap(([name, value]) => {
+        if (Array.isArray(value)) {
+          return value.map((v) => ({ name, value: v }));
+        }
+
+        return {
+          name,
+          value,
+        };
+      });
+
+      testResult.labels = [...newLabels, ...testResult.labels];
+    }
 
     this.notifier.afterTestResultStop(testResult);
   };
