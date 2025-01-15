@@ -198,12 +198,12 @@ export class AllureReporter implements ReporterV2 {
     }
 
     if ("annotations" in test) {
-      const annotations: Label[] = test.annotations?.filter(
-        (annotation) => annotation.type !== "skip" && annotation.type !== "fixme",
-      ).map((annotation) => ({
-        name: annotation.type,
-        value: annotation.description!,
-      }));
+      const annotations: Label[] = test.annotations
+        ?.filter((annotation) => annotation.type !== "skip" && annotation.type !== "fixme")
+        .map((annotation) => ({
+          name: annotation.type,
+          value: annotation.description!,
+        }));
       result.labels!.push(...annotations);
     }
 

@@ -58,7 +58,6 @@ it("should support fixme annotation", async () => {
   );
 });
 
-
 it("should support allure metadata in playwright annotation", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
