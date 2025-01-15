@@ -57,32 +57,36 @@ it("should handle global labels as map", async () => {
   );
 
   expect(tests).toHaveLength(2);
-  expect(tests[0].labels).toEqual(expect.arrayContaining([
-    {
-      name: "foo",
-      value: "bar",
-    },
-    {
-      name: "bar",
-      value: "beep",
-    },
-    {
-      name: "bar",
-      value: "boop",
-    },
-  ]));
-  expect(tests[1].labels).toEqual(expect.arrayContaining([
-    {
-      name: "foo",
-      value: "bar",
-    },
-    {
-      name: "bar",
-      value: "beep",
-    },
-    {
-      name: "bar",
-      value: "boop",
-    },
-  ]));
+  expect(tests[0].labels).toEqual(
+    expect.arrayContaining([
+      {
+        name: "foo",
+        value: "bar",
+      },
+      {
+        name: "bar",
+        value: "beep",
+      },
+      {
+        name: "bar",
+        value: "boop",
+      },
+    ]),
+  );
+  expect(tests[1].labels).toEqual(
+    expect.arrayContaining([
+      {
+        name: "foo",
+        value: "bar",
+      },
+      {
+        name: "bar",
+        value: "beep",
+      },
+      {
+        name: "bar",
+        value: "boop",
+      },
+    ]),
+  );
 });

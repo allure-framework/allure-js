@@ -31,25 +31,27 @@ describe("global labels", () => {
         globalLabels: {
           foo: "bar",
           bar: ["beep", "boop"],
-        }
+        },
       },
       ["plain-mocha", "testInSuite"],
     );
 
     expect(results.tests).toHaveLength(1);
-    expect(results.tests[0].labels).toEqual(expect.arrayContaining([
-      {
-        name: "foo",
-        value: "bar",
-      },
-      {
-        name: "bar",
-        value: "beep",
-      },
-      {
-        name: "bar",
-        value: "boop",
-      },
-    ]));
+    expect(results.tests[0].labels).toEqual(
+      expect.arrayContaining([
+        {
+          name: "foo",
+          value: "bar",
+        },
+        {
+          name: "bar",
+          value: "beep",
+        },
+        {
+          name: "bar",
+          value: "boop",
+        },
+      ]),
+    );
   });
 });

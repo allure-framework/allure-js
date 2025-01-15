@@ -47,7 +47,7 @@ export type LinkConfig<TOpts extends LinkTypeOptions = LinkTypeOptions> = Partia
 
 export type WriterDescriptor = [cls: string, ...args: readonly unknown[]] | string;
 
-export type GlobalLabelsConfig = Record<string, string | string[]>
+export type GlobalLabelsConfig = Record<string, string | string[]>;
 
 export interface ReporterConfig {
   readonly resultsDir?: string;
