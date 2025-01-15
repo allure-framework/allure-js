@@ -4,6 +4,7 @@ import {
   type Attachment,
   type AttachmentOptions,
   type FixtureResult,
+  Label,
   Stage,
   type StepResult,
   type TestResult,
@@ -105,7 +106,7 @@ export class ReporterRuntime {
   categories?: Category[];
   environmentInfo?: EnvironmentInfo;
   linkConfig?: LinkConfig;
-  globalLabels: ReporterRuntimeConfig["globalLabels"] = [];
+  globalLabels: Label[] = [];
 
   constructor({ writer, listeners = [], environmentInfo, categories, links, globalLabels }: ReporterRuntimeConfig) {
     this.writer = resolveWriter(writer);
@@ -113,7 +114,21 @@ export class ReporterRuntime {
     this.categories = categories;
     this.environmentInfo = environmentInfo;
     this.linkConfig = links;
-    this.globalLabels = globalLabels ?? {};
+
+    if (Array.isArray(globalLabels)) {
+      this.globalLabels = globalLabels;
+    } else if (Object.keys(globalLabels as GlobalLabelsConfig).length) {
+      this.globalLabels = Object.entries(globalLabels as GlobalLabelsConfig).flatMap(([name, value]) => {
+        if (Array.isArray(value)) {
+          return value.map((v) => ({ name, value: v }));
+        }
+
+        return {
+          name,
+          value,
+        };
+      });
+    }
   }
 
   startScope = (): string => {
@@ -276,22 +291,7 @@ export class ReporterRuntime {
       }
     });
 
-    if (this.globalLabels && Array.isArray(this.globalLabels)) {
-      testResult.labels = [...this.globalLabels, ...testResult.labels];
-    } else if (Object.keys(this.globalLabels as GlobalLabelsConfig).length) {
-      const newLabels = Object.entries(this.globalLabels as GlobalLabelsConfig).flatMap(([name, value]) => {
-        if (Array.isArray(value)) {
-          return value.map((v) => ({ name, value: v }));
-        }
-
-        return {
-          name,
-          value,
-        };
-      });
-
-      testResult.labels = [...newLabels, ...testResult.labels];
-    }
+    testResult.labels = [...this.globalLabels, ...testResult.labels];
 
     this.notifier.afterTestResultStop(testResult);
   };
