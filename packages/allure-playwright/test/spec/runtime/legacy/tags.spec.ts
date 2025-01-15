@@ -24,7 +24,7 @@ it("sets multiply tags", async () => {
         { name: LabelName.TAG, value: "TestInfo" },
         { name: LabelName.TAG, value: "some" },
         { name: LabelName.TAG, value: "other" },
-        { name: LabelName.TAG, value: "other" },
+        { name: LabelName.TAG, value: "tags" },
       ]),
     }),
   ]);
