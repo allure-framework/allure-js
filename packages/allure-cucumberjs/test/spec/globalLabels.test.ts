@@ -34,3 +34,59 @@ it("should handle global labels", async () => {
     value: "bar",
   });
 });
+
+it("should handle global labels as map", async () => {
+  const { tests } = await runCucumberInlineTest(
+    ["examples"],
+    ["examples"],
+    undefined,
+    (reporterFilePath) => `
+    module.exports = {
+      default: {
+        paths: ["./**/*.feature"],
+        format: ["summary", "${reporterFilePath}"],
+        formatOptions: {
+          globalLabels: {
+            foo: "bar",
+            bar: ["beep", "boop"],
+          }
+        }
+      }
+    }
+  `,
+  );
+
+  expect(tests).toHaveLength(2);
+  expect(tests[0].labels).toEqual(
+    expect.arrayContaining([
+      {
+        name: "foo",
+        value: "bar",
+      },
+      {
+        name: "bar",
+        value: "beep",
+      },
+      {
+        name: "bar",
+        value: "boop",
+      },
+    ]),
+  );
+  expect(tests[1].labels).toEqual(
+    expect.arrayContaining([
+      {
+        name: "foo",
+        value: "bar",
+      },
+      {
+        name: "bar",
+        value: "beep",
+      },
+      {
+        name: "bar",
+        value: "boop",
+      },
+    ]),
+  );
+});

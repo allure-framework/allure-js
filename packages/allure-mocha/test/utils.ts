@@ -4,7 +4,7 @@ import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import * as path from "node:path";
 import { type Label, Status, attachment, attachmentPath, logStep, parameter, step } from "allure-js-commons";
 import type { AllureResults, Category } from "allure-js-commons/sdk";
-import { MessageReader, getPosixPath } from "allure-js-commons/sdk/reporter";
+import { type GlobalLabelsConfig, MessageReader, getPosixPath } from "allure-js-commons/sdk/reporter";
 import type { AllureMochaReporterConfig } from "../src/types.js";
 
 type MochaRunOptions = {
@@ -15,7 +15,7 @@ type MochaRunOptions = {
   extraReporters?: AllureMochaReporterConfig["extraReporters"];
   inputFiles?: string[];
   outputFiles?: Record<string, string>;
-  globalLabels?: Label[];
+  globalLabels?: Label[] | GlobalLabelsConfig;
 };
 
 type TestPlanEntryFixture = {
