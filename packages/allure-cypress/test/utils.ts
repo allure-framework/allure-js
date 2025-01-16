@@ -80,8 +80,8 @@ export const runCypressInlineTest = async (
 
   await step("Prepare files", async () => {
     const allureCommonsModulePath = require.resolve("allure-js-commons");
-    const allureCypressModulePath = require.resolve("allure-cypress");
-    const allureCypressReporterModulePath = require.resolve("allure-cypress/reporter");
+    const allureCypressReporterModulePath = require.resolve("allure-cypress");
+    const allureCypressModulePath = join(dirname(allureCypressReporterModulePath), "index.js");
 
     for (const [testFile, getContent] of Object.entries(testFilesToWrite)) {
       const fileDir = dirname(join(testDir, testFile));
