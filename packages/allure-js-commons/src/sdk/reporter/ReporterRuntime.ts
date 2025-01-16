@@ -4,7 +4,7 @@ import {
   type Attachment,
   type AttachmentOptions,
   type FixtureResult,
-  Label,
+  type Label,
   Stage,
   type StepResult,
   type TestResult,
@@ -27,7 +27,6 @@ import { hasSkipLabel } from "./testplan.js";
 import type {
   FixtureResultWrapper,
   FixtureType,
-  GlobalLabelsConfig,
   LinkConfig,
   ReporterRuntimeConfig,
   TestScope,
@@ -108,7 +107,14 @@ export class ReporterRuntime {
   linkConfig?: LinkConfig;
   globalLabels: Label[] = [];
 
-  constructor({ writer, listeners = [], environmentInfo, categories, links, globalLabels }: ReporterRuntimeConfig) {
+  constructor({
+    writer,
+    listeners = [],
+    environmentInfo,
+    categories,
+    links,
+    globalLabels = {},
+  }: ReporterRuntimeConfig) {
     this.writer = resolveWriter(writer);
     this.notifier = new Notifier({ listeners });
     this.categories = categories;
@@ -117,8 +123,8 @@ export class ReporterRuntime {
 
     if (Array.isArray(globalLabels)) {
       this.globalLabels = globalLabels;
-    } else if (Object.keys(globalLabels as GlobalLabelsConfig).length) {
-      this.globalLabels = Object.entries(globalLabels as GlobalLabelsConfig).flatMap(([name, value]) => {
+    } else if (Object.keys(globalLabels).length) {
+      this.globalLabels = Object.entries(globalLabels).flatMap(([name, value]) => {
         if (Array.isArray(value)) {
           return value.map((v) => ({ name, value: v }));
         }
