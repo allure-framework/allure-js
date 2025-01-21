@@ -296,6 +296,49 @@ describe("extractMetadataFromString", () => {
       ],
     });
   });
+
+  it("should support values in single quotes", () => {
+    expect(
+      extractMetadataFromString("foo @allure.label.l1='foo bar baz' and bar @allure.id=beep @allure.label.l1=boop"),
+    ).toEqual({
+      cleanTitle: "foo and bar",
+      labels: [
+        { name: "l1", value: "foo bar baz" },
+        { name: LabelName.ALLURE_ID, value: "beep" },
+        { name: "l1", value: "boop" },
+      ],
+    });
+  });
+
+  it("should support values in double quotes", () => {
+    expect(extractMetadataFromString('foo @allure.label.l1="foo bar baz"')).toEqual({
+      cleanTitle: "foo",
+      labels: [{ name: "l1", value: "foo bar baz" }],
+    });
+  });
+
+  it("should support values in backticks", () => {
+    expect(extractMetadataFromString("foo @allure.label.l1=`foo bar baz`")).toEqual({
+      cleanTitle: "foo",
+      labels: [{ name: "l1", value: "foo bar baz" }],
+    });
+  });
+
+  it("should support mixed values at the same time", () => {
+    expect(
+      extractMetadataFromString(
+        "foo @allure.label.l1=foo @allure.label.l1=`foo 1` bar @allure.label.l1='foo 2' baz @allure.label.l1=\"foo 3\"",
+      ),
+    ).toEqual({
+      cleanTitle: "foo bar baz",
+      labels: [
+        { name: "l1", value: "foo" },
+        { name: "l1", value: "foo 1" },
+        { name: "l1", value: "foo 2" },
+        { name: "l1", value: "foo 3" },
+      ],
+    });
+  });
 });
 
 describe("isMetadataTag", () => {
