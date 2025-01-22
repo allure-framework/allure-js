@@ -63,7 +63,7 @@ export const getMessageAndTraceFromError = (
   };
 };
 
-type AllureTitleMetadataMatch = {
+type AllureTitleMetadataMatch = RegExpMatchArray & {
   groups: {
     type?: string;
     v1?: string;
@@ -74,19 +74,17 @@ type AllureTitleMetadataMatch = {
 };
 
 export const allureTitleMetadataRegexp =
-  /@?allure\.(?<type>[^\s]+)[:=]("(?<v1>[^"]+)"|'(?<v2>[^']+)'|`(?<v3>[^`]+)`|(?<v4>[^\s]+))/;
+  /@?allure\.(?<type>\S+)[:=]("[^"]+"|'[^']+'|`[^`]+`|\S+)/;
 export const allureTitleMetadataRegexpGlobal = new RegExp(allureTitleMetadataRegexp, "g");
-export const allureIdRegexp = /(?:^|\s)@?allure\.id[:=](?<id>[^\s]+)/;
+export const allureIdRegexp = /(?:^|\s)@?allure\.id[:=](?<id>\S+)/;
 export const allureLabelRegexp = /(?:^|\s)@?allure\.label\.(?<name>[^:=\s]+)[:=](?<value>[^\s]+)/;
 
 export const getTypeFromAllureTitleMetadataMatch = (match: AllureTitleMetadataMatch) => {
-  return match.groups?.type;
+  return match?.[1];
 };
 
 export const getValueFromAllureTitleMetadataMatch = (match: AllureTitleMetadataMatch) => {
-  const { v1, v2, v3, v4 } = match.groups ?? {};
-
-  return v1 || v2 || v3 || v4;
+  return match?.[2]?.replace?.(/['"`]/g, "");
 };
 
 export const isMetadataTag = (tag: string) => {
