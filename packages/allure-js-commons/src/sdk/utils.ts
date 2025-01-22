@@ -73,8 +73,7 @@ type AllureTitleMetadataMatch = RegExpMatchArray & {
   };
 };
 
-export const allureTitleMetadataRegexp =
-  /@?allure\.(?<type>\S+)[:=]("[^"]+"|'[^']+'|`[^`]+`|\S+)/;
+export const allureTitleMetadataRegexp = /@?allure\.(?<type>\S+)[:=]("[^"]+"|'[^']+'|`[^`]+`|\S+)/;
 export const allureTitleMetadataRegexpGlobal = new RegExp(allureTitleMetadataRegexp, "g");
 export const allureIdRegexp = /(?:^|\s)@?allure\.id[:=](?<id>\S+)/;
 export const allureLabelRegexp = /(?:^|\s)@?allure\.label\.(?<name>[^:=\s]+)[:=](?<value>[^\s]+)/;
