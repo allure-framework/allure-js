@@ -30,7 +30,7 @@ export const uint8ArrayToBase64 = (data: unknown) => {
 
 export const getTestStartData = (test: CypressTest) => ({
   ...getNamesAndLabels(Cypress.spec, test),
-  start: test.wallClockStartedAt?.getTime() || Date.now(),
+  start: test.wallClockStartedAt?.getTime?.() || Date.now(),
 });
 
 export const getTestStopData = (test: CypressTest) => ({
