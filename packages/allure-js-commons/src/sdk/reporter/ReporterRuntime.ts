@@ -107,13 +107,34 @@ export class ReporterRuntime {
   linkConfig?: LinkConfig;
   globalLabels: Label[] = [];
 
-  constructor({ writer, listeners = [], environmentInfo, categories, links, globalLabels }: ReporterRuntimeConfig) {
+  constructor({
+    writer,
+    listeners = [],
+    environmentInfo,
+    categories,
+    links,
+    globalLabels = {},
+  }: ReporterRuntimeConfig) {
     this.writer = resolveWriter(writer);
     this.notifier = new Notifier({ listeners });
     this.categories = categories;
     this.environmentInfo = environmentInfo;
     this.linkConfig = links;
-    this.globalLabels = globalLabels ?? [];
+
+    if (Array.isArray(globalLabels)) {
+      this.globalLabels = globalLabels;
+    } else if (Object.keys(globalLabels).length) {
+      this.globalLabels = Object.entries(globalLabels).flatMap(([name, value]) => {
+        if (Array.isArray(value)) {
+          return value.map((v) => ({ name, value: v }));
+        }
+
+        return {
+          name,
+          value,
+        };
+      });
+    }
   }
 
   startScope = (): string => {

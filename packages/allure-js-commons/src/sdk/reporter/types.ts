@@ -1,6 +1,7 @@
 import type {
   FixtureResult,
   Label,
+  LabelName,
   Link,
   LinkType,
   Parameter,
@@ -47,10 +48,12 @@ export type LinkConfig<TOpts extends LinkTypeOptions = LinkTypeOptions> = Partia
 
 export type WriterDescriptor = [cls: string, ...args: readonly unknown[]] | string;
 
+export type GlobalLabelsConfig = Partial<Record<LabelName, string | string[]>> & Record<string, string | string[]>;
+
 export interface ReporterConfig {
   readonly resultsDir?: string;
   readonly links?: LinkConfig;
-  readonly globalLabels?: Label[];
+  readonly globalLabels?: Label[] | GlobalLabelsConfig;
   readonly listeners?: LifecycleListener[];
   readonly environmentInfo?: EnvironmentInfo;
   readonly categories?: Category[];

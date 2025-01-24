@@ -16,12 +16,10 @@ it("should handle global labels", async () => {
              require.resolve("allure-playwright"),
              {
                resultsDir: "./allure-results",
-               globalLabels: [
-                 {
-                   name: "foo",
-                   value: "bar"
+                 globalLabels: {
+                   foo: "bar",
+                   bar: ["beep", "boop"],
                  }
-               ]
              },
            ],
            ["dot"],
@@ -36,8 +34,20 @@ it("should handle global labels", async () => {
   });
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].labels[0]).toEqual({
-    name: "foo",
-    value: "bar",
-  });
+  expect(tests[0].labels).toEqual(
+    expect.arrayContaining([
+      {
+        name: "foo",
+        value: "bar",
+      },
+      {
+        name: "bar",
+        value: "beep",
+      },
+      {
+        name: "bar",
+        value: "boop",
+      },
+    ]),
+  );
 });
