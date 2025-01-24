@@ -73,7 +73,7 @@ type AllureTitleMetadataMatch = RegExpMatchArray & {
   };
 };
 
-export const allureTitleMetadataRegexp = /@?allure\.(?<type>\S+)[:=]("[^"]+"|'[^']+'|`[^`]+`|\S+)/;
+export const allureTitleMetadataRegexp = /(?:^|\s)@?allure\.(?<type>\S+)[:=]("[^"]+"|'[^']+'|`[^`]+`|\S+)/;
 export const allureTitleMetadataRegexpGlobal = new RegExp(allureTitleMetadataRegexp, "g");
 export const allureIdRegexp = /(?:^|\s)@?allure\.id[:=](?<id>\S+)/;
 export const allureLabelRegexp = /(?:^|\s)@?allure\.label\.(?<name>[^:=\s]+)[:=](?<value>[^\s]+)/;
@@ -83,7 +83,16 @@ export const getTypeFromAllureTitleMetadataMatch = (match: AllureTitleMetadataMa
 };
 
 export const getValueFromAllureTitleMetadataMatch = (match: AllureTitleMetadataMatch) => {
-  return match?.[2]?.replace?.(/['"`]/g, "");
+  const quotesRegexp = /['"`]/;
+  const quoteOpenRegexp = new RegExp(`^${quotesRegexp.source}`);
+  const quoteCloseRegexp = new RegExp(`${quotesRegexp.source}$`);
+  const matchedValue = match?.[2] ?? "";
+
+  if (quoteOpenRegexp.test(matchedValue) && quoteCloseRegexp.test(matchedValue)) {
+    return matchedValue.slice(1, -1);
+  }
+
+  return matchedValue;
 };
 
 export const isMetadataTag = (tag: string) => {
