@@ -44,7 +44,14 @@ export const stripAnsi = (str: string): string => {
   return str.replace(regex, "");
 };
 
-export const getMessageAndTraceFromError = (error: Error | { message?: string; stack?: string }): StatusDetails => {
+export const getMessageAndTraceFromError = (
+  error:
+    | Error
+    | {
+        message?: string;
+        stack?: string;
+      },
+): StatusDetails => {
   const { message, stack } = error;
   const actual = "actual" in error && error.actual !== undefined ? { actual: serialize(error.actual) } : {};
   const expected = "expected" in error && error.expected !== undefined ? { expected: serialize(error.expected) } : {};
@@ -56,13 +63,40 @@ export const getMessageAndTraceFromError = (error: Error | { message?: string; s
   };
 };
 
-export const allureIdRegexp = /(?:^|\s)@?allure\.id[:=](?<id>[^\s]+)/;
-export const allureIdRegexpGlobal = new RegExp(allureIdRegexp, "g");
+type AllureTitleMetadataMatch = RegExpMatchArray & {
+  groups: {
+    type?: string;
+    v1?: string;
+    v2?: string;
+    v3?: string;
+    v4?: string;
+  };
+};
+
+export const allureTitleMetadataRegexp = /(?:^|\s)@?allure\.(?<type>\S+)[:=]("[^"]+"|'[^']+'|`[^`]+`|\S+)/;
+export const allureTitleMetadataRegexpGlobal = new RegExp(allureTitleMetadataRegexp, "g");
+export const allureIdRegexp = /(?:^|\s)@?allure\.id[:=](?<id>\S+)/;
 export const allureLabelRegexp = /(?:^|\s)@?allure\.label\.(?<name>[^:=\s]+)[:=](?<value>[^\s]+)/;
-export const allureLabelRegexpGlobal = new RegExp(allureLabelRegexp, "g");
+
+export const getTypeFromAllureTitleMetadataMatch = (match: AllureTitleMetadataMatch) => {
+  return match?.[1];
+};
+
+export const getValueFromAllureTitleMetadataMatch = (match: AllureTitleMetadataMatch) => {
+  const quotesRegexp = /['"`]/;
+  const quoteOpenRegexp = new RegExp(`^${quotesRegexp.source}`);
+  const quoteCloseRegexp = new RegExp(`${quotesRegexp.source}$`);
+  const matchedValue = match?.[2] ?? "";
+
+  if (quoteOpenRegexp.test(matchedValue) && quoteCloseRegexp.test(matchedValue)) {
+    return matchedValue.slice(1, -1);
+  }
+
+  return matchedValue;
+};
 
 export const isMetadataTag = (tag: string) => {
-  return allureIdRegexp.test(tag) || allureLabelRegexp.test(tag);
+  return allureTitleMetadataRegexp.test(tag);
 };
 
 export const extractMetadataFromString = (
@@ -72,25 +106,45 @@ export const extractMetadataFromString = (
   cleanTitle: string;
 } => {
   const labels = [] as Label[];
+  const metadata = title.matchAll(allureTitleMetadataRegexpGlobal);
+  const cleanTitle = title
+    .replaceAll(allureTitleMetadataRegexpGlobal, "")
+    .split(" ")
+    .filter(Boolean)
+    .reduce((acc, word) => {
+      if (/^[\n\r]/.test(word)) {
+        return acc + word;
+      }
 
-  title.split(" ").forEach((val) => {
-    const idValue = val.match(allureIdRegexp)?.groups?.id;
+      return `${acc} ${word}`;
+    }, "")
+    .trim();
 
-    if (idValue) {
-      labels.push({ name: LabelName.ALLURE_ID, value: idValue });
+  for (const m of metadata) {
+    const match = m as AllureTitleMetadataMatch;
+    const type = getTypeFromAllureTitleMetadataMatch(match);
+    const value = getValueFromAllureTitleMetadataMatch(match);
+
+    if (!type || !value) {
+      continue;
     }
 
-    const labelMatch = val.match(allureLabelRegexp);
-    const { name, value } = labelMatch?.groups || {};
+    const [subtype, name] = type.split(".");
 
-    if (name && value) {
-      labels?.push({ name, value });
+    switch (subtype) {
+      case "id":
+        labels.push({ name: LabelName.ALLURE_ID, value });
+        break;
+      case "label":
+        labels.push({ name, value });
+        break;
     }
-  });
+  }
 
-  const cleanTitle = title.replace(allureLabelRegexpGlobal, "").replace(allureIdRegexpGlobal, "").trim();
-
-  return { labels, cleanTitle };
+  return {
+    labels,
+    cleanTitle,
+  };
 };
 
 export const isAnyStepFailed = (item: StepResult | TestResult | FixtureResult): boolean => {
