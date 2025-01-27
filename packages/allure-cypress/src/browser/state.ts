@@ -3,6 +3,7 @@ import { DEFAULT_RUNTIME_CONFIG, last, toReversed } from "../utils.js";
 
 export const getAllureState = () => {
   let state = Cypress.env("allure") as AllureSpecState;
+
   if (!state) {
     state = {
       config: DEFAULT_RUNTIME_CONFIG,
@@ -15,8 +16,10 @@ export const getAllureState = () => {
       stepsToFinalize: [],
       nextApiStepId: 0,
     };
+
     Cypress.env("allure", state);
   }
+
   return state;
 };
 
