@@ -33,6 +33,7 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   escapeRegExp,
+  formatLink,
   getEnvironmentLabels,
   getFrameworkLabel,
   getHostLabel,
@@ -212,12 +213,22 @@ export class AllureReporter implements ReporterV2 {
         }
 
         if (annotation.type === "issue") {
-          result.links!.push({ type: LinkType.ISSUE, url: annotation.description! });
+          result.links!.push(
+            formatLink(this.options.links ?? {}, {
+              type: LinkType.ISSUE,
+              url: annotation.description!,
+            }),
+          );
           continue;
         }
 
         if (annotation.type === "tms" || annotation.type === "test_key") {
-          result.links!.push({ type: LinkType.TMS, url: annotation.description! });
+          result.links!.push(
+            formatLink(this.options.links ?? {}, {
+              type: LinkType.TMS,
+              url: annotation.description!,
+            }),
+          );
           continue;
         }
 
