@@ -149,14 +149,14 @@ const getLogProps = (entry: CypressLogEntry) => {
     attributes: { consoleProps },
   } = entry;
   const isAssertionWithMessage = !!maybeGetAssertionLogMessage(entry);
-  const props = consoleProps();
+  const { props, name } = consoleProps();
 
   // accessing LocalStorage after the page reload can stick the test runner
   // to avoid the issue, we just need to log the command manually
   // the problem potentially can happen with other storage related commands, like `clearAllLocalStorage`, `clearAllSessionStorage`, `getAllLocalStorage`, `getAllSessionStorage`, `setLocalStorage`, `setSessionStorage`
   // but probably, we don't need to silent them all at this moment
   // the context: https://github.com/allure-framework/allure-js/issues/1222
-  if (["clearLocalStorage"].includes(props.name)) {
+  if (["clearLocalStorage"].includes(name)) {
     return [
       ["name", "clearLocalStorage"],
       ["type", "command"],
