@@ -16,6 +16,7 @@ const onAfterScreenshot = (
   ...[, { name: originalName, path }]: Parameters<Cypress.ScreenshotDefaultsOptions["onAfterScreenshot"]>
 ) => {
   const name = originalName ?? getFileNameFromPath(path);
+
   reportScreenshot(path, name);
   setupScreenshotAttachmentStep(originalName, name);
 };
