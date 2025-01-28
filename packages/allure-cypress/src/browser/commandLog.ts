@@ -51,6 +51,7 @@ export const setupScreenshotAttachmentStep = (originalName: string | undefined, 
 
 export const startCommandLogStep = (entry: CypressLogEntry) => {
   const currentLogEntry = getCurrentLogEntry();
+
   if (typeof currentLogEntry !== "undefined" && shouldStopCurrentLogStep(currentLogEntry.log, entry)) {
     stopCommandLogStep(currentLogEntry.log.attributes.id);
   }
@@ -65,12 +66,14 @@ export const stopCommandLogStep = (entryId: string) => findAndStopStepWithSubste
 const pushLogEntry = (entry: CypressLogEntry) => {
   const id = entry.attributes.id;
   const stepDescriptor: LogStepDescriptor = { id, type: "log", log: entry };
+
   pushStep(stepDescriptor);
 
   // Some properties of some Command Log entries are undefined at the time the entry is stopped. An example is the
   // Yielded property of some queries. We defer converting them to Allure step parameters until the test/hook ends.
   setupStepFinalization(stepDescriptor, (data) => {
     data.parameters = getCommandLogStepParameters(entry);
+
     if (stepDescriptor.attachmentName) {
       // Rename the step to match the attachment name. Once the names are the same, Allure will render the
       // attachment in the place of the step.
@@ -146,18 +149,27 @@ const getLogProps = (entry: CypressLogEntry) => {
     attributes: { consoleProps },
   } = entry;
   const isAssertionWithMessage = !!maybeGetAssertionLogMessage(entry);
+  const { props, name } = consoleProps();
+
+  // accessing LocalStorage after the page reload can stick the test runner
+  // to avoid the issue, we just need to log the command manually
+  // the problem potentially can happen with other storage related commands, like `clearAllLocalStorage`, `clearAllSessionStorage`, `getAllLocalStorage`, `getAllSessionStorage`, `setLocalStorage`, `setSessionStorage`
+  // but probably, we don't need to silent them all at this moment
+  // the context: https://github.com/allure-framework/allure-js/issues/1222
+  if (["clearLocalStorage"].includes(name)) {
+    return [] as [string, unknown][];
+  }
 
   // For assertion logs, we interpolate the 'Message' property, which contains unformatted assertion description,
   // directly into the step's name.
   // No need to keep the exact same information in the step's parameters.
-  return Object.entries(consoleProps().props).filter(
-    ([k, v]) => isDefined(v) && !(isAssertionWithMessage && k === "Message"),
-  );
+  return Object.entries(props).filter(([k, v]) => isDefined(v) && !(isAssertionWithMessage && k === "Message"));
 };
 
 const maybeGetAssertionLogMessage = (entry: CypressLogEntry) => {
   if (isAssertLog(entry)) {
     const message = entry.attributes.consoleProps().props.Message;
+
     if (message && typeof message === "string") {
       return message;
     }
