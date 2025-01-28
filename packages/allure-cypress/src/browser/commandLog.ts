@@ -157,11 +157,7 @@ const getLogProps = (entry: CypressLogEntry) => {
   // but probably, we don't need to silent them all at this moment
   // the context: https://github.com/allure-framework/allure-js/issues/1222
   if (["clearLocalStorage"].includes(name)) {
-    return [
-      ["name", "clearLocalStorage"],
-      ["type", "command"],
-      ["props", {}],
-    ] as [string, unknown][];
+    return [] as [string, unknown][];
   }
 
   // For assertion logs, we interpolate the 'Message' property, which contains unformatted assertion description,
