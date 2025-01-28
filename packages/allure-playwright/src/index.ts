@@ -15,17 +15,25 @@ import {
   type ImageDiffAttachment,
   type Label,
   LabelName,
+  LinkType,
   Stage,
   Status,
   type TestResult,
 } from "allure-js-commons";
 import type { RuntimeMessage, TestPlanV1Test } from "allure-js-commons/sdk";
-import { extractMetadataFromString, getMessageAndTraceFromError, hasLabel, stripAnsi } from "allure-js-commons/sdk";
+import {
+  extractMetadataFromString,
+  getMessageAndTraceFromError,
+  getMetadataLabel,
+  hasLabel,
+  stripAnsi,
+} from "allure-js-commons/sdk";
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
   ReporterRuntime,
   createDefaultWriter,
   escapeRegExp,
+  formatLink,
   getEnvironmentLabels,
   getFrameworkLabel,
   getHostLabel,
@@ -179,6 +187,7 @@ export class AllureReporter implements ReporterV2 {
       labels: [...titleMetadata.labels, ...getEnvironmentLabels()],
       links: [],
       parameters: [],
+      steps: [],
       testCaseId: md5(testCaseIdBase),
       fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
     };
@@ -195,6 +204,56 @@ export class AllureReporter implements ReporterV2 {
         value: tag.startsWith("@") ? tag.substring(1) : tag,
       }));
       result.labels!.push(...tags);
+    }
+
+    if ("annotations" in test) {
+      for (const annotation of test.annotations) {
+        if (annotation.type === "skip" || annotation.type === "fixme") {
+          continue;
+        }
+
+        if (annotation.type === "issue") {
+          result.links!.push(
+            formatLink(this.options.links ?? {}, {
+              type: LinkType.ISSUE,
+              url: annotation.description!,
+            }),
+          );
+          continue;
+        }
+
+        if (annotation.type === "tms" || annotation.type === "test_key") {
+          result.links!.push(
+            formatLink(this.options.links ?? {}, {
+              type: LinkType.TMS,
+              url: annotation.description!,
+            }),
+          );
+          continue;
+        }
+
+        if (annotation.type === "description") {
+          result.description = annotation.description;
+          continue;
+        }
+
+        const annotationLabel = getMetadataLabel(annotation.type, annotation.description);
+
+        if (annotationLabel) {
+          result.labels!.push(annotationLabel);
+          continue;
+        }
+
+        result.steps!.push({
+          name: `${annotation.type}: ${annotation.description!}`,
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          parameters: [],
+          steps: [],
+          attachments: [],
+          statusDetails: {},
+        });
+      }
     }
 
     if (project?.name) {

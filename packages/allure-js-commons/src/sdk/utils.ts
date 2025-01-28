@@ -73,6 +73,7 @@ type AllureTitleMetadataMatch = RegExpMatchArray & {
   };
 };
 
+export const allureMetadataRegexp = /(?:^|\s)@?allure\.(?<type>\S+)$/;
 export const allureTitleMetadataRegexp = /(?:^|\s)@?allure\.(?<type>\S+)[:=]("[^"]+"|'[^']+'|`[^`]+`|\S+)/;
 export const allureTitleMetadataRegexpGlobal = new RegExp(allureTitleMetadataRegexp, "g");
 export const allureIdRegexp = /(?:^|\s)@?allure\.id[:=](?<id>\S+)/;
@@ -96,7 +97,23 @@ export const getValueFromAllureTitleMetadataMatch = (match: AllureTitleMetadataM
 };
 
 export const isMetadataTag = (tag: string) => {
-  return allureTitleMetadataRegexp.test(tag);
+  return allureMetadataRegexp.test(tag);
+};
+
+export const getMetadataLabel = (tag: string, value?: string): Label | undefined => {
+  const match = tag.match(allureMetadataRegexp);
+  const type = match?.groups?.type;
+
+  if (!type) {
+    return undefined;
+  }
+
+  const [subtype, name] = type.split(".");
+
+  return {
+    name: subtype === "id" ? LabelName.ALLURE_ID : name,
+    value: value ?? "",
+  };
 };
 
 export const extractMetadataFromString = (
