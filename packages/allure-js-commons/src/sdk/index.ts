@@ -17,6 +17,7 @@ export {
   getStatusFromError,
   getMessageAndTraceFromError,
   isMetadataTag,
+  getMetadataLabel,
   extractMetadataFromString,
   isAllStepsEnded,
   isAnyStepFailed,
