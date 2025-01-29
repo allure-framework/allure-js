@@ -238,10 +238,12 @@ describe("extractMetadataFromString", () => {
     expect(extractMetadataFromString("")).toEqual({
       cleanTitle: "",
       labels: [],
+      links: [],
     });
     expect(extractMetadataFromString("foo")).toEqual({
       cleanTitle: "foo",
       labels: [],
+      links: [],
     });
   });
 
@@ -249,14 +251,17 @@ describe("extractMetadataFromString", () => {
     expect(extractMetadataFromString("foo @allure.id:1004")).toEqual({
       cleanTitle: "foo",
       labels: [{ name: "ALLURE_ID", value: "1004" }],
+      links: [],
     });
     expect(extractMetadataFromString("foo allure.id:1004")).toEqual({
       cleanTitle: "foo",
       labels: [{ name: "ALLURE_ID", value: "1004" }],
+      links: [],
     });
     expect(extractMetadataFromString("foo @allure.id=1004")).toEqual({
       cleanTitle: "foo",
       labels: [{ name: "ALLURE_ID", value: "1004" }],
+      links: [],
     });
   });
 
@@ -264,25 +269,51 @@ describe("extractMetadataFromString", () => {
     expect(extractMetadataFromString("foo @allure.label.bar:baz")).toEqual({
       cleanTitle: "foo",
       labels: [{ name: "bar", value: "baz" }],
+      links: [],
     });
     expect(extractMetadataFromString("foo allure.label.bar:baz")).toEqual({
       cleanTitle: "foo",
       labels: [{ name: "bar", value: "baz" }],
+      links: [],
     });
     expect(extractMetadataFromString("foo @allure.label.bar=baz")).toEqual({
       cleanTitle: "foo",
       labels: [{ name: "bar", value: "baz" }],
+      links: [],
+    });
+  });
+
+  it("should extract links from metadata", () => {
+    expect(extractMetadataFromString("foo @allure.link.bar:https://allurereport.org")).toEqual({
+      cleanTitle: "foo",
+      labels: [],
+      links: [{ type: "bar", url: "https://allurereport.org" }],
+    });
+    expect(extractMetadataFromString("foo allure.link.bar:https://allurereport.org/foo")).toEqual({
+      cleanTitle: "foo",
+      labels: [],
+      links: [{ type: "bar", url: "https://allurereport.org/foo" }],
+    });
+    expect(extractMetadataFromString("foo @allure.link.bar=https://allurereport.org/foo+bar&baz")).toEqual({
+      cleanTitle: "foo",
+      labels: [],
+      links: [{ type: "bar", url: "https://allurereport.org/foo+bar&baz" }],
     });
   });
 
   it("should extract all matches", () => {
-    expect(extractMetadataFromString("foo @allure.label.bar:baz @allure.id:1004 @allure.label.qux:quz")).toEqual({
+    expect(
+      extractMetadataFromString(
+        "foo @allure.label.bar:baz @allure.id:1004 @allure.label.qux:quz @allure.link.issue=https://example.com/issues/1",
+      ),
+    ).toEqual({
       cleanTitle: "foo",
       labels: [
         { name: "bar", value: "baz" },
         { name: "ALLURE_ID", value: "1004" },
         { name: "qux", value: "quz" },
       ],
+      links: [{ type: "issue", url: "https://example.com/issues/1" }],
     });
   });
 
@@ -294,12 +325,15 @@ describe("extractMetadataFromString", () => {
         { name: "ALLURE_ID", value: "1004" },
         { name: "l2", value: "v2" },
       ],
+      links: [],
     });
   });
 
   it("should support values in single quotes", () => {
     expect(
-      extractMetadataFromString("foo @allure.label.l1='foo bar baz' and bar @allure.id=beep @allure.label.l1=boop"),
+      extractMetadataFromString(
+        "foo @allure.label.l1='foo bar baz' and bar @allure.id=beep @allure.label.l1=boop @allure.link.my_link='https://allurereport.org'",
+      ),
     ).toEqual({
       cleanTitle: "foo and bar",
       labels: [
@@ -307,20 +341,27 @@ describe("extractMetadataFromString", () => {
         { name: LabelName.ALLURE_ID, value: "beep" },
         { name: "l1", value: "boop" },
       ],
+      links: [{ type: "my_link", url: "https://allurereport.org" }],
     });
   });
 
   it("should support values in double quotes", () => {
-    expect(extractMetadataFromString('foo @allure.label.l1="foo bar baz"')).toEqual({
+    expect(
+      extractMetadataFromString('foo @allure.label.l1="foo bar baz" @allure.link.my_link="https://allurereport.org"'),
+    ).toEqual({
       cleanTitle: "foo",
       labels: [{ name: "l1", value: "foo bar baz" }],
+      links: [{ type: "my_link", url: "https://allurereport.org" }],
     });
   });
 
   it("should support values in backticks", () => {
-    expect(extractMetadataFromString("foo @allure.label.l1=`foo bar baz`")).toEqual({
+    expect(
+      extractMetadataFromString("foo @allure.label.l1=`foo bar baz` @allure.link.my_link=`https://allurereport.org`"),
+    ).toEqual({
       cleanTitle: "foo",
       labels: [{ name: "l1", value: "foo bar baz" }],
+      links: [{ type: "my_link", url: "https://allurereport.org" }],
     });
   });
 
@@ -337,6 +378,7 @@ describe("extractMetadataFromString", () => {
         { name: "l1", value: "foo 2" },
         { name: "l1", value: "foo 3" },
       ],
+      links: [],
     });
   });
 });

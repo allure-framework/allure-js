@@ -1,4 +1,4 @@
-import type { FixtureResult, Label, StatusDetails, StepResult, TestResult } from "../model.js";
+import type { FixtureResult, Label, Link, StatusDetails, StepResult, TestResult } from "../model.js";
 import { LabelName, Status } from "../model.js";
 import type { RuntimeMessage, SerializeOptions, SerializerReplacerFunc } from "./types.js";
 
@@ -74,7 +74,7 @@ type AllureTitleMetadataMatch = RegExpMatchArray & {
 };
 
 export const allureMetadataRegexp = /(?:^|\s)@?allure\.(?<type>\S+)$/;
-export const allureTitleMetadataRegexp = /(?:^|\s)@?allure\.(?<type>\S+)[:=]("[^"]+"|'[^']+'|`[^`]+`|\S+)/;
+export const allureTitleMetadataRegexp = /(?:^|\s)@?allure\.(?<type>[^:=\s]+)[:=]("[^"]+"|'[^']+'|`[^`]+`|\S+)/;
 export const allureTitleMetadataRegexpGlobal = new RegExp(allureTitleMetadataRegexp, "g");
 export const allureIdRegexp = /(?:^|\s)@?allure\.id[:=](?<id>\S+)/;
 export const allureLabelRegexp = /(?:^|\s)@?allure\.label\.(?<name>[^:=\s]+)[:=](?<value>[^\s]+)/;
@@ -120,9 +120,11 @@ export const extractMetadataFromString = (
   title: string,
 ): {
   labels: Label[];
+  links: Link[];
   cleanTitle: string;
 } => {
   const labels = [] as Label[];
+  const links = [] as Link[];
   const metadata = title.matchAll(allureTitleMetadataRegexpGlobal);
   const cleanTitle = title
     .replaceAll(allureTitleMetadataRegexpGlobal, "")
@@ -155,11 +157,15 @@ export const extractMetadataFromString = (
       case "label":
         labels.push({ name, value });
         break;
+      case "link":
+        links.push({ type: name, url: value });
+        break;
     }
   }
 
   return {
     labels,
+    links,
     cleanTitle,
   };
 };
