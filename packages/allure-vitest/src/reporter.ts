@@ -71,7 +71,7 @@ export default class AllureVitestReporter implements Reporter {
       return;
     }
 
-    const { specPath, fullName, name, suitePath, labels: metadataLabels } = getTestMetadata(task);
+    const { specPath, fullName, name, suitePath, labels: metadataLabels, links: metadataLinks } = getTestMetadata(task);
     const testUuid = this.allureReporterRuntime!.startTest({
       name,
       start: task.result?.startTime,
@@ -86,6 +86,7 @@ export default class AllureVitestReporter implements Reporter {
       result.labels.push(...getEnvironmentLabels());
       result.labels.push(getHostLabel());
       result.labels.push(getThreadLabel(VITEST_POOL_ID && `vitest-worker-${VITEST_POOL_ID}`));
+      result.links.push(...metadataLinks);
 
       if (specPath) {
         result.labels.push({
