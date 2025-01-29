@@ -96,7 +96,7 @@ class AllureReporter {
     const hostLabel = getHostLabel();
     const threadLabel = getThreadLabel();
 
-    const { labels } = extractMeta(args.item.events);
+    const { labels, links } = extractMeta(args.item.events);
 
     this.currentTest = this.allureRuntime.startTest({
       name: args.item.name,
@@ -110,6 +110,7 @@ class AllureReporter {
         ...labels,
         ...getEnvironmentLabels(),
       ],
+      links,
     });
 
     this.allureRuntime.updateTest(this.currentTest, (test) => {
