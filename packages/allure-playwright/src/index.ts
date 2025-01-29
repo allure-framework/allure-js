@@ -185,7 +185,7 @@ export class AllureReporter implements ReporterV2 {
     const result: Partial<TestResult> = {
       name: titleMetadata.cleanTitle,
       labels: [...titleMetadata.labels, ...getEnvironmentLabels()],
-      links: [],
+      links: [...titleMetadata.links],
       parameters: [],
       steps: [],
       testCaseId: md5(testCaseIdBase),
