@@ -91,9 +91,7 @@ test("complex test overview", async () => {
         { name: LabelName.ALLURE_ID, value: "228" },
         { name: "custom", value: "test" },
       ]),
-      links: expect.arrayContaining([
-        { type: "my_link", url: "https://allurereport.org" },
-      ]),
+      links: expect.arrayContaining([{ type: "my_link", url: "https://allurereport.org" }]),
       parameters: expect.arrayContaining([
         expect.objectContaining({ name: "Request", value: "GET - http://example.com/test?dfgdfg" }),
         expect.objectContaining({ name: "Response Code", value: "200", excluded: true }),

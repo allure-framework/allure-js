@@ -1,5 +1,5 @@
 import type { ReporterConstructor } from "mocha";
-import type { Label } from "allure-js-commons";
+import type { Label, Link } from "allure-js-commons";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 
 export type TestPlanIndices = {
@@ -11,6 +11,7 @@ export type AllureMochaTestData = {
   isIncludedInTestRun: boolean;
   fullName: string;
   labels: readonly Label[];
+  links: readonly Link[];
   displayName: string;
   scope?: string;
 };

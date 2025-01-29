@@ -25,6 +25,7 @@ import {
   getAllureDisplayName,
   getAllureFullName,
   getAllureMetaLabels,
+  getAllureMetaLinks,
   getHookType,
   getSuitesOfMochaTest,
   getTestCaseId,
@@ -187,14 +188,17 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       getThreadLabel(this.getWorkerId()),
     ];
     const metaLabels = getAllureMetaLabels(test);
+    const links = getAllureMetaLinks(test);
     const labels = globalLabels.concat(initialLabels, metaLabels);
 
     if (test.file) {
       const packageLabel: Label = getPackageLabel(test.file);
+
       labels.push(packageLabel);
     }
 
     const scopeUuid = this.runtime.startScope();
+
     setTestScope(test, scopeUuid);
 
     // @ts-ignore
@@ -207,6 +211,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
         stage: Stage.RUNNING,
         fullName: getAllureFullName(test),
         labels,
+        links: [...links],
         testCaseId: getTestCaseId(test),
         parameters: parameters,
       },

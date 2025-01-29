@@ -20,9 +20,7 @@ describe("title metadata", () => {
         { name: LabelName.ALLURE_ID, value: "1" },
         { name: "bar", value: "2" },
       ]),
-      links: expect.arrayContaining([
-        { type: "my_link", url: "https://allurereport.org" },
-      ])
+      links: expect.arrayContaining([{ type: "my_link", url: "https://allurereport.org" }]),
     });
   });
 });

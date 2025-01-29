@@ -21,9 +21,7 @@ it("has metadata from title", async () => {
         { name: LabelName.TAG, value: "slow" },
         { name: "labelName", value: "labelValue" },
       ]),
-      links: expect.arrayContaining([
-        { type: "my_link", url: "https://allurereport.org" },
-      ]),
+      links: expect.arrayContaining([{ type: "my_link", url: "https://allurereport.org" }]),
     }),
   ]);
 });
