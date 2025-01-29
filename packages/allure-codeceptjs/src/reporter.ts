@@ -4,9 +4,11 @@ import { env } from "node:process";
 import { LabelName, Stage, Status, type StepResult } from "allure-js-commons";
 import { getMessageAndTraceFromError, getStatusFromError, isMetadataTag } from "allure-js-commons/sdk";
 import AllureMochaReporter from "allure-mocha";
-import type { CodeceptError, CodeceptStep } from "./model.js";
+import type { CodeceptBddStep, CodeceptError, CodeceptStep } from "./model.js";
 
 export class AllureCodeceptJsReporter extends AllureMochaReporter {
+  protected currentBddStep?: string;
+
   constructor(runner: Mocha.Runner, opts: Mocha.MochaOptions, isInWorker: boolean) {
     super(runner, opts, isInWorker);
     this.registerEvents();
@@ -15,11 +17,15 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
   registerEvents() {
     // Test
     event.dispatcher.on(event.test.before, this.testStarted.bind(this));
+    event.dispatcher.on(event.test.failed, this.testFailed.bind(this));
     // Step
     event.dispatcher.on(event.step.started, this.stepStarted.bind(this));
     event.dispatcher.on(event.step.passed, this.stepPassed.bind(this));
     event.dispatcher.on(event.step.failed, this.stepFailed.bind(this));
     event.dispatcher.on(event.step.comment, this.stepComment.bind(this));
+
+    event.dispatcher.on(event.bddStep.before, this.bddStepStarted.bind(this));
+    event.dispatcher.on(event.bddStep.after, this.stepPassed.bind(this));
   }
 
   testStarted(test: { tags?: string[] }) {
@@ -40,6 +46,20 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     });
   }
 
+  testFailed(_: {}, error: Error) {
+    if (this.currentBddStep) {
+      this.stopCurrentStep((result) => {
+        result.stage = Stage.FINISHED;
+        result.status = Status.BROKEN;
+        if (error) {
+          result.status = getStatusFromError({ message: error.message } as Error);
+          result.statusDetails = getMessageAndTraceFromError(error);
+        }
+      });
+    }
+    this.currentBddStep = undefined;
+  }
+
   stepStarted(step: CodeceptStep) {
     const root = this.currentHook ?? this.currentTest;
     if (!root) {
@@ -47,6 +67,16 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     }
     this.runtime.startStep(root, undefined, {
       name: step.toString().trim(),
+    });
+  }
+
+  bddStepStarted(step: CodeceptBddStep) {
+    const root = this.currentHook ?? this.currentTest;
+    if (!root) {
+      return;
+    }
+    this.currentBddStep = this.runtime.startStep(root, undefined, {
+      name: step.keyword + step.text,
     });
   }
 
