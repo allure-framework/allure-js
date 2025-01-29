@@ -27,3 +27,25 @@ it("should add labels from embedded metadata", async () => {
     }),
   ]);
 });
+
+it("should add links from embedded metadata", async () => {
+  const { tests } = await runJasmineInlineTest({
+    "spec/test/sample.spec.js": `
+      it("foo @allure.link.bar=https://allurereport.org", () => {});
+    `,
+  });
+
+  expect(tests).toEqual([
+    expect.objectContaining({
+      name: "foo",
+      fullName: "spec/test/sample.spec.js#foo",
+      status: Status.PASSED,
+      links: expect.arrayContaining([
+        {
+          type: "bar",
+          url: "https://allurereport.org",
+        },
+      ]),
+    }),
+  ]);
+});

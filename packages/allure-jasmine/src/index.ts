@@ -118,11 +118,12 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   }
 
   specStarted(spec: jasmine.SpecResult & { filename?: string }): void {
-    const { fullName, labels, name } = getAllureNamesAndLabels(
+    const { fullName, labels, links, name } = getAllureNamesAndLabels(
       spec.filename,
       this.getCurrentSpecPath(),
       spec.description,
     );
+
     if (!hasSkipLabel(labels)) {
       this.#startScope();
       this.currentAllureTestUuid = this.allureRuntime.startTest(
@@ -130,6 +131,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
           name,
           fullName,
           labels,
+          links,
           stage: Stage.RUNNING,
         },
         this.scopesStack,

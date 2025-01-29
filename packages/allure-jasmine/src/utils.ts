@@ -23,12 +23,13 @@ export const getAllureNamesAndLabels = (
   rawSpecName: string,
 ) => {
   const filePart = filename ? getPosixPath(getRelativePath(filename)) : undefined;
-  const { cleanTitle: specName, labels } = extractMetadataFromString(rawSpecName);
+  const { cleanTitle: specName, labels, links } = extractMetadataFromString(rawSpecName);
   const specPart = [...suites, specName].join(" > ");
 
   return {
     name: specName,
     fullName: filePart ? `${filePart}#${specPart}` : undefined,
     labels,
+    links,
   };
 };
