@@ -10,6 +10,8 @@ describe("embedded metadata", () => {
       ["labels", "meta", "single"],
       ["labels", "meta", "multiple"],
       ["labels", "meta", "change"],
+      ["links", "meta", "single"],
+      ["links", "meta", "multiple"],
     ));
   });
 
@@ -67,5 +69,37 @@ describe("embedded metadata", () => {
 
     expect(testCaseIdBefore).toBe(testCaseIdAfter);
     expect(historyIdBefore).toBe(historyIdAfter);
+  });
+
+  it("may apply a custom link", () => {
+    expect(tests).toContainEqual(
+      expect.objectContaining({
+        name: "a test with an embedded custom link",
+        links: expect.arrayContaining([
+          {
+            type: "foo",
+            url: "bar",
+          },
+        ]),
+      }),
+    );
+  });
+
+  it("may apply multiple links", () => {
+    expect(tests).toContainEqual(
+      expect.objectContaining({
+        name: "a test two embedded custom link",
+        links: expect.arrayContaining([
+          {
+            type: "foo",
+            url: "bar",
+          },
+          {
+            type: "baz",
+            url: "qux",
+          },
+        ]),
+      }),
+    );
   });
 });

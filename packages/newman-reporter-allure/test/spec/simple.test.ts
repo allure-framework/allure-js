@@ -33,6 +33,7 @@ const collection = {
                             exec: [
                               "//@allure.id=228",
                               "//@allure.label.custom=test",
+                              "//@allure.link.my_link=https://allurereport.org",
                               'pm.test("Status code is 200", function () {',
                               "    pm.response.to.have.status(200);",
                               "});",
@@ -90,6 +91,7 @@ test("complex test overview", async () => {
         { name: LabelName.ALLURE_ID, value: "228" },
         { name: "custom", value: "test" },
       ]),
+      links: expect.arrayContaining([{ type: "my_link", url: "https://allurereport.org" }]),
       parameters: expect.arrayContaining([
         expect.objectContaining({ name: "Request", value: "GET - http://example.com/test?dfgdfg" }),
         expect.objectContaining({ name: "Response Code", value: "200", excluded: true }),

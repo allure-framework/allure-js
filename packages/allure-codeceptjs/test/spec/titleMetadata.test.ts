@@ -6,7 +6,7 @@ it("handles title metadata", async () => {
   const { tests } = await runCodeceptJsInlineTest({
     "sample.test.js": `
         Feature("sample feature");
-        Scenario("some strange name to test @allure.id=228 @allure.label.tag=slow @allure.label.labelName=labelValue", async () => {});
+        Scenario("some strange name to test @allure.id=228 @allure.label.tag=slow @allure.label.labelName=labelValue @allure.link.my_link=https://allurereport.org", async () => {});
       `,
   });
 
@@ -25,6 +25,14 @@ it("handles title metadata", async () => {
       {
         name: "labelName",
         value: "labelValue",
+      },
+    ]),
+  );
+  expect(tests[0].links).toEqual(
+    expect.arrayContaining([
+      {
+        type: "my_link",
+        url: "https://allurereport.org",
       },
     ]),
   );

@@ -5,7 +5,7 @@ import { env } from "node:process";
 import * as allure from "allure-js-commons";
 import { Stage, Status, type StatusDetails, type TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
+import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import {
   ReporterRuntime,
@@ -122,9 +122,9 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       }
     };
 
-    #getTestFullName(test: Circus.TestEntry) {
+    #getTestFullName(test: Circus.TestEntry, testTitle: string = test.name) {
       const newTestSuitePath = getTestPath(test.parent);
-      const newTestPath = newTestSuitePath.concat(test.name);
+      const newTestPath = newTestSuitePath.concat(testTitle);
       const newTestId = getTestId(newTestPath);
 
       return `${getPosixPath(this.testPath)}#${newTestId}`;
@@ -186,7 +186,8 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
 
     #handleTestStart(test: Circus.TestEntry) {
       const newTestSuitePath = getTestPath(test.parent);
-      const newTestFullName = this.#getTestFullName(test);
+      const { cleanTitle, labels, links } = extractMetadataFromString(test.name);
+      const newTestFullName = this.#getTestFullName(test, cleanTitle);
 
       if (this.testPlan && !isTestPresentInTestPlan(newTestFullName, this.testPlan)) {
         test.mode = "skip";
@@ -196,7 +197,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
 
       const testUuid = this.runtime.startTest(
         {
-          name: test.name,
+          name: cleanTitle,
           fullName: newTestFullName,
           start: test.startedAt ?? undefined,
           stage: Stage.RUNNING,
@@ -208,7 +209,9 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
             getThreadLabel(env.JEST_WORKER_ID),
             ...getEnvironmentLabels(),
             ...getSuiteLabels(newTestSuitePath),
+            ...labels,
           ],
+          links,
         },
         this.runContext.scopes,
       );

@@ -13,17 +13,22 @@ const allureMochaDataKey = Symbol("Used to access Allure extra data in Mocha obj
 
 const getAllureData = (item: Mocha.Test): AllureMochaTestData => {
   const data = (item as any)[allureMochaDataKey];
+
   if (!data) {
     const meta = extractMetadataFromString(item.title);
     const defaultData: AllureMochaTestData = {
       isIncludedInTestRun: true,
       fullName: createAllureFullName(item),
       labels: meta.labels,
+      links: meta.links,
       displayName: meta.cleanTitle,
     };
+
     (item as any)[allureMochaDataKey] = defaultData;
+
     return defaultData;
   }
+
   return data;
 };
 
@@ -54,6 +59,8 @@ export const getAllureFullName = (test: Mocha.Test) => getAllureData(test).fullN
 export const isIncludedInTestRun = (test: Mocha.Test) => getAllureData(test).isIncludedInTestRun;
 
 export const getAllureMetaLabels = (test: Mocha.Test) => getAllureData(test).labels;
+
+export const getAllureMetaLinks = (test: Mocha.Test) => getAllureData(test).links;
 
 export const getAllureId = (data: AllureMochaTestData) => {
   const values = data.labels.filter((l) => l.name === LabelName.ALLURE_ID).map((l) => l.value);

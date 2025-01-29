@@ -1,9 +1,9 @@
 import { expect, it } from "vitest";
 import { Status } from "allure-js-commons";
-import { runJasmineInlineTest } from "../utils.js";
+import { runJestInlineTest } from "../utils.js";
 
 it("should add labels from embedded metadata", async () => {
-  const { tests } = await runJasmineInlineTest({
+  const { tests } = await runJestInlineTest({
     "spec/test/sample.spec.js": `
       it("foo @allure.id:1004 @allure.label.bar=baz", () => {});
     `,
@@ -29,7 +29,7 @@ it("should add labels from embedded metadata", async () => {
 });
 
 it("should add links from embedded metadata", async () => {
-  const { tests } = await runJasmineInlineTest({
+  const { tests } = await runJestInlineTest({
     "spec/test/sample.spec.js": `
       it("foo @allure.link.bar=https://allurereport.org", () => {});
     `,

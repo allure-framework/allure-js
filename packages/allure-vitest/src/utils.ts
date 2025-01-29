@@ -25,7 +25,7 @@ export const getTestMetadata = (task: Task) => {
   const suitePath = getSuitePath(task);
   const relativeTestPath = getPosixPath(getRelativePath(task.file.filepath));
 
-  const { cleanTitle, labels } = extractMetadataFromString(task.name);
+  const { cleanTitle, labels, links } = extractMetadataFromString(task.name);
 
   return {
     specPath: relativeTestPath,
@@ -33,6 +33,7 @@ export const getTestMetadata = (task: Task) => {
     suitePath,
     fullName: `${relativeTestPath}#${suitePath.concat(cleanTitle).join(" ")}`,
     labels,
+    links,
   };
 };
 
@@ -43,5 +44,6 @@ export const existsInTestPlan = (task: Task, testPlan?: TestPlanV1) => {
 
   const { fullName, labels } = getTestMetadata(task);
   const { value: id } = labels.find(({ name }) => name === LabelName.ALLURE_ID) ?? {};
+
   return includedInTestPlan(testPlan, { fullName, id });
 };

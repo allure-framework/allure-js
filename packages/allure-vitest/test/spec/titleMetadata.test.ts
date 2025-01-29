@@ -8,16 +8,19 @@ describe("title metadata", () => {
       `
       import { test } from "vitest";
 
-      test("foo @allure.id=1 @allure.label.bar=2", () => {});
+      test("foo @allure.id=1 @allure.label.bar=2 @allure.link.my_link=https://allurereport.org", () => {});
     `,
     );
 
     expect(tests).toHaveLength(1);
-    expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: LabelName.ALLURE_ID, value: "1" }));
-    expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "bar", value: "2" }));
     expect(tests[0]).toMatchObject({
       name: "foo",
       fullName: "sample.test.ts#foo",
+      labels: expect.arrayContaining([
+        { name: LabelName.ALLURE_ID, value: "1" },
+        { name: "bar", value: "2" },
+      ]),
+      links: expect.arrayContaining([{ type: "my_link", url: "https://allurereport.org" }]),
     });
   });
 });

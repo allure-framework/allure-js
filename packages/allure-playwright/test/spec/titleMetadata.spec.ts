@@ -7,7 +7,7 @@ it("has metadata from title", async () => {
     "sample.test.js": `
       import { test } from '@playwright/test';
 
-      test('some strange name to test @allure.id=228 @allure.label.tag=slow @allure.label.labelName=labelValue', async ({}, testInfo) => {
+      test('some strange name to test @allure.id=228 @allure.label.tag=slow @allure.label.labelName=labelValue @allure.link.my_link=https://allurereport.org', async ({}, testInfo) => {
       });
     `,
   });
@@ -21,6 +21,7 @@ it("has metadata from title", async () => {
         { name: LabelName.TAG, value: "slow" },
         { name: "labelName", value: "labelValue" },
       ]),
+      links: expect.arrayContaining([{ type: "my_link", url: "https://allurereport.org" }]),
     }),
   ]);
 });

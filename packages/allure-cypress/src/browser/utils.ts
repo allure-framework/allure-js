@@ -29,7 +29,7 @@ export const uint8ArrayToBase64 = (data: unknown) => {
 };
 
 export const getTestStartData = (test: CypressTest) => ({
-  ...getNamesAndLabels(Cypress.spec, test),
+  ...getTestMetadata(test),
   start:
     typeof test.wallClockStartedAt === "string"
       ? Date.parse(test.wallClockStartedAt)
@@ -100,12 +100,12 @@ export const getSuiteTitlePath = (test: CypressTest): string[] =>
 
 export const generateApiStepId = () => (getAllureState().nextApiStepId++).toString();
 
-export const getNamesAndLabels = (spec: Cypress.Spec, test: CypressTest) => {
+export const getTestMetadata = (test: CypressTest) => {
   const rawName = test.title;
-  const { cleanTitle: name, labels } = extractMetadataFromString(rawName);
+  const { cleanTitle: name, labels, links } = extractMetadataFromString(rawName);
   const suites = test.titlePath().slice(0, -1);
   const fullNameSuffix = `${[...suites, name].join(" ")}`;
-  return { name, labels, fullNameSuffix };
+  return { name, labels, links, fullNameSuffix };
 };
 
 export const isAllureHook = (hook: CypressHook) => hook.title.includes(ALLURE_REPORT_SYSTEM_HOOK);

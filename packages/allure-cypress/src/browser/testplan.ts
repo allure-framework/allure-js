@@ -2,7 +2,7 @@ import { LabelName } from "allure-js-commons";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import type { CypressSuite, CypressTest } from "../types.js";
 import { getAllureTestPlan } from "./state.js";
-import { getNamesAndLabels, resolveSpecRelativePath } from "./utils.js";
+import { getTestMetadata, resolveSpecRelativePath } from "./utils.js";
 
 export const applyTestPlan = (spec: Cypress.Spec, root: CypressSuite) => {
   const testPlan = getAllureTestPlan();
@@ -36,7 +36,7 @@ const getIndicesOfDeselectedTests = (
 ) => {
   const indicesToRemove: number[] = [];
   tests.forEach((test, index) => {
-    const { fullNameSuffix, labels } = getNamesAndLabels(spec, test);
+    const { fullNameSuffix, labels } = getTestMetadata(test);
     const fullName = `${specPath}#${fullNameSuffix}`;
     const allureId = labels.find(({ name }) => name === LabelName.ALLURE_ID)?.value;
 

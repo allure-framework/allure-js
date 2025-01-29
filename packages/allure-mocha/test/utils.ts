@@ -350,6 +350,7 @@ export const runMochaInlineTest = async (
   ...samples: (string | string[])[]
 ) => {
   let options: MochaRunOptions;
+
   if (typeof sampleOrConfig === "object" && !(sampleOrConfig instanceof Array)) {
     options = sampleOrConfig;
   } else {
