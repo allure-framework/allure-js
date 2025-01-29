@@ -263,14 +263,6 @@ export class ReporterRuntime {
 
     this.notifier.beforeTestResultStop(testResult);
 
-    testResult.testCaseId ??= getTestResultTestCaseId(testResult);
-    testResult.historyId ??= getTestResultHistoryId(testResult);
-
-    const startStop = this.#calculateTimings(testResult.start, opts?.stop, opts?.duration);
-
-    testResult.start = startStop.start;
-    testResult.stop = startStop.stop;
-
     const scopeUuids = wrapped.scopeUuids;
 
     scopeUuids.forEach((scopeUuid) => {
@@ -298,6 +290,14 @@ export class ReporterRuntime {
     });
 
     testResult.labels = [...this.globalLabels, ...testResult.labels];
+
+    testResult.testCaseId ??= getTestResultTestCaseId(testResult);
+    testResult.historyId ??= getTestResultHistoryId(testResult);
+
+    const startStop = this.#calculateTimings(testResult.start, opts?.stop, opts?.duration);
+
+    testResult.start = startStop.start;
+    testResult.stop = startStop.stop;
 
     this.notifier.afterTestResultStop(testResult);
   };
