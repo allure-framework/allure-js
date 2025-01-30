@@ -4,9 +4,8 @@ import { relative } from "node:path";
 import { env } from "node:process";
 import * as allure from "allure-js-commons";
 import { Stage, Status, type StatusDetails, type TestResult } from "allure-js-commons";
-import type { RuntimeMessage } from "allure-js-commons/sdk";
+import { type RuntimeMessage, type TestPlanV1, serialize } from "allure-js-commons/sdk";
 import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
-import type { TestPlanV1 } from "allure-js-commons/sdk";
 import {
   ReporterRuntime,
   createDefaultWriter,
@@ -371,10 +370,54 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       // jest collects all errors, but we need to report the first one because it's a reason why the test has been failed
       const [error] = errors;
       const hasMultipleErrors = Array.isArray(error);
-      const firstError: Error = hasMultipleErrors ? error[0] : error;
+      const exception: Circus.Exception = hasMultipleErrors ? error[0] : error;
+
+      const firstError = this.#convertToError(exception);
+
+      // in case user throws non-Error type, the first exception is the user-thrown object,
+      // while the second one is provided by jest and has correct stack trace
+      if (hasMultipleErrors && error.length > 1) {
+        const secondError = this.#convertToError(error[1]);
+        if (!firstError.message) {
+          firstError.message = secondError.message;
+        }
+        if (!firstError.stack) {
+          firstError.stack = secondError.stack;
+        }
+      }
+
       const details = getMessageAndTraceFromError(firstError);
       const status = getStatusFromError(firstError);
       return { status, details };
+    }
+
+    #convertToError(exception: Circus.Exception):
+      | Error
+      | {
+          message?: string;
+          stack?: string;
+        } {
+      if (!exception) {
+        return {};
+      }
+      // user may throw an object as well
+      if (typeof exception !== "object" || !("stack" in exception)) {
+        return {
+          message: serialize(exception),
+        };
+      }
+
+      const prototypeDescriptors = Object.getOwnPropertyDescriptors(Object.getPrototypeOf(exception));
+      const protoClone = Object.create(null, prototypeDescriptors);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const clone = Object.create(protoClone, Object.getOwnPropertyDescriptors(exception));
+
+      return clone as
+        | Error
+        | {
+            message?: string;
+            stack?: string;
+          };
     }
   };
 };
