@@ -44,6 +44,27 @@ export const stripAnsi = (str: string): string => {
   return str.replace(regex, "");
 };
 
+const actualAndExpected = (value: unknown): { actual?: string; expected?: string } => {
+  if (!value || typeof value !== "object") {
+    return {};
+  }
+
+  // support for jest asserts
+  if ("matcherResult" in value && value.matcherResult !== undefined && typeof value.matcherResult === "object") {
+    return {
+      actual: serialize((value.matcherResult as any).actual),
+      expected: serialize((value.matcherResult as any).expected),
+    };
+  }
+
+  const actual = "actual" in value && value.actual !== undefined ? { actual: serialize(value.actual) } : {};
+  const expected = "expected" in value && value.expected !== undefined ? { expected: serialize(value.expected) } : {};
+  return {
+    ...actual,
+    ...expected,
+  };
+};
+
 export const getMessageAndTraceFromError = (
   error:
     | Error
@@ -53,13 +74,10 @@ export const getMessageAndTraceFromError = (
       },
 ): StatusDetails => {
   const { message, stack } = error;
-  const actual = "actual" in error && error.actual !== undefined ? { actual: serialize(error.actual) } : {};
-  const expected = "expected" in error && error.expected !== undefined ? { expected: serialize(error.expected) } : {};
   return {
     message: message ? stripAnsi(message) : undefined,
     trace: stack ? stripAnsi(stack) : undefined,
-    ...actual,
-    ...expected,
+    ...actualAndExpected(error),
   };
 };
 
