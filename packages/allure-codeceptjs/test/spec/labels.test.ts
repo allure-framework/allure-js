@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
-import { runCodeceptJsInlineTest } from "../utils.js";
 import { LabelName } from "allure-js-commons";
+import { runCodeceptJsInlineTest } from "../utils.js";
 
 it("should add host & thread labels", async () => {
   const { tests } = await runCodeceptJsInlineTest(
