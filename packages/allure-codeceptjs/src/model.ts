@@ -21,3 +21,11 @@ export interface CodeceptStep {
   metaStep: CodeceptStep;
   toString: () => string;
 }
+
+export interface CodeceptBddStep {
+  id: string;
+  keyword: string;
+  keywordType: string;
+  text: string;
+  startTime: number;
+}
