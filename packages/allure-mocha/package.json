@@ -1,6 +1,6 @@
 {
   "name": "allure-mocha",
-  "version": "3.0.9",
+  "version": "3.1.0",
   "description": "Allure Mocha integration",
   "keywords": [
     "allure",
