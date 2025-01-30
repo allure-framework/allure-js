@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { describe, expect, it } from "vitest";
-import { type Link, Stage, Status } from "../../../src/model.js";
+import { type Link, Stage, Status, type TestResult } from "../../../src/model.js";
+import { getTestResultHistoryId } from "../../../src/sdk/reporter";
 import { ReporterRuntime } from "../../../src/sdk/reporter/ReporterRuntime.js";
 import { mockWriter } from "../../utils/writer.js";
 
@@ -633,6 +634,71 @@ describe("ReporterRuntime", () => {
             value: "value 3",
           },
         ]),
+      );
+    });
+
+    it("should calculate historyId considering parameters from before fixtures", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const scopeUuid = runtime.startScope();
+      const fixtureUuid = runtime.startFixture(scopeUuid, "before", {})!;
+      runtime.applyRuntimeMessages(fixtureUuid, [
+        {
+          type: "metadata",
+          data: {
+            parameters: [
+              {
+                name: "name 1",
+                value: "value 1",
+              },
+              {
+                name: "name 2",
+                value: "value 2",
+              },
+            ],
+          },
+        },
+      ]);
+      runtime.stopFixture(fixtureUuid);
+      const fullName = "full name " + randomInt(1000);
+      const testUuid = runtime.startTest({ fullName }, [scopeUuid]);
+      runtime.applyRuntimeMessages(testUuid, [
+        {
+          type: "metadata",
+          data: {
+            parameters: [
+              {
+                name: "name 3",
+                value: "value 3",
+              },
+            ],
+          },
+        },
+      ]);
+      runtime.stopTest(testUuid);
+      runtime.writeTest(testUuid);
+      runtime.writeScope(scopeUuid);
+
+      const [testResult] = writer.writeResult.mock.calls[0];
+      expect(testResult.historyId).toEqual(
+        getTestResultHistoryId({
+          fullName,
+          parameters: [
+            {
+              name: "name 1",
+              value: "value 1",
+            },
+            {
+              name: "name 2",
+              value: "value 2",
+            },
+            {
+              name: "name 3",
+              value: "value 3",
+            },
+          ],
+        } as TestResult),
       );
     });
 
