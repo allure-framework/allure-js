@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+import { Status } from "allure-js-commons";
 import { runPlaywrightInlineTest } from "../utils.js";
 
 it("handles before hooks", async () => {
@@ -57,6 +58,65 @@ it("handles after hooks", async () => {
           name: "afterAll hook",
           stop: expect.any(Number),
           start: expect.any(Number),
+        }),
+      ],
+    }),
+  );
+});
+
+it("should mark step as failed when any child step is failed", async () => {
+  const results = await runPlaywrightInlineTest({
+    "sample.test.js": `
+       import test from '@playwright/test';
+
+       test("should contain hooks", async ({ page }) => {
+         await page.waitForEvent("en_event");
+       });
+     `,
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             "allure-playwright",
+             {
+               resultsDir: "./allure-results",
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+         timeout: 1000,
+         screenshot: "on",
+       };
+    `,
+  });
+
+  expect(results.tests[0]).toEqual(
+    expect.objectContaining({
+      name: "should contain hooks",
+      status: Status.BROKEN,
+      steps: [
+        expect.objectContaining({
+          name: "Before Hooks",
+          status: Status.PASSED,
+        }),
+        expect.objectContaining({
+          name: "page.waitForEvent",
+          status: Status.FAILED,
+          steps: [
+            expect.objectContaining({
+              name: "After Hooks",
+              status: Status.FAILED,
+            }),
+          ],
+        }),
+        expect.objectContaining({
+          name: "Worker Cleanup",
+          status: Status.PASSED,
         }),
       ],
     }),

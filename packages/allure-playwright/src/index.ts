@@ -40,6 +40,7 @@ import {
   getLanguageLabel,
   getPackageLabel,
   getThreadLabel,
+  getWorstTestStepResult,
   md5,
   parseTestPlan,
   readImageAsBase64,
@@ -313,14 +314,16 @@ export class AllureReporter implements ReporterV2 {
     }
 
     const testUuid = this.allureResultsUuids.get(test.id)!;
-
     const currentStep = this.allureRuntime!.currentStep(testUuid);
+
     if (!currentStep) {
       return;
     }
 
     this.allureRuntime!.updateStep(currentStep, (stepResult) => {
-      stepResult.status = step.error ? Status.FAILED : Status.PASSED;
+      const { status = Status.PASSED } = getWorstTestStepResult(stepResult.steps) ?? {};
+
+      stepResult.status = step.error ? Status.FAILED : status;
       stepResult.stage = Stage.FINISHED;
 
       if (step.error) {
@@ -361,6 +364,7 @@ export class AllureReporter implements ReporterV2 {
         const skipReason = test.annotations?.find(
           (annotation) => annotation.type === "skip" || annotation.type === "fixme",
         )?.description;
+
         if (skipReason) {
           testResult.statusDetails = { ...testResult.statusDetails, message: skipReason };
         }
@@ -371,9 +375,11 @@ export class AllureReporter implements ReporterV2 {
     });
 
     const attachmentSteps = this.attachmentSteps.get(testUuid) ?? [];
+
     for (let i = 0; i < result.attachments.length; i++) {
       const attachment = result.attachments[i];
       const attachmentStep = attachmentSteps.length > i ? attachmentSteps[i] : undefined;
+
       await this.processAttachment(testUuid, attachmentStep, attachment);
     }
 
