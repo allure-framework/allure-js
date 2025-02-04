@@ -20,6 +20,7 @@ export interface CodeceptStep {
   status: string;
   metaStep: CodeceptStep;
   toString: () => string;
+  isBDD: () => boolean;
 }
 
 export interface CodeceptBddStep {
