@@ -2,12 +2,20 @@ import { event, recorder } from "codeceptjs";
 import type * as Mocha from "mocha";
 import { env } from "node:process";
 import { LabelName, Stage, Status, type StepResult } from "allure-js-commons";
-import { getMessageAndTraceFromError, getStatusFromError, isMetadataTag } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, getStatusFromError, isMetadataTag, stripAnsi } from "allure-js-commons/sdk";
 import AllureMochaReporter from "allure-mocha";
 import type { CodeceptBddStep, CodeceptError, CodeceptStep } from "./model.js";
 
+interface MetaStep {
+  name: string;
+  id: string;
+}
+
+const MAX_META_STEP_NESTING = 10;
+
 export class AllureCodeceptJsReporter extends AllureMochaReporter {
   protected currentBddStep?: string;
+  protected metaStepStack: MetaStep[] = [];
 
   constructor(runner: Mocha.Runner, opts: Mocha.MochaOptions, isInWorker: boolean) {
     super(runner, opts, isInWorker);
@@ -18,6 +26,7 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     // Test
     event.dispatcher.on(event.test.before, this.testStarted.bind(this));
     event.dispatcher.on(event.test.failed, this.testFailed.bind(this));
+    event.dispatcher.on(event.test.finished, this.testFinished.bind(this));
     // Step
     event.dispatcher.on(event.step.started, this.stepStarted.bind(this));
     event.dispatcher.on(event.step.passed, this.stepPassed.bind(this));
@@ -47,17 +56,53 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
   }
 
   testFailed(_: {}, error: Error) {
+    const status = getStatusFromError({ message: error.message } as Error);
+    const statusDetails = getMessageAndTraceFromError(error);
     if (this.currentBddStep) {
       this.stopCurrentStep((result) => {
         result.stage = Stage.FINISHED;
         result.status = Status.BROKEN;
         if (error) {
-          result.status = getStatusFromError({ message: error.message } as Error);
-          result.statusDetails = getMessageAndTraceFromError(error);
+          result.status = status;
+          result.statusDetails = { ...statusDetails };
         }
       });
     }
     this.currentBddStep = undefined;
+
+    for (const { id } of this.metaStepStack) {
+      this.runtime.updateStep(id, (result) => {
+        result.stage = Stage.FINISHED;
+        result.status = Status.BROKEN;
+        if (error) {
+          result.status = status;
+          result.statusDetails = { ...statusDetails };
+        }
+      });
+      this.runtime.stopStep(id);
+    }
+    this.metaStepStack = [];
+  }
+
+  testFinished() {
+    if (this.currentBddStep) {
+      this.runtime.updateStep(this.currentBddStep, (result) => {
+        result.status = Status.PASSED;
+        result.stage = Stage.FINISHED;
+      });
+      this.runtime.stopStep(this.currentBddStep);
+    }
+    this.currentBddStep = undefined;
+
+    for (const { id } of this.metaStepStack) {
+      this.runtime.updateStep(id, (result) => {
+        result.status = Status.PASSED;
+        result.stage = Stage.FINISHED;
+      });
+      this.runtime.stopStep(id);
+    }
+
+    this.metaStepStack = [];
   }
 
   stepStarted(step: CodeceptStep) {
@@ -65,6 +110,41 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     if (!root) {
       return;
     }
+
+    const stepPath: string[] = [];
+    let current = step.metaStep;
+    while (current && !current.isBDD() && stepPath.length < MAX_META_STEP_NESTING) {
+      stepPath.push(stripAnsi(current.toString() ?? "").trim());
+      current = current.metaStep;
+    }
+
+    let index = 0;
+    while (
+      index < Math.min(this.metaStepStack.length, stepPath.length) &&
+      this.metaStepStack[index].name === stepPath[index]
+    ) {
+      index++;
+    }
+
+    for (let i = index; i < this.metaStepStack.length; i++) {
+      const id = this.metaStepStack[i].id;
+      this.runtime.updateStep(id, (result) => {
+        result.status = Status.PASSED;
+        result.stage = Stage.FINISHED;
+      });
+      this.runtime.stopStep(id);
+    }
+
+    for (let i = index; i < stepPath.length; i++) {
+      const name = stepPath[i];
+      const id = this.runtime.startStep(root, undefined, {
+        name,
+      });
+      if (id) {
+        this.metaStepStack.push({ name, id });
+      }
+    }
+
     this.runtime.startStep(root, undefined, {
       name: step.toString().trim(),
     });
@@ -112,6 +192,10 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     const root = this.currentHook ?? this.currentTest;
     const currentStep = root ? this.runtime.currentStep(root) : undefined;
 
+    this.stopStepById(currentStep, updateFunc);
+  }
+
+  stopStepById(currentStep: string | undefined, updateFunc: (result: StepResult) => void) {
     if (!currentStep) {
       return;
     }
