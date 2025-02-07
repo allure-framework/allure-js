@@ -320,36 +320,31 @@ export class AllureReporter implements ReporterV2 {
       start: step.startTime.getTime(),
       stage: Stage.RUNNING,
     };
+    const isRootBeforeHook = step.title === BEFORE_HOOKS_ROOT_STEP_TITLE;
+    const isRootAfterHook = step.title === AFTER_HOOKS_ROOT_STEP_TITLE;
+    const isRootHook = isRootBeforeHook || isRootAfterHook;
     const isBeforeHookDescendant = isBeforeHookStep(step);
     const isAfterHookDescendant = isAfterHookStep(step);
 
-    if (isBeforeHookDescendant) {
-      const stack = this.beforeHooksStepsStack.get(test.id)!;
+    if (isBeforeHookDescendant || isAfterHookDescendant) {
+      const stack = isBeforeHookDescendant
+        ? this.beforeHooksStepsStack.get(test.id)!
+        : this.afterHooksStepsStack.get(test.id)!;
 
       stack.startStep(baseStep);
       return;
     }
 
-    if (isAfterHookDescendant) {
-      const stack = this.afterHooksStepsStack.get(test.id)!;
-
-      stack.startStep(baseStep);
-      return;
-    }
-
-    if (step.title === BEFORE_HOOKS_ROOT_STEP_TITLE) {
+    if (isRootHook) {
       const stack = new ShallowStepsStack();
 
       stack.startStep(baseStep);
-      this.beforeHooksStepsStack.set(test.id, stack);
-      return;
-    }
 
-    if (step.title === AFTER_HOOKS_ROOT_STEP_TITLE) {
-      const stack = new ShallowStepsStack();
-
-      stack.startStep(baseStep);
-      this.afterHooksStepsStack.set(test.id, stack);
+      if (isRootBeforeHook) {
+        this.beforeHooksStepsStack.set(test.id, stack);
+      } else {
+        this.afterHooksStepsStack.set(test.id, stack);
+      }
       return;
     }
 
@@ -367,44 +362,53 @@ export class AllureReporter implements ReporterV2 {
     }
 
     const testUuid = this.allureResultsUuids.get(test.id)!;
+    const isRootBeforeHook = step.title === BEFORE_HOOKS_ROOT_STEP_TITLE;
+    const isRootAfterHook = step.title === AFTER_HOOKS_ROOT_STEP_TITLE;
+    const isRootHook = isRootBeforeHook || isRootAfterHook;
     const isBeforeHookDescendant = isBeforeHookStep(step);
     const isAfterHookDescendant = isAfterHookStep(step);
+    const isAfterHook = isRootAfterHook || isAfterHookDescendant;
+    const isHook = isRootBeforeHook || isRootAfterHook || isBeforeHookDescendant || isAfterHookDescendant;
 
-    if (isBeforeHookDescendant) {
-      const stack = this.beforeHooksStepsStack.get(test.id)!;
+    if (isHook) {
+      const stack = isAfterHook ? this.afterHooksStepsStack.get(test.id)! : this.beforeHooksStepsStack.get(test.id)!;
 
-      stack.stopStep({
-        stage: Stage.FINISHED,
+      stack.updateStep((stepResult) => {
+        const { status = Status.PASSED } = getWorstTestStepResult(stepResult.steps) ?? {};
+
+        stepResult.status = step.error ? Status.FAILED : status;
+        stepResult.stage = Stage.FINISHED;
+
+        if (step.error) {
+          stepResult.statusDetails = { ...getMessageAndTraceFromError(step.error) };
+        }
       });
-      return;
+      stack.stopStep({
+        duration: step.duration,
+      });
     }
 
-    if (isAfterHookDescendant) {
-      const stack = this.afterHooksStepsStack.get(test.id)!;
-
-      stack.stopStep({
-        stage: Stage.FINISHED,
-      });
-      return;
-    }
-
-    if (step.title === BEFORE_HOOKS_ROOT_STEP_TITLE) {
-      const stack = this.beforeHooksStepsStack.get(test.id)!;
+    if (isRootHook) {
+      const stack = isRootAfterHook
+        ? this.afterHooksStepsStack.get(test.id)!
+        : this.beforeHooksStepsStack.get(test.id)!;
 
       this.allureRuntime?.updateTest(testUuid, (testResult) => {
-        testResult.steps.unshift(...stack.steps);
+        if (isRootAfterHook) {
+          testResult.steps.push(...stack.steps);
+        } else {
+          testResult.steps.unshift(...stack.steps);
+        }
       });
-      this.beforeHooksStepsStack.delete(test.id);
-      return;
+
+      if (isRootAfterHook) {
+        this.afterHooksStepsStack.delete(test.id);
+      } else {
+        this.beforeHooksStepsStack.delete(test.id);
+      }
     }
 
-    if (step.title === AFTER_HOOKS_ROOT_STEP_TITLE) {
-      const stack = this.afterHooksStepsStack.get(test.id)!;
-
-      this.allureRuntime?.updateTest(testUuid, (testResult) => {
-        testResult.steps.push(...stack.steps);
-      });
-      this.afterHooksStepsStack.delete(test.id);
+    if (isHook) {
       return;
     }
 

@@ -86,22 +86,27 @@ export class ShallowStepsStack {
     this.#runningSteps.push(stepResult);
   }
 
-  updateStep(step?: Partial<StepResult>) {
+  updateStep(updateFunc: (result: StepResult) => void) {
     if (!this.#currentStep) {
-      throw new Error("there is no step to stop");
+      // eslint-disable-next-line no-console
+      console.error("There is no running step in the stack to update!");
+      return;
     }
 
-    Object.assign(this.#currentStep, step);
+    updateFunc(this.#currentStep);
   }
 
-  stopStep(step?: Partial<StepResult>) {
+  stopStep(opts?: { stop?: number; duration?: number }) {
     if (!this.#currentStep) {
-      throw new Error("there is no step to stop");
+      // eslint-disable-next-line no-console
+      console.error("There is no running step in the stack to stop!");
+      return;
     }
 
-    Object.assign(this.#currentStep, {
-      stage: Stage.FINISHED,
-      ...step,
+    const { stop, duration = 0 } = opts ?? {};
+
+    this.updateStep((result) => {
+      result.stop = stop ?? result.start ? result.start! + duration : undefined;
     });
 
     this.#runningSteps.pop();

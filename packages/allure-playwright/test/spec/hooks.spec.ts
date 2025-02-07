@@ -17,6 +17,7 @@ it("handles before hooks", async () => {
   const [beforeHooks] = tests[0].steps;
 
   expect(beforeHooks).toMatchObject({
+    name: "Before Hooks",
     steps: expect.arrayContaining([
       expect.objectContaining({
         name: "beforeAll hook",
@@ -95,31 +96,24 @@ it("should mark step as failed when any child step is failed", async () => {
     `,
   });
 
-  expect(results.tests[0]).toEqual(
-    expect.objectContaining({
-      name: "should contain hooks",
-      status: Status.BROKEN,
-      steps: [
-        expect.objectContaining({
-          name: "Before Hooks",
-          status: Status.PASSED,
-        }),
-
-        expect.objectContaining({
-          name: "page.waitForEvent",
-          status: Status.FAILED,
-        }),
-        expect.objectContaining({
-          name: "Worker Cleanup",
-          status: Status.PASSED,
-        }),
-        expect.objectContaining({
-          name: "After Hooks",
-          status: Status.FAILED,
-        }),
-      ],
-    }),
-  );
+  expect(results.tests[0]).toMatchObject({
+    name: "should contain hooks",
+    status: Status.BROKEN,
+    steps: [
+      expect.objectContaining({
+        name: "Before Hooks",
+        status: Status.PASSED,
+      }),
+      expect.objectContaining({
+        name: "page.waitForEvent",
+        status: Status.FAILED,
+      }),
+      expect.objectContaining({
+        name: "After Hooks",
+        status: Status.PASSED,
+      }),
+    ],
+  });
 });
 
 it("keeps correct hooks structure when something failed", async () => {

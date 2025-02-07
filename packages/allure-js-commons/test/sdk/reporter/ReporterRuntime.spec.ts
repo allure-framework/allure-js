@@ -794,13 +794,15 @@ describe("ReporterRuntime", () => {
       const stack = new ShallowStepsStack();
 
       stack.startStep({ name: "step1" });
-      stack.stopStep({ status: Status.PASSED });
+      stack.updateStep((result) => {
+        result.status = Status.PASSED;
+        result.stage = Stage.FINISHED;
+      });
+      stack.stopStep();
 
       expect(stack.steps).toEqual([
         expect.objectContaining({
           name: "step1",
-          status: Status.PASSED,
-          stage: Stage.FINISHED,
           steps: [],
         }),
       ]);
