@@ -18,6 +18,7 @@ import {
   LinkType,
   Stage,
   Status,
+  type StepResult,
   type TestResult,
 } from "allure-js-commons";
 import type { RuntimeMessage, TestPlanV1Test } from "allure-js-commons/sdk";
@@ -31,7 +32,9 @@ import {
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
   ReporterRuntime,
+  ShallowStepsStack,
   createDefaultWriter,
+  createStepResult,
   escapeRegExp,
   formatLink,
   getEnvironmentLabels,
@@ -47,7 +50,14 @@ import {
 } from "allure-js-commons/sdk/reporter";
 import { allurePlaywrightLegacyApi } from "./legacy.js";
 import type { AllurePlaywrightReporterConfig } from "./model.js";
-import { statusToAllureStats } from "./utils.js";
+import {
+  AFTER_HOOKS_ROOT_STEP_TITLE,
+  BEFORE_HOOKS_ROOT_STEP_TITLE,
+  isAfterHookStep,
+  isBeforeHookStep,
+  isDescendantOfStepWithTitle,
+  statusToAllureStats,
+} from "./utils.js";
 
 // TODO: move to utils.ts
 const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
@@ -91,6 +101,8 @@ export class AllureReporter implements ReporterV2 {
   private readonly startedTestCasesTitlesCache: string[] = [];
   private readonly allureResultsUuids: Map<string, string> = new Map();
   private readonly attachmentSteps: Map<string, (string | undefined)[]> = new Map();
+  private beforeHooksStepsStack: Map<string, ShallowStepsStack> = new Map();
+  private afterHooksStepsStack: Map<string, ShallowStepsStack> = new Map();
 
   constructor(config: AllurePlaywrightReporterConfig) {
     this.options = { suiteTitle: true, detail: true, ...config };
@@ -281,6 +293,11 @@ export class AllureReporter implements ReporterV2 {
       return true;
     }
 
+    // playwright doesn't report this step
+    if (step.title === "Worker Cleanup" || isDescendantOfStepWithTitle(step, "Worker Cleanup")) {
+      return true;
+    }
+
     return false;
   }
 
@@ -297,10 +314,46 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    this.allureRuntime!.startStep(testUuid, undefined, {
+    const baseStep: StepResult = {
+      ...createStepResult(),
       name: step.title,
       start: step.startTime.getTime(),
-    });
+      stage: Stage.RUNNING,
+    };
+    const isBeforeHookDescendant = isBeforeHookStep(step);
+    const isAfterHookDescendant = isAfterHookStep(step);
+
+    if (isBeforeHookDescendant) {
+      const stack = this.beforeHooksStepsStack.get(test.id)!;
+
+      stack.startStep(baseStep);
+      return;
+    }
+
+    if (isAfterHookDescendant) {
+      const stack = this.afterHooksStepsStack.get(test.id)!;
+
+      stack.startStep(baseStep);
+      return;
+    }
+
+    if (step.title === BEFORE_HOOKS_ROOT_STEP_TITLE) {
+      const stack = new ShallowStepsStack();
+
+      stack.startStep(baseStep);
+      this.beforeHooksStepsStack.set(test.id, stack);
+      return;
+    }
+
+    if (step.title === AFTER_HOOKS_ROOT_STEP_TITLE) {
+      const stack = new ShallowStepsStack();
+
+      stack.startStep(baseStep);
+      this.afterHooksStepsStack.set(test.id, stack);
+      return;
+    }
+
+    this.allureRuntime!.startStep(testUuid, undefined, baseStep)!;
   }
 
   onStepEnd(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
@@ -314,6 +367,47 @@ export class AllureReporter implements ReporterV2 {
     }
 
     const testUuid = this.allureResultsUuids.get(test.id)!;
+    const isBeforeHookDescendant = isBeforeHookStep(step);
+    const isAfterHookDescendant = isAfterHookStep(step);
+
+    if (isBeforeHookDescendant) {
+      const stack = this.beforeHooksStepsStack.get(test.id)!;
+
+      stack.stopStep({
+        stage: Stage.FINISHED,
+      });
+      return;
+    }
+
+    if (isAfterHookDescendant) {
+      const stack = this.afterHooksStepsStack.get(test.id)!;
+
+      stack.stopStep({
+        stage: Stage.FINISHED,
+      });
+      return;
+    }
+
+    if (step.title === BEFORE_HOOKS_ROOT_STEP_TITLE) {
+      const stack = this.beforeHooksStepsStack.get(test.id)!;
+
+      this.allureRuntime?.updateTest(testUuid, (testResult) => {
+        testResult.steps.unshift(...stack.steps);
+      });
+      this.beforeHooksStepsStack.delete(test.id);
+      return;
+    }
+
+    if (step.title === AFTER_HOOKS_ROOT_STEP_TITLE) {
+      const stack = this.afterHooksStepsStack.get(test.id)!;
+
+      this.allureRuntime?.updateTest(testUuid, (testResult) => {
+        testResult.steps.push(...stack.steps);
+      });
+      this.afterHooksStepsStack.delete(test.id);
+      return;
+    }
+
     const currentStep = this.allureRuntime!.currentStep(testUuid);
 
     if (!currentStep) {

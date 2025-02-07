@@ -104,21 +104,77 @@ it("should mark step as failed when any child step is failed", async () => {
           name: "Before Hooks",
           status: Status.PASSED,
         }),
+
         expect.objectContaining({
           name: "page.waitForEvent",
           status: Status.FAILED,
-          steps: [
-            expect.objectContaining({
-              name: "After Hooks",
-              status: Status.FAILED,
-            }),
-          ],
         }),
         expect.objectContaining({
           name: "Worker Cleanup",
           status: Status.PASSED,
         }),
+        expect.objectContaining({
+          name: "After Hooks",
+          status: Status.FAILED,
+        }),
       ],
     }),
   );
+});
+
+it("keeps correct hooks structure when something failed", async () => {
+  const results = await runPlaywrightInlineTest({
+    "sample.test.js": `
+       import test from '@playwright/test';
+
+       test.beforeAll(async () => {});
+
+       test.beforeEach(async () => {});
+
+       test.afterAll(async () => {});
+
+       test.afterEach(async () => {});
+
+       test("should contain hooks", async ({ page }) => {
+         await test.step("step 1", async () => {
+           await page.waitForEvent("en_event");
+         });
+       });
+     `,
+    "playwright.config.js": `
+       import { defineConfig } from "@playwright/test";
+
+       export default {
+         reporter: [
+           [
+             "allure-playwright",
+             {
+               resultsDir: "./allure-results",
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+         timeout: 1000,
+         use: {
+           screenshot: "on",
+         },
+       };
+    `,
+  });
+
+  expect(results.tests[0].steps).toHaveLength(3);
+  expect(results.tests[0].steps[0]).toMatchObject({
+    name: "Before Hooks",
+  });
+  expect(results.tests[0].steps[1]).toMatchObject({
+    name: "step 1",
+  });
+  expect(results.tests[0].steps[2]).toMatchObject({
+    name: "After Hooks",
+  });
 });
