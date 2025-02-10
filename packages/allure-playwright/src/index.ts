@@ -18,6 +18,7 @@ import {
   LinkType,
   Stage,
   Status,
+  type StepResult,
   type TestResult,
 } from "allure-js-commons";
 import type { RuntimeMessage, TestPlanV1Test } from "allure-js-commons/sdk";
@@ -31,7 +32,9 @@ import {
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
   ReporterRuntime,
+  ShallowStepsStack,
   createDefaultWriter,
+  createStepResult,
   escapeRegExp,
   formatLink,
   getEnvironmentLabels,
@@ -40,13 +43,21 @@ import {
   getLanguageLabel,
   getPackageLabel,
   getThreadLabel,
+  getWorstTestStepResult,
   md5,
   parseTestPlan,
   readImageAsBase64,
 } from "allure-js-commons/sdk/reporter";
 import { allurePlaywrightLegacyApi } from "./legacy.js";
 import type { AllurePlaywrightReporterConfig } from "./model.js";
-import { statusToAllureStats } from "./utils.js";
+import {
+  AFTER_HOOKS_ROOT_STEP_TITLE,
+  BEFORE_HOOKS_ROOT_STEP_TITLE,
+  isAfterHookStep,
+  isBeforeHookStep,
+  isDescendantOfStepWithTitle,
+  statusToAllureStats,
+} from "./utils.js";
 
 // TODO: move to utils.ts
 const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
@@ -90,6 +101,8 @@ export class AllureReporter implements ReporterV2 {
   private readonly startedTestCasesTitlesCache: string[] = [];
   private readonly allureResultsUuids: Map<string, string> = new Map();
   private readonly attachmentSteps: Map<string, (string | undefined)[]> = new Map();
+  private beforeHooksStepsStack: Map<string, ShallowStepsStack> = new Map();
+  private afterHooksStepsStack: Map<string, ShallowStepsStack> = new Map();
 
   constructor(config: AllurePlaywrightReporterConfig) {
     this.options = { suiteTitle: true, detail: true, ...config };
@@ -280,6 +293,11 @@ export class AllureReporter implements ReporterV2 {
       return true;
     }
 
+    // playwright doesn't report this step
+    if (step.title === "Worker Cleanup" || isDescendantOfStepWithTitle(step, "Worker Cleanup")) {
+      return true;
+    }
+
     return false;
   }
 
@@ -296,10 +314,41 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    this.allureRuntime!.startStep(testUuid, undefined, {
+    const baseStep: StepResult = {
+      ...createStepResult(),
       name: step.title,
       start: step.startTime.getTime(),
-    });
+      stage: Stage.RUNNING,
+    };
+    const isRootBeforeHook = step.title === BEFORE_HOOKS_ROOT_STEP_TITLE;
+    const isRootAfterHook = step.title === AFTER_HOOKS_ROOT_STEP_TITLE;
+    const isRootHook = isRootBeforeHook || isRootAfterHook;
+    const isBeforeHookDescendant = isBeforeHookStep(step);
+    const isAfterHookDescendant = isAfterHookStep(step);
+
+    if (isBeforeHookDescendant || isAfterHookDescendant) {
+      const stack = isBeforeHookDescendant
+        ? this.beforeHooksStepsStack.get(test.id)!
+        : this.afterHooksStepsStack.get(test.id)!;
+
+      stack.startStep(baseStep);
+      return;
+    }
+
+    if (isRootHook) {
+      const stack = new ShallowStepsStack();
+
+      stack.startStep(baseStep);
+
+      if (isRootBeforeHook) {
+        this.beforeHooksStepsStack.set(test.id, stack);
+      } else {
+        this.afterHooksStepsStack.set(test.id, stack);
+      }
+      return;
+    }
+
+    this.allureRuntime!.startStep(testUuid, undefined, baseStep)!;
   }
 
   onStepEnd(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
@@ -313,14 +362,66 @@ export class AllureReporter implements ReporterV2 {
     }
 
     const testUuid = this.allureResultsUuids.get(test.id)!;
+    const isRootBeforeHook = step.title === BEFORE_HOOKS_ROOT_STEP_TITLE;
+    const isRootAfterHook = step.title === AFTER_HOOKS_ROOT_STEP_TITLE;
+    const isRootHook = isRootBeforeHook || isRootAfterHook;
+    const isBeforeHookDescendant = isBeforeHookStep(step);
+    const isAfterHookDescendant = isAfterHookStep(step);
+    const isAfterHook = isRootAfterHook || isAfterHookDescendant;
+    const isHook = isRootBeforeHook || isRootAfterHook || isBeforeHookDescendant || isAfterHookDescendant;
+
+    if (isHook) {
+      const stack = isAfterHook ? this.afterHooksStepsStack.get(test.id)! : this.beforeHooksStepsStack.get(test.id)!;
+
+      stack.updateStep((stepResult) => {
+        const { status = Status.PASSED } = getWorstTestStepResult(stepResult.steps) ?? {};
+
+        stepResult.status = step.error ? Status.FAILED : status;
+        stepResult.stage = Stage.FINISHED;
+
+        if (step.error) {
+          stepResult.statusDetails = { ...getMessageAndTraceFromError(step.error) };
+        }
+      });
+      stack.stopStep({
+        duration: step.duration,
+      });
+    }
+
+    if (isRootHook) {
+      const stack = isRootAfterHook
+        ? this.afterHooksStepsStack.get(test.id)!
+        : this.beforeHooksStepsStack.get(test.id)!;
+
+      this.allureRuntime?.updateTest(testUuid, (testResult) => {
+        if (isRootAfterHook) {
+          testResult.steps.push(...stack.steps);
+        } else {
+          testResult.steps.unshift(...stack.steps);
+        }
+      });
+
+      if (isRootAfterHook) {
+        this.afterHooksStepsStack.delete(test.id);
+      } else {
+        this.beforeHooksStepsStack.delete(test.id);
+      }
+    }
+
+    if (isHook) {
+      return;
+    }
 
     const currentStep = this.allureRuntime!.currentStep(testUuid);
+
     if (!currentStep) {
       return;
     }
 
     this.allureRuntime!.updateStep(currentStep, (stepResult) => {
-      stepResult.status = step.error ? Status.FAILED : Status.PASSED;
+      const { status = Status.PASSED } = getWorstTestStepResult(stepResult.steps) ?? {};
+
+      stepResult.status = step.error ? Status.FAILED : status;
       stepResult.stage = Stage.FINISHED;
 
       if (step.error) {
@@ -361,6 +462,7 @@ export class AllureReporter implements ReporterV2 {
         const skipReason = test.annotations?.find(
           (annotation) => annotation.type === "skip" || annotation.type === "fixme",
         )?.description;
+
         if (skipReason) {
           testResult.statusDetails = { ...testResult.statusDetails, message: skipReason };
         }
@@ -371,9 +473,11 @@ export class AllureReporter implements ReporterV2 {
     });
 
     const attachmentSteps = this.attachmentSteps.get(testUuid) ?? [];
+
     for (let i = 0; i < result.attachments.length; i++) {
       const attachment = result.attachments[i];
       const attachmentStep = attachmentSteps.length > i ? attachmentSteps[i] : undefined;
+
       await this.processAttachment(testUuid, attachmentStep, attachment);
     }
 

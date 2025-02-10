@@ -54,6 +54,7 @@ export const getWorstTestStepResult = (steps: StepResult[]): StepResult | undefi
   if (steps.length === 0) {
     return;
   }
+
   return [...steps].sort((a, b) => statusToPriority(a.status) - statusToPriority(b.status))[0];
 };
 

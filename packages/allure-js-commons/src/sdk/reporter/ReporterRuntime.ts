@@ -36,7 +36,7 @@ import { deepClone, formatLinks, getTestResultHistoryId, getTestResultTestCaseId
 import { buildAttachmentFileName } from "./utils/attachments.js";
 import { resolveWriter } from "./writer/loader.js";
 
-interface StepStack {
+export interface StepStack {
   clear(): void;
 
   removeRoot(rootUuid: string): void;
@@ -48,7 +48,72 @@ interface StepStack {
   removeStep(stepUuid: string): void;
 }
 
-class DefaultStepStack implements StepStack {
+/**
+ * Simpler steps stack implementation that contains only the current steps without root nodes
+ * Useful, when you need to create steps without binding them to a specific test or fixture
+ * @example
+ * ```js
+ * const stack = new ShallowStepsStack();
+ *
+ * stack.startStep({ name: "step 1" });
+ * stack.startStep({ name: "step 1.1" });
+ * stack.stopStep({ status: Status.FAILED });
+ * stack.stopStep({ status: Status.PASSED });
+ * stack.steps // => [{ name: "step 1", status: Status.PASSED, steps: [{ name: "step 1.1", status: Status.FAILED }] }]
+ * ```
+ */
+export class ShallowStepsStack {
+  steps: StepResult[] = [];
+
+  #runningSteps: StepResult[] = [];
+
+  get #currentStep() {
+    return this.#runningSteps[this.#runningSteps.length - 1];
+  }
+
+  startStep(step: Partial<StepResult>) {
+    const stepResult: StepResult = {
+      ...createStepResult(),
+      ...step,
+    };
+
+    if (this.#currentStep) {
+      this.#currentStep.steps.push(stepResult);
+    } else {
+      this.steps.push(stepResult);
+    }
+
+    this.#runningSteps.push(stepResult);
+  }
+
+  updateStep(updateFunc: (result: StepResult) => void) {
+    if (!this.#currentStep) {
+      // eslint-disable-next-line no-console
+      console.error("There is no running step in the stack to update!");
+      return;
+    }
+
+    updateFunc(this.#currentStep);
+  }
+
+  stopStep(opts?: { stop?: number; duration?: number }) {
+    if (!this.#currentStep) {
+      // eslint-disable-next-line no-console
+      console.error("There is no running step in the stack to stop!");
+      return;
+    }
+
+    const { stop, duration = 0 } = opts ?? {};
+
+    this.updateStep((result) => {
+      result.stop = stop ?? result.start ? result.start! + duration : undefined;
+    });
+
+    this.#runningSteps.pop();
+  }
+}
+
+export class DefaultStepStack implements StepStack {
   private stepsByRoot: Map<string, string[]> = new Map();
   private rootsByStep: Map<string, string> = new Map();
 

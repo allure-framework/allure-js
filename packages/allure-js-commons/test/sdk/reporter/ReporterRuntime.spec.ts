@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { type Link, Stage, Status, type TestResult } from "../../../src/model.js";
 import { getTestResultHistoryId } from "../../../src/sdk/reporter";
-import { ReporterRuntime } from "../../../src/sdk/reporter/ReporterRuntime.js";
+import { ReporterRuntime, ShallowStepsStack } from "../../../src/sdk/reporter/ReporterRuntime.js";
 import { mockWriter } from "../../utils/writer.js";
 
 const fixtures = {
@@ -786,6 +786,140 @@ describe("ReporterRuntime", () => {
     });
     it("should load InMemoryWriter", () => {
       new ReporterRuntime({ writer: "InMemoryWriter" });
+    });
+  });
+
+  describe("ShallowStepsStack", () => {
+    it("should start and stop single step", () => {
+      const stack = new ShallowStepsStack();
+
+      stack.startStep({ name: "step1" });
+      stack.updateStep((result) => {
+        result.status = Status.PASSED;
+        result.stage = Stage.FINISHED;
+      });
+      stack.stopStep();
+
+      expect(stack.steps).toEqual([
+        expect.objectContaining({
+          name: "step1",
+          steps: [],
+        }),
+      ]);
+    });
+
+    it("should start and stop multiple same level steps", () => {
+      const stack = new ShallowStepsStack();
+
+      stack.startStep({ name: "step1" });
+      stack.stopStep();
+      stack.startStep({ name: "step2" });
+      stack.stopStep();
+      stack.startStep({ name: "step3" });
+      stack.stopStep();
+
+      expect(stack.steps).toEqual([
+        expect.objectContaining({
+          name: "step1",
+          steps: [],
+        }),
+        expect.objectContaining({
+          name: "step2",
+          steps: [],
+        }),
+        expect.objectContaining({
+          name: "step3",
+          steps: [],
+        }),
+      ]);
+    });
+
+    it("should start and stop nested steps", () => {
+      const stack = new ShallowStepsStack();
+
+      stack.startStep({ name: "step1" });
+      stack.startStep({ name: "step1.1" });
+      stack.startStep({ name: "step1.1.1" });
+      stack.stopStep();
+      stack.stopStep();
+      stack.stopStep();
+
+      expect(stack.steps).toEqual([
+        expect.objectContaining({
+          name: "step1",
+          steps: [
+            expect.objectContaining({
+              name: "step1.1",
+              steps: [
+                expect.objectContaining({
+                  name: "step1.1.1",
+                  steps: [],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ]);
+    });
+
+    it("should start and stop nested and same level steps", () => {
+      const stack = new ShallowStepsStack();
+
+      stack.startStep({ name: "step1" });
+      stack.startStep({ name: "step1.1" });
+      stack.startStep({ name: "step1.1.1" });
+      stack.stopStep();
+      stack.stopStep();
+      stack.stopStep();
+      stack.startStep({ name: "step2" });
+      stack.stopStep();
+      stack.startStep({ name: "step3" });
+      stack.startStep({ name: "step3.1" });
+      stack.startStep({ name: "step3.1.1" });
+      stack.stopStep();
+      stack.stopStep();
+      stack.startStep({ name: "step3.2" });
+      stack.stopStep();
+      stack.stopStep();
+
+      expect(stack.steps).toEqual([
+        expect.objectContaining({
+          name: "step1",
+          steps: [
+            expect.objectContaining({
+              name: "step1.1",
+              steps: [
+                expect.objectContaining({
+                  name: "step1.1.1",
+                  steps: [],
+                }),
+              ],
+            }),
+          ],
+        }),
+        expect.objectContaining({
+          name: "step2",
+          steps: [],
+        }),
+        expect.objectContaining({
+          name: "step3",
+          steps: [
+            expect.objectContaining({
+              name: "step3.1",
+              steps: [
+                expect.objectContaining({
+                  name: "step3.1.1",
+                  steps: [],
+                }),
+              ],
+            }),
+            expect.objectContaining({
+              name: "step3.2",
+              steps: [],
+            }),
+          ],
+        }),
+      ]);
     });
   });
 });
