@@ -9,6 +9,10 @@ export class AllurePlaywrightTestRuntime extends MessageTestRuntime {
     super();
   }
 
+  async step<T = void>(name: string, body: () => T | PromiseLike<T>) {
+    return await test.step(name, () => Promise.resolve(body()));
+  }
+
   async attachment(name: string, content: Buffer | string, options: AttachmentOptions) {
     await test.info().attach(name, { body: content, contentType: options.contentType });
   }
