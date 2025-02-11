@@ -364,7 +364,6 @@ export class AllureReporter implements ReporterV2 {
     const testUuid = this.allureResultsUuids.get(test.id)!;
     const isRootBeforeHook = step.title === BEFORE_HOOKS_ROOT_STEP_TITLE;
     const isRootAfterHook = step.title === AFTER_HOOKS_ROOT_STEP_TITLE;
-    const isRootHook = isRootBeforeHook || isRootAfterHook;
     const isBeforeHookDescendant = isBeforeHookStep(step);
     const isAfterHookDescendant = isAfterHookStep(step);
     const isAfterHook = isRootAfterHook || isAfterHookDescendant;
@@ -386,29 +385,6 @@ export class AllureReporter implements ReporterV2 {
       stack.stopStep({
         duration: step.duration,
       });
-    }
-
-    if (isRootHook) {
-      const stack = isRootAfterHook
-        ? this.afterHooksStepsStack.get(test.id)!
-        : this.beforeHooksStepsStack.get(test.id)!;
-
-      this.allureRuntime?.updateTest(testUuid, (testResult) => {
-        if (isRootAfterHook) {
-          testResult.steps.push(...stack.steps);
-        } else {
-          testResult.steps.unshift(...stack.steps);
-        }
-      });
-
-      if (isRootAfterHook) {
-        this.afterHooksStepsStack.delete(test.id);
-      } else {
-        this.beforeHooksStepsStack.delete(test.id);
-      }
-    }
-
-    if (isHook) {
       return;
     }
 
@@ -439,6 +415,8 @@ export class AllureReporter implements ReporterV2 {
     const error = result.error;
     // only apply default suites if not set by user
     const [, projectSuiteTitle, fileSuiteTitle, ...suiteTitles] = test.parent.titlePath();
+    const beforeHooksStack = this.beforeHooksStepsStack.get(test.id);
+    const afterHooksStack = this.afterHooksStepsStack.get(test.id);
 
     this.allureRuntime!.updateTest(testUuid, (testResult) => {
       testResult.labels.push(getHostLabel());
@@ -530,6 +508,16 @@ export class AllureReporter implements ReporterV2 {
 
         return labelsGroup;
       });
+
+      if (beforeHooksStack) {
+        testResult.steps.unshift(...beforeHooksStack.steps);
+        this.beforeHooksStepsStack.delete(test.id);
+      }
+
+      if (afterHooksStack) {
+        testResult.steps.push(...afterHooksStack.steps);
+        this.afterHooksStepsStack.delete(test.id);
+      }
 
       testResult.labels = newLabels;
     });
