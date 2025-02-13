@@ -21,7 +21,7 @@ import {
   type StepResult,
   type TestResult,
 } from "allure-js-commons";
-import type { RuntimeMessage, TestPlanV1Test } from "allure-js-commons/sdk";
+import type { RuntimeMessage, RuntimeStepMetadataMessage, TestPlanV1Test } from "allure-js-commons/sdk";
 import {
   extractMetadataFromString,
   getMessageAndTraceFromError,
@@ -306,6 +306,7 @@ export class AllureReporter implements ReporterV2 {
 
     if (step.category === "attach") {
       const currentStep = this.allureRuntime?.currentStep(testUuid);
+
       this.attachmentSteps.set(testUuid, [...(this.attachmentSteps.get(testUuid) ?? []), currentStep]);
       return;
     }
@@ -562,6 +563,18 @@ export class AllureReporter implements ReporterV2 {
     return false;
   }
 
+  private processStepMetadataMessage(attachmentStepUuid: string, message: RuntimeStepMetadataMessage) {
+    const { name, parameters = [] } = message.data;
+
+    this.allureRuntime!.updateStep(attachmentStepUuid, (step) => {
+      if (name) {
+        step.name = name;
+      }
+
+      step.parameters.push(...parameters);
+    });
+  }
+
   private async processAttachment(
     testUuid: string,
     attachmentStepUuid: string | undefined,
@@ -585,18 +598,24 @@ export class AllureReporter implements ReporterV2 {
     if (allureRuntimeMessage) {
       const message = JSON.parse(attachment.body!.toString()) as RuntimeMessage;
 
-      // TODO fix step metadata messages
+      if (message.type === "step_metadata") {
+        this.processStepMetadataMessage(attachmentStepUuid!, message);
+        return;
+      }
+
       this.allureRuntime!.applyRuntimeMessages(testUuid, [message]);
       return;
     }
 
     const parentUuid = this.allureRuntime!.startStep(testUuid, attachmentStepUuid, { name: attachment.name });
+
     // only stop if step is created. Step may not be created only if test with specified uuid doesn't exists.
     // usually, missing test by uuid means we should completely skip result processing;
     // the later operations are safe and will only produce console warnings
     if (parentUuid) {
       this.allureRuntime!.stopStep(parentUuid, undefined);
     }
+
     if (attachment.body) {
       this.allureRuntime!.writeAttachment(testUuid, parentUuid, attachment.name, attachment.body, {
         contentType: attachment.contentType,

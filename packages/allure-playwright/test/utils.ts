@@ -1,16 +1,19 @@
 import { fork } from "child_process";
+import { glob } from "glob";
 import { randomUUID } from "node:crypto";
-import { mkdir, rm, writeFile } from "node:fs/promises";
-import { dirname, extname, join } from "node:path";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { dirname, extname, join, relative } from "node:path";
 import { attachment, logStep, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
+
+type AllurePlaywrightTestResults = AllureResults & { restFiles: Record<string, string> };
 
 export const runPlaywrightInlineTest = async (
   files: Record<string, string | Buffer>,
   cliArgs: string[] = [],
   env?: Record<string, string>,
-): Promise<AllureResults> => {
+): Promise<AllurePlaywrightTestResults> => {
   const testFiles = {
     "playwright.config.js": `
        module.exports = {
@@ -32,19 +35,24 @@ export const runPlaywrightInlineTest = async (
     `,
     ...files,
   };
+  const testFilesNames = Object.keys(testFiles);
   const testDir = join(__dirname, "fixtures", randomUUID());
 
   await step(`create test dir ${testDir}`, async () => {
     await mkdir(testDir, { recursive: true });
   });
 
-  for (const file of Object.keys(testFiles)) {
+  for (const file of testFilesNames) {
     await step(file, async () => {
       const filePath = join(testDir, file);
       await mkdir(dirname(filePath), { recursive: true });
       const content = testFiles[file as keyof typeof testFiles];
       await writeFile(filePath, content, "utf8");
-      await attachment(file, content, { contentType: "text/plain", fileExtension: extname(file), encoding: "utf-8" });
+      await attachment(file, content, {
+        contentType: "text/plain",
+        fileExtension: extname(file),
+        encoding: "utf-8",
+      });
     });
   }
 
@@ -79,7 +87,14 @@ export const runPlaywrightInlineTest = async (
 
   return new Promise((resolve) => {
     testProcess.on("exit", async (code, signal) => {
-      await rm(testDir, { recursive: true });
+      const resultsFiles = (
+        await glob(join(testDir, "**/*"), {
+          nodir: true,
+          windowsPathsNoEscape: true,
+        })
+      )
+        .map((filename) => relative(testDir, filename))
+        .filter((filename) => !testFilesNames.includes(filename));
 
       if (signal) {
         await logStep(`Interrupted with ${signal}`);
@@ -90,9 +105,20 @@ export const runPlaywrightInlineTest = async (
 
       await attachment("stdout", stdout.join("\n"), "text/plain");
       await attachment("stderr", stderr.join("\n"), "text/plain");
-
       await messageReader.attachResults();
-      return resolve(messageReader.results);
+
+      const result: AllurePlaywrightTestResults = {
+        ...messageReader.results,
+        restFiles: {},
+      };
+
+      for (const file of resultsFiles) {
+        result.restFiles[file] = await readFile(join(testDir, file), "utf-8");
+      }
+
+      await rm(testDir, { recursive: true });
+
+      return resolve(result);
     });
   });
 };
