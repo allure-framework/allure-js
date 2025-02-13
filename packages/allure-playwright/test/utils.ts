@@ -87,7 +87,12 @@ export const runPlaywrightInlineTest = async (
 
   return new Promise((resolve) => {
     testProcess.on("exit", async (code, signal) => {
-      const resultsFiles = (await glob(join(testDir, "**/*"), { nodir: true }))
+      const resultsFiles = (
+        await glob(join(testDir, "**/*"), {
+          nodir: true,
+          windowsPathsNoEscape: true,
+        })
+      )
         .map((filename) => relative(testDir, filename))
         .filter((filename) => !testFilesNames.includes(filename));
 
