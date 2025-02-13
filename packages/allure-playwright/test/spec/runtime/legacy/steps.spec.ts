@@ -140,3 +140,55 @@ it("should allow to set step metadata through its context", async () => {
     name: "After Hooks",
   });
 });
+
+it("should use native playwright steps under the hood", async () => {
+  const { tests, restFiles } = await runPlaywrightInlineTest({
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             "allure-playwright",
+             {
+               resultsDir: "./allure-results",
+             },
+           ],
+           ["dot"],
+           ["json", { outputFile: "./test-results.json" }],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
+    "sample.test.ts": `
+      import { allure, test } from "allure-playwright";
+
+      test("steps", async () => {
+        await allure.step("step 1", async () => {});
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toHaveLength(3);
+  expect(tests[0].steps[0]).toMatchObject({
+    name: "Before Hooks",
+  });
+  expect(tests[0].steps[1]).toMatchObject({
+    name: "step 1",
+    status: Status.PASSED,
+    stage: Stage.FINISHED,
+  });
+  expect(tests[0].steps[2]).toMatchObject({
+    name: "After Hooks",
+  });
+  expect(restFiles["test-results.json"]).toBeDefined();
+
+  const pwTestResults = JSON.parse(restFiles["test-results.json"]);
+
+  expect(pwTestResults.suites[0].specs[0].tests[0].results[0].steps[0]).toMatchObject({
+    title: "step 1",
+  });
+});
