@@ -17379,6 +17379,14 @@ const RAW_RUNTIME_STATE =
           ["charset", "npm:1.0.1"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:2.0.2", {\
+        "packageLocation": "./.yarn/cache/mime-format-npm-2.0.2-e7f4f496b3-8dfcb4310f.zip/node_modules/mime-format/",\
+        "packageDependencies": [\
+          ["mime-format", "npm:2.0.2"],\
+          ["charset", "npm:1.0.1"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["mime-types", [\
@@ -17972,7 +17980,7 @@ const RAW_RUNTIME_STATE =
           ["msw", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.3"],\
           ["newman", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:6.2.1"],\
           ["npm-run-all2", "npm:7.0.0"],\
-          ["postman-collection", "npm:4.3.0"],\
+          ["postman-collection", "npm:5.0.0"],\
           ["rimraf", "npm:6.0.0"],\
           ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\
           ["vitest", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:3.0.5"]\
@@ -18962,24 +18970,6 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["postman-collection", [\
-      ["npm:4.3.0", {\
-        "packageLocation": "./.yarn/cache/postman-collection-npm-4.3.0-3fd5310c06-4b91e61867.zip/node_modules/postman-collection/",\
-        "packageDependencies": [\
-          ["postman-collection", "npm:4.3.0"],\
-          ["@faker-js/faker", "npm:5.5.3"],\
-          ["file-type", "npm:3.9.0"],\
-          ["http-reasons", "npm:0.1.0"],\
-          ["iconv-lite", "npm:0.6.3"],\
-          ["liquid-json", "npm:0.3.1"],\
-          ["lodash", "npm:4.17.21"],\
-          ["mime-format", "npm:2.0.1"],\
-          ["mime-types", "npm:2.1.35"],\
-          ["postman-url-encoder", "npm:3.0.5"],\
-          ["semver", "npm:7.5.4"],\
-          ["uuid", "npm:8.3.2"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:4.4.0", {\
         "packageLocation": "./.yarn/cache/postman-collection-npm-4.4.0-3ea53af3e3-69abf714d4.zip/node_modules/postman-collection/",\
         "packageDependencies": [\
@@ -18994,6 +18984,24 @@ const RAW_RUNTIME_STATE =
           ["mime-types", "npm:2.1.35"],\
           ["postman-url-encoder", "npm:3.0.5"],\
           ["semver", "npm:7.5.4"],\
+          ["uuid", "npm:8.3.2"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:5.0.0", {\
+        "packageLocation": "./.yarn/cache/postman-collection-npm-5.0.0-740b5495cd-d514d4f44f.zip/node_modules/postman-collection/",\
+        "packageDependencies": [\
+          ["postman-collection", "npm:5.0.0"],\
+          ["@faker-js/faker", "npm:5.5.3"],\
+          ["file-type", "npm:3.9.0"],\
+          ["http-reasons", "npm:0.1.0"],\
+          ["iconv-lite", "npm:0.6.3"],\
+          ["liquid-json", "npm:0.3.1"],\
+          ["lodash", "npm:4.17.21"],\
+          ["mime-format", "npm:2.0.2"],\
+          ["mime-types", "npm:2.1.35"],\
+          ["postman-url-encoder", "npm:3.0.6"],\
+          ["semver", "npm:7.7.1"],\
           ["uuid", "npm:8.3.2"]\
         ],\
         "linkType": "HARD"\
@@ -19090,6 +19098,14 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/postman-url-encoder-npm-3.0.5-1e41381a6a-e4bb3698c9.zip/node_modules/postman-url-encoder/",\
         "packageDependencies": [\
           ["postman-url-encoder", "npm:3.0.5"],\
+          ["punycode", "npm:2.3.1"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:3.0.6", {\
+        "packageLocation": "./.yarn/cache/postman-url-encoder-npm-3.0.6-22e675bc23-654aa43455.zip/node_modules/postman-url-encoder/",\
+        "packageDependencies": [\
+          ["postman-url-encoder", "npm:3.0.6"],\
           ["punycode", "npm:2.3.1"]\
         ],\
         "linkType": "HARD"\
@@ -20348,6 +20364,13 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/semver-npm-7.6.3-57e82c14d5-36b1fbe1a2.zip/node_modules/semver/",\
         "packageDependencies": [\
           ["semver", "npm:7.6.3"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:7.7.1", {\
+        "packageLocation": "./.yarn/cache/semver-npm-7.7.1-4572475307-4cfa1eb91e.zip/node_modules/semver/",\
+        "packageDependencies": [\
+          ["semver", "npm:7.7.1"]\
         ],\
         "linkType": "HARD"\
       }]\
