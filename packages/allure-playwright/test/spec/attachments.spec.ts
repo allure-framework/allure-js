@@ -60,3 +60,52 @@ it("adds snapshots correctly and provide a screenshot diff", async () => {
     source: expect.stringMatching(/.*\.imagediff/),
   });
 });
+
+it("adds trace to the report as an attachment", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": `
+      import test from '@playwright/test';
+
+      test('should do nothing', async ({ page }, testInfo) => {
+        await page.goto('https://allurereport.org');
+      });
+    `,
+    "playwright.config.js": `
+       import { defineConfig } from "@playwright/test";
+
+       export default {
+         outputDir: "./test-results",
+         reporter: [
+           [
+             require.resolve("allure-playwright"),
+             {
+               resultsDir: "./allure-results",
+               detail: false,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+         use: {
+           trace: "on",
+         }
+      };
+    `,
+  });
+
+  expect(tests[0].steps).toHaveLength(1);
+  expect(tests[0].steps[0]).toMatchObject({
+    name: "trace",
+    attachments: [
+      expect.objectContaining({
+        name: "trace",
+        type: "application/zip",
+        source: expect.stringMatching(/.*\.zip/),
+      }),
+    ],
+  });
+});
