@@ -109,3 +109,54 @@ it("adds trace to the report as an attachment", async () => {
     ],
   });
 });
+
+it("adds trace from stopChunk to the report as an attachment", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": `
+      import test from '@playwright/test';
+      import { attachTrace } from "allure-js-commons";
+
+      test('should do nothing', async ({ page, context }, testInfo) => {
+        await context.tracing.start({ screenshots: true, snapshots: true });
+        await page.goto('https://allurereport.org');
+        const chunkPath = 'allure-results/trace-chunk.zip';
+        await context.tracing.stopChunk({ path: chunkPath });
+        await attachTrace("trace-chunk", chunkPath);
+      });
+    `,
+    "playwright.config.js": `
+       import { defineConfig } from "@playwright/test";
+
+       export default {
+         outputDir: "./test-results",
+         reporter: [
+           [
+             require.resolve("allure-playwright"),
+             {
+               resultsDir: "./allure-results",
+               detail: false,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+      };
+    `,
+  });
+
+  expect(tests[0].steps).toHaveLength(1);
+  expect(tests[0].steps[0]).toMatchObject({
+    name: "trace-chunk",
+    attachments: [
+      expect.objectContaining({
+        name: "trace-chunk",
+        type: "application/vnd.allure.playwright-trace",
+        source: expect.stringMatching(/.*\.zip/),
+      }),
+    ],
+  });
+});
