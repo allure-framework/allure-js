@@ -38,7 +38,7 @@ describe("typeToExtension", () => {
 
   it("should get an zip extension for Playwright trace archive", () => {
     const extension = typeToExtension({
-      contentType: "application/playwright-trace",
+      contentType: "application/vnd.allure.playwright-trace",
     });
 
     expect(extension).toBe(".zip");

@@ -52,7 +52,7 @@ export class AllurePlaywrightTestRuntime extends MessageTestRuntime {
   }
 
   async attachTrace(name: string, content: Buffer) {
-    await this.attachment(name, content, { contentType: "application/playwright-trace" });
+    await this.attachment(name, content, { contentType: "application/vnd.allure.playwright-trace" });
   }
 
   async sendMessage(message: RuntimeMessage) {

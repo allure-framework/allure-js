@@ -624,7 +624,7 @@ export const EXTENSIONS_BY_TYPE: Record<string, string> = {
   "application/xspf+xml": ".xspf",
   "application/xv+xml": ".mxml",
   "application/zip": ".zip",
-  "application/playwright-trace": ".zip",
+  "application/vnd.allure.playwright-trace": ".zip",
   "application/zstd": ".zst",
   "audio/ac3": ".ac3",
   "audio/adpcm": ".adp",

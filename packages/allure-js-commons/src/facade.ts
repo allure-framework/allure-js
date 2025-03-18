@@ -77,7 +77,9 @@ export const attachment = (
 };
 
 export const attachTrace = (name: string, path: string) => {
-  return callRuntimeMethod("attachmentFromPath", name, path, { contentType: "application/playwright-trace" });
+  return callRuntimeMethod("attachmentFromPath", name, path, {
+    contentType: "application/vnd.allure.playwright-trace",
+  });
 };
 
 export const attachmentPath = (
