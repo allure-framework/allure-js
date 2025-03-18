@@ -2,6 +2,7 @@ export {
   allureId,
   attachment,
   attachmentPath,
+  attachTrace,
   description,
   descriptionHtml,
   displayName,
