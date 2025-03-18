@@ -51,10 +51,6 @@ export class AllurePlaywrightTestRuntime extends MessageTestRuntime {
     await test.info().attach(name, { path, contentType: options.contentType });
   }
 
-  async attachTrace(name: string, content: Buffer) {
-    await this.attachment(name, content, { contentType: "application/vnd.allure.playwright-trace" });
-  }
-
   async sendMessage(message: RuntimeMessage) {
     await test.info().attach(`Allure Metadata (${message.type})`, {
       contentType: ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
