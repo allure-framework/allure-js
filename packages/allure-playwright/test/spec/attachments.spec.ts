@@ -103,7 +103,7 @@ it("adds trace to the report as an attachment", async () => {
     attachments: [
       expect.objectContaining({
         name: "trace",
-        type: "application/zip",
+        type: "application/vnd.allure.playwright-trace",
         source: expect.stringMatching(/.*\.zip/),
       }),
     ],
