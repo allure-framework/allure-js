@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, it } from "vitest";
+import { ContentType } from "allure-js-commons";
 import { runPlaywrightInlineTest } from "../utils.js";
 
 it("doesn't not throw on missing attachment", async () => {
@@ -65,9 +66,12 @@ it("adds trace to the report as an attachment", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
       import test from '@playwright/test';
+      import * as allure from "allure-js-commons";
+      import { ContentType } from "allure-js-commons";
 
       test('should do nothing', async ({ page }, testInfo) => {
         await page.goto('https://allurereport.org');
+        await allure.attachment("trace", "trace", ContentType.JPEG);
       });
     `,
     "playwright.config.js": `
@@ -97,8 +101,17 @@ it("adds trace to the report as an attachment", async () => {
     `,
   });
 
-  expect(tests[0].steps).toHaveLength(1);
+  expect(tests[0].steps).toHaveLength(2);
   expect(tests[0].steps[0]).toMatchObject({
+    name: "trace",
+    attachments: [
+      expect.objectContaining({
+        name: "trace",
+        type: "image/jpeg",
+      }),
+    ],
+  });
+  expect(tests[0].steps[1]).toMatchObject({
     name: "trace",
     attachments: [
       expect.objectContaining({
