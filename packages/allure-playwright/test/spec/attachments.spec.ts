@@ -1,7 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, it } from "vitest";
-import { ContentType } from "allure-js-commons";
 import { runPlaywrightInlineTest } from "../utils.js";
 
 it("doesn't not throw on missing attachment", async () => {
