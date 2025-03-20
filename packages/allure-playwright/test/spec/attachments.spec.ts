@@ -65,9 +65,12 @@ it("adds trace to the report as an attachment", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
       import test from '@playwright/test';
+      import * as allure from "allure-js-commons";
+      import { ContentType } from "allure-js-commons";
 
       test('should do nothing', async ({ page }, testInfo) => {
         await page.goto('https://allurereport.org');
+        await allure.attachment("trace", "trace", ContentType.JPEG);
       });
     `,
     "playwright.config.js": `
@@ -97,13 +100,73 @@ it("adds trace to the report as an attachment", async () => {
     `,
   });
 
-  expect(tests[0].steps).toHaveLength(1);
+  expect(tests[0].steps).toHaveLength(2);
   expect(tests[0].steps[0]).toMatchObject({
     name: "trace",
     attachments: [
       expect.objectContaining({
         name: "trace",
-        type: "application/zip",
+        type: "image/jpeg",
+      }),
+    ],
+  });
+  expect(tests[0].steps[1]).toMatchObject({
+    name: "trace",
+    attachments: [
+      expect.objectContaining({
+        name: "trace",
+        type: "application/vnd.allure.playwright-trace",
+        source: expect.stringMatching(/.*\.zip/),
+      }),
+    ],
+  });
+});
+
+it("adds trace from stopChunk to the report as an attachment", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": `
+      import test from '@playwright/test';
+      import { attachTrace } from "allure-js-commons";
+
+      test('should do nothing', async ({ page, context }, testInfo) => {
+        await context.tracing.start({ screenshots: true, snapshots: true });
+        await page.goto('https://allurereport.org');
+        const chunkPath = 'allure-results/trace-chunk.zip';
+        await context.tracing.stopChunk({ path: chunkPath });
+        await attachTrace("trace-chunk", chunkPath);
+      });
+    `,
+    "playwright.config.js": `
+       import { defineConfig } from "@playwright/test";
+
+       export default {
+         outputDir: "./test-results",
+         reporter: [
+           [
+             require.resolve("allure-playwright"),
+             {
+               resultsDir: "./allure-results",
+               detail: false,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+      };
+    `,
+  });
+
+  expect(tests[0].steps).toHaveLength(1);
+  expect(tests[0].steps[0]).toMatchObject({
+    name: "trace-chunk",
+    attachments: [
+      expect.objectContaining({
+        name: "trace-chunk",
+        type: "application/vnd.allure.playwright-trace",
         source: expect.stringMatching(/.*\.zip/),
       }),
     ],

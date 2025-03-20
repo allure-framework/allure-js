@@ -623,9 +623,13 @@ export class AllureReporter implements ReporterV2 {
     } else if (!existsSync(attachment.path!)) {
       return;
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      const contentType =
+        attachment.name === "trace" && attachment.contentType === "application/zip"
+          ? "application/vnd.allure.playwright-trace"
+          : attachment.contentType;
+
       this.allureRuntime!.writeAttachment(testUuid, parentUuid, attachment.name, attachment.path!, {
-        contentType: attachment.contentType,
+        contentType,
       });
     }
 

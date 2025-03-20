@@ -36,6 +36,14 @@ describe("typeToExtension", () => {
     expect(extension).toBe(".imagediff");
   });
 
+  it("should get an zip extension for Playwright trace archive", () => {
+    const extension = typeToExtension({
+      contentType: "application/vnd.allure.playwright-trace",
+    });
+
+    expect(extension).toBe(".zip");
+  });
+
   it("should get an empty extension for unknown type", () => {
     const extension = typeToExtension({
       contentType: "application/vnd.unknown",
