@@ -80,7 +80,7 @@
     "allure-commandline": "^2.29.0",
     "allure-vitest": "workspace:*",
     "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsdoc": "^50.0.0",
     "eslint-plugin-n": "^17.10.1",
