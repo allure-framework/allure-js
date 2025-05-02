@@ -5513,7 +5513,7 @@ __metadata:
     eslint-plugin-n: "npm:^17.10.1"
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
-    npm-run-all2: "npm:^7.0.0"
+    npm-run-all2: "npm:^8.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^3.0.5"
@@ -5560,7 +5560,7 @@ __metadata:
     eslint-plugin-n: "npm:^17.10.1"
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
-    npm-run-all2: "npm:^7.0.0"
+    npm-run-all2: "npm:^8.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^3.0.5"
@@ -5600,7 +5600,7 @@ __metadata:
     eslint-plugin-n: "npm:^17.10.1"
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
-    npm-run-all2: "npm:^7.0.0"
+    npm-run-all2: "npm:^8.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^3.0.5"
@@ -5641,7 +5641,7 @@ __metadata:
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     jasmine: "npm:^5.1.0"
-    npm-run-all2: "npm:^7.0.0"
+    npm-run-all2: "npm:^8.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^3.0.5"
@@ -5685,7 +5685,7 @@ __metadata:
     jest-cli: "npm:^29.7.0"
     jest-environment-jsdom: "npm:^29.7.0"
     jest-environment-node: "npm:^29.7.0"
-    npm-run-all2: "npm:^7.0.0"
+    npm-run-all2: "npm:^8.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^3.0.5"
@@ -5734,7 +5734,7 @@ __metadata:
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     md5: "npm:^2.3.0"
-    npm-run-all2: "npm:^7.0.0"
+    npm-run-all2: "npm:^8.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^3.0.5"
@@ -5801,7 +5801,7 @@ __metadata:
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     glob: "npm:^11.0.1"
     mocha: "npm:^11.0.0"
-    npm-run-all2: "npm:^7.0.0"
+    npm-run-all2: "npm:^8.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^3.0.5"
@@ -5838,7 +5838,7 @@ __metadata:
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     glob: "npm:^11.0.1"
-    npm-run-all2: "npm:^7.0.0"
+    npm-run-all2: "npm:^8.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^3.0.5"
@@ -5866,7 +5866,7 @@ __metadata:
     eslint-plugin-n: "npm:^17.10.1"
     eslint-plugin-no-null: "npm:^1.0.2"
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
-    npm-run-all2: "npm:^7.0.0"
+    npm-run-all2: "npm:^8.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
     vitest: "npm:^3.0.5"
@@ -7731,6 +7731,17 @@ __metadata:
     shebang-command: "npm:^2.0.0"
     which: "npm:^2.0.1"
   checksum: 10/e1a13869d2f57d974de0d9ef7acbf69dc6937db20b918525a01dacb5032129bd552d290d886d981e99f1b624cb03657084cc87bd40f115c07ecf376821c729ce
+  languageName: node
+  linkType: hard
+
+"cross-spawn@npm:^7.0.6":
+  version: 7.0.6
+  resolution: "cross-spawn@npm:7.0.6"
+  dependencies:
+    path-key: "npm:^3.1.0"
+    shebang-command: "npm:^2.0.0"
+    which: "npm:^2.0.1"
+  checksum: 10/0d52657d7ae36eb130999dffff1168ec348687b48dd38e2ff59992ed916c88d328cf1d07ff4a4a10bc78de5e1c23f04b306d569e42f7a2293915c081e4dfee86
   languageName: node
   linkType: hard
 
@@ -13726,7 +13737,7 @@ __metadata:
     eslint-plugin-prefer-arrow: "npm:^1.2.3"
     msw: "npm:1"
     newman: "npm:^6.2.1"
-    npm-run-all2: "npm:^7.0.0"
+    npm-run-all2: "npm:^8.0.0"
     postman-collection: "npm:^5.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
@@ -13934,12 +13945,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-run-all2@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "npm-run-all2@npm:7.0.0"
+"npm-run-all2@npm:^8.0.0":
+  version: 8.0.1
+  resolution: "npm-run-all2@npm:8.0.1"
   dependencies:
     ansi-styles: "npm:^6.2.1"
-    cross-spawn: "npm:^7.0.3"
+    cross-spawn: "npm:^7.0.6"
     memorystream: "npm:^0.3.1"
     minimatch: "npm:^10.0.1"
     pidtree: "npm:^0.6.0"
@@ -13951,7 +13962,7 @@ __metadata:
     npm-run-all2: bin/npm-run-all/index.js
     run-p: bin/run-p/index.js
     run-s: bin/run-s/index.js
-  checksum: 10/8e5626220e580de667963bc2713a2fd99eafbd0ccad0d36e5040e37b20c27963d16149a87f6de5931235368907a08b2f6ebf951b2df5e7e2ee4202e983d388c3
+  checksum: 10/afa8edf143bd2767a8a884379f52364b6cf465b0c6219f035a730b279397a459d7215d110204ff6089ca160492d8120763cd84880e07c0f4d0cc8e6ef3fb218a
   languageName: node
   linkType: hard
 
