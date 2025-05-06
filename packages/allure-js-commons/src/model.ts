@@ -56,7 +56,9 @@ interface Executable {
 
 export interface FixtureResult extends Executable {}
 
-export interface StepResult extends Executable {}
+export interface StepResult extends Executable {
+  uuid?: string;
+}
 
 export interface TestResult extends Executable {
   uuid: string;

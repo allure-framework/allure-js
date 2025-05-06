@@ -172,3 +172,84 @@ it("keeps correct hooks structure when something failed", async () => {
     name: "After Hooks",
   });
 });
+
+it("should hook steps have attachments", async () => {
+  const results = await runPlaywrightInlineTest({
+    "sample.test.js": `
+        const {test} = require("@playwright/test");
+        const allure = require("allure-js-commons");
+        test.beforeAll(async () => {
+            await allure.attachment('attachment outside step beforeAll', 'test value', 'application/json');
+            await allure.step('i am beforeAll step', async () => {
+                await allure.attachment('attachment in beforeAll step', 'test value', 'application/json');
+            });
+        });
+        test.afterAll(async () => {
+            await allure.attachment('attachment outside step afterAll', 'test value', 'application/json');
+            await allure.step('i am afterAll', async () => {
+                await allure.attachment('test key afterall', 'test value', 'application/json');
+            });
+        });
+        test("sample test", async () => {
+            await allure.step("step 1", async () => {
+                await allure.attachment('attach in step 1', 'test value', 'application/json');
+            });
+            await allure.step("step 2", async () => {
+                await allure.attachment('attach in step 2', 'test value', 'application/json');
+            });
+            await allure.attachment('i am just attachment in test', 'test value', 'application/json');
+        });
+    `,
+    "playwright.config.js": `
+       import { defineConfig } from "@playwright/test";
+
+       export default {
+         reporter: [
+           [
+             "allure-playwright",
+             {
+               resultsDir: "./allure-results",
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+         timeout: 1000,
+         use: {
+           screenshot: "on",
+         },
+       };
+    `,
+  });
+
+  const steps = results.tests[0].steps;
+
+  const beforeHook = steps.find((step) => step.name === "Before Hooks");
+  expect(beforeHook).toBeDefined();
+  expect(beforeHook?.attachments).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "attachment outside step beforeAll",
+        type: "application/json",
+      }),
+    ]),
+  );
+
+  expect(beforeHook?.steps).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "i am beforeAll step",
+        attachments: expect.arrayContaining([
+          expect.objectContaining({
+            name: "attachment in beforeAll step",
+            type: "application/json",
+          }),
+        ]),
+      }),
+    ]),
+  );
+});
