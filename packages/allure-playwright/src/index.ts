@@ -1,12 +1,5 @@
 import type { FullConfig } from "@playwright/test";
-import type {
-  FullResult,
-  TestResult as PlaywrightTestResult,
-  Suite,
-  TestCase,
-  TestError,
-  TestStep,
-} from "@playwright/test/reporter";
+import type { TestResult as PlaywrightTestResult, Suite, TestCase, TestStep } from "@playwright/test/reporter";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
@@ -29,7 +22,6 @@ import {
   hasLabel,
   stripAnsi,
 } from "allure-js-commons/sdk";
-import { randomUuid } from "allure-js-commons/sdk/reporter";
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
   ReporterRuntime,
@@ -47,56 +39,21 @@ import {
   getWorstTestStepResult,
   md5,
   parseTestPlan,
+  randomUuid,
   readImageAsBase64,
 } from "allure-js-commons/sdk/reporter";
 import { allurePlaywrightLegacyApi } from "./legacy.js";
-import type { AllurePlaywrightReporterConfig } from "./model.js";
+import type { AllurePlaywrightReporterConfig, AttachStack, ReporterV2 } from "./model.js";
 import {
   AFTER_HOOKS_ROOT_STEP_TITLE,
   BEFORE_HOOKS_ROOT_STEP_TITLE,
+  diffEndRegexp,
   isAfterHookStep,
   isBeforeHookStep,
   isDescendantOfStepWithTitle,
+  normalizeHookTitle,
   statusToAllureStats,
 } from "./utils.js";
-
-// TODO: move to utils.ts
-const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
-
-interface ReporterV2 {
-  onConfigure(config: FullConfig): void;
-
-  onBegin(suite: Suite): void;
-
-  onTestBegin(test: TestCase, result: PlaywrightTestResult): void;
-
-  onStdOut(chunk: string | Buffer, test?: TestCase, result?: PlaywrightTestResult): void;
-
-  onStdErr(chunk: string | Buffer, test?: TestCase, result?: PlaywrightTestResult): void;
-
-  onTestEnd(test: TestCase, result: PlaywrightTestResult): void;
-
-  onEnd(result: FullResult): Promise<{ status?: FullResult["status"] } | undefined | void> | void;
-
-  onExit(): void | Promise<void>;
-
-  onError(error: TestError): void;
-
-  onStepBegin(test: TestCase, result: PlaywrightTestResult, step: TestStep): void;
-
-  onStepEnd(test: TestCase, result: PlaywrightTestResult, step: TestStep): void;
-
-  printsToStdio(): boolean;
-
-  version(): "v2";
-}
-export interface AttachStack extends TestStep {
-  uuid: string;
-}
-
-const normalizeHookTitle = (title: string) => {
-  return title.startsWith('attach "') && title.endsWith('"') ? title.slice(8, -1) : title;
-};
 
 export class AllureReporter implements ReporterV2 {
   config!: FullConfig;
@@ -318,7 +275,6 @@ export class AllureReporter implements ReporterV2 {
     const isBeforeHookDescendant = isBeforeHookStep(step);
     const isAfterHookDescendant = isAfterHookStep(step);
     const isHookStep = isBeforeHookDescendant || isAfterHookDescendant;
-
     const testUuid = this.allureResultsUuids.get(test.id)!;
 
     if (step.category === "attach" && !isHookStep) {
@@ -333,7 +289,7 @@ export class AllureReporter implements ReporterV2 {
 
     const baseStep: StepResult = {
       ...createStepResult(),
-      name: normalizeHookTitle(step.title),
+      name: step.title,
       start: step.startTime.getTime(),
       stage: Stage.RUNNING,
       uuid: randomUuid(),
@@ -348,6 +304,7 @@ export class AllureReporter implements ReporterV2 {
         stack.startStep(baseStep);
         const attachStack = isBeforeHookDescendant ? this.beforeHooksAttachmentsStack : this.afterHooksAttachmentsStack;
         stack.updateStep((stepResult) => {
+          stepResult.name = normalizeHookTitle(stepResult.name!);
           stepResult.stage = Stage.FINISHED;
           attachStack.set(test.id, [...(attachStack.get(test.id) ?? []), { ...step, uuid: stepResult.uuid as string }]);
         });
@@ -361,9 +318,7 @@ export class AllureReporter implements ReporterV2 {
 
     if (isRootHook) {
       const stack = new ShallowStepsStack();
-
       stack.startStep(baseStep);
-
       if (isRootBeforeHook) {
         this.beforeHooksStepsStack.set(test.id, stack);
       } else {
@@ -379,12 +334,10 @@ export class AllureReporter implements ReporterV2 {
     if (this.#shouldIgnoreStep(step)) {
       return;
     }
-
     // ignore attach steps since attachments are already in the report
     if (step.category === "attach") {
       return;
     }
-
     const testUuid = this.allureResultsUuids.get(test.id)!;
     const isRootBeforeHook = step.title === BEFORE_HOOKS_ROOT_STEP_TITLE;
     const isRootAfterHook = step.title === AFTER_HOOKS_ROOT_STEP_TITLE;
@@ -398,11 +351,8 @@ export class AllureReporter implements ReporterV2 {
 
       stack.updateStep((stepResult) => {
         const { status = Status.PASSED } = getWorstTestStepResult(stepResult.steps) ?? {};
-
         stepResult.status = step.error ? Status.FAILED : status;
         stepResult.stage = Stage.FINISHED;
-        stepResult.name = `${stepResult.name ?? ""}`;
-
         if (step.error) {
           stepResult.statusDetails = { ...getMessageAndTraceFromError(step.error) };
         }
@@ -421,7 +371,6 @@ export class AllureReporter implements ReporterV2 {
 
     this.allureRuntime!.updateStep(currentStep, (stepResult) => {
       const { status = Status.PASSED } = getWorstTestStepResult(stepResult.steps) ?? {};
-
       stepResult.status = step.error ? Status.FAILED : status;
       stepResult.stage = Stage.FINISHED;
       if (step.error) {
@@ -476,7 +425,6 @@ export class AllureReporter implements ReporterV2 {
 
     const attachmentsInBeforeHooks = this.beforeHooksAttachmentsStack.get(test.id) ?? [];
     const attachmentsInAfterHooks = this.afterHooksAttachmentsStack.get(test.id) ?? [];
-
     const hookAttachmentUuids = new Set(
       [...attachmentsInBeforeHooks, ...attachmentsInAfterHooks]
         .map((hookStep) => normalizeHookTitle(hookStep.title))
