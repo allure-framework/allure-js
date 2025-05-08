@@ -8,6 +8,8 @@ export interface AttachmentOptions {
   contentType: ContentType | string;
   encoding?: BufferEncoding;
   fileExtension?: string;
+  path?: string;
+  body?: Buffer;
 }
 
 export interface Label {

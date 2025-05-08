@@ -28,4 +28,3 @@ export {
   stripAnsi,
   serialize,
 } from "./utils.js";
-export { buildAttachmentFileName } from "./reporter/utils/attachments.js";

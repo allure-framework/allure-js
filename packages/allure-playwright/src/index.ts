@@ -29,7 +29,6 @@ import {
   hasLabel,
   stripAnsi,
 } from "allure-js-commons/sdk";
-import { buildAttachmentFileName } from "allure-js-commons/sdk";
 import { randomUuid } from "allure-js-commons/sdk/reporter";
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
@@ -539,17 +538,7 @@ export class AllureReporter implements ReporterV2 {
       if (targetStack && hookStep) {
         const stepResult = targetStack?.findStepByUuid(hookStep?.uuid);
         if (stepResult) {
-          const isPath = !!attachment.path;
-          const fileExt = attachment.path ? path.extname(attachment.path) : undefined;
-          const fileName = buildAttachmentFileName({
-            contentType: attachment.contentType,
-            fileExtension: fileExt,
-          });
-          if (isPath) {
-            this.allureRuntime!.writer.writeAttachmentFromPath(fileName, attachment.path!);
-          } else if (attachment.body) {
-            this.allureRuntime!.writer.writeAttachment(fileName, attachment.body);
-          }
+          const fileName = targetStack.addAttachment(attachment, this.allureRuntime!.writer);
           stepResult.attachments.push({
             name: attachment.name,
             type: attachment.contentType,
