@@ -194,10 +194,6 @@ it("should hook steps have attachments", async () => {
             await allure.step("step 1", async () => {
                 await allure.attachment('attach in step 1', 'test value', 'application/json');
             });
-            await allure.step("step 2", async () => {
-                await allure.attachment('attach in step 2', 'test value', 'application/json');
-            });
-            await allure.attachment('i am just attachment in test', 'test value', 'application/json');
         });
     `,
     "playwright.config.js": `
@@ -219,37 +215,80 @@ it("should hook steps have attachments", async () => {
            },
          ],
          timeout: 1000,
-         use: {
-           screenshot: "on",
-         },
        };
     `,
   });
-
   const steps = results.tests[0].steps;
+  expect(steps).toHaveLength(3);
+  const beforeHooks = steps[0];
+  const beforeAllHook = beforeHooks.steps[0];
+  expect(beforeAllHook.name).equal("beforeAll hook");
 
-  const beforeHook = steps.find((step) => step.name === "Before Hooks");
-  expect(beforeHook).toBeDefined();
-  expect(beforeHook?.attachments).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining({
-        name: "attachment outside step beforeAll",
-        type: "application/json",
-      }),
-    ]),
-  );
+  expect(beforeAllHook.steps).toEqual([
+    expect.objectContaining({
+      name: "attachment outside step beforeAll",
+      attachments: [
+        expect.objectContaining({
+          name: "attachment outside step beforeAll",
+          type: "application/json",
+        }),
+      ],
+    }),
+    expect.objectContaining({
+      name: "i am beforeAll step",
+      steps: [
+        expect.objectContaining({
+          name: "attachment in beforeAll step",
+          attachments: [
+            expect.objectContaining({
+              name: "attachment in beforeAll step",
+              type: "application/json",
+            }),
+          ],
+        }),
+      ],
+    }),
+  ]);
 
-  expect(beforeHook?.steps).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining({
-        name: "i am beforeAll step",
-        attachments: expect.arrayContaining([
-          expect.objectContaining({
-            name: "attachment in beforeAll step",
-            type: "application/json",
-          }),
-        ]),
-      }),
-    ]),
-  );
+  const step1Attachment = steps[1];
+  expect(step1Attachment.name).toEqual("step 1");
+
+  expect(step1Attachment.steps).toEqual([
+    expect.objectContaining({
+      name: "attach in step 1",
+      attachments: [
+        expect.objectContaining({
+          name: "attach in step 1",
+          type: "application/json",
+        }),
+      ],
+    }),
+  ]);
+
+  const afterHooks = steps[2];
+  expect(afterHooks.steps[0].steps).toEqual([
+    expect.objectContaining({
+      name: "attachment outside step afterAll",
+      attachments: [
+        expect.objectContaining({
+          name: "attachment outside step afterAll",
+          type: "application/json",
+        }),
+      ],
+    }),
+    expect.objectContaining({
+      name: "i am afterAll",
+      steps: [
+        expect.objectContaining({
+          name: "test key afterall",
+          attachments: [
+            expect.objectContaining({
+              name: "test key afterall",
+              type: "application/json",
+            }),
+          ],
+        }),
+      ],
+    }),
+  ]);
 });
