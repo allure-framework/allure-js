@@ -17782,7 +17782,7 @@ const RAW_RUNTIME_STATE =
           ["msw", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.3"],\
           ["node-fetch", "virtual:228daa3c452a13b8f16ea171886977d260f311ad8cd9abf7aafaae08bedd52b5f5ddcad31b32be91de1f133f16804b3d5cd1d6c6734536c8a55004c60d6cf243#npm:2.7.0"],\
           ["outvariant", "npm:1.4.2"],\
-          ["path-to-regexp", "npm:6.2.1"],\
+          ["path-to-regexp", "npm:6.3.0"],\
           ["strict-event-emitter", "npm:0.4.6"],\
           ["type-fest", "npm:2.19.0"],\
           ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\
@@ -18803,10 +18803,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["path-to-regexp", [\
-      ["npm:6.2.1", {\
-        "packageLocation": "./.yarn/cache/path-to-regexp-npm-6.2.1-8ebfe03654-1e266be712.zip/node_modules/path-to-regexp/",\
+      ["npm:6.3.0", {\
+        "packageLocation": "./.yarn/cache/path-to-regexp-npm-6.3.0-ee2cdde576-6822f686f0.zip/node_modules/path-to-regexp/",\
         "packageDependencies": [\
-          ["path-to-regexp", "npm:6.2.1"]\
+          ["path-to-regexp", "npm:6.3.0"]\
         ],\
         "linkType": "HARD"\
       }]\
