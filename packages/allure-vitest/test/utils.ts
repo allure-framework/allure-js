@@ -1,103 +1,113 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
-import { basename, dirname, extname, join } from "node:path";
+import { dirname, extname, join } from "node:path";
+import { env as processEnv } from "node:process";
 import { fileURLToPath } from "url";
 import { attachment, logStep, step } from "allure-js-commons";
-import type { AllureResults, TestPlanV1 } from "allure-js-commons/sdk";
+import type { AllureResults } from "allure-js-commons/sdk";
 import { stripAnsi } from "allure-js-commons/sdk";
 import { MessageReader, getPosixPath } from "allure-js-commons/sdk/reporter";
 
+type TestFileAccessor = (opts: {
+  setupModulePath: string;
+  reporterModulePath: string;
+  allureResultsPath: string;
+  testDir: string;
+}) => string;
+
+type TestFiles = Record<string, string | TestFileAccessor>;
+
 type Opts = {
-  env?: Record<string, string>;
-  specPath?: string;
-  testplan?: TestPlanV1;
-  configFactory?: (tempDir: string) => string;
+  env?: (testDir: string) => Record<string, string>;
   cwd?: string;
 };
 
 const fileDirname = dirname(fileURLToPath(import.meta.url));
 
 export const runVitestInlineTest = async (
-  test: string,
-  { env = {}, specPath = "sample.test.ts", testplan, configFactory, cwd }: Opts = {},
+  testFiles: TestFiles,
+  { env = () => ({}), cwd }: Opts = {},
 ): Promise<AllureResults> => {
   const testDir = join(fileDirname, "fixtures", randomUUID());
-  const configFilePath = join(testDir, "vitest.config.ts");
-  const testFilePath = join(testDir, specPath);
-
+  const configFilename = "vitest.config.ts";
   // getPosixPath allows us to interpolate such paths without escaping
   const setupModulePath = getPosixPath(require.resolve("allure-vitest/setup"));
   const reporterModulePath = getPosixPath(require.resolve("allure-vitest/reporter"));
   const allureResultsPath = getPosixPath(join(testDir, "allure-results"));
+  const fixtureAccessorOpts = {
+    setupModulePath,
+    reporterModulePath,
+    allureResultsPath,
+    testDir,
+  };
 
-  const configContent = configFactory
-    ? configFactory(testDir)
-    : `
-    import { defineConfig } from "vitest/config";
+  const testFilesToWrite: TestFiles = {
+    [configFilename]: `
+      import { defineConfig } from "vitest/config";
 
-    export default defineConfig({
-      test: {
-        setupFiles: ["${setupModulePath}"],
-        reporters: [
-          "verbose",
-          ["${reporterModulePath}", {
-            links: {
-              issue: {
-                urlTemplate: "https://example.org/issue/%s",
+      export default defineConfig({
+        test: {
+          setupFiles: ["${setupModulePath}"],
+          reporters: [
+            "verbose",
+            ["${reporterModulePath}", {
+              links: {
+                issue: {
+                  urlTemplate: "https://example.org/issue/%s",
+                },
+                tms: {
+                  urlTemplate: "https://example.org/tms/%s",
+                },
               },
-              tms: {
-                urlTemplate: "https://example.org/tms/%s",
-              },
-            },
-            resultsDir: "${allureResultsPath}",
-          }]
-        ],
-      },
-    });
-  `;
+              resultsDir: "${allureResultsPath}",
+            }]
+          ],
+        },
+      });
+    `,
+    ...testFiles,
+  };
 
-  await step("create testDir", async () => {
+  await step("create test dir", async () => {
     await mkdir(testDir, { recursive: true });
-    await writeFile(join(testDir, "package.json"), String.raw`{ "name": "dummy" }`);
-  });
-  await step(`write config file ${configFilePath}`, async () => {
-    await writeFile(configFilePath, configContent, "utf8");
-    await attachment("vitest.config.ts", configContent, {
-      contentType: "text/plain",
-      fileExtension: ".ts",
-      encoding: "utf-8",
-    });
   });
 
-  if (testplan) {
-    await step("write testplan.json", async () => {
-      const testPlanPath = join(testDir, "testplan.json");
-      await writeFile(testPlanPath, JSON.stringify(testplan));
-      env.ALLURE_TESTPLAN_PATH = testPlanPath;
+  // eslint-disable-next-line guard-for-in
+  for (const testFile in testFilesToWrite) {
+    await step(`write test file "${testFile}"`, async () => {
+      const testFilePath = join(testDir, testFile);
+      let testFileContent: string;
+
+      if (typeof testFilesToWrite[testFile] === "string") {
+        testFileContent = testFilesToWrite[testFile] as string;
+      } else {
+        testFileContent = (testFilesToWrite[testFile] as TestFileAccessor)(fixtureAccessorOpts);
+      }
+
+      await mkdir(dirname(testFilePath), { recursive: true });
+      await writeFile(testFilePath, testFileContent, "utf8");
+      await attachment(testFile, testFileContent, {
+        contentType: "text/plain",
+        encoding: "utf-8",
+        fileExtension: extname(testFile),
+      });
     });
   }
 
-  await step(`write test file ${testFilePath}`, async () => {
-    const specDir = dirname(testFilePath);
-    await mkdir(specDir, { recursive: true });
-    await writeFile(testFilePath, test, "utf8");
-    await attachment(basename(testFilePath), test, {
-      contentType: "text/plain",
-      fileExtension: extname(testFilePath),
-      encoding: "utf-8",
-    });
+  const modulePath = await step("resolve vitest", () => {
+    return require.resolve("vitest/dist/cli.js");
   });
+  const args = ["run", "--config", configFilename, "--dir", "."];
+  const testProcess = await step(`${modulePath} ${args.join(" ")}`, async () => {
+    const subprocessEnv: Record<string, string> = {
+      ...processEnv,
+      ALLURE_TEST_MODE: "1",
+      ...env(testDir),
+    };
 
-  const modulePath = require.resolve("vitest/dist/cli.js");
-  const args = ["run", "--config", configFilePath, "--dir", testDir];
-  const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
     return fork(modulePath, args, {
-      env: {
-        ...process.env,
-        ...env,
-        ALLURE_TEST_MODE: "1",
-      },
+      env: { ...subprocessEnv },
       cwd: cwd ? join(testDir, cwd) : testDir,
       stdio: "pipe",
     });
@@ -126,7 +136,6 @@ export const runVitestInlineTest = async (
       await attachment("stdout", stdout.join("\n"), "text/plain");
       await attachment("stderr", stderr.join("\n"), "text/plain");
       await rm(testDir, { recursive: true });
-
       await messageReader.attachResults();
 
       return resolve(messageReader.results);

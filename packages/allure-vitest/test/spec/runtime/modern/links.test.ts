@@ -4,8 +4,8 @@ import { runVitestInlineTest } from "../../../utils.js";
 
 describe("links", () => {
   it("link", async () => {
-    const { tests } = await runVitestInlineTest(
-      `
+    const { tests } = await runVitestInlineTest({
+      "sample.test.ts": `
       import { test } from "vitest";
       import { link } from "allure-js-commons";
 
@@ -13,7 +13,7 @@ describe("links", () => {
         await link("https://example.org", "foo", "bar");
       });
       `,
-    );
+    });
 
     expect(tests).toHaveLength(1);
     expect(tests[0].links).toContainEqual({
@@ -24,8 +24,8 @@ describe("links", () => {
   });
 
   it("issue", async () => {
-    const { tests } = await runVitestInlineTest(
-      `
+    const { tests } = await runVitestInlineTest({
+      "sample.test.ts": `
       import { test } from "vitest";
       import { issue } from "allure-js-commons";
 
@@ -34,7 +34,7 @@ describe("links", () => {
         await issue("2", "bar");
       });
       `,
-    );
+    });
 
     expect(tests).toHaveLength(1);
     expect(tests[0].links).toContainEqual({
@@ -50,8 +50,8 @@ describe("links", () => {
   });
 
   it("tms", async () => {
-    const { tests } = await runVitestInlineTest(
-      `
+    const { tests } = await runVitestInlineTest({
+      "sample.test.ts": `
       import { test } from "vitest";
       import { tms } from "allure-js-commons";
 
@@ -60,7 +60,7 @@ describe("links", () => {
         await tms("2", "bar");
       });
       `,
-    );
+    });
 
     expect(tests).toHaveLength(1);
     expect(tests[0].links).toContainEqual({

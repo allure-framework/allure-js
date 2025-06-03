@@ -1,3 +1,4 @@
+import { sep } from "node:path";
 import type { RunnerTestFile as File, RunnerTask as Task } from "vitest";
 import type { Reporter } from "vitest/reporters";
 import { LabelName, Stage, Status } from "allure-js-commons";
@@ -78,11 +79,16 @@ export default class AllureVitestReporter implements Reporter {
     });
 
     this.allureReporterRuntime!.updateTest(testUuid, (result) => {
+      const suiteLabels = getSuiteLabels(suitePath);
+      const fsPath = specPath.split(sep);
+      const titlePath = [...fsPath, ...suitePath];
+
       result.fullName = fullName;
+      result.titlePath = titlePath;
       result.labels.push(getFrameworkLabel("vitest"));
       result.labels.push(getLanguageLabel());
       result.labels.push(...metadataLabels);
-      result.labels.push(...getSuiteLabels(suitePath));
+      result.labels.push(...suiteLabels);
       result.labels.push(...getEnvironmentLabels());
       result.labels.push(getHostLabel());
       result.labels.push(getThreadLabel(VITEST_POOL_ID && `vitest-worker-${VITEST_POOL_ID}`));

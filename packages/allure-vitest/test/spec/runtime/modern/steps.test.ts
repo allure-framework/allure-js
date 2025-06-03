@@ -3,14 +3,16 @@ import { Stage, Status } from "allure-js-commons";
 import { runVitestInlineTest } from "../../../utils.js";
 
 it("handles single lambda step", async () => {
-  const { tests } = await runVitestInlineTest(`
+  const { tests } = await runVitestInlineTest({
+    "sample.test.ts": `
     import { test } from "vitest";
     import { step } from "allure-js-commons";
 
     test("steps", async () => {
       await step("step", () => {});
     });
-  `);
+  `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].steps).toHaveLength(1);
@@ -22,7 +24,8 @@ it("handles single lambda step", async () => {
 });
 
 it("handles single lambda step with attachment", async () => {
-  const { tests, attachments } = await runVitestInlineTest(`
+  const { tests, attachments } = await runVitestInlineTest({
+    "sample.test.ts": `
     import { test } from "vitest";
     import { step, attachment } from "allure-js-commons";
 
@@ -31,7 +34,8 @@ it("handles single lambda step with attachment", async () => {
         await attachment("foo.txt", Buffer.from("bar"), "text/plain");
       });
     });
-  `);
+  `,
+  });
 
   expect(tests).toHaveLength(1);
   const [step] = tests[0].steps[0].steps;
@@ -45,7 +49,8 @@ it("handles single lambda step with attachment", async () => {
 });
 
 it("handles nested lambda steps", async () => {
-  const { tests } = await runVitestInlineTest(`
+  const { tests } = await runVitestInlineTest({
+    "sample.test.ts": `
     import { test } from "vitest";
     import { step } from "allure-js-commons";
 
@@ -57,7 +62,8 @@ it("handles nested lambda steps", async () => {
         });
       });
     });
-  `);
+  `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].steps).toHaveLength(1);
@@ -81,7 +87,8 @@ it("handles nested lambda steps", async () => {
 });
 
 it("handles step renaming", async () => {
-  const { tests } = await runVitestInlineTest(`
+  const { tests } = await runVitestInlineTest({
+    "sample.test.ts": `
     import { test } from "vitest";
     import { step } from "allure-js-commons";
 
@@ -90,7 +97,8 @@ it("handles step renaming", async () => {
         await ctx.displayName("bar");
       });
     });
-  `);
+  `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].steps).toHaveLength(1);
@@ -98,7 +106,8 @@ it("handles step renaming", async () => {
 });
 
 it("supports step parameters", async () => {
-  const { tests } = await runVitestInlineTest(`
+  const { tests } = await runVitestInlineTest({
+    "sample.test.ts": `
     import { test } from "vitest";
     import { step } from "allure-js-commons";
 
@@ -110,7 +119,8 @@ it("supports step parameters", async () => {
         await ctx.parameter("p4", "v4", "hidden");
       });
     });
-  `);
+  `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].steps).toHaveLength(1);

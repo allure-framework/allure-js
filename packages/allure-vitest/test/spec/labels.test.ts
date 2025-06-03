@@ -2,13 +2,15 @@ import { expect, it } from "vitest";
 import { runVitestInlineTest } from "../utils.js";
 
 it("should add host & thread labels", async () => {
-  const { tests } = await runVitestInlineTest(`
+  const { tests } = await runVitestInlineTest({
+    "sample.test.ts": `
     import { test, expect } from "vitest";
 
     test("sample test", async () => {
       expect(1).toBe(1);
     });
-  `);
+  `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toEqual(
@@ -26,13 +28,15 @@ it("should add host & thread labels", async () => {
 });
 
 it("should add package label", async () => {
-  const { tests } = await runVitestInlineTest(`
+  const { tests } = await runVitestInlineTest({
+    "sample.test.ts": `
     import { test, expect } from "vitest";
 
     test("sample test", async () => {
       expect(1).toBe(1);
     });
-  `);
+  `,
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toEqual(
@@ -46,14 +50,13 @@ it("should add package label", async () => {
 });
 
 it("should add package label for tests in directories", async () => {
-  const { tests } = await runVitestInlineTest(
-    `
+  const { tests } = await runVitestInlineTest({
+    "foo/bar/baz.test.ts": `
       import { test } from "vitest";
 
       test("qux", async () => {});
     `,
-    { specPath: "foo/bar/baz.test.ts" },
-  );
+  });
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toEqual(
@@ -68,12 +71,14 @@ it("should add package label for tests in directories", async () => {
 
 it("should add labels from env variables", async () => {
   const { tests } = await runVitestInlineTest(
-    `
+    {
+      "sample.test.ts": `
       import { test } from "vitest";
 
       test("foo", () => {});
       test("bar", () => {});
     `,
+    },
     {
       env: {
         ALLURE_LABEL_: "-",
