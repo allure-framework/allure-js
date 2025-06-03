@@ -67,6 +67,7 @@ export interface TestResult extends Executable {
   historyId?: string;
   fullName?: string;
   testCaseId?: string;
+  titlePath?: string[];
   labels: Label[];
   links: Link[];
 }
