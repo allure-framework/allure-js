@@ -1,5 +1,6 @@
 import * as Mocha from "mocha";
-import { env } from "node:process";
+import { sep } from "node:path";
+import { cwd, env } from "node:process";
 import { type AttachmentOptions, type ContentType, type Label, type Parameter } from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
@@ -262,8 +263,12 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     }
     if (isIncludedInTestRun(test)) {
       const defaultSuites = getSuitesOfMochaTest(test);
+
       this.runtime.updateTest(this.currentTest, (t) => {
-        ensureSuiteLabels(t, defaultSuites);
+        const fsPath: string[] = test.file!.replace(cwd(), "").split(sep).filter(Boolean);
+        const suiteLabels = ensureSuiteLabels(t, defaultSuites).map(({ value }) => value);
+
+        t.titlePath = fsPath.concat(suiteLabels as string[]);
         t.stage = Stage.FINISHED;
       });
       this.runtime.stopTest(this.currentTest);
