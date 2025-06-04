@@ -170,6 +170,7 @@ export class AllureReporter implements ReporterV2 {
       steps: [],
       testCaseId: md5(testCaseIdBase),
       fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
+      titlePath: testFilePath.split(path.sep).concat(...suiteTitles),
     };
 
     result.labels!.push(getLanguageLabel());
