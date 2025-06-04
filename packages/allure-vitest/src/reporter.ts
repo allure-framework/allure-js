@@ -27,6 +27,7 @@ export default class AllureVitestReporter implements Reporter {
 
   onInit() {
     const { listeners, resultsDir, ...config } = this.config;
+
     this.allureReporterRuntime = new ReporterRuntime({
       ...config,
       writer: createDefaultWriter({ resultsDir }),

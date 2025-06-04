@@ -2,7 +2,6 @@ import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, extname, join } from "node:path";
-import { env as processEnv } from "node:process";
 import { fileURLToPath } from "url";
 import { attachment, logStep, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
@@ -31,6 +30,7 @@ export const runVitestInlineTest = async (
 ): Promise<AllureResults> => {
   const testDir = join(fileDirname, "fixtures", randomUUID());
   const configFilename = "vitest.config.ts";
+  const configPath = join(testDir, configFilename);
   // getPosixPath allows us to interpolate such paths without escaping
   const setupModulePath = getPosixPath(require.resolve("allure-vitest/setup"));
   const reporterModulePath = getPosixPath(require.resolve("allure-vitest/reporter"));
@@ -66,6 +66,7 @@ export const runVitestInlineTest = async (
         },
       });
     `,
+    "package.json": JSON.stringify({ name: "dummy" }),
     ...testFiles,
   };
 
@@ -75,6 +76,11 @@ export const runVitestInlineTest = async (
 
   // eslint-disable-next-line guard-for-in
   for (const testFile in testFilesToWrite) {
+    // add ability to skip writing files such as config
+    if (!testFilesToWrite[testFile]) {
+      continue;
+    }
+
     await step(`write test file "${testFile}"`, async () => {
       const testFilePath = join(testDir, testFile);
       let testFileContent: string;
@@ -98,12 +104,12 @@ export const runVitestInlineTest = async (
   const modulePath = await step("resolve vitest", () => {
     return require.resolve("vitest/dist/cli.js");
   });
-  const args = ["run", "--config", configFilename, "--dir", "."];
-  const testProcess = await step(`${modulePath} ${args.join(" ")}`, async () => {
+  const args = ["run", "--config", configPath, "--dir", "."];
+  const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
     const subprocessEnv: Record<string, string> = {
-      ...processEnv,
+      ...process.env,
       ALLURE_TEST_MODE: "1",
-      ...env(testDir),
+      ...(env?.(testDir) ?? {}),
     };
 
     return fork(modulePath, args, {
