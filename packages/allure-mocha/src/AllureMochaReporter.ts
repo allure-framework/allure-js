@@ -268,7 +268,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
         const fsPath: string[] = test.file!.replace(cwd(), "").split(sep).filter(Boolean);
         const suiteLabels = ensureSuiteLabels(t, defaultSuites).map(({ value }) => value);
 
-        t.titlePath = fsPath.concat(suiteLabels as string[]);
+        t.titlePath = fsPath.concat(suiteLabels);
         t.stage = Stage.FINISHED;
       });
       this.runtime.stopTest(this.currentTest);

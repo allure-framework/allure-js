@@ -9,7 +9,7 @@ import {
   type TestStepResult,
   TestStepResultStatus,
 } from "@cucumber/messages";
-import { extname, sep } from "node:path";
+import { extname } from "node:path";
 import type { Label, Link, TestResult } from "allure-js-commons";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
@@ -273,7 +273,7 @@ export default class AllureCucumberReporter extends Formatter {
     const scenarioLabels = this.parseTagsLabels(scenario?.tags || []);
     const scenarioLinks = this.parseTagsLinks(scenario?.tags || []);
 
-    result.titlePath = posixPath.split(sep).concat([doc?.feature?.name, scenario?.name].filter(Boolean) as string[]);
+    result.titlePath = posixPath.split("/").concat([doc?.feature?.name, scenario?.name].filter(Boolean) as string[]);
 
     result.labels!.push(...featureLabels, ...scenarioLabels, ...pickleLabels);
     result.links!.push(...featureLinks, ...scenarioLinks);

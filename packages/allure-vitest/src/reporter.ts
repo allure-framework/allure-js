@@ -1,4 +1,3 @@
-import { sep } from "node:path";
 import type { RunnerTestFile as File, RunnerTask as Task } from "vitest";
 import type { Reporter } from "vitest/reporters";
 import { LabelName, Stage, Status } from "allure-js-commons";
@@ -81,7 +80,7 @@ export default class AllureVitestReporter implements Reporter {
 
     this.allureReporterRuntime!.updateTest(testUuid, (result) => {
       const suiteLabels = getSuiteLabels(suitePath);
-      const fsPath = specPath.split(sep);
+      const fsPath = specPath.split("/");
       const titlePath = [...fsPath, ...suitePath];
 
       result.fullName = fullName;

@@ -1,5 +1,4 @@
 import type Cypress from "cypress";
-import { sep } from "node:path";
 import { ContentType, Stage, Status } from "allure-js-commons";
 import type { FixtureResult, TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
@@ -322,7 +321,7 @@ export class AllureCypress {
           getPackageLabel(context.specPath),
         ],
         fullName: `${posixPath}#${fullNameSuffix}`,
-        titlePath: posixPath.split(sep).concat(context.suiteNames),
+        titlePath: posixPath.split("/").concat(context.suiteNames),
         ...otherTestData,
       },
       scopes,
