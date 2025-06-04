@@ -1,3 +1,4 @@
+import { sep } from "node:path";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { getPosixPath, getRelativePath } from "allure-js-commons/sdk/reporter";
 
@@ -29,6 +30,7 @@ export const getAllureNamesAndLabels = (
   return {
     name: specName,
     fullName: filePart ? `${filePart}#${specPart}` : undefined,
+    titlePath: filePart ? filePart?.split(sep).concat(suites) : undefined,
     labels,
     links,
   };

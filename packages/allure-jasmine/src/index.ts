@@ -118,7 +118,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   }
 
   specStarted(spec: jasmine.SpecResult & { filename?: string }): void {
-    const { fullName, labels, links, name } = getAllureNamesAndLabels(
+    const { fullName, titlePath, labels, links, name } = getAllureNamesAndLabels(
       spec.filename,
       this.getCurrentSpecPath(),
       spec.description,
@@ -130,6 +130,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
         {
           name,
           fullName,
+          titlePath,
           labels,
           links,
           stage: Stage.RUNNING,
