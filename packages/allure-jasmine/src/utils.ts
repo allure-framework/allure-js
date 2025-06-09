@@ -29,7 +29,7 @@ export const getAllureNamesAndLabels = (
   return {
     name: specName,
     fullName: filePart ? `${filePart}#${specPart}` : undefined,
-    titlePath: filePart ? filePart?.split("/").concat(suites) : undefined,
+    titlePath: filePart ? filePart.split("/").concat(suites) : undefined,
     labels,
     links,
   };

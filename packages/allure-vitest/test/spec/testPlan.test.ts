@@ -9,10 +9,6 @@ describe("test plan", () => {
         "foo/sample.test.ts": `
           import { test, describe } from "vitest";
 
-          console.log("1", process.env);
-          console.log("2", process.env.ALLURE_TESTPLAN_PATH);
-          debugger
-
           test("foo", () => {});
 
           test("bar", () => {});

@@ -273,8 +273,7 @@ export default class AllureCucumberReporter extends Formatter {
     const scenarioLabels = this.parseTagsLabels(scenario?.tags || []);
     const scenarioLinks = this.parseTagsLinks(scenario?.tags || []);
 
-    result.titlePath = posixPath.split("/").concat([doc?.feature?.name, scenario?.name].filter(Boolean) as string[]);
-
+    result.titlePath = posixPath.split("/").concat([doc?.feature?.name].filter(Boolean) as string[]);
     result.labels!.push(...featureLabels, ...scenarioLabels, ...pickleLabels);
     result.links!.push(...featureLinks, ...scenarioLinks);
 
