@@ -1,11 +1,11 @@
 import * as Mocha from "mocha";
 import { sep } from "node:path";
-import { cwd, env } from "node:process";
+import { env } from "node:process";
 import { type AttachmentOptions, type ContentType, type Label, type Parameter } from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
-import { getHostLabel, getThreadLabel } from "allure-js-commons/sdk/reporter";
+import { getHostLabel, getRelativePath, getThreadLabel } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
   createDefaultWriter,
@@ -265,9 +265,9 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       const defaultSuites = getSuitesOfMochaTest(test);
 
       this.runtime.updateTest(this.currentTest, (t) => {
-        const fsPath: string[] = test.file!.replace(cwd(), "").split(sep).filter(Boolean);
+        const fsPath: string[] = getRelativePath(test.file!).split(sep).filter(Boolean);
 
-        ensureSuiteLabels(t, defaultSuites).map(({ value }) => value);
+        ensureSuiteLabels(t, defaultSuites);
 
         t.titlePath = fsPath.concat(...defaultSuites);
         t.stage = Stage.FINISHED;
