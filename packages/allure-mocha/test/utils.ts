@@ -26,8 +26,8 @@ type TestPlanEntryFixture = {
 type AllureMochaRunResults = AllureResults & {
   outputFiles: Map<string, Buffer>;
   exitCode: number;
-  stdout: string[];
-  stderr: string[];
+  stdout: string | undefined;
+  stderr: string | undefined;
 };
 
 type TestPlanSelectorEntryFixture = [file: readonly string[], name: string];
@@ -176,22 +176,24 @@ abstract class AllureMochaTestRunner {
 
     testProcess.on("message", messageReader.handleMessage);
 
-    const stdout: string[] = [];
-    const stderr: string[] = [];
+    const stdoutChunks: string[] = [];
+    const stderrChunks: string[] = [];
     testProcess.stdout?.setEncoding("utf8").on("data", (chunk: Buffer | string) => {
-      stdout.push(chunk.toString());
+      stdoutChunks.push(chunk.toString());
     });
     testProcess.stderr?.setEncoding("utf8").on("data", (chunk: Buffer | string) => {
-      stderr.push(chunk.toString());
+      stderrChunks.push(chunk.toString());
     });
 
     return await new Promise<AllureMochaRunResults>((resolve, reject) => {
       testProcess.on("exit", async (code, signal) => {
-        if (stdout.length) {
-          await attachment("stdout", stdout.join("\n"), "text/plain");
+        const stdout = stdoutChunks.length ? stdoutChunks.join("") : undefined;
+        const stderr = stderrChunks.length ? stderrChunks.join("") : undefined;
+        if (stdout) {
+          await attachment("stdout", stdout, "text/plain");
         }
-        if (stderr.length) {
-          await attachment("stderr", stderr.join("\n"), "text/plain");
+        if (stderr) {
+          await attachment("stderr", stderr, "text/plain");
         }
         await messageReader.attachErrors();
         await messageReader.attachResults();
