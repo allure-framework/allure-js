@@ -118,17 +118,17 @@ it("should assign titlePath property to the test result", async () => {
   expect(tests).toHaveLength(3);
   expect(tests).toContainEqual(
     expect.objectContaining({
-      titlePath: ["features", "simple.feature", "simple"],
+      titlePath: ["features", "simple"],
     }),
   );
   expect(tests).toContainEqual(
     expect.objectContaining({
-      titlePath: ["features", "simple.feature", "simple"],
+      titlePath: ["features", "simple"],
     }),
   );
   expect(tests).toContainEqual(
     expect.objectContaining({
-      titlePath: ["features", "simple.feature", "simple"],
+      titlePath: ["features", "simple"],
     }),
   );
 });
