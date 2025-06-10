@@ -88,19 +88,18 @@ class AllureReporter {
       failedAssertions: [],
       consoleLogs: [],
     };
-
     const itemGroup = args.item.parent();
     const item = args.item;
     const fullName = this.#getFullName(item);
     const testPath = this.#pathToItem(item);
     const hostLabel = getHostLabel();
     const threadLabel = getThreadLabel();
-
     const { labels, links } = extractMeta(args.item.events);
 
     this.currentTest = this.allureRuntime.startTest({
       name: args.item.name,
       fullName,
+      titlePath: testPath,
       stage: Stage.RUNNING,
       labels: [
         getLanguageLabel(),

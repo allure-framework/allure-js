@@ -157,7 +157,8 @@ export class AllureReporter implements ReporterV2 {
     const titleMetadata = extractMetadataFromString(test.title);
     const project = suite.project()!;
     const testFilePath = path.relative(project?.testDir, test.location.file);
-    const relativeFile = testFilePath.split(path.sep).join("/");
+    const relativeFileParts = testFilePath.split(path.sep);
+    const relativeFile = relativeFileParts.join("/");
     // root > project > file path > test.describe...
     const [, , , ...suiteTitles] = suite.titlePath();
     const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
@@ -170,6 +171,7 @@ export class AllureReporter implements ReporterV2 {
       steps: [],
       testCaseId: md5(testCaseIdBase),
       fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
+      titlePath: relativeFileParts.concat(...suiteTitles),
     };
 
     result.labels!.push(getLanguageLabel());

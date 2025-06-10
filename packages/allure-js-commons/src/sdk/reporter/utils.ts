@@ -153,10 +153,23 @@ export const getSuiteLabels = (suites: readonly string[]): Label[] => {
 
 const suiteLabelNames: readonly string[] = [LabelName.PARENT_SUITE, LabelName.SUITE, LabelName.SUB_SUITE];
 
+/**
+ * Resolves suite labels for the given test results and add default lables if there is no any suite label.
+ * @example
+ * ```ts
+ * ensureSuiteLabels({ labels: [{ name: "suite", value: "foo" }] }, ["bar"]) // => [{ name: "suite", value: "foo" }]
+ * ensureSuiteLabels({ labels: [] }, ["bar"]) // => [{ name: "parentSuite", value: "bar" }]
+ * ```
+ * @param test - Test result to resolve suite labels for
+ * @param defaultSuites - Default suites to add if there is no any suite label
+ * @returns Actual suite labels
+ */
 export const ensureSuiteLabels = (test: Partial<TestResult>, defaultSuites: readonly string[]) => {
   if (!test.labels?.find((l) => suiteLabelNames.includes(l.name))) {
     test.labels = [...(test.labels ?? []), ...getSuiteLabels(defaultSuites)];
   }
+
+  return suiteLabelNames.map((name) => test.labels?.find((l) => l.name === name)).filter(Boolean) as Label[];
 };
 
 const reRegExpChar = /[\\^$.*+?()[\]{}|]/g,

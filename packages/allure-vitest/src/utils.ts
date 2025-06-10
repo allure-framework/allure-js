@@ -24,7 +24,6 @@ export const getSuitePath = (task: Task): string[] => {
 export const getTestMetadata = (task: Task) => {
   const suitePath = getSuitePath(task);
   const relativeTestPath = getPosixPath(getRelativePath(task.file.filepath));
-
   const { cleanTitle, labels, links } = extractMetadataFromString(task.name);
 
   return {

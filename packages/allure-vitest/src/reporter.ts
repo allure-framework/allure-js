@@ -26,6 +26,7 @@ export default class AllureVitestReporter implements Reporter {
 
   onInit() {
     const { listeners, resultsDir, ...config } = this.config;
+
     this.allureReporterRuntime = new ReporterRuntime({
       ...config,
       writer: createDefaultWriter({ resultsDir }),
@@ -78,11 +79,16 @@ export default class AllureVitestReporter implements Reporter {
     });
 
     this.allureReporterRuntime!.updateTest(testUuid, (result) => {
+      const suiteLabels = getSuiteLabels(suitePath);
+      const fsPath = specPath.split("/");
+      const titlePath = [...fsPath, ...suitePath];
+
       result.fullName = fullName;
+      result.titlePath = titlePath;
       result.labels.push(getFrameworkLabel("vitest"));
       result.labels.push(getLanguageLabel());
       result.labels.push(...metadataLabels);
-      result.labels.push(...getSuiteLabels(suitePath));
+      result.labels.push(...suiteLabels);
       result.labels.push(...getEnvironmentLabels());
       result.labels.push(getHostLabel());
       result.labels.push(getThreadLabel(VITEST_POOL_ID && `vitest-worker-${VITEST_POOL_ID}`));

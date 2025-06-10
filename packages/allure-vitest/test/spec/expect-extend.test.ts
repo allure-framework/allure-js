@@ -3,7 +3,8 @@ import { runVitestInlineTest } from "../utils.js";
 
 describe("expect.extend", () => {
   it("should support expect.extend", async () => {
-    const { tests } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest({
+      "sample.test.ts": `
     import { test, expect } from "vitest";
 
     expect.extend({ toFail() { return { pass: false, message: () => "some message" }; } });
@@ -12,7 +13,8 @@ describe("expect.extend", () => {
       expect({}).toFail();
     });
 
-  `);
+  `,
+    });
 
     expect(tests).toHaveLength(1);
     expect(tests).toEqual([

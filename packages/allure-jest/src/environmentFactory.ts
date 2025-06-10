@@ -1,6 +1,6 @@
 import type { EnvironmentContext, JestEnvironment, JestEnvironmentConfig } from "@jest/environment";
 import type { Circus } from "@jest/types";
-import { relative } from "node:path";
+import { relative, sep } from "node:path";
 import { env } from "node:process";
 import * as allure from "allure-js-commons";
 import { Stage, Status, type StatusDetails, type TestResult } from "allure-js-commons";
@@ -184,7 +184,9 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     }
 
     #handleTestStart(test: Circus.TestEntry) {
+      const fsPath = this.testPath.split(sep);
       const newTestSuitePath = getTestPath(test.parent);
+      const titlePath = fsPath.concat(newTestSuitePath);
       const { cleanTitle, labels, links } = extractMetadataFromString(test.name);
       const newTestFullName = this.#getTestFullName(test, cleanTitle);
 
@@ -210,6 +212,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
             ...getSuiteLabels(newTestSuitePath),
             ...labels,
           ],
+          titlePath,
           links,
         },
         this.runContext.scopes,

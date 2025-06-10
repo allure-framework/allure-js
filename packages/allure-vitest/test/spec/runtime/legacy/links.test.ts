@@ -4,15 +4,15 @@ import { runVitestInlineTest } from "../../../utils.js";
 
 describe("links", () => {
   it("link", async () => {
-    const { tests } = await runVitestInlineTest(
-      `
+    const { tests } = await runVitestInlineTest({
+      "sample.test.ts": `
       import { test } from "vitest";
 
       test("link", async (t) => {
         await allure.link("foo", "https://example.org", "bar");
       });
       `,
-    );
+    });
 
     expect(tests).toHaveLength(1);
     expect(tests[0].links).toContainEqual({
@@ -23,8 +23,8 @@ describe("links", () => {
   });
 
   it("issue", async () => {
-    const { tests } = await runVitestInlineTest(
-      `
+    const { tests } = await runVitestInlineTest({
+      "sample.test.ts": `
       import { test } from "vitest";
 
       test("issue", async () => {
@@ -32,7 +32,7 @@ describe("links", () => {
         await allure.issue("bar", "2");
       });
       `,
-    );
+    });
 
     expect(tests).toHaveLength(1);
     expect(tests[0].links).toContainEqual({
@@ -48,8 +48,8 @@ describe("links", () => {
   });
 
   it("tms", async () => {
-    const { tests } = await runVitestInlineTest(
-      `
+    const { tests } = await runVitestInlineTest({
+      "sample.test.ts": `
       import { test } from "vitest";
 
       test("tms", async () => {
@@ -57,7 +57,7 @@ describe("links", () => {
         await allure.tms("bar", "2");
       });
       `,
-    );
+    });
 
     expect(tests).toHaveLength(1);
     expect(tests[0].links).toContainEqual({

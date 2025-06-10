@@ -111,3 +111,24 @@ it("should calculate fullName in a CWD-independent manner", async () => {
     }),
   );
 });
+
+it("should assign titlePath property to the test result", async () => {
+  const { tests } = await runCucumberInlineTest(["simple"], ["simple"]);
+
+  expect(tests).toHaveLength(3);
+  expect(tests).toContainEqual(
+    expect.objectContaining({
+      titlePath: ["features", "simple"],
+    }),
+  );
+  expect(tests).toContainEqual(
+    expect.objectContaining({
+      titlePath: ["features", "simple"],
+    }),
+  );
+  expect(tests).toContainEqual(
+    expect.objectContaining({
+      titlePath: ["features", "simple"],
+    }),
+  );
+});
