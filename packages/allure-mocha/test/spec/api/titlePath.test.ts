@@ -12,12 +12,26 @@ describe("titlePath", () => {
   it("should assign titlePath property to the test result", () => {
     const [tr] = tests;
 
-    expect(tr.titlePath).toEqual(["plain-mocha", expect.stringMatching(/titlePath\.spec\.(m|c)?js/)]);
+    expect(tr.titlePath).toEqual([
+      "test",
+      "fixtures",
+      expect.any(String),
+      "plain-mocha",
+      expect.stringMatching(/titlePath\.spec\.(m|c)?js/),
+    ]);
   });
 
   it("should assign titlePath property to the test result with suites", () => {
     const [, tr] = tests;
 
-    expect(tr.titlePath).toEqual(["plain-mocha", expect.stringMatching(/titlePath\.spec\.(m|c)?js/), "foo", "bar"]);
+    expect(tr.titlePath).toEqual([
+      "test",
+      "fixtures",
+      expect.any(String),
+      "plain-mocha",
+      expect.stringMatching(/titlePath\.spec\.(m|c)?js/),
+      "foo",
+      "bar",
+    ]);
   });
 });
