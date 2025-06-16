@@ -118,7 +118,7 @@ const getCommandLogStepName = (entry: CypressLogEntry) => {
   const resolvedMessage = (
     maybeGetAssertionLogMessage(entry) ??
     maybeGetCucumberLogMessage(entry) ??
-    entry.attributes.renderProps().message ??
+    (typeof entry?.attributes?.renderProps === "function" ? entry.attributes.renderProps().message : undefined) ??
     message
   ).trim();
   const stepName = [resolvedName, resolvedMessage].filter(Boolean).join(" ");
