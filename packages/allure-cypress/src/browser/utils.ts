@@ -155,12 +155,12 @@ export const resolveConsoleProps = (entry: CypressLogEntry): CypressConsoleProps
   // consoleProps can be a function or an object(cy.origin just return an object)
   return typeof entry.attributes.consoleProps === "function"
     ? entry.attributes.consoleProps()
-    : entry.attributes.consoleProps || undefined;
+    : entry.attributes.consoleProps;
 };
 
 export const resolveRenderProps = (entry: CypressLogEntry): CypressRenderProps => {
   // renderProps can be a function or an object(cy.origin just return an object)
   return typeof entry?.attributes?.renderProps === "function"
     ? entry.attributes.renderProps()
-    : entry.attributes?.renderProps || undefined;
+    : entry.attributes?.renderProps;
 };

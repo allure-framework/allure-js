@@ -1021,7 +1021,7 @@ it("should support commands in hooks", async () => {
   ]);
 });
 
-it("should renderProps works correct", async () => {
+it("should log cy.origin commands correctly in cross-origin testing", async () => {
   issue("1280");
   const { tests } = await runCypressInlineTest({
     "cypress/e2e/sample.cy.js": () => `
