@@ -5,6 +5,7 @@ import { reportStepStart } from "./lifecycle.js";
 import serializePropValue from "./serialize.js";
 import { getCurrentStep, getStepStack, pushStep, setupStepFinalization } from "./state.js";
 import { ALLURE_STEP_CMD_SUBJECT, findAndStopStepWithSubsteps, isLogStep } from "./steps.js";
+import { resolveConsoleProps, resolveRenderProps } from "./utils.js";
 
 export const shouldCreateStepFromCommandLogEntry = (entry: CypressLogEntry) => {
   const { event, instrument } = entry.attributes;
@@ -42,7 +43,7 @@ export const setupScreenshotAttachmentStep = (originalName: string | undefined, 
     const {
       name: commandName,
       props: { name: nameFromProps },
-    } = step.log.attributes.consoleProps();
+    } = resolveConsoleProps(step.log);
     if (commandName === "screenshot" && nameFromProps === originalName) {
       step.attachmentName = name;
     }
@@ -109,8 +110,10 @@ const scheduleCommandLogStepStop = (entry: CypressLogEntry) => {
   }
 };
 
-const isApiStepErrorLogEntry = ({ attributes: { name, consoleProps } }: CypressLogEntry) =>
-  name === "then" && Object.is(consoleProps().props["Applied To"], ALLURE_STEP_CMD_SUBJECT);
+const isApiStepErrorLogEntry = (entry: CypressLogEntry) => {
+  const { name } = entry.attributes;
+  return name === "then" && Object.is(resolveConsoleProps(entry).props["Applied To"], ALLURE_STEP_CMD_SUBJECT);
+};
 
 const getCommandLogStepName = (entry: CypressLogEntry) => {
   const { name, message, displayName } = entry.attributes;
@@ -118,7 +121,7 @@ const getCommandLogStepName = (entry: CypressLogEntry) => {
   const resolvedMessage = (
     maybeGetAssertionLogMessage(entry) ??
     maybeGetCucumberLogMessage(entry) ??
-    (typeof entry?.attributes?.renderProps === "function" ? entry.attributes.renderProps().message : undefined) ??
+    resolveRenderProps(entry).message ??
     message
   ).trim();
   const stepName = [resolvedName, resolvedMessage].filter(Boolean).join(" ");
@@ -145,11 +148,8 @@ const maybeGetCucumberLogMessage = (entry: CypressLogEntry) => {
 };
 
 const getLogProps = (entry: CypressLogEntry) => {
-  const {
-    attributes: { consoleProps },
-  } = entry;
   const isAssertionWithMessage = !!maybeGetAssertionLogMessage(entry);
-  const { props, name } = consoleProps();
+  const { props, name } = resolveConsoleProps(entry);
 
   // accessing LocalStorage after the page reload can stick the test runner
   // to avoid the issue, we just need to log the command manually
@@ -168,7 +168,7 @@ const getLogProps = (entry: CypressLogEntry) => {
 
 const maybeGetAssertionLogMessage = (entry: CypressLogEntry) => {
   if (isAssertLog(entry)) {
-    const message = entry.attributes.consoleProps().props.Message;
+    const message = resolveConsoleProps(entry).props.Message;
 
     if (message && typeof message === "string") {
       return message;

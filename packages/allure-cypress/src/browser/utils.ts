@@ -1,7 +1,16 @@
 import { Status } from "allure-js-commons";
 import type { StatusDetails } from "allure-js-commons";
 import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
-import type { CypressHook, CypressStepStopMessage, CypressSuite, CypressTest, StepDescriptor } from "../types.js";
+import type {
+  CypressConsoleProps,
+  CypressHook,
+  CypressLogEntry,
+  CypressRenderProps,
+  CypressStepStopMessage,
+  CypressSuite,
+  CypressTest,
+  StepDescriptor,
+} from "../types.js";
 import { ALLURE_REPORT_SYSTEM_HOOK } from "./events/mocha.js";
 import { getAllureState, getProjectDir } from "./state.js";
 import { resolveStepStatus } from "./steps.js";
@@ -140,4 +149,18 @@ export const getStatusDataOfTestSkippedByHookError = (
 const getSkipReason = (hookTitle: string, suite: CypressSuite) => {
   const suiteName = suite.title ? `'${suite.title}'` : "root";
   return `'${hookTitle}' defined in the ${suiteName} suite has failed`;
+};
+
+export const resolveConsoleProps = (entry: CypressLogEntry): CypressConsoleProps => {
+  // consoleProps can be a function or an object(cy.origin just return an object)
+  return typeof entry.attributes.consoleProps === "function"
+    ? entry.attributes.consoleProps()
+    : entry.attributes.consoleProps || undefined;
+};
+
+export const resolveRenderProps = (entry: CypressLogEntry): CypressRenderProps => {
+  // renderProps can be a function or an object(cy.origin just return an object)
+  return typeof entry?.attributes?.renderProps === "function"
+    ? entry.attributes.renderProps()
+    : entry.attributes?.renderProps || undefined;
 };

@@ -1,8 +1,7 @@
 /* eslint max-lines: 0 */
 import { beforeAll, describe, expect, it } from "vitest";
-import { Stage, Status } from "allure-js-commons";
 import type { TestResult } from "allure-js-commons";
-import { issue } from "allure-js-commons";
+import { Stage, Status, issue } from "allure-js-commons";
 import { runCypressInlineTest } from "../utils.js";
 
 it("should create steps from cypress commands", async () => {
@@ -197,14 +196,14 @@ describe("parameter serialization", () => {
           const obj1 = {};
           obj1.ref = obj1; // should remove a direct circular reference 'ref'
           cy.wrap(obj1);
-  
+
           const sibling = {};
           cy.wrap({ ref: { foo: sibling, bar: sibling } }); // it's okay to have the same object on different paths
-  
+
           const obj2 = { ref: {} };
           obj2.ref.ref = obj2;
           cy.wrap(obj2); // should remove an indirect circular reference 'ref.ref'
-  
+
           cy.wrap("A".repeat(1000)); // should truncate string values
           cy.wrap(Array(1000).fill("A")); // should truncate objects
           cy.wrap({ foo: { bar: { baz: {}, qux: "qut" } } }) // should remove 'baz' because it creates nesting level 4
@@ -280,7 +279,7 @@ describe("parameter serialization", () => {
       `,
       "cypress.config.js": ({ allureCypressReporterModulePath }) => `
         const { allureCypress } = require("${allureCypressReporterModulePath}");
-  
+
         module.exports = {
           e2e: {
             baseUrl: "https://allurereport.org",
@@ -292,7 +291,7 @@ describe("parameter serialization", () => {
                   maxArgumentDepth: 2,
                 }
               });
-  
+
               return config;
             },
           },
@@ -621,7 +620,7 @@ describe("failed and broken tests with mixed steps", () => {
           });
         });
       });
-  
+
       it("broken test", () => {
         step("api step 1", () => {
           const log = Cypress.log({
@@ -1014,6 +1013,47 @@ it("should support commands in hooks", async () => {
               stage: Stage.FINISHED,
               steps: [],
               parameters: [{ name: "message", value: "qux" }],
+            }),
+          ],
+        }),
+      ],
+    }),
+  ]);
+});
+
+it("should renderProps works correct", async () => {
+  issue("1280");
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": () => `
+        it("use origin", () => {
+        cy.origin("https://github.com", () => {
+          cy.log("foo");})
+        });
+      `,
+  });
+
+  expect(tests).toEqual([
+    expect.objectContaining({
+      name: "use origin",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      steps: [
+        expect.objectContaining({
+          name: "origin https://github.com",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          steps: [
+            expect.objectContaining({
+              name: "log foo",
+              status: Status.PASSED,
+              stage: Stage.FINISHED,
+              parameters: [
+                {
+                  name: "message",
+                  value: "foo",
+                },
+              ],
+              steps: [],
             }),
           ],
         }),
