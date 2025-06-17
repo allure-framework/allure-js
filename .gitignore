@@ -71,3 +71,8 @@ yarn-error.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Test output
+**/coverage/
+**/test-results/
+**/.nyc_output/
