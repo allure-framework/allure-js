@@ -1,0 +1,38 @@
+import { noopRuntime } from "./NoopTestRuntime.js";
+const ALLURE_TEST_RUNTIME_KEY = "allureTestRuntime";
+export const setGlobalTestRuntime = (runtime) => {
+    globalThis[ALLURE_TEST_RUNTIME_KEY] = () => runtime;
+};
+const getGlobalTestRuntimeFunction = () => {
+    return globalThis?.[ALLURE_TEST_RUNTIME_KEY];
+};
+export const getGlobalTestRuntime = () => {
+    const testRuntime = getGlobalTestRuntimeFunction();
+    if (testRuntime) {
+        return testRuntime() ?? noopRuntime;
+    }
+    return noopRuntime;
+};
+export const getGlobalTestRuntimeWithAutoconfig = () => {
+    const testRuntime = getGlobalTestRuntimeFunction();
+    if (testRuntime) {
+        return testRuntime() ?? noopRuntime;
+    }
+    if ("_playwrightInstance" in globalThis) {
+        try {
+            // protection from bundlers tree-shaking visiting (webpack, rollup)
+            // @ts-ignore
+            // eslint-disable-next-line no-eval
+            return (0, eval)("(() => import('allure-playwright/autoconfig'))()").then(() => {
+                return getGlobalTestRuntimeFunction()?.() ?? noopRuntime;
+            });
+        }
+        catch (err) {
+            // eslint-disable-next-line no-console
+            console.log("can't execute allure-playwright/autoconfig", err);
+            return noopRuntime;
+        }
+    }
+    return noopRuntime;
+};
+//# sourceMappingURL=runtime.js.map

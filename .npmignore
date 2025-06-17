@@ -1,0 +1,25 @@
+# Ignore test and dev files
+src/
+test/
+test-results/
+coverage/
+*.test.ts
+*.spec.ts
+*.log
+*.md
+*.yml
+*.cjs
+*.mts
+*.ts
+!.d.ts
+.eslintrc.*
+.prettier*
+tsconfig.json
+babel.*.json
+vitest*
+.yarn*
+.npmrc
+.editorconfig
+.idea/
+.vscode/
+.husky/ 
