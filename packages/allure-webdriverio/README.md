@@ -1,42 +1,124 @@
 # Allure WebdriverIO Reporter
 
+[![npm](https://img.shields.io/npm/dm/allure-webdriverio.svg)](https://www.npmjs.com/package/allure-webdriverio)
+[![npm](https://img.shields.io/npm/v/allure-webdriverio.svg)](https://www.npmjs.com/package/allure-webdriverio)
+
 This is the [WebdriverIO](https://webdriver.io/) reporter for [Allure Framework](https://allurereport.org/). It provides detailed test execution reports with rich metadata, attachments, and test history.
+
+## Features
+
+- ✅ **Automatic test case status tracking**
+- ✅ **WebDriver commands reporting**
+- ✅ **Screenshot attachments**
+- ✅ **Test suite hierarchies**
+- ✅ **Parallel execution support**
+- ✅ **Environment information**
+- ✅ **Test categorization**
+- ✅ **Test case links**
+- ✅ **Custom labels and attachments**
+- ✅ **Parameterized test support**
+- ✅ **Step-by-step test execution**
 
 ## Installation
 
 ```bash
+# Using yarn (recommended)
+yarn add -D allure-webdriverio
+
 # Using npm
 npm install allure-webdriverio --save-dev
-
-# Using yarn
-yarn add -D allure-webdriverio
 ```
 
-## Usage
+## Quick Start
 
-Update your WebdriverIO configuration file to use the Allure reporter:
+1. **Install the package:**
+   ```bash
+   yarn add -D allure-webdriverio
+   ```
+
+2. **Update your WebdriverIO configuration:**
+   ```js
+   // wdio.conf.ts
+   import type { Options } from '@wdio/types'
+
+   export const config: Options.Testrunner = {
+       // ... other config
+       reporters: [
+           ['allure', {
+               outputDir: 'allure-results',
+               disableWebdriverStepsReporting: false,
+               disableWebdriverScreenshotsReporting: false
+           }]
+       ],
+       // ... rest of config
+   }
+   ```
+
+3. **Run your tests:**
+   ```bash
+   yarn wdio run wdio.conf.ts
+   ```
+
+4. **Generate and view the report:**
+   ```bash
+   # Install Allure CLI
+   yarn global add allure-commandline
+
+   # Generate report
+   allure generate allure-results --clean
+
+   # Open report
+   allure open
+   ```
+
+## Configuration
+
+### Basic Configuration
 
 ```js
 // wdio.conf.ts
-import type { Options } from '@wdio/types'
-
 export const config: Options.Testrunner = {
-    // ...
+    // ... other config
     reporters: [
         ['allure', {
             outputDir: 'allure-results',
+            clean: true,
+            disableWebdriverStepsReporting: false,
+            disableWebdriverScreenshotsReporting: false
+        }]
+    ],
+    // ... rest of config
+}
+```
+
+### Advanced Configuration
+
+```js
+// wdio.conf.ts
+export const config: Options.Testrunner = {
+    // ... other config
+    reporters: [
+        ['allure', {
+            outputDir: 'allure-results',
+            clean: true,
             disableWebdriverStepsReporting: false,
             disableWebdriverScreenshotsReporting: false,
             environmentInfo: {
                 node: process.version,
                 platform: process.platform,
-                // Add any custom environment info
+                browser: 'Chrome',
+                version: 'latest'
             },
             categories: [
                 {
                     name: 'Failed tests',
                     messageRegex: '.*',
                     matchedStatuses: ['failed']
+                },
+                {
+                    name: 'Product defects',
+                    messageRegex: '.*expected.*',
+                    matchedStatuses: ['broken']
                 }
             ],
             links: {
@@ -48,35 +130,114 @@ export const config: Options.Testrunner = {
                     pattern: ["{}", "https://example.org/tms/{}"],
                     urlTemplate: "https://example.org/tms/%s"
                 }
+            },
+            globalLabels: {
+                framework: 'webdriverio',
+                language: 'typescript'
             }
         }]
     ],
-    // ...
+    // ... rest of config
 }
 ```
 
 ## Configuration Options
 
-* `outputDir` - The directory where Allure report files will be written. Defaults to `./allure-results`
-* `clean` - Clean the output directory before running tests. Defaults to `false`
-* `disableWebdriverStepsReporting` - Disable automatic reporting of WebDriver commands. Defaults to `false`
-* `disableWebdriverScreenshotsReporting` - Disable automatic reporting of screenshots. Defaults to `false`
-* `environmentInfo` - Custom environment information to be displayed in the report. Type: `Record<string, string>`
-* `categories` - Test result categories configuration. See [Categories](#categories) for more details
-* `links` - Configuration for test case links. See [Links](#links) for more details
-* `globalLabels` - Labels to be added to all test cases. Type: `Record<string, string>`
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `outputDir` | `string` | `'./allure-results'` | Directory where Allure report files will be written |
+| `clean` | `boolean` | `false` | Clean the output directory before running tests |
+| `disableWebdriverStepsReporting` | `boolean` | `false` | Disable automatic reporting of WebDriver commands |
+| `disableWebdriverScreenshotsReporting` | `boolean` | `false` | Disable automatic reporting of screenshots |
+| `environmentInfo` | `Record<string, string>` | `{}` | Custom environment information |
+| `categories` | `Category[]` | `[]` | Test result categories configuration |
+| `links` | `LinksConfig` | `{}` | Configuration for test case links |
+| `globalLabels` | `Record<string, string>` | `{}` | Labels to be added to all test cases |
 
-## Features
+## Usage Examples
 
-* Automatic test case status tracking
-* WebDriver commands reporting
-* Screenshot attachments
-* Test suite hierarchies
-* Parallel execution support
-* Environment information
-* Test categorization
-* Test case links
-* Custom labels and attachments
+### Basic Test with Allure
+
+```typescript
+import { allure } from 'allure-webdriverio';
+
+describe('User Login', () => {
+    it('should login successfully with valid credentials', async () => {
+        // Add test metadata
+        allure.addLabel('severity', 'critical');
+        allure.addLabel('feature', 'Login');
+        allure.addLabel('story', 'User logs in with valid credentials');
+        
+        // Add description
+        allure.addDescription('This test verifies that a user can log in with valid credentials.');
+        
+        // Add links
+        allure.addIssue('AUTH-123');
+        allure.addTestId('LOGIN-1');
+        
+        // Test steps
+        await allure.step('Open login page', async () => {
+            await browser.url('/login');
+        });
+        
+        await allure.step('Enter credentials and submit', async () => {
+            await $('#username').setValue('user');
+            await $('#password').setValue('password');
+            await $('#login-button').click();
+        });
+        
+        await allure.step('Verify successful login', async () => {
+            await expect($('#welcome')).toBeDisplayed();
+        });
+    });
+});
+```
+
+### Parameterized Test
+
+```typescript
+import { allure } from 'allure-webdriverio';
+
+describe('Cross-browser Testing', () => {
+    const browsers = ['chrome', 'firefox', 'safari'];
+    
+    browsers.forEach(browserName => {
+        it(`should work in ${browserName}`, async () => {
+            // Add browser parameter
+            allure.addParameter('browser', browserName);
+            allure.addParameter('environment', process.env.TEST_ENV || 'staging');
+            
+            // Test implementation
+            await browser.url('/');
+            await expect($('h1')).toHaveText('Welcome');
+        });
+    });
+});
+```
+
+### Test with Attachments
+
+```typescript
+import { allure } from 'allure-webdriverio';
+
+describe('Screenshot Tests', () => {
+    it('should capture screenshot on failure', async () => {
+        try {
+            await browser.url('/');
+            await expect($('.non-existent-element')).toBeDisplayed();
+        } catch (error) {
+            // Capture screenshot
+            const screenshot = await browser.takeScreenshot();
+            allure.addAttachment(
+                'Failure Screenshot', 
+                Buffer.from(screenshot, 'base64'), 
+                'image/png'
+            );
+            throw error;
+        }
+    });
+});
+```
 
 ## Categories
 
@@ -104,7 +265,7 @@ categories: [
 
 ## Links
 
-You can configure links to external systems (like issue trackers or test management systems):
+Configure links to external systems (issue trackers, test management systems):
 
 ```js
 links: {
@@ -119,69 +280,76 @@ links: {
 }
 ```
 
-## Example
+## API Reference
 
-```typescript
-import { Status } from 'allure-webdriverio';
+### Allure Methods
 
-describe('User Login', () => {
-    it('should login successfully with valid credentials', async () => {
-        // Parameterized test example
-        const browserName = browser.capabilities.browserName;
-        const environment = process.env.TEST_ENV || 'staging';
-        allure.addParameter('browser', browserName);
-        allure.addParameter('env', environment);
+| Method | Description |
+|--------|-------------|
+| `allure.addLabel(name, value)` | Add a label to the test |
+| `allure.addParameter(name, value)` | Add a parameter to the test |
+| `allure.addDescription(text)` | Add description to the test |
+| `allure.addDescriptionHtml(html)` | Add HTML description to the test |
+| `allure.addAttachment(name, content, type)` | Add attachment to the test |
+| `allure.addIssue(issueId)` | Add issue link |
+| `allure.addTestId(testId)` | Add test case ID |
+| `allure.addLink(url, name, type)` | Add custom link |
+| `allure.step(name, fn)` | Create a test step |
 
-        // Custom labels
-        allure.addLabel('severity', 'critical');
-        allure.addLabel('feature', 'Login');
-        allure.addLabel('story', 'User logs in with valid credentials');
+### Available Labels
 
-        // Add description
-        allure.addDescription('This test verifies that a user can log in with valid credentials.');
+| Label | Description |
+|-------|-------------|
+| `severity` | Test severity (blocker, critical, normal, minor, trivial) |
+| `feature` | Feature name |
+| `story` | User story |
+| `epic` | Epic name |
+| `suite` | Test suite name |
+| `framework` | Testing framework |
+| `language` | Programming language |
 
-        // Add links
-        allure.addIssue('AUTH-123');
-        allure.addTestId('LOGIN-1');
+## Development
 
-        // Test steps
-        await allure.step('Open login page', async () => {
-            await browser.url('/login');
-        });
-        await allure.step('Enter credentials and submit', async () => {
-            await $('#username').setValue('user');
-            await $('#password').setValue('password');
-            await $('#login-button').click();
-        });
-        await allure.step('Verify successful login', async () => {
-            await expect($('#welcome')).toBeDisplayed();
-        });
+### Running Tests
 
-        // Attach screenshot
-        const screenshot = await browser.takeScreenshot();
-        allure.addAttachment('Login Screenshot', Buffer.from(screenshot, 'base64'), 'image/png');
-    });
-});
-```
-
-## Generating Reports
-
-After test execution, you'll have the Allure results in your `outputDir`. To generate and view the report:
-
-1. Install the Allure command-line tool:
 ```bash
-npm install -g allure-commandline
+# Run all tests
+yarn test
+
+# Run tests in watch mode
+yarn test:watch
+
+# Run tests with coverage
+yarn test:coverage
+
+# Run tests for this package only
+yarn workspace allure-webdriverio test
 ```
 
-2. Generate and open the report:
+### Building
+
 ```bash
-# Generate the report
-allure generate allure-results --clean
+# Build the package
+yarn build
 
-# Open the report
-allure open
+# Clean build artifacts
+yarn clean
 ```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-This project is licensed under the Apache 2.0 License - see the LICENSE file for details. 
+This project is licensed under the Apache 2.0 License - see the [LICENSE](../../LICENSE) file for details.
+
+## Support
+
+- 📚 [Documentation](https://allurereport.org/docs/)
+- ❓ [Questions and Support](https://github.com/orgs/allure-framework/discussions/categories/questions-support)
+- 🐛 [Report Issues](https://github.com/allure-framework/allure-js/issues) 
