@@ -73,9 +73,6 @@ export class AllureReporter extends WDIOReporter {
                 });
             }
         }
-
-        // Handle any attachments
-        this.processAttachments(test);
     }
 
     onTestPass(test: TestStats): void {
