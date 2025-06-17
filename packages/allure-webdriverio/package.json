@@ -1,0 +1,74 @@
+{
+  "name": "allure-webdriverio",
+  "version": "2.0.0",
+  "description": "Allure WebdriverIO integration",
+  "type": "module",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:allure-framework/allure-js.git",
+    "directory": "packages/allure-webdriverio"
+  },
+  "author": {
+    "name": "Hirok Sarker",
+    "email": "hirok.sarker@gmail.com"
+  },
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "allure",
+    "allure2",
+    "webdriverio",
+    "wdio",
+    "reporter",
+    "report",
+    "testing"
+  ],
+  "peerDependencies": {
+    "@wdio/reporter": "^8.0.0",
+    "@wdio/types": "^8.0.0"
+  },
+  "dependencies": {
+    "allure-js-commons": "workspace:*"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.24.6",
+    "@babel/core": "^7.24.6",
+    "@babel/plugin-transform-modules-commonjs": "^7.24.6",
+    "@babel/preset-env": "^7.24.6",
+    "@babel/preset-typescript": "^7.24.6",
+    "@types/node": "^18.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "@vitest/expect": "^1.0.0",
+    "@wdio/cli": "^8.0.0",
+    "@wdio/local-runner": "^8.0.0",
+    "@wdio/mocha-framework": "^8.0.0",
+    "@wdio/reporter": "^8.0.0",
+    "@wdio/spec-reporter": "^8.0.0",
+    "@wdio/types": "^8.0.0",
+    "npm-run-all2": "^8.0.0",
+    "rimraf": "^6.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "compile": "run-s 'compile:*'",
+    "compile:esm": "babel --config-file ./babel.esm.json ./src --out-dir ./dist/esm --extensions '.ts' --source-maps",
+    "compile:cjs": "babel --config-file ./babel.cjs.json ./src --out-dir ./dist/cjs --extensions '.ts' --source-maps",
+    "compile:types": "tsc",
+    "build": "yarn clean && yarn compile",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src test --ext .ts",
+    "lint:fix": "eslint src test --ext .ts --fix"
+  }
+}
