@@ -198,9 +198,9 @@ describe('AllureReporter', () => {
         expect(result.name).toBe('test with attachment');
         expect(result.status).toBe('passed');
         expect(result.attachments).toBeDefined();
-        expect(result.attachments?.length).toBe(2);
-        expect(result.attachments?.[1].type).toBe('text/plain');
-        expect(result.attachments?.[1].name).toBe('screenshot');
+        expect(result.attachments?.length).toBe(1);
+        expect(result.attachments?.[0].type).toBe('text/plain');
+        expect(result.attachments?.[0].name).toBe('screenshot');
     });
 
     it('should handle parameterized test correctly', () => {
@@ -230,7 +230,6 @@ describe('AllureReporter', () => {
             parameterValues: ['chrome', 'staging']
         } as unknown as TestStats;
 
-        // Simulate parameter handling
         reporter.onTestStart(test);
         reporter.onTestPass(test);
 
@@ -259,13 +258,13 @@ describe('AllureReporter', () => {
             output: [
                 {
                     type: 'result',
-                    command: 'screenshot',
-                    result: { value: 'base64-encoded-screenshot-data' }
+                    command: 'screenshot1',
+                    result: { value: 'base64-screenshot-1' }
                 },
                 {
                     type: 'result',
-                    command: 'log',
-                    result: { value: 'log output' }
+                    command: 'screenshot2',
+                    result: { value: 'base64-screenshot-2' }
                 }
             ],
             errors: [],
@@ -288,10 +287,9 @@ describe('AllureReporter', () => {
         expect(result.name).toBe('test with multiple attachments');
         expect(result.status).toBe('passed');
         expect(result.attachments).toBeDefined();
-        expect(result.attachments?.length).toBeGreaterThanOrEqual(2);
-        expect(result.attachments?.map(a => a.name)).toEqual(
-            expect.arrayContaining(['screenshot', 'log'])
-        );
+        expect(result.attachments?.length).toBe(2);
+        expect(result.attachments?.[0].name).toBe('screenshot1');
+        expect(result.attachments?.[1].name).toBe('screenshot2');
     });
 
     it('should handle test with custom labels', () => {

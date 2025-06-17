@@ -41,7 +41,7 @@ export const config: Options.Testrunner = {
             ],
             links: {
                 issue: {
-                    pattern: ['{}", "https://example.org/issue/{}'],
+                    pattern: ["{}", "https://example.org/issue/{}"],
                     urlTemplate: "https://example.org/issue/%s"
                 },
                 tms: {
