@@ -12,7 +12,7 @@ export class VitestTestRuntime extends MessageTestRuntime {
     }
     const currentSuite = getCurrentSuite();
     if (currentSuite) {
-      currentSuite.tasks.forEach((task) => processTask(task, message));
+      currentSuite.tasks.forEach((task) => processTask(task as Task | SuiteCollector, message));
       return Promise.resolve();
     }
     // eslint-disable-next-line no-console
