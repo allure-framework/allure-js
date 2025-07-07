@@ -2,8 +2,8 @@ import { mkdirSync, readFileSync, readdirSync, rmSync } from "fs";
 import { join } from "path";
 import { Writable } from "stream";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { AllureReporter } from "../../src/index.js";
 import { Status } from "allure-js-commons";
+import { AllureReporter } from "../../src/index.js";
 
 function getLatestResult(resultsDir) {
   const files = readdirSync(resultsDir);
@@ -280,4 +280,4 @@ describe("AllureReporter", () => {
     expect(result.parameters[1].name).toBe("version");
     expect(result.parameters[1].value).toBe("120");
   });
-}); 
+});

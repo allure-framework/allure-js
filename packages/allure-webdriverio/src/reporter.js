@@ -142,4 +142,4 @@ export class AllureReporter extends WDIOReporter {
       }
     }
   }
-} 
+}

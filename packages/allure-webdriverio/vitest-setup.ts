@@ -1,1 +1,2 @@
-import '@vitest/expect'; 
+import '@vitest/expect';
+import 'allure-vitest/setup'; 

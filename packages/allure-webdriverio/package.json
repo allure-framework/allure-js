@@ -1,6 +1,6 @@
 {
   "name": "allure-webdriverio",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "description": "Allure WebdriverIO integration",
   "keywords": [
     "allure",
@@ -56,6 +56,7 @@
     "@wdio/reporter": "^8.0.0",
     "@wdio/spec-reporter": "^8.0.0",
     "@wdio/types": "^8.0.0",
+    "allure-vitest": "workspace:*",
     "npm-run-all2": "^8.0.0",
     "rimraf": "^6.0.0",
     "vitest": "^1.0.0"

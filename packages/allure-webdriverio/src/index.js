@@ -1,1 +1,1 @@
-export { AllureReporter } from "./reporter.js"; 
+export { AllureReporter } from "./reporter.js";

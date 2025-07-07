@@ -79,3 +79,6 @@ Thumbs.db
 
 # Vitest
 **/.vitest/
+
+# Allure WebdriverIO specific
+packages/allure-webdriverio/coverage/
