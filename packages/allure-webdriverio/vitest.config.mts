@@ -5,11 +5,10 @@ export default defineConfig({
         globals: true,
         environment: 'node',
         setupFiles: ['./vitest-setup.ts'],
-        include: ['test/spec/**/*.test.ts'],
+        include: ['test/spec/**/*.test.js'],
         coverage: {
             enabled: true,
-            reporter: ['text', 'html'],
-            include: ['src/**/*.ts'],
+            include: ['src/**/*.js'],
             exclude: ['**/node_modules/**', '**/dist/**', '**/test/**'],
         },
     },
