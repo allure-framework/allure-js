@@ -1,6 +1,6 @@
 import WDIOReporter from "@wdio/reporter";
-import { Stage, Status } from "allure-js-commons";
-import { ReporterRuntime, createDefaultWriter } from "allure-js-commons/sdk/reporter";
+import { Stage, Status, LabelName } from "allure-js-commons";
+import { ReporterRuntime, createDefaultWriter, getSuiteLabels } from "allure-js-commons/sdk/reporter";
 
 export class AllureReporter extends WDIOReporter {
   constructor(options = {}) {
@@ -17,6 +17,31 @@ export class AllureReporter extends WDIOReporter {
     });
   }
 
+  // Helper function to collect test path recursively
+  collectTestPath(test) {
+    const path = [];
+    let currentTest = test;
+    
+    // Collect the path from the test structure
+    while (currentTest && currentTest.parent) {
+      path.unshift(currentTest.parent);
+      // In WebdriverIO, we need to traverse up the parent chain
+      // This is a simplified approach - in real scenarios, you might need to access the full test hierarchy
+      currentTest = currentTest.parent;
+    }
+    
+    // If we have a fullTitle, we can parse it to get the complete path
+    if (test.fullTitle) {
+      const parts = test.fullTitle.split(' ');
+      if (parts.length > 1) {
+        // Remove the test name (last part) and use the rest as the path
+        return parts.slice(0, -1);
+      }
+    }
+    
+    return path;
+  }
+
   onTestStart(test) {
     this.currentTest = this.runtime.startTest({
       name: test.title,
@@ -25,40 +50,43 @@ export class AllureReporter extends WDIOReporter {
       stage: Stage.RUNNING,
     });
 
-    // Add labels in a single updateTest call
-    this.runtime.updateTest(this.currentTest, (result) => {
-      if (test.parent) {
-        result.labels.push({ name: "suite", value: test.parent });
-      }
-      result.labels.push({ name: "framework", value: "wdio" });
-    });
+    // Collect test path for suite labels
+    const testPath = this.collectTestPath(test);
+    const suiteLabels = getSuiteLabels(testPath);
 
-    // Add custom labels if present
+    // Add all labels and parameters in a single updateTest call
     this.runtime.updateTest(this.currentTest, (result) => {
+      // Add suite labels
+      suiteLabels.forEach(label => {
+        result.labels.push(label);
+      });
+
+      // Add framework label
+      result.labels.push({ name: LabelName.FRAMEWORK, value: "wdio" });
+
+      // Add custom labels if present
       if (test.severity) {
-        result.labels.push({ name: "severity", value: test.severity });
+        result.labels.push({ name: LabelName.SEVERITY, value: test.severity });
       }
       if (test.feature) {
-        result.labels.push({ name: "feature", value: test.feature });
+        result.labels.push({ name: LabelName.FEATURE, value: test.feature });
       }
       if (test.story) {
-        result.labels.push({ name: "story", value: test.story });
+        result.labels.push({ name: LabelName.STORY, value: test.story });
       }
-    });
 
-    // Add parameters if present
-    if (test.parameterNames && test.parameterValues) {
-      const names = test.parameterNames;
-      const values = test.parameterValues;
-      if (Array.isArray(names) && Array.isArray(values) && names.length === values.length) {
-        this.runtime.updateTest(this.currentTest, (result) => {
+      // Add parameters if present
+      if (test.parameterNames && test.parameterValues) {
+        const names = test.parameterNames;
+        const values = test.parameterValues;
+        if (Array.isArray(names) && Array.isArray(values) && names.length === values.length) {
           result.parameters = [
             ...(result.parameters || []),
             ...names.map((name, i) => ({ name, value: String(values[i]) })),
           ];
-        });
+        }
       }
-    }
+    });
   }
 
   onTestPass(test) {
@@ -101,12 +129,19 @@ export class AllureReporter extends WDIOReporter {
       stage: Stage.PENDING,
     });
 
-    // Add labels in a single updateTest call
+    // Collect test path for suite labels
+    const testPath = this.collectTestPath(test);
+    const suiteLabels = getSuiteLabels(testPath);
+
+    // Add all labels in a single updateTest call
     this.runtime.updateTest(testId, (result) => {
-      if (test.parent) {
-        result.labels.push({ name: "suite", value: test.parent });
-      }
-      result.labels.push({ name: "framework", value: "wdio" });
+      // Add suite labels
+      suiteLabels.forEach(label => {
+        result.labels.push(label);
+      });
+
+      // Add framework label
+      result.labels.push({ name: LabelName.FRAMEWORK, value: "wdio" });
     });
 
     // Process any attachments
@@ -130,14 +165,11 @@ export class AllureReporter extends WDIOReporter {
       if (output.type === "result" && output.result?.value) {
         const value = String(output.result.value);
         this.runtime.updateTest(this.currentTest || "", (result) => {
-          result.attachments = [
-            ...(result.attachments || []),
-            {
-              name: output.command || "Command Result",
-              type: "text/plain",
-              source: Buffer.from(value).toString("base64"),
-            },
-          ];
+          result.attachments.push({
+            name: output.command || "Command Result",
+            type: "text/plain",
+            source: Buffer.from(value).toString("base64"),
+          });
         });
       }
     }

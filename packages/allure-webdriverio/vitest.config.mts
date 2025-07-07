@@ -6,6 +6,7 @@ export default defineConfig({
         environment: 'node',
         setupFiles: ['./vitest-setup.ts'],
         include: ['test/spec/**/*.test.js'],
+        reporters: ["default", ["allure-vitest/reporter", { resultsDir: "./out/allure-results" }]],
         coverage: {
             enabled: true,
             include: ['src/**/*.js'],
