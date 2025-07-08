@@ -7,7 +7,7 @@ describe("extra reporters", () => {
       const { tests, stdout } = await runMochaInlineTest({ extraReporters: "json" }, "plain-mocha/testInSuite");
 
       expect(tests).toEqual([expect.objectContaining({ name: "a test in a suite" })]);
-      expect(JSON.parse(stdout.join(""))).toMatchObject({
+      expect(JSON.parse(stdout!)).toMatchObject({
         stats: expect.objectContaining({
           suites: 1,
           tests: 1,
@@ -20,7 +20,7 @@ describe("extra reporters", () => {
       const { tests, stdout } = await runMochaInlineTest({ extraReporters: ["json"] }, "plain-mocha/testInSuite");
 
       expect(tests).toEqual([expect.objectContaining({ name: "a test in a suite" })]);
-      expect(JSON.parse(stdout.join(""))).toMatchObject({
+      expect(JSON.parse(stdout!)).toMatchObject({
         stats: expect.objectContaining({
           suites: 1,
           tests: 1,
@@ -47,8 +47,7 @@ describe("extra reporters", () => {
           passes: 1,
         }),
       });
-
-      expect(stdout).toEqual([]);
+      expect(stdout).toBeUndefined();
     });
   });
 
@@ -62,7 +61,7 @@ describe("extra reporters", () => {
       );
 
       expect(tests).toEqual([expect.objectContaining({ name: "a test in a suite" })]);
-      expect(stdout).toEqual(
+      expect(stdout!.split("\n")).toEqual(
         expect.arrayContaining([
           expect.stringMatching(/^\["start",/),
           expect.stringMatching(/^\["pass",/),
@@ -84,7 +83,7 @@ describe("extra reporters", () => {
       );
 
       expect(tests).toEqual([expect.objectContaining({ name: "a test in a suite" })]);
-      expect(stdout).toEqual(
+      expect(stdout!.split("\n")).toEqual(
         expect.arrayContaining([
           expect.stringMatching(/^\["start",/),
           expect.stringMatching(/^\["pass",/),
@@ -107,14 +106,14 @@ describe("extra reporters", () => {
       );
 
       expect(tests).toEqual([expect.objectContaining({ name: "a test in a suite" })]);
-      expect(stdout).toEqual(
+      expect(stdout!.split("\n")).toEqual(
         expect.arrayContaining([
           expect.stringMatching(/^<testsuite/),
           expect.stringMatching(/^<testcase/),
           expect.stringMatching(/testsuite>\s*$/),
         ]),
       );
-      expect(stdout).not.toEqual(
+      expect(stdout!.split("\n")).not.toEqual(
         expect.arrayContaining([
           expect.stringMatching(/^\["start",/),
           expect.stringMatching(/^\["pass",/),
@@ -140,7 +139,7 @@ describe("extra reporters", () => {
       );
 
       expect(tests).toEqual([expect.objectContaining({ name: "a test in a suite" })]);
-      expect(JSON.parse(stdout.join(""))).toMatchObject({
+      expect(JSON.parse(stdout!)).toMatchObject({
         stats: expect.objectContaining({
           suites: 1,
           tests: 1,
@@ -173,7 +172,7 @@ describe("extra reporters", () => {
       );
 
       expect(tests).toEqual([expect.objectContaining({ name: "a test in a suite" })]);
-      expect(stdout).toEqual([]);
+      expect(stdout).toBeUndefined();
       expect(JSON.parse(outputFiles.get("output.json")?.toString("utf-8") ?? "null")).toMatchObject({
         stats: expect.objectContaining({
           suites: 1,
@@ -200,7 +199,7 @@ describe("extra reporters", () => {
       );
 
       expect(tests).toEqual([expect.objectContaining({ name: "a test in a suite" })]);
-      expect(stdout).toEqual([]);
+      expect(stdout).toBeUndefined();
       expect(outputFiles.get("output1.xml")?.toString("utf-8")).toMatch(/<testsuite[^<]+<testcase[^<]+<\/testsuite>/);
       expect(outputFiles.get("output2.xml")?.toString("utf-8")).toMatch(/<testsuite[^<]+<testcase[^<]+<\/testsuite>/);
     });
@@ -217,7 +216,7 @@ describe("extra reporters", () => {
       );
 
       expect(tests).toEqual([expect.objectContaining({ name: "a test in a suite" })]);
-      expect(JSON.parse(stdout.join(""))).toEqual({});
+      expect(JSON.parse(stdout!)).toEqual({});
     });
 
     test("local reporter with options", async () => {
@@ -230,7 +229,7 @@ describe("extra reporters", () => {
       );
 
       expect(tests).toEqual([expect.objectContaining({ name: "a test in a suite" })]);
-      expect(JSON.parse(stdout.join(""))).toEqual({ foo: "bar" });
+      expect(JSON.parse(stdout!)).toEqual({ foo: "bar" });
     });
   });
 
@@ -243,11 +242,7 @@ describe("extra reporters", () => {
       );
 
       expect(exitCode).not.toEqual(0);
-      expect(stderr).toEqual(
-        expect.arrayContaining([
-          expect.stringContaining("A reporter value must be a string or a constructor. Got number"),
-        ]),
-      );
+      expect(stderr).toMatch(/A reporter value must be a string or a constructor\. Got number/);
     });
 
     test("a reporter module must exist", async () => {
@@ -258,7 +253,7 @@ describe("extra reporters", () => {
       );
 
       expect(exitCode).not.toEqual(0);
-      expect(stderr).toEqual(expect.arrayContaining([expect.stringContaining("Can't load the 'foo' reporter")]));
+      expect(stderr).toMatch(/Can't load the 'foo' reporter/);
     });
 
     test("a reporter entry can't be an empty array", async () => {
@@ -269,13 +264,7 @@ describe("extra reporters", () => {
       );
 
       expect(exitCode).not.toEqual(0);
-      expect(stderr).toEqual(
-        expect.arrayContaining([
-          expect.stringContaining(
-            "If an extra reporter entry is an array, it must contain one or two elements. 0 found",
-          ),
-        ]),
-      );
+      expect(stderr).toMatch(/If an extra reporter entry is an array, it must contain one or two elements\. 0 found/);
     });
 
     test("a reporter entry's module must be a string", async () => {
@@ -286,11 +275,7 @@ describe("extra reporters", () => {
       );
 
       expect(exitCode).not.toEqual(0);
-      expect(stderr).toEqual(
-        expect.arrayContaining([
-          expect.stringContaining("A reporter value must be a string or a constructor. Got number"),
-        ]),
-      );
+      expect(stderr).toMatch(/A reporter value must be a string or a constructor\. Got number/);
     });
 
     test("a reporter module in the array must be a string", async () => {
@@ -301,11 +286,7 @@ describe("extra reporters", () => {
       );
 
       expect(exitCode).not.toEqual(0);
-      expect(stderr).toEqual(
-        expect.arrayContaining([
-          expect.stringContaining("A reporter value must be a string or a constructor. Got number"),
-        ]),
-      );
+      expect(stderr).toMatch(/A reporter value must be a string or a constructor\. Got number/);
     });
 
     test("a reporter entry in the array can't be an empty array", async () => {
@@ -316,13 +297,7 @@ describe("extra reporters", () => {
       );
 
       expect(exitCode).not.toEqual(0);
-      expect(stderr).toEqual(
-        expect.arrayContaining([
-          expect.stringContaining(
-            "If an extra reporter entry is an array, it must contain one or two elements. 0 found",
-          ),
-        ]),
-      );
+      expect(stderr).toMatch(/If an extra reporter entry is an array, it must contain one or two elements\. 0 found/);
     });
   });
 });

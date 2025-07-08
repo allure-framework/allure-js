@@ -21,7 +21,7 @@ export const runJestInlineTest = async (
   const allureJestNode = require.resolve("allure-jest/node");
   const allureJestNodePath = getPosixPath(relative(testDir, allureJestNode));
   const testFilesToWrite: TestFiles = {
-    "jest.config.js": `
+    [configFileName]: `
       const config = {
         bail: false,
         testEnvironment: "${allureJestNodePath}",
@@ -70,7 +70,7 @@ export const runJestInlineTest = async (
       }
 
       await mkdir(dirname(testFilePath), { recursive: true });
-      await writeFile(join(testDir, testFile), testFileContent, "utf8");
+      await writeFile(testFilePath, testFileContent, "utf8");
       await attachment(testFile, testFileContent, {
         contentType: "text/plain",
         encoding: "utf-8",
@@ -94,7 +94,6 @@ export const runJestInlineTest = async (
       stdio: "pipe",
     });
   });
-
   const messageReader = new MessageReader();
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -110,6 +109,7 @@ export const runJestInlineTest = async (
     testProcess.on("exit", async () => {
       await rm(testDir, { recursive: true });
       await messageReader.attachResults();
+
       return resolve(messageReader.results);
     });
   });

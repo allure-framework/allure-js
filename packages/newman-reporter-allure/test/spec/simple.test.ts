@@ -78,6 +78,7 @@ test("complex test overview", async () => {
     expect.objectContaining({
       name: "testReq",
       fullName: "fff/ParentName/SuiteName/SubSub1/SubSub1#testReq",
+      titlePath: ["fff", "ParentName", "SuiteName", "SubSub1", "SubSub1"],
       status: Status.PASSED,
       stage: Stage.FINISHED,
       description: "testDescription\n\nmultiline\n\n**somethingBold**",

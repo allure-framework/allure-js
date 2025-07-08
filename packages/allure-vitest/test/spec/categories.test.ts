@@ -3,26 +3,25 @@ import { runVitestInlineTest } from "../utils.js";
 
 describe("categories", () => {
   it("should support categories", async () => {
-    const { categories } = await runVitestInlineTest(
-      `
+    const { categories } = await runVitestInlineTest({
+      "sample.test.ts": `
         import { test } from "vitest";
 
         test("sample test", async () => {
         });
       `,
-      {
-        configFactory: () => `
+      "vitest.config.ts": ({ allureResultsPath, reporterModulePath, setupModulePath }) => `
           import { defineConfig } from "vitest/config";
 
           export default defineConfig({
             test: {
-              setupFiles: ["allure-vitest/setup"],
+              setupFiles: ["${setupModulePath}"],
               reporters: [
                 "default",
                 [
-                  "allure-vitest/reporter",
+                  "${reporterModulePath}",
                   {
-                    resultsDir: "allure-results",
+                    resultsDir: "${allureResultsPath}",
                     categories: [{
                       name: "first"
                     },{
@@ -34,8 +33,7 @@ describe("categories", () => {
             },
           });
         `,
-      },
-    );
+    });
 
     expect(categories).toEqual(expect.arrayContaining([{ name: "first" }, { name: "second" }]));
   });

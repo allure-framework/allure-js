@@ -8,6 +8,8 @@ export interface AttachmentOptions {
   contentType: ContentType | string;
   encoding?: BufferEncoding;
   fileExtension?: string;
+  path?: string;
+  body?: Buffer;
 }
 
 export interface Label {
@@ -56,13 +58,16 @@ interface Executable {
 
 export interface FixtureResult extends Executable {}
 
-export interface StepResult extends Executable {}
+export interface StepResult extends Executable {
+  uuid?: string;
+}
 
 export interface TestResult extends Executable {
   uuid: string;
   historyId?: string;
   fullName?: string;
   testCaseId?: string;
+  titlePath?: string[];
   labels: Label[];
   links: Link[];
 }

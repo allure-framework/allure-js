@@ -1,4 +1,5 @@
 /* eslint max-lines: 0 */
+import path from "node:path";
 import { extname } from "path";
 import {
   type Attachment,
@@ -71,6 +72,10 @@ export class ShallowStepsStack {
     return this.#runningSteps[this.#runningSteps.length - 1];
   }
 
+  currentStep() {
+    return this.#currentStep;
+  }
+
   startStep(step: Partial<StepResult>) {
     const stepResult: StepResult = {
       ...createStepResult(),
@@ -110,6 +115,37 @@ export class ShallowStepsStack {
     });
 
     this.#runningSteps.pop();
+  }
+
+  findStepByUuid(uuid: string): StepResult | undefined {
+    const findRecursively = (steps: StepResult[]): StepResult | undefined => {
+      for (const s of steps) {
+        if (s.uuid === uuid) {
+          return s;
+        }
+        const found = findRecursively(s.steps);
+        if (found) {
+          return found;
+        }
+      }
+      return undefined;
+    };
+    return findRecursively(this.steps);
+  }
+
+  addAttachment(attachment: AttachmentOptions, writer: Writer) {
+    const isPath = !!attachment.path;
+    const fileExt = attachment.path ? path.extname(attachment.path) : undefined;
+    const fileName = buildAttachmentFileName({
+      contentType: attachment.contentType,
+      fileExtension: fileExt,
+    });
+    if (isPath) {
+      writer.writeAttachmentFromPath(fileName, attachment.path as string);
+    } else if (attachment.body) {
+      writer.writeAttachment(fileName, attachment.body);
+    }
+    return fileName;
   }
 }
 
