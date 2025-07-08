@@ -33,7 +33,8 @@
   "resolutions": {
     "axios": "^1.8.2",
     "braces": "^3.0.3",
-    "jose": "^4.15.5"
+    "jose": "^4.15.5",
+    "tar": "^6.2.1"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^2.6.1",
