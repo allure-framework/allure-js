@@ -273,13 +273,20 @@ export default class AllureCucumberReporter extends Formatter {
     const scenarioLabels = this.parseTagsLabels(scenario?.tags || []);
     const scenarioLinks = this.parseTagsLinks(scenario?.tags || []);
 
+    // remove feature file name from the title path
+    result.titlePath = posixPath
+      .split("/")
+      .slice(0, -1)
+      .concat([doc?.feature?.name].filter(Boolean) as string[]);
     result.labels!.push(...featureLabels, ...scenarioLabels, ...pickleLabels);
     result.links!.push(...featureLinks, ...scenarioLinks);
 
     const scopeUuid = this.allureRuntime.startScope();
+
     this.scopeUuids.set(data.id, scopeUuid);
 
     const testUuid = this.allureRuntime.startTest(result, [scopeUuid]);
+
     this.testResultUuids.set(data.id, testUuid);
 
     this.testCaseStartedMap.set(data.id, data);

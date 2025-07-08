@@ -304,8 +304,10 @@ export class AllureCypress {
     fullNameSuffix: string,
     { labels: metadataLabels = [], ...otherTestData }: Partial<TestResult>,
     scopes: string[],
-  ) =>
-    this.allureRuntime.startTest(
+  ) => {
+    const posixPath = getPosixPath(context.specPath);
+
+    return this.allureRuntime.startTest(
       {
         stage: Stage.RUNNING,
         labels: [
@@ -318,11 +320,13 @@ export class AllureCypress {
           getThreadLabel(),
           getPackageLabel(context.specPath),
         ],
-        fullName: `${getPosixPath(context.specPath)}#${fullNameSuffix}`,
+        fullName: `${posixPath}#${fullNameSuffix}`,
+        titlePath: posixPath.split("/").concat(context.suiteNames),
         ...otherTestData,
       },
       scopes,
     );
+  };
 
   #failHookAndTest = (context: SpecContext, { data: { status, statusDetails } }: CypressFailMessage) => {
     const setError = (result: object) => Object.assign(result, { status, statusDetails });

@@ -3,7 +3,8 @@ import { runVitestInlineTest } from "../utils.js";
 
 describe("test.extend", () => {
   it("should support test.extend", async () => {
-    const { tests } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest({
+      "sample.test.ts": `
     import { test as baseTest, expect } from "vitest";
     import { logStep } from "allure-js-commons";
 
@@ -19,7 +20,8 @@ describe("test.extend", () => {
     testFixture("fixture test", async ({ dummy }) => {
       await logStep(dummy);
     });
-  `);
+  `,
+    });
 
     expect(tests).toHaveLength(2);
     expect(tests).toEqual([

@@ -39,6 +39,13 @@ export type CypressCommand = {
   state: "passed" | "failed" | "queued";
 };
 
+export type CypressRenderProps = { message?: string };
+
+export type CypressConsoleProps = {
+  name: string;
+  props: Record<string, unknown>;
+};
+
 export type CypressLogEntry = ReturnType<typeof Cypress.log> & {
   attributes: {
     id: string;
@@ -53,13 +60,8 @@ export type CypressLogEntry = ReturnType<typeof Cypress.log> & {
     createdAtTimestamp: number;
     updatedAtTimestamp: number;
     end?: boolean;
-    renderProps: () => {
-      message: string;
-    };
-    consoleProps: () => {
-      name: string;
-      props: Record<string, unknown>;
-    };
+    renderProps: (() => CypressRenderProps) | CypressRenderProps;
+    consoleProps: (() => CypressConsoleProps) | CypressConsoleProps;
   };
   endGroup: () => unknown;
 };

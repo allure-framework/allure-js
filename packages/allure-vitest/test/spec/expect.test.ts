@@ -3,14 +3,16 @@ import { runVitestInlineTest } from "../utils.js";
 
 describe("expect", () => {
   it("should add actual and expected values when using expect", async () => {
-    const { tests } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest({
+      "sample.test.ts": `
     import { test, expect } from "vitest";
 
     test("fail test", () => {
       expect("a value").toEqual("the other one");
     });
 
-  `);
+  `,
+    });
 
     expect(tests).toHaveLength(1);
     expect(tests).toMatchObject([
@@ -26,14 +28,16 @@ describe("expect", () => {
     ]);
   });
   it("should add actual and expected values when using expect with match object", async () => {
-    const { tests } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest({
+      "sample.test.ts": `
     import { test, expect } from "vitest";
 
     test("fail test", () => {
       expect({ nested: { obj: "value", n: 123}}).toMatchObject({ nested: { obj: "some"} });
     });
 
-  `);
+  `,
+    });
 
     expect(tests).toHaveLength(1);
     expect(tests).toMatchObject([
@@ -50,14 +54,16 @@ describe("expect", () => {
 
   // this is the way vitest process errors
   it("should add actual and expected values when regular exception is thrown", async () => {
-    const { tests } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest({
+      "sample.test.ts": `
     import { test, expect } from "vitest";
 
     test("fail test", () => {
       throw new Error("fail!")
     });
 
-  `);
+  `,
+    });
 
     expect(tests).toHaveLength(1);
     expect(tests).toMatchObject([

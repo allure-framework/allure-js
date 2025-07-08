@@ -39,3 +39,9 @@ export const isDescendantOfStepWithTitle = (step: TestStep, title: string): bool
 export const isAfterHookStep = (step: TestStep) => isDescendantOfStepWithTitle(step, AFTER_HOOKS_ROOT_STEP_TITLE);
 
 export const isBeforeHookStep = (step: TestStep) => isDescendantOfStepWithTitle(step, BEFORE_HOOKS_ROOT_STEP_TITLE);
+
+export const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
+
+export const normalizeHookTitle = (title: string) => {
+  return title.startsWith('attach "') && title.endsWith('"') ? title.slice(8, -1) : title;
+};

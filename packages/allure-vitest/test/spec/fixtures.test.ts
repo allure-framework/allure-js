@@ -3,7 +3,8 @@ import { runVitestInlineTest } from "../utils.js";
 
 describe("fixtures", () => {
   it("should report fixtures", async () => {
-    const { tests } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest({
+      "sample.test.ts": `
     import { afterAll, afterEach, beforeAll, beforeEach, test } from "vitest";
     import { step } from "allure-js-commons";
 
@@ -26,7 +27,8 @@ describe("fixtures", () => {
     test("sample test", async () => {
       await step("test step", () => {});
     });
-  `);
+  `,
+    });
 
     expect(tests).toHaveLength(1);
     const [testResult] = tests;

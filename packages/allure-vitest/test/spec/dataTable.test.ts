@@ -3,7 +3,8 @@ import { runVitestInlineTest } from "../utils.js";
 
 describe("data tables", () => {
   it("should support tests with data table", async () => {
-    const { tests } = await runVitestInlineTest(`
+    const { tests } = await runVitestInlineTest({
+      "sample.test.ts": `
     import { test, expect } from "vitest";
     import { label } from "allure-js-commons";
 
@@ -14,7 +15,8 @@ describe("data tables", () => {
     ])("%i + %i = %i", async (a, b, expected) => {
       await label("foo", "bar");
     })
-  `);
+  `,
+    });
 
     expect(tests).toHaveLength(3);
     expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
