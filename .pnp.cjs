@@ -11657,10 +11657,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["cookie", [\
-      ["npm:0.4.2", {\
-        "packageLocation": "./.yarn/cache/cookie-npm-0.4.2-7761894d5f-2e1de9fded.zip/node_modules/cookie/",\
+      ["npm:0.7.2", {\
+        "packageLocation": "./.yarn/cache/cookie-npm-0.7.2-6ea9ee4231-24b286c556.zip/node_modules/cookie/",\
         "packageDependencies": [\
-          ["cookie", "npm:0.4.2"]\
+          ["cookie", "npm:0.7.2"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -18276,7 +18276,7 @@ const RAW_RUNTIME_STATE =
           ["@types/typescript", null],\
           ["chalk", "npm:4.1.2"],\
           ["chokidar", "npm:3.6.0"],\
-          ["cookie", "npm:0.4.2"],\
+          ["cookie", "npm:0.7.2"],\
           ["graphql", "npm:16.8.1"],\
           ["headers-polyfill", "npm:3.2.5"],\
           ["inquirer", "npm:8.2.6"],\
