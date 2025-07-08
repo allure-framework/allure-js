@@ -4875,19 +4875,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@babel/runtime", [\
-      ["npm:7.24.6", {\
-        "packageLocation": "./.yarn/cache/@babel-runtime-npm-7.24.6-3acd4a9fd9-6c4e12731c.zip/node_modules/@babel/runtime/",\
+      ["npm:7.27.6", {\
+        "packageLocation": "./.yarn/cache/@babel-runtime-npm-7.27.6-350e7a5827-cc957a12ba.zip/node_modules/@babel/runtime/",\
         "packageDependencies": [\
-          ["@babel/runtime", "npm:7.24.6"],\
-          ["regenerator-runtime", "npm:0.14.1"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
-      ["npm:7.26.0", {\
-        "packageLocation": "./.yarn/cache/@babel-runtime-npm-7.26.0-9afa3c4ef6-9f4ea1c1d5.zip/node_modules/@babel/runtime/",\
-        "packageDependencies": [\
-          ["@babel/runtime", "npm:7.26.0"],\
-          ["regenerator-runtime", "npm:0.14.1"]\
+          ["@babel/runtime", "npm:7.27.6"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -17687,7 +17678,7 @@ const RAW_RUNTIME_STATE =
       ["npm:0.80.12", {\
         "packageLocation": "./.yarn/cache/metro-runtime-npm-0.80.12-8e7410ce37-8a09e7001b.zip/node_modules/metro-runtime/",\
         "packageDependencies": [\
-          ["@babel/runtime", "npm:7.26.0"],\
+          ["@babel/runtime", "npm:7.27.6"],\
           ["flow-enums-runtime", "npm:0.0.6"],\
           ["metro-runtime", "npm:0.80.12"]\
         ],\
@@ -17696,7 +17687,7 @@ const RAW_RUNTIME_STATE =
       ["npm:0.81.0", {\
         "packageLocation": "./.yarn/cache/metro-runtime-npm-0.81.0-fddf7cb76f-fdb87c44ad.zip/node_modules/metro-runtime/",\
         "packageDependencies": [\
-          ["@babel/runtime", "npm:7.26.0"],\
+          ["@babel/runtime", "npm:7.27.6"],\
           ["flow-enums-runtime", "npm:0.0.6"],\
           ["metro-runtime", "npm:0.81.0"]\
         ],\
@@ -20347,20 +20338,13 @@ const RAW_RUNTIME_STATE =
           ["regenerator-runtime", "npm:0.13.11"]\
         ],\
         "linkType": "HARD"\
-      }],\
-      ["npm:0.14.1", {\
-        "packageLocation": "./.yarn/cache/regenerator-runtime-npm-0.14.1-a6c97c609a-5db3161abb.zip/node_modules/regenerator-runtime/",\
-        "packageDependencies": [\
-          ["regenerator-runtime", "npm:0.14.1"]\
-        ],\
-        "linkType": "HARD"\
       }]\
     ]],\
     ["regenerator-transform", [\
       ["npm:0.15.2", {\
         "packageLocation": "./.yarn/cache/regenerator-transform-npm-0.15.2-109e57a69f-c4fdcb46d1.zip/node_modules/regenerator-transform/",\
         "packageDependencies": [\
-          ["@babel/runtime", "npm:7.24.6"],\
+          ["@babel/runtime", "npm:7.27.6"],\
           ["regenerator-transform", "npm:0.15.2"]\
         ],\
         "linkType": "HARD"\
