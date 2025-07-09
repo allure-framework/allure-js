@@ -36,6 +36,7 @@
     "braces": "^3.0.3",
     "cookie": "^0.7.0",
     "cross-spawn": "^7.0.6",
+    "jose": "^4.15.5",
     "tar": "^6.2.1"
   },
   "devDependencies": {
