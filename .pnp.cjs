@@ -253,7 +253,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/generator", "npm:7.23.6"],\
           ["@babel/helper-compilation-targets", "npm:7.23.6"],\
           ["@babel/helper-module-transforms", "virtual:4987baf09b82c48eb8b5413aa2ba462ba316c95c50a367748f9bb0d09a052cbd6508a65052d6692401be2eab1d0720262e16f715ed4f30858ba5040402f5e3fe#npm:7.23.3"],\
-          ["@babel/helpers", "npm:7.23.9"],\
+          ["@babel/helpers", "npm:7.27.6"],\
           ["@babel/parser", "npm:7.23.9"],\
           ["@babel/template", "npm:7.23.9"],\
           ["@babel/traverse", "npm:7.23.9"],\
@@ -275,7 +275,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/generator", "npm:7.26.3"],\
           ["@babel/helper-compilation-targets", "npm:7.25.9"],\
           ["@babel/helper-module-transforms", "virtual:6f14d37f26f87c55654e510172561c825f7eb822527d5aaba60d24913853c925a2338249715305c87baadd7e7b73f94aba8cb62d407d8bb26b18bd6b90ca945f#npm:7.26.0"],\
-          ["@babel/helpers", "npm:7.26.0"],\
+          ["@babel/helpers", "npm:7.27.6"],\
           ["@babel/parser", "npm:7.26.3"],\
           ["@babel/template", "npm:7.25.9"],\
           ["@babel/traverse", "npm:7.26.4"],\
@@ -1148,25 +1148,6 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@babel/helpers", [\
-      ["npm:7.23.9", {\
-        "packageLocation": "./.yarn/cache/@babel-helpers-npm-7.23.9-703579a363-dd56daac8b.zip/node_modules/@babel/helpers/",\
-        "packageDependencies": [\
-          ["@babel/helpers", "npm:7.23.9"],\
-          ["@babel/template", "npm:7.23.9"],\
-          ["@babel/traverse", "npm:7.23.9"],\
-          ["@babel/types", "npm:7.23.9"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
-      ["npm:7.26.0", {\
-        "packageLocation": "./.yarn/cache/@babel-helpers-npm-7.26.0-d7ff09b837-fd4757f65d.zip/node_modules/@babel/helpers/",\
-        "packageDependencies": [\
-          ["@babel/helpers", "npm:7.26.0"],\
-          ["@babel/template", "npm:7.25.9"],\
-          ["@babel/types", "npm:7.26.3"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:7.27.6", {\
         "packageLocation": "./.yarn/cache/@babel-helpers-npm-7.27.6-7fcd6207a2-33c1ab2b42.zip/node_modules/@babel/helpers/",\
         "packageDependencies": [\
