@@ -69,8 +69,8 @@ it("adds trace to the report as an attachment", async () => {
       import { ContentType } from "allure-js-commons";
 
       test('should do nothing', async ({ page }, testInfo) => {
-        await page.goto('https://allurereport.org');
         await allure.attachment("trace", "trace", ContentType.JPEG);
+
       });
     `,
     "playwright.config.js": `
@@ -86,7 +86,6 @@ it("adds trace to the report as an attachment", async () => {
                detail: false,
              },
            ],
-           ["dot"],
          ],
          projects: [
            {
@@ -130,7 +129,7 @@ it("adds trace from stopChunk to the report as an attachment", async () => {
 
       test('should do nothing', async ({ page, context }, testInfo) => {
         await context.tracing.start({ screenshots: true, snapshots: true });
-        await page.goto('https://allurereport.org');
+        await page.goto('https://playwright.dev');
         const chunkPath = 'allure-results/trace-chunk.zip';
         await context.tracing.stopChunk({ path: chunkPath });
         await attachTrace("trace-chunk", chunkPath);

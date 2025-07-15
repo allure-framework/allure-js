@@ -279,7 +279,7 @@ export class AllureReporter implements ReporterV2 {
     const isHookStep = isBeforeHookDescendant || isAfterHookDescendant;
     const testUuid = this.allureResultsUuids.get(test.id)!;
 
-    if (step.category === "attach" && !isHookStep) {
+    if (["test.attach", "attach"].includes(step.category) && !isHookStep) {
       const currentStep = this.allureRuntime?.currentStep(testUuid);
       this.attachmentSteps.set(testUuid, [...(this.attachmentSteps.get(testUuid) ?? []), currentStep]);
       return;
@@ -302,7 +302,7 @@ export class AllureReporter implements ReporterV2 {
         ? this.beforeHooksStepsStack.get(test.id)!
         : this.afterHooksStepsStack.get(test.id)!;
 
-      if (step.category === "attach") {
+      if (["test.attach", "attach"].includes(step.category)) {
         stack.startStep(baseStep);
         const attachStack = isBeforeHookDescendant ? this.beforeHooksAttachmentsStack : this.afterHooksAttachmentsStack;
         stack.updateStep((stepResult) => {
@@ -336,8 +336,8 @@ export class AllureReporter implements ReporterV2 {
     if (this.#shouldIgnoreStep(step)) {
       return;
     }
-    // ignore attach steps since attachments are already in the report
-    if (step.category === "attach") {
+    // ignore test.attach steps since attachments are already in the report
+    if (["test.attach", "attach"].includes(step.category)) {
       return;
     }
     const testUuid = this.allureResultsUuids.get(test.id)!;
@@ -559,6 +559,7 @@ export class AllureReporter implements ReporterV2 {
         stderr: [],
         stdout: [],
         startTime: this.globalStartTime,
+        annotations: [],
       });
     }
   }
