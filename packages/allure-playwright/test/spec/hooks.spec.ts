@@ -105,7 +105,7 @@ it("should mark step as failed when any child step is failed", async () => {
         status: Status.PASSED,
       }),
       expect.objectContaining({
-        name: "page.waitForEvent",
+        name: 'Wait for event "en_event"',
         status: Status.FAILED,
       }),
       expect.objectContaining({
@@ -161,7 +161,7 @@ it("keeps correct hooks structure when something failed", async () => {
     `,
   });
 
-  expect(results.tests[0].steps).toHaveLength(3);
+  expect(results.tests[0].steps).toHaveLength(4);
   expect(results.tests[0].steps[0]).toMatchObject({
     name: "Before Hooks",
   });
@@ -169,6 +169,9 @@ it("keeps correct hooks structure when something failed", async () => {
     name: "step 1",
   });
   expect(results.tests[0].steps[2]).toMatchObject({
+    name: "screenshot",
+  });
+  expect(results.tests[0].steps[3]).toMatchObject({
     name: "After Hooks",
   });
 });
