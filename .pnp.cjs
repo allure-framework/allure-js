@@ -5403,14 +5403,14 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["npm:27.2.0", {\
-        "packageLocation": "./.yarn/cache/@cucumber-messages-npm-27.2.0-111311f0e7-b1f59c309f.zip/node_modules/@cucumber/messages/",\
+      ["npm:28.1.0", {\
+        "packageLocation": "./.yarn/cache/@cucumber-messages-npm-28.1.0-1a1060c2f6-563620f57e.zip/node_modules/@cucumber/messages/",\
         "packageDependencies": [\
-          ["@cucumber/messages", "npm:27.2.0"],\
+          ["@cucumber/messages", "npm:28.1.0"],\
           ["@types/uuid", "npm:10.0.0"],\
           ["class-transformer", "npm:0.5.1"],\
           ["reflect-metadata", "npm:0.2.2"],\
-          ["uuid", "npm:11.0.5"]\
+          ["uuid", "npm:11.1.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -8893,7 +8893,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/preset-env", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:7.27.1"],\
           ["@cucumber/cucumber", "npm:10.8.0"],\
-          ["@cucumber/messages", "npm:27.2.0"],\
+          ["@cucumber/messages", "npm:28.1.0"],\
           ["@stylistic/eslint-plugin", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:2.6.1"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
@@ -22804,10 +22804,10 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["npm:11.0.5", {\
-        "packageLocation": "./.yarn/cache/uuid-npm-11.0.5-685b7c1023-0594ecdff3.zip/node_modules/uuid/",\
+      ["npm:11.1.0", {\
+        "packageLocation": "./.yarn/cache/uuid-npm-11.1.0-61d0d08928-d2da43b49b.zip/node_modules/uuid/",\
         "packageDependencies": [\
-          ["uuid", "npm:11.0.5"]\
+          ["uuid", "npm:11.1.0"]\
         ],\
         "linkType": "HARD"\
       }],\

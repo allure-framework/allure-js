@@ -2996,15 +2996,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cucumber/messages@npm:^27.0.0":
-  version: 27.2.0
-  resolution: "@cucumber/messages@npm:27.2.0"
+"@cucumber/messages@npm:^28.0.0":
+  version: 28.1.0
+  resolution: "@cucumber/messages@npm:28.1.0"
   dependencies:
     "@types/uuid": "npm:10.0.0"
     class-transformer: "npm:0.5.1"
     reflect-metadata: "npm:0.2.2"
-    uuid: "npm:11.0.5"
-  checksum: 10/b1f59c309f5a04988608ad93fbd51774c127d22b06c65025447825ea6438f851a665d175434b3d78c88e57b4b7f44e3de04286188452262621909bdfe9688b9a
+    uuid: "npm:11.1.0"
+  checksum: 10/563620f57e4da9c6680b4bc0d37a3e97624117ca52eea3f2be7c1fccb54c0825b94c541285437de33715b0c62a32702d147b21a72b20065aea6e3a23e7df396d
   languageName: node
   linkType: hard
 
@@ -5824,7 +5824,7 @@ __metadata:
     "@babel/preset-env": "npm:^7.28.0"
     "@babel/preset-typescript": "npm:^7.27.1"
     "@cucumber/cucumber": "npm:^10.8.0"
-    "@cucumber/messages": "npm:^27.0.0"
+    "@cucumber/messages": "npm:^28.0.0"
     "@stylistic/eslint-plugin": "npm:^2.6.1"
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
@@ -18213,12 +18213,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:11.0.5":
-  version: 11.0.5
-  resolution: "uuid@npm:11.0.5"
+"uuid@npm:11.1.0":
+  version: 11.1.0
+  resolution: "uuid@npm:11.1.0"
   bin:
     uuid: dist/esm/bin/uuid
-  checksum: 10/0594ecdff3051e15d4a2c614b4c72e73af373bde0a5d156512353c01156975295d024ae8d7151846d7bd4d22ccd251b16ed51b4318fa71505fb20ad984102dc1
+  checksum: 10/d2da43b49b154d154574891ced66d0c83fc70caaad87e043400cf644423b067542d6f3eb641b7c819224a7cd3b4c2f21906acbedd6ec9c6a05887aa9115a9cf5
   languageName: node
   linkType: hard
 
