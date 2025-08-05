@@ -1,3 +1,4 @@
+/* eslint max-lines: off */
 import type { FullConfig } from "@playwright/test";
 import type { TestResult as PlaywrightTestResult, Suite, TestCase, TestStep } from "@playwright/test/reporter";
 import { existsSync } from "node:fs";
@@ -304,7 +305,9 @@ export class AllureReporter implements ReporterV2 {
 
       if (["test.attach", "attach"].includes(step.category)) {
         stack.startStep(baseStep);
+
         const attachStack = isBeforeHookDescendant ? this.beforeHooksAttachmentsStack : this.afterHooksAttachmentsStack;
+
         stack.updateStep((stepResult) => {
           stepResult.name = normalizeHookTitle(stepResult.name!);
           stepResult.stage = Stage.FINISHED;
@@ -432,12 +435,19 @@ export class AllureReporter implements ReporterV2 {
         .map((hookStep) => normalizeHookTitle(hookStep.title))
         .filter(Boolean),
     );
+    const hookAttachmentNames = new Set(
+      [...attachmentsInBeforeHooks, ...attachmentsInAfterHooks]
+        .map((hookStep) => normalizeHookTitle(hookStep.title))
+        .filter(Boolean),
+    );
     const attachmentSteps = this.attachmentSteps.get(testUuid) ?? [];
     const attachmentsInSteps = result.attachments.filter((attachment) => !hookAttachmentUuids.has(attachment.name));
+    const onlyHooksAttachments = result.attachments.filter((att) => hookAttachmentNames.has(att.name));
 
     for (let i = 0; i < attachmentsInSteps.length; i++) {
       const attachment = attachmentsInSteps[i];
       const attachmentStep = attachmentSteps.length > i ? attachmentSteps[i] : undefined;
+
       await this.processAttachment(testUuid, attachmentStep, attachment);
     }
 
@@ -468,13 +478,6 @@ export class AllureReporter implements ReporterV2 {
     // FIXME: temp logic for labels override, we need it here to keep the reporter compatible with v2 API
     // in next iterations we need to implement the logic for every javascript integration
 
-    const hookAttachmentNames = new Set(
-      [...attachmentsInBeforeHooks, ...attachmentsInAfterHooks]
-        .map((hookStep) => normalizeHookTitle(hookStep.title))
-        .filter(Boolean),
-    );
-    const onlyHooksAttachments = result.attachments.filter((att) => hookAttachmentNames.has(att.name));
-
     for (const attachment of onlyHooksAttachments) {
       const matchingBeforeHookStep = attachmentsInBeforeHooks.find(
         (step) => normalizeHookTitle(step.title) === attachment.name,
@@ -484,6 +487,11 @@ export class AllureReporter implements ReporterV2 {
       );
       const targetStack = matchingBeforeHookStep ? beforeHooksStack : afterHooksStack;
       const hookStep = matchingBeforeHookStep || matchingAfterHookStep;
+
+      if (attachment.contentType === ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE) {
+        await this.processAttachment(testUuid, hookStep?.uuid, attachment);
+        continue;
+      }
 
       if (targetStack && hookStep) {
         const stepResult = targetStack?.findStepByUuid(hookStep?.uuid);
@@ -497,6 +505,7 @@ export class AllureReporter implements ReporterV2 {
         }
       }
     }
+
     this.allureRuntime!.updateTest(testUuid, (testResult) => {
       const mappedLabels = testResult.labels.reduce<Record<string, Label[]>>((acc, label) => {
         if (!acc[label.name]) {
@@ -533,7 +542,6 @@ export class AllureReporter implements ReporterV2 {
 
       testResult.labels = newLabels;
     });
-
     this.allureRuntime!.stopTest(testUuid, { duration: result.duration });
     this.allureRuntime!.writeTest(testUuid);
   }
