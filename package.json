@@ -35,7 +35,7 @@
     "@babel/runtime": "^7.26.10",
     "axios": "^1.8.2",
     "braces": "^3.0.3",
-    "cookie": "^0.7.0",
+    "cookie": "^1.0.0",
     "cross-spawn": "^7.0.6",
     "jose": "^4.15.5",
     "tar": "^6.2.1"
