@@ -1,3 +1,4 @@
+/* eslint max-lines: off */
 import type { FullConfig } from "@playwright/test";
 import type { TestResult as PlaywrightTestResult, Suite, TestCase, TestStep } from "@playwright/test/reporter";
 import { existsSync } from "node:fs";
