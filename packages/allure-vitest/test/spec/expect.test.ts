@@ -52,7 +52,6 @@ describe("expect", () => {
     ]);
   });
 
-  // this is the way vitest process errors
   it("should add actual and expected values when regular exception is thrown", async () => {
     const { tests } = await runVitestInlineTest({
       "sample.test.ts": `
@@ -61,20 +60,18 @@ describe("expect", () => {
     test("fail test", () => {
       throw new Error("fail!")
     });
-
   `,
     });
 
     expect(tests).toHaveLength(1);
-    expect(tests).toMatchObject([
-      {
-        name: "fail test",
-        status: "broken",
-        statusDetails: {
-          expected: "undefined",
-          actual: "undefined",
-        },
-      },
-    ]);
+
+    const [{ name, status, statusDetails }] = tests;
+
+    expect(name).toBe("fail test");
+    expect(status).toBe("broken");
+    expect(statusDetails.message).toBe("fail!");
+    expect(statusDetails.trace).toContain("Error: fail!");
+    expect(statusDetails.expected).toBeUndefined();
+    expect(statusDetails.actual).toBeUndefined();
   });
 });
