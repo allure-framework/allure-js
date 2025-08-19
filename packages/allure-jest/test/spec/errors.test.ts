@@ -13,13 +13,15 @@ it("should handle timeout exceptions", async () => {
   });
 
   expect(tests).toHaveLength(1);
+
   const [tr] = tests;
+
   expect(tr).toMatchObject({
     status: Status.BROKEN,
-    statusDetails: {
+    statusDetails: expect.objectContaining({
       message: expect.stringContaining("timeout"),
       trace: expect.stringContaining("sample.test.js"),
-    },
+    }),
   });
 });
 
@@ -73,7 +75,9 @@ it("should handle expect errors", async () => {
   });
 
   expect(tests).toHaveLength(1);
+
   const [tr] = tests;
+
   expect(tr).toMatchObject({
     status: Status.FAILED,
     statusDetails: {
@@ -93,7 +97,9 @@ it("should set actual and expected values for expects", async () => {
   });
 
   expect(tests).toHaveLength(1);
+
   const [tr] = tests;
+
   expect(tr).toMatchObject({
     status: Status.FAILED,
     statusDetails: {

@@ -28,14 +28,10 @@ export const getGlobalTestRuntimeWithAutoconfig = (): TestRuntime | Promise<Test
     return testRuntime() ?? noopRuntime;
   }
 
-  try {
-    // protection from bundlers tree-shaking visiting (webpack, rollup)
-    // @ts-ignore
-    // eslint-disable-next-line no-eval
-    return (0, eval)("(() => import('allure-playwright/autoconfig'))()").then(() => {
-      return getGlobalTestRuntimeFunction()?.() ?? noopRuntime;
-    });
-  } catch (ignored) {}
+  // protection from bundlers tree-shaking visiting (webpack, rollup)
+  const pwAutoconfigModuleName = "allure-playwright/autoconfig";
 
-  return noopRuntime;
+  return import(pwAutoconfigModuleName)
+    .then(() => getGlobalTestRuntimeFunction()?.() ?? noopRuntime)
+    .catch(() => noopRuntime);
 };
