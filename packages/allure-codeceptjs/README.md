@@ -75,39 +75,39 @@ import * as allure from "allure-js-commons";
 Feature("Signing in with a password");
 Scenario("Signing in with a correct password", async () => {
   await allure.description("The test checks if an active user with a valid password can sign in to the app.");
-    await allure.epic("Signing in");
-    await allure.tags("signin", "ui", "positive");
-    await allure.issue("https://github.com/allure-framework/allure-js/issues/673", "ISSUE-673");
-    await allure.owner("eroshenkoam");
-    await allure.parameter("browser", "chrome");
+  await allure.epic("Signing in");
+  await allure.tags("signin", "ui", "positive");
+  await allure.issue("https://github.com/allure-framework/allure-js/issues/673", "ISSUE-673");
+  await allure.owner("eroshenkoam");
+  await allure.parameter("browser", "chrome");
 
-    const user = await allure.step("Prepare the user", async () => {
-      return await createAnActiveUserInDb();
+  const user = await allure.step("Prepare the user", async () => {
+    return await createAnActiveUserInDb();
+  });
+
+  await allure.step("Make a sign-in attempt", async () => {
+    await allure.step("Navigate to the sign-in page", async () => {
+      // ...
     });
 
-    await allure.step("Make a sign-in attempt", async () => {
-      await allure.step("Navigate to the sign-in page", async () => {
-        // ...
-      });
+    await allure.step("Fill the sign-in form", async (stepContext) => {
+      await stepContext.parameter("login", user.login);
+      await stepContext.parameter("password", user.password, "masked");
 
-      await allure.step("Fill the sign-in form", async (stepContext) => {
-        await stepContext.parameter("login", user.login);
-        await stepContext.parameter("password", user.password, "masked");
-
-        // ...
-      });
-
-      await allure.step("Submit the form", async () => {
-        // ...
-        // const responseData = ...
-
-        await allure.attachment("response", JSON.stringify(responseData), { contentType: "application/json" });
-      });
+      // ...
     });
 
-    await allure.step("Assert the signed-in state", async () => {
-        // ...
+    await allure.step("Submit the form", async () => {
+      // ...
+      // const responseData = ...
+
+      await allure.attachment("response", JSON.stringify(responseData), { contentType: "application/json" });
     });
+  });
+
+  await allure.step("Assert the signed-in state", async () => {
+    // ...
+  });
 });
 ```
 
