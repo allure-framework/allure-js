@@ -251,6 +251,8 @@ export class AllureReporter implements ReporterV2 {
 
     this.allureResultsUuids.set(test.id, testUuid);
     this.startedTestCasesTitlesCache.push(titleMetadata.cleanTitle);
+
+    debugger
   }
 
   #shouldIgnoreStep(step: TestStep) {
@@ -544,6 +546,8 @@ export class AllureReporter implements ReporterV2 {
     });
     this.allureRuntime!.stopTest(testUuid, { duration: result.duration });
     this.allureRuntime!.writeTest(testUuid);
+
+    debugger
   }
 
   async addSkippedResults() {

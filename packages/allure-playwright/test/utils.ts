@@ -99,6 +99,7 @@ export const runPlaywrightInlineTest = async (
       if (signal) {
         await logStep(`Interrupted with ${signal}`);
       }
+
       if (code) {
         await logStep(`Exit code: ${code}`);
       }
@@ -106,6 +107,8 @@ export const runPlaywrightInlineTest = async (
       await attachment("stdout", stdout.join("\n"), "text/plain");
       await attachment("stderr", stderr.join("\n"), "text/plain");
       await messageReader.attachResults();
+
+      debugger
 
       const result: AllurePlaywrightTestResults = {
         ...messageReader.results,
