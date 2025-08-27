@@ -78,7 +78,7 @@
     "allure-commandline": "^2.29.0",
     "allure-vitest": "workspace:*",
     "babel-plugin-add-module-exports": "^1.0.4",
-    "cypress": "^14.0.0",
+    "cypress": "^15.0.0",
     "esbuild": "^0.25.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^10.0.0",
