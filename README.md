@@ -20,6 +20,11 @@
 
 [Read more](/packages/allure-cucumberjs/README.md)
 
+### WebdriverIO
+
+![npm](https://img.shields.io/npm/dm/allure-webdriverio.svg) ![npm](https://img.shields.io/npm/v/allure-webdriverio.svg)
+
+[Read more](/packages/allure-webdriverio/README.md)
 
 ### Vitest
 
