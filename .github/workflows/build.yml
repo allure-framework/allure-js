@@ -10,6 +10,9 @@ on:
       - "main"
       - "hotfix-*"
 
+permissions:
+  contents: read
+
 jobs:
   check-cache:
     runs-on: ubuntu-latest
