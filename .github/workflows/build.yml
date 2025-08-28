@@ -10,11 +10,12 @@ on:
       - "main"
       - "hotfix-*"
 
+permissions:
+  contents: read
+
 jobs:
   check-cache:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
@@ -27,8 +28,6 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
@@ -51,8 +50,6 @@ jobs:
 
   prettier:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
@@ -69,8 +66,6 @@ jobs:
   build:
     name: "Build"
     runs-on: ${{ matrix.os }}
-    permissions:
-      contents: read
     strategy:
       fail-fast: false
       matrix:

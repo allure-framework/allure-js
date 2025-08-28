@@ -4,11 +4,12 @@ on:
   pull_request:
     types: [ opened, labeled, unlabeled, synchronize ]
 
+permissions:
+  contents: read
+
 jobs:
   triage:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - uses: baev/match-label-action@master
         with:
