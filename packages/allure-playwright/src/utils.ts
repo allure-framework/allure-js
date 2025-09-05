@@ -43,5 +43,5 @@ export const isBeforeHookStep = (step: TestStep) => isDescendantOfStepWithTitle(
 export const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
 
 export const normalizeHookTitle = (title: string) => {
-  return title.startsWith('attach "') && title.endsWith('"') ? title.slice(8, -1) : title;
+  return title.replace(/^[aA]ttach\s"(.+)"$/, "$1");
 };

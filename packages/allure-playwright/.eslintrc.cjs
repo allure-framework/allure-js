@@ -7,7 +7,7 @@ module.exports = {
   overrides: [
     {
       extends: ["plugin:@typescript-eslint/disable-type-checked"],
-      files: [".eslintrc.cjs", "vitest.config.ts", "vitest-setup.ts"],
-    }
+      files: [".eslintrc.cjs", "vitest.config.mts", "vitest-setup.ts"],
+    },
   ],
 };

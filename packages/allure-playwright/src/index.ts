@@ -268,7 +268,51 @@ export class AllureReporter implements ReporterV2 {
       return true;
     }
 
+    // if (step.category === "fixture" && (isBeforeHookStep(step) || isAfterHookStep(step))) {
+    //   return true;
+    // }
+
     return false;
+  }
+
+  #processHookAttachment(
+    attachment: {
+      name: string;
+      contentType: string;
+      path?: string;
+      body?: Buffer;
+    },
+    attachmentsInBeforeHooks: AttachStack[],
+    attachmentsInAfterHooks: AttachStack[],
+    beforeHooksStack: ShallowStepsStack | undefined,
+    afterHooksStack: ShallowStepsStack | undefined,
+    testUuid: string,
+  ): void {
+    const matchingBeforeHookStep = attachmentsInBeforeHooks.find(
+      (step) => normalizeHookTitle(step.title) === attachment.name,
+    );
+    const matchingAfterHookStep = attachmentsInAfterHooks.find(
+      (step) => normalizeHookTitle(step.title) === attachment.name,
+    );
+    const targetStack = matchingBeforeHookStep ? beforeHooksStack : afterHooksStack;
+    const hookStep = matchingBeforeHookStep || matchingAfterHookStep;
+
+    if (attachment.contentType === ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE) {
+      this.processAttachment(testUuid, hookStep?.uuid, attachment);
+      return;
+    }
+
+    if (targetStack && hookStep) {
+      const stepResult = targetStack?.findStepByUuid(hookStep?.uuid);
+      if (stepResult) {
+        const fileName = targetStack.addAttachment(attachment, this.allureRuntime!.writer);
+        stepResult.attachments.push({
+          name: attachment.name,
+          type: attachment.contentType,
+          source: fileName,
+        });
+      }
+    }
   }
 
   onStepBegin(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
@@ -339,16 +383,19 @@ export class AllureReporter implements ReporterV2 {
     if (this.#shouldIgnoreStep(step)) {
       return;
     }
-    // ignore test.attach steps since attachments are already in the report
-    if (["test.attach", "attach"].includes(step.category)) {
-      return;
-    }
+
+    const isBeforeHookDescendant = isBeforeHookStep(step);
+    const isAfterHookDescendant = isAfterHookStep(step);
+
     const testUuid = this.allureResultsUuids.get(test.id)!;
     const isRootBeforeHook = step.title === BEFORE_HOOKS_ROOT_STEP_TITLE;
     const isRootAfterHook = step.title === AFTER_HOOKS_ROOT_STEP_TITLE;
-    const isBeforeHookDescendant = isBeforeHookStep(step);
-    const isAfterHookDescendant = isAfterHookStep(step);
     const isAfterHook = isRootAfterHook || isAfterHookDescendant;
+
+    if (["test.attach", "attach"].includes(step.category)) {
+      return;
+    }
+
     const isHook = isRootBeforeHook || isRootAfterHook || isBeforeHookDescendant || isAfterHookDescendant;
 
     if (isHook) {
@@ -442,6 +489,7 @@ export class AllureReporter implements ReporterV2 {
     );
     const attachmentSteps = this.attachmentSteps.get(testUuid) ?? [];
     const attachmentsInSteps = result.attachments.filter((attachment) => !hookAttachmentUuids.has(attachment.name));
+
     const onlyHooksAttachments = result.attachments.filter((att) => hookAttachmentNames.has(att.name));
 
     for (let i = 0; i < attachmentsInSteps.length; i++) {
@@ -449,6 +497,17 @@ export class AllureReporter implements ReporterV2 {
       const attachmentStep = attachmentSteps.length > i ? attachmentSteps[i] : undefined;
 
       await this.processAttachment(testUuid, attachmentStep, attachment);
+    }
+
+    for (const attachment of onlyHooksAttachments) {
+      this.#processHookAttachment(
+        attachment,
+        attachmentsInBeforeHooks,
+        attachmentsInAfterHooks,
+        beforeHooksStack,
+        afterHooksStack,
+        testUuid,
+      );
     }
 
     if (result.stdout.length > 0) {
@@ -473,37 +532,6 @@ export class AllureReporter implements ReporterV2 {
           contentType: ContentType.TEXT,
         },
       );
-    }
-
-    // FIXME: temp logic for labels override, we need it here to keep the reporter compatible with v2 API
-    // in next iterations we need to implement the logic for every javascript integration
-
-    for (const attachment of onlyHooksAttachments) {
-      const matchingBeforeHookStep = attachmentsInBeforeHooks.find(
-        (step) => normalizeHookTitle(step.title) === attachment.name,
-      );
-      const matchingAfterHookStep = attachmentsInAfterHooks.find(
-        (step) => normalizeHookTitle(step.title) === attachment.name,
-      );
-      const targetStack = matchingBeforeHookStep ? beforeHooksStack : afterHooksStack;
-      const hookStep = matchingBeforeHookStep || matchingAfterHookStep;
-
-      if (attachment.contentType === ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE) {
-        await this.processAttachment(testUuid, hookStep?.uuid, attachment);
-        continue;
-      }
-
-      if (targetStack && hookStep) {
-        const stepResult = targetStack?.findStepByUuid(hookStep?.uuid);
-        if (stepResult) {
-          const fileName = targetStack.addAttachment(attachment, this.allureRuntime!.writer);
-          stepResult.attachments.push({
-            name: attachment.name,
-            type: attachment.contentType,
-            source: fileName,
-          });
-        }
-      }
     }
 
     this.allureRuntime!.updateTest(testUuid, (testResult) => {
@@ -604,6 +632,7 @@ export class AllureReporter implements ReporterV2 {
       path?: string;
       body?: Buffer;
     },
+    skipStepCreation: boolean = false,
   ) {
     if (!attachment.body && !attachment.path) {
       return;
@@ -627,13 +656,13 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    const parentUuid = this.allureRuntime!.startStep(testUuid, attachmentStepUuid, { name: attachment.name });
+    let parentUuid = attachmentStepUuid;
 
-    // only stop if step is created. Step may not be created only if test with specified uuid doesn't exists.
-    // usually, missing test by uuid means we should completely skip result processing;
-    // the later operations are safe and will only produce console warnings
-    if (parentUuid) {
-      this.allureRuntime!.stopStep(parentUuid, undefined);
+    if (!skipStepCreation) {
+      parentUuid = this.allureRuntime!.startStep(testUuid, attachmentStepUuid, { name: attachment.name });
+      if (parentUuid) {
+        this.allureRuntime!.stopStep(parentUuid, undefined);
+      }
     }
 
     if (attachment.body) {
