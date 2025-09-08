@@ -93,6 +93,6 @@
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "@playwright/test": ">=1.36.0"
+    "@playwright/test": ">=1.53.0"
   }
 }

@@ -220,3 +220,83 @@ it("should ignore route.continue() steps", async () => {
     }),
   );
 });
+
+it("should attach attachments to correct steps in hooks and test steps", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.js": `
+      import { test, expect } from '@playwright/test';
+
+      const example = async (some) => {
+        await test.info().attach("test", { body: some });
+      };
+
+      test.describe("Scratch", () => {
+        test.beforeAll(async () => {
+          await example("test");
+        });
+        test("test", async () => {
+          await test.step("test2", async () => {
+            await example("test2");
+          });
+          await test.step("test3", async () => {
+            await example("test3");
+          });
+        });
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  const [testResult] = tests;
+
+  expect(testResult.steps).toHaveLength(4);
+  const beforeHooksStep = testResult.steps[0];
+  expect(beforeHooksStep.name).toBe("Before Hooks");
+  expect(beforeHooksStep.steps).toHaveLength(1);
+
+  const beforeAllStep = beforeHooksStep.steps[0];
+  expect(beforeAllStep.name).toBe("beforeAll hook");
+  expect(beforeAllStep.steps).toHaveLength(1);
+
+  const beforeAllAttachmentStep = beforeAllStep.steps[0];
+  expect(beforeAllAttachmentStep.name).toBe("test");
+  expect(beforeAllAttachmentStep.attachments).toHaveLength(1);
+  expect(beforeAllAttachmentStep.attachments[0]).toEqual(
+    expect.objectContaining({
+      name: "test",
+      type: "text/plain",
+    }),
+  );
+
+  const test2Step = testResult.steps[1];
+  expect(test2Step.name).toBe("test2");
+  expect(test2Step.steps).toHaveLength(1);
+
+  const test2AttachmentStep = test2Step.steps[0];
+  expect(test2AttachmentStep.name).toBe("test");
+  expect(test2AttachmentStep.attachments).toHaveLength(1);
+  expect(test2AttachmentStep.attachments[0]).toEqual(
+    expect.objectContaining({
+      name: "test",
+      type: "text/plain",
+    }),
+  );
+
+  const test3Step = testResult.steps[2];
+  expect(test3Step.name).toBe("test3");
+  expect(test3Step.steps).toHaveLength(1);
+
+  const test3AttachmentStep = test3Step.steps[0];
+  expect(test3AttachmentStep.name).toBe("test");
+  expect(test3AttachmentStep.attachments).toHaveLength(1);
+  expect(test3AttachmentStep.attachments[0]).toEqual(
+    expect.objectContaining({
+      name: "test",
+      type: "text/plain",
+    }),
+  );
+
+  const afterHooksStep = testResult.steps[3];
+  expect(afterHooksStep.name).toBe("After Hooks");
+  expect(afterHooksStep.steps).toHaveLength(0);
+});

@@ -6162,7 +6162,7 @@ __metadata:
     typescript: "npm:^5.2.2"
     vitest: "npm:^3.2.4"
   peerDependencies:
-    "@playwright/test": ">=1.36.0"
+    "@playwright/test": ">=1.53.0"
   languageName: unknown
   linkType: soft
 
