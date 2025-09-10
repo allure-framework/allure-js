@@ -430,19 +430,33 @@ export class AllureReporter implements ReporterV2 {
 
     const attachmentsInBeforeHooks = this.beforeHooksAttachmentsStack.get(test.id) ?? [];
     const attachmentsInAfterHooks = this.afterHooksAttachmentsStack.get(test.id) ?? [];
-    const hookAttachmentUuids = new Set(
-      [...attachmentsInBeforeHooks, ...attachmentsInAfterHooks]
-        .map((hookStep) => normalizeHookTitle(hookStep.title))
-        .filter(Boolean),
-    );
-    const hookAttachmentNames = new Set(
-      [...attachmentsInBeforeHooks, ...attachmentsInAfterHooks]
-        .map((hookStep) => normalizeHookTitle(hookStep.title))
-        .filter(Boolean),
-    );
+    const hookAttachmentCounts = new Map<string, number>();
+
+    for (const hookStep of [...attachmentsInBeforeHooks, ...attachmentsInAfterHooks]) {
+      const name = normalizeHookTitle(hookStep.title);
+      if (name) {
+        hookAttachmentCounts.set(name, (hookAttachmentCounts.get(name) || 0) + 1);
+      }
+    }
+
     const attachmentSteps = this.attachmentSteps.get(testUuid) ?? [];
-    const attachmentsInSteps = result.attachments.filter((attachment) => !hookAttachmentUuids.has(attachment.name));
-    const onlyHooksAttachments = result.attachments.filter((att) => hookAttachmentNames.has(att.name));
+
+    const onlyHooksAttachments: typeof result.attachments = [];
+    const attachmentsInSteps: typeof result.attachments = [];
+    const attachmentCounts = new Map<string, number>();
+
+    for (const attachment of result.attachments) {
+      const hookCount = hookAttachmentCounts.get(attachment.name) || 0;
+      const currentCount = attachmentCounts.get(attachment.name) || 0;
+
+      if (currentCount < hookCount) {
+        onlyHooksAttachments.push(attachment);
+      } else {
+        attachmentsInSteps.push(attachment);
+      }
+
+      attachmentCounts.set(attachment.name, currentCount + 1);
+    }
 
     for (let i = 0; i < attachmentsInSteps.length; i++) {
       const attachment = attachmentsInSteps[i];
@@ -478,15 +492,26 @@ export class AllureReporter implements ReporterV2 {
     // FIXME: temp logic for labels override, we need it here to keep the reporter compatible with v2 API
     // in next iterations we need to implement the logic for every javascript integration
 
+    let beforeHookIndex = 0;
+    let afterHookIndex = 0;
+
     for (const attachment of onlyHooksAttachments) {
-      const matchingBeforeHookStep = attachmentsInBeforeHooks.find(
-        (step) => normalizeHookTitle(step.title) === attachment.name,
-      );
-      const matchingAfterHookStep = attachmentsInAfterHooks.find(
-        (step) => normalizeHookTitle(step.title) === attachment.name,
-      );
-      const targetStack = matchingBeforeHookStep ? beforeHooksStack : afterHooksStack;
-      const hookStep = matchingBeforeHookStep || matchingAfterHookStep;
+      let matchingBeforeHookStep = null;
+      let matchingAfterHookStep = null;
+      let targetStack = null;
+      let hookStep = null;
+
+      if (beforeHookIndex < attachmentsInBeforeHooks.length) {
+        matchingBeforeHookStep = attachmentsInBeforeHooks[beforeHookIndex];
+        targetStack = beforeHooksStack;
+        hookStep = matchingBeforeHookStep;
+        beforeHookIndex++;
+      } else if (afterHookIndex < attachmentsInAfterHooks.length) {
+        matchingAfterHookStep = attachmentsInAfterHooks[afterHookIndex];
+        targetStack = afterHooksStack;
+        hookStep = matchingAfterHookStep;
+        afterHookIndex++;
+      }
 
       if (attachment.contentType === ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE) {
         await this.processAttachment(testUuid, hookStep?.uuid, attachment);
