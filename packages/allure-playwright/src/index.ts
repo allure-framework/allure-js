@@ -430,39 +430,49 @@ export class AllureReporter implements ReporterV2 {
 
     const attachmentsInBeforeHooks = this.beforeHooksAttachmentsStack.get(test.id) ?? [];
     const attachmentsInAfterHooks = this.afterHooksAttachmentsStack.get(test.id) ?? [];
-    const hookAttachmentCounts = new Map<string, number>();
-
-    for (const hookStep of [...attachmentsInBeforeHooks, ...attachmentsInAfterHooks]) {
-      const name = normalizeHookTitle(hookStep.title);
-      if (name) {
-        hookAttachmentCounts.set(name, (hookAttachmentCounts.get(name) || 0) + 1);
-      }
-    }
-
     const attachmentSteps = this.attachmentSteps.get(testUuid) ?? [];
 
-    const onlyHooksAttachments: typeof result.attachments = [];
-    const attachmentsInSteps: typeof result.attachments = [];
-    const attachmentCounts = new Map<string, number>();
+    const attachmentToStepMap = new Map<number, { stepUuid?: string; isHook: boolean; hookStep?: AttachStack }>();
 
-    for (const attachment of result.attachments) {
-      const hookCount = hookAttachmentCounts.get(attachment.name) || 0;
-      const currentCount = attachmentCounts.get(attachment.name) || 0;
+    let attachmentIndex = 0;
 
-      if (currentCount < hookCount) {
-        onlyHooksAttachments.push(attachment);
-      } else {
-        attachmentsInSteps.push(attachment);
-      }
-
-      attachmentCounts.set(attachment.name, currentCount + 1);
+    for (const hookStep of attachmentsInBeforeHooks) {
+      attachmentToStepMap.set(attachmentIndex, {
+        stepUuid: hookStep.uuid,
+        isHook: true,
+        hookStep,
+      });
+      attachmentIndex++;
     }
 
-    for (let i = 0; i < attachmentsInSteps.length; i++) {
-      const attachment = attachmentsInSteps[i];
-      const attachmentStep = attachmentSteps.length > i ? attachmentSteps[i] : undefined;
+    for (const stepUuid of attachmentSteps) {
+      attachmentToStepMap.set(attachmentIndex, {
+        stepUuid,
+        isHook: false,
+      });
+      attachmentIndex++;
+    }
 
-      await this.processAttachment(testUuid, attachmentStep, attachment);
+    for (const hookStep of attachmentsInAfterHooks) {
+      attachmentToStepMap.set(attachmentIndex, {
+        stepUuid: hookStep.uuid,
+        isHook: true,
+        hookStep,
+      });
+      attachmentIndex++;
+    }
+
+    for (let i = 0; i < result.attachments.length; i++) {
+      const attachment = result.attachments[i];
+      const stepInfo = attachmentToStepMap.get(i);
+
+      if (stepInfo?.isHook) {
+        continue;
+      } else if (stepInfo?.stepUuid) {
+        await this.processAttachment(testUuid, stepInfo.stepUuid, attachment);
+      } else {
+        await this.processAttachment(testUuid, undefined, attachment);
+      }
     }
 
     if (result.stdout.length > 0) {
@@ -492,41 +502,30 @@ export class AllureReporter implements ReporterV2 {
     // FIXME: temp logic for labels override, we need it here to keep the reporter compatible with v2 API
     // in next iterations we need to implement the logic for every javascript integration
 
-    let beforeHookIndex = 0;
-    let afterHookIndex = 0;
+    for (let i = 0; i < result.attachments.length; i++) {
+      const attachment = result.attachments[i];
+      const stepInfo = attachmentToStepMap.get(i);
 
-    for (const attachment of onlyHooksAttachments) {
-      let matchingBeforeHookStep = null;
-      let matchingAfterHookStep = null;
-      let targetStack = null;
-      let hookStep = null;
+      if (stepInfo?.isHook && stepInfo.hookStep) {
+        const hookStep = stepInfo.hookStep;
+        const isBeforeHook = attachmentsInBeforeHooks.includes(hookStep);
+        const targetStack = isBeforeHook ? beforeHooksStack : afterHooksStack;
 
-      if (beforeHookIndex < attachmentsInBeforeHooks.length) {
-        matchingBeforeHookStep = attachmentsInBeforeHooks[beforeHookIndex];
-        targetStack = beforeHooksStack;
-        hookStep = matchingBeforeHookStep;
-        beforeHookIndex++;
-      } else if (afterHookIndex < attachmentsInAfterHooks.length) {
-        matchingAfterHookStep = attachmentsInAfterHooks[afterHookIndex];
-        targetStack = afterHooksStack;
-        hookStep = matchingAfterHookStep;
-        afterHookIndex++;
-      }
+        if (attachment.contentType === ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE) {
+          await this.processAttachment(testUuid, hookStep.uuid, attachment);
+          continue;
+        }
 
-      if (attachment.contentType === ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE) {
-        await this.processAttachment(testUuid, hookStep?.uuid, attachment);
-        continue;
-      }
-
-      if (targetStack && hookStep) {
-        const stepResult = targetStack?.findStepByUuid(hookStep?.uuid);
-        if (stepResult) {
-          const fileName = targetStack.addAttachment(attachment, this.allureRuntime!.writer);
-          stepResult.attachments.push({
-            name: attachment.name,
-            type: attachment.contentType,
-            source: fileName,
-          });
+        if (targetStack) {
+          const stepResult = targetStack.findStepByUuid(hookStep.uuid);
+          if (stepResult) {
+            const fileName = targetStack.addAttachment(attachment, this.allureRuntime!.writer);
+            stepResult.attachments.push({
+              name: attachment.name,
+              type: attachment.contentType,
+              source: fileName,
+            });
+          }
         }
       }
     }
