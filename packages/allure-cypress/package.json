@@ -1,6 +1,6 @@
 {
   "name": "allure-cypress",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "Allure Cypress integration",
   "keywords": [
     "allure",
