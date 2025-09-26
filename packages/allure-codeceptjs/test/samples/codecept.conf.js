@@ -28,6 +28,8 @@ exports.config = {
     CustomHelper: {
       require: "./helper.js",
     },
-    ExpectHelper: {},
+    ExpectHelper: {
+      require: require.resolve("codeceptjs-expect"),
+    },
   },
 };

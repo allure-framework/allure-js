@@ -47,7 +47,7 @@ export const runCodeceptJsInlineTest = async (
   }
 
   const modulePath = await step("resolve codeceptjs", () => {
-    return require.resolve("codeceptjs/bin/codecept.js");
+    return resolvePath(require.resolve("codeceptjs"), "../../bin/codecept.js");
   });
   const args = ["run", "-c", testDir, ...extraCliArgs];
   const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
@@ -66,9 +66,13 @@ export const runCodeceptJsInlineTest = async (
   const stderr: string[] = [];
 
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
+    // eslint-disable-next-line no-console
+    console.log(chunk.toString());
     stdout.push(String(chunk));
   });
   testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
+    // eslint-disable-next-line no-console
+    console.error(chunk.toString());
     stderr.push(String(chunk));
   });
   const messageReader = new MessageReader();

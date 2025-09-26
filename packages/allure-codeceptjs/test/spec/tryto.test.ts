@@ -38,7 +38,9 @@ it("should support tryTo plugin", async () => {
             Playwright: {
               require: "./helper.js",
             },
-            ExpectHelper: {},
+            ExpectHelper: {
+              require: require.resolve("codeceptjs-expect"),
+            },
           },
         };
       `,
