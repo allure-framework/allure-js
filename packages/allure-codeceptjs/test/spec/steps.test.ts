@@ -194,24 +194,26 @@ it("should log expects", async () => {
       `,
   });
 
-  expect(tests).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining({
-        status: Status.FAILED,
-        name: "scenario 1",
-        statusDetails: expect.objectContaining({
-          message: "expected 1 to equal 2",
-        }),
-        steps: [
-          expect.objectContaining({
-            name: "I expect equal 1, 2",
-            status: Status.FAILED,
-            statusDetails: expect.objectContaining({
-              message: "expected 1 to equal 2",
-            }),
-          }),
-        ],
+  expect(tests).toEqual([
+    expect.objectContaining({
+      status: Status.FAILED,
+      name: "scenario 1",
+      statusDetails: expect.objectContaining({
+        message: expect.stringContaining("Expected: 2\nReceived: 1"),
+        actual: "1",
+        expected: "2",
       }),
-    ]),
-  );
+      steps: [
+        expect.objectContaining({
+          name: "I expect equal 1, 2",
+          status: Status.FAILED,
+          statusDetails: expect.objectContaining({
+            message: expect.stringContaining("Expected: 2\nReceived: 1"),
+            actual: "1",
+            expected: "2",
+          }),
+        }),
+      ],
+    }),
+  ]);
 });

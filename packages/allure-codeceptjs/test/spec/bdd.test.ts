@@ -73,7 +73,9 @@ it("should support helper steps in bdd steps", async () => {
             CustomHelper: {
               require: "./helper.js",
             },
-            ExpectHelper: {},
+            ExpectHelper: {
+              require: require.resolve("codeceptjs-expect"),
+            },
           },
         };
       `,
@@ -163,7 +165,9 @@ it("should support failed bdd steps", async () => {
             CustomHelper: {
               require: "./helper.js",
             },
-            ExpectHelper: {},
+            ExpectHelper: {
+              require: require.resolve("codeceptjs-expect"),
+            },
           },
         };
       `,

@@ -69,6 +69,7 @@
     "allure-vitest": "workspace:*",
     "babel-plugin-add-module-exports": "^1.0.4",
     "codeceptjs": "^3.7.6-beta.1",
+    "codeceptjs-expect": "^1.0.3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-import": "^2.29.1",

@@ -157,7 +157,9 @@ it("should support failed steps in page objects", async () => {
   });
 
   expect(tests).toHaveLength(1);
+
   const [tr] = tests;
+
   expect(tr).toMatchObject({
     status: Status.BROKEN,
     name: "login-scenario1",
@@ -178,19 +180,19 @@ it("should support failed steps in page objects", async () => {
           trace: expect.stringContaining("CustomHelper.fail"),
         },
         steps: [
-          {
+          expect.objectContaining({
             name: "I pass",
             status: Status.PASSED,
-          },
-          {
-            name: "I fail",
-            status: Status.BROKEN,
-            statusDetails: {
-              message: expect.stringContaining("an error"),
-              trace: expect.stringContaining("CustomHelper.fail"),
-            },
-          },
+          }),
         ],
+      },
+      {
+        name: "I fail",
+        status: Status.BROKEN,
+        statusDetails: {
+          message: expect.stringContaining("an error"),
+          trace: expect.stringContaining("CustomHelper.fail"),
+        },
       },
     ],
   });
@@ -469,7 +471,9 @@ it("should support nexted page object steps", async () => {
   });
 
   expect(tests).toHaveLength(1);
+
   const [tr] = tests;
+
   expect(tr).toMatchObject({
     status: Status.PASSED,
     name: "login-scenario1",
@@ -481,21 +485,14 @@ it("should support nexted page object steps", async () => {
       {
         name: "On page1: few nested steps",
         status: Status.PASSED,
-        steps: [
-          {
-            name: "I pass",
-            status: Status.PASSED,
-          },
-          {
-            name: "I next",
-            status: Status.PASSED,
-          },
-          // somehow "On page2: on next page" meta step is not reported
-          {
-            name: "I next",
-            status: Status.PASSED,
-          },
-        ],
+      },
+      {
+        name: "I next",
+        status: Status.PASSED,
+      },
+      {
+        name: "On page2: on next page",
+        status: Status.PASSED,
       },
     ],
   });
