@@ -2665,13 +2665,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codeceptjs/detox-helper@npm:1.1.12":
-  version: 1.1.12
-  resolution: "@codeceptjs/detox-helper@npm:1.1.12"
+"@codeceptjs/detox-helper@npm:1.1.13":
+  version: 1.1.13
+  resolution: "@codeceptjs/detox-helper@npm:1.1.13"
   dependencies:
-    detox: "npm:20.41.1"
+    detox: "npm:20.41.3"
     react-native: "npm:^0.81.1"
-  checksum: 10/2fbfa9e4533d519596038a16274f8bf3cd85716a1e5c224d10b997aae5dc3e7a29628369a1b2460b0844dd1180e87100bfb5ea6fe90ea5748a0dc54013691048
+  checksum: 10/f4a218db382b787423009e00eec6330459a28803d13ae625bad3ab38b1196fbdc6eecd8a77f64c02a758b8b4e38e37ee83d6e0c5dc2f06302cddd8095941f0a7
   languageName: node
   linkType: hard
 
@@ -5574,7 +5574,7 @@ __metadata:
     allure-mocha: "workspace:*"
     allure-vitest: "workspace:*"
     babel-plugin-add-module-exports: "npm:^1.0.4"
-    codeceptjs: "npm:^3.7.5"
+    codeceptjs: "npm:^3.7.6-beta.1"
     eslint: "npm:^8.57.0"
     eslint-config-prettier: "npm:^10.0.0"
     eslint-plugin-import: "npm:^2.29.1"
@@ -7473,12 +7473,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"codeceptjs@npm:^3.7.5":
-  version: 3.7.5
-  resolution: "codeceptjs@npm:3.7.5"
+"codeceptjs@npm:^3.7.6-beta.1":
+  version: 3.7.6-beta.1
+  resolution: "codeceptjs@npm:3.7.6-beta.1"
   dependencies:
     "@codeceptjs/configure": "npm:1.0.6"
-    "@codeceptjs/detox-helper": "npm:1.1.12"
+    "@codeceptjs/detox-helper": "npm:1.1.13"
     "@codeceptjs/helper": "npm:2.0.4"
     "@cucumber/cucumber-expressions": "npm:18"
     "@cucumber/gherkin": "npm:35.1.0"
@@ -7526,7 +7526,7 @@ __metadata:
       optional: true
   bin:
     codeceptjs: bin/codecept.js
-  checksum: 10/bc5ee5710f061f54d83b013520d071ed003dff1ae24b3bbb7bc95cd0427ec114ab3444e322886fbc4c5fa2f98aad2e7ff4a3decd2c0b39f1e7160b3031e486bd
+  checksum: 10/fa4b834d3f1648130c650b628b39386553f6d47411d6a6c93ddec3b3c54d2f75b940c9aea2e3a73e924ab02dcbbbad6006dae30161d094f7b6a40f4502956108
   languageName: node
   linkType: hard
 
@@ -8176,9 +8176,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"detox@npm:20.41.1":
-  version: 20.41.1
-  resolution: "detox@npm:20.41.1"
+"detox@npm:20.41.3":
+  version: 20.41.3
+  resolution: "detox@npm:20.41.3"
   dependencies:
     "@wix-pilot/core": "npm:^3.4.1"
     "@wix-pilot/detox": "npm:^1.0.13"
@@ -8224,7 +8224,7 @@ __metadata:
       optional: true
   bin:
     detox: local-cli/cli.js
-  checksum: 10/450931ad3255c0534e1dd4dfa90cc67b7293b75be306d17af01678755f6a08f52213c2880e1d039d0a11cf20fe71bf7f93f074570427e469bbc2eb40abe4b12f
+  checksum: 10/99286c6e2efea661f9e45d8a7215399b1683fc2dc7facaec11726acd134a361be5fbda56e773573b564ceb025e4919306c8820eb9c4c40433cede2dee9ded10a
   languageName: node
   linkType: hard
 
