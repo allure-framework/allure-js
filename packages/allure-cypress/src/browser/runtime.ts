@@ -179,12 +179,6 @@ class AllureCypressTestRuntime implements TestRuntime {
   flushAllureMessagesToTask(taskName: string) {
     const messages = this.#dequeueAllMessages();
     if (messages.length) {
-      const isOrigin = this.#isInOriginContext();
-
-      if (isOrigin) {
-        return;
-      }
-
       cy.task(taskName, { absolutePath: Cypress.spec.absolute, messages }, { log: false });
     }
   }
@@ -192,12 +186,6 @@ class AllureCypressTestRuntime implements TestRuntime {
   flushAllureMessagesToTaskAsync(taskName: string): Cypress.Chainable<unknown> | undefined {
     const messages = this.#dequeueAllMessages();
     if (messages.length) {
-      const isOrigin = this.#isInOriginContext();
-
-      if (isOrigin) {
-        return cy.wrap(Cypress.Promise.resolve(), { log: false });
-      }
-
       const args: AllureCypressTaskArgs = {
         absolutePath: Cypress.spec.absolute,
         messages,
