@@ -1021,7 +1021,7 @@ it("should support commands in hooks", async () => {
   ]);
 });
 
-it("should log cy.origin commands correctly in cross-origin testing", async () => {
+it("should log cy.origin commands correctly in cross-origin testing without hanging", async () => {
   issue("1280");
   const { tests } = await runCypressInlineTest({
     "cypress/e2e/sample.cy.js": () => `
@@ -1056,6 +1056,40 @@ it("should log cy.origin commands correctly in cross-origin testing", async () =
               steps: [],
             }),
           ],
+        }),
+      ],
+    }),
+  ]);
+});
+
+it("should not hang when using cy.origin with allure steps", async () => {
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/origin-hang-test.cy.js": () => `
+        it("should complete cy.origin without hanging", () => {
+          cy.origin("https://example.com", () => {
+            cy.log("inside origin");
+            cy.wrap("test").should("eq", "test");
+          });
+          cy.log("outside origin");
+        });
+      `,
+  });
+
+  expect(tests).toEqual([
+    expect.objectContaining({
+      name: "should complete cy.origin without hanging",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      steps: [
+        expect.objectContaining({
+          name: "origin https://example.com",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+        }),
+        expect.objectContaining({
+          name: "log outside origin",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
         }),
       ],
     }),
