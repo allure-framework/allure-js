@@ -211,60 +211,46 @@ describe("parameter serialization", () => {
       `,
     });
 
-    expect(tests).toEqual([
-      expect.objectContaining({
-        steps: [
-          expect.objectContaining({
-            parameters: [
-              {
-                name: "Yielded",
-                value: JSON.stringify({}),
-              },
-            ],
-          }),
-          expect.objectContaining({
-            parameters: [
-              {
-                name: "Yielded",
-                value: JSON.stringify({ ref: { foo: {}, bar: {} } }),
-              },
-            ],
-          }),
-          expect.objectContaining({
-            parameters: [
-              {
-                name: "Yielded",
-                value: JSON.stringify({ ref: {} }),
-              },
-            ],
-          }),
-          expect.objectContaining({
-            parameters: [
-              {
-                name: "Yielded",
-                value: `${"A".repeat(128)}...`,
-              },
-            ],
-          }),
-          expect.objectContaining({
-            parameters: [
-              {
-                name: "Yielded",
-                value: `[${String.raw`"A",`.repeat(31)}"A"...`,
-              },
-            ],
-          }),
-          expect.objectContaining({
-            parameters: [
-              {
-                name: "Yielded",
-                value: JSON.stringify({ foo: { bar: { qux: "qut" } } }),
-              },
-            ],
-          }),
-        ],
-      }),
-    ]);
+    expect(tests).toHaveLength(1);
+    const steps = tests[0].steps;
+    expect(steps).toHaveLength(6);
+
+    const [step1, step2, step3, step4, step5, step6] = steps;
+
+    expect(step1).toMatchObject({
+      parameters: [{ name: "Yielded", value: JSON.stringify({}) }],
+    });
+    expect(step1.parameters).toHaveLength(1);
+
+    expect(step2).toMatchObject({
+      parameters: [{ name: "Yielded", value: JSON.stringify({ ref: { foo: {}, bar: {} } }) }],
+    });
+    expect(step2.parameters).toHaveLength(1);
+
+    expect(step3).toMatchObject({
+      parameters: [{ name: "Yielded", value: JSON.stringify({ ref: {} }) }],
+    });
+    expect(step3.parameters).toHaveLength(1);
+
+    expect(step4).toMatchObject({
+      parameters: [{ name: "Yielded", value: `${"A".repeat(128)}...` }],
+    });
+    expect(step4.parameters).toHaveLength(1);
+
+    expect(step5).toMatchObject({
+      parameters: [
+        {
+          name: "Yielded",
+          value: `[${`"A",`.repeat(31)}"A"...`,
+        },
+      ],
+    });
+    expect(step5.parameters).toHaveLength(1);
+
+    expect(step6).toMatchObject({
+      parameters: [{ name: "Yielded", value: JSON.stringify({ foo: { bar: { qux: "qut" } } }) }],
+    });
+    expect(step6.parameters).toHaveLength(1);
   });
 
   it("should take the limits from the config", async () => {
