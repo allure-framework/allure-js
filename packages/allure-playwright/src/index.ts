@@ -71,6 +71,7 @@ export class AllureReporter implements ReporterV2 {
   private afterHooksStepsStack: Map<string, ShallowStepsStack> = new Map();
   private beforeHooksAttachmentsStack: Map<string, AttachStack[]> = new Map();
   private afterHooksAttachmentsStack: Map<string, AttachStack[]> = new Map();
+  private readonly pwStepUuid = new WeakMap<TestStep, string>();
 
   constructor(config: AllurePlaywrightReporterConfig) {
     this.options = { suiteTitle: true, detail: true, ...config };
@@ -317,7 +318,6 @@ export class AllureReporter implements ReporterV2 {
         return;
       }
       stack.startStep(baseStep);
-
       return;
     }
 
@@ -331,8 +331,12 @@ export class AllureReporter implements ReporterV2 {
       }
       return;
     }
+    const parentUuid = step.parent ? this.pwStepUuid.get(step.parent) ?? null : null;
+    const createdUuid = this.allureRuntime!.startStep(testUuid, parentUuid, baseStep);
 
-    this.allureRuntime!.startStep(testUuid, undefined, baseStep)!;
+    if (createdUuid) {
+      this.pwStepUuid.set(step, createdUuid);
+    }
   }
 
   onStepEnd(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
@@ -374,7 +378,12 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    this.allureRuntime!.updateStep(currentStep, (stepResult) => {
+    const stepUuid = this.pwStepUuid.get(step);
+    if (!stepUuid) {
+      return;
+    }
+
+    this.allureRuntime!.updateStep(stepUuid, (stepResult) => {
       const { status = Status.PASSED } = getWorstTestStepResult(stepResult.steps) ?? {};
       stepResult.status = step.error ? Status.FAILED : status;
       stepResult.stage = Stage.FINISHED;
@@ -382,7 +391,7 @@ export class AllureReporter implements ReporterV2 {
         stepResult.statusDetails = { ...getMessageAndTraceFromError(step.error) };
       }
     });
-    this.allureRuntime!.stopStep(currentStep, { duration: step.duration });
+    this.allureRuntime!.stopStep(stepUuid, { duration: step.duration });
   }
 
   async onTestEnd(test: TestCase, result: PlaywrightTestResult) {
