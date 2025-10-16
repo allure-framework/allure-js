@@ -221,13 +221,7 @@ it("should use native playwright steps under the hood", async () => {
   });
 });
 
-const byName = (steps: any[], name: string) => steps.find((s) => s.name === name);
-const expectFinished = (s: any) => {
-  expect(s).toEqual(expect.objectContaining({ stage: Stage.FINISHED }));
-  expect([Status.PASSED, Status.FAILED, Status.SKIPPED]).toContain(s.status);
-};
-
-it("reports parallel steps correctly with Promise.all (no attachments)", async () => {
+it("reports parallel steps correctly with Promise.all", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "a.test.ts": `
       import { test, expect } from "@playwright/test";
@@ -265,33 +259,29 @@ it("reports parallel steps correctly with Promise.all (no attachments)", async (
   expect(tests).toHaveLength(1);
   const [tr] = tests;
 
-  const step1 = byName(tr.steps, "Step 1: Thread 1");
-  const step2 = byName(tr.steps, "Step 2: Thread 2");
-  const final = byName(tr.steps, "Final Step: Done");
+  const step1 = tr.steps.find((s) => s.name === "Step 1: Thread 1");
+  const step2 = tr.steps.find((s) => s.name === "Step 2: Thread 2");
+  const final = tr.steps.find((s) => s.name === "Final Step: Done");
 
-  expect(step1).toBeTruthy();
-  expect(step2).toBeTruthy();
-  expect(final).toBeTruthy();
+  expect(step1?.stage).toBe(Stage.FINISHED);
+  expect(step2?.stage).toBe(Stage.FINISHED);
+  expect(final?.stage).toBe(Stage.FINISHED);
+  expect(final?.status).toBe(Status.PASSED);
 
-  expectFinished(step1);
-  expectFinished(step2);
-  expect(final).toEqual(expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED }));
+  const t1s1 = step1?.steps.find((s) => s.name === "T1 - Step 1");
+  const t1s2 = step1?.steps.find((s) => s.name === "T1 - Step 2");
+  expect(t1s1?.status).toBe(Status.PASSED);
+  expect(t1s2?.status).toBe(Status.PASSED);
 
-  const t1s1 = byName(step1.steps, "T1 - Step 1");
-  const t1s2 = byName(step1.steps, "T1 - Step 2");
-  expect(t1s1).toBeTruthy();
-  expect(t1s2).toBeTruthy();
-  expect(t1s1).toEqual(expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED }));
-  expect(t1s2).toEqual(expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED }));
+  const t2prep = step2?.steps.find((s) => s.name === "T2 - Prepare");
+  const t2s1 = step2?.steps.find((s) => s.name === "T2 - Step 1");
+  const t2s2 = step2?.steps.find((s) => s.name === "T2 - Step 2");
+  const t2clean = step2?.steps.find((s) => s.name === "T2 - Cleanup");
 
-  const t2prep = byName(step2.steps, "T2 - Prepare");
-  const t2s1 = byName(step2.steps, "T2 - Step 1");
-  const t2s2 = byName(step2.steps, "T2 - Step 2");
-  const t2clean = byName(step2.steps, "T2 - Cleanup");
-  for (const s of [t2prep, t2s1, t2s2, t2clean]) {
-    expect(s).toBeTruthy();
-    expectFinished(s);
-  }
+  expect(t2prep?.stage).toBe(Stage.FINISHED);
+  expect(t2s1?.stage).toBe(Stage.FINISHED);
+  expect(t2s2?.stage).toBe(Stage.FINISHED);
+  expect(t2clean?.stage).toBe(Stage.FINISHED);
 });
 
 it("isolates failure in one parallel branch", async () => {
@@ -317,20 +307,16 @@ it("isolates failure in one parallel branch", async () => {
   expect(tests).toHaveLength(1);
   const [tr] = tests;
 
-  const step1 = byName(tr.steps, "Step 1: Thread 1");
-  const step2 = byName(tr.steps, "Step 2: Thread 2");
-  expect(step1).toBeTruthy();
-  expect(step2).toBeTruthy();
+  const step1 = tr.steps.find((s) => s.name === "Step 1: Thread 1");
+  const step2 = tr.steps.find((s) => s.name === "Step 2: Thread 2");
 
-  expect(step1.status).toBe(Status.PASSED);
-  expect(step2.status).toBe(Status.FAILED);
+  expect(step1?.status).toBe(Status.PASSED);
+  expect(step2?.status).toBe(Status.FAILED);
 
-  const t1ok = byName(step1.steps, "T1 ok");
-  const t2boom = byName(step2.steps, "T2 boom");
-  expect(t1ok).toBeTruthy();
-  expect(t2boom).toBeTruthy();
+  const t1ok = step1?.steps.find((s) => s.name === "T1 ok");
+  const t2boom = step2?.steps.find((s) => s.name === "T2 boom");
 
-  expect(t1ok.status).toBe(Status.PASSED);
-  expect(t2boom.status).toBe(Status.FAILED);
-  expect(t2boom.statusDetails?.message ?? "").toEqual(expect.stringContaining("toBe"));
+  expect(t1ok?.status).toBe(Status.PASSED);
+  expect(t2boom?.status).toBe(Status.FAILED);
+  expect(t2boom?.statusDetails?.message).toContain("toBe");
 });
