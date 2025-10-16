@@ -220,3 +220,103 @@ it("should use native playwright steps under the hood", async () => {
     title: "step 1",
   });
 });
+
+it("reports parallel steps correctly with Promise.all", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.ts": `
+      import { test, expect } from "@playwright/test";
+
+      test("parallel steps", async ({ page, browser }) => {
+        const t1 = test.step("Step 1: Thread 1", async () => {
+          await test.step("T1 - Step 1", async () => {
+            await page.goto("https://example.com/#t1-1");
+          });
+          await test.step("T1 - Step 2", async () => {
+            await page.goto("https://example.com/#t1-2");
+          });
+        });
+
+        const t2 = test.step("Step 2: Thread 2", async () => {
+          const ctx = await browser.newContext();
+          const p2 = await ctx.newPage();
+          await test.step("T2 - Prepare", async () => {});
+          await test.step("T2 - Step 1", async () => {
+            await p2.goto("https://example.com/#t2-1");
+          });
+          await test.step("T2 - Step 2", async () => {
+            await p2.goto("https://example.com/#t2-2");
+          });
+          await test.step("T2 - Cleanup", async () => { await p2.close(); await ctx.close(); });
+        });
+
+        await Promise.all([t1, t2]);
+
+        await test.step("Final Step: Done", async () => {});
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  const [tr] = tests;
+
+  const step1 = tr.steps.find((s) => s.name === "Step 1: Thread 1");
+  const step2 = tr.steps.find((s) => s.name === "Step 2: Thread 2");
+  const final = tr.steps.find((s) => s.name === "Final Step: Done");
+
+  expect(step1?.stage).toBe(Stage.FINISHED);
+  expect(step2?.stage).toBe(Stage.FINISHED);
+  expect(final?.stage).toBe(Stage.FINISHED);
+  expect(final?.status).toBe(Status.PASSED);
+
+  const t1s1 = step1?.steps.find((s) => s.name === "T1 - Step 1");
+  const t1s2 = step1?.steps.find((s) => s.name === "T1 - Step 2");
+  expect(t1s1?.status).toBe(Status.PASSED);
+  expect(t1s2?.status).toBe(Status.PASSED);
+
+  const t2prep = step2?.steps.find((s) => s.name === "T2 - Prepare");
+  const t2s1 = step2?.steps.find((s) => s.name === "T2 - Step 1");
+  const t2s2 = step2?.steps.find((s) => s.name === "T2 - Step 2");
+  const t2clean = step2?.steps.find((s) => s.name === "T2 - Cleanup");
+
+  expect(t2prep?.stage).toBe(Stage.FINISHED);
+  expect(t2s1?.stage).toBe(Stage.FINISHED);
+  expect(t2s2?.stage).toBe(Stage.FINISHED);
+  expect(t2clean?.stage).toBe(Stage.FINISHED);
+});
+
+it("isolates failure in one parallel branch", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.ts": `
+      import { test, expect } from "@playwright/test";
+
+      test("parallel failure isolation", async () => {
+        const t1 = test.step("Step 1: Thread 1", async () => {
+          await test.step("T1 ok", async () => {});
+        });
+
+        const t2 = test.step("Step 2: Thread 2", async () => {
+          await test.step("T2 boom", async () => { expect(1).toBe(2); });
+          await test.step("T2 after", async () => {});
+        });
+
+        await Promise.allSettled([t1, t2]);
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  const [tr] = tests;
+
+  const step1 = tr.steps.find((s) => s.name === "Step 1: Thread 1");
+  const step2 = tr.steps.find((s) => s.name === "Step 2: Thread 2");
+
+  expect(step1?.status).toBe(Status.PASSED);
+  expect(step2?.status).toBe(Status.FAILED);
+
+  const t1ok = step1?.steps.find((s) => s.name === "T1 ok");
+  const t2boom = step2?.steps.find((s) => s.name === "T2 boom");
+
+  expect(t1ok?.status).toBe(Status.PASSED);
+  expect(t2boom?.status).toBe(Status.FAILED);
+  expect(t2boom?.statusDetails?.message).toContain("toBe");
+});
