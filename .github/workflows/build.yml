@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "yarn"
       - name: yarn install & check-cache
         run: |
@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "yarn"
       - name: yarn install
         run: |
@@ -54,7 +54,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "yarn"
       - name: yarn install
         run: |
