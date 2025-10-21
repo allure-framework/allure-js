@@ -1,8 +1,43 @@
 import { serialize } from "allure-js-commons/sdk";
 import { getConfig } from "./state.js";
 
-export default (value: unknown) =>
-  isDomObject(value) ? stringifyAsDom(value) : serialize(value, getSerializeOptions());
+export default (value: unknown) => {
+  return isDomObject(value) ? stringifyAsDom(value) : serializeAsObject(value);
+};
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const stripAncestorRefs = (value: unknown, ancestors: object[] = []): unknown => {
+  if (!isPlainObject(value)) {
+    return value;
+  }
+
+  const result: Record<string, unknown> = {};
+  ancestors.push(value);
+
+  for (const [key, prop] of Object.entries(value)) {
+    if (typeof prop === "object" && prop !== null) {
+      if (ancestors.includes(prop)) {
+        continue;
+      }
+      result[key] = stripAncestorRefs(prop, ancestors);
+    } else {
+      result[key] = prop;
+    }
+  }
+
+  ancestors.pop();
+  return result;
+};
+
+export const serializeAsObject = (value: unknown) => {
+  if (isPlainObject(value)) {
+    const cleaned = stripAncestorRefs(value);
+    return serialize({ ...(cleaned as object) }, getSerializeOptions());
+  }
+  return serialize(value, getSerializeOptions());
+};
 
 const getSerializeOptions = () => {
   const {
