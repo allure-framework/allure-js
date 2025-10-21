@@ -2,6 +2,7 @@
 import type { FullConfig } from "@playwright/test";
 import type { TestResult as PlaywrightTestResult, Suite, TestCase, TestStep } from "@playwright/test/reporter";
 import { existsSync } from "node:fs";
+import { access } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import {
@@ -60,6 +61,8 @@ export class AllureReporter implements ReporterV2 {
   config!: FullConfig;
   suite!: Suite;
   options: AllurePlaywrightReporterConfig;
+  outputDir: string | undefined;
+  snapshotDir: string | undefined;
 
   private allureRuntime: ReporterRuntime | undefined;
   private globalStartTime = new Date();
@@ -79,6 +82,8 @@ export class AllureReporter implements ReporterV2 {
 
   onConfigure(config: FullConfig): void {
     this.config = config;
+    this.outputDir = config.projects[0].outputDir;
+    this.snapshotDir = config.projects[0].snapshotDir;
 
     const testPlan = parseTestPlan();
 
@@ -690,15 +695,38 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    const pathWithoutEnd = attachment.path!.replace(diffEndRegexp, "");
+    const pathWithoutEndFromSnapshotDir = attachment
+      .path!.replace(this.outputDir!, this.snapshotDir!)
+      ?.replace(diffEndRegexp, "")
+      .replace(/\.png/, "");
 
-    if (this.processedDiffs.includes(pathWithoutEnd)) {
+    const pathWithoutEnd = attachment.path!.replace(diffEndRegexp, "").replace(/\.png/, "");
+
+    if (this.processedDiffs.includes(pathWithoutEnd) || this.processedDiffs.includes(pathWithoutEndFromSnapshotDir)) {
       return;
     }
+    const fileExists = async (filePath: string) => {
+      return await access(filePath)
+        .then(() => true)
+        .catch(() => false);
+    };
 
-    const actualBase64 = await readImageAsBase64(`${pathWithoutEnd}-actual.png`);
-    const expectedBase64 = await readImageAsBase64(`${pathWithoutEnd}-expected.png`);
-    const diffBase64 = await readImageAsBase64(`${pathWithoutEnd}-diff.png`);
+    const readImageFromDirs = async (modifier: "actual" | "expected" | "diff") => {
+      const defaultPath = `${pathWithoutEnd}-${modifier}.png`;
+      const snapshotPath = `${pathWithoutEndFromSnapshotDir}-${modifier}.png`;
+      if (await fileExists(defaultPath)) {
+        return await readImageAsBase64(defaultPath);
+      }
+      if (await fileExists(snapshotPath)) {
+        return await readImageAsBase64(snapshotPath);
+      }
+      return undefined;
+    };
+
+    const actualBase64 = await readImageFromDirs("actual");
+    const expectedBase64 = await readImageFromDirs("expected");
+    const diffBase64 = await readImageFromDirs("diff");
+
     const diffName = attachment.name.replace(diffEndRegexp, "");
 
     this.allureRuntime!.writeAttachment(
