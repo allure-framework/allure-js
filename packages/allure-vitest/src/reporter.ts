@@ -45,11 +45,6 @@ export default class AllureVitestReporter implements Reporter {
   }
 
   async handleTask(task: Task) {
-    // do not report skipped tests
-    if (task.mode === "skip" && !task.result) {
-      return;
-    }
-
     if (task.type === "suite") {
       for (const innerTask of task.tasks) {
         await this.handleTask(innerTask);
@@ -125,6 +120,11 @@ export default class AllureVitestReporter implements Reporter {
           result.stage = Stage.PENDING;
           break;
         }
+      }
+
+      if (task.mode === "skip" && !task.result) {
+        result.status = Status.SKIPPED;
+        result.stage = Stage.PENDING;
       }
     });
     this.allureReporterRuntime!.stopTest(testUuid, { duration: task.result?.duration ?? 0 });

@@ -25,10 +25,16 @@ $ git clone git@github.com:your-username/allure-js.git
 
 Note that latest NodeJS LTS is required (the most recent is 14.17.4) to proceed.
 
+Ensure you have `yarn` installed globally:
+```bash
+npm install --global yarn
+```
+
+
 Then install core dependencies:
 
 ```bash
-npm install
+yarn install
 ```
 
 Then build and link all packages:

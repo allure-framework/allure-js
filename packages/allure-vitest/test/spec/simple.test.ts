@@ -64,7 +64,7 @@ describe("test status", () => {
     expect(tests[0].stage).toBe(Stage.PENDING);
   });
 
-  it("shouldn't report skipped tests and suites", async () => {
+  it("should report skipped tests and suites", async () => {
     const { tests } = await runVitestInlineTest({
       "sample.test.ts": `
     import { describe, test } from "vitest";
@@ -77,6 +77,10 @@ describe("test status", () => {
     `,
     });
 
-    expect(tests).toHaveLength(0);
+    expect(tests).toHaveLength(2);
+    expect(tests[0].status).toBe(Status.SKIPPED);
+    expect(tests[0].stage).toBe(Stage.PENDING);
+    expect(tests[1].status).toBe(Status.SKIPPED);
+    expect(tests[1].stage).toBe(Stage.PENDING);
   });
 });
