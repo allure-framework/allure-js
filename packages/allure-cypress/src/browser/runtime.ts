@@ -1,8 +1,8 @@
-import { Status } from "allure-js-commons";
 import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions } from "allure-js-commons";
+import { Status } from "allure-js-commons";
 import { getMessageAndTraceFromError } from "allure-js-commons/sdk";
-import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import type { TestRuntime } from "allure-js-commons/sdk/runtime";
+import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import type { AllureCypressTaskArgs, CypressMessage } from "../types.js";
 import { enqueueRuntimeMessage, getRuntimeMessages, setRuntimeMessages } from "./state.js";
 import { ALLURE_STEP_CMD_SUBJECT, startAllureApiStep, stopCurrentAllureApiStep } from "./steps.js";
@@ -126,7 +126,13 @@ class AllureCypressTestRuntime implements TestRuntime {
     });
   }
 
-  logStep(name: string, status: Status = Status.PASSED, error?: Error) {
+  logStep(name: string, status: Status = Status.PASSED, error?: Error): PromiseLike<void> {
+    if (this.#isInOriginContext()) {
+      startAllureApiStep(name);
+      stopCurrentAllureApiStep(status, error ? getMessageAndTraceFromError(error) : undefined);
+      return Cypress.Promise.resolve();
+    }
+
     return cy
       .wrap(ALLURE_STEP_CMD_SUBJECT, { log: false })
       .then(() => {
@@ -202,5 +208,45 @@ class AllureCypressTestRuntime implements TestRuntime {
     const messages = getRuntimeMessages();
     this.#resetMessages();
     return messages;
+  }
+
+  #isInOriginContext(): boolean {
+    try {
+      const hasOriginContext = !!(window as any).cypressOriginContext;
+      const hasOriginWindow = !!(window as any).cypressOriginWindow;
+
+      if (hasOriginContext || hasOriginWindow) {
+        return true;
+      }
+
+      const baseUrl = Cypress.config("baseUrl");
+      const currentOrigin = window.location.origin;
+
+      if (baseUrl && currentOrigin !== baseUrl) {
+        return true;
+      }
+
+      const cypressInstance = (window as any).Cypress;
+
+      if (cypressInstance && cypressInstance.state && cypressInstance.state("origin")) {
+        return true;
+      }
+
+      try {
+        const cyExists = typeof cy !== "undefined";
+        const cyTaskExists = typeof cy.task !== "undefined";
+
+        // In cy.origin context, cy.task may not be available or may throw
+        if (!cyExists || !cyTaskExists) {
+          return true;
+        }
+      } catch (error) {
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      return true;
+    }
   }
 }
