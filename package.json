@@ -60,5 +60,5 @@
     "rimraf": "^6.0.0",
     "typescript": "^5.2.2"
   },
-  "packageManager": "yarn@4.9.4"
+  "packageManager": "yarn@4.11.0"
 }
