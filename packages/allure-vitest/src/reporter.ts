@@ -1,6 +1,6 @@
-import type { RunnerTestFile as File, SerializedError, RunnerTask as Task } from "vitest";
-import { TestModule, TestSpecification } from "vitest/node";
-import type { Reporter, TestRunEndReason } from "vitest/reporters";
+import type { RunnerTask as Task } from "vitest";
+import type { TestModule } from "vitest/node";
+import type { Reporter } from "vitest/reporters";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
@@ -38,19 +38,17 @@ export default class AllureVitestReporter implements Reporter {
     this.allureReporterRuntime.writeEnvironmentInfo();
   }
 
-  onTestRunEnd(
-    tests: ReadonlyArray<TestModule>,
-    unhandledErrors: ReadonlyArray<SerializedError>,
-    reason: TestRunEndReason,
-  ) {
+  // eslint-disable-next-line @typescript-eslint/array-type
+  onTestRunEnd(tests: ReadonlyArray<TestModule>) {
     for (const test of tests) {
+      // actually there's the task property in the test object
       // @ts-ignore
       if (!test?.task) {
         continue;
       }
 
       // @ts-ignore
-      this.handleTask(test.task);
+      this.handleTask(test.task as unknown as Task);
     }
   }
 
