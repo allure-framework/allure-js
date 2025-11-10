@@ -1,5 +1,6 @@
-import type { RunnerTestFile as File, RunnerTask as Task } from "vitest";
-import type { Reporter } from "vitest/reporters";
+import type { RunnerTestFile as File, SerializedError, RunnerTask as Task } from "vitest";
+import { TestModule, TestSpecification } from "vitest/node";
+import type { Reporter, TestRunEndReason } from "vitest/reporters";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
@@ -32,19 +33,28 @@ export default class AllureVitestReporter implements Reporter {
       writer: createDefaultWriter({ resultsDir }),
       listeners,
     });
+
+    this.allureReporterRuntime.writeCategoriesDefinitions();
+    this.allureReporterRuntime.writeEnvironmentInfo();
   }
 
-  onFinished(files?: File[]) {
-    for (const file of files || []) {
-      for (const task of file.tasks) {
-        this.handleTask(task);
+  onTestRunEnd(
+    tests: ReadonlyArray<TestModule>,
+    unhandledErrors: ReadonlyArray<SerializedError>,
+    reason: TestRunEndReason,
+  ) {
+    for (const test of tests) {
+      // @ts-ignore
+      if (!test?.task) {
+        continue;
       }
+
+      // @ts-ignore
+      this.handleTask(test.task);
     }
-    this.allureReporterRuntime!.writeEnvironmentInfo();
-    this.allureReporterRuntime!.writeCategoriesDefinitions();
   }
 
-  async handleTask(task: Task) {
+  handleTask(task: Task) {
     // do not report skipped tests
     if (task.mode === "skip" && !task.result) {
       return;
@@ -52,7 +62,7 @@ export default class AllureVitestReporter implements Reporter {
 
     if (task.type === "suite") {
       for (const innerTask of task.tasks) {
-        await this.handleTask(innerTask);
+        this.handleTask(innerTask);
       }
       return;
     }
@@ -127,6 +137,7 @@ export default class AllureVitestReporter implements Reporter {
         }
       }
     });
+
     this.allureReporterRuntime!.stopTest(testUuid, { duration: task.result?.duration ?? 0 });
     this.allureReporterRuntime!.writeTest(testUuid);
   }

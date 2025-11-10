@@ -6,20 +6,29 @@ import { MessageTestRuntime } from "allure-js-commons/sdk/runtime";
 export class VitestTestRuntime extends MessageTestRuntime {
   sendMessage(message: RuntimeMessage): Promise<void> {
     const currentTest = getCurrentTest();
+
     if (currentTest) {
       addMessage(currentTest.meta, message);
+
       return Promise.resolve();
     }
-    const currentSuite = getCurrentSuite();
-    if (currentSuite) {
-      currentSuite.tasks.forEach((task) => processTask(task, message));
-      return Promise.resolve();
-    }
+
+    try {
+      const currentSuite = getCurrentSuite();
+
+      if (currentSuite) {
+        // @ts-ignore
+        currentSuite.tasks.forEach((task) => processTask(task, message));
+        return Promise.resolve();
+      }
+    } catch {}
+
     // eslint-disable-next-line no-console
     console.error(
       "no vitest context is detected. Please ensure you're using allure API within vitest test (it, test) " +
         "or setup (beforeAll, beforeEach, afterAll, afterEach) function. Make sure vitest@1.6.0 or above is used",
     );
+
     return Promise.resolve();
   }
 }
