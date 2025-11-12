@@ -1,4 +1,5 @@
-import type { RunnerTestFile as File, RunnerTask as Task } from "vitest";
+import type { RunnerTask as Task } from "vitest";
+import type { TestModule } from "vitest/node";
 import type { Reporter } from "vitest/reporters";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
@@ -32,19 +33,26 @@ export default class AllureVitestReporter implements Reporter {
       writer: createDefaultWriter({ resultsDir }),
       listeners,
     });
+
+    this.allureReporterRuntime.writeCategoriesDefinitions();
+    this.allureReporterRuntime.writeEnvironmentInfo();
   }
 
-  onFinished(files?: File[]) {
-    for (const file of files || []) {
-      for (const task of file.tasks) {
-        this.handleTask(task);
+  // eslint-disable-next-line @typescript-eslint/array-type
+  onTestRunEnd(tests: ReadonlyArray<TestModule>) {
+    for (const test of tests) {
+      // actually there's the task property in the test object
+      // @ts-ignore
+      if (!test?.task) {
+        continue;
       }
+
+      // @ts-ignore
+      this.handleTask(test.task as unknown as Task);
     }
-    this.allureReporterRuntime!.writeEnvironmentInfo();
-    this.allureReporterRuntime!.writeCategoriesDefinitions();
   }
 
-  async handleTask(task: Task) {
+  handleTask(task: Task) {
     // do not report skipped tests
     if (task.mode === "skip" && !task.result) {
       return;
@@ -52,7 +60,7 @@ export default class AllureVitestReporter implements Reporter {
 
     if (task.type === "suite") {
       for (const innerTask of task.tasks) {
-        await this.handleTask(innerTask);
+        this.handleTask(innerTask);
       }
       return;
     }
@@ -127,6 +135,7 @@ export default class AllureVitestReporter implements Reporter {
         }
       }
     });
+
     this.allureReporterRuntime!.stopTest(testUuid, { duration: task.result?.duration ?? 0 });
     this.allureReporterRuntime!.writeTest(testUuid);
   }

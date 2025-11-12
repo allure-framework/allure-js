@@ -102,7 +102,9 @@ export const runVitestInlineTest = async (
   }
 
   const modulePath = await step("resolve vitest", () => {
-    return require.resolve("vitest/dist/cli.js");
+    const vitestPath = dirname(require.resolve("vitest"));
+
+    return join(vitestPath, "vitest.mjs");
   });
   const args = ["run", "--config", configPath, "--dir", "."];
   const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
