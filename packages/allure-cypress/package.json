@@ -79,7 +79,7 @@
     "allure-vitest": "workspace:*",
     "babel-plugin-add-module-exports": "^1.0.4",
     "cypress": "^15.0.0",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.27.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-cypress": "^4.0.0",
