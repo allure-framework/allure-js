@@ -260,7 +260,7 @@ export class AllureReporter implements ReporterV2 {
   }
 
   #shouldIgnoreStep(step: TestStep) {
-    if (!this.options.detail && step.category !== "test.step") {
+    if (!this.options.detail && !["test.step", "attach", "test.attach"].includes(step.category)) {
       return true;
     }
 
@@ -298,6 +298,13 @@ export class AllureReporter implements ReporterV2 {
       uuid: randomUuid(),
     };
 
+    if (["test.attach", "attach"].includes(step.category) && !isHookStep) {
+      const parent = step.parent ? this.pwStepUuid.get(step.parent) ?? null : null;
+      const targets = this.attachmentTargets.get(test.id) ?? [];
+      targets.push({ stepUuid: parent ?? undefined });
+      this.attachmentTargets.set(test.id, targets);
+      return;
+    }
     if (isHookStep) {
       const stack = isBeforeHookDescendant
         ? this.beforeHooksStepsStack.get(test.id)!
@@ -335,15 +342,6 @@ export class AllureReporter implements ReporterV2 {
       } else {
         this.afterHooksStepsStack.set(test.id, stack);
       }
-      return;
-    }
-
-    if (["test.attach", "attach"].includes(step.category) && !isHookStep) {
-      const parent = step.parent ? this.pwStepUuid.get(step.parent) ?? null : null;
-      const targets = this.attachmentTargets.get(test.id) ?? [];
-      targets.push({ stepUuid: parent ?? undefined });
-      this.attachmentTargets.set(test.id, targets);
-
       return;
     }
 
@@ -485,10 +483,7 @@ export class AllureReporter implements ReporterV2 {
 
     for (const attachment of result.attachments) {
       const isRuntimeMessage = attachment.contentType === ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE;
-      const isTestAttach = !!attachment.body && !isRuntimeMessage;
-
-      const stepInfo =
-        isTestAttach && targetIndex < attachmentTargets.length ? attachmentTargets[targetIndex++] : undefined;
+      const stepInfo = targetIndex < attachmentTargets.length ? attachmentTargets[targetIndex++] : undefined;
 
       if (isRuntimeMessage) {
         const stepUuid = stepInfo?.hookStep?.uuid ?? stepInfo?.stepUuid;
