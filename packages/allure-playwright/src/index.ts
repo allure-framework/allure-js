@@ -69,7 +69,7 @@ export class AllureReporter implements ReporterV2 {
   private processedDiffs: string[] = [];
   private readonly startedTestCasesTitlesCache: string[] = [];
   private readonly allureResultsUuids: Map<string, string> = new Map();
-  private readonly attachmentSteps: Map<string, (string | undefined)[]> = new Map();
+  private readonly attachmentTargets: Map<string, { stepUuid?: string; hookStep?: AttachStack }[]> = new Map();
   private beforeHooksStepsStack: Map<string, ShallowStepsStack> = new Map();
   private afterHooksStepsStack: Map<string, ShallowStepsStack> = new Map();
   private beforeHooksAttachmentsStack: Map<string, AttachStack[]> = new Map();
@@ -260,7 +260,7 @@ export class AllureReporter implements ReporterV2 {
   }
 
   #shouldIgnoreStep(step: TestStep) {
-    if (!this.options.detail && step.category !== "test.step") {
+    if (!this.options.detail && !["test.step", "attach", "test.attach"].includes(step.category)) {
       return true;
     }
 
@@ -286,12 +286,6 @@ export class AllureReporter implements ReporterV2 {
     const isHookStep = isBeforeHookDescendant || isAfterHookDescendant;
     const testUuid = this.allureResultsUuids.get(test.id)!;
 
-    if (["test.attach", "attach"].includes(step.category) && !isHookStep) {
-      const currentStep = this.allureRuntime?.currentStep(testUuid);
-      this.attachmentSteps.set(testUuid, [...(this.attachmentSteps.get(testUuid) ?? []), currentStep]);
-      return;
-    }
-
     if (this.#shouldIgnoreStep(step)) {
       return;
     }
@@ -304,24 +298,38 @@ export class AllureReporter implements ReporterV2 {
       uuid: randomUuid(),
     };
 
+    if (["test.attach", "attach"].includes(step.category) && !isHookStep) {
+      const parent = step.parent ? this.pwStepUuid.get(step.parent) ?? null : null;
+      const targets = this.attachmentTargets.get(test.id) ?? [];
+      targets.push({ stepUuid: parent ?? undefined });
+      this.attachmentTargets.set(test.id, targets);
+      return;
+    }
     if (isHookStep) {
       const stack = isBeforeHookDescendant
         ? this.beforeHooksStepsStack.get(test.id)!
         : this.afterHooksStepsStack.get(test.id)!;
 
       if (["test.attach", "attach"].includes(step.category)) {
+        let hookStepWithUuid: AttachStack | undefined;
         stack.startStep(baseStep);
 
         const attachStack = isBeforeHookDescendant ? this.beforeHooksAttachmentsStack : this.afterHooksAttachmentsStack;
 
         stack.updateStep((stepResult) => {
+          hookStepWithUuid = { ...step, uuid: stepResult.uuid as string } as AttachStack;
           stepResult.name = normalizeHookTitle(stepResult.name!);
           stepResult.stage = Stage.FINISHED;
-          attachStack.set(test.id, [...(attachStack.get(test.id) ?? []), { ...step, uuid: stepResult.uuid as string }]);
+          attachStack.set(test.id, [...(attachStack.get(test.id) ?? []), hookStepWithUuid]);
         });
         stack.stopStep();
+
+        const targets = this.attachmentTargets.get(test.id) ?? [];
+        targets.push({ hookStep: hookStepWithUuid });
+        this.attachmentTargets.set(test.id, targets);
         return;
       }
+
       stack.startStep(baseStep);
       return;
     }
@@ -336,6 +344,7 @@ export class AllureReporter implements ReporterV2 {
       }
       return;
     }
+
     const parentUuid = step.parent ? this.pwStepUuid.get(step.parent) ?? null : null;
     const createdUuid = this.allureRuntime!.startStep(testUuid, parentUuid, baseStep);
 
@@ -384,6 +393,7 @@ export class AllureReporter implements ReporterV2 {
     }
 
     const stepUuid = this.pwStepUuid.get(step);
+
     if (!stepUuid) {
       return;
     }
@@ -442,53 +452,6 @@ export class AllureReporter implements ReporterV2 {
       testResult.stage = Stage.FINISHED;
     });
 
-    const attachmentsInBeforeHooks = this.beforeHooksAttachmentsStack.get(test.id) ?? [];
-    const attachmentsInAfterHooks = this.afterHooksAttachmentsStack.get(test.id) ?? [];
-    const attachmentSteps = this.attachmentSteps.get(testUuid) ?? [];
-
-    const attachmentToStepMap = new Map<number, { stepUuid?: string; isHook: boolean; hookStep?: AttachStack }>();
-
-    let attachmentIndex = 0;
-
-    for (const hookStep of attachmentsInBeforeHooks) {
-      attachmentToStepMap.set(attachmentIndex, {
-        stepUuid: hookStep.uuid,
-        isHook: true,
-        hookStep,
-      });
-      attachmentIndex++;
-    }
-
-    for (const stepUuid of attachmentSteps) {
-      attachmentToStepMap.set(attachmentIndex, {
-        stepUuid,
-        isHook: false,
-      });
-      attachmentIndex++;
-    }
-
-    for (const hookStep of attachmentsInAfterHooks) {
-      attachmentToStepMap.set(attachmentIndex, {
-        stepUuid: hookStep.uuid,
-        isHook: true,
-        hookStep,
-      });
-      attachmentIndex++;
-    }
-
-    for (let i = 0; i < result.attachments.length; i++) {
-      const attachment = result.attachments[i];
-      const stepInfo = attachmentToStepMap.get(i);
-
-      if (stepInfo?.isHook) {
-        continue;
-      } else if (stepInfo?.stepUuid) {
-        await this.processAttachment(testUuid, stepInfo.stepUuid, attachment);
-      } else {
-        await this.processAttachment(testUuid, undefined, attachment);
-      }
-    }
-
     if (result.stdout.length > 0) {
       this.allureRuntime!.writeAttachment(
         testUuid,
@@ -513,22 +476,25 @@ export class AllureReporter implements ReporterV2 {
       );
     }
 
-    // FIXME: temp logic for labels override, we need it here to keep the reporter compatible with v2 API
-    // in next iterations we need to implement the logic for every javascript integration
+    const attachmentsInBeforeHooks = this.beforeHooksAttachmentsStack.get(test.id) ?? [];
+    const attachmentTargets = this.attachmentTargets.get(test.id) ?? [];
 
-    for (let i = 0; i < result.attachments.length; i++) {
-      const attachment = result.attachments[i];
-      const stepInfo = attachmentToStepMap.get(i);
+    let targetIndex = 0;
 
-      if (stepInfo?.isHook && stepInfo.hookStep) {
+    for (const attachment of result.attachments) {
+      const isRuntimeMessage = attachment.contentType === ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE;
+      const stepInfo = targetIndex < attachmentTargets.length ? attachmentTargets[targetIndex++] : undefined;
+
+      if (isRuntimeMessage) {
+        const stepUuid = stepInfo?.hookStep?.uuid ?? stepInfo?.stepUuid;
+        await this.processAttachment(testUuid, stepUuid, attachment);
+        continue;
+      }
+
+      if (stepInfo?.hookStep) {
         const hookStep = stepInfo.hookStep;
         const isBeforeHook = attachmentsInBeforeHooks.includes(hookStep);
         const targetStack = isBeforeHook ? beforeHooksStack : afterHooksStack;
-
-        if (attachment.contentType === ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE) {
-          await this.processAttachment(testUuid, hookStep.uuid, attachment);
-          continue;
-        }
 
         if (targetStack) {
           const stepResult = targetStack.findStepByUuid(hookStep.uuid);
@@ -541,9 +507,19 @@ export class AllureReporter implements ReporterV2 {
             });
           }
         }
+        continue;
       }
+
+      if (stepInfo?.stepUuid) {
+        await this.processAttachment(testUuid, stepInfo.stepUuid, attachment);
+        continue;
+      }
+
+      await this.processAttachment(testUuid, undefined, attachment);
     }
 
+    // FIXME: temp logic for labels override, we need it here to keep the reporter compatible with v2 API
+    // in next iterations we need to implement the logic for every javascript integration
     this.allureRuntime!.updateTest(testUuid, (testResult) => {
       const mappedLabels = testResult.labels.reduce<Record<string, Label[]>>((acc, label) => {
         if (!acc[label.name]) {
