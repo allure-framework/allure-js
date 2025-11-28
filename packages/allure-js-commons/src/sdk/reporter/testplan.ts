@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import type { Label } from "../../model.js";
 import type { TestPlanV1 } from "../types.js";
 import { allureIdRegexp } from "../utils.js";
@@ -7,6 +7,12 @@ export const parseTestPlan = (): TestPlanV1 | undefined => {
   const testPlanPath = process.env.ALLURE_TESTPLAN_PATH;
 
   if (!testPlanPath) {
+    return undefined;
+  }
+
+  if (!existsSync(testPlanPath)) {
+    // eslint-disable-next-line no-console
+    console.error("Test plan file is missing. Skipping test plan usage:", testPlanPath);
     return undefined;
   }
 
