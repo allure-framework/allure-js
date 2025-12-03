@@ -8941,7 +8941,7 @@ const RAW_RUNTIME_STATE =
           ["esbuild", "npm:0.27.0"],\
           ["eslint", "npm:8.57.0"],\
           ["eslint-config-prettier", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:10.1.1"],\
-          ["eslint-plugin-cypress", "virtual:98c60b7d3b6c5117c4513c6cb8006cab39e0411be8ffe9bb791d9b6d0a1566b28587d5455e7567553092cbdbab928cfaf2a758f8f25f0e31ddedfee569ca964b#npm:4.0.0"],\
+          ["eslint-plugin-cypress", "virtual:98c60b7d3b6c5117c4513c6cb8006cab39e0411be8ffe9bb791d9b6d0a1566b28587d5455e7567553092cbdbab928cfaf2a758f8f25f0e31ddedfee569ca964b#npm:5.2.0"],\
           ["eslint-plugin-import", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:2.29.1"],\
           ["eslint-plugin-jsdoc", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:54.1.1"],\
           ["eslint-plugin-n", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:17.10.1"],\
@@ -12901,20 +12901,20 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["eslint-plugin-cypress", [\
-      ["npm:4.0.0", {\
-        "packageLocation": "./.yarn/cache/eslint-plugin-cypress-npm-4.0.0-f8615ae39e-54fdac6a9f.zip/node_modules/eslint-plugin-cypress/",\
+      ["npm:5.2.0", {\
+        "packageLocation": "./.yarn/cache/eslint-plugin-cypress-npm-5.2.0-31852c8b9a-4701b3e6b6.zip/node_modules/eslint-plugin-cypress/",\
         "packageDependencies": [\
-          ["eslint-plugin-cypress", "npm:4.0.0"]\
+          ["eslint-plugin-cypress", "npm:5.2.0"]\
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:98c60b7d3b6c5117c4513c6cb8006cab39e0411be8ffe9bb791d9b6d0a1566b28587d5455e7567553092cbdbab928cfaf2a758f8f25f0e31ddedfee569ca964b#npm:4.0.0", {\
-        "packageLocation": "./.yarn/__virtual__/eslint-plugin-cypress-virtual-8596533eba/0/cache/eslint-plugin-cypress-npm-4.0.0-f8615ae39e-54fdac6a9f.zip/node_modules/eslint-plugin-cypress/",\
+      ["virtual:98c60b7d3b6c5117c4513c6cb8006cab39e0411be8ffe9bb791d9b6d0a1566b28587d5455e7567553092cbdbab928cfaf2a758f8f25f0e31ddedfee569ca964b#npm:5.2.0", {\
+        "packageLocation": "./.yarn/__virtual__/eslint-plugin-cypress-virtual-b6d7ce565f/0/cache/eslint-plugin-cypress-npm-5.2.0-31852c8b9a-4701b3e6b6.zip/node_modules/eslint-plugin-cypress/",\
         "packageDependencies": [\
           ["@types/eslint", "npm:8.56.11"],\
           ["eslint", "npm:8.57.0"],\
-          ["eslint-plugin-cypress", "virtual:98c60b7d3b6c5117c4513c6cb8006cab39e0411be8ffe9bb791d9b6d0a1566b28587d5455e7567553092cbdbab928cfaf2a758f8f25f0e31ddedfee569ca964b#npm:4.0.0"],\
-          ["globals", "npm:15.11.0"]\
+          ["eslint-plugin-cypress", "virtual:98c60b7d3b6c5117c4513c6cb8006cab39e0411be8ffe9bb791d9b6d0a1566b28587d5455e7567553092cbdbab928cfaf2a758f8f25f0e31ddedfee569ca964b#npm:5.2.0"],\
+          ["globals", "npm:16.5.0"]\
         ],\
         "packagePeers": [\
           "@types/eslint",\
@@ -14218,17 +14218,17 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["npm:15.11.0", {\
-        "packageLocation": "./.yarn/cache/globals-npm-15.11.0-336de1c0c2-14009ef190.zip/node_modules/globals/",\
-        "packageDependencies": [\
-          ["globals", "npm:15.11.0"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:15.9.0", {\
         "packageLocation": "./.yarn/cache/globals-npm-15.9.0-52af85f5e6-19bca70131.zip/node_modules/globals/",\
         "packageDependencies": [\
           ["globals", "npm:15.9.0"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:16.5.0", {\
+        "packageLocation": "./.yarn/cache/globals-npm-16.5.0-9e83817f44-f9e8a2a13f.zip/node_modules/globals/",\
+        "packageDependencies": [\
+          ["globals", "npm:16.5.0"]\
         ],\
         "linkType": "HARD"\
       }]\
