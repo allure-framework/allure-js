@@ -18421,10 +18421,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["node-forge", [\
-      ["npm:1.3.1", {\
-        "packageLocation": "./.yarn/cache/node-forge-npm-1.3.1-f31fd566cc-05bab68686.zip/node_modules/node-forge/",\
+      ["npm:1.3.3", {\
+        "packageLocation": "./.yarn/cache/node-forge-npm-1.3.3-6f469a1f76-f41c31b929.zip/node_modules/node-forge/",\
         "packageDependencies": [\
-          ["node-forge", "npm:1.3.1"]\
+          ["node-forge", "npm:1.3.3"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -19439,7 +19439,7 @@ const RAW_RUNTIME_STATE =
           ["js-sha512", "npm:0.9.0"],\
           ["lodash", "npm:4.17.21"],\
           ["mime-types", "npm:2.1.35"],\
-          ["node-forge", "npm:1.3.1"],\
+          ["node-forge", "npm:1.3.3"],\
           ["node-oauth1", "npm:1.3.0"],\
           ["performance-now", "npm:2.1.0"],\
           ["postman-collection", "npm:4.4.0"],\
@@ -20633,7 +20633,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/selfsigned-npm-2.4.1-1ca1b883c5-52536623f1.zip/node_modules/selfsigned/",\
         "packageDependencies": [\
           ["@types/node-forge", "npm:1.3.11"],\
-          ["node-forge", "npm:1.3.1"],\
+          ["node-forge", "npm:1.3.3"],\
           ["selfsigned", "npm:2.4.1"]\
         ],\
         "linkType": "HARD"\
