@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   publish:
@@ -23,6 +24,5 @@ jobs:
         run: |
           yarn install
           yarn build
-      - run: yarn workspaces foreach -Avv --no-private npm publish --provenance --tolerate-republish
-        env:
-          YARN_NPM_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      - run: yarn workspaces foreach -Avv --no-private npm publish --tolerate-republish
+
