@@ -16,6 +16,7 @@ const MAX_META_STEP_NESTING = 10;
 export class AllureCodeceptJsReporter extends AllureMochaReporter {
   protected currentBddStep?: string;
   protected metaStepStack: MetaStep[] = [];
+  protected currentLeafStep?: string;
 
   constructor(runner: Mocha.Runner, opts: Mocha.MochaOptions, isInWorker: boolean) {
     super(runner, opts, isInWorker);
@@ -103,49 +104,53 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     }
 
     this.metaStepStack = [];
+    this.currentLeafStep = undefined;
   }
 
   stepStarted(step: CodeceptStep) {
     const root = this.currentHook ?? this.currentTest;
-    if (!root) {
-      return;
-    }
+    if (!root) return;
 
+    // Build meta-step path (parent → child)
     const stepPath: string[] = [];
     let current = step.metaStep;
     while (current && !current.isBDD() && stepPath.length < MAX_META_STEP_NESTING) {
-      stepPath.push(stripAnsi(current.toString() ?? "").trim());
+      stepPath.unshift(stripAnsi(current.toString() ?? "").trim());
       current = current.metaStep;
     }
 
+    // Find common prefix
     let index = 0;
     while (
       index < Math.min(this.metaStepStack.length, stepPath.length) &&
       this.metaStepStack[index].name === stepPath[index]
-    ) {
+      ) {
       index++;
     }
 
-    for (let i = index; i < this.metaStepStack.length; i++) {
-      const id = this.metaStepStack[i].id;
-      this.runtime.updateStep(id, (result) => {
-        result.status = Status.PASSED;
-        result.stage = Stage.FINISHED;
+    // Close outdated meta-steps
+    for (let i = this.metaStepStack.length - 1; i >= index; i--) {
+      const { id } = this.metaStepStack[i];
+      this.runtime.updateStep(id, (s) => {
+        s.status = Status.PASSED;
+        s.stage = Stage.FINISHED;
       });
       this.runtime.stopStep(id);
     }
+    this.metaStepStack = this.metaStepStack.slice(0, index);
 
+    // Start missing meta-steps
     for (let i = index; i < stepPath.length; i++) {
-      const name = stepPath[i];
-      const id = this.runtime.startStep(root, undefined, {
-        name,
+      const parentId = this.metaStepStack[i - 1]?.id ?? root;
+      const id = this.runtime.startStep(parentId, undefined, {
+        name: stepPath[i],
       });
-      if (id) {
-        this.metaStepStack.push({ name, id });
-      }
+      if (id) this.metaStepStack.push({ name: stepPath[i], id });
     }
 
-    this.runtime.startStep(root, undefined, {
+    // Start leaf step
+    const parent = this.metaStepStack[this.metaStepStack.length - 1]?.id ?? root;
+    this.currentLeafStep = this.runtime.startStep(parent, undefined, {
       name: step.toString().trim(),
     });
   }
@@ -163,15 +168,19 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
   // according to the docs, codeceptjs supposed to report the error,
   // but actually it's never reported
   stepFailed(_: CodeceptJS.Step, error?: CodeceptError) {
-    this.stopCurrentStep((result) => {
+    if (!this.currentLeafStep) return;
+
+    this.runtime.updateStep(this.currentLeafStep, (result) => {
       result.stage = Stage.FINISHED;
       if (error) {
-        result.status = getStatusFromError({ message: error.message } as Error);
+        result.status = getStatusFromError(error as unknown as Error);
         result.statusDetails = getMessageAndTraceFromError(error);
       } else {
         result.status = env.TRY_TO === "true" ? Status.BROKEN : Status.FAILED;
       }
     });
+    this.runtime.stopStep(this.currentLeafStep);
+    this.currentLeafStep = undefined;
   }
 
   stepComment() {
@@ -182,10 +191,14 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
   }
 
   stepPassed() {
-    this.stopCurrentStep((result) => {
+    if (!this.currentLeafStep) return;
+
+    this.runtime.updateStep(this.currentLeafStep, (result) => {
       result.status = Status.PASSED;
       result.stage = Stage.FINISHED;
     });
+    this.runtime.stopStep(this.currentLeafStep);
+    this.currentLeafStep = undefined;
   }
 
   stopCurrentStep(updateFunc: (result: StepResult) => void) {
