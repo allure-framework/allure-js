@@ -77,11 +77,7 @@ export const getMessageAndTraceFromError = (
         stack?: string;
       },
 ): StatusDetails => {
-  let { message, stack } = error;
-  // If no message but has inspect method, use it (e.g., AssertionFailedError)
-  if (!message && typeof (error as any).inspect === "function") {
-    message = (error as any).inspect();
-  }
+  const { message, stack } = error;
   return {
     message: message ? stripAnsi(message) : undefined,
     trace: stack ? stripAnsi(stack) : undefined,
