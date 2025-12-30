@@ -109,9 +109,10 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
 
   stepStarted(step: CodeceptStep) {
     const root = this.currentHook ?? this.currentTest;
-    if (!root) return;
+    if (!root) {
+      return;
+    }
 
-    // Build meta-step path (parent → child)
     const stepPath: string[] = [];
     let current = step.metaStep;
     while (current && !current.isBDD() && stepPath.length < MAX_META_STEP_NESTING) {
@@ -119,16 +120,14 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
       current = current.metaStep;
     }
 
-    // Find common prefix
     let index = 0;
     while (
       index < Math.min(this.metaStepStack.length, stepPath.length) &&
       this.metaStepStack[index].name === stepPath[index]
-      ) {
+    ) {
       index++;
     }
 
-    // Close outdated meta-steps
     for (let i = this.metaStepStack.length - 1; i >= index; i--) {
       const { id } = this.metaStepStack[i];
       this.runtime.updateStep(id, (s) => {
@@ -139,16 +138,15 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     }
     this.metaStepStack = this.metaStepStack.slice(0, index);
 
-    // Start missing meta-steps
     for (let i = index; i < stepPath.length; i++) {
+      const name = stepPath[i];
       const parentId = this.metaStepStack[i - 1]?.id ?? root;
       const id = this.runtime.startStep(parentId, undefined, {
-        name: stepPath[i],
+        name,
       });
-      if (id) this.metaStepStack.push({ name: stepPath[i], id });
+      if (id) this.metaStepStack.push({ name, id });
     }
 
-    // Start leaf step
     const parent = this.metaStepStack[this.metaStepStack.length - 1]?.id ?? root;
     this.currentLeafStep = this.runtime.startStep(parent, undefined, {
       name: step.toString().trim(),
@@ -168,12 +166,14 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
   // according to the docs, codeceptjs supposed to report the error,
   // but actually it's never reported
   stepFailed(_: CodeceptJS.Step, error?: CodeceptError) {
-    if (!this.currentLeafStep) return;
+    if (!this.currentLeafStep) {
+      return;
+    }
 
     this.runtime.updateStep(this.currentLeafStep, (result) => {
       result.stage = Stage.FINISHED;
       if (error) {
-        result.status = getStatusFromError(error as unknown as Error);
+        result.status = getStatusFromError({ message: error.message } as Error);
         result.statusDetails = getMessageAndTraceFromError(error);
       } else {
         result.status = env.TRY_TO === "true" ? Status.BROKEN : Status.FAILED;
@@ -191,7 +191,9 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
   }
 
   stepPassed() {
-    if (!this.currentLeafStep) return;
+    if (!this.currentLeafStep) {
+      return;
+    }
 
     this.runtime.updateStep(this.currentLeafStep, (result) => {
       result.status = Status.PASSED;
