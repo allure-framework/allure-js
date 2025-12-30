@@ -9,6 +9,7 @@ export const getStatusFromError = (error: Partial<Error>): Status => {
      * `jest` throws `JestAssertionError` instance
      * `jasmine` throws `ExpectationFailed` instance
      * `vitest` throws `Error` for extended assertions, so we look into stack
+     * `codeceptjs-expect` errors have actual/expected properties or inspect method
      */
     case /assert/gi.test(error.constructor.name):
     case /expectation/gi.test(error.constructor.name):
@@ -16,8 +17,11 @@ export const getStatusFromError = (error: Partial<Error>): Status => {
     case error.message && /assert/gi.test(error.message):
     case error.stack && /@vitest\/expect/gi.test(error.stack):
     case error.stack && /playwright\/lib\/matchers\/expect\.js/gi.test(error.stack):
+    case error.stack && /codeceptjs-expect/gi.test(error.stack):
     case "matcherResult" in error:
     case "inspect" in error && typeof error.inspect === "function":
+    case "actual" in error:
+    case "expected" in error:
       return Status.FAILED;
     default:
       return Status.BROKEN;
@@ -73,7 +77,11 @@ export const getMessageAndTraceFromError = (
         stack?: string;
       },
 ): StatusDetails => {
-  const { message, stack } = error;
+  let { message, stack } = error;
+  // If no message but has inspect method, use it (e.g., AssertionFailedError)
+  if (!message && typeof (error as any).inspect === "function") {
+    message = (error as any).inspect();
+  }
   return {
     message: message ? stripAnsi(message) : undefined,
     trace: stack ? stripAnsi(stack) : undefined,
