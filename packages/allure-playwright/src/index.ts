@@ -53,6 +53,7 @@ import {
   isAfterHookStep,
   isBeforeHookStep,
   isDescendantOfStepWithTitle,
+  normalizeAttachStepTitle,
   normalizeHookTitle,
   statusToAllureStats,
 } from "./utils.js";
@@ -75,14 +76,6 @@ export class AllureReporter implements ReporterV2 {
   private beforeHooksAttachmentsStack: Map<string, AttachStack[]> = new Map();
   private afterHooksAttachmentsStack: Map<string, AttachStack[]> = new Map();
   private readonly pwStepUuid = new WeakMap<TestStep, string>();
-
-  private normalizeAttachStepTitle(title: string): string {
-    const match = title.match(/["'`]{1}(.+?)["'`]{1}/);
-    if (match?.[1]) {
-      return match[1];
-    }
-    return title.replace(/^(test\.)?attach\s*/i, "").trim();
-  }
 
   constructor(config: AllurePlaywrightReporterConfig) {
     this.options = { suiteTitle: true, detail: true, ...config };
@@ -309,7 +302,7 @@ export class AllureReporter implements ReporterV2 {
     if (["test.attach", "attach"].includes(step.category) && !isHookStep) {
       const parent = step.parent ? this.pwStepUuid.get(step.parent) ?? null : null;
       const targets = this.attachmentTargets.get(test.id) ?? [];
-      targets.push({ name: this.normalizeAttachStepTitle(step.title), stepUuid: parent ?? undefined });
+      targets.push({ name: normalizeAttachStepTitle(step.title), stepUuid: parent ?? undefined });
       this.attachmentTargets.set(test.id, targets);
       return;
     }
@@ -334,7 +327,7 @@ export class AllureReporter implements ReporterV2 {
         stack.stopStep();
 
         const targets = this.attachmentTargets.get(test.id) ?? [];
-        targets.push({ name: this.normalizeAttachStepTitle(step.title), hookStep: hookStepWithUuid });
+        targets.push({ name: normalizeAttachStepTitle(step.title), hookStep: hookStepWithUuid });
         this.attachmentTargets.set(test.id, targets);
         return;
       }
