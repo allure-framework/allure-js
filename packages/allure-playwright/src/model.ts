@@ -18,6 +18,12 @@ export interface AttachStack extends TestStep {
   uuid: string;
 }
 
+export type AttachmentTarget = {
+  name: string;
+  stepUuid?: string;
+  hookStep?: AttachStack;
+};
+
 export interface ReporterV2 {
   onConfigure(config: FullConfig): void;
 
