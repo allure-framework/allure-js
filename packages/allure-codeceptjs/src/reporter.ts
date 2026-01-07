@@ -144,7 +144,9 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
       const id = this.runtime.startStep(parentId, undefined, {
         name,
       });
-      if (id) this.metaStepStack.push({ name, id });
+      if (id) {
+        this.metaStepStack.push({ name, id });
+      }
     }
 
     const parent = this.metaStepStack[this.metaStepStack.length - 1]?.id ?? root;
