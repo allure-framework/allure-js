@@ -97,8 +97,8 @@ it("should support failed steps in page objects", async () => {
 
         Feature("login-feature");
         Scenario("login-scenario1", async ({ I, login }) => {
-          await I.pass();
-          await login.onMainPage();
+          I.pass();
+          login.onMainPage();
         });
       `,
     "codecept.conf.js": `
@@ -148,9 +148,9 @@ it("should support failed steps in page objects", async () => {
 
         module.exports = {
             async onMainPage() {
-                await I.pass();
-                await I.fail();
-                await I.pass();
+                I.pass();
+                I.fail();
+                I.pass();
             }
         }
         `,
@@ -180,19 +180,19 @@ it("should support failed steps in page objects", async () => {
           trace: expect.stringContaining("CustomHelper.fail"),
         },
         steps: [
-          expect.objectContaining({
+          {
             name: "I pass",
             status: Status.PASSED,
-          }),
+          },
+          {
+            name: "I fail",
+            status: Status.BROKEN,
+            statusDetails: {
+              message: expect.stringContaining("an error"),
+              trace: expect.stringContaining("CustomHelper.fail"),
+            },
+          },
         ],
-      },
-      {
-        name: "I fail",
-        status: Status.BROKEN,
-        statusDetails: {
-          message: expect.stringContaining("an error"),
-          trace: expect.stringContaining("CustomHelper.fail"),
-        },
       },
     ],
   });
