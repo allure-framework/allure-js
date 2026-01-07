@@ -173,8 +173,11 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     this.runtime.updateStep(this.currentLeafStep, (result) => {
       result.stage = Stage.FINISHED;
       if (error) {
-        result.status = getStatusFromError({ message: error.message } as Error);
-        result.statusDetails = getMessageAndTraceFromError(error);
+        if (!error.message && typeof error.inspect === "function") {
+          error.message = error.inspect();
+        }
+        result.status = getStatusFromError(error as unknown as Error);
+        result.statusDetails = getMessageAndTraceFromError(error as unknown as Error);
       } else {
         result.status = env.TRY_TO === "true" ? Status.BROKEN : Status.FAILED;
       }
