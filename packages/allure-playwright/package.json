@@ -1,6 +1,6 @@
 {
   "name": "allure-playwright",
-  "version": "3.4.3",
+  "version": "3.4.4",
   "description": "Allure Playwright integration",
   "keywords": [
     "allure",

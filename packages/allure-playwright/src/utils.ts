@@ -45,3 +45,11 @@ export const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
 export const normalizeHookTitle = (title: string) => {
   return title.replace(/^[aA]ttach\s"(.+)"$/, "$1");
 };
+
+export const normalizeAttachStepTitle = (title: string): string => {
+  const match = title.match(/["'`]{1}(.+?)["'`]{1}/);
+  if (match?.[1]) {
+    return match[1];
+  }
+  return title.replace(/^(test\.)?attach\s*/i, "").trim();
+};
