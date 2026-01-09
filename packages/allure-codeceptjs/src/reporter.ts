@@ -160,6 +160,13 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     if (!root) {
       return;
     }
+    if (this.currentBddStep) {
+      this.runtime.updateStep(this.currentBddStep, (result) => {
+        result.status = Status.PASSED;
+        result.stage = Stage.FINISHED;
+      });
+      this.runtime.stopStep(this.currentBddStep);
+    }
     this.currentBddStep = this.runtime.startStep(root, undefined, {
       name: step.keyword + step.text,
     });
@@ -196,6 +203,16 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
   }
 
   stepPassed() {
+    if (this.currentBddStep && !this.currentLeafStep) {
+      this.runtime.updateStep(this.currentBddStep, (result) => {
+        result.status = Status.PASSED;
+        result.stage = Stage.FINISHED;
+      });
+      this.runtime.stopStep(this.currentBddStep);
+      this.currentBddStep = undefined;
+      return;
+    }
+
     if (!this.currentLeafStep) {
       return;
     }

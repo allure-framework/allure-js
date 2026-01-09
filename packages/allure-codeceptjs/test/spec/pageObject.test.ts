@@ -96,7 +96,7 @@ it("should support failed steps in page objects", async () => {
         const { container } = require('codeceptjs')
 
         Feature("login-feature");
-        Scenario("login-scenario1", async ({ I, login }) => {
+        Scenario("login-scenario1", ({ I, login }) => {
           I.pass();
           login.onMainPage();
         });
@@ -131,12 +131,10 @@ it("should support failed steps in page objects", async () => {
 
         class CustomHelper extends Helper {
 
-          async pass() {
-            await Promise.resolve();
-          }
+          pass() {}
 
-          async fail() {
-            await Promise.reject(new Error("an error"));
+          fail() {
+            throw new Error("an error");
           }
 
         }
@@ -147,7 +145,7 @@ it("should support failed steps in page objects", async () => {
         const { I } = inject();
 
         module.exports = {
-            async onMainPage() {
+            onMainPage() {
                 I.pass();
                 I.fail();
                 I.pass();
@@ -400,7 +398,7 @@ it("should support nested page object steps", async () => {
         const { container } = require('codeceptjs')
 
         Feature("login-feature");
-        Scenario("login-scenario1", async ({ I, page1, page2 }) => {
+        Scenario("login-scenario1", ({ I, page1, page2 }) => {
           I.pass();
           page1.fewNestedSteps();
           page2.onNextPage();
@@ -437,13 +435,9 @@ it("should support nested page object steps", async () => {
 
         class CustomHelper extends Helper {
 
-          async pass() {
-            await Promise.resolve();
-          }
+          pass() {}
 
-          async next() {
-            await Promise.resolve();
-          }
+          next() {}
 
         }
 
@@ -453,10 +447,10 @@ it("should support nested page object steps", async () => {
         const { I, page2 } = inject();
 
         module.exports = {
-            async fewNestedSteps() {
+            fewNestedSteps() {
                 I.pass();
                 I.next();
-                await page2.onNextPage();
+                page2.onNextPage();
             }
         }
         `,
@@ -464,7 +458,7 @@ it("should support nested page object steps", async () => {
         const { I } = inject();
 
         module.exports = {
-            async onNextPage() {
+            onNextPage() {
                 I.pass();
                 I.next();
             }
