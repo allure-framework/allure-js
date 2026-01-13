@@ -5276,7 +5276,7 @@ const RAW_RUNTIME_STATE =
           ["json-stringify-safe", "npm:5.0.1"],\
           ["mime-types", "npm:2.1.35"],\
           ["performance-now", "npm:2.1.0"],\
-          ["qs", "npm:6.14.0"],\
+          ["qs", "npm:6.14.1"],\
           ["safe-buffer", "npm:5.2.1"],\
           ["tough-cookie", "npm:5.1.1"],\
           ["tunnel-agent", "npm:0.6.0"],\
@@ -19392,7 +19392,7 @@ const RAW_RUNTIME_STATE =
           ["oauth-sign", "npm:0.9.0"],\
           ["performance-now", "npm:2.1.0"],\
           ["postman-request", "npm:2.88.1-postman.34"],\
-          ["qs", "npm:6.5.3"],\
+          ["qs", "npm:6.14.1"],\
           ["safe-buffer", "npm:5.2.1"],\
           ["stream-length", "npm:1.0.2"],\
           ["uuid", "npm:8.3.2"]\
@@ -19713,18 +19713,11 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["qs", [\
-      ["npm:6.14.0", {\
-        "packageLocation": "./.yarn/cache/qs-npm-6.14.0-6b298311eb-a60e49bbd5.zip/node_modules/qs/",\
+      ["npm:6.14.1", {\
+        "packageLocation": "./.yarn/cache/qs-npm-6.14.1-2af4c28250-34b5ab00a9.zip/node_modules/qs/",\
         "packageDependencies": [\
-          ["qs", "npm:6.14.0"],\
+          ["qs", "npm:6.14.1"],\
           ["side-channel", "npm:1.1.0"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
-      ["npm:6.5.3", {\
-        "packageLocation": "./.yarn/cache/qs-npm-6.5.3-90b2635484-485c990fba.zip/node_modules/qs/",\
-        "packageDependencies": [\
-          ["qs", "npm:6.5.3"]\
         ],\
         "linkType": "HARD"\
       }]\
