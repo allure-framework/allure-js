@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { Status } from "allure-js-commons";
+import { Stage, Status } from "allure-js-commons";
 import { runPlaywrightInlineTest } from "../utils.js";
 
 it("handles before hooks", async () => {
@@ -363,6 +363,134 @@ it("should not loose tests metadata when when there are hooks in the test", asyn
       }),
       expect.objectContaining({
         name: "After Hooks",
+      }),
+    ]),
+  );
+});
+
+it("handles test.step inside beforeEach when detail: false", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": `
+       import { test } from '@playwright/test';
+
+       test.describe('test detail = false', () => {
+         test.beforeEach('Before each test', async () => {
+           await test.step('Before - test demo 1', () => {
+           });
+         });
+
+         test('Demo Test 1', async () => {
+           await test.step('Test - Demo Test 1 - Step A', () => {
+           });
+         });
+       });
+     `,
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright"),
+             {
+               resultsDir: "./allure-results",
+               detail: false,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0]).toMatchObject({
+    name: "Demo Test 1",
+    status: Status.PASSED,
+    stage: Stage.FINISHED,
+  });
+  expect(tests[0].steps).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "Before Hooks",
+        status: Status.PASSED,
+        steps: expect.arrayContaining([
+          expect.objectContaining({
+            name: "Before - test demo 1",
+            status: Status.PASSED,
+          }),
+        ]),
+      }),
+      expect.objectContaining({
+        name: "Test - Demo Test 1 - Step A",
+        status: Status.PASSED,
+      }),
+    ]),
+  );
+});
+
+it("handles test.step inside afterEach when detail: false", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.js": `
+       import { test } from '@playwright/test';
+
+       test.describe('test detail = false', () => {
+         test.afterEach('After each test', async () => {
+           await test.step('After - test demo 1', () => {
+           });
+         });
+
+         test('Demo Test 1', async () => {
+           await test.step('Test - Demo Test 1 - Step A', () => {
+           });
+         });
+       });
+     `,
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright"),
+             {
+               resultsDir: "./allure-results",
+               detail: false,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0]).toMatchObject({
+    name: "Demo Test 1",
+    status: Status.PASSED,
+    stage: Stage.FINISHED,
+  });
+  expect(tests[0].steps).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "Test - Demo Test 1 - Step A",
+        status: Status.PASSED,
+      }),
+      expect.objectContaining({
+        name: "After Hooks",
+        status: Status.PASSED,
+        steps: expect.arrayContaining([
+          expect.objectContaining({
+            name: "After - test demo 1",
+            status: Status.PASSED,
+          }),
+        ]),
       }),
     ]),
   );
