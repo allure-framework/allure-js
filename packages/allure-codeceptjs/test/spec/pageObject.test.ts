@@ -96,9 +96,9 @@ it("should support failed steps in page objects", async () => {
         const { container } = require('codeceptjs')
 
         Feature("login-feature");
-        Scenario("login-scenario1", async ({ I, login }) => {
-          await I.pass();
-          await login.onMainPage();
+        Scenario("login-scenario1", ({ I, login }) => {
+          I.pass();
+          login.onMainPage();
         });
       `,
     "codecept.conf.js": `
@@ -131,12 +131,10 @@ it("should support failed steps in page objects", async () => {
 
         class CustomHelper extends Helper {
 
-          async pass() {
-            await Promise.resolve();
-          }
+          pass() {}
 
-          async fail() {
-            await Promise.reject(new Error("an error"));
+          fail() {
+            throw new Error("an error");
           }
 
         }
@@ -147,10 +145,10 @@ it("should support failed steps in page objects", async () => {
         const { I } = inject();
 
         module.exports = {
-            async onMainPage() {
-                await I.pass();
-                await I.fail();
-                await I.pass();
+            onMainPage() {
+                I.pass();
+                I.fail();
+                I.pass();
             }
         }
         `,
@@ -180,19 +178,19 @@ it("should support failed steps in page objects", async () => {
           trace: expect.stringContaining("CustomHelper.fail"),
         },
         steps: [
-          expect.objectContaining({
+          {
             name: "I pass",
             status: Status.PASSED,
-          }),
+          },
+          {
+            name: "I fail",
+            status: Status.BROKEN,
+            statusDetails: {
+              message: expect.stringContaining("an error"),
+              trace: expect.stringContaining("CustomHelper.fail"),
+            },
+          },
         ],
-      },
-      {
-        name: "I fail",
-        status: Status.BROKEN,
-        statusDetails: {
-          message: expect.stringContaining("an error"),
-          trace: expect.stringContaining("CustomHelper.fail"),
-        },
       },
     ],
   });
@@ -394,15 +392,16 @@ it("should support failed actor steps", async () => {
   });
 });
 
-it("should support nexted page object steps", async () => {
+it("should support nested page object steps", async () => {
   const { tests } = await runCodeceptJsInlineTest({
     "nested/login.test.js": `
         const { container } = require('codeceptjs')
 
         Feature("login-feature");
-        Scenario("login-scenario1", async ({ I, page1 }) => {
-          await I.pass();
-          await page1.fewNestedSteps();
+        Scenario("login-scenario1", ({ I, page1, page2 }) => {
+          I.pass();
+          page1.fewNestedSteps();
+          page2.onNextPage();
         });
       `,
     "codecept.conf.js": `
@@ -436,13 +435,9 @@ it("should support nexted page object steps", async () => {
 
         class CustomHelper extends Helper {
 
-          async pass() {
-            await Promise.resolve();
-          }
+          pass() {}
 
-          async next() {
-            await Promise.resolve();
-          }
+          next() {}
 
         }
 
@@ -452,10 +447,10 @@ it("should support nexted page object steps", async () => {
         const { I, page2 } = inject();
 
         module.exports = {
-            async fewNestedSteps() {
-                await I.pass();
-                await I.next();
-                await page2.onNextPage();
+            fewNestedSteps() {
+                I.pass();
+                I.next();
+                page2.onNextPage();
             }
         }
         `,
@@ -463,8 +458,9 @@ it("should support nexted page object steps", async () => {
         const { I } = inject();
 
         module.exports = {
-            async onNextPage() {
-                await I.next();
+            onNextPage() {
+                I.pass();
+                I.next();
             }
         }
         `,
@@ -475,7 +471,6 @@ it("should support nexted page object steps", async () => {
   const [tr] = tests;
 
   expect(tr).toMatchObject({
-    status: Status.PASSED,
     name: "login-scenario1",
     steps: [
       {
@@ -485,14 +480,38 @@ it("should support nexted page object steps", async () => {
       {
         name: "On page1: few nested steps",
         status: Status.PASSED,
-      },
-      {
-        name: "I next",
-        status: Status.PASSED,
+        steps: [
+          {
+            name: "I pass",
+            status: Status.PASSED,
+          },
+          {
+            name: "I next",
+            status: Status.PASSED,
+          },
+          {
+            name: "I pass",
+            status: Status.PASSED,
+          },
+          {
+            name: "I next",
+            status: Status.PASSED,
+          },
+        ],
       },
       {
         name: "On page2: on next page",
         status: Status.PASSED,
+        steps: [
+          {
+            name: "I pass",
+            status: Status.PASSED,
+          },
+          {
+            name: "I next",
+            status: Status.PASSED,
+          },
+        ],
       },
     ],
   });
