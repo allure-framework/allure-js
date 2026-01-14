@@ -308,9 +308,27 @@ export class AllureReporter implements ReporterV2 {
     }
 
     if (isHookStep) {
-      const stack = isBeforeHookDescendant
-        ? this.beforeHooksStepsStack.get(test.id)!
-        : this.afterHooksStepsStack.get(test.id)!;
+      // Lazily initialize the hook stack if it doesn't exist (e.g., when detail: false and root hook was ignored)
+      let stack = isBeforeHookDescendant
+        ? this.beforeHooksStepsStack.get(test.id)
+        : this.afterHooksStepsStack.get(test.id);
+
+      if (!stack) {
+        stack = new ShallowStepsStack();
+        const rootHookStep: StepResult = {
+          ...createStepResult(),
+          name: isBeforeHookDescendant ? BEFORE_HOOKS_ROOT_STEP_TITLE : AFTER_HOOKS_ROOT_STEP_TITLE,
+          start: step.startTime.getTime(),
+          stage: Stage.RUNNING,
+          uuid: randomUuid(),
+        };
+        stack.startStep(rootHookStep);
+        if (isBeforeHookDescendant) {
+          this.beforeHooksStepsStack.set(test.id, stack);
+        } else {
+          this.afterHooksStepsStack.set(test.id, stack);
+        }
+      }
 
       if (["test.attach", "attach"].includes(step.category)) {
         let hookStepWithUuid: AttachStack | undefined;
@@ -356,6 +374,31 @@ export class AllureReporter implements ReporterV2 {
   }
 
   onStepEnd(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
+    const isRootBeforeHook = step.title === BEFORE_HOOKS_ROOT_STEP_TITLE;
+    const isRootAfterHook = step.title === AFTER_HOOKS_ROOT_STEP_TITLE;
+    const isRootHook = isRootBeforeHook || isRootAfterHook;
+
+    // For root hooks, check if we have a lazily created stack that needs to be finalized
+    if (isRootHook) {
+      const stack = isRootAfterHook ? this.afterHooksStepsStack.get(test.id) : this.beforeHooksStepsStack.get(test.id);
+
+      // If stack exists (was lazily created), finalize the root hook step
+      if (stack) {
+        stack.updateStep((stepResult) => {
+          const { status = Status.PASSED } = getWorstTestStepResult(stepResult.steps) ?? {};
+          stepResult.status = step.error ? Status.FAILED : status;
+          stepResult.stage = Stage.FINISHED;
+          if (step.error) {
+            stepResult.statusDetails = { ...getMessageAndTraceFromError(step.error) };
+          }
+        });
+        stack.stopStep({
+          duration: step.duration,
+        });
+      }
+      return;
+    }
+
     if (this.#shouldIgnoreStep(step)) {
       return;
     }
@@ -364,15 +407,18 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
     const testUuid = this.allureResultsUuids.get(test.id)!;
-    const isRootBeforeHook = step.title === BEFORE_HOOKS_ROOT_STEP_TITLE;
-    const isRootAfterHook = step.title === AFTER_HOOKS_ROOT_STEP_TITLE;
     const isBeforeHookDescendant = isBeforeHookStep(step);
     const isAfterHookDescendant = isAfterHookStep(step);
-    const isAfterHook = isRootAfterHook || isAfterHookDescendant;
-    const isHook = isRootBeforeHook || isRootAfterHook || isBeforeHookDescendant || isAfterHookDescendant;
+    const isAfterHook = isAfterHookDescendant;
+    const isHook = isBeforeHookDescendant || isAfterHookDescendant;
 
     if (isHook) {
-      const stack = isAfterHook ? this.afterHooksStepsStack.get(test.id)! : this.beforeHooksStepsStack.get(test.id)!;
+      const stack = isAfterHook ? this.afterHooksStepsStack.get(test.id) : this.beforeHooksStepsStack.get(test.id);
+
+      // Stack might not exist if root hook was ignored (e.g., detail: false) and no test.step was called inside it
+      if (!stack) {
+        return;
+      }
 
       stack.updateStep((stepResult) => {
         const { status = Status.PASSED } = getWorstTestStepResult(stepResult.steps) ?? {};
