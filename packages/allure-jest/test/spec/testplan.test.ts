@@ -9,19 +9,19 @@ it("respects testplan", async () => {
     tests: [
       {
         id: 1,
-        selector: "nested/super strange nested/super strange name.test.js#also nested should execute",
+        selector: "allure-jest:nested/super strange nested/super strange name.test.js#also nested should execute",
       },
       {
         id: 2,
-        selector: "b.test.js#should execute",
+        selector: "allure-jest:b.test.js#should execute",
       },
       {
         id: 3,
-        selector: ".+.test.js#+.",
+        selector: "allure-jest:.+.test.js#+.",
       },
       {
         id: 4,
-        selector: "notaga.test.js#a",
+        selector: "allure-jest:notaga.test.js#a",
       },
     ],
   };
@@ -65,19 +65,19 @@ it("respects testplan", async () => {
     expect.arrayContaining([
       expect.objectContaining({
         name: "should execute",
-        fullName: "b.test.js#should execute",
+        fullName: "allure-jest:b.test.js#should execute",
       }),
       expect.objectContaining({
         name: "should execute",
-        fullName: "nested/super strange nested/super strange name.test.js#also nested should execute",
+        fullName: "allure-jest:nested/super strange nested/super strange name.test.js#also nested should execute",
       }),
       expect.objectContaining({
         name: "+.",
-        fullName: ".+.test.js#+.",
+        fullName: "allure-jest:.+.test.js#+.",
       }),
       expect.objectContaining({
         name: "a",
-        fullName: "notaga.test.js#a",
+        fullName: "allure-jest:notaga.test.js#a",
       }),
     ]),
   );

@@ -11,7 +11,7 @@ it("should set correct timings for tests", async () => {
   expect(tr.name).toEqual("scenario with sleep");
   expect(tr.start).toBeGreaterThanOrEqual(before);
   expect(tr.start).toBeLessThanOrEqual(after);
-  expect(tr.stop).toBeGreaterThanOrEqual(tr.start!);
+  expect(tr.stop).toBeGreaterThanOrEqual(tr.start);
 });
 
 it("should set correct timings for steps", async () => {
@@ -25,7 +25,7 @@ it("should set correct timings for steps", async () => {
   expect(s1.name).toEqual("Given a sleep");
   expect(s1.start).toBeGreaterThanOrEqual(before);
   expect(s1.start).toBeLessThanOrEqual(after);
-  expect(s1.stop).toBeGreaterThanOrEqual(s1.start!);
+  expect(s1.stop).toBeGreaterThanOrEqual(s1.start);
   expect(s1.stop! - s1.start!).toBeGreaterThanOrEqual(100);
 });
 
@@ -39,6 +39,6 @@ it("should set correct timings for hooks", async () => {
   const [f1] = trc.befores;
   expect(f1.start).toBeGreaterThanOrEqual(before);
   expect(f1.start).toBeLessThanOrEqual(after);
-  expect(f1.stop).toBeGreaterThanOrEqual(f1.start!);
+  expect(f1.stop).toBeGreaterThanOrEqual(f1.start);
   expect(f1.stop! - f1.start!).toBeGreaterThanOrEqual(80);
 });

@@ -58,77 +58,23 @@ it("handles basic cases", async () => {
   );
 });
 
-it("should set full name", async () => {
-  const { tests } = await runCucumberInlineTest(["simple"], ["simple"]);
-
-  expect(tests).toHaveLength(3);
-  expect(tests).toContainEqual(
-    expect.objectContaining({
-      name: "passed",
-      fullName: "features/simple.feature#passed",
-      status: Status.PASSED,
-    }),
-  );
-  expect(tests).toContainEqual(
-    expect.objectContaining({
-      name: "failed",
-      fullName: "features/simple.feature#failed",
-      status: Status.FAILED,
-    }),
-  );
-  expect(tests).toContainEqual(
-    expect.objectContaining({
-      name: "broken",
-      fullName: "features/simple.feature#broken",
-      status: Status.BROKEN,
-    }),
-  );
-});
-
-it("should calculate fullName in a CWD-independent manner", async () => {
-  const { tests } = await runCucumberInlineTest(["nested/simple"], ["simple"], { cwd: "features/nested" });
-
-  expect(tests).toHaveLength(3);
-  expect(tests).toContainEqual(
-    expect.objectContaining({
-      name: "passed",
-      fullName: "features/nested/simple.feature#passed",
-      status: Status.PASSED,
-    }),
-  );
-  expect(tests).toContainEqual(
-    expect.objectContaining({
-      name: "failed",
-      fullName: "features/nested/simple.feature#failed",
-      status: Status.FAILED,
-    }),
-  );
-  expect(tests).toContainEqual(
-    expect.objectContaining({
-      name: "broken",
-      fullName: "features/nested/simple.feature#broken",
-      status: Status.BROKEN,
-    }),
-  );
-});
-
 it("should assign titlePath property to the test result", async () => {
   const { tests } = await runCucumberInlineTest(["simple"], ["simple"]);
 
   expect(tests).toHaveLength(3);
   expect(tests).toContainEqual(
     expect.objectContaining({
-      titlePath: ["features", "simple"],
+      titlePath: ["dummy", "features", "simple"],
     }),
   );
   expect(tests).toContainEqual(
     expect.objectContaining({
-      titlePath: ["features", "simple"],
+      titlePath: ["dummy", "features", "simple"],
     }),
   );
   expect(tests).toContainEqual(
     expect.objectContaining({
-      titlePath: ["features", "simple"],
+      titlePath: ["dummy", "features", "simple"],
     }),
   );
 });

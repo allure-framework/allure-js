@@ -24,15 +24,15 @@ it("should set package label", async () => {
     expect.arrayContaining([
       expect.objectContaining({
         name: "test 1",
-        labels: expect.arrayContaining([{ name: "package", value: "some.path.to.sample.test.js" }]),
+        labels: expect.arrayContaining([{ name: "package", value: "allure-playwright.some.path.to.sample.test.js" }]),
       }),
       expect.objectContaining({
         name: "test 2",
-        labels: expect.arrayContaining([{ name: "package", value: "some.other.to.some.test.js" }]),
+        labels: expect.arrayContaining([{ name: "package", value: "allure-playwright.some.other.to.some.test.js" }]),
       }),
       expect.objectContaining({
         name: "test 3",
-        labels: expect.arrayContaining([{ name: "package", value: "root.test.js" }]),
+        labels: expect.arrayContaining([{ name: "package", value: "allure-playwright.root.test.js" }]),
       }),
     ]),
   );

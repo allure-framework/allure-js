@@ -36,7 +36,11 @@ describe("test plan", () => {
         "testplan.json": JSON.stringify(
           {
             version: "1.0",
-            tests: [{ selector: "foo/sample.test.ts#baz" }, { id: 3 }, { selector: "foo/sample.test.ts#foo bar boop" }],
+            tests: [
+              { selector: "dummy:foo/sample.test.ts#baz" },
+              { id: 3 },
+              { selector: "dummy:foo/sample.test.ts#foo bar boop" },
+            ],
           },
           null,
           2,
@@ -50,10 +54,10 @@ describe("test plan", () => {
     );
 
     expect(tests).toHaveLength(3);
-    expect(tests).toContainEqual(expect.objectContaining({ name: "baz", fullName: "foo/sample.test.ts#baz" }));
-    expect(tests).toContainEqual(expect.objectContaining({ name: "beep", fullName: "foo/sample.test.ts#beep" }));
+    expect(tests).toContainEqual(expect.objectContaining({ name: "baz", fullName: "dummy:foo/sample.test.ts#baz" }));
+    expect(tests).toContainEqual(expect.objectContaining({ name: "beep", fullName: "dummy:foo/sample.test.ts#beep" }));
     expect(tests).toContainEqual(
-      expect.objectContaining({ name: "boop", fullName: "foo/sample.test.ts#foo bar boop" }),
+      expect.objectContaining({ name: "boop", fullName: "dummy:foo/sample.test.ts#foo bar boop" }),
     );
   });
 });

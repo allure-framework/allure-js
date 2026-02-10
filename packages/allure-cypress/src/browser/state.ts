@@ -12,6 +12,7 @@ export const getAllureState = () => {
       testPlan: undefined,
       currentTest: undefined,
       projectDir: undefined,
+      projectName: undefined,
       stepStack: [],
       stepsToFinalize: [],
       nextApiStepId: 0,
@@ -42,6 +43,8 @@ export const enqueueRuntimeMessage = (message: CypressMessage) => {
 export const getAllureTestPlan = () => getAllureState().testPlan;
 
 export const getProjectDir = () => getAllureState().projectDir;
+
+export const getProjectName = () => getAllureState().projectName;
 
 export const getCurrentTest = () => getAllureState().currentTest;
 

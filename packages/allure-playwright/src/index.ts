@@ -33,10 +33,14 @@ import {
   escapeRegExp,
   formatLink,
   getEnvironmentLabels,
+  getFallbackTestCaseIdLabel,
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
   getPackageLabel,
+  getPosixPath,
+  getProjectName,
+  getRelativePath,
   getThreadLabel,
   getWorstTestStepResult,
   md5,
@@ -165,12 +169,17 @@ export class AllureReporter implements ReporterV2 {
     const titleMetadata = extractMetadataFromString(test.title);
     const project = suite.project()!;
     const testFilePath = path.relative(project?.testDir, test.location.file);
-    const relativeFileParts = testFilePath.split(path.sep);
-    const relativeFile = relativeFileParts.join("/");
+    const relativeFilePosix = getPosixPath(testFilePath);
+    const relativeFileParts = relativeFilePosix.split("/");
+    const projectName = getProjectName();
+    const relativeFileForId = getPosixPath(getRelativePath(test.location.file));
     // root > project > file path > test.describe...
     const [, , , ...suiteTitles] = suite.titlePath();
     const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
-    const testCaseIdBase = `${relativeFile}#${nameSuites}${test.title}`;
+    const fullNameBaseForId = projectName ? `${projectName}:${relativeFileForId}` : relativeFileForId;
+    const testCaseIdBase = `${fullNameBaseForId}#${nameSuites}${test.title}`;
+    const legacyTestCaseIdBase = `${relativeFilePosix}#${nameSuites}${test.title}`;
+    const legacyTestCaseId = md5(legacyTestCaseIdBase);
     const result: Partial<TestResult> = {
       name: titleMetadata.cleanTitle,
       labels: [...titleMetadata.labels, ...getEnvironmentLabels()],
@@ -178,13 +187,14 @@ export class AllureReporter implements ReporterV2 {
       parameters: [],
       steps: [],
       testCaseId: md5(testCaseIdBase),
-      fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
+      fullName: `${relativeFilePosix}:${test.location.line}:${test.location.column}`,
       titlePath: relativeFileParts.concat(...suiteTitles),
     };
 
     result.labels!.push(getLanguageLabel());
     result.labels!.push(getFrameworkLabel("playwright"));
     result.labels!.push(getPackageLabel(testFilePath));
+    result.labels!.push(getFallbackTestCaseIdLabel(legacyTestCaseId));
     result.labels!.push({ name: "titlePath", value: suite.titlePath().join(" > ") });
 
     // support for earlier playwright versions

@@ -1,8 +1,10 @@
 import { expect, it } from "vitest";
+import { md5 } from "allure-js-commons/sdk/reporter";
 import { runPlaywrightInlineTest } from "../utils.js";
 
 it("historical data should be fine", async () => {
   const { tests } = await runPlaywrightInlineTest({
+    "package.json": JSON.stringify({ name: "allure-playwright" }),
     "sample.test.js": `
       import { test } from '@playwright/test';
 
@@ -12,15 +14,23 @@ it("historical data should be fine", async () => {
       `,
   });
   const fullName = "sample.test.js:5:13";
+  const testCaseId = md5("allure-playwright:sample.test.js#nested test");
+  const [testResult] = tests;
 
-  expect(tests).toEqual(
+  expect(testResult).toEqual(
+    expect.objectContaining({
+      name: "test",
+      fullName,
+    }),
+  );
+  expect(testResult.testCaseId).toBe(testCaseId);
+  expect(testResult.historyId).toBe(`${testCaseId}:${md5("Project:project")}`);
+  expect(testResult.labels).toEqual(
     expect.arrayContaining([
-      expect.objectContaining({
-        name: "test",
-        fullName,
-        testCaseId: "bf3198c05e4d7aaeeffe4ca4b5244d0f",
-        historyId: "bf3198c05e4d7aaeeffe4ca4b5244d0f:4d32f1bb70ce8096643fc1cc311d1fe1",
-      }),
+      {
+        name: "_fallbackTestCaseId",
+        value: md5("sample.test.js#nested test"),
+      },
     ]),
   );
 });

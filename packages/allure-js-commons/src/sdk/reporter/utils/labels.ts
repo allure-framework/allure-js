@@ -4,7 +4,7 @@ import { env, pid } from "node:process";
 import { isMainThread, threadId } from "node:worker_threads";
 import type { Label } from "../../../model.js";
 import { LabelName } from "../../../model.js";
-import { getRelativePath } from "../utils.js";
+import { getProjectName, getRelativePath } from "../utils.js";
 
 const ENV_LABEL_PREFIX = "ALLURE_LABEL_";
 
@@ -44,13 +44,18 @@ export const getThreadLabel = (userProvidedThreadId?: string): Label => {
   };
 };
 
-export const getPackageLabel = (filepath: string): Label => ({
-  name: LabelName.PACKAGE,
-  value: getRelativePath(filepath)
+export const getPackageLabel = (filepath: string): Label => {
+  const projectName = getProjectName();
+  const pathParts = getRelativePath(filepath)
     .split(path.sep)
-    .filter((v) => v)
-    .join("."),
-});
+    .filter((v) => v);
+  const labelParts = projectName ? [projectName, ...pathParts] : pathParts;
+
+  return {
+    name: LabelName.PACKAGE,
+    value: labelParts.join("."),
+  };
+};
 
 export const getLanguageLabel = (): Label => ({
   name: LabelName.LANGUAGE,

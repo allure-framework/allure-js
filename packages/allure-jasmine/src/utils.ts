@@ -1,5 +1,5 @@
 import { extractMetadataFromString } from "allure-js-commons/sdk";
-import { getPosixPath, getRelativePath } from "allure-js-commons/sdk/reporter";
+import { getPosixPath, getProjectName, getRelativePath } from "allure-js-commons/sdk/reporter";
 
 import FailedExpectation = jasmine.FailedExpectation;
 
@@ -22,14 +22,20 @@ export const getAllureNamesAndLabels = (
   suites: readonly string[],
   rawSpecName: string,
 ) => {
+  const projectName = getProjectName();
   const filePart = filename ? getPosixPath(getRelativePath(filename)) : undefined;
   const { cleanTitle: specName, labels, links } = extractMetadataFromString(rawSpecName);
   const specPart = [...suites, specName].join(" > ");
+  const fullNameBase = filePart ? (projectName ? `${projectName}:${filePart}` : filePart) : undefined;
+  const legacyFullNameBase = filePart || undefined;
+  const titlePath = filePart ? filePart.split("/").concat(suites) : undefined;
+  const titlePathWithProject = titlePath && projectName ? [projectName, ...titlePath] : titlePath;
 
   return {
     name: specName,
-    fullName: filePart ? `${filePart}#${specPart}` : undefined,
-    titlePath: filePart ? filePart.split("/").concat(suites) : undefined,
+    fullName: fullNameBase ? `${fullNameBase}#${specPart}` : undefined,
+    legacyFullName: legacyFullNameBase ? `${legacyFullNameBase}#${specPart}` : undefined,
+    titlePath: titlePathWithProject,
     labels,
     links,
   };

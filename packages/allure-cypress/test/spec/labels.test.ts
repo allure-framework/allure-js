@@ -36,7 +36,9 @@ it("should add package label", async () => {
   });
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].labels).toEqual(expect.arrayContaining([{ name: "package", value: "cypress.e2e.sample.cy.js" }]));
+  expect(tests[0].labels).toEqual(
+    expect.arrayContaining([{ name: "package", value: "dummy.cypress.e2e.sample.cy.js" }]),
+  );
 });
 
 it("should add labels from env variables", async () => {

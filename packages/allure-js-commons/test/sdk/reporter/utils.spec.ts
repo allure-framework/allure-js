@@ -1,6 +1,9 @@
-import { describe, expect, it } from "vitest";
+import * as fs from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { describe, expect, it, vi } from "vitest";
 import { LabelName } from "../../../src/model.js";
-import { getSuiteLabels } from "../../../src/sdk/reporter/utils.js";
+import { getRelativePath, getSuiteLabels } from "../../../src/sdk/reporter/utils.js";
 
 describe("getSuiteLabels", () => {
   describe("with empty suites", () => {
@@ -52,5 +55,41 @@ describe("getSuiteLabels", () => {
         },
       ]);
     });
+  });
+});
+
+describe("getProjectName", () => {
+  it("should cache the project name on subsequent calls", async () => {
+    const originalCwd = process.cwd();
+    const tempDir = fs.mkdtempSync(path.join(tmpdir(), "allure-js-commons-project-name-"));
+
+    try {
+      fs.writeFileSync(path.join(tempDir, "package.json"), JSON.stringify({ name: "first-name" }), "utf8");
+      process.chdir(tempDir);
+      vi.resetModules();
+      const { getProjectName: getProjectNameFresh } = await import("../../../src/sdk/reporter/utils.js");
+
+      expect(getProjectNameFresh()).toBe("first-name");
+
+      fs.writeFileSync(path.join(tempDir, "package.json"), JSON.stringify({ name: "second-name" }), "utf8");
+      expect(getProjectNameFresh()).toBe("first-name");
+    } finally {
+      process.chdir(originalCwd);
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("getRelativePath", () => {
+  it("should keep relative path unchanged", () => {
+    const filepath = path.join("test", "spec", "example.test.ts");
+    const result = getRelativePath(filepath);
+    expect(result).toBe(path.join("test", "spec", "example.test.ts"));
+  });
+
+  it("should handle absolute paths and make them project-relative", () => {
+    const absolutePath = path.join(process.cwd(), "test", "spec", "example.test.ts");
+    const result = getRelativePath(absolutePath);
+    expect(result).toBe(path.join("test", "spec", "example.test.ts"));
   });
 });

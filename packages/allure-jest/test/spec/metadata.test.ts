@@ -12,7 +12,7 @@ it("should add labels from embedded metadata", async () => {
   expect(tests).toEqual([
     expect.objectContaining({
       name: "foo",
-      fullName: "spec/test/sample.spec.js#foo",
+      fullName: "allure-jest:spec/test/sample.spec.js#foo",
       status: Status.PASSED,
       labels: expect.arrayContaining([
         {
@@ -38,7 +38,7 @@ it("should add links from embedded metadata", async () => {
   expect(tests).toEqual([
     expect.objectContaining({
       name: "foo",
-      fullName: "spec/test/sample.spec.js#foo",
+      fullName: "allure-jest:spec/test/sample.spec.js#foo",
       status: Status.PASSED,
       links: expect.arrayContaining([
         {

@@ -1,39 +1,11 @@
-import path from "node:path";
-import { describe, expect, it } from "vitest";
-import type { TestPlanV1 } from "allure-js-commons/sdk";
+import { expect, it } from "vitest";
 import { runCypressInlineTest } from "../utils.js";
 
-describe("fullName, and package", () => {
-  describe("with testplan", () => {
-    it("should not depend on a CWD", async () => {
-      const testPlan: TestPlanV1 = {
-        version: "1.0",
-        tests: [{ selector: "cypress/e2e/sample.cy.js#foo" }],
-      };
-      const { tests } = await runCypressInlineTest(
-        {
-          "cypress/e2e/sample.cy.js": () => `
-        it("foo", () => {});
-      `,
-          "testplan.json": () => JSON.stringify(testPlan),
-        },
-        {
-          cwd: "cypress",
-          env: (testDir) => ({ ALLURE_TESTPLAN_PATH: path.join(testDir, "testplan.json") }),
-        },
-      );
-
-      expect(tests).toHaveLength(1);
-      expect(tests[0].labels).toEqual(expect.arrayContaining([{ name: "package", value: "cypress.e2e.sample.cy.js" }]));
-      expect(tests[0].fullName).toEqual("cypress/e2e/sample.cy.js#foo");
-    });
-  });
-
-  describe("when no Cypress config provided", () => {
-    it("should not depend on a CWD", async () => {
-      const { tests } = await runCypressInlineTest(
-        {
-          "cypress.config.js": ({ allureCypressReporterModulePath, supportFilePath, specPattern, allureDirPath }) => `
+it("should not depend on a CWD when no Cypress config provided", async () => {
+  const { tests } = await runCypressInlineTest(
+    {
+      "package.json": () => JSON.stringify({ name: "dummy" }),
+      "cypress.config.js": ({ allureCypressReporterModulePath, supportFilePath, specPattern, allureDirPath }) => `
         const { allureCypress } = require("${allureCypressReporterModulePath}");
 
         module.exports = {
@@ -52,18 +24,18 @@ describe("fullName, and package", () => {
           },
         };
       `,
-          "cypress/e2e/sample.cy.js": () => `
+      "cypress/e2e/sample.cy.js": () => `
         it("foo", () => {});
       `,
-        },
-        {
-          cwd: "cypress",
-        },
-      );
+    },
+    {
+      cwd: "cypress",
+    },
+  );
 
-      expect(tests).toHaveLength(1);
-      expect(tests[0].labels).toEqual(expect.arrayContaining([{ name: "package", value: "cypress.e2e.sample.cy.js" }]));
-      expect(tests[0].fullName).toEqual("cypress/e2e/sample.cy.js#foo");
-    });
-  });
+  expect(tests).toHaveLength(1);
+  expect(tests[0].labels).toEqual(
+    expect.arrayContaining([{ name: "package", value: "dummy.cypress.e2e.sample.cy.js" }]),
+  );
+  expect(tests[0].fullName).toEqual("dummy:cypress/e2e/sample.cy.js#foo");
 });

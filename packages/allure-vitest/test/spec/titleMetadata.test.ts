@@ -15,7 +15,7 @@ describe("title metadata", () => {
     expect(tests).toHaveLength(1);
     expect(tests[0]).toMatchObject({
       name: "foo",
-      fullName: "sample.test.ts#foo",
+      fullName: "dummy:sample.test.ts#foo",
       labels: expect.arrayContaining([
         { name: LabelName.ALLURE_ID, value: "1" },
         { name: "bar", value: "2" },

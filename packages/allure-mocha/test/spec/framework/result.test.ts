@@ -15,7 +15,7 @@ describe("defaults", () => {
 
   it("has fullName", () => {
     const fnPattern = new RegExp(
-      `^test/fixtures/[a-f0-9-]+/plain-mocha/testInFileScope\\.spec\\${SPEC_EXT}: a test in a file scope$`,
+      `^allure-mocha:test/fixtures/[a-f0-9-]+/plain-mocha/testInFileScope\\.spec\\${SPEC_EXT}: a test in a file scope$`,
     );
     expect(test.fullName).toMatch(fnPattern);
   });
@@ -37,7 +37,7 @@ describe("defaults", () => {
   it("has default labels", () => {
     const labels = test.labels;
     const packagePattern = new RegExp(
-      `^test\\.fixtures\\.[a-f0-9-]+\\.plain-mocha\\.testInFileScope\\.spec\\${SPEC_EXT}$`,
+      `^allure-mocha\\.test\\.fixtures\\.[a-f0-9-]+\\.plain-mocha\\.testInFileScope\\.spec\\${SPEC_EXT}$`,
     );
     expect(labels).toContainEqual({ name: "language", value: "javascript" });
     expect(labels).toContainEqual({ name: "framework", value: "mocha" });

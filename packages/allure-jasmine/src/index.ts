@@ -7,9 +7,11 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getFallbackTestCaseIdLabel,
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
+  getLegacyTestCaseIdFromFullName,
   getPackageLabel,
   getSuiteLabels,
   getThreadLabel,
@@ -118,13 +120,16 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   }
 
   specStarted(spec: jasmine.SpecResult & { filename?: string }): void {
-    const { fullName, titlePath, labels, links, name } = getAllureNamesAndLabels(
+    const { fullName, legacyFullName, titlePath, labels, links, name } = getAllureNamesAndLabels(
       spec.filename,
       this.getCurrentSpecPath(),
       spec.description,
     );
 
     if (!hasSkipLabel(labels)) {
+      if (legacyFullName) {
+        labels.push(getFallbackTestCaseIdLabel(getLegacyTestCaseIdFromFullName(legacyFullName)));
+      }
       this.#startScope();
       this.currentAllureTestUuid = this.allureRuntime.startTest(
         {

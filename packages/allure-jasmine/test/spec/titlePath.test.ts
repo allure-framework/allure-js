@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+import { md5 } from "allure-js-commons/sdk/reporter";
 import { runJasmineInlineTest } from "../utils.js";
 
 it("should assign titlePath property to the test result", async () => {
@@ -12,7 +13,15 @@ it("should assign titlePath property to the test result", async () => {
 
   const [tr] = tests;
 
-  expect(tr.titlePath).toEqual(["spec", "test", "sample1.spec.js"]);
+  expect(tr.titlePath).toEqual(["dummy", "spec", "test", "sample1.spec.js"]);
+  expect(tr.labels).toEqual(
+    expect.arrayContaining([
+      {
+        name: "_fallbackTestCaseId",
+        value: md5("spec/test/sample1.spec.js#should pass"),
+      },
+    ]),
+  );
 });
 
 it("should assign titlePath property to the test result with suites", async () => {
@@ -32,5 +41,5 @@ it("should assign titlePath property to the test result with suites", async () =
 
   const [tr] = tests;
 
-  expect(tr.titlePath).toEqual(["spec", "test", "sample1.spec.js", "foo", "bar"]);
+  expect(tr.titlePath).toEqual(["dummy", "spec", "test", "sample1.spec.js", "foo", "bar"]);
 });

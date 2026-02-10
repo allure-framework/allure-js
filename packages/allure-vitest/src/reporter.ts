@@ -1,7 +1,7 @@
 import type { RunnerTask as Task } from "vitest";
 import type { TestModule } from "vitest/node";
 import type { Reporter } from "vitest/reporters";
-import { LabelName, Stage, Status } from "allure-js-commons";
+import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
@@ -9,9 +9,12 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getFallbackTestCaseIdLabel,
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
+  getLegacyTestCaseIdFromFullName,
+  getPackageLabel,
   getSuiteLabels,
   getThreadLabel,
 } from "allure-js-commons/sdk/reporter";
@@ -80,7 +83,16 @@ export default class AllureVitestReporter implements Reporter {
       return;
     }
 
-    const { specPath, fullName, name, suitePath, labels: metadataLabels, links: metadataLinks } = getTestMetadata(task);
+    const {
+      projectName,
+      specPath,
+      fullName,
+      legacyFullName,
+      name,
+      suitePath,
+      labels: metadataLabels,
+      links: metadataLinks,
+    } = getTestMetadata(task);
     const testUuid = this.allureReporterRuntime!.startTest({
       name,
       start: task.result?.startTime,
@@ -89,7 +101,8 @@ export default class AllureVitestReporter implements Reporter {
     this.allureReporterRuntime!.updateTest(testUuid, (result) => {
       const suiteLabels = getSuiteLabels(suitePath);
       const fsPath = specPath.split("/");
-      const titlePath = [...fsPath, ...suitePath];
+      const baseTitlePath = [...fsPath, ...suitePath];
+      const titlePath = projectName ? [projectName, ...baseTitlePath] : baseTitlePath;
 
       result.fullName = fullName;
       result.titlePath = titlePath;
@@ -100,13 +113,11 @@ export default class AllureVitestReporter implements Reporter {
       result.labels.push(...getEnvironmentLabels());
       result.labels.push(getHostLabel());
       result.labels.push(getThreadLabel(VITEST_POOL_ID && `vitest-worker-${VITEST_POOL_ID}`));
+      result.labels.push(getFallbackTestCaseIdLabel(getLegacyTestCaseIdFromFullName(legacyFullName)));
       result.links.push(...metadataLinks);
 
-      if (specPath) {
-        result.labels.push({
-          name: LabelName.PACKAGE,
-          value: specPath.replaceAll("/", "."),
-        });
+      if (task.file.filepath) {
+        result.labels.push(getPackageLabel(task.file.filepath));
       }
 
       this.allureReporterRuntime!.applyRuntimeMessages(testUuid, allureRuntimeMessages);

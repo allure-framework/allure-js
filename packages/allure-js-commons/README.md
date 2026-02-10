@@ -27,3 +27,8 @@ Using `ALLURE_LABEL_{{labelName}}={{labelValue}}` syntax you can set common labe
 ```bash
 ALLURE_LABEL_epic="Story 1" npm test
 ```
+
+### `_fallbackTestCaseId` label
+
+Some integrations emit a `_fallbackTestCaseId` label to provide the legacy test case ID during transitions.
+It is a regular label and does not affect test execution, filtering, or selection.
