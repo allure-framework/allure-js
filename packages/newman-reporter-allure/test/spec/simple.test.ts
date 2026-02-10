@@ -1,4 +1,5 @@
 import { LabelName, Stage, Status } from "allure-js-commons";
+import { md5 } from "allure-js-commons/sdk/reporter";
 import { afterAll, afterEach, beforeAll, expect, test } from "vitest";
 
 import { server } from "../mocks/server.js";
@@ -78,8 +79,8 @@ test("complex test overview", async () => {
   expect(tests[0]).toEqual(
     expect.objectContaining({
       name: "testReq",
-      fullName: "fff/ParentName/SuiteName/SubSub1/SubSub1#testReq",
-      titlePath: ["fff", "ParentName", "SuiteName", "SubSub1", "SubSub1"],
+      fullName: "newman-reporter-allure:fff/ParentName/SuiteName/SubSub1/SubSub1#testReq",
+      titlePath: ["newman-reporter-allure", "fff", "ParentName", "SuiteName", "SubSub1", "SubSub1"],
       status: Status.PASSED,
       stage: Stage.FINISHED,
       description: "testDescription\n\nmultiline\n\n**somethingBold**",
@@ -92,6 +93,10 @@ test("complex test overview", async () => {
         { name: LabelName.SUB_SUITE, value: "SuiteName > SubSub1 > SubSub1" },
         { name: LabelName.ALLURE_ID, value: "228" },
         { name: "custom", value: "test" },
+        {
+          name: "_fallbackTestCaseId",
+          value: md5("fff/ParentName/SuiteName/SubSub1/SubSub1#testReq"),
+        },
       ]),
       links: expect.arrayContaining([{ type: "my_link", url: "https://allurereport.org" }]),
       parameters: expect.arrayContaining([

@@ -4,8 +4,9 @@ import { expect, it } from "vitest";
 import { runJestInlineTest } from "../../../utils.js";
 
 it("single step", async () => {
-  const { tests } = await runJestInlineTest({
-    "sample.test.js": `
+  const { tests } = await runJestInlineTest(
+    {
+      "sample.test.js": `
     const { label, step } = require("allure-js-commons");
 
     it("step", async () => {
@@ -13,8 +14,10 @@ it("single step", async () => {
         await label("foo", "bar");
       });
     });
-  `,
-  });
+    `,
+    },
+    undefined,
+  );
 
   expect(tests).toHaveLength(1);
   expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));

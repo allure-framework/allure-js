@@ -242,6 +242,7 @@ export type AllureSpecState = {
   initialized: boolean;
   testPlan: TestPlanV1 | null | undefined;
   projectDir?: string;
+  projectName?: string;
   messages: CypressMessage[];
   currentTest?: CypressTest;
   stepStack: StepDescriptor[];
