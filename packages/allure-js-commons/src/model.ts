@@ -42,6 +42,11 @@ export interface StatusDetails {
   expected?: string;
 }
 
+export interface GlobalInfo {
+  attachments: Attachment[];
+  errors: StatusDetails[];
+}
+
 // don't use the interface as is, use Results types instead
 interface Executable {
   name?: string;

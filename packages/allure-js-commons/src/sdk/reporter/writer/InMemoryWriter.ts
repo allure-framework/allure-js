@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import type { TestResult, TestResultContainer } from "../../../model.js";
+import type { GlobalInfo, TestResult, TestResultContainer } from "../../../model.js";
 import type { AllureResults, Category, EnvironmentInfo } from "../../types.js";
 import type { Writer } from "../types.js";
 
@@ -9,6 +9,7 @@ export class InMemoryWriter implements Writer, AllureResults {
   public attachments: Record<string, Buffer> = {};
   public categories?: Category[];
   public envInfo?: Record<string, string | undefined>;
+  public globals?: Record<string, GlobalInfo>;
 
   public writeGroup(result: TestResultContainer): void {
     this.groups.push(result);
@@ -32,5 +33,10 @@ export class InMemoryWriter implements Writer, AllureResults {
 
   public writeEnvironmentInfo(envInfo: EnvironmentInfo): void {
     this.envInfo = envInfo;
+  }
+
+  public writeGlobalInfo(distFileName: string, info: GlobalInfo): void {
+    this.globals = this.globals ?? {};
+    this.globals[distFileName] = info;
   }
 }

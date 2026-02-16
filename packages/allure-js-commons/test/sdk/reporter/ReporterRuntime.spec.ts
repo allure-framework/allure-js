@@ -789,6 +789,143 @@ describe("ReporterRuntime", () => {
     });
   });
 
+  describe("global info", () => {
+    it("should ignore rootless non-global runtime messages and keep global ones", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      runtime.applyRuntimeMessages(undefined, [
+        {
+          type: "attachment_content",
+          data: {
+            name: "test-only",
+            content: Buffer.from("should-be-ignored", "utf-8").toString("base64"),
+            encoding: "base64",
+            contentType: "text/plain",
+          },
+        },
+        {
+          type: "global_attachment_content",
+          data: {
+            name: "global-log",
+            content: Buffer.from("hello", "utf-8").toString("base64"),
+            encoding: "base64",
+            contentType: "text/plain",
+          },
+        },
+        {
+          type: "global_error",
+          data: {
+            message: "global setup failed",
+            trace: "stack",
+          },
+        },
+      ]);
+      runtime.writeGlobalInfo();
+
+      expect(writer.writeAttachment).toHaveBeenCalledTimes(1);
+      const [[, globals]] = writer.writeGlobalInfo.mock.calls;
+      expect(globals).toEqual({
+        attachments: [expect.objectContaining({ name: "global-log", type: "text/plain" })],
+        errors: [{ message: "global setup failed", trace: "stack" }],
+      });
+    });
+
+    it("should write global attachments and errors", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      runtime.applyRuntimeMessages(undefined, [
+        {
+          type: "global_attachment_content",
+          data: {
+            name: "setup-log",
+            content: Buffer.from("hello", "utf-8").toString("base64"),
+            encoding: "base64",
+            contentType: "text/plain",
+            fileExtension: ".txt",
+          },
+        },
+        {
+          type: "global_error",
+          data: {
+            message: "setup failed",
+            trace: "stack",
+          },
+        },
+      ]);
+      runtime.writeGlobalInfo();
+
+      expect(writer.writeAttachment).toHaveBeenCalledTimes(1);
+      expect(writer.writeGlobalInfo).toHaveBeenCalledTimes(1);
+
+      const [[attachmentSource, content]] = writer.writeAttachment.mock.calls;
+      expect(attachmentSource).toMatch(/.+\.txt/);
+      expect(content.toString("utf-8")).toBe("hello");
+
+      const [[globalsFileName, globals]] = writer.writeGlobalInfo.mock.calls;
+      expect(globalsFileName).toMatch(/.+-globals\.json/);
+      expect(globals).toEqual({
+        attachments: [
+          {
+            name: "setup-log",
+            source: attachmentSource,
+            type: "text/plain",
+          },
+        ],
+        errors: [
+          {
+            message: "setup failed",
+            trace: "stack",
+          },
+        ],
+      });
+    });
+
+    it("should always write empty globals and only once", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      runtime.writeGlobalInfo();
+      runtime.writeGlobalInfo();
+
+      expect(writer.writeGlobalInfo).toHaveBeenCalledTimes(1);
+      const [[, globals]] = writer.writeGlobalInfo.mock.calls;
+      expect(globals).toEqual({
+        attachments: [],
+        errors: [],
+      });
+    });
+
+    it("should stay idempotent across repeated finish calls after first write", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      runtime.applyRuntimeMessages(undefined, [
+        {
+          type: "global_error",
+          data: {
+            message: "first call",
+          },
+        },
+      ]);
+      runtime.writeGlobalInfo();
+      runtime.applyRuntimeMessages(undefined, [
+        {
+          type: "global_error",
+          data: {
+            message: "second call",
+          },
+        },
+      ]);
+      runtime.writeGlobalInfo();
+
+      expect(writer.writeGlobalInfo).toHaveBeenCalledTimes(1);
+      const [[, globals]] = writer.writeGlobalInfo.mock.calls;
+      expect(globals.errors).toEqual([{ message: "first call" }]);
+    });
+  });
+
   describe("ShallowStepsStack", () => {
     it("should start and stop single step", () => {
       const stack = new ShallowStepsStack();

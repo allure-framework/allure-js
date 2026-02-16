@@ -1,5 +1,5 @@
 import { type Mocked, vi } from "vitest";
-import type { TestResult, TestResultContainer } from "../../src/index.js";
+import type { GlobalInfo, TestResult, TestResultContainer } from "../../src/index.js";
 import type { Category, EnvironmentInfo } from "../../src/sdk/index.js";
 import type { Writer } from "../../src/sdk/reporter/index.js";
 
@@ -10,4 +10,5 @@ export const mockWriter = (): Mocked<Writer> => ({
   writeAttachment: vi.fn<[string, Buffer], void>(),
   writeEnvironmentInfo: vi.fn<[EnvironmentInfo], void>(),
   writeCategoriesDefinitions: vi.fn<[Category[]], void>(),
+  writeGlobalInfo: vi.fn<[string, GlobalInfo], void>(),
 });

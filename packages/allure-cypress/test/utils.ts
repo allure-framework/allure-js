@@ -35,6 +35,7 @@ export const runCypressInlineTest = async (
     tests: [],
     groups: [],
     attachments: {},
+    globals: {},
     categories: [],
     envInfo: undefined,
     timestamps: new Map(),
@@ -198,6 +199,14 @@ export const runCypressInlineTest = async (
                   const testResultContainer = JSON.parse(await readFile(fullPath, "utf8")) as TestResultContainer;
                   await attachment(resultFile, JSON.stringify(testResultContainer, undefined, 2), ContentType.JSON);
                   res.groups.push(testResultContainer);
+                  continue;
+                }
+
+                if (/-globals\.json$/.test(resultFile)) {
+                  const globalInfo = JSON.parse(await readFile(fullPath, "utf8"));
+                  await attachment(resultFile, JSON.stringify(globalInfo, undefined, 2), ContentType.JSON);
+                  res.globals ??= {};
+                  res.globals[resultFile] = globalInfo;
                   continue;
                 }
 

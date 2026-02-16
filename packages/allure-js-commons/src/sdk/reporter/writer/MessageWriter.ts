@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import type { EventEmitter } from "node:events";
 import process from "process";
-import type { TestResult, TestResultContainer } from "../../../model.js";
+import type { GlobalInfo, TestResult, TestResultContainer } from "../../../model.js";
 import type { Category, EnvironmentInfo } from "../../types.js";
 import type { Writer } from "../types.js";
 import { stringifyEnvInfo } from "../utils/envInfo.js";
@@ -50,5 +50,9 @@ export class MessageWriter implements Writer {
 
   writeResult(result: TestResult): void {
     this.writeJson(`${result.uuid}-result.json`, "result", result);
+  }
+
+  writeGlobalInfo(distFileName: string, info: GlobalInfo): void {
+    this.writeJson(distFileName, "misc", info);
   }
 }

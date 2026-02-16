@@ -1,4 +1,4 @@
-import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions } from "allure-js-commons";
+import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions, StatusDetails } from "allure-js-commons";
 import { Status } from "allure-js-commons";
 import { getMessageAndTraceFromError } from "allure-js-commons/sdk";
 import type { TestRuntime } from "allure-js-commons/sdk/runtime";
@@ -11,6 +11,11 @@ import { uint8ArrayToBase64 } from "./utils.js";
 export const initTestRuntime = () => setGlobalTestRuntime(new AllureCypressTestRuntime() as TestRuntime);
 
 export const getTestRuntime = () => getGlobalTestRuntime() as AllureCypressTestRuntime;
+
+type SerializedBuffer = {
+  type: "Buffer";
+  data: number[];
+};
 
 class AllureCypressTestRuntime implements TestRuntime {
   constructor() {
@@ -95,12 +100,10 @@ class AllureCypressTestRuntime implements TestRuntime {
     });
   }
 
-  // @ts-ignore
-  attachment(name: string, content: string, options: AttachmentOptions) {
-    // @ts-ignore
-    const attachmentRawContent: string | Uint8Array = content?.type === "Buffer" ? content.data : content;
-    const actualEncoding = typeof attachmentRawContent === "string" ? "utf8" : "base64";
-    const attachmentContent = uint8ArrayToBase64(attachmentRawContent);
+  attachment(name: string, content: Buffer | string, options: AttachmentOptions) {
+    const [attachmentContent, actualEncoding] = this.#buildAttachmentContent(
+      content as Buffer | string | SerializedBuffer,
+    );
 
     return this.#enqueueMessageAsync({
       type: "attachment_content",
@@ -123,6 +126,30 @@ class AllureCypressTestRuntime implements TestRuntime {
         contentType: options.contentType,
         fileExtension: options.fileExtension,
       },
+    });
+  }
+
+  globalAttachment(name: string, content: Buffer | string, options: AttachmentOptions) {
+    const [attachmentContent, actualEncoding] = this.#buildAttachmentContent(
+      content as Buffer | string | SerializedBuffer,
+    );
+
+    return this.#enqueueMessageAsync({
+      type: "global_attachment_content",
+      data: {
+        name,
+        content: attachmentContent,
+        encoding: actualEncoding,
+        contentType: options.contentType,
+        fileExtension: options.fileExtension,
+      },
+    });
+  }
+
+  globalError(details: StatusDetails) {
+    return this.#enqueueMessageAsync({
+      type: "global_error",
+      data: details,
     });
   }
 
@@ -208,6 +235,34 @@ class AllureCypressTestRuntime implements TestRuntime {
     const messages = getRuntimeMessages();
     this.#resetMessages();
     return messages;
+  }
+
+  #buildAttachmentContent(content: Buffer | string | SerializedBuffer): [string, BufferEncoding] {
+    const rawContent = this.#normalizeAttachmentContent(content);
+    const encoding: BufferEncoding = typeof rawContent === "string" ? "utf8" : "base64";
+
+    return [uint8ArrayToBase64(rawContent), encoding];
+  }
+
+  #normalizeAttachmentContent(content: Buffer | string | SerializedBuffer): string | Uint8Array {
+    if (typeof content === "string") {
+      return content;
+    }
+
+    if (this.#isSerializedBuffer(content)) {
+      return new Uint8Array(content.data);
+    }
+
+    return content;
+  }
+
+  #isSerializedBuffer(content: unknown): content is SerializedBuffer {
+    if (!content || typeof content !== "object") {
+      return false;
+    }
+
+    const candidate = content as Partial<SerializedBuffer>;
+    return candidate.type === "Buffer" && Array.isArray(candidate.data);
   }
 
   #isInOriginContext(): boolean {

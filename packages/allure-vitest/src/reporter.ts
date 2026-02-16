@@ -15,11 +15,13 @@ import {
   getSuiteLabels,
   getThreadLabel,
 } from "allure-js-commons/sdk/reporter";
+import { takeGlobalRuntimeMessages } from "./VitestTestRuntime.js";
 import { getTestMetadata } from "./utils.js";
 
 export default class AllureVitestReporter implements Reporter {
   private allureReporterRuntime?: ReporterRuntime;
   private config: ReporterConfig;
+  private globalRuntimeMessages: RuntimeMessage[] = [];
 
   constructor(config: ReporterConfig) {
     this.config = config;
@@ -36,6 +38,7 @@ export default class AllureVitestReporter implements Reporter {
 
     this.allureReporterRuntime.writeCategoriesDefinitions();
     this.allureReporterRuntime.writeEnvironmentInfo();
+    this.globalRuntimeMessages = [];
   }
 
   // eslint-disable-next-line @typescript-eslint/array-type
@@ -50,6 +53,14 @@ export default class AllureVitestReporter implements Reporter {
       // @ts-ignore
       this.handleTask(test.task as unknown as Task);
     }
+
+    const globalMessages = [...this.globalRuntimeMessages, ...takeGlobalRuntimeMessages()];
+
+    if (globalMessages.length) {
+      this.allureReporterRuntime!.applyRuntimeMessages(undefined, globalMessages);
+    }
+    this.allureReporterRuntime!.writeGlobalInfo();
+    this.globalRuntimeMessages = [];
   }
 
   handleTask(task: Task) {
@@ -67,10 +78,12 @@ export default class AllureVitestReporter implements Reporter {
 
     const {
       allureRuntimeMessages = [],
+      allureGlobalRuntimeMessages = [],
       VITEST_POOL_ID,
       allureSkip = false,
     } = task.meta as {
       allureRuntimeMessages: RuntimeMessage[];
+      allureGlobalRuntimeMessages: RuntimeMessage[];
       VITEST_POOL_ID: string;
       allureSkip?: boolean;
     };
@@ -78,6 +91,10 @@ export default class AllureVitestReporter implements Reporter {
     // do not report tests skipped by test plan
     if (allureSkip) {
       return;
+    }
+
+    if (allureGlobalRuntimeMessages.length) {
+      this.globalRuntimeMessages.push(...allureGlobalRuntimeMessages);
     }
 
     const { specPath, fullName, name, suitePath, labels: metadataLabels, links: metadataLinks } = getTestMetadata(task);

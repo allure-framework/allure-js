@@ -1,4 +1,13 @@
-import type { Label, Link, Parameter, Status, StatusDetails, TestResult, TestResultContainer } from "../model.js";
+import type {
+  GlobalInfo,
+  Label,
+  Link,
+  Parameter,
+  Status,
+  StatusDetails,
+  TestResult,
+  TestResultContainer,
+} from "../model.js";
 
 type RuntimeMessageBase<T extends string> = {
   type: T;
@@ -62,13 +71,29 @@ export type RuntimeAttachmentPathMessage = RuntimeMessageBase<"attachment_path">
   };
 };
 
+export type RuntimeGlobalAttachmentContentMessage = RuntimeMessageBase<"global_attachment_content"> & {
+  data: {
+    name: string;
+    content: string;
+    encoding: BufferEncoding;
+    contentType: string;
+    fileExtension?: string;
+  };
+};
+
+export type RuntimeGlobalErrorMessage = RuntimeMessageBase<"global_error"> & {
+  data: StatusDetails;
+};
+
 export type RuntimeMessage =
   | RuntimeMetadataMessage
   | RuntimeStartStepMessage
   | RuntimeStepMetadataMessage
   | RuntimeStopStepMessage
   | RuntimeAttachmentContentMessage
-  | RuntimeAttachmentPathMessage;
+  | RuntimeAttachmentPathMessage
+  | RuntimeGlobalAttachmentContentMessage
+  | RuntimeGlobalErrorMessage;
 
 export interface TestPlanV1Test {
   id?: string | number;
@@ -107,6 +132,7 @@ export interface AllureResults {
   tests: TestResult[];
   groups: TestResultContainer[];
   attachments: Record<string, Buffer | string>;
+  globals?: Record<string, GlobalInfo>;
   envInfo?: EnvironmentInfo;
   categories?: Category[];
 }

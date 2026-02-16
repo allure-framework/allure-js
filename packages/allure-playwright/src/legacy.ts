@@ -1,5 +1,5 @@
 import * as allure from "allure-js-commons";
-import type { Label, Link } from "allure-js-commons";
+import type { Label, Link, StatusDetails } from "allure-js-commons";
 
 /**
  * @deprecated please use api exported by "allure-js-commons" instead.
@@ -21,6 +21,8 @@ export interface AllurePlaywrightLegacyApi {
   allureId: (id: string) => Promise<void>;
   displayName: (name: string) => Promise<void>;
   attachment: (name: string, content: Buffer | string, type: string) => Promise<void>;
+  globalAttachment: (name: string, content: Buffer | string, type: string) => Promise<void>;
+  globalError: (details: StatusDetails) => Promise<void>;
   issue: (name: string, url: string) => Promise<void>;
   tms: (name: string, url: string) => Promise<void>;
   epic: (name: string) => Promise<void>;
@@ -89,6 +91,9 @@ export const allurePlaywrightLegacyApi: AllurePlaywrightLegacyApi = {
    * @deprecated please use import { attachment } from "allure-js-commons" instead.
    */
   attachment: (name, content, type) => Promise.resolve(allure.attachment(name, content, { contentType: type })),
+  globalAttachment: (name, content, type) =>
+    Promise.resolve(allure.globalAttachment(name, content, { contentType: type })),
+  globalError: (details) => Promise.resolve(allure.globalError(details)),
   /**
    * @deprecated please use import { issue } from "allure-js-commons" instead.
    */

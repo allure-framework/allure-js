@@ -5,8 +5,10 @@ import {
   type Attachment,
   type AttachmentOptions,
   type FixtureResult,
+  type GlobalInfo,
   type Label,
   Stage,
+  type StatusDetails,
   type StepResult,
   type TestResult,
 } from "../../model.js";
@@ -15,6 +17,8 @@ import type {
   EnvironmentInfo,
   RuntimeAttachmentContentMessage,
   RuntimeAttachmentPathMessage,
+  RuntimeGlobalAttachmentContentMessage,
+  RuntimeGlobalErrorMessage,
   RuntimeMessage,
   RuntimeMetadataMessage,
   RuntimeStartStepMessage,
@@ -207,6 +211,9 @@ export class ReporterRuntime {
   environmentInfo?: EnvironmentInfo;
   linkConfig?: LinkConfig;
   globalLabels: Label[] = [];
+  globalAttachments: Attachment[] = [];
+  globalErrors: StatusDetails[] = [];
+  #isGlobalInfoWritten = false;
 
   constructor({
     writer,
@@ -504,23 +511,11 @@ export class ReporterRuntime {
     }
 
     const isPath = typeof attachmentContentOrPath === "string";
-    const fileExtension = options.fileExtension ?? (isPath ? extname(attachmentContentOrPath) : undefined);
-    const attachmentFileName = buildAttachmentFileName({
-      contentType: options.contentType,
-      fileExtension,
+    const attachmentFileName = this.#writeAttachmentFile(attachmentContentOrPath, {
+      ...options,
+      fileExtension: options.fileExtension ?? (isPath ? extname(attachmentContentOrPath) : undefined),
     });
-
-    if (isPath) {
-      this.writer.writeAttachmentFromPath(attachmentFileName, attachmentContentOrPath);
-    } else {
-      this.writer.writeAttachment(attachmentFileName, attachmentContentOrPath);
-    }
-
-    const attachment: Attachment = {
-      name: attachmentName,
-      source: attachmentFileName,
-      type: options.contentType,
-    };
+    const attachment = this.#createAttachment(attachmentName, options.contentType, attachmentFileName);
 
     if (options.wrapInStep) {
       const { timestamp = Date.now() } = options;
@@ -563,26 +558,70 @@ export class ReporterRuntime {
     this.writer.writeCategoriesDefinitions(serializedCategories);
   };
 
-  applyRuntimeMessages = (rootUuid: string, messages: RuntimeMessage[]) => {
+  writeGlobalInfo = () => {
+    if (this.#isGlobalInfoWritten) {
+      return;
+    }
+
+    const globalInfo: GlobalInfo = {
+      attachments: [...this.globalAttachments],
+      errors: [...this.globalErrors],
+    };
+
+    this.writer.writeGlobalInfo(`${randomUuid()}-globals.json`, globalInfo);
+    this.#isGlobalInfoWritten = true;
+  };
+
+  applyRuntimeMessages = (rootUuid: string | undefined, messages: RuntimeMessage[]) => {
     messages.forEach((message) => {
       switch (message.type) {
         case "metadata":
+          if (!rootUuid) {
+            this.#onMissingRootMessage(message);
+            return;
+          }
           this.#handleMetadataMessage(rootUuid, message.data);
           return;
         case "step_metadata":
+          if (!rootUuid) {
+            this.#onMissingRootMessage(message);
+            return;
+          }
           this.#handleStepMetadataMessage(rootUuid, message.data);
           return;
         case "step_start":
+          if (!rootUuid) {
+            this.#onMissingRootMessage(message);
+            return;
+          }
           this.#handleStartStepMessage(rootUuid, message.data);
           return;
         case "step_stop":
+          if (!rootUuid) {
+            this.#onMissingRootMessage(message);
+            return;
+          }
           this.#handleStopStepMessage(rootUuid, message.data);
           return;
         case "attachment_content":
+          if (!rootUuid) {
+            this.#onMissingRootMessage(message);
+            return;
+          }
           this.#handleAttachmentContentMessage(rootUuid, message.data);
           return;
         case "attachment_path":
+          if (!rootUuid) {
+            this.#onMissingRootMessage(message);
+            return;
+          }
           this.#handleAttachmentPathMessage(rootUuid, message.data);
+          return;
+        case "global_attachment_content":
+          this.#handleGlobalAttachmentContentMessage(message.data);
+          return;
+        case "global_error":
+          this.#handleGlobalErrorMessage(message.data);
           return;
         default:
           // eslint-disable-next-line no-console
@@ -732,6 +771,20 @@ export class ReporterRuntime {
     });
   };
 
+  #handleGlobalAttachmentContentMessage = (message: RuntimeGlobalAttachmentContentMessage["data"]) => {
+    const attachmentContent = Buffer.from(message.content, message.encoding);
+    const attachmentSource = this.#writeAttachmentFile(attachmentContent, {
+      contentType: message.contentType,
+      fileExtension: message.fileExtension,
+    });
+
+    this.globalAttachments.push(this.#createAttachment(message.name, message.contentType, attachmentSource));
+  };
+
+  #handleGlobalErrorMessage = (message: RuntimeGlobalErrorMessage["data"]) => {
+    this.globalErrors.push({ ...message });
+  };
+
   #findParent = (
     rootUuid: string,
     parentStepUuid: string | null | undefined,
@@ -749,6 +802,36 @@ export class ReporterRuntime {
     } else {
       return this.state.getStepResult(parentStepUuid);
     }
+  };
+
+  #writeAttachmentFile = (
+    attachmentContentOrPath: Buffer | string,
+    options: Pick<AttachmentOptions, "contentType" | "fileExtension">,
+  ) => {
+    const isPath = typeof attachmentContentOrPath === "string";
+    const attachmentFileName = buildAttachmentFileName({
+      contentType: options.contentType,
+      fileExtension: options.fileExtension,
+    });
+
+    if (isPath) {
+      this.writer.writeAttachmentFromPath(attachmentFileName, attachmentContentOrPath);
+    } else {
+      this.writer.writeAttachment(attachmentFileName, attachmentContentOrPath);
+    }
+
+    return attachmentFileName;
+  };
+
+  #createAttachment = (name: string, contentType: string, source: string): Attachment => ({
+    name,
+    source,
+    type: contentType,
+  });
+
+  #onMissingRootMessage = (message: RuntimeMessage) => {
+    // eslint-disable-next-line no-console
+    console.error(`could not apply runtime message: no root uuid is provided for message type "${message.type}"`);
   };
 
   #writeFixturesOfScope = ({ fixtures, tests }: TestScope) => {

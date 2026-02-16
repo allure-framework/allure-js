@@ -7,6 +7,7 @@ import {
   type ParameterMode,
   type ParameterOptions,
   Status,
+  type StatusDetails,
 } from "../../model.js";
 import type { RuntimeMessage } from "../types.js";
 import { getMessageAndTraceFromError, getStatusFromError } from "../utils.js";
@@ -136,6 +137,27 @@ export abstract class MessageTestRuntime implements TestRuntime {
         wrapInStep: true,
         timestamp: Date.now(),
       },
+    });
+  }
+
+  async globalAttachment(name: string, content: Buffer | string, options: AttachmentOptions) {
+    const bufferContent = typeof content === "string" ? Buffer.from(content, options.encoding) : content;
+    await this.sendMessage({
+      type: "global_attachment_content",
+      data: {
+        name,
+        content: bufferContent.toString("base64"),
+        encoding: "base64",
+        contentType: options.contentType,
+        fileExtension: options.fileExtension,
+      },
+    });
+  }
+
+  async globalError(details: StatusDetails) {
+    await this.sendMessage({
+      type: "global_error",
+      data: details,
     });
   }
 
