@@ -9656,7 +9656,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/assertion-error-formatter-npm-3.0.0-13cc1330f6-b7afe82546.zip/node_modules/assertion-error-formatter/",\
         "packageDependencies": [\
           ["assertion-error-formatter", "npm:3.0.0"],\
-          ["diff", "npm:4.0.2"],\
+          ["diff", "npm:4.0.4"],\
           ["pad-right", "npm:0.2.2"],\
           ["repeat-string", "npm:1.6.1"]\
         ],\
@@ -12077,10 +12077,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["diff", [\
-      ["npm:4.0.2", {\
-        "packageLocation": "./.yarn/cache/diff-npm-4.0.2-73133c7102-ec09ec2101.zip/node_modules/diff/",\
+      ["npm:4.0.4", {\
+        "packageLocation": "./.yarn/cache/diff-npm-4.0.4-e9ea573423-5019b3f5ae.zip/node_modules/diff/",\
         "packageDependencies": [\
-          ["diff", "npm:4.0.2"]\
+          ["diff", "npm:4.0.4"]\
         ],\
         "linkType": "HARD"\
       }],\
