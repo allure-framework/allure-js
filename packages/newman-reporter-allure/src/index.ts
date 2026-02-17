@@ -12,10 +12,10 @@ import {
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
-  getLegacyTestCaseIdFromFullName,
   getProjectName,
   getSuiteLabels,
   getThreadLabel,
+  md5,
 } from "allure-js-commons/sdk/reporter";
 import type { PmItem, RunningItem } from "./model.js";
 import { extractMeta } from "./utils.js";
@@ -112,7 +112,7 @@ class AllureReporter {
         getFrameworkLabel("newman"),
         hostLabel,
         threadLabel,
-        getFallbackTestCaseIdLabel(getLegacyTestCaseIdFromFullName(legacyFullName)),
+        getFallbackTestCaseIdLabel(md5(legacyFullName)),
         ...labels,
         ...getEnvironmentLabels(),
       ],

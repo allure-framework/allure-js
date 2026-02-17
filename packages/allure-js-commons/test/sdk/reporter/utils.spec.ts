@@ -60,12 +60,12 @@ describe("getSuiteLabels", () => {
 
 describe("getProjectName", () => {
   it("should cache the project name on subsequent calls", async () => {
-    const originalCwd = process.cwd();
     const tempDir = fs.mkdtempSync(path.join(tmpdir(), "allure-js-commons-project-name-"));
+    const cwdSpy = vi.spyOn(process, "cwd");
 
     try {
       fs.writeFileSync(path.join(tempDir, "package.json"), JSON.stringify({ name: "first-name" }), "utf8");
-      process.chdir(tempDir);
+      cwdSpy.mockReturnValue(tempDir);
       vi.resetModules();
       const { getProjectName: getProjectNameFresh } = await import("../../../src/sdk/reporter/utils.js");
 
@@ -74,7 +74,7 @@ describe("getProjectName", () => {
       fs.writeFileSync(path.join(tempDir, "package.json"), JSON.stringify({ name: "second-name" }), "utf8");
       expect(getProjectNameFresh()).toBe("first-name");
     } finally {
-      process.chdir(originalCwd);
+      cwdSpy.mockRestore();
       fs.rmSync(tempDir, { recursive: true, force: true });
     }
   });

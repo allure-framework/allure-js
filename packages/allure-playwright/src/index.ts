@@ -174,12 +174,16 @@ export class AllureReporter implements ReporterV2 {
     const projectName = getProjectName();
     const relativeFileForId = getPosixPath(getRelativePath(test.location.file));
     // root > project > file path > test.describe...
+    const [, projectSuiteTitle] = suite.titlePath();
     const [, , , ...suiteTitles] = suite.titlePath();
     const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
     const fullNameBaseForId = projectName ? `${projectName}:${relativeFileForId}` : relativeFileForId;
     const testCaseIdBase = `${fullNameBaseForId}#${nameSuites}${test.title}`;
     const legacyTestCaseIdBase = `${relativeFilePosix}#${nameSuites}${test.title}`;
     const legacyTestCaseId = md5(legacyTestCaseIdBase);
+    const titlePath = projectSuiteTitle
+      ? [projectSuiteTitle, ...relativeFileParts, ...suiteTitles]
+      : relativeFileParts.concat(...suiteTitles);
     const result: Partial<TestResult> = {
       name: titleMetadata.cleanTitle,
       labels: [...titleMetadata.labels, ...getEnvironmentLabels()],
@@ -188,7 +192,7 @@ export class AllureReporter implements ReporterV2 {
       steps: [],
       testCaseId: md5(testCaseIdBase),
       fullName: `${relativeFilePosix}:${test.location.line}:${test.location.column}`,
-      titlePath: relativeFileParts.concat(...suiteTitles),
+      titlePath,
     };
 
     result.labels!.push(getLanguageLabel());
