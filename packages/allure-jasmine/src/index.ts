@@ -11,11 +11,11 @@ import {
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
-  getLegacyTestCaseIdFromFullName,
   getPackageLabel,
   getSuiteLabels,
   getThreadLabel,
   hasSkipLabel,
+  md5,
 } from "allure-js-commons/sdk/reporter";
 import { MessageTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 
@@ -134,7 +134,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
     if (!hasSkipLabel(labels)) {
       if (legacyFullName) {
-        labels.push(getFallbackTestCaseIdLabel(getLegacyTestCaseIdFromFullName(legacyFullName)));
+        labels.push(getFallbackTestCaseIdLabel(md5(legacyFullName)));
       }
       this.#startScope();
       this.currentAllureTestUuid = this.allureRuntime.startTest(

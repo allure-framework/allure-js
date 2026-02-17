@@ -24,14 +24,14 @@ describe("monorepo scenario", () => {
 
       cwdSpy.mockReturnValue(package1Dir);
       vi.resetModules();
-      const { getProjectName, getRelativePath } = await import("../../../../src/sdk/reporter/utils.js");
+      const { getProjectName, getRelativePath } = await import("../../../src/sdk/reporter/utils.js");
       const projectName1 = getProjectName();
       const path1 = getRelativePath(absoluteFile1);
 
       cwdSpy.mockReturnValue(package2Dir);
       vi.resetModules();
       const { getProjectName: getProjectName2, getRelativePath: getRelativePath2 } = await import(
-        "../../../../src/sdk/reporter/utils.js"
+        "../../../src/sdk/reporter/utils.js"
       );
       const projectName2 = getProjectName2();
       const path2 = getRelativePath2(absoluteFile2);

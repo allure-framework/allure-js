@@ -26,8 +26,6 @@ export const getFallbackTestCaseIdLabel = (value: string): Label => ({
   value,
 });
 
-export const getLegacyTestCaseIdFromFullName = (fullName: string): string => md5(fullName);
-
 export const getTestResultHistoryId = (result: TestResult) => {
   if (result.historyId) {
     return result.historyId;

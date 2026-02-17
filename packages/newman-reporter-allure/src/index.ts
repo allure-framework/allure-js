@@ -11,10 +11,10 @@ import {
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
-  getLegacyTestCaseIdFromFullName,
   getProjectName,
   getSuiteLabels,
   getThreadLabel,
+  md5,
 } from "allure-js-commons/sdk/reporter";
 import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
 import type { CollectionDefinition, Event, HeaderList, Item, Request, Response } from "postman-collection";
@@ -114,7 +114,7 @@ class AllureReporter {
         getFrameworkLabel("newman"),
         hostLabel,
         threadLabel,
-        getFallbackTestCaseIdLabel(getLegacyTestCaseIdFromFullName(legacyFullName)),
+        getFallbackTestCaseIdLabel(md5(legacyFullName)),
         ...labels,
         ...getEnvironmentLabels(),
       ],

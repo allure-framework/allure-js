@@ -9,7 +9,6 @@ import {
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
-  getLegacyTestCaseIdFromFullName,
   getPackageLabel,
   getPosixPath,
   getProjectName,
@@ -17,6 +16,7 @@ import {
   getRelativePath,
   getSuiteLabels,
   getThreadLabel,
+  md5,
   parseTestPlan,
 } from "allure-js-commons/sdk/reporter";
 import type Cypress from "cypress";
@@ -328,7 +328,7 @@ export class AllureCypress {
           getHostLabel(),
           getThreadLabel(),
           getPackageLabel(context.specPath),
-          getFallbackTestCaseIdLabel(getLegacyTestCaseIdFromFullName(legacyFullName)),
+          getFallbackTestCaseIdLabel(md5(legacyFullName)),
         ],
         fullName: `${fullNameBase}#${fullNameSuffix}`,
         titlePath: projectName ? [projectName, ...titlePath] : titlePath,

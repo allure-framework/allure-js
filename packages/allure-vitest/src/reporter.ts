@@ -10,10 +10,10 @@ import {
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
-  getLegacyTestCaseIdFromFullName,
   getPackageLabel,
   getSuiteLabels,
   getThreadLabel,
+  md5,
 } from "allure-js-commons/sdk/reporter";
 import type { RunnerTask as Task } from "vitest";
 import type { TestModule } from "vitest/node";
@@ -132,7 +132,7 @@ export default class AllureVitestReporter implements Reporter {
       result.labels.push(...getEnvironmentLabels());
       result.labels.push(getHostLabel());
       result.labels.push(getThreadLabel(vitestWorker && `vitest-worker-${vitestWorker}`));
-      result.labels.push(getFallbackTestCaseIdLabel(getLegacyTestCaseIdFromFullName(legacyFullName)));
+      result.labels.push(getFallbackTestCaseIdLabel(md5(legacyFullName)));
       result.links.push(...metadataLinks);
 
       if (browser) {

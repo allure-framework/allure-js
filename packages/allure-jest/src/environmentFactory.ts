@@ -20,13 +20,13 @@ import {
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
-  getLegacyTestCaseIdFromFullName,
   getPackageLabel,
   getPosixPath,
   getProjectName,
   getSuiteLabels,
   getThreadLabel,
   includedInTestPlan,
+  md5,
   parseTestPlan,
 } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
@@ -251,7 +251,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
             getLanguageLabel(),
             getFrameworkLabel("jest"),
             getPackageLabel(this.testPath),
-            getFallbackTestCaseIdLabel(getLegacyTestCaseIdFromFullName(legacyFullName)),
+            getFallbackTestCaseIdLabel(md5(legacyFullName)),
             getHostLabel(),
             getThreadLabel(env.JEST_WORKER_ID),
             ...getEnvironmentLabels(),
