@@ -85,6 +85,15 @@ export const globalAttachment = (
   return callRuntimeMethod("globalAttachment", name, content, opts);
 };
 
+export const globalAttachmentPath = (
+  name: string,
+  path: string,
+  options: ContentType | string | Omit<AttachmentOptions, "encoding">,
+) => {
+  const opts = typeof options === "string" ? { contentType: options } : options;
+  return callRuntimeMethod("globalAttachmentFromPath", name, path, opts);
+};
+
 export const globalError = (details: StatusDetails) => {
   return callRuntimeMethod("globalError", details);
 };

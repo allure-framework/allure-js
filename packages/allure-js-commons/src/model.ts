@@ -42,7 +42,7 @@ export interface StatusDetails {
   expected?: string;
 }
 
-export interface GlobalInfo {
+export interface Globals {
   attachments: Attachment[];
   errors: StatusDetails[];
 }

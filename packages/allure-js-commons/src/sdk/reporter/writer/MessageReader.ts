@@ -28,6 +28,10 @@ export class MessageReader {
       case "attachment":
         this.results.attachments[path] = data;
         return;
+      case "globals":
+        this.results.globals = this.results.globals ?? {};
+        this.results.globals[path] = parseJsonResult(data);
+        return;
       case "misc":
         switch (path) {
           case "environment.properties":
@@ -37,10 +41,6 @@ export class MessageReader {
             this.results.categories = parseJsonResult(data);
             break;
           default:
-            if (path.endsWith("-globals.json")) {
-              this.results.globals = this.results.globals ?? {};
-              this.results.globals[path] = parseJsonResult(data);
-            }
             break;
         }
         return;

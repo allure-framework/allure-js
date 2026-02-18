@@ -1,5 +1,5 @@
 import { type Mocked, describe, expect, it, vi } from "vitest";
-import { globalAttachment, globalError, logStep } from "../src/facade.js";
+import { globalAttachment, globalAttachmentPath, globalError, logStep } from "../src/facade.js";
 import { Status } from "../src/model.js";
 import { type TestRuntime } from "../src/sdk/runtime/index.js";
 
@@ -11,6 +11,7 @@ const mockRuntime = (): Mocked<TestRuntime> => {
     descriptionHtml: vi.fn(),
     displayName: vi.fn(),
     globalAttachment: vi.fn(),
+    globalAttachmentFromPath: vi.fn(),
     globalError: vi.fn(),
     historyId: vi.fn(),
     labels: vi.fn(),
@@ -89,5 +90,16 @@ describe("global runtime methods", () => {
     await globalError({ message: "boom", trace: "stack" });
 
     expect(runtime.globalError).toHaveBeenCalledWith({ message: "boom", trace: "stack" });
+  });
+
+  it("should add global attachment from path", async () => {
+    const runtime = mockRuntime();
+    vi.stubGlobal("allureTestRuntime", () => runtime);
+
+    await globalAttachmentPath("setup.log", "/tmp/setup.log", "text/plain");
+
+    expect(runtime.globalAttachmentFromPath).toHaveBeenCalledWith("setup.log", "/tmp/setup.log", {
+      contentType: "text/plain",
+    });
   });
 });

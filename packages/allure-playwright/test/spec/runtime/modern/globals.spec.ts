@@ -34,3 +34,22 @@ it("writes globals payload from runtime API calls", async () => {
   const encodedAttachment = attachments[globalAttachmentRef.source] as string;
   expect(Buffer.from(encodedAttachment, "base64").toString("utf-8")).toBe("hello");
 });
+
+it("does not collect globals from setup-only file without tests", async () => {
+  const { globals } = await runPlaywrightInlineTest({
+    "sample.test.js": `
+      import { writeFileSync } from "node:fs";
+      import { join } from "node:path";
+      import { globalAttachment, globalAttachmentPath, globalError } from "allure-js-commons";
+
+      const filePath = join(process.cwd(), "setup-only.log");
+      writeFileSync(filePath, "from-path", "utf8");
+
+      void globalAttachment("setup-inline-log", "from-inline", { contentType: "text/plain" });
+      void globalAttachmentPath("setup-file-log", filePath, { contentType: "text/plain" });
+      void globalError({ message: "setup-only error", trace: "setup stack" });
+    `,
+  });
+
+  expect(Object.keys(globals ?? {})).toHaveLength(0);
+});

@@ -97,7 +97,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
 
     const globalMessages = message.filter(isGlobalRuntimeMessage);
     if (globalMessages.length) {
-      this.runtime.applyRuntimeMessages(undefined, globalMessages);
+      this.runtime.applyGlobalRuntimeMessages(globalMessages);
     }
   };
 
@@ -140,7 +140,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   override done(failures: number, fn?: ((failures: number) => void) | undefined) {
     this.runtime.writeEnvironmentInfo();
     this.runtime.writeCategoriesDefinitions();
-    this.runtime.writeGlobalInfo();
+    this.runtime.writeGlobals();
     doneAll(this.#extraReporters, failures, fn);
   }
 
@@ -173,7 +173,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       this.runtime.writeScope(scopeUuid);
     }
     if (this.isInWorker && !suite.parent) {
-      this.runtime.writeGlobalInfo();
+      this.runtime.writeGlobals();
     }
   };
 

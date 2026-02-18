@@ -5,7 +5,7 @@ import {
   type Attachment,
   type AttachmentOptions,
   type FixtureResult,
-  type GlobalInfo,
+  type Globals,
   type Label,
   Stage,
   type StatusDetails,
@@ -18,6 +18,7 @@ import type {
   RuntimeAttachmentContentMessage,
   RuntimeAttachmentPathMessage,
   RuntimeGlobalAttachmentContentMessage,
+  RuntimeGlobalAttachmentPathMessage,
   RuntimeGlobalErrorMessage,
   RuntimeMessage,
   RuntimeMetadataMessage,
@@ -213,7 +214,6 @@ export class ReporterRuntime {
   globalLabels: Label[] = [];
   globalAttachments: Attachment[] = [];
   globalErrors: StatusDetails[] = [];
-  #isGlobalInfoWritten = false;
 
   constructor({
     writer,
@@ -558,67 +558,45 @@ export class ReporterRuntime {
     this.writer.writeCategoriesDefinitions(serializedCategories);
   };
 
-  writeGlobalInfo = () => {
-    if (this.#isGlobalInfoWritten) {
-      return;
-    }
-
-    const globalInfo: GlobalInfo = {
+  writeGlobals = () => {
+    const globals: Globals = {
       attachments: [...this.globalAttachments],
       errors: [...this.globalErrors],
     };
 
-    this.writer.writeGlobalInfo(`${randomUuid()}-globals.json`, globalInfo);
-    this.#isGlobalInfoWritten = true;
+    if (!globals.attachments.length && !globals.errors.length) {
+      return;
+    }
+
+    this.#writeGlobals(`${randomUuid()}-globals.json`, globals);
   };
 
-  applyRuntimeMessages = (rootUuid: string | undefined, messages: RuntimeMessage[]) => {
+  applyRuntimeMessages = (rootUuid: string, messages: RuntimeMessage[]) => {
     messages.forEach((message) => {
       switch (message.type) {
         case "metadata":
-          if (!rootUuid) {
-            this.#onMissingRootMessage(message);
-            return;
-          }
           this.#handleMetadataMessage(rootUuid, message.data);
           return;
         case "step_metadata":
-          if (!rootUuid) {
-            this.#onMissingRootMessage(message);
-            return;
-          }
           this.#handleStepMetadataMessage(rootUuid, message.data);
           return;
         case "step_start":
-          if (!rootUuid) {
-            this.#onMissingRootMessage(message);
-            return;
-          }
           this.#handleStartStepMessage(rootUuid, message.data);
           return;
         case "step_stop":
-          if (!rootUuid) {
-            this.#onMissingRootMessage(message);
-            return;
-          }
           this.#handleStopStepMessage(rootUuid, message.data);
           return;
         case "attachment_content":
-          if (!rootUuid) {
-            this.#onMissingRootMessage(message);
-            return;
-          }
           this.#handleAttachmentContentMessage(rootUuid, message.data);
           return;
         case "attachment_path":
-          if (!rootUuid) {
-            this.#onMissingRootMessage(message);
-            return;
-          }
           this.#handleAttachmentPathMessage(rootUuid, message.data);
           return;
         case "global_attachment_content":
           this.#handleGlobalAttachmentContentMessage(message.data);
+          return;
+        case "global_attachment_path":
+          this.#handleGlobalAttachmentPathMessage(message.data);
           return;
         case "global_error":
           this.#handleGlobalErrorMessage(message.data);
@@ -627,6 +605,24 @@ export class ReporterRuntime {
           // eslint-disable-next-line no-console
           console.error(`could not apply runtime messages: unknown message ${JSON.stringify(message)}`);
           return;
+      }
+    });
+  };
+
+  applyGlobalRuntimeMessages = (messages: RuntimeMessage[]) => {
+    messages.forEach((message) => {
+      switch (message.type) {
+        case "global_attachment_content":
+          this.#handleGlobalAttachmentContentMessage(message.data);
+          break;
+        case "global_attachment_path":
+          this.#handleGlobalAttachmentPathMessage(message.data);
+          break;
+        case "global_error":
+          this.#handleGlobalErrorMessage(message.data);
+          break;
+        default:
+          break;
       }
     });
   };
@@ -781,6 +777,15 @@ export class ReporterRuntime {
     this.globalAttachments.push(this.#createAttachment(message.name, message.contentType, attachmentSource));
   };
 
+  #handleGlobalAttachmentPathMessage = (message: RuntimeGlobalAttachmentPathMessage["data"]) => {
+    const attachmentSource = this.#writeAttachmentFile(message.path, {
+      contentType: message.contentType,
+      fileExtension: message.fileExtension ?? extname(message.path),
+    });
+
+    this.globalAttachments.push(this.#createAttachment(message.name, message.contentType, attachmentSource));
+  };
+
   #handleGlobalErrorMessage = (message: RuntimeGlobalErrorMessage["data"]) => {
     this.globalErrors.push({ ...message });
   };
@@ -829,9 +834,8 @@ export class ReporterRuntime {
     type: contentType,
   });
 
-  #onMissingRootMessage = (message: RuntimeMessage) => {
-    // eslint-disable-next-line no-console
-    console.error(`could not apply runtime message: no root uuid is provided for message type "${message.type}"`);
+  #writeGlobals = (distFileName: string, globals: Globals): void => {
+    this.writer.writeGlobals(distFileName, globals);
   };
 
   #writeFixturesOfScope = ({ fixtures, tests }: TestScope) => {

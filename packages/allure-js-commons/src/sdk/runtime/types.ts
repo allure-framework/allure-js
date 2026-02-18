@@ -29,6 +29,12 @@ export interface TestRuntime {
 
   globalAttachment: (name: string, content: Buffer | string, options: AttachmentOptions) => PromiseLike<void>;
 
+  globalAttachmentFromPath: (
+    name: string,
+    path: string,
+    options: Omit<AttachmentOptions, "encoding">,
+  ) => PromiseLike<void>;
+
   globalError: (details: StatusDetails) => PromiseLike<void>;
 
   attachmentFromPath: (name: string, path: string, options: Omit<AttachmentOptions, "encoding">) => PromiseLike<void>;

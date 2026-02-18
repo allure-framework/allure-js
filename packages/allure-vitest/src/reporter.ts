@@ -57,9 +57,9 @@ export default class AllureVitestReporter implements Reporter {
     const globalMessages = [...this.globalRuntimeMessages, ...takeGlobalRuntimeMessages()];
 
     if (globalMessages.length) {
-      this.allureReporterRuntime!.applyRuntimeMessages(undefined, globalMessages);
+      this.allureReporterRuntime!.applyGlobalRuntimeMessages(globalMessages);
     }
-    this.allureReporterRuntime!.writeGlobalInfo();
+    this.allureReporterRuntime!.writeGlobals();
     this.globalRuntimeMessages = [];
   }
 

@@ -574,13 +574,13 @@ export default class AllureCucumberReporter extends Formatter {
       return;
     }
 
-    this.allureRuntime.applyRuntimeMessages(undefined, globalMessages);
+    this.allureRuntime.applyGlobalRuntimeMessages(globalMessages);
   }
 
   private onTestRunFinished() {
     this.allureRuntime.writeCategoriesDefinitions();
     this.allureRuntime.writeEnvironmentInfo();
-    this.allureRuntime.writeGlobalInfo();
+    this.allureRuntime.writeGlobals();
   }
 
   private exceptionToError(message?: string, exception?: messages.Exception): Error | undefined {

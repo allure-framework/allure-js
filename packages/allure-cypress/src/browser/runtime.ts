@@ -146,6 +146,18 @@ class AllureCypressTestRuntime implements TestRuntime {
     });
   }
 
+  globalAttachmentFromPath(name: string, path: string, options: Omit<AttachmentOptions, "encoding">) {
+    return this.#enqueueMessageAsync({
+      type: "global_attachment_path",
+      data: {
+        name,
+        path,
+        contentType: options.contentType,
+        fileExtension: options.fileExtension,
+      },
+    });
+  }
+
   globalError(details: StatusDetails) {
     return this.#enqueueMessageAsync({
       type: "global_error",

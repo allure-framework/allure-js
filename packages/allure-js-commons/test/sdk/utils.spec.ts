@@ -662,6 +662,16 @@ describe("isGlobalRuntimeMessage", () => {
         },
       }),
     ).toBe(true);
+    expect(
+      isGlobalRuntimeMessage({
+        type: "global_attachment_path",
+        data: {
+          name: "global-log",
+          path: "/tmp/global.log",
+          contentType: "text/plain",
+        },
+      }),
+    ).toBe(true);
   });
 
   it("should return false for scoped runtime messages", () => {

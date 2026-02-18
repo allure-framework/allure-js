@@ -79,7 +79,10 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       if (!executableUuid && !isGlobalRuntimeMessage(message)) {
         return;
       }
-
+      if (!executableUuid) {
+        this.runtime.applyGlobalRuntimeMessages([message]);
+        return;
+      }
       this.runtime.applyRuntimeMessages(executableUuid, [message]);
     }
 
@@ -362,7 +365,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     #handleRunFinish() {
       this.runtime.writeEnvironmentInfo();
       this.runtime.writeCategoriesDefinitions();
-      this.runtime.writeGlobalInfo();
+      this.runtime.writeGlobals();
     }
 
     #currentExecutable() {

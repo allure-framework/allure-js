@@ -8,6 +8,7 @@ export type {
   RuntimeAttachmentContentMessage,
   RuntimeAttachmentPathMessage,
   RuntimeGlobalAttachmentContentMessage,
+  RuntimeGlobalAttachmentPathMessage,
   RuntimeGlobalErrorMessage,
   RuntimeStartStepMessage,
   RuntimeStepMetadataMessage,

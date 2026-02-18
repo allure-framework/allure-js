@@ -154,6 +154,18 @@ export abstract class MessageTestRuntime implements TestRuntime {
     });
   }
 
+  async globalAttachmentFromPath(name: string, path: string, options: Omit<AttachmentOptions, "encoding">) {
+    await this.sendMessage({
+      type: "global_attachment_path",
+      data: {
+        name,
+        path,
+        contentType: options.contentType,
+        fileExtension: options.fileExtension,
+      },
+    });
+  }
+
   async globalError(details: StatusDetails) {
     await this.sendMessage({
       type: "global_error",

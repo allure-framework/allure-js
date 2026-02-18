@@ -2,6 +2,7 @@ import type { FixtureResult, Label, Link, StatusDetails, StepResult, TestResult 
 import { LabelName, Status } from "../model.js";
 import type {
   RuntimeGlobalAttachmentContentMessage,
+  RuntimeGlobalAttachmentPathMessage,
   RuntimeGlobalErrorMessage,
   RuntimeMessage,
   SerializeOptions,
@@ -222,8 +223,15 @@ export const hasStepMessage = (messages: RuntimeMessage[]) => {
 
 export const isGlobalRuntimeMessage = (
   message: RuntimeMessage,
-): message is RuntimeGlobalAttachmentContentMessage | RuntimeGlobalErrorMessage => {
-  return message.type === "global_attachment_content" || message.type === "global_error";
+): message is
+  | RuntimeGlobalAttachmentContentMessage
+  | RuntimeGlobalAttachmentPathMessage
+  | RuntimeGlobalErrorMessage => {
+  return (
+    message.type === "global_attachment_content" ||
+    message.type === "global_attachment_path" ||
+    message.type === "global_error"
+  );
 };
 
 export const getStepsMessagesPair = (messages: RuntimeMessage[]) =>

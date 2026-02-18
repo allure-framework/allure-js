@@ -84,6 +84,10 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     if (!rootUuid && !isGlobalRuntimeMessage(message)) {
       return;
     }
+    if (!rootUuid) {
+      this.allureRuntime.applyGlobalRuntimeMessages([message]);
+      return;
+    }
     this.allureRuntime.applyRuntimeMessages(rootUuid, [message]);
   }
 
@@ -204,7 +208,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   jasmineDone(): void {
     this.allureRuntime.writeEnvironmentInfo();
     this.allureRuntime.writeCategoriesDefinitions();
-    this.allureRuntime.writeGlobalInfo();
+    this.allureRuntime.writeGlobals();
     // write global container (or any remaining scopes)
     this.scopesStack.forEach((scopeUuid) => {
       this.allureRuntime.writeScope(scopeUuid);

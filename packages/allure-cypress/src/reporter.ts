@@ -139,7 +139,7 @@ export class AllureCypress {
     this.#endAllSpecs();
     this.allureRuntime.writeEnvironmentInfo();
     this.allureRuntime.writeCategoriesDefinitions();
-    this.allureRuntime.writeGlobalInfo();
+    this.allureRuntime.writeGlobals();
   };
 
   endSpec = (specAbsolutePath: string, cypressVideoPath?: string) => {
@@ -462,6 +462,10 @@ export class AllureCypress {
   #applyRuntimeApiMessages = (context: SpecContext, message: RuntimeMessage) => {
     const rootUuid = this.#resolveRootUuid(context);
     if (!rootUuid && !isGlobalRuntimeMessage(message)) {
+      return;
+    }
+    if (!rootUuid) {
+      this.allureRuntime.applyGlobalRuntimeMessages([message]);
       return;
     }
     this.allureRuntime.applyRuntimeMessages(rootUuid, [message]);

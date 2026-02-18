@@ -6,7 +6,7 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-test("writes empty globals payload", async () => {
+test("does not write globals payload when runtime globals are not used", async () => {
   const collection = {
     info: {
       name: "globals",
@@ -44,12 +44,5 @@ test("writes empty globals payload", async () => {
   const { globals } = await runNewmanCollection(collection);
 
   const globalsEntries = Object.entries(globals ?? {});
-  expect(globalsEntries).toHaveLength(1);
-
-  const [globalsFileName, globalInfo] = globalsEntries[0];
-  expect(globalsFileName).toMatch(/.+-globals\.json/);
-  expect(globalInfo).toEqual({
-    attachments: [],
-    errors: [],
-  });
+  expect(globalsEntries).toHaveLength(0);
 });

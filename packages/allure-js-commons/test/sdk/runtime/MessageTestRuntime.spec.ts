@@ -104,6 +104,24 @@ describe("global methods", () => {
       },
     });
   });
+
+  it("should create global attachment path message", async () => {
+    const messageTestRuntime = implementMessageTestRuntime();
+
+    await messageTestRuntime.globalAttachmentFromPath("global log", "/tmp/global.log", { contentType: "text/plain" });
+
+    expect(messageTestRuntime.sendMessage).toBeCalledTimes(1);
+    const [[message]] = messageTestRuntime.sendMessage.mock.calls;
+    expect(message).toEqual({
+      type: "global_attachment_path",
+      data: {
+        name: "global log",
+        path: "/tmp/global.log",
+        contentType: "text/plain",
+        fileExtension: undefined,
+      },
+    });
+  });
 });
 
 describe("step", () => {

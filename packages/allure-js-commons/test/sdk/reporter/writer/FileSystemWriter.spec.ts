@@ -70,7 +70,7 @@ describe("FileSystemWriter", () => {
     };
     const runtime = new ReporterRuntime(config);
 
-    runtime.applyRuntimeMessages(undefined, [
+    runtime.applyGlobalRuntimeMessages([
       {
         type: "global_attachment_content",
         data: {
@@ -89,7 +89,7 @@ describe("FileSystemWriter", () => {
         },
       },
     ]);
-    runtime.writeGlobalInfo();
+    runtime.writeGlobals();
 
     const resultFiles = readdirSync(allureResults);
     const globalsFile = resultFiles.find((file) => file.endsWith("-globals.json"));
@@ -115,7 +115,7 @@ describe("FileSystemWriter", () => {
     ]);
   });
 
-  it("writes empty globals file", () => {
+  it("does not write globals file when payload is empty", () => {
     const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
     const allureResults = path.join(tmp, "allure-results");
     const config: ReporterRuntimeConfig = {
@@ -125,20 +125,8 @@ describe("FileSystemWriter", () => {
     };
     const runtime = new ReporterRuntime(config);
 
-    runtime.writeGlobalInfo();
+    runtime.writeGlobals();
 
-    const resultFiles = readdirSync(allureResults);
-    const globalsFile = resultFiles.find((file) => file.endsWith("-globals.json"));
-    expect(globalsFile).toBeDefined();
-
-    const globalsContent = JSON.parse(readFileSync(path.join(allureResults, globalsFile!), "utf-8")) as {
-      attachments: unknown[];
-      errors: unknown[];
-    };
-
-    expect(globalsContent).toEqual({
-      attachments: [],
-      errors: [],
-    });
+    expect(existsSync(allureResults)).toBeFalsy();
   });
 });

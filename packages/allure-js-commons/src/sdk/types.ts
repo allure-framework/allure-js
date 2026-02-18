@@ -1,5 +1,5 @@
 import type {
-  GlobalInfo,
+  Globals,
   Label,
   Link,
   Parameter,
@@ -81,6 +81,15 @@ export type RuntimeGlobalAttachmentContentMessage = RuntimeMessageBase<"global_a
   };
 };
 
+export type RuntimeGlobalAttachmentPathMessage = RuntimeMessageBase<"global_attachment_path"> & {
+  data: {
+    name: string;
+    path: string;
+    contentType: string;
+    fileExtension?: string;
+  };
+};
+
 export type RuntimeGlobalErrorMessage = RuntimeMessageBase<"global_error"> & {
   data: StatusDetails;
 };
@@ -93,6 +102,7 @@ export type RuntimeMessage =
   | RuntimeAttachmentContentMessage
   | RuntimeAttachmentPathMessage
   | RuntimeGlobalAttachmentContentMessage
+  | RuntimeGlobalAttachmentPathMessage
   | RuntimeGlobalErrorMessage;
 
 export interface TestPlanV1Test {
@@ -132,7 +142,7 @@ export interface AllureResults {
   tests: TestResult[];
   groups: TestResultContainer[];
   attachments: Record<string, Buffer | string>;
-  globals?: Record<string, GlobalInfo>;
+  globals?: Record<string, Globals>;
   envInfo?: EnvironmentInfo;
   categories?: Category[];
 }

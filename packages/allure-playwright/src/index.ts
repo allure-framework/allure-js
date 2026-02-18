@@ -654,7 +654,7 @@ export class AllureReporter implements ReporterV2 {
 
     this.allureRuntime!.writeEnvironmentInfo();
     this.allureRuntime!.writeCategoriesDefinitions();
-    this.allureRuntime!.writeGlobalInfo();
+    this.allureRuntime!.writeGlobals();
   }
 
   printsToStdio(): boolean {

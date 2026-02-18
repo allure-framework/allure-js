@@ -1,12 +1,12 @@
 import { readFileSync } from "fs";
 import type { EventEmitter } from "node:events";
 import process from "process";
-import type { GlobalInfo, TestResult, TestResultContainer } from "../../../model.js";
+import type { Globals, TestResult, TestResultContainer } from "../../../model.js";
 import type { Category, EnvironmentInfo } from "../../types.js";
 import type { Writer } from "../types.js";
 import { stringifyEnvInfo } from "../utils/envInfo.js";
 
-type EventType = "result" | "container" | "attachment" | "misc";
+type EventType = "result" | "container" | "attachment" | "misc" | "globals";
 
 export class MessageWriter implements Writer {
   constructor(private bus?: EventEmitter) {}
@@ -52,7 +52,7 @@ export class MessageWriter implements Writer {
     this.writeJson(`${result.uuid}-result.json`, "result", result);
   }
 
-  writeGlobalInfo(distFileName: string, info: GlobalInfo): void {
-    this.writeJson(distFileName, "misc", info);
+  writeGlobals(distFileName: string, info: Globals): void {
+    this.writeJson(distFileName, "globals", info);
   }
 }

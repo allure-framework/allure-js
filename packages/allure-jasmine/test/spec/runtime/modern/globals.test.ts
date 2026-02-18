@@ -37,3 +37,41 @@ it("writes globals payload from runtime API calls", async () => {
   const encodedAttachment = attachments[globalAttachmentRef.source] as string;
   expect(Buffer.from(encodedAttachment, "base64").toString("utf-8")).toBe("hello");
 });
+
+it("collects globals from setup-only file without tests", async () => {
+  const { globals, attachments } = await runJasmineInlineTest({
+    "spec/test/sample.spec.js": `
+      const { writeFileSync } = require("node:fs");
+      const { join } = require("node:path");
+      const { globalAttachment, globalAttachmentPath, globalError } = require("allure-js-commons");
+
+      const filePath = join(process.cwd(), "setup-only.log");
+      writeFileSync(filePath, "from-path", "utf8");
+
+      void globalAttachment("setup-inline-log", "from-inline", { contentType: "text/plain" });
+      void globalAttachmentPath("setup-file-log", filePath, { contentType: "text/plain" });
+      void globalError({ message: "setup-only error", trace: "setup stack" });
+    `,
+  });
+
+  const globalsEntries = Object.entries(globals ?? {});
+  expect(globalsEntries).toHaveLength(1);
+
+  const [, globalInfo] = globalsEntries[0];
+  expect(globalInfo.errors).toEqual(
+    expect.arrayContaining([
+      {
+        message: "setup-only error",
+        trace: "setup stack",
+      },
+    ]),
+  );
+
+  const inlineRef = globalInfo.attachments.find((a) => a.name === "setup-inline-log");
+  const pathRef = globalInfo.attachments.find((a) => a.name === "setup-file-log");
+
+  expect(inlineRef?.type).toBe("text/plain");
+  expect(pathRef?.type).toBe("text/plain");
+  expect(Buffer.from(attachments[inlineRef!.source] as string, "base64").toString("utf-8")).toBe("from-inline");
+  expect(Buffer.from(attachments[pathRef!.source] as string, "base64").toString("utf-8")).toBe("from-path");
+});
