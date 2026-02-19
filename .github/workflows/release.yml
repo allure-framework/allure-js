@@ -21,7 +21,7 @@ jobs:
         run: |
           expr "${{ github.event.inputs.releaseVersion }}" : '\(^[1-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\(-beta\.[1-9][0-9]*\)\{0,1\}\)$'
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           token: ${{ secrets.QAMETA_CI }}
 
