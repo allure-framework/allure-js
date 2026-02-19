@@ -5989,25 +5989,6 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
-    ["@isaacs/balanced-match", [\
-      ["npm:4.0.1", {\
-        "packageLocation": "./.yarn/cache/@isaacs-balanced-match-npm-4.0.1-8965afafe6-102fbc6d2c.zip/node_modules/@isaacs/balanced-match/",\
-        "packageDependencies": [\
-          ["@isaacs/balanced-match", "npm:4.0.1"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
-    ["@isaacs/brace-expansion", [\
-      ["npm:5.0.0", {\
-        "packageLocation": "./.yarn/cache/@isaacs-brace-expansion-npm-5.0.0-754d3cb3f5-cf3b7f206a.zip/node_modules/@isaacs/brace-expansion/",\
-        "packageDependencies": [\
-          ["@isaacs/balanced-match", "npm:4.0.1"],\
-          ["@isaacs/brace-expansion", "npm:5.0.0"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
     ["@isaacs/cliui", [\
       ["npm:8.0.2", {\
         "packageLocation": "./.yarn/cache/@isaacs-cliui-npm-8.0.2-f4364666d5-e9ed5fd27c.zip/node_modules/@isaacs/cliui/",\
@@ -8825,10 +8806,10 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["npm:8.17.1", {\
-        "packageLocation": "./.yarn/cache/ajv-npm-8.17.1-12ade7edc6-ee3c62162c.zip/node_modules/ajv/",\
+      ["npm:8.18.0", {\
+        "packageLocation": "./.yarn/cache/ajv-npm-8.18.0-6e5e062765-bfed9de827.zip/node_modules/ajv/",\
         "packageDependencies": [\
-          ["ajv", "npm:8.17.1"],\
+          ["ajv", "npm:8.18.0"],\
           ["fast-deep-equal", "npm:3.1.3"],\
           ["fast-uri", "npm:3.0.5"],\
           ["json-schema-traverse", "npm:1.0.0"],\
@@ -9656,7 +9637,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/assertion-error-formatter-npm-3.0.0-13cc1330f6-b7afe82546.zip/node_modules/assertion-error-formatter/",\
         "packageDependencies": [\
           ["assertion-error-formatter", "npm:3.0.0"],\
-          ["diff", "npm:4.0.2"],\
+          ["diff", "npm:4.0.4"],\
           ["pad-right", "npm:0.2.2"],\
           ["repeat-string", "npm:1.6.1"]\
         ],\
@@ -10252,6 +10233,13 @@ const RAW_RUNTIME_STATE =
           ["balanced-match", "npm:1.0.2"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:4.0.3", {\
+        "packageLocation": "./.yarn/cache/balanced-match-npm-4.0.3-493541582f-e9e2177f1e.zip/node_modules/balanced-match/",\
+        "packageDependencies": [\
+          ["balanced-match", "npm:4.0.3"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["base64-js", [\
@@ -10352,6 +10340,14 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["balanced-match", "npm:1.0.2"],\
           ["brace-expansion", "npm:2.0.1"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:5.0.2", {\
+        "packageLocation": "./.yarn/cache/brace-expansion-npm-5.0.2-9598014784-18d382c091.zip/node_modules/brace-expansion/",\
+        "packageDependencies": [\
+          ["balanced-match", "npm:4.0.3"],\
+          ["brace-expansion", "npm:5.0.2"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -12030,7 +12026,7 @@ const RAW_RUNTIME_STATE =
           ["@types/jest", null],\
           ["@wix-pilot/core", "virtual:777e072edb161888a94a8e936ffd092bebc2ef9a1e4a3c532a870ea1fdf389fedb5ad32317b75c5396703fe9b953adf279e45d697d9aecfe5382b3bf8eb3c44b#npm:3.4.2"],\
           ["@wix-pilot/detox", "virtual:777e072edb161888a94a8e936ffd092bebc2ef9a1e4a3c532a870ea1fdf389fedb5ad32317b75c5396703fe9b953adf279e45d697d9aecfe5382b3bf8eb3c44b#npm:1.0.13"],\
-          ["ajv", "npm:8.17.1"],\
+          ["ajv", "npm:8.18.0"],\
           ["bunyan", "npm:1.8.15"],\
           ["bunyan-debug-stream", "virtual:777e072edb161888a94a8e936ffd092bebc2ef9a1e4a3c532a870ea1fdf389fedb5ad32317b75c5396703fe9b953adf279e45d697d9aecfe5382b3bf8eb3c44b#npm:3.1.0"],\
           ["caf", "npm:15.0.1"],\
@@ -12077,10 +12073,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["diff", [\
-      ["npm:4.0.2", {\
-        "packageLocation": "./.yarn/cache/diff-npm-4.0.2-73133c7102-ec09ec2101.zip/node_modules/diff/",\
+      ["npm:4.0.4", {\
+        "packageLocation": "./.yarn/cache/diff-npm-4.0.4-e9ea573423-5019b3f5ae.zip/node_modules/diff/",\
         "packageDependencies": [\
-          ["diff", "npm:4.0.2"]\
+          ["diff", "npm:4.0.4"]\
         ],\
         "linkType": "HARD"\
       }],\
@@ -14135,7 +14131,7 @@ const RAW_RUNTIME_STATE =
           ["foreground-child", "npm:3.3.1"],\
           ["glob", "npm:11.1.0"],\
           ["jackspeak", "npm:4.1.1"],\
-          ["minimatch", "npm:10.1.1"],\
+          ["minimatch", "npm:10.2.1"],\
           ["minipass", "npm:7.1.2"],\
           ["package-json-from-dist", "npm:1.0.0"],\
           ["path-scurry", "npm:2.0.0"]\
@@ -17788,19 +17784,11 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["minimatch", [\
-      ["npm:10.0.1", {\
-        "packageLocation": "./.yarn/cache/minimatch-npm-10.0.1-eabcc0d3a0-082e7ccbc0.zip/node_modules/minimatch/",\
+      ["npm:10.2.1", {\
+        "packageLocation": "./.yarn/cache/minimatch-npm-10.2.1-6662420b08-d41c195ee1.zip/node_modules/minimatch/",\
         "packageDependencies": [\
-          ["brace-expansion", "npm:2.0.1"],\
-          ["minimatch", "npm:10.0.1"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
-      ["npm:10.1.1", {\
-        "packageLocation": "./.yarn/cache/minimatch-npm-10.1.1-453db4ee1a-110f38921e.zip/node_modules/minimatch/",\
-        "packageDependencies": [\
-          ["@isaacs/brace-expansion", "npm:5.0.0"],\
-          ["minimatch", "npm:10.1.1"]\
+          ["brace-expansion", "npm:5.0.2"],\
+          ["minimatch", "npm:10.2.1"]\
         ],\
         "linkType": "HARD"\
       }],\
@@ -18548,7 +18536,7 @@ const RAW_RUNTIME_STATE =
           ["ansi-styles", "npm:6.2.1"],\
           ["cross-spawn", "npm:7.0.6"],\
           ["memorystream", "npm:0.3.1"],\
-          ["minimatch", "npm:10.0.1"],\
+          ["minimatch", "npm:10.2.1"],\
           ["npm-run-all2", "npm:8.0.1"],\
           ["pidtree", "npm:0.6.0"],\
           ["read-package-json-fast", "npm:4.0.0"],\
