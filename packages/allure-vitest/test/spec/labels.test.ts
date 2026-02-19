@@ -43,7 +43,7 @@ it("should add package label", async () => {
     expect.arrayContaining([
       {
         name: "package",
-        value: "sample.test.ts",
+        value: "dummy.sample.test.ts",
       },
     ]),
   );
@@ -63,7 +63,7 @@ it("should add package label for tests in directories", async () => {
     expect.arrayContaining([
       {
         name: "package",
-        value: "foo.bar.baz.test.ts",
+        value: "dummy.foo.bar.baz.test.ts",
       },
     ]),
   );

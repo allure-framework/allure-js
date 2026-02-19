@@ -33,10 +33,12 @@ import {
   escapeRegExp,
   formatLink,
   getEnvironmentLabels,
+  getFallbackTestCaseIdLabel,
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
   getPackageLabel,
+  getProjectName,
   getThreadLabel,
   getWorstTestStepResult,
   md5,
@@ -167,10 +169,16 @@ export class AllureReporter implements ReporterV2 {
     const testFilePath = path.relative(project?.testDir, test.location.file);
     const relativeFileParts = testFilePath.split(path.sep);
     const relativeFile = relativeFileParts.join("/");
+    const projectName = getProjectName();
     // root > project > file path > test.describe...
     const [, , , ...suiteTitles] = suite.titlePath();
     const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
-    const testCaseIdBase = `${relativeFile}#${nameSuites}${test.title}`;
+    const legacyTestCaseIdBase = `${relativeFile}#${nameSuites}${test.title}`;
+    const testCaseIdBase = projectName ? `${projectName}:${legacyTestCaseIdBase}` : legacyTestCaseIdBase;
+    const legacyTestCaseId = md5(legacyTestCaseIdBase);
+    const titlePath = projectName
+      ? [projectName, ...relativeFileParts, ...suiteTitles]
+      : relativeFileParts.concat(...suiteTitles);
     const result: Partial<TestResult> = {
       name: titleMetadata.cleanTitle,
       labels: [...titleMetadata.labels, ...getEnvironmentLabels()],
@@ -179,12 +187,13 @@ export class AllureReporter implements ReporterV2 {
       steps: [],
       testCaseId: md5(testCaseIdBase),
       fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
-      titlePath: relativeFileParts.concat(...suiteTitles),
+      titlePath,
     };
 
     result.labels!.push(getLanguageLabel());
     result.labels!.push(getFrameworkLabel("playwright"));
     result.labels!.push(getPackageLabel(testFilePath));
+    result.labels!.push(getFallbackTestCaseIdLabel(legacyTestCaseId));
     result.labels!.push({ name: "titlePath", value: suite.titlePath().join(" > ") });
 
     // support for earlier playwright versions

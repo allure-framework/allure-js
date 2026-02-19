@@ -4,7 +4,7 @@ import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import * as path from "node:path";
 import { type Label, Status, attachment, attachmentPath, logStep, parameter, step } from "allure-js-commons";
 import type { AllureResults, Category } from "allure-js-commons/sdk";
-import { type GlobalLabelsConfig, MessageReader, getPosixPath } from "allure-js-commons/sdk/reporter";
+import { type GlobalLabelsConfig, MessageReader, getPosixPath, getProjectName } from "allure-js-commons/sdk/reporter";
 import type { AllureMochaReporterConfig } from "../src/types.js";
 
 type MochaRunOptions = {
@@ -255,7 +255,10 @@ abstract class AllureMochaTestRunner {
   };
 
   #resolveTestplanSelector = (prefix: string, [file, name]: TestPlanSelectorEntryFixture) => {
-    return getPosixPath(`${path.join(prefix, ...file)}.spec${SPEC_EXT}: ${name}`);
+    const projectName = getProjectName();
+    const fullNameBase = `${path.join(prefix, ...file)}.spec${SPEC_EXT}: ${name}`;
+    const fullName = projectName ? `${projectName}:${fullNameBase}` : fullNameBase;
+    return getPosixPath(fullName);
   };
 
   #reportOtherOutputFiles = async (testDir: string) => {

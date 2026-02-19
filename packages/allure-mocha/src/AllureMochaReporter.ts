@@ -5,7 +5,13 @@ import { type AttachmentOptions, type ContentType, type Label, type Parameter } 
 import { Stage, Status } from "allure-js-commons";
 import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
-import { getHostLabel, getRelativePath, getThreadLabel } from "allure-js-commons/sdk/reporter";
+import {
+  getFallbackTestCaseIdLabel,
+  getHostLabel,
+  getProjectName,
+  getRelativePath,
+  getThreadLabel,
+} from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
   createDefaultWriter,
@@ -28,6 +34,7 @@ import {
   getAllureMetaLabels,
   getAllureMetaLinks,
   getHookType,
+  getLegacyTestCaseId,
   getSuitesOfMochaTest,
   getTestCaseId,
   getTestScope,
@@ -198,6 +205,8 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       labels.push(packageLabel);
     }
 
+    labels.push(getFallbackTestCaseIdLabel(getLegacyTestCaseId(test)));
+
     const scopeUuid = this.runtime.startScope();
 
     setTestScope(test, scopeUuid);
@@ -265,11 +274,12 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       const defaultSuites = getSuitesOfMochaTest(test);
 
       this.runtime.updateTest(this.currentTest, (t) => {
+        const projectName = getProjectName();
         const fsPath: string[] = getRelativePath(test.file!).split(sep).filter(Boolean);
-
         ensureSuiteLabels(t, defaultSuites);
 
-        t.titlePath = fsPath.concat(...defaultSuites);
+        const titlePath = fsPath.concat(...defaultSuites);
+        t.titlePath = projectName ? [projectName, ...titlePath] : titlePath;
         t.stage = Stage.FINISHED;
       });
       this.runtime.stopTest(this.currentTest);

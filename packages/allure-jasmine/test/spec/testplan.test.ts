@@ -12,7 +12,7 @@ it("should filter tests by selector", async () => {
         it("qux", () => {});
       `,
       "testplan.json": JSON.stringify({
-        tests: [{ selector: "spec/test/sample.spec.js#foo" }, { selector: "spec/test/sample.spec.js#baz" }],
+        tests: [{ selector: "dummy:spec/test/sample.spec.js#foo" }, { selector: "dummy:spec/test/sample.spec.js#baz" }],
       }),
     },
     { ALLURE_TESTPLAN_PATH: "testplan.json" },

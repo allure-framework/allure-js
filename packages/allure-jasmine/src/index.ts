@@ -7,6 +7,7 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getFallbackTestCaseIdLabel,
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
@@ -14,6 +15,7 @@ import {
   getSuiteLabels,
   getThreadLabel,
   hasSkipLabel,
+  md5,
 } from "allure-js-commons/sdk/reporter";
 import { MessageTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import type { JasmineBeforeAfterFn } from "./model.js";
@@ -118,13 +120,16 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   }
 
   specStarted(spec: jasmine.SpecResult & { filename?: string }): void {
-    const { fullName, titlePath, labels, links, name } = getAllureNamesAndLabels(
+    const { fullName, legacyFullName, titlePath, labels, links, name } = getAllureNamesAndLabels(
       spec.filename,
       this.getCurrentSpecPath(),
       spec.description,
     );
 
     if (!hasSkipLabel(labels)) {
+      if (legacyFullName) {
+        labels.push(getFallbackTestCaseIdLabel(md5(legacyFullName)));
+      }
       this.#startScope();
       this.currentAllureTestUuid = this.allureRuntime.startTest(
         {

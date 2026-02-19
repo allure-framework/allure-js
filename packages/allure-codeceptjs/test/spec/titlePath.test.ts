@@ -13,5 +13,5 @@ it("should assign titlePath property to the test result", async () => {
 
   const [tr] = tests;
 
-  expect(tr.titlePath).toEqual(["spec", "test", "sample.test.js", "login-feature"]);
+  expect(tr.titlePath).toEqual(["dummy", "spec", "test", "sample.test.js", "login-feature"]);
 });

@@ -10,13 +10,16 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getFallbackTestCaseIdLabel,
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
   getPackageLabel,
   getPosixPath,
+  getProjectName,
   getSuiteLabels,
   getThreadLabel,
+  md5,
   parseTestPlan,
 } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
@@ -126,7 +129,10 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const newTestPath = newTestSuitePath.concat(testTitle);
       const newTestId = getTestId(newTestPath);
 
-      return `${getPosixPath(this.testPath)}#${newTestId}`;
+      const projectName = getProjectName();
+      const fullNamePath = getPosixPath(this.testPath);
+      const fullNameBase = projectName ? `${projectName}:${fullNamePath}` : fullNamePath;
+      return `${fullNameBase}#${newTestId}`;
     }
 
     #handleSuiteStart() {
@@ -186,8 +192,12 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     #handleTestStart(test: Circus.TestEntry) {
       const fsPath = this.testPath.split(sep);
       const newTestSuitePath = getTestPath(test.parent);
-      const titlePath = fsPath.concat(newTestSuitePath);
+      const projectName = getProjectName();
+      const baseTitlePath = fsPath.concat(newTestSuitePath);
+      const titlePath = projectName ? [projectName, ...baseTitlePath] : baseTitlePath;
       const { cleanTitle, labels, links } = extractMetadataFromString(test.name);
+      const legacyTestId = getTestId(newTestSuitePath.concat(cleanTitle));
+      const legacyFullName = `${getPosixPath(this.testPath)}#${legacyTestId}`;
       const newTestFullName = this.#getTestFullName(test, cleanTitle);
 
       if (this.testPlan && !isTestPresentInTestPlan(newTestFullName, this.testPlan)) {
@@ -206,6 +216,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
             getLanguageLabel(),
             getFrameworkLabel("jest"),
             getPackageLabel(this.testPath),
+            getFallbackTestCaseIdLabel(md5(legacyFullName)),
             getHostLabel(),
             getThreadLabel(env.JEST_WORKER_ID),
             ...getEnvironmentLabels(),

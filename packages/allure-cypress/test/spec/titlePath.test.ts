@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+import { md5 } from "allure-js-commons/sdk/reporter";
 import { runCypressInlineTest } from "../utils.js";
 
 it("should assign titlePath property to the test result", async () => {
@@ -11,7 +12,15 @@ it("should assign titlePath property to the test result", async () => {
   });
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].titlePath).toEqual(["cypress", "e2e", "foo", "bar", "sample.cy.js"]);
+  expect(tests[0].titlePath).toEqual(["dummy", "cypress", "e2e", "foo", "bar", "sample.cy.js"]);
+  expect(tests[0].labels).toEqual(
+    expect.arrayContaining([
+      {
+        name: "_fallbackTestCaseId",
+        value: md5("cypress/e2e/foo/bar/sample.cy.js#should pass"),
+      },
+    ]),
+  );
 });
 
 it("should assign titlePath property to the test result with suites", async () => {
@@ -28,5 +37,5 @@ it("should assign titlePath property to the test result with suites", async () =
   });
 
   expect(tests).toHaveLength(1);
-  expect(tests[0].titlePath).toEqual(["cypress", "e2e", "foo", "bar", "sample.cy.js", "foo", "bar"]);
+  expect(tests[0].titlePath).toEqual(["dummy", "cypress", "e2e", "foo", "bar", "sample.cy.js", "foo", "bar"]);
 });

@@ -12,10 +12,10 @@ it("should support test plan", async () => {
         selector: "invalid",
       },
       {
-        selector: "nested/login.test.js: login-feature > login-scenario1",
+        selector: "dummy:nested/login.test.js: login-feature > login-scenario1",
       },
       {
-        selector: "logout.test.js: logout-feature > logout-scenario1",
+        selector: "dummy:logout.test.js: logout-feature > logout-scenario1",
       },
     ],
   };
@@ -47,19 +47,19 @@ it("should support test plan", async () => {
       expect.objectContaining({
         status: Status.PASSED,
         name: "logout-scenario1",
-        fullName: "logout.test.js: logout-feature > logout-scenario1",
+        fullName: "dummy:logout.test.js: logout-feature > logout-scenario1",
       }),
       expect.objectContaining({
         status: Status.PASSED,
         stage: Stage.FINISHED,
         name: "login-scenario1",
-        fullName: "nested/login.test.js: login-feature > login-scenario1",
+        fullName: "dummy:nested/login.test.js: login-feature > login-scenario1",
       }),
       expect.objectContaining({
         status: Status.PASSED,
         stage: Stage.FINISHED,
         name: "login-scenario3",
-        fullName: "nested/login.test.js: login-feature > login-scenario3 @allure.id:321",
+        fullName: "dummy:nested/login.test.js: login-feature > login-scenario3 @allure.id:321",
       }),
     ]),
   );

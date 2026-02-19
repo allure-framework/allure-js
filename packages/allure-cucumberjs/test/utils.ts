@@ -90,7 +90,7 @@ export const runCucumberInlineTest = async (
       fileExtension: ".js",
     });
   });
-  await writeFile(join(testDir, "package.json"), String.raw`{"name": "dummy"}`, "utf8");
+  await writeFile(join(testDir, "package.json"), JSON.stringify({ name: "dummy" }), "utf8");
   await step("world.js", async () => {
     await writeFile(worldFilePath, worldContent, "utf8");
     await attachment("world.js", worldContent, {

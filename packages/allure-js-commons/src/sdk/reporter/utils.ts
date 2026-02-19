@@ -18,6 +18,13 @@ export const md5 = (str: string) => {
   return createHash("md5").update(str).digest("hex");
 };
 
+export const FALLBACK_TEST_CASE_ID_LABEL_NAME = "_fallbackTestCaseId";
+
+export const getFallbackTestCaseIdLabel = (value: string): Label => ({
+  name: FALLBACK_TEST_CASE_ID_LABEL_NAME,
+  value,
+});
+
 export const getTestResultHistoryId = (result: TestResult) => {
   if (result.historyId) {
     return result.historyId;
@@ -70,6 +77,33 @@ export const readImageAsBase64 = async (filePath: string): Promise<string | unde
   }
 };
 
+export const getProjectName = (() => {
+  let cachedProjectName: string | undefined | null = null;
+
+  return (): string | undefined => {
+    if (cachedProjectName !== null) {
+      return cachedProjectName ?? undefined;
+    }
+
+    const projectRoot = getProjectRoot();
+    const packageJsonPath = path.join(projectRoot, "package.json");
+
+    try {
+      const packageJsonContent = fs.readFileSync(packageJsonPath, "utf-8");
+      const packageJson = JSON.parse(packageJsonContent);
+
+      if (packageJson.name && typeof packageJson.name === "string") {
+        const name = packageJson.name;
+        cachedProjectName = name;
+        return name;
+      }
+    } catch {}
+
+    cachedProjectName = undefined;
+    return cachedProjectName;
+  };
+})();
+
 export const getProjectRoot = (() => {
   let cachedProjectRoot: string | null = null;
 
@@ -107,6 +141,7 @@ export const getRelativePath = (filepath: string) => {
     const projectRoot = getProjectRoot();
     filepath = path.relative(projectRoot, filepath);
   }
+
   return filepath;
 };
 

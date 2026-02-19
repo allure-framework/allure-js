@@ -37,7 +37,7 @@ it("should set full name", async () => {
     expect.arrayContaining([
       expect.objectContaining({
         name: "should pass",
-        fullName: "a/path/to/test/sample.spec.js#should pass",
+        fullName: "allure-jest:a/path/to/test/sample.spec.js#should pass",
         status: Status.PASSED,
       }),
     ]),

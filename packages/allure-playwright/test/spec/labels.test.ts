@@ -76,7 +76,7 @@ it("should add package label", async () => {
         labels: expect.arrayContaining([
           {
             name: "package",
-            value: "nested.sample.test.js",
+            value: "allure-playwright.nested.sample.test.js",
           },
         ]),
       }),
@@ -85,7 +85,7 @@ it("should add package label", async () => {
         labels: expect.arrayContaining([
           {
             name: "package",
-            value: "nested.more.sample.test.js",
+            value: "allure-playwright.nested.more.sample.test.js",
           },
         ]),
       }),

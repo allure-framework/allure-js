@@ -2,7 +2,7 @@ import type { RunnerTestSuite as Suite, RunnerTask as Task } from "vitest";
 import { LabelName } from "allure-js-commons";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
-import { getPosixPath, getRelativePath, includedInTestPlan } from "allure-js-commons/sdk/reporter";
+import { getPosixPath, getProjectName, getRelativePath, includedInTestPlan } from "allure-js-commons/sdk/reporter";
 
 export const getSuitePath = (task: Task): string[] => {
   const path = [];
@@ -23,14 +23,19 @@ export const getSuitePath = (task: Task): string[] => {
 
 export const getTestMetadata = (task: Task) => {
   const suitePath = getSuitePath(task);
+  const projectName = getProjectName();
   const relativeTestPath = getPosixPath(getRelativePath(task.file.filepath));
   const { cleanTitle, labels, links } = extractMetadataFromString(task.name);
+  const fullNameBase = projectName ? `${projectName}:${relativeTestPath}` : relativeTestPath;
+  const legacyFullNameBase = relativeTestPath;
 
   return {
+    projectName,
     specPath: relativeTestPath,
     name: cleanTitle || task.name,
     suitePath,
-    fullName: `${relativeTestPath}#${suitePath.concat(cleanTitle).join(" ")}`,
+    fullName: `${fullNameBase}#${suitePath.concat(cleanTitle).join(" ")}`,
+    legacyFullName: `${legacyFullNameBase}#${suitePath.concat(cleanTitle).join(" ")}`,
     labels,
     links,
   };

@@ -73,7 +73,7 @@ it("should add package label", async () => {
         labels: expect.arrayContaining([
           {
             name: "package",
-            value: "nested.login.test.js",
+            value: "dummy.nested.login.test.js",
           },
         ]),
       }),
@@ -82,7 +82,7 @@ it("should add package label", async () => {
         labels: expect.arrayContaining([
           {
             name: "package",
-            value: "nested.login.test.js",
+            value: "dummy.nested.login.test.js",
           },
         ]),
       }),
@@ -110,21 +110,21 @@ it("should not depend on CWD", async () => {
     expect.arrayContaining([
       expect.objectContaining({
         name: "failed-scenario",
-        fullName: "nested/login.test.js: login-feature > failed-scenario",
+        fullName: "dummy:nested/login.test.js: login-feature > failed-scenario",
         labels: expect.arrayContaining([
           {
             name: "package",
-            value: "nested.login.test.js",
+            value: "dummy.nested.login.test.js",
           },
         ]),
       }),
       expect.objectContaining({
         name: "passed-scenario",
-        fullName: "nested/login.test.js: login-feature > passed-scenario",
+        fullName: "dummy:nested/login.test.js: login-feature > passed-scenario",
         labels: expect.arrayContaining([
           {
             name: "package",
-            value: "nested.login.test.js",
+            value: "dummy.nested.login.test.js",
           },
         ]),
       }),
