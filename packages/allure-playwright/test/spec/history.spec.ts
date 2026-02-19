@@ -4,7 +4,7 @@ import { runPlaywrightInlineTest } from "../utils.js";
 
 it("historical data should be fine", async () => {
   const { tests } = await runPlaywrightInlineTest({
-    "package.json": JSON.stringify({ name: "allure-playwright" }),
+    "package.json": JSON.stringify({ name: "dummy" }),
     "sample.test.js": `
       import { test } from '@playwright/test';
 
@@ -14,7 +14,7 @@ it("historical data should be fine", async () => {
       `,
   });
   const fullName = "sample.test.js:5:13";
-  const testCaseId = md5("allure-playwright:sample.test.js#nested test");
+  const testCaseId = md5("dummy:sample.test.js#nested test");
   const [testResult] = tests;
 
   expect(testResult).toEqual(

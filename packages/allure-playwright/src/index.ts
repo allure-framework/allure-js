@@ -38,9 +38,7 @@ import {
   getHostLabel,
   getLanguageLabel,
   getPackageLabel,
-  getPosixPath,
   getProjectName,
-  getRelativePath,
   getThreadLabel,
   getWorstTestStepResult,
   md5,
@@ -169,20 +167,17 @@ export class AllureReporter implements ReporterV2 {
     const titleMetadata = extractMetadataFromString(test.title);
     const project = suite.project()!;
     const testFilePath = path.relative(project?.testDir, test.location.file);
-    const relativeFilePosix = getPosixPath(testFilePath);
-    const relativeFileParts = relativeFilePosix.split("/");
+    const relativeFileParts = testFilePath.split(path.sep);
+    const relativeFile = relativeFileParts.join("/");
     const projectName = getProjectName();
-    const relativeFileForId = getPosixPath(getRelativePath(test.location.file));
     // root > project > file path > test.describe...
-    const [, projectSuiteTitle] = suite.titlePath();
     const [, , , ...suiteTitles] = suite.titlePath();
     const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
-    const fullNameBaseForId = projectName ? `${projectName}:${relativeFileForId}` : relativeFileForId;
-    const testCaseIdBase = `${fullNameBaseForId}#${nameSuites}${test.title}`;
-    const legacyTestCaseIdBase = `${relativeFilePosix}#${nameSuites}${test.title}`;
+    const legacyTestCaseIdBase = `${relativeFile}#${nameSuites}${test.title}`;
+    const testCaseIdBase = projectName ? `${projectName}:${legacyTestCaseIdBase}` : legacyTestCaseIdBase;
     const legacyTestCaseId = md5(legacyTestCaseIdBase);
-    const titlePath = projectSuiteTitle
-      ? [projectSuiteTitle, ...relativeFileParts, ...suiteTitles]
+    const titlePath = projectName
+      ? [projectName, ...relativeFileParts, ...suiteTitles]
       : relativeFileParts.concat(...suiteTitles);
     const result: Partial<TestResult> = {
       name: titleMetadata.cleanTitle,
@@ -191,7 +186,7 @@ export class AllureReporter implements ReporterV2 {
       parameters: [],
       steps: [],
       testCaseId: md5(testCaseIdBase),
-      fullName: `${relativeFilePosix}:${test.location.line}:${test.location.column}`,
+      fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
       titlePath,
     };
 

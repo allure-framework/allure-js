@@ -4,7 +4,7 @@ import { runPlaywrightInlineTest } from "../utils.js";
 
 it("should preserve fullName format and include fallback testCaseId", async () => {
   const { tests } = await runPlaywrightInlineTest({
-    "package.json": JSON.stringify({ name: "allure-playwright" }),
+    "package.json": JSON.stringify({ name: "dummy" }),
     "sample.test.js": `
       import { test } from '@playwright/test';
 
@@ -14,7 +14,7 @@ it("should preserve fullName format and include fallback testCaseId", async () =
 
   expect(tests).toHaveLength(1);
   expect(tests[0].fullName).toMatch(/^sample\.test\.js:\d+:\d+$/);
-  expect(tests[0].testCaseId).toBe(md5("allure-playwright:sample.test.js#test 1"));
+  expect(tests[0].testCaseId).toBe(md5("dummy:sample.test.js#test 1"));
   expect(tests[0].labels).toEqual(
     expect.arrayContaining([
       {

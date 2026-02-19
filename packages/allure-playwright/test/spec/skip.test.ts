@@ -5,7 +5,7 @@ import { runPlaywrightInlineTest } from "../utils.js";
 
 it("reports programmatically skipped results", async () => {
   const { tests } = await runPlaywrightInlineTest({
-    "package.json": JSON.stringify({ name: "allure-playwright" }),
+    "package.json": JSON.stringify({ name: "dummy" }),
     "sample.test.js": `
       import test from '@playwright/test';
 
@@ -22,9 +22,9 @@ it("reports programmatically skipped results", async () => {
   const skipped1 = tests.find((test) => test.name === "should be skipped 1")!;
   const notSkipped = tests.find((test) => test.name === "should not be skipped")!;
   const skipped2 = tests.find((test) => test.name === "should be skipped 2")!;
-  const skipped1TestCaseId = md5("allure-playwright:sample.test.js#should be skipped 1");
-  const notSkippedTestCaseId = md5("allure-playwright:sample.test.js#should not be skipped");
-  const skipped2TestCaseId = md5("allure-playwright:sample.test.js#should be skipped 2");
+  const skipped1TestCaseId = md5("dummy:sample.test.js#should be skipped 1");
+  const notSkippedTestCaseId = md5("dummy:sample.test.js#should not be skipped");
+  const skipped2TestCaseId = md5("dummy:sample.test.js#should be skipped 2");
 
   expect(skipped1).toEqual(
     expect.objectContaining({
