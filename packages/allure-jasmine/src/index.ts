@@ -81,11 +81,11 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
   handleAllureRuntimeMessages(message: RuntimeMessage) {
     const rootUuid = this.currentAllureFixtureUuid ?? this.currentAllureTestUuid;
-    if (!rootUuid && !isGlobalRuntimeMessage(message)) {
+    if (isGlobalRuntimeMessage(message)) {
+      this.allureRuntime.applyGlobalRuntimeMessages([message]);
       return;
     }
     if (!rootUuid) {
-      this.allureRuntime.applyGlobalRuntimeMessages([message]);
       return;
     }
     this.allureRuntime.applyRuntimeMessages(rootUuid, [message]);

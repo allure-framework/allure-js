@@ -89,15 +89,15 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   }
 
   applyRuntimeMessages = (...message: RuntimeMessage[]) => {
-    const root = this.currentHook ?? this.currentTest;
-    if (root) {
-      this.runtime.applyRuntimeMessages(root, message);
-      return;
-    }
-
     const globalMessages = message.filter(isGlobalRuntimeMessage);
     if (globalMessages.length) {
       this.runtime.applyGlobalRuntimeMessages(globalMessages);
+    }
+
+    const root = this.currentHook ?? this.currentTest;
+    const scopedMessages = message.filter((m) => !isGlobalRuntimeMessage(m));
+    if (root && scopedMessages.length) {
+      this.runtime.applyRuntimeMessages(root, scopedMessages);
     }
   };
 

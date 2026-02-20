@@ -76,11 +76,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
 
     handleAllureRuntimeMessage(message: RuntimeMessage) {
       const executableUuid = last(this.runContext.executables);
-      if (!executableUuid && !isGlobalRuntimeMessage(message)) {
+      if (isGlobalRuntimeMessage(message)) {
+        this.runtime.applyGlobalRuntimeMessages([message]);
         return;
       }
       if (!executableUuid) {
-        this.runtime.applyGlobalRuntimeMessages([message]);
         return;
       }
       this.runtime.applyRuntimeMessages(executableUuid, [message]);

@@ -461,11 +461,11 @@ export class AllureCypress {
 
   #applyRuntimeApiMessages = (context: SpecContext, message: RuntimeMessage) => {
     const rootUuid = this.#resolveRootUuid(context);
-    if (!rootUuid && !isGlobalRuntimeMessage(message)) {
+    if (isGlobalRuntimeMessage(message)) {
+      this.allureRuntime.applyGlobalRuntimeMessages([message]);
       return;
     }
     if (!rootUuid) {
-      this.allureRuntime.applyGlobalRuntimeMessages([message]);
       return;
     }
     this.allureRuntime.applyRuntimeMessages(rootUuid, [message]);

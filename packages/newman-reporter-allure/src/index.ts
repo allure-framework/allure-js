@@ -410,7 +410,6 @@ class AllureReporter {
       this.allureRuntime.writeScope(this.currentScope);
       this.currentScope = undefined;
     }
-    this.allureRuntime.writeGlobals();
   }
 
   #pathToItem(item: Item): string[] {

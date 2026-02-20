@@ -592,15 +592,6 @@ export class ReporterRuntime {
         case "attachment_path":
           this.#handleAttachmentPathMessage(rootUuid, message.data);
           return;
-        case "global_attachment_content":
-          this.#handleGlobalAttachmentContentMessage(message.data);
-          return;
-        case "global_attachment_path":
-          this.#handleGlobalAttachmentPathMessage(message.data);
-          return;
-        case "global_error":
-          this.#handleGlobalErrorMessage(message.data);
-          return;
         default:
           // eslint-disable-next-line no-console
           console.error(`could not apply runtime messages: unknown message ${JSON.stringify(message)}`);
