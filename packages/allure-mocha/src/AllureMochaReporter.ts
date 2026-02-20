@@ -4,7 +4,7 @@ import { env } from "node:process";
 import { type AttachmentOptions, type ContentType, type Label, type Parameter } from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
-import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, getStatusFromError, isGlobalRuntimeMessage } from "allure-js-commons/sdk";
 import { getHostLabel, getRelativePath, getThreadLabel } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
@@ -89,9 +89,15 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   }
 
   applyRuntimeMessages = (...message: RuntimeMessage[]) => {
+    const globalMessages = message.filter(isGlobalRuntimeMessage);
+    if (globalMessages.length) {
+      this.runtime.applyGlobalRuntimeMessages(globalMessages);
+    }
+
     const root = this.currentHook ?? this.currentTest;
-    if (root) {
-      this.runtime.applyRuntimeMessages(root, message);
+    const scopedMessages = message.filter((m) => !isGlobalRuntimeMessage(m));
+    if (root && scopedMessages.length) {
+      this.runtime.applyRuntimeMessages(root, scopedMessages);
     }
   };
 
@@ -134,6 +140,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   override done(failures: number, fn?: ((failures: number) => void) | undefined) {
     this.runtime.writeEnvironmentInfo();
     this.runtime.writeCategoriesDefinitions();
+    this.runtime.writeGlobals();
     doneAll(this.#extraReporters, failures, fn);
   }
 
@@ -164,6 +171,9 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     const scopeUuid = this.scopesStack.pop();
     if (scopeUuid) {
       this.runtime.writeScope(scopeUuid);
+    }
+    if (this.isInWorker && !suite.parent) {
+      this.runtime.writeGlobals();
     }
   };
 

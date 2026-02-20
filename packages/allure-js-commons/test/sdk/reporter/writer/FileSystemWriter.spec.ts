@@ -59,4 +59,74 @@ describe("FileSystemWriter", () => {
 
     expect(existsSync(tmpReportPath)).toBe(true);
   });
+
+  it("writes globals file", () => {
+    const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
+    const allureResults = path.join(tmp, "allure-results");
+    const config: ReporterRuntimeConfig = {
+      writer: new FileSystemWriter({
+        resultsDir: allureResults,
+      }),
+    };
+    const runtime = new ReporterRuntime(config);
+
+    runtime.applyGlobalRuntimeMessages([
+      {
+        type: "global_attachment_content",
+        data: {
+          name: "global log",
+          content: Buffer.from("hello", "utf-8").toString("base64"),
+          encoding: "base64",
+          contentType: ContentType.TEXT,
+          fileExtension: ".txt",
+        },
+      },
+      {
+        type: "global_error",
+        data: {
+          message: "boom",
+          trace: "stack",
+        },
+      },
+    ]);
+    runtime.writeGlobals();
+
+    const resultFiles = readdirSync(allureResults);
+    const globalsFile = resultFiles.find((file) => file.endsWith("-globals.json"));
+    expect(globalsFile).toBeDefined();
+
+    const globalsContent = JSON.parse(readFileSync(path.join(allureResults, globalsFile!), "utf-8")) as {
+      attachments: { name: string; source: string; type: string }[];
+      errors: { message: string; trace: string }[];
+    };
+
+    expect(globalsContent.attachments).toHaveLength(1);
+    expect(globalsContent.attachments[0]).toEqual(
+      expect.objectContaining({
+        name: "global log",
+        type: ContentType.TEXT,
+      }),
+    );
+    expect(globalsContent.errors).toEqual([
+      {
+        message: "boom",
+        trace: "stack",
+      },
+    ]);
+  });
+
+  it("does not write globals file when payload is empty", () => {
+    const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
+    const allureResults = path.join(tmp, "allure-results");
+    const config: ReporterRuntimeConfig = {
+      writer: new FileSystemWriter({
+        resultsDir: allureResults,
+      }),
+    };
+    const runtime = new ReporterRuntime(config);
+
+    runtime.writeGlobals();
+
+    expect(existsSync(allureResults)).toBeFalsy();
+  });
 });

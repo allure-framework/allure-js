@@ -8,6 +8,7 @@ import {
   getMessageAndTraceFromError,
   getStatusFromError,
   isAnyStepFailed,
+  isGlobalRuntimeMessage,
   isMetadataTag,
   serialize,
 } from "../../src/sdk/utils.js";
@@ -637,5 +638,53 @@ describe("getMessageAndTraceFromError", () => {
     error.expected = undefined;
     const result = getMessageAndTraceFromError(error);
     expect(result).not.toHaveProperty("expected");
+  });
+});
+
+describe("isGlobalRuntimeMessage", () => {
+  it("should return true for global runtime messages", () => {
+    expect(
+      isGlobalRuntimeMessage({
+        type: "global_attachment_content",
+        data: {
+          name: "global-log",
+          content: "aGVsbG8=",
+          encoding: "base64",
+          contentType: "text/plain",
+        },
+      }),
+    ).toBe(true);
+    expect(
+      isGlobalRuntimeMessage({
+        type: "global_error",
+        data: {
+          message: "global setup failed",
+        },
+      }),
+    ).toBe(true);
+    expect(
+      isGlobalRuntimeMessage({
+        type: "global_attachment_path",
+        data: {
+          name: "global-log",
+          path: "/tmp/global.log",
+          contentType: "text/plain",
+        },
+      }),
+    ).toBe(true);
+  });
+
+  it("should return false for scoped runtime messages", () => {
+    expect(
+      isGlobalRuntimeMessage({
+        type: "attachment_content",
+        data: {
+          name: "test-log",
+          content: "aGVsbG8=",
+          encoding: "base64",
+          contentType: "text/plain",
+        },
+      }),
+    ).toBe(false);
   });
 });

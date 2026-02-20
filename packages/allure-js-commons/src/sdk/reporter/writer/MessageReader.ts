@@ -12,6 +12,7 @@ export class MessageReader {
     tests: [],
     groups: [],
     attachments: {},
+    globals: {},
   };
 
   handleMessage = (jsonMessage: string) => {
@@ -26,6 +27,10 @@ export class MessageReader {
         return;
       case "attachment":
         this.results.attachments[path] = data;
+        return;
+      case "globals":
+        this.results.globals = this.results.globals ?? {};
+        this.results.globals[path] = parseJsonResult(data);
         return;
       case "misc":
         switch (path) {
@@ -76,6 +81,14 @@ export class MessageReader {
       if (this.results.groups) {
         for (const trc of this.results.groups) {
           await attachment(`${trc.uuid}-container.json`, JSON.stringify(trc, null, 2), {
+            contentType: "application/json",
+            encoding: "utf-8",
+          });
+        }
+      }
+      if (this.results.globals) {
+        for (const key of Object.keys(this.results.globals)) {
+          await attachment(key, JSON.stringify(this.results.globals[key], null, 2), {
             contentType: "application/json",
             encoding: "utf-8",
           });

@@ -69,6 +69,61 @@ describe("logStep", () => {
   });
 });
 
+describe("global methods", () => {
+  it("should create global attachment message", async () => {
+    const messageTestRuntime = implementMessageTestRuntime();
+
+    await messageTestRuntime.globalAttachment("global log", "content", { contentType: "text/plain" });
+
+    expect(messageTestRuntime.sendMessage).toBeCalledTimes(1);
+    const [[message]] = messageTestRuntime.sendMessage.mock.calls;
+    expect(message).toEqual({
+      type: "global_attachment_content",
+      data: {
+        name: "global log",
+        content: Buffer.from("content", "utf-8").toString("base64"),
+        encoding: "base64",
+        contentType: "text/plain",
+        fileExtension: undefined,
+      },
+    });
+  });
+
+  it("should create global error message", async () => {
+    const messageTestRuntime = implementMessageTestRuntime();
+
+    await messageTestRuntime.globalError({ message: "global failed", trace: "stack" });
+
+    expect(messageTestRuntime.sendMessage).toBeCalledTimes(1);
+    const [[message]] = messageTestRuntime.sendMessage.mock.calls;
+    expect(message).toEqual({
+      type: "global_error",
+      data: {
+        message: "global failed",
+        trace: "stack",
+      },
+    });
+  });
+
+  it("should create global attachment path message", async () => {
+    const messageTestRuntime = implementMessageTestRuntime();
+
+    await messageTestRuntime.globalAttachmentFromPath("global log", "/tmp/global.log", { contentType: "text/plain" });
+
+    expect(messageTestRuntime.sendMessage).toBeCalledTimes(1);
+    const [[message]] = messageTestRuntime.sendMessage.mock.calls;
+    expect(message).toEqual({
+      type: "global_attachment_path",
+      data: {
+        name: "global log",
+        path: "/tmp/global.log",
+        contentType: "text/plain",
+        fileExtension: undefined,
+      },
+    });
+  });
+});
+
 describe("step", () => {
   it("should not have ansi in error details", async () => {
     const ansiPattern = [

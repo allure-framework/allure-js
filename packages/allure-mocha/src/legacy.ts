@@ -1,5 +1,5 @@
 import * as commons from "allure-js-commons";
-import type { ContentType, ParameterOptions } from "allure-js-commons";
+import type { ContentType, ParameterOptions, StatusDetails } from "allure-js-commons";
 import { Status } from "allure-js-commons";
 import type { Category } from "allure-js-commons/sdk";
 import { getStatusFromError, isPromise } from "allure-js-commons/sdk";
@@ -114,6 +114,17 @@ class LegacyAllureApi {
     Promise.resolve(
       commons.attachment(name, content, typeof options === "string" ? { contentType: options } : options),
     );
+  /**
+   * @deprecated please use import { globalAttachment } from "allure-js-commons" instead.
+   */
+  globalAttachment = (name: string, content: Buffer | string, options: ContentType | string | AttachmentOptions) =>
+    Promise.resolve(
+      commons.globalAttachment(name, content, typeof options === "string" ? { contentType: options } : options),
+    );
+  /**
+   * @deprecated please use import { globalError } from "allure-js-commons" instead.
+   */
+  globalError = (details: StatusDetails) => Promise.resolve(commons.globalError(details));
   /**
    * @deprecated please use import { attachment } from "allure-js-commons" instead.
    */

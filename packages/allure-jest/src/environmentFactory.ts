@@ -5,7 +5,12 @@ import { env } from "node:process";
 import * as allure from "allure-js-commons";
 import { Stage, Status, type StatusDetails, type TestResult } from "allure-js-commons";
 import { type RuntimeMessage, type TestPlanV1, serialize } from "allure-js-commons/sdk";
-import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
+import {
+  extractMetadataFromString,
+  getMessageAndTraceFromError,
+  getStatusFromError,
+  isGlobalRuntimeMessage,
+} from "allure-js-commons/sdk";
 import {
   ReporterRuntime,
   createDefaultWriter,
@@ -71,7 +76,13 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
 
     handleAllureRuntimeMessage(message: RuntimeMessage) {
       const executableUuid = last(this.runContext.executables);
-
+      if (isGlobalRuntimeMessage(message)) {
+        this.runtime.applyGlobalRuntimeMessages([message]);
+        return;
+      }
+      if (!executableUuid) {
+        return;
+      }
       this.runtime.applyRuntimeMessages(executableUuid, [message]);
     }
 
@@ -354,6 +365,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     #handleRunFinish() {
       this.runtime.writeEnvironmentInfo();
       this.runtime.writeCategoriesDefinitions();
+      this.runtime.writeGlobals();
     }
 
     #currentExecutable() {

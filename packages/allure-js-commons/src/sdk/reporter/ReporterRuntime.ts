@@ -5,8 +5,10 @@ import {
   type Attachment,
   type AttachmentOptions,
   type FixtureResult,
+  type Globals,
   type Label,
   Stage,
+  type StatusDetails,
   type StepResult,
   type TestResult,
 } from "../../model.js";
@@ -15,6 +17,9 @@ import type {
   EnvironmentInfo,
   RuntimeAttachmentContentMessage,
   RuntimeAttachmentPathMessage,
+  RuntimeGlobalAttachmentContentMessage,
+  RuntimeGlobalAttachmentPathMessage,
+  RuntimeGlobalErrorMessage,
   RuntimeMessage,
   RuntimeMetadataMessage,
   RuntimeStartStepMessage,
@@ -207,6 +212,8 @@ export class ReporterRuntime {
   environmentInfo?: EnvironmentInfo;
   linkConfig?: LinkConfig;
   globalLabels: Label[] = [];
+  globalAttachments: Attachment[] = [];
+  globalErrors: StatusDetails[] = [];
 
   constructor({
     writer,
@@ -504,23 +511,11 @@ export class ReporterRuntime {
     }
 
     const isPath = typeof attachmentContentOrPath === "string";
-    const fileExtension = options.fileExtension ?? (isPath ? extname(attachmentContentOrPath) : undefined);
-    const attachmentFileName = buildAttachmentFileName({
-      contentType: options.contentType,
-      fileExtension,
+    const attachmentFileName = this.#writeAttachmentFile(attachmentContentOrPath, {
+      ...options,
+      fileExtension: options.fileExtension ?? (isPath ? extname(attachmentContentOrPath) : undefined),
     });
-
-    if (isPath) {
-      this.writer.writeAttachmentFromPath(attachmentFileName, attachmentContentOrPath);
-    } else {
-      this.writer.writeAttachment(attachmentFileName, attachmentContentOrPath);
-    }
-
-    const attachment: Attachment = {
-      name: attachmentName,
-      source: attachmentFileName,
-      type: options.contentType,
-    };
+    const attachment = this.#createAttachment(attachmentName, options.contentType, attachmentFileName);
 
     if (options.wrapInStep) {
       const { timestamp = Date.now() } = options;
@@ -563,6 +558,19 @@ export class ReporterRuntime {
     this.writer.writeCategoriesDefinitions(serializedCategories);
   };
 
+  writeGlobals = () => {
+    const globals: Globals = {
+      attachments: [...this.globalAttachments],
+      errors: [...this.globalErrors],
+    };
+
+    if (!globals.attachments.length && !globals.errors.length) {
+      return;
+    }
+
+    this.#writeGlobals(`${randomUuid()}-globals.json`, globals);
+  };
+
   applyRuntimeMessages = (rootUuid: string, messages: RuntimeMessage[]) => {
     messages.forEach((message) => {
       switch (message.type) {
@@ -588,6 +596,24 @@ export class ReporterRuntime {
           // eslint-disable-next-line no-console
           console.error(`could not apply runtime messages: unknown message ${JSON.stringify(message)}`);
           return;
+      }
+    });
+  };
+
+  applyGlobalRuntimeMessages = (messages: RuntimeMessage[]) => {
+    messages.forEach((message) => {
+      switch (message.type) {
+        case "global_attachment_content":
+          this.#handleGlobalAttachmentContentMessage(message.data);
+          break;
+        case "global_attachment_path":
+          this.#handleGlobalAttachmentPathMessage(message.data);
+          break;
+        case "global_error":
+          this.#handleGlobalErrorMessage(message.data);
+          break;
+        default:
+          break;
       }
     });
   };
@@ -732,6 +758,29 @@ export class ReporterRuntime {
     });
   };
 
+  #handleGlobalAttachmentContentMessage = (message: RuntimeGlobalAttachmentContentMessage["data"]) => {
+    const attachmentContent = Buffer.from(message.content, message.encoding);
+    const attachmentSource = this.#writeAttachmentFile(attachmentContent, {
+      contentType: message.contentType,
+      fileExtension: message.fileExtension,
+    });
+
+    this.globalAttachments.push(this.#createAttachment(message.name, message.contentType, attachmentSource));
+  };
+
+  #handleGlobalAttachmentPathMessage = (message: RuntimeGlobalAttachmentPathMessage["data"]) => {
+    const attachmentSource = this.#writeAttachmentFile(message.path, {
+      contentType: message.contentType,
+      fileExtension: message.fileExtension ?? extname(message.path),
+    });
+
+    this.globalAttachments.push(this.#createAttachment(message.name, message.contentType, attachmentSource));
+  };
+
+  #handleGlobalErrorMessage = (message: RuntimeGlobalErrorMessage["data"]) => {
+    this.globalErrors.push({ ...message });
+  };
+
   #findParent = (
     rootUuid: string,
     parentStepUuid: string | null | undefined,
@@ -749,6 +798,35 @@ export class ReporterRuntime {
     } else {
       return this.state.getStepResult(parentStepUuid);
     }
+  };
+
+  #writeAttachmentFile = (
+    attachmentContentOrPath: Buffer | string,
+    options: Pick<AttachmentOptions, "contentType" | "fileExtension">,
+  ) => {
+    const isPath = typeof attachmentContentOrPath === "string";
+    const attachmentFileName = buildAttachmentFileName({
+      contentType: options.contentType,
+      fileExtension: options.fileExtension,
+    });
+
+    if (isPath) {
+      this.writer.writeAttachmentFromPath(attachmentFileName, attachmentContentOrPath);
+    } else {
+      this.writer.writeAttachment(attachmentFileName, attachmentContentOrPath);
+    }
+
+    return attachmentFileName;
+  };
+
+  #createAttachment = (name: string, contentType: string, source: string): Attachment => ({
+    name,
+    source,
+    type: contentType,
+  });
+
+  #writeGlobals = (distFileName: string, globals: Globals): void => {
+    this.writer.writeGlobals(distFileName, globals);
   };
 
   #writeFixturesOfScope = ({ fixtures, tests }: TestScope) => {
