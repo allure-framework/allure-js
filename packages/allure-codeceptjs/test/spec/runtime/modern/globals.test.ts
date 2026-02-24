@@ -2,6 +2,7 @@ import { expect, it } from "vitest";
 import { runCodeceptJsInlineTest } from "../../../utils.js";
 
 it("writes globals payload from scenario body", async () => {
+  const before = Date.now();
   const { globals, attachments } = await runCodeceptJsInlineTest({
     "login.test.js": `
       const { globalAttachment, globalError } = require("allure-js-commons");
@@ -13,6 +14,7 @@ it("writes globals payload from scenario body", async () => {
       });
     `,
   });
+  const after = Date.now();
 
   const globalsEntries = Object.entries(globals ?? {});
   expect(globalsEntries.length).toBeGreaterThan(0);
@@ -32,10 +34,12 @@ it("writes globals payload from scenario body", async () => {
     ]),
   );
   allErrors.forEach((error) => {
-    expect(error.timestamp).toEqual(expect.any(Number));
+    expect(error.timestamp).toBeGreaterThanOrEqual(before);
+    expect(error.timestamp).toBeLessThanOrEqual(after);
   });
   allAttachments.forEach((attachment) => {
-    expect(attachment.timestamp).toEqual(expect.any(Number));
+    expect(attachment.timestamp).toBeGreaterThanOrEqual(before);
+    expect(attachment.timestamp).toBeLessThanOrEqual(after);
   });
   expect(allErrors.filter((error) => error.message === "global setup failed")).toHaveLength(1);
   expect(allAttachments.filter((attachment) => attachment.name === "global-log")).toHaveLength(1);
@@ -47,6 +51,7 @@ it("writes globals payload from scenario body", async () => {
 });
 
 it("writes globals payload from suite hooks", async () => {
+  const before = Date.now();
   const { globals, attachments } = await runCodeceptJsInlineTest({
     "login.test.js": `
       const { globalAttachment, globalError } = require("allure-js-commons");
@@ -63,6 +68,7 @@ it("writes globals payload from suite hooks", async () => {
       Scenario("sample-scenario", async () => {});
     `,
   });
+  const after = Date.now();
 
   const globalsEntries = Object.entries(globals ?? {});
   expect(globalsEntries.length).toBeGreaterThan(0);
@@ -78,10 +84,12 @@ it("writes globals payload from suite hooks", async () => {
     ]),
   );
   allErrors.forEach((error) => {
-    expect(error.timestamp).toEqual(expect.any(Number));
+    expect(error.timestamp).toBeGreaterThanOrEqual(before);
+    expect(error.timestamp).toBeLessThanOrEqual(after);
   });
   allAttachments.forEach((attachment) => {
-    expect(attachment.timestamp).toEqual(expect.any(Number));
+    expect(attachment.timestamp).toBeGreaterThanOrEqual(before);
+    expect(attachment.timestamp).toBeLessThanOrEqual(after);
   });
 
   const beforeSuiteAttachment = allAttachments.find((a) => a.name === "before-suite-log");

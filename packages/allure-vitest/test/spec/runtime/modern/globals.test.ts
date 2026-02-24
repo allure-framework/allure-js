@@ -12,7 +12,8 @@ it("writes globals payload from runtime API calls", async () => {
         await globalError({ message: "global setup failed", trace: "stack" });
       });
 
-      test("passes", () => {});
+      test("passes 1", () => {});
+      test("passes 2", () => {});
     `,
   });
 

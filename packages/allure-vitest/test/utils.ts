@@ -32,8 +32,8 @@ export const runVitestInlineTest = async (
   const configFilename = "vitest.config.ts";
   const configPath = join(testDir, configFilename);
   // getPosixPath allows us to interpolate such paths without escaping
-  const setupModulePath = getPosixPath(join(fileDirname, "..", "src", "setup.ts"));
-  const reporterModulePath = getPosixPath(join(fileDirname, "..", "src", "reporter.ts"));
+  const setupModulePath = getPosixPath(require.resolve("allure-vitest/setup"));
+  const reporterModulePath = getPosixPath(require.resolve("allure-vitest/reporter"));
   const allureResultsPath = getPosixPath(join(testDir, "allure-results"));
   const fixtureAccessorOpts = {
     setupModulePath,

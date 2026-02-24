@@ -37,7 +37,7 @@ it("writes globals payload from runtime API calls", async () => {
   expect(Buffer.from(encodedAttachment, "base64").toString("utf-8")).toBe("hello");
 });
 
-it("writes globals payload from hooks and module scope", async () => {
+it("supports globals from hooks, but not from module scope", async () => {
   const { globals, attachments } = await runMochaInlineTest("globals/runtimeGlobalsContexts");
 
   const globalsEntries = Object.entries(globals ?? {});
@@ -49,15 +49,13 @@ it("writes globals payload from hooks and module scope", async () => {
   expect(allErrors).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
-        message: "module scope error",
-        timestamp: expect.any(Number),
-      }),
-      expect.objectContaining({
         message: "after hook error",
         timestamp: expect.any(Number),
       }),
     ]),
   );
+  expect(allErrors.filter((error) => error.message === "module scope error")).toHaveLength(0);
+  expect(allErrors.filter((error) => error.message === "after hook error")).toHaveLength(1);
   allErrors.forEach((error) => {
     expect(error.timestamp).toEqual(expect.any(Number));
   });

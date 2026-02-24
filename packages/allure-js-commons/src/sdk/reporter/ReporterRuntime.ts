@@ -758,7 +758,7 @@ export class ReporterRuntime {
       fileExtension: message.fileExtension,
     });
 
-    this.#writeGlobals(`${randomUuid()}-globals.json`, {
+    this.#writeGlobals({
       attachments: [this.#createGlobalAttachment(message.name, message.contentType, attachmentSource)],
       errors: [],
     });
@@ -770,14 +770,14 @@ export class ReporterRuntime {
       fileExtension: message.fileExtension ?? extname(message.path),
     });
 
-    this.#writeGlobals(`${randomUuid()}-globals.json`, {
+    this.#writeGlobals({
       attachments: [this.#createGlobalAttachment(message.name, message.contentType, attachmentSource)],
       errors: [],
     });
   };
 
   #handleGlobalErrorMessage = (message: RuntimeGlobalErrorMessage["data"]) => {
-    this.#writeGlobals(`${randomUuid()}-globals.json`, {
+    this.#writeGlobals({
       attachments: [],
       errors: [{ ...message, timestamp: Date.now() }],
     });
@@ -832,8 +832,8 @@ export class ReporterRuntime {
     timestamp: Date.now(),
   });
 
-  #writeGlobals = (distFileName: string, globals: Globals): void => {
-    this.writer.writeGlobals(distFileName, globals);
+  #writeGlobals = (globals: Globals): void => {
+    this.writer.writeGlobals(`${randomUuid()}-globals.json`, globals);
   };
 
   #writeFixturesOfScope = ({ fixtures, tests }: TestScope) => {

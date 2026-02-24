@@ -1,15 +1,15 @@
-void (async () => {
-  const { globalError } = await import("allure-js-commons");
-  await globalError({ message: "module scope error" });
-})();
+// cjs: const { after, before, it } = require("mocha");
+// cjs: const { globalAttachment, globalError } = require("allure-js-commons");
+// esm: import { after, before, it } from "mocha";
+// esm: import { globalAttachment, globalError } from "allure-js-commons";
+
+void globalError({ message: "module scope error" });
 
 before(async () => {
-  const { globalAttachment } = await import("allure-js-commons");
   await globalAttachment("before-log", "before", { contentType: "text/plain" });
 });
 
 after(async () => {
-  const { globalError } = await import("allure-js-commons");
   await globalError({ message: "after hook error" });
 });
 

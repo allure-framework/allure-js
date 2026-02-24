@@ -997,6 +997,48 @@ describe("ReporterRuntime", () => {
       );
     });
 
+    it("should set global timestamps within message processing window", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+      const before = Date.now();
+
+      runtime.applyGlobalRuntimeMessages([
+        {
+          type: "global_attachment_content",
+          data: {
+            name: "setup-log",
+            content: Buffer.from("hello", "utf-8").toString("base64"),
+            encoding: "base64",
+            contentType: "text/plain",
+            fileExtension: ".txt",
+          },
+        },
+        {
+          type: "global_error",
+          data: {
+            message: "setup failed",
+            trace: "stack",
+          },
+        },
+      ]);
+
+      const after = Date.now();
+      const globalsPayloads = writer.writeGlobals.mock.calls.map(([, globals]) => globals);
+      const attachmentTimestamps = globalsPayloads.flatMap((globals) => globals.attachments.map((a) => a.timestamp));
+      const errorTimestamps = globalsPayloads.flatMap((globals) => globals.errors.map((e) => e.timestamp));
+
+      expect(attachmentTimestamps).toHaveLength(1);
+      expect(errorTimestamps).toHaveLength(1);
+      attachmentTimestamps.forEach((timestamp) => {
+        expect(timestamp).toBeGreaterThanOrEqual(before);
+        expect(timestamp).toBeLessThanOrEqual(after);
+      });
+      errorTimestamps.forEach((timestamp) => {
+        expect(timestamp).toBeGreaterThanOrEqual(before);
+        expect(timestamp).toBeLessThanOrEqual(after);
+      });
+    });
+
     it("should write global attachment from path", () => {
       const writer = mockWriter();
       const runtime = new ReporterRuntime({ writer });
