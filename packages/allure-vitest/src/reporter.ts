@@ -3,7 +3,7 @@ import type { TestModule } from "vitest/node";
 import type { Reporter } from "vitest/reporters";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import { getMessageAndTraceFromError, getStatusFromError, isGlobalRuntimeMessage } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
@@ -59,7 +59,6 @@ export default class AllureVitestReporter implements Reporter {
     if (globalMessages.length) {
       this.allureReporterRuntime!.applyGlobalRuntimeMessages(globalMessages);
     }
-    this.allureReporterRuntime!.writeGlobals();
     this.globalRuntimeMessages = [];
   }
 
@@ -126,14 +125,8 @@ export default class AllureVitestReporter implements Reporter {
         });
       }
 
-      const globalMessages = allureRuntimeMessages.filter(isGlobalRuntimeMessage);
-      if (globalMessages.length) {
-        this.allureReporterRuntime!.applyGlobalRuntimeMessages(globalMessages);
-      }
-
-      const scopedMessages = allureRuntimeMessages.filter((m) => !isGlobalRuntimeMessage(m));
-      if (scopedMessages.length) {
-        this.allureReporterRuntime!.applyRuntimeMessages(testUuid, scopedMessages);
+      if (allureRuntimeMessages.length) {
+        this.allureReporterRuntime!.applyRuntimeMessages(testUuid, allureRuntimeMessages);
       }
 
       switch (task.result?.state) {

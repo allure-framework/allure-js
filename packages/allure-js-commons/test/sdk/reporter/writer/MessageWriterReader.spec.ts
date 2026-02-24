@@ -15,8 +15,8 @@ describe("MessageWriter/MessageReader globals transport", () => {
     });
 
     const globals: Globals = {
-      attachments: [{ name: "setup-log", source: "setup-log.txt", type: "text/plain" }],
-      errors: [{ message: "setup failed", trace: "stack" }],
+      attachments: [{ name: "setup-log", source: "setup-log.txt", type: "text/plain", timestamp: 1 }],
+      errors: [{ message: "setup failed", trace: "stack", timestamp: 2 }],
     };
 
     writer.writeGlobals("123-globals.json", globals);

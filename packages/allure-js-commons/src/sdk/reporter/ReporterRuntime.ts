@@ -8,7 +8,6 @@ import {
   type Globals,
   type Label,
   Stage,
-  type StatusDetails,
   type StepResult,
   type TestResult,
 } from "../../model.js";
@@ -212,8 +211,6 @@ export class ReporterRuntime {
   environmentInfo?: EnvironmentInfo;
   linkConfig?: LinkConfig;
   globalLabels: Label[] = [];
-  globalAttachments: Attachment[] = [];
-  globalErrors: StatusDetails[] = [];
 
   constructor({
     writer,
@@ -558,19 +555,6 @@ export class ReporterRuntime {
     this.writer.writeCategoriesDefinitions(serializedCategories);
   };
 
-  writeGlobals = () => {
-    const globals: Globals = {
-      attachments: [...this.globalAttachments],
-      errors: [...this.globalErrors],
-    };
-
-    if (!globals.attachments.length && !globals.errors.length) {
-      return;
-    }
-
-    this.#writeGlobals(`${randomUuid()}-globals.json`, globals);
-  };
-
   applyRuntimeMessages = (rootUuid: string, messages: RuntimeMessage[]) => {
     messages.forEach((message) => {
       switch (message.type) {
@@ -591,6 +575,15 @@ export class ReporterRuntime {
           return;
         case "attachment_path":
           this.#handleAttachmentPathMessage(rootUuid, message.data);
+          return;
+        case "global_attachment_content":
+          this.#handleGlobalAttachmentContentMessage(message.data);
+          return;
+        case "global_attachment_path":
+          this.#handleGlobalAttachmentPathMessage(message.data);
+          return;
+        case "global_error":
+          this.#handleGlobalErrorMessage(message.data);
           return;
         default:
           // eslint-disable-next-line no-console
@@ -765,7 +758,10 @@ export class ReporterRuntime {
       fileExtension: message.fileExtension,
     });
 
-    this.globalAttachments.push(this.#createAttachment(message.name, message.contentType, attachmentSource));
+    this.#writeGlobals(`${randomUuid()}-globals.json`, {
+      attachments: [this.#createGlobalAttachment(message.name, message.contentType, attachmentSource)],
+      errors: [],
+    });
   };
 
   #handleGlobalAttachmentPathMessage = (message: RuntimeGlobalAttachmentPathMessage["data"]) => {
@@ -774,11 +770,17 @@ export class ReporterRuntime {
       fileExtension: message.fileExtension ?? extname(message.path),
     });
 
-    this.globalAttachments.push(this.#createAttachment(message.name, message.contentType, attachmentSource));
+    this.#writeGlobals(`${randomUuid()}-globals.json`, {
+      attachments: [this.#createGlobalAttachment(message.name, message.contentType, attachmentSource)],
+      errors: [],
+    });
   };
 
   #handleGlobalErrorMessage = (message: RuntimeGlobalErrorMessage["data"]) => {
-    this.globalErrors.push({ ...message });
+    this.#writeGlobals(`${randomUuid()}-globals.json`, {
+      attachments: [],
+      errors: [{ ...message, timestamp: Date.now() }],
+    });
   };
 
   #findParent = (
@@ -823,6 +825,11 @@ export class ReporterRuntime {
     name,
     source,
     type: contentType,
+  });
+
+  #createGlobalAttachment = (name: string, contentType: string, source: string): Globals["attachments"][number] => ({
+    ...this.#createAttachment(name, contentType, source),
+    timestamp: Date.now(),
   });
 
   #writeGlobals = (distFileName: string, globals: Globals): void => {

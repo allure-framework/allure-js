@@ -22,7 +22,6 @@ import {
   getMessageAndTraceFromError,
   getMetadataLabel,
   hasLabel,
-  isGlobalRuntimeMessage,
   stripAnsi,
 } from "allure-js-commons/sdk";
 import {
@@ -655,7 +654,6 @@ export class AllureReporter implements ReporterV2 {
 
     this.allureRuntime!.writeEnvironmentInfo();
     this.allureRuntime!.writeCategoriesDefinitions();
-    this.allureRuntime!.writeGlobals();
   }
 
   printsToStdio(): boolean {
@@ -701,12 +699,6 @@ export class AllureReporter implements ReporterV2 {
         this.processStepMetadataMessage(attachmentStepUuid!, message);
         return;
       }
-
-      if (isGlobalRuntimeMessage(message)) {
-        this.allureRuntime!.applyGlobalRuntimeMessages([message]);
-        return;
-      }
-
       this.allureRuntime!.applyRuntimeMessages(testUuid, [message]);
       return;
     }

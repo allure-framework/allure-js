@@ -2,7 +2,6 @@ import type Cypress from "cypress";
 import { ContentType, Stage, Status } from "allure-js-commons";
 import type { FixtureResult, TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import { isGlobalRuntimeMessage } from "allure-js-commons/sdk";
 import {
   ReporterRuntime,
   createDefaultWriter,
@@ -139,7 +138,6 @@ export class AllureCypress {
     this.#endAllSpecs();
     this.allureRuntime.writeEnvironmentInfo();
     this.allureRuntime.writeCategoriesDefinitions();
-    this.allureRuntime.writeGlobals();
   };
 
   endSpec = (specAbsolutePath: string, cypressVideoPath?: string) => {
@@ -461,14 +459,11 @@ export class AllureCypress {
 
   #applyRuntimeApiMessages = (context: SpecContext, message: RuntimeMessage) => {
     const rootUuid = this.#resolveRootUuid(context);
-    if (isGlobalRuntimeMessage(message)) {
+    if (rootUuid) {
+      this.allureRuntime.applyRuntimeMessages(rootUuid, [message]);
+    } else {
       this.allureRuntime.applyGlobalRuntimeMessages([message]);
-      return;
     }
-    if (!rootUuid) {
-      return;
-    }
-    this.allureRuntime.applyRuntimeMessages(rootUuid, [message]);
   };
 
   /**

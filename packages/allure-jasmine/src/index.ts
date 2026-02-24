@@ -1,12 +1,7 @@
 import * as allure from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import {
-  getMessageAndTraceFromError,
-  getStatusFromError,
-  isGlobalRuntimeMessage,
-  isPromise,
-} from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, getStatusFromError, isPromise } from "allure-js-commons/sdk";
 import type { FixtureType, ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
@@ -81,14 +76,11 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
   handleAllureRuntimeMessages(message: RuntimeMessage) {
     const rootUuid = this.currentAllureFixtureUuid ?? this.currentAllureTestUuid;
-    if (isGlobalRuntimeMessage(message)) {
+    if (rootUuid) {
+      this.allureRuntime.applyRuntimeMessages(rootUuid, [message]);
+    } else {
       this.allureRuntime.applyGlobalRuntimeMessages([message]);
-      return;
     }
-    if (!rootUuid) {
-      return;
-    }
-    this.allureRuntime.applyRuntimeMessages(rootUuid, [message]);
   }
 
   jasmineStarted(): void {
@@ -208,7 +200,6 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   jasmineDone(): void {
     this.allureRuntime.writeEnvironmentInfo();
     this.allureRuntime.writeCategoriesDefinitions();
-    this.allureRuntime.writeGlobals();
     // write global container (or any remaining scopes)
     this.scopesStack.forEach((scopeUuid) => {
       this.allureRuntime.writeScope(scopeUuid);

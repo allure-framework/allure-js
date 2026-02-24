@@ -15,19 +15,32 @@ it("writes globals payload from scenario body", async () => {
   });
 
   const globalsEntries = Object.entries(globals ?? {});
-  expect(globalsEntries).toHaveLength(1);
+  expect(globalsEntries.length).toBeGreaterThan(0);
+  globalsEntries.forEach(([globalsFileName]) => {
+    expect(globalsFileName).toMatch(/.+-globals\.json/);
+  });
 
-  const [, globalInfo] = globalsEntries[0];
-  expect(globalInfo.errors).toEqual(
+  const allErrors = globalsEntries.flatMap(([, info]) => info.errors);
+  const allAttachments = globalsEntries.flatMap(([, info]) => info.attachments);
+  expect(allErrors).toEqual(
     expect.arrayContaining([
-      {
+      expect.objectContaining({
         message: "global setup failed",
         trace: "stack",
-      },
+        timestamp: expect.any(Number),
+      }),
     ]),
   );
+  allErrors.forEach((error) => {
+    expect(error.timestamp).toEqual(expect.any(Number));
+  });
+  allAttachments.forEach((attachment) => {
+    expect(attachment.timestamp).toEqual(expect.any(Number));
+  });
+  expect(allErrors.filter((error) => error.message === "global setup failed")).toHaveLength(1);
+  expect(allAttachments.filter((attachment) => attachment.name === "global-log")).toHaveLength(1);
 
-  const scenarioAttachment = globalInfo.attachments.find((a) => a.name === "global-log");
+  const scenarioAttachment = allAttachments.find((a) => a.name === "global-log");
   expect(scenarioAttachment?.type).toBe("text/plain");
   const encodedScenarioAttachment = attachments[scenarioAttachment!.source] as string;
   expect(Buffer.from(encodedScenarioAttachment, "base64").toString("utf-8")).toBe("hello");
@@ -52,13 +65,26 @@ it("writes globals payload from suite hooks", async () => {
   });
 
   const globalsEntries = Object.entries(globals ?? {});
-  expect(globalsEntries).toHaveLength(1);
+  expect(globalsEntries.length).toBeGreaterThan(0);
 
-  const [, globalInfo] = globalsEntries[0];
-  expect(globalInfo.errors).toEqual(expect.arrayContaining([{ message: "after suite error" }]));
-  expect(globalInfo.attachments).toHaveLength(1);
+  const allErrors = globalsEntries.flatMap(([, info]) => info.errors);
+  const allAttachments = globalsEntries.flatMap(([, info]) => info.attachments);
+  expect(allErrors).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: "after suite error",
+        timestamp: expect.any(Number),
+      }),
+    ]),
+  );
+  allErrors.forEach((error) => {
+    expect(error.timestamp).toEqual(expect.any(Number));
+  });
+  allAttachments.forEach((attachment) => {
+    expect(attachment.timestamp).toEqual(expect.any(Number));
+  });
 
-  const beforeSuiteAttachment = globalInfo.attachments.find((a) => a.name === "before-suite-log");
+  const beforeSuiteAttachment = allAttachments.find((a) => a.name === "before-suite-log");
   expect(beforeSuiteAttachment?.type).toBe("text/plain");
   const encodedBeforeSuiteAttachment = attachments[beforeSuiteAttachment!.source] as string;
   expect(Buffer.from(encodedBeforeSuiteAttachment, "base64").toString("utf-8")).toBe("before");

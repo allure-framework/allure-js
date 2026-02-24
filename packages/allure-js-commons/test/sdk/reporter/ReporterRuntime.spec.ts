@@ -790,6 +790,95 @@ describe("ReporterRuntime", () => {
   });
 
   describe("globals", () => {
+    it("should handle global runtime message in applyRuntimeMessages", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      runtime.applyRuntimeMessages("some-root", [
+        {
+          type: "global_error",
+          data: {
+            message: "from rooted runtime apply",
+          },
+        },
+      ]);
+
+      expect(writer.writeGlobals).toHaveBeenCalledTimes(1);
+      expect(writer.writeGlobals.mock.calls[0][1]).toEqual({
+        attachments: [],
+        errors: [
+          {
+            message: "from rooted runtime apply",
+            timestamp: expect.any(Number),
+          },
+        ],
+      });
+    });
+
+    it("should handle mixed scoped and global messages in applyRuntimeMessages", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+      const testUuid = runtime.startTest({ name: "test" });
+
+      runtime.applyRuntimeMessages(testUuid, [
+        {
+          type: "attachment_content",
+          data: {
+            name: "scoped-attachment",
+            content: Buffer.from("scoped-content", "utf-8").toString("base64"),
+            encoding: "base64",
+            contentType: "text/plain",
+          },
+        },
+        {
+          type: "global_error",
+          data: {
+            message: "global-error",
+          },
+        },
+      ]);
+
+      runtime.stopTest(testUuid);
+      runtime.writeTest(testUuid);
+
+      expect(writer.writeAttachment).toHaveBeenCalledTimes(1);
+      expect(writer.writeGlobals).toHaveBeenCalledTimes(1);
+      expect(writer.writeGlobals.mock.calls[0][1]).toEqual({
+        attachments: [],
+        errors: [
+          {
+            message: "global-error",
+            timestamp: expect.any(Number),
+          },
+        ],
+      });
+      expect(writer.writeResult).toHaveBeenCalledWith(
+        expect.objectContaining({
+          attachments: [expect.objectContaining({ name: "scoped-attachment", type: "text/plain" })],
+        }),
+      );
+    });
+
+    it("should ignore rootless non-global runtime messages in applyGlobalRuntimeMessages", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      runtime.applyGlobalRuntimeMessages([
+        {
+          type: "attachment_content",
+          data: {
+            name: "test-only",
+            content: Buffer.from("should-be-ignored", "utf-8").toString("base64"),
+            encoding: "base64",
+            contentType: "text/plain",
+          },
+        },
+      ]);
+
+      expect(writer.writeAttachment).not.toHaveBeenCalled();
+      expect(writer.writeGlobals).not.toHaveBeenCalled();
+    });
+
     it("should ignore rootless non-global runtime messages and keep global ones", () => {
       const writer = mockWriter();
       const runtime = new ReporterRuntime({ writer });
@@ -821,14 +910,30 @@ describe("ReporterRuntime", () => {
           },
         },
       ]);
-      runtime.writeGlobals();
 
       expect(writer.writeAttachment).toHaveBeenCalledTimes(1);
-      const [[, globals]] = writer.writeGlobals.mock.calls;
-      expect(globals).toEqual({
-        attachments: [expect.objectContaining({ name: "global-log", type: "text/plain" })],
-        errors: [{ message: "global setup failed", trace: "stack" }],
-      });
+      expect(writer.writeGlobals).toHaveBeenCalledTimes(2);
+      const globalsPayloads = writer.writeGlobals.mock.calls.map(([, globals]) => globals);
+      expect(globalsPayloads).toEqual(
+        expect.arrayContaining([
+          {
+            attachments: [
+              expect.objectContaining({ name: "global-log", type: "text/plain", timestamp: expect.any(Number) }),
+            ],
+            errors: [],
+          },
+          {
+            attachments: [],
+            errors: [
+              expect.objectContaining({
+                message: "global setup failed",
+                trace: "stack",
+                timestamp: expect.any(Number),
+              }),
+            ],
+          },
+        ]),
+      );
     });
 
     it("should write global attachments and errors", () => {
@@ -854,32 +959,42 @@ describe("ReporterRuntime", () => {
           },
         },
       ]);
-      runtime.writeGlobals();
 
       expect(writer.writeAttachment).toHaveBeenCalledTimes(1);
-      expect(writer.writeGlobals).toHaveBeenCalledTimes(1);
+      expect(writer.writeGlobals).toHaveBeenCalledTimes(2);
 
       const [[attachmentSource, content]] = writer.writeAttachment.mock.calls;
       expect(attachmentSource).toMatch(/.+\.txt/);
       expect(content.toString("utf-8")).toBe("hello");
 
-      const [[globalsFileName, globals]] = writer.writeGlobals.mock.calls;
-      expect(globalsFileName).toMatch(/.+-globals\.json/);
-      expect(globals).toEqual({
-        attachments: [
+      expect(writer.writeGlobals.mock.calls[0][0]).toMatch(/.+-globals\.json/);
+      expect(writer.writeGlobals.mock.calls[1][0]).toMatch(/.+-globals\.json/);
+      const globalsPayloads = writer.writeGlobals.mock.calls.map(([, globals]) => globals);
+      expect(globalsPayloads).toEqual(
+        expect.arrayContaining([
           {
-            name: "setup-log",
-            source: attachmentSource,
-            type: "text/plain",
+            attachments: [
+              {
+                name: "setup-log",
+                source: attachmentSource,
+                type: "text/plain",
+                timestamp: expect.any(Number),
+              },
+            ],
+            errors: [],
           },
-        ],
-        errors: [
           {
-            message: "setup failed",
-            trace: "stack",
+            attachments: [],
+            errors: [
+              {
+                message: "setup failed",
+                trace: "stack",
+                timestamp: expect.any(Number),
+              },
+            ],
           },
-        ],
-      });
+        ]),
+      );
     });
 
     it("should write global attachment from path", () => {
@@ -896,7 +1011,6 @@ describe("ReporterRuntime", () => {
           },
         },
       ]);
-      runtime.writeGlobals();
 
       expect(writer.writeAttachmentFromPath).toHaveBeenCalledTimes(1);
       expect(writer.writeGlobals).toHaveBeenCalledTimes(1);
@@ -910,21 +1024,13 @@ describe("ReporterRuntime", () => {
           name: "setup-log",
           source,
           type: "text/plain",
+          timestamp: expect.any(Number),
         },
       ]);
+      expect(globals.errors).toEqual([]);
     });
 
-    it("should not write globals file for empty payload", () => {
-      const writer = mockWriter();
-      const runtime = new ReporterRuntime({ writer });
-
-      runtime.writeGlobals();
-      runtime.writeGlobals();
-
-      expect(writer.writeGlobals).not.toHaveBeenCalled();
-    });
-
-    it("should create a new globals file on each write call", () => {
+    it("should create a new globals file for each global message", () => {
       const writer = mockWriter();
       const runtime = new ReporterRuntime({ writer });
 
@@ -936,7 +1042,6 @@ describe("ReporterRuntime", () => {
           },
         },
       ]);
-      runtime.writeGlobals();
       runtime.applyGlobalRuntimeMessages([
         {
           type: "global_error",
@@ -945,7 +1050,6 @@ describe("ReporterRuntime", () => {
           },
         },
       ]);
-      runtime.writeGlobals();
 
       expect(writer.writeGlobals).toHaveBeenCalledTimes(2);
     });

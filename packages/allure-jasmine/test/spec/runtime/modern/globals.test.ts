@@ -18,19 +18,33 @@ it("writes globals payload from runtime API calls", async () => {
   });
 
   const globalsEntries = Object.entries(globals ?? {});
-  expect(globalsEntries).toHaveLength(1);
+  expect(globalsEntries.length).toBeGreaterThan(0);
+  globalsEntries.forEach(([globalsFileName]) => {
+    expect(globalsFileName).toMatch(/.+-globals\.json/);
+  });
 
-  const [globalsFileName, globalInfo] = globalsEntries[0];
-  expect(globalsFileName).toMatch(/.+-globals\.json/);
-  expect(globalInfo.errors).toEqual([
-    {
-      message: "global setup failed",
-      trace: "stack",
-    },
-  ]);
-  expect(globalInfo.attachments).toHaveLength(1);
+  const allErrors = globalsEntries.flatMap(([, info]) => info.errors);
+  const allAttachments = globalsEntries.flatMap(([, info]) => info.attachments);
+  expect(allErrors).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: "global setup failed",
+        trace: "stack",
+        timestamp: expect.any(Number),
+      }),
+    ]),
+  );
+  allErrors.forEach((error) => {
+    expect(error.timestamp).toEqual(expect.any(Number));
+  });
+  allAttachments.forEach((attachment) => {
+    expect(attachment.timestamp).toEqual(expect.any(Number));
+  });
+  expect(allErrors.filter((error) => error.message === "global setup failed")).toHaveLength(1);
+  expect(allAttachments.filter((attachment) => attachment.name === "global-log")).toHaveLength(1);
 
-  const [globalAttachmentRef] = globalInfo.attachments;
+  const globalAttachmentRef = allAttachments.find((a) => a.name === "global-log");
+  expect(globalAttachmentRef).toBeDefined();
   expect(globalAttachmentRef.name).toBe("global-log");
   expect(globalAttachmentRef.type).toBe("text/plain");
 
@@ -55,20 +69,25 @@ it("collects globals from setup-only file without tests", async () => {
   });
 
   const globalsEntries = Object.entries(globals ?? {});
-  expect(globalsEntries).toHaveLength(1);
+  expect(globalsEntries.length).toBeGreaterThan(0);
 
-  const [, globalInfo] = globalsEntries[0];
-  expect(globalInfo.errors).toEqual(
+  const allErrors = globalsEntries.flatMap(([, info]) => info.errors);
+  const allAttachments = globalsEntries.flatMap(([, info]) => info.attachments);
+  expect(allErrors).toEqual(
     expect.arrayContaining([
-      {
+      expect.objectContaining({
         message: "setup-only error",
         trace: "setup stack",
-      },
+        timestamp: expect.any(Number),
+      }),
     ]),
   );
+  allAttachments.forEach((attachment) => {
+    expect(attachment.timestamp).toEqual(expect.any(Number));
+  });
 
-  const inlineRef = globalInfo.attachments.find((a) => a.name === "setup-inline-log");
-  const pathRef = globalInfo.attachments.find((a) => a.name === "setup-file-log");
+  const inlineRef = allAttachments.find((a) => a.name === "setup-inline-log");
+  const pathRef = allAttachments.find((a) => a.name === "setup-file-log");
 
   expect(inlineRef?.type).toBe("text/plain");
   expect(pathRef?.type).toBe("text/plain");

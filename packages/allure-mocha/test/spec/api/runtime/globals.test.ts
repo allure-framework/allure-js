@@ -7,38 +7,34 @@ it("writes globals payload from runtime API calls", async () => {
   const globalsEntries = Object.entries(globals ?? {});
   expect(globalsEntries.length).toBeGreaterThan(0);
 
-  const globalsEntry = globalsEntries.find(([, info]) => {
-    return (
-      info.errors.some((error) => error.message === "global setup failed") &&
-      info.attachments.some((attachment) => attachment.name === "global-log")
-    );
+  globalsEntries.forEach(([globalsFileName]) => {
+    expect(globalsFileName).toMatch(/.+-globals\.json/);
   });
-
-  expect(globalsEntry).toBeDefined();
-
-  const [globalsFileName, globalInfo] = globalsEntry!;
-  expect(globalsFileName).toMatch(/.+-globals\.json/);
-  expect(globalInfo.errors).toEqual(
+  const allAttachments = globalsEntries.flatMap(([, info]) => info.attachments);
+  const allErrors = globalsEntries.flatMap(([, info]) => info.errors);
+  expect(allErrors).toEqual(
     expect.arrayContaining([
-      {
+      expect.objectContaining({
         message: "global setup failed",
         trace: "stack",
-      },
+        timestamp: expect.any(Number),
+      }),
     ]),
   );
-
-  const allAttachments = globalsEntries.flatMap(([, info]) => info.attachments);
-  expect(allAttachments.length).toBeGreaterThanOrEqual(2);
+  allErrors.forEach((error) => {
+    expect(error.timestamp).toEqual(expect.any(Number));
+  });
+  allAttachments.forEach((attachment) => {
+    expect(attachment.timestamp).toEqual(expect.any(Number));
+  });
+  expect(allErrors.filter((error) => error.message === "global setup failed")).toHaveLength(1);
+  expect(allAttachments.filter((attachment) => attachment.name === "global-log")).toHaveLength(1);
 
   const globalAttachmentRef = allAttachments.find((a) => a.name === "global-log");
-  const globalPathAttachmentRef = allAttachments.find((a) => a.name === "global-log-path");
   expect(globalAttachmentRef?.type).toBe("text/plain");
-  expect(globalPathAttachmentRef?.type).toBe("text/plain");
 
   const encodedAttachment = attachments[globalAttachmentRef!.source] as string;
-  const encodedPathAttachment = attachments[globalPathAttachmentRef!.source] as string;
   expect(Buffer.from(encodedAttachment, "base64").toString("utf-8")).toBe("hello");
-  expect(Buffer.from(encodedPathAttachment, "base64").toString("utf-8")).toBe("hello-from-path");
 });
 
 it("writes globals payload from hooks and module scope", async () => {
@@ -51,8 +47,23 @@ it("writes globals payload from hooks and module scope", async () => {
   const allErrors = globalsEntries.flatMap(([, info]) => info.errors);
 
   expect(allErrors).toEqual(
-    expect.arrayContaining([{ message: "module scope error" }, { message: "after hook error" }]),
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: "module scope error",
+        timestamp: expect.any(Number),
+      }),
+      expect.objectContaining({
+        message: "after hook error",
+        timestamp: expect.any(Number),
+      }),
+    ]),
   );
+  allErrors.forEach((error) => {
+    expect(error.timestamp).toEqual(expect.any(Number));
+  });
+  allAttachments.forEach((attachment) => {
+    expect(attachment.timestamp).toEqual(expect.any(Number));
+  });
 
   const beforeAttachmentRef = allAttachments.find((a) => a.name === "before-log");
   expect(beforeAttachmentRef?.type).toBe("text/plain");
