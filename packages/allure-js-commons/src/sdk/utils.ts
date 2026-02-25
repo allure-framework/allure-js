@@ -1,6 +1,13 @@
 import type { FixtureResult, Label, Link, StatusDetails, StepResult, TestResult } from "../model.js";
 import { LabelName, Status } from "../model.js";
-import type { RuntimeMessage, SerializeOptions, SerializerReplacerFunc } from "./types.js";
+import type {
+  RuntimeGlobalAttachmentContentMessage,
+  RuntimeGlobalAttachmentPathMessage,
+  RuntimeGlobalErrorMessage,
+  RuntimeMessage,
+  SerializeOptions,
+  SerializerReplacerFunc,
+} from "./types.js";
 
 export const getStatusFromError = (error: Partial<Error>): Status => {
   switch (true) {
@@ -212,6 +219,19 @@ export const hasLabel = (testResult: TestResult, labelName: LabelName | string):
 
 export const hasStepMessage = (messages: RuntimeMessage[]) => {
   return messages.some((message) => message.type === "step_start" || message.type === "step_stop");
+};
+
+export const isGlobalRuntimeMessage = (
+  message: RuntimeMessage,
+): message is
+  | RuntimeGlobalAttachmentContentMessage
+  | RuntimeGlobalAttachmentPathMessage
+  | RuntimeGlobalErrorMessage => {
+  return (
+    message.type === "global_attachment_content" ||
+    message.type === "global_attachment_path" ||
+    message.type === "global_error"
+  );
 };
 
 export const getStepsMessagesPair = (messages: RuntimeMessage[]) =>

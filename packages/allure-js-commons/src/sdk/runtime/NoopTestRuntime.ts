@@ -9,6 +9,18 @@ export class NoopTestRuntime implements TestRuntime {
     await this.warning();
   }
 
+  async globalAttachment() {
+    await this.warning();
+  }
+
+  async globalAttachmentFromPath() {
+    await this.warning();
+  }
+
+  async globalError() {
+    await this.warning();
+  }
+
   async description() {
     await this.warning();
   }

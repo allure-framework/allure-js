@@ -461,6 +461,8 @@ export class AllureCypress {
     const rootUuid = this.#resolveRootUuid(context);
     if (rootUuid) {
       this.allureRuntime.applyRuntimeMessages(rootUuid, [message]);
+    } else {
+      this.allureRuntime.applyGlobalRuntimeMessages([message]);
     }
   };
 

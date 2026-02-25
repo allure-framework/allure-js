@@ -12,7 +12,7 @@ import {
 import { extname } from "node:path";
 import type { Label, Link, TestResult } from "allure-js-commons";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
-import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
+import { type RuntimeMessage, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
   ReporterRuntime,
@@ -500,16 +500,9 @@ export default class AllureCucumberReporter extends Formatter {
   }
 
   private onAttachment(message: messages.Attachment): void {
-    if (!message.testCaseStartedId) {
-      return;
-    }
-
-    const fixtureUuid = this.fixtureUuids.get(message.testCaseStartedId);
-    const testUuid = this.testResultUuids.get(message.testCaseStartedId);
+    const fixtureUuid = message.testCaseStartedId ? this.fixtureUuids.get(message.testCaseStartedId) : undefined;
+    const testUuid = message.testCaseStartedId ? this.testResultUuids.get(message.testCaseStartedId) : undefined;
     const rootUuid = fixtureUuid ?? testUuid;
-    if (!rootUuid) {
-      return;
-    }
 
     if (message.mediaType === "application/vnd.allure.skipcucumber+json") {
       if (testUuid) {
@@ -521,10 +514,11 @@ export default class AllureCucumberReporter extends Formatter {
     }
 
     if (message.mediaType === ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE) {
-      const parsedMessage = JSON.parse(message.body);
+      this.applyRuntimeAttachmentMessages(rootUuid, message.body);
+      return;
+    }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      this.allureRuntime.applyRuntimeMessages(rootUuid, Array.isArray(parsedMessage) ? parsedMessage : [parsedMessage]);
+    if (!rootUuid) {
       return;
     }
 
@@ -543,6 +537,20 @@ export default class AllureCucumberReporter extends Formatter {
         },
       },
     ]);
+  }
+
+  private parseRuntimeMessages(messageBody: string): RuntimeMessage[] {
+    const parsedMessage = JSON.parse(messageBody) as RuntimeMessage | RuntimeMessage[];
+    return Array.isArray(parsedMessage) ? parsedMessage : [parsedMessage];
+  }
+
+  private applyRuntimeAttachmentMessages(rootUuid: string | undefined, messageBody: string): void {
+    const runtimeMessages = this.parseRuntimeMessages(messageBody);
+    if (rootUuid) {
+      this.allureRuntime.applyRuntimeMessages(rootUuid, runtimeMessages);
+    } else {
+      this.allureRuntime.applyGlobalRuntimeMessages(runtimeMessages);
+    }
   }
 
   private onTestRunFinished() {

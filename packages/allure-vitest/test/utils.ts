@@ -3,10 +3,10 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, extname, join } from "node:path";
 import { fileURLToPath } from "url";
+import { MessageReader, getPosixPath } from "../../allure-js-commons/src/sdk/reporter/index.js";
 import { attachment, logStep, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { stripAnsi } from "allure-js-commons/sdk";
-import { MessageReader, getPosixPath } from "allure-js-commons/sdk/reporter";
 
 type TestFileAccessor = (opts: {
   setupModulePath: string;

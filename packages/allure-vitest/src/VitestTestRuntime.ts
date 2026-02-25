@@ -1,11 +1,63 @@
 import { getCurrentSuite, getCurrentTest } from "@vitest/runner";
 import type { SuiteCollector, RunnerTask as Task, TaskMeta } from "vitest";
-import type { RuntimeMessage } from "allure-js-commons/sdk";
+import { type RuntimeMessage, isGlobalRuntimeMessage } from "allure-js-commons/sdk";
 import { MessageTestRuntime } from "allure-js-commons/sdk/runtime";
+
+const ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_KEY = "__allureVitestGlobalRuntimeMessages";
+const ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_META_KEY = "allureGlobalRuntimeMessages";
+const ALLURE_VITEST_RUNTIME_MESSAGES_META_KEY = "allureRuntimeMessages";
+
+type RuntimeMessageMetaKey =
+  | typeof ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_META_KEY
+  | typeof ALLURE_VITEST_RUNTIME_MESSAGES_META_KEY;
+type RuntimeMessageTaskMeta = TaskMeta & {
+  [ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_META_KEY]?: RuntimeMessage[];
+  [ALLURE_VITEST_RUNTIME_MESSAGES_META_KEY]?: RuntimeMessage[];
+};
+
+const addGlobalMessage = (message: RuntimeMessage) => {
+  const holder = globalThis as unknown as Record<string, RuntimeMessage[] | undefined>;
+  const messages = (holder[ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_KEY] ??= []);
+  messages.push(message);
+};
+
+const addMessageToMeta = (meta: TaskMeta, key: RuntimeMessageMetaKey, message: RuntimeMessage) => {
+  const typedMeta = meta as RuntimeMessageTaskMeta;
+  const messages = (typedMeta[key] ??= []);
+  messages.push(message);
+};
+
+export const takeGlobalRuntimeMessages = (): RuntimeMessage[] => {
+  const holder = globalThis as unknown as Record<string, RuntimeMessage[] | undefined>;
+  const result = [...(holder[ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_KEY] ?? [])];
+  holder[ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_KEY] = [];
+  return result;
+};
 
 export class VitestTestRuntime extends MessageTestRuntime {
   sendMessage(message: RuntimeMessage): Promise<void> {
     const currentTest = getCurrentTest();
+
+    if (isGlobalRuntimeMessage(message)) {
+      if (currentTest) {
+        addMessageToMeta(currentTest.meta, ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_META_KEY, message);
+        return Promise.resolve();
+      }
+
+      try {
+        const currentSuite = getCurrentSuite();
+
+        if (currentSuite) {
+          const hasTargetTest = attachGlobalMessageToFirstTest(currentSuite, message);
+          if (hasTargetTest) {
+            return Promise.resolve();
+          }
+        }
+      } catch {}
+
+      addGlobalMessage(message);
+      return Promise.resolve();
+    }
 
     if (currentTest) {
       addMessage(currentTest.meta, message);
@@ -17,8 +69,7 @@ export class VitestTestRuntime extends MessageTestRuntime {
       const currentSuite = getCurrentSuite();
 
       if (currentSuite) {
-        // @ts-ignore
-        currentSuite.tasks.forEach((task) => processTask(task, message));
+        processTask(currentSuite, message);
         return Promise.resolve();
       }
     } catch {}
@@ -33,26 +84,41 @@ export class VitestTestRuntime extends MessageTestRuntime {
   }
 }
 
-const processTask = (task: Task | SuiteCollector, message: RuntimeMessage) => {
+const processTask = (task: Task | SuiteCollector, message: RuntimeMessage, isGlobal = false) => {
   switch (task.type) {
     case "collector":
     case "suite":
-      task.tasks.forEach((sub) => processTask(sub, message));
+      task.tasks.forEach((sub) => processTask(sub, message, isGlobal));
       break;
     case "test":
-      addMessage(task.meta, message);
+      if (isGlobal) {
+        addMessageToMeta(task.meta, ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_META_KEY, message);
+      } else {
+        addMessage(task.meta, message);
+      }
       break;
     default:
       break;
   }
 };
 
-const addMessage = (meta: TaskMeta, message: RuntimeMessage) => {
-  // @ts-ignore
-  if (!meta.allureRuntimeMessages) {
-    // @ts-ignore
-    meta.allureRuntimeMessages = [];
+// beforeAll is suite-scoped in Vitest (no current test context):
+// https://main.vitest.dev/api/hooks#beforeall
+// Bind a global message to the first test task to avoid duplicating it across every
+// test in the suite when suite-level globals are later collected.
+const attachGlobalMessageToFirstTest = (task: Task | SuiteCollector, message: RuntimeMessage): boolean => {
+  switch (task.type) {
+    case "collector":
+    case "suite":
+      return task.tasks.some((sub) => attachGlobalMessageToFirstTest(sub, message));
+    case "test":
+      addMessageToMeta(task.meta, ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_META_KEY, message);
+      return true;
+    default:
+      return false;
   }
-  // @ts-ignore
-  meta.allureRuntimeMessages.push(message);
+};
+
+const addMessage = (meta: TaskMeta, message: RuntimeMessage) => {
+  addMessageToMeta(meta, ALLURE_VITEST_RUNTIME_MESSAGES_META_KEY, message);
 };

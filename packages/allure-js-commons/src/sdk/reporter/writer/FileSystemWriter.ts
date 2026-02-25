@@ -1,6 +1,6 @@
 import { copyFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import type { TestResult, TestResultContainer } from "../../../model.js";
+import type { Globals, TestResult, TestResultContainer } from "../../../model.js";
 import type { Category, EnvironmentInfo } from "../../types.js";
 import type { Writer } from "../types.js";
 import { stringifyEnvInfo } from "../utils/envInfo.js";
@@ -45,6 +45,11 @@ export class FileSystemWriter implements Writer {
   writeResult(result: TestResult): void {
     const path = this.buildPath(`${result.uuid}-result.json`);
     writeJson(path, result);
+  }
+
+  writeGlobals(distFileName: string, info: Globals): void {
+    const path = this.buildPath(distFileName);
+    writeJson(path, info);
   }
 
   private buildPath(name: string): string {

@@ -71,8 +71,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
 
     handleAllureRuntimeMessage(message: RuntimeMessage) {
       const executableUuid = last(this.runContext.executables);
-
-      this.runtime.applyRuntimeMessages(executableUuid, [message]);
+      if (executableUuid) {
+        this.runtime.applyRuntimeMessages(executableUuid, [message]);
+      } else {
+        this.runtime.applyGlobalRuntimeMessages([message]);
+      }
     }
 
     handleTestEvent = (event: Circus.Event) => {

@@ -59,4 +59,78 @@ describe("FileSystemWriter", () => {
 
     expect(existsSync(tmpReportPath)).toBe(true);
   });
+
+  it("writes globals files eagerly for runtime global messages", () => {
+    const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
+    const allureResults = path.join(tmp, "allure-results");
+    const config: ReporterRuntimeConfig = {
+      writer: new FileSystemWriter({
+        resultsDir: allureResults,
+      }),
+    };
+    const runtime = new ReporterRuntime(config);
+
+    runtime.applyGlobalRuntimeMessages([
+      {
+        type: "global_attachment_content",
+        data: {
+          name: "global log",
+          content: Buffer.from("hello", "utf-8").toString("base64"),
+          encoding: "base64",
+          contentType: ContentType.TEXT,
+          fileExtension: ".txt",
+        },
+      },
+      {
+        type: "global_error",
+        data: {
+          message: "boom",
+          trace: "stack",
+        },
+      },
+    ]);
+    const resultFiles = readdirSync(allureResults);
+    const globalsFiles = resultFiles.filter((file) => file.endsWith("-globals.json"));
+    expect(globalsFiles).toHaveLength(2);
+
+    const globalsPayloads = globalsFiles.map(
+      (file) =>
+        JSON.parse(readFileSync(path.join(allureResults, file), "utf-8")) as {
+          attachments: { name: string; source: string; type: string; timestamp: number }[];
+          errors: { message: string; trace: string; timestamp: number }[];
+        },
+    );
+
+    const allAttachments = globalsPayloads.flatMap((payload) => payload.attachments);
+    const allErrors = globalsPayloads.flatMap((payload) => payload.errors);
+
+    expect(allAttachments).toHaveLength(1);
+    expect(allAttachments[0]).toEqual(
+      expect.objectContaining({
+        name: "global log",
+        type: ContentType.TEXT,
+        timestamp: expect.any(Number),
+      }),
+    );
+    expect(allErrors).toEqual([
+      expect.objectContaining({
+        message: "boom",
+        trace: "stack",
+        timestamp: expect.any(Number),
+      }),
+    ]);
+  });
+
+  it("does not write globals file when there are no global messages", () => {
+    const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
+    const allureResults = path.join(tmp, "allure-results");
+    const config: ReporterRuntimeConfig = {
+      writer: new FileSystemWriter({
+        resultsDir: allureResults,
+      }),
+    };
+    new ReporterRuntime(config);
+
+    expect(existsSync(allureResults)).toBeFalsy();
+  });
 });

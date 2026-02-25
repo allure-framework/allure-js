@@ -699,7 +699,6 @@ export class AllureReporter implements ReporterV2 {
         this.processStepMetadataMessage(attachmentStepUuid!, message);
         return;
       }
-
       this.allureRuntime!.applyRuntimeMessages(testUuid, [message]);
       return;
     }

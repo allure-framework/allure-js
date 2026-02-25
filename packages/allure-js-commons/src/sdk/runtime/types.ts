@@ -1,4 +1,12 @@
-import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions, Status } from "../../model.js";
+import type {
+  AttachmentOptions,
+  Label,
+  Link,
+  ParameterMode,
+  ParameterOptions,
+  Status,
+  StatusDetails,
+} from "../../model.js";
 
 export interface TestRuntime {
   labels: (...labels: Label[]) => PromiseLike<void>;
@@ -18,6 +26,16 @@ export interface TestRuntime {
   testCaseId: (value: string) => PromiseLike<void>;
 
   attachment: (name: string, content: Buffer | string, options: AttachmentOptions) => PromiseLike<void>;
+
+  globalAttachment: (name: string, content: Buffer | string, options: AttachmentOptions) => PromiseLike<void>;
+
+  globalAttachmentFromPath: (
+    name: string,
+    path: string,
+    options: Omit<AttachmentOptions, "encoding">,
+  ) => PromiseLike<void>;
+
+  globalError: (details: StatusDetails) => PromiseLike<void>;
 
   attachmentFromPath: (name: string, path: string, options: Omit<AttachmentOptions, "encoding">) => PromiseLike<void>;
 

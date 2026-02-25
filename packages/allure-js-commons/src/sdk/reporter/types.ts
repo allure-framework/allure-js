@@ -1,5 +1,6 @@
 import type {
   FixtureResult,
+  Globals,
   Label,
   LabelName,
   Link,
@@ -75,6 +76,8 @@ export interface Writer {
   writeEnvironmentInfo(info: EnvironmentInfo): void;
 
   writeCategoriesDefinitions(categories: Category[]): void;
+
+  writeGlobals(distFileName: string, info: Globals): void;
 }
 
 export type TestScope = {

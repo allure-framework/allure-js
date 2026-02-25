@@ -5,6 +5,7 @@ import {
   type Attachment,
   type AttachmentOptions,
   type FixtureResult,
+  type Globals,
   type Label,
   Stage,
   type StepResult,
@@ -15,6 +16,9 @@ import type {
   EnvironmentInfo,
   RuntimeAttachmentContentMessage,
   RuntimeAttachmentPathMessage,
+  RuntimeGlobalAttachmentContentMessage,
+  RuntimeGlobalAttachmentPathMessage,
+  RuntimeGlobalErrorMessage,
   RuntimeMessage,
   RuntimeMetadataMessage,
   RuntimeStartStepMessage,
@@ -504,23 +508,11 @@ export class ReporterRuntime {
     }
 
     const isPath = typeof attachmentContentOrPath === "string";
-    const fileExtension = options.fileExtension ?? (isPath ? extname(attachmentContentOrPath) : undefined);
-    const attachmentFileName = buildAttachmentFileName({
-      contentType: options.contentType,
-      fileExtension,
+    const attachmentFileName = this.#writeAttachmentFile(attachmentContentOrPath, {
+      ...options,
+      fileExtension: options.fileExtension ?? (isPath ? extname(attachmentContentOrPath) : undefined),
     });
-
-    if (isPath) {
-      this.writer.writeAttachmentFromPath(attachmentFileName, attachmentContentOrPath);
-    } else {
-      this.writer.writeAttachment(attachmentFileName, attachmentContentOrPath);
-    }
-
-    const attachment: Attachment = {
-      name: attachmentName,
-      source: attachmentFileName,
-      type: options.contentType,
-    };
+    const attachment = this.#createAttachment(attachmentName, options.contentType, attachmentFileName);
 
     if (options.wrapInStep) {
       const { timestamp = Date.now() } = options;
@@ -584,10 +576,37 @@ export class ReporterRuntime {
         case "attachment_path":
           this.#handleAttachmentPathMessage(rootUuid, message.data);
           return;
+        case "global_attachment_content":
+          this.#handleGlobalAttachmentContentMessage(message.data);
+          return;
+        case "global_attachment_path":
+          this.#handleGlobalAttachmentPathMessage(message.data);
+          return;
+        case "global_error":
+          this.#handleGlobalErrorMessage(message.data);
+          return;
         default:
           // eslint-disable-next-line no-console
           console.error(`could not apply runtime messages: unknown message ${JSON.stringify(message)}`);
           return;
+      }
+    });
+  };
+
+  applyGlobalRuntimeMessages = (messages: RuntimeMessage[]) => {
+    messages.forEach((message) => {
+      switch (message.type) {
+        case "global_attachment_content":
+          this.#handleGlobalAttachmentContentMessage(message.data);
+          break;
+        case "global_attachment_path":
+          this.#handleGlobalAttachmentPathMessage(message.data);
+          break;
+        case "global_error":
+          this.#handleGlobalErrorMessage(message.data);
+          break;
+        default:
+          break;
       }
     });
   };
@@ -732,6 +751,38 @@ export class ReporterRuntime {
     });
   };
 
+  #handleGlobalAttachmentContentMessage = (message: RuntimeGlobalAttachmentContentMessage["data"]) => {
+    const attachmentContent = Buffer.from(message.content, message.encoding);
+    const attachmentSource = this.#writeAttachmentFile(attachmentContent, {
+      contentType: message.contentType,
+      fileExtension: message.fileExtension,
+    });
+
+    this.#writeGlobals({
+      attachments: [this.#createGlobalAttachment(message.name, message.contentType, attachmentSource)],
+      errors: [],
+    });
+  };
+
+  #handleGlobalAttachmentPathMessage = (message: RuntimeGlobalAttachmentPathMessage["data"]) => {
+    const attachmentSource = this.#writeAttachmentFile(message.path, {
+      contentType: message.contentType,
+      fileExtension: message.fileExtension ?? extname(message.path),
+    });
+
+    this.#writeGlobals({
+      attachments: [this.#createGlobalAttachment(message.name, message.contentType, attachmentSource)],
+      errors: [],
+    });
+  };
+
+  #handleGlobalErrorMessage = (message: RuntimeGlobalErrorMessage["data"]) => {
+    this.#writeGlobals({
+      attachments: [],
+      errors: [{ ...message, timestamp: Date.now() }],
+    });
+  };
+
   #findParent = (
     rootUuid: string,
     parentStepUuid: string | null | undefined,
@@ -749,6 +800,40 @@ export class ReporterRuntime {
     } else {
       return this.state.getStepResult(parentStepUuid);
     }
+  };
+
+  #writeAttachmentFile = (
+    attachmentContentOrPath: Buffer | string,
+    options: Pick<AttachmentOptions, "contentType" | "fileExtension">,
+  ) => {
+    const isPath = typeof attachmentContentOrPath === "string";
+    const attachmentFileName = buildAttachmentFileName({
+      contentType: options.contentType,
+      fileExtension: options.fileExtension,
+    });
+
+    if (isPath) {
+      this.writer.writeAttachmentFromPath(attachmentFileName, attachmentContentOrPath);
+    } else {
+      this.writer.writeAttachment(attachmentFileName, attachmentContentOrPath);
+    }
+
+    return attachmentFileName;
+  };
+
+  #createAttachment = (name: string, contentType: string, source: string): Attachment => ({
+    name,
+    source,
+    type: contentType,
+  });
+
+  #createGlobalAttachment = (name: string, contentType: string, source: string): Globals["attachments"][number] => ({
+    ...this.#createAttachment(name, contentType, source),
+    timestamp: Date.now(),
+  });
+
+  #writeGlobals = (globals: Globals): void => {
+    this.writer.writeGlobals(`${randomUuid()}-globals.json`, globals);
   };
 
   #writeFixturesOfScope = ({ fixtures, tests }: TestScope) => {

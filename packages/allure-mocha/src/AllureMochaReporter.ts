@@ -92,6 +92,8 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     const root = this.currentHook ?? this.currentTest;
     if (root) {
       this.runtime.applyRuntimeMessages(root, message);
+    } else {
+      this.runtime.applyGlobalRuntimeMessages(message);
     }
   };
 

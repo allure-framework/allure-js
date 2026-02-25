@@ -1,4 +1,4 @@
-import type { Status } from "./model.js";
+import type { Status, StatusDetails } from "./model.js";
 import { type ContentType } from "./model.js";
 import { type AttachmentOptions, type Label, type Link, type ParameterMode, type ParameterOptions } from "./model.js";
 import { LabelName, LinkType } from "./model.js";
@@ -74,6 +74,28 @@ export const attachment = (
 ) => {
   const opts = typeof options === "string" ? { contentType: options } : options;
   return callRuntimeMethod("attachment", name, content, opts);
+};
+
+export const globalAttachment = (
+  name: string,
+  content: Buffer | string,
+  options: ContentType | string | AttachmentOptions,
+) => {
+  const opts = typeof options === "string" ? { contentType: options } : options;
+  return callRuntimeMethod("globalAttachment", name, content, opts);
+};
+
+export const globalAttachmentPath = (
+  name: string,
+  path: string,
+  options: ContentType | string | Omit<AttachmentOptions, "encoding">,
+) => {
+  const opts = typeof options === "string" ? { contentType: options } : options;
+  return callRuntimeMethod("globalAttachmentFromPath", name, path, opts);
+};
+
+export const globalError = (details: StatusDetails) => {
+  return callRuntimeMethod("globalError", details);
 };
 
 export const attachTrace = (name: string, path: string) => {
