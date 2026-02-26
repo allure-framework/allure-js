@@ -1,10 +1,11 @@
+/* eslint no-underscore-dangle: "off" */
 import { afterEach, beforeAll, beforeEach } from "vitest";
 import { commands } from "vitest/browser";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import { VitestTestRuntime } from "../VitestTestRuntime.js";
 import { allureVitestLegacyApi } from "../legacy.js";
 
-beforeAll(async () => {
+beforeAll(() => {
   setGlobalTestRuntime(new VitestTestRuntime());
 });
 
@@ -12,7 +13,7 @@ beforeEach(async ({ skip, task }) => {
   (task as any).meta = {
     ...task.meta,
     // @ts-expect-error
-    vitestWorker: globalThis?.["__vitest_worker__"]?.ctx?.workerId,
+    vitestWorker: globalThis?.__vitest_worker__?.ctx?.workerId,
   };
 
   const inTestPlan = (await commands?.existsInTestPlan?.(task)) ?? true;

@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, it, test } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
 import { type TestFileAccessor, createVitestBrowserConfig, createVitestConfig, runVitestInlineTest } from "../utils.js";
 

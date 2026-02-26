@@ -34,14 +34,14 @@ npm install -D allure-vitest
 
 ## Usage
 
-Add `"allure-vitest/setup"` to `setupFiles` and `"allure-vitest/reporter"` to `reporters`:
+Add next changes to your config file if you want to use vitest to run NodeJS tests only:
 
-```js
+```diff
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    setupFiles: ["allure-vitest/setup"],
++    setupFiles: ["allure-vitest/setup"],
     reporters: [
       "default",
       "allure-vitest/reporter",
@@ -50,25 +50,32 @@ export default defineConfig({
 });
 ```
 
+In case if you want to use [vitest for browser testing](https://vitest.dev/guide/browser/) add next changes:
 
-When the test run completes, the result files will be generated in the `./allure-results` directory.
+```diff
+import { defineConfig } from "vitest/config";
++ import { commands } from "allure-vitest/browser"
 
-You may select another location, or further customize the reporter's behavior with [the configuration options](https://allurereport.org/docs/vitest-configuration/).
-
-### View the report
-
-> You need Allure Report to be installed on your machine to generate and open the report from the result files. See the [installation instructions](https://allurereport.org/docs/install/) on how to get it.
-
-Generate Allure Report after the tests are executed:
-
-```bash
-allure generate ./allure-results -o ./allure-report
-```
-
-Open the generated report:
-
-```bash
-allure open ./allure-report
+export default defineConfig({
+  test: {
++    setupFiles: ["allure-vitest/browser/setup"],
+    reporters: [
+      "default",
+      "allure-vitest/reporter",
+    ],
+  },
+  browser: {
+    provider: playwright(),
+    enabled: true,
+    headless: true,
+    instances: [
+      { browser: "chromium" },
+    ],
++    commands: {
++      ...commands,
++    }
+  },
+});
 ```
 
 ## Allure API
