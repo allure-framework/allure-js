@@ -1,9 +1,10 @@
+import { platform } from "node:process";
 /**
  * The implementation is based on https://github.com/gagle/node-properties.
  */
 import type { EnvironmentInfo } from "../../types.js";
 
-const EOL = process.platform === "win32" ? "\r\n" : "\n";
+const EOL = platform === "win32" ? "\r\n" : "\n";
 
 export const stringifyEnvInfo = (envInfo: EnvironmentInfo) => {
   const lines: string[] = [];

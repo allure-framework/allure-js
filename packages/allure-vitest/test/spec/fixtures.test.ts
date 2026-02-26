@@ -1,10 +1,20 @@
-import { describe, expect, it } from "vitest";
-import { runVitestInlineTest } from "../utils.js";
+import { beforeAll, describe, expect, it } from "vitest";
+import { type TestFileAccessor, createVitestBrowserConfig, createVitestConfig, runVitestInlineTest } from "../utils.js";
 
 describe("fixtures", () => {
-  it("should report fixtures", async () => {
-    const { tests } = await runVitestInlineTest({
-      "sample.test.ts": `
+  for (const env of ["node", "browser"]) {
+    describe(`for "${env}"`, () => {
+      let configFileAccessor: TestFileAccessor;
+
+      beforeAll(() => {
+        configFileAccessor = ({ allureResultsPath }) =>
+          env === "node" ? createVitestConfig(allureResultsPath) : createVitestBrowserConfig(allureResultsPath);
+      });
+
+      it("should report fixtures", async () => {
+        const { tests } = await runVitestInlineTest({
+          "vitest.config.ts": configFileAccessor,
+          "sample.test.ts": `
     import { afterAll, afterEach, beforeAll, beforeEach, test } from "vitest";
     import { step } from "allure-js-commons";
 
@@ -28,26 +38,28 @@ describe("fixtures", () => {
       await step("test step", () => {});
     });
   `,
-    });
+        });
 
-    expect(tests).toHaveLength(1);
-    const [testResult] = tests;
-    expect(testResult.steps).toEqual([
-      expect.objectContaining({
-        name: "before all step",
-      }),
-      expect.objectContaining({
-        name: "before each step",
-      }),
-      expect.objectContaining({
-        name: "test step",
-      }),
-      expect.objectContaining({
-        name: "after each step",
-      }),
-      expect.objectContaining({
-        name: "after all step",
-      }),
-    ]);
-  });
+        expect(tests).toHaveLength(1);
+        const [testResult] = tests;
+        expect(testResult.steps).toEqual([
+          expect.objectContaining({
+            name: "before all step",
+          }),
+          expect.objectContaining({
+            name: "before each step",
+          }),
+          expect.objectContaining({
+            name: "test step",
+          }),
+          expect.objectContaining({
+            name: "after each step",
+          }),
+          expect.objectContaining({
+            name: "after all step",
+          }),
+        ]);
+      });
+    });
+  }
 });
