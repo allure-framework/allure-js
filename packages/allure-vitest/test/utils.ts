@@ -164,7 +164,8 @@ export const runVitestInlineTest = async (
     return fork(modulePath, args, {
       env: { ...subprocessEnv },
       cwd: cwd ? join(testDir, cwd) : testDir,
-      stdio: ["inherit", "pipe"],
+      stdio: "inherit",
+      // stdio: ["inherit", "pipe"],
     });
   });
 
