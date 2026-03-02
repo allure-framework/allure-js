@@ -100,7 +100,7 @@ class AllureCypressTestRuntime implements TestRuntime {
     });
   }
 
-  attachment(name: string, content: Buffer | string, options: AttachmentOptions) {
+  attachment(name: string, content: Uint8Array | Buffer | string, options: AttachmentOptions) {
     const [attachmentContent, actualEncoding] = this.#buildAttachmentContent(
       content as Buffer | string | SerializedBuffer,
     );
@@ -129,7 +129,7 @@ class AllureCypressTestRuntime implements TestRuntime {
     });
   }
 
-  globalAttachment(name: string, content: Buffer | string, options: AttachmentOptions) {
+  globalAttachment(name: string, content: Uint8Array | Buffer | string, options: AttachmentOptions) {
     const [attachmentContent, actualEncoding] = this.#buildAttachmentContent(
       content as Buffer | string | SerializedBuffer,
     );
@@ -256,8 +256,8 @@ class AllureCypressTestRuntime implements TestRuntime {
     return [uint8ArrayToBase64(rawContent), encoding];
   }
 
-  #normalizeAttachmentContent(content: Buffer | string | SerializedBuffer): string | Uint8Array {
-    if (typeof content === "string") {
+  #normalizeAttachmentContent(content: Uint8Array | Buffer | string | SerializedBuffer): string | Uint8Array {
+    if (content instanceof Uint8Array || typeof content === "string") {
       return content;
     }
 
