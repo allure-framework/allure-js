@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 import type { AttachmentOptions, ParameterMode } from "allure-js-commons";
-import type { RuntimeMessage } from "allure-js-commons/sdk";
+import { uint8ArrayToBase64, type RuntimeMessage } from "allure-js-commons/sdk";
 import { ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/sdk/reporter";
 import { MessageTestRuntime } from "allure-js-commons/sdk/runtime";
 
@@ -43,8 +43,8 @@ export class AllurePlaywrightTestRuntime extends MessageTestRuntime {
     });
   }
 
-  async attachment(name: string, content: Buffer | string, options: AttachmentOptions) {
-    await test.info().attach(name, { body: content, contentType: options.contentType });
+  async attachment(name: string, content: Uint8Array | Buffer | string, options: AttachmentOptions) {
+    await test.info().attach(name, { body: content instanceof Uint8Array ? uint8ArrayToBase64(content) : content, contentType: options.contentType });
   }
 
   async attachmentFromPath(name: string, path: string, options: AttachmentOptions) {
