@@ -322,8 +322,8 @@ export const limitString = (value: string, maxLength: number) =>
 export const uint8ArrayToBase64 = (data: Uint8Array): string => {
   let binary = "";
 
-  for (let i = 0; i < data.length; i++) {
-    binary += String.fromCharCode(data[i]);
+  for (const charCode of data) {
+    binary += String.fromCharCode(charCode);
   }
 
   return btoa(binary);

@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/require-await: off */
 import {
   type AttachmentOptions,
   type Label,
@@ -110,6 +111,7 @@ export abstract class BaseMessageTestRuntime implements TestRuntime {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async attachment(name: string, content: Buffer | Uint8Array | string, options: AttachmentOptions) {
     throw new Error("Not implemented");
   }
@@ -128,6 +130,7 @@ export abstract class BaseMessageTestRuntime implements TestRuntime {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async globalAttachment(name: string, content: Buffer | Uint8Array | string, options: AttachmentOptions) {
     throw new Error("Not implemented");
   }

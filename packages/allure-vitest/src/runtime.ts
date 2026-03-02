@@ -1,6 +1,6 @@
-import { SuiteCollector, Task, getCurrentSuite, getCurrentTest } from "@vitest/runner";
-import { TaskMeta } from "vitest";
-import { RuntimeMessage, isGlobalRuntimeMessage } from "allure-js-commons/sdk";
+import { type SuiteCollector, type Task, getCurrentSuite, getCurrentTest } from "@vitest/runner";
+import type { TaskMeta } from "vitest";
+import { type RuntimeMessage, isGlobalRuntimeMessage } from "allure-js-commons/sdk";
 import { BaseMessageTestRuntime } from "allure-js-commons/sdk/runtime";
 
 export const ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_KEY = "__allureVitestGlobalRuntimeMessages";

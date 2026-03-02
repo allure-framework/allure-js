@@ -1,11 +1,6 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
-import {
-  type TestFileAccessor,
-  createVitestBrowserConfig,
-  createVitestConfig,
-  runVitestInlineTest,
-} from "../../../utils.js";
+import { createVitestBrowserConfig, createVitestConfig, runVitestInlineTest } from "../../../utils.js";
 
 describe("steps", () => {
   describe('for "node"', () => {

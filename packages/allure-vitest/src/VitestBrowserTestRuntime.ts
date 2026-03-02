@@ -1,4 +1,4 @@
-import { AttachmentOptions } from "allure-js-commons";
+import type { AttachmentOptions } from "allure-js-commons";
 import { uint8ArrayToBase64 } from "allure-js-commons/sdk";
 import { BaseVitestTestRuntime } from "./runtime.js";
 

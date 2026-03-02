@@ -1,4 +1,4 @@
-import { AttachmentOptions } from "allure-js-commons";
+import type { AttachmentOptions } from "allure-js-commons";
 import { BaseVitestTestRuntime } from "./runtime.js";
 
 export class VitestTestRuntime extends BaseVitestTestRuntime {
