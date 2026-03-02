@@ -69,7 +69,7 @@ export const testCaseId = (value: string) => {
 
 export const attachment = (
   name: string,
-  content: Buffer | string,
+  content: Buffer | Uint8Array | string,
   options: ContentType | string | AttachmentOptions,
 ) => {
   const opts = typeof options === "string" ? { contentType: options } : options;
@@ -78,7 +78,7 @@ export const attachment = (
 
 export const globalAttachment = (
   name: string,
-  content: Buffer | string,
+  content: Buffer | Uint8Array | string,
   options: ContentType | string | AttachmentOptions,
 ) => {
   const opts = typeof options === "string" ? { contentType: options } : options;

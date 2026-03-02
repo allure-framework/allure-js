@@ -25,9 +25,13 @@ export interface TestRuntime {
 
   testCaseId: (value: string) => PromiseLike<void>;
 
-  attachment: (name: string, content: Buffer | string, options: AttachmentOptions) => PromiseLike<void>;
+  attachment: (name: string, content: Buffer | Uint8Array | string, options: AttachmentOptions) => PromiseLike<void>;
 
-  globalAttachment: (name: string, content: Buffer | string, options: AttachmentOptions) => PromiseLike<void>;
+  globalAttachment: (
+    name: string,
+    content: Buffer | Uint8Array | string,
+    options: AttachmentOptions,
+  ) => PromiseLike<void>;
 
   globalAttachmentFromPath: (
     name: string,

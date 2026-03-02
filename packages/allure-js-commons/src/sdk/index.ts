@@ -31,4 +31,5 @@ export {
   hasLabel,
   stripAnsi,
   serialize,
+  uint8ArrayToBase64,
 } from "./utils.js";

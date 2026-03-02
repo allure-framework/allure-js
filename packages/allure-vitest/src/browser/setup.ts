@@ -2,11 +2,11 @@
 import { afterEach, beforeAll, beforeEach } from "vitest";
 import { commands } from "vitest/browser";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
-import { VitestTestRuntime } from "../VitestTestRuntime.js";
+import { VitestBrowserTestRuntime } from "../VitestBrowserTestRuntime.js";
 import { allureVitestLegacyApi } from "../legacy.js";
 
 beforeAll(() => {
-  setGlobalTestRuntime(new VitestTestRuntime());
+  setGlobalTestRuntime(new VitestBrowserTestRuntime());
 });
 
 beforeEach(async ({ skip, task }) => {

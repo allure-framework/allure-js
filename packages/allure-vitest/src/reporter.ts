@@ -15,7 +15,7 @@ import {
   getSuiteLabels,
   getThreadLabel,
 } from "allure-js-commons/sdk/reporter";
-import { takeGlobalRuntimeMessages } from "./VitestTestRuntime.js";
+import { takeGlobalRuntimeMessages } from "./runtime.js";
 import { getTestMetadata } from "./utils.js";
 
 export default class AllureVitestReporter implements Reporter {
