@@ -84,8 +84,11 @@ jobs:
         run: |
           yarn install --immutable --immutable-cache
 
-      - name: "Playwright install chromium"
+      - name: "Playwright install chromium for playwright"
         run: yarn workspace allure-playwright playwright install chromium --with-deps
+
+      - name: "Playwright install chromium for vitest"
+        run: yarn workspace allure-vitest playwright install chromium --with-deps
 
       - name: yarn build
         run: |
