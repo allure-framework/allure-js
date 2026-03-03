@@ -14,6 +14,7 @@ beforeEach(async ({ skip, task }) => {
     ...task.meta,
     // @ts-expect-error
     vitestWorker: globalThis?.__vitest_worker__?.ctx?.workerId,
+    browser: task.file.projectName,
   };
 
   const inTestPlan = (await commands?.existsInTestPlan?.(task)) ?? true;

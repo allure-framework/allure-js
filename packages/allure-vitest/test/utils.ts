@@ -113,7 +113,7 @@ export const runVitestInlineTest = async (
 
   const testFilesToWrite: TestFiles = {
     "vitest.config.ts": createVitestConfig(allureResultsPath),
-    "package.json": JSON.stringify({ name: "dummy" }),
+    "package.json": JSON.stringify({ name: "dummy", type: "module" }),
     ...testFiles,
   };
 

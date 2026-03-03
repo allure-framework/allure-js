@@ -10,6 +10,7 @@ declare global {
 declare module "vitest" {
   interface TaskMeta {
     vitestWorker?: string;
+    browser?: string;
     allureSkip?: boolean;
   }
 }

@@ -42,4 +42,23 @@ describe("browser", () => {
 
     expect(attachments[attachment.source]).not.toBeUndefined();
   });
+
+  it("should assign browser parameter to the tests", async () => {
+    const { tests } = await runVitestInlineTest({
+      "vitest.config.ts": ({ allureResultsPath }) => createVitestBrowserConfig(allureResultsPath),
+      "sample.test.ts": `
+        import { test, expect } from "vitest";
+
+        test("should pass", async () => {
+          expect(1).toBe(1);
+        });
+      `,
+    });
+
+    expect(tests).toHaveLength(1);
+    expect(tests[0].parameters).toContainEqual({
+      name: "browser",
+      value: "chromium",
+    });
+  });
 });

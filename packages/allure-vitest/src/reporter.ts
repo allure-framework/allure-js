@@ -79,12 +79,14 @@ export default class AllureVitestReporter implements Reporter {
       allureRuntimeMessages = [],
       allureGlobalRuntimeMessages = [],
       vitestWorker,
+      browser,
       allureSkip = false,
     } = task.meta as {
       allureRuntimeMessages: RuntimeMessage[];
       allureGlobalRuntimeMessages: RuntimeMessage[];
       vitestWorker: string;
       allureSkip?: boolean;
+      browser?: string;
     };
 
     // do not report tests skipped by test plan
@@ -117,6 +119,13 @@ export default class AllureVitestReporter implements Reporter {
       result.labels.push(getHostLabel());
       result.labels.push(getThreadLabel(vitestWorker && `vitest-worker-${vitestWorker}`));
       result.links.push(...metadataLinks);
+
+      if (browser) {
+        result.parameters.push({
+          name: "browser",
+          value: browser,
+        });
+      }
 
       if (specPath) {
         result.labels.push({
