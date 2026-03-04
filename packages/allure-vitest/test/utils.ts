@@ -105,10 +105,10 @@ export const runVitestInlineTest = async (
   // getPosixPath allows us to interpolate such paths without escaping
   const allureResultsPath = getPosixPath(join(testDir, "allure-results"));
   const fixtureAccessorOpts = {
+    testDir: getPosixPath(testDir),
     setupModulePath,
     reporterModulePath,
     allureResultsPath,
-    testDir,
   };
 
   const testFilesToWrite: TestFiles = {
@@ -191,7 +191,7 @@ export const runVitestInlineTest = async (
       }
       await attachment("stdout", stdout.join("\n"), "text/plain");
       await attachment("stderr", stderr.join("\n"), "text/plain");
-      await rm(testDir, { recursive: true });
+      await rm(testDir, { recursive: true, maxRetries: 3, retryDelay: 1000 });
       await messageReader.attachResults();
 
       return resolve(messageReader.results);
