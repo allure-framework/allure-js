@@ -11451,7 +11451,7 @@ const RAW_RUNTIME_STATE =
           ["mocha", "npm:11.7.2"],\
           ["monocart-coverage-reports", "npm:2.12.9"],\
           ["ms", "npm:2.1.3"],\
-          ["multer", "npm:2.0.2"],\
+          ["multer", "npm:2.1.0"],\
           ["ora-classic", "npm:5.4.2"],\
           ["parse-function", "npm:5.6.10"],\
           ["parse5", "npm:7.3.0"],\
@@ -18432,17 +18432,14 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["multer", [\
-      ["npm:2.0.2", {\
-        "packageLocation": "./.yarn/cache/multer-npm-2.0.2-8feabf7be2-4bdcb07138.zip/node_modules/multer/",\
+      ["npm:2.1.0", {\
+        "packageLocation": "./.yarn/cache/multer-npm-2.1.0-fec24fead8-7677636ed8.zip/node_modules/multer/",\
         "packageDependencies": [\
           ["append-field", "npm:1.0.0"],\
           ["busboy", "npm:1.6.0"],\
           ["concat-stream", "npm:2.0.0"],\
-          ["mkdirp", "npm:0.5.6"],\
-          ["multer", "npm:2.0.2"],\
-          ["object-assign", "npm:4.1.1"],\
-          ["type-is", "npm:1.6.18"],\
-          ["xtend", "npm:4.0.2"]\
+          ["multer", "npm:2.1.0"],\
+          ["type-is", "npm:1.6.18"]\
         ],\
         "linkType": "HARD"\
       }]\
