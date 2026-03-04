@@ -15,7 +15,7 @@ import {
   getSuiteLabels,
   getThreadLabel,
 } from "allure-js-commons/sdk/reporter";
-import { takeGlobalRuntimeMessages } from "./VitestTestRuntime.js";
+import { takeGlobalRuntimeMessages } from "./runtime.js";
 import { getTestMetadata } from "./utils.js";
 
 export default class AllureVitestReporter implements Reporter {
@@ -78,13 +78,15 @@ export default class AllureVitestReporter implements Reporter {
     const {
       allureRuntimeMessages = [],
       allureGlobalRuntimeMessages = [],
-      VITEST_POOL_ID,
+      vitestWorker,
+      browser,
       allureSkip = false,
     } = task.meta as {
       allureRuntimeMessages: RuntimeMessage[];
       allureGlobalRuntimeMessages: RuntimeMessage[];
-      VITEST_POOL_ID: string;
+      vitestWorker: string;
       allureSkip?: boolean;
+      browser?: string;
     };
 
     // do not report tests skipped by test plan
@@ -115,8 +117,15 @@ export default class AllureVitestReporter implements Reporter {
       result.labels.push(...suiteLabels);
       result.labels.push(...getEnvironmentLabels());
       result.labels.push(getHostLabel());
-      result.labels.push(getThreadLabel(VITEST_POOL_ID && `vitest-worker-${VITEST_POOL_ID}`));
+      result.labels.push(getThreadLabel(vitestWorker && `vitest-worker-${vitestWorker}`));
       result.links.push(...metadataLinks);
+
+      if (browser) {
+        result.parameters.push({
+          name: "browser",
+          value: browser,
+        });
+      }
 
       if (specPath) {
         result.labels.push({

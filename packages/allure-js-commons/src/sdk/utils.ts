@@ -298,20 +298,33 @@ const createSerializeReplacer = (maxDepth: number, userDefinedReplacer: Serializ
   return userDefinedReplacer ? composeReplacers(userDefinedReplacer, limitingReplacer) : limitingReplacer;
 };
 
-const composeReplacers = (first: SerializerReplacerFunc, second: SerializerReplacerFunc): SerializerReplacerFunc =>
+export const composeReplacers = (
+  first: SerializerReplacerFunc,
+  second: SerializerReplacerFunc,
+): SerializerReplacerFunc =>
   function (k, v) {
     return second.call(this, k, first.call(this, k, v));
   };
 
-const excludeCircularRefsFromMap = (parents: any[], map: Map<any, any>) => {
+export const excludeCircularRefsFromMap = (parents: any[], map: Map<any, any>) => {
   return Array.from(map)
     .filter(([k]) => !parents.includes(k))
     .map(([k, v]) => [k, parents.includes(v) ? undefined : v]);
 };
 
-const excludeCircularRefsFromSet = (parents: any[], set: Set<any>) => {
+export const excludeCircularRefsFromSet = (parents: any[], set: Set<any>) => {
   return Array.from(set).map((v) => (parents.includes(v) ? undefined : v));
 };
 
-const limitString = (value: string, maxLength: number) =>
+export const limitString = (value: string, maxLength: number) =>
   maxLength && value.length > maxLength ? `${value.substring(0, maxLength)}...` : value;
+
+export const uint8ArrayToBase64 = (data: Uint8Array): string => {
+  let binary = "";
+
+  for (const charCode of data) {
+    binary += String.fromCharCode(charCode);
+  }
+
+  return btoa(binary);
+};

@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/require-await: off */
 import {
   type AttachmentOptions,
   type Label,
@@ -13,7 +14,7 @@ import type { RuntimeMessage } from "../types.js";
 import { getMessageAndTraceFromError, getStatusFromError } from "../utils.js";
 import type { TestRuntime } from "./types.js";
 
-export abstract class MessageTestRuntime implements TestRuntime {
+export abstract class BaseMessageTestRuntime implements TestRuntime {
   async label(name: LabelName | string, value: string) {
     await this.sendMessage({
       type: "metadata",
@@ -110,20 +111,9 @@ export abstract class MessageTestRuntime implements TestRuntime {
     });
   }
 
-  async attachment(name: string, content: Buffer | string, options: AttachmentOptions) {
-    const bufferContent = typeof content === "string" ? Buffer.from(content, options.encoding) : content;
-    await this.sendMessage({
-      type: "attachment_content",
-      data: {
-        name,
-        content: bufferContent.toString("base64"),
-        encoding: "base64",
-        contentType: options.contentType,
-        fileExtension: options.fileExtension,
-        wrapInStep: true,
-        timestamp: Date.now(),
-      },
-    });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async attachment(name: string, content: Buffer | Uint8Array | string, options: AttachmentOptions) {
+    throw new Error("Not implemented");
   }
 
   async attachmentFromPath(name: string, path: string, options: AttachmentOptions) {
@@ -140,18 +130,9 @@ export abstract class MessageTestRuntime implements TestRuntime {
     });
   }
 
-  async globalAttachment(name: string, content: Buffer | string, options: AttachmentOptions) {
-    const bufferContent = typeof content === "string" ? Buffer.from(content, options.encoding) : content;
-    await this.sendMessage({
-      type: "global_attachment_content",
-      data: {
-        name,
-        content: bufferContent.toString("base64"),
-        encoding: "base64",
-        contentType: options.contentType,
-        fileExtension: options.fileExtension,
-      },
-    });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async globalAttachment(name: string, content: Buffer | Uint8Array | string, options: AttachmentOptions) {
+    throw new Error("Not implemented");
   }
 
   async globalAttachmentFromPath(name: string, path: string, options: Omit<AttachmentOptions, "encoding">) {
@@ -252,4 +233,48 @@ export abstract class MessageTestRuntime implements TestRuntime {
   }
 
   abstract sendMessage(message: RuntimeMessage): Promise<void>;
+}
+
+export abstract class MessageTestRuntime extends BaseMessageTestRuntime {
+  async attachment(name: string, content: Buffer | Uint8Array | string, options: AttachmentOptions) {
+    const bufferContent =
+      typeof content === "string"
+        ? Buffer.from(content, options.encoding)
+        : content instanceof Uint8Array
+          ? Buffer.from(content)
+          : content;
+
+    await this.sendMessage({
+      type: "attachment_content",
+      data: {
+        name,
+        content: bufferContent.toString("base64"),
+        encoding: "base64",
+        contentType: options.contentType,
+        fileExtension: options.fileExtension,
+        wrapInStep: true,
+        timestamp: Date.now(),
+      },
+    });
+  }
+
+  async globalAttachment(name: string, content: Buffer | Uint8Array | string, options: AttachmentOptions) {
+    const bufferContent =
+      typeof content === "string"
+        ? Buffer.from(content, options.encoding)
+        : content instanceof Uint8Array
+          ? Buffer.from(content)
+          : content;
+
+    await this.sendMessage({
+      type: "global_attachment_content",
+      data: {
+        name,
+        content: bufferContent.toString("base64"),
+        encoding: "base64",
+        contentType: options.contentType,
+        fileExtension: options.fileExtension,
+      },
+    });
+  }
 }

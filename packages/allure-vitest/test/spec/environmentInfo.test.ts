@@ -1,16 +1,21 @@
-import { describe, expect, it } from "vitest";
-import { runVitestInlineTest } from "../utils.js";
+import { beforeAll, describe, expect, it } from "vitest";
+import {
+  type TestFileAccessor,
+  browserSetupModulePath,
+  reporterModulePath,
+  runVitestInlineTest,
+  setupModulePath,
+} from "../utils.js";
 
 describe("environment info", () => {
-  it("should add environmentInfo", async () => {
-    const { envInfo } = await runVitestInlineTest({
-      "sample.test.ts": `
-        import { test } from "vitest";
+  for (const env of ["node", "browser"]) {
+    describe(`for "${env}"`, () => {
+      let configFileAccessor: TestFileAccessor;
 
-        test("sample test", async () => {
-        });
-      `,
-      "vitest.config.ts": ({ allureResultsPath, reporterModulePath, setupModulePath }) => `
+      beforeAll(() => {
+        configFileAccessor = ({ allureResultsPath }) => {
+          if (env === "node") {
+            return `
         import { defineConfig } from "vitest/config";
 
         export default defineConfig({
@@ -31,9 +36,56 @@ describe("environment info", () => {
             ],
           },
         });
-      `,
-    });
+      `;
+          }
+          return `
+        import { defineConfig } from "vitest/config";
+        import { commands } from "allure-vitest/browser";
+        import { playwright } from "@vitest/browser-playwright";
 
-    expect(envInfo).toEqual({ "app version": "123.0.1", "some other key": "some other value" });
-  });
+        export default defineConfig({
+          test: {
+            openTelemetry: { enabled: false },
+            setupFiles: ["${browserSetupModulePath}"],
+            reporters: [
+              "default",
+              [
+                "${reporterModulePath}",
+                {
+                  resultsDir: "${allureResultsPath}",
+                  environmentInfo: {
+                    "app version": "123.0.1",
+                    "some other key": "some other value"
+                  }
+                }
+              ],
+            ],
+            browser: {
+              provider: playwright(),
+              enabled: true,
+              headless: true,
+              instances: [{ browser: "chromium" }],
+              commands: { ...commands },
+            },
+          },
+        });
+      `;
+        };
+      });
+
+      it("should add environmentInfo", async () => {
+        const { envInfo } = await runVitestInlineTest({
+          "sample.test.ts": `
+        import { test } from "vitest";
+
+        test("sample test", async () => {
+        });
+      `,
+          "vitest.config.ts": configFileAccessor,
+        });
+
+        expect(envInfo).toEqual({ "app version": "123.0.1", "some other key": "some other value" });
+      });
+    });
+  }
 });

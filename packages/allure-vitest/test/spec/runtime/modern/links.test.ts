@@ -1,11 +1,26 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { LinkType } from "allure-js-commons";
-import { runVitestInlineTest } from "../../../utils.js";
+import {
+  type TestFileAccessor,
+  createVitestBrowserConfig,
+  createVitestConfig,
+  runVitestInlineTest,
+} from "../../../utils.js";
 
 describe("links", () => {
-  it("link", async () => {
-    const { tests } = await runVitestInlineTest({
-      "sample.test.ts": `
+  for (const env of ["node", "browser"]) {
+    describe(`for "${env}"`, () => {
+      let configFileAccessor: TestFileAccessor;
+
+      beforeAll(() => {
+        configFileAccessor = ({ allureResultsPath }) =>
+          env === "node" ? createVitestConfig(allureResultsPath) : createVitestBrowserConfig(allureResultsPath);
+      });
+
+      it("link", async () => {
+        const { tests } = await runVitestInlineTest({
+          "vitest.config.ts": configFileAccessor,
+          "sample.test.ts": `
       import { test } from "vitest";
       import { link } from "allure-js-commons";
 
@@ -13,19 +28,20 @@ describe("links", () => {
         await link("https://example.org", "foo", "bar");
       });
       `,
-    });
+        });
 
-    expect(tests).toHaveLength(1);
-    expect(tests[0].links).toContainEqual({
-      name: "foo",
-      type: "bar",
-      url: "https://example.org",
-    });
-  });
+        expect(tests).toHaveLength(1);
+        expect(tests[0].links).toContainEqual({
+          name: "foo",
+          type: "bar",
+          url: "https://example.org",
+        });
+      });
 
-  it("issue", async () => {
-    const { tests } = await runVitestInlineTest({
-      "sample.test.ts": `
+      it("issue", async () => {
+        const { tests } = await runVitestInlineTest({
+          "vitest.config.ts": configFileAccessor,
+          "sample.test.ts": `
       import { test } from "vitest";
       import { issue } from "allure-js-commons";
 
@@ -34,24 +50,25 @@ describe("links", () => {
         await issue("2", "bar");
       });
       `,
-    });
+        });
 
-    expect(tests).toHaveLength(1);
-    expect(tests[0].links).toContainEqual({
-      name: "foo",
-      type: LinkType.ISSUE,
-      url: "https://example.org/issue/1",
-    });
-    expect(tests[0].links).toContainEqual({
-      name: "bar",
-      type: LinkType.ISSUE,
-      url: "https://example.org/issue/2",
-    });
-  });
+        expect(tests).toHaveLength(1);
+        expect(tests[0].links).toContainEqual({
+          name: "foo",
+          type: LinkType.ISSUE,
+          url: "https://example.org/issue/1",
+        });
+        expect(tests[0].links).toContainEqual({
+          name: "bar",
+          type: LinkType.ISSUE,
+          url: "https://example.org/issue/2",
+        });
+      });
 
-  it("tms", async () => {
-    const { tests } = await runVitestInlineTest({
-      "sample.test.ts": `
+      it("tms", async () => {
+        const { tests } = await runVitestInlineTest({
+          "vitest.config.ts": configFileAccessor,
+          "sample.test.ts": `
       import { test } from "vitest";
       import { tms } from "allure-js-commons";
 
@@ -60,18 +77,20 @@ describe("links", () => {
         await tms("2", "bar");
       });
       `,
-    });
+        });
 
-    expect(tests).toHaveLength(1);
-    expect(tests[0].links).toContainEqual({
-      name: "foo",
-      type: LinkType.TMS,
-      url: "https://example.org/tms/1",
+        expect(tests).toHaveLength(1);
+        expect(tests[0].links).toContainEqual({
+          name: "foo",
+          type: LinkType.TMS,
+          url: "https://example.org/tms/1",
+        });
+        expect(tests[0].links).toContainEqual({
+          name: "bar",
+          type: LinkType.TMS,
+          url: "https://example.org/tms/2",
+        });
+      });
     });
-    expect(tests[0].links).toContainEqual({
-      name: "bar",
-      type: LinkType.TMS,
-      url: "https://example.org/tms/2",
-    });
-  });
+  }
 });

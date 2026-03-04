@@ -8,14 +8,14 @@ import { attachment, logStep, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { stripAnsi } from "allure-js-commons/sdk";
 
-type TestFileAccessor = (opts: {
+export type TestFileAccessor = (opts: {
   setupModulePath: string;
   reporterModulePath: string;
   allureResultsPath: string;
   testDir: string;
 }) => string;
 
-type TestFiles = Record<string, string | TestFileAccessor>;
+export type TestFiles = Record<string, string | TestFileAccessor>;
 
 type Opts = {
   env?: (testDir: string) => Record<string, string>;
@@ -24,49 +24,96 @@ type Opts = {
 
 const fileDirname = dirname(fileURLToPath(import.meta.url));
 
+export const setupModulePath = getPosixPath(require.resolve("allure-vitest/setup"));
+
+export const browserSetupModulePath = getPosixPath(require.resolve("allure-vitest/browser/setup"));
+
+export const reporterModulePath = getPosixPath(require.resolve("allure-vitest/reporter"));
+
+export const createVitestConfig = (allureResultsPath: string) => `
+  import { defineConfig } from "vitest/config";
+
+  export default defineConfig({
+    test: {
+      openTelemetry: {
+        enabled: false,
+      },
+      setupFiles: ["${setupModulePath}"],
+      reporters: [
+        "verbose",
+        ["${reporterModulePath}", {
+          links: {
+            issue: {
+              urlTemplate: "https://example.org/issue/%s",
+            },
+            tms: {
+              urlTemplate: "https://example.org/tms/%s",
+            },
+          },
+          resultsDir: "${allureResultsPath}",
+        }]
+      ],
+    },
+  });
+`;
+
+export const createVitestBrowserConfig = (allureResultsPath: string) => `
+  import { defineConfig } from "vitest/config";
+  import { commands } from "allure-vitest/browser"
+  import { playwright } from "@vitest/browser-playwright";
+
+  export default defineConfig({
+    test: {
+      openTelemetry: {
+        enabled: false,
+      },
+      setupFiles: ["${browserSetupModulePath}"],
+      reporters: [
+        "verbose",
+        ["${reporterModulePath}", {
+          links: {
+            issue: {
+              urlTemplate: "https://example.org/issue/%s",
+            },
+            tms: {
+              urlTemplate: "https://example.org/tms/%s",
+            },
+          },
+          resultsDir: "${allureResultsPath}",
+        }]
+      ],
+      browser: {
+        provider: playwright(),
+        enabled: true,
+        headless: true,
+        instances: [
+          { browser: "chromium" },
+        ],
+        commands: {
+          ...commands,
+        }
+      },
+    },
+  });
+`;
+
 export const runVitestInlineTest = async (
   testFiles: TestFiles,
   { env = () => ({}), cwd }: Opts = {},
 ): Promise<AllureResults> => {
   const testDir = join(fileDirname, "fixtures", randomUUID());
-  const configFilename = "vitest.config.ts";
-  const configPath = join(testDir, configFilename);
   // getPosixPath allows us to interpolate such paths without escaping
-  const setupModulePath = getPosixPath(require.resolve("allure-vitest/setup"));
-  const reporterModulePath = getPosixPath(require.resolve("allure-vitest/reporter"));
   const allureResultsPath = getPosixPath(join(testDir, "allure-results"));
   const fixtureAccessorOpts = {
+    testDir: getPosixPath(testDir),
     setupModulePath,
     reporterModulePath,
     allureResultsPath,
-    testDir,
   };
 
   const testFilesToWrite: TestFiles = {
-    [configFilename]: `
-      import { defineConfig } from "vitest/config";
-
-      export default defineConfig({
-        test: {
-          setupFiles: ["${setupModulePath}"],
-          reporters: [
-            "verbose",
-            ["${reporterModulePath}", {
-              links: {
-                issue: {
-                  urlTemplate: "https://example.org/issue/%s",
-                },
-                tms: {
-                  urlTemplate: "https://example.org/tms/%s",
-                },
-              },
-              resultsDir: "${allureResultsPath}",
-            }]
-          ],
-        },
-      });
-    `,
-    "package.json": JSON.stringify({ name: "dummy" }),
+    "vitest.config.ts": createVitestConfig(allureResultsPath),
+    "package.json": JSON.stringify({ name: "dummy", type: "module" }),
     ...testFiles,
   };
 
@@ -106,7 +153,7 @@ export const runVitestInlineTest = async (
 
     return join(vitestPath, "vitest.mjs");
   });
-  const args = ["run", "--config", configPath, "--dir", "."];
+  const args = ["run", "--config", join(testDir, "vitest.config.ts"), "--dir", "."];
   const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
     const subprocessEnv: Record<string, string> = {
       ...process.env,
@@ -117,7 +164,8 @@ export const runVitestInlineTest = async (
     return fork(modulePath, args, {
       env: { ...subprocessEnv },
       cwd: cwd ? join(testDir, cwd) : testDir,
-      stdio: "pipe",
+      stdio: "inherit",
+      // stdio: ["inherit", "pipe"],
     });
   });
 
@@ -143,7 +191,7 @@ export const runVitestInlineTest = async (
       }
       await attachment("stdout", stdout.join("\n"), "text/plain");
       await attachment("stderr", stderr.join("\n"), "text/plain");
-      await rm(testDir, { recursive: true });
+      await rm(testDir, { recursive: true, maxRetries: 3, retryDelay: 1000 });
       await messageReader.attachResults();
 
       return resolve(messageReader.results);

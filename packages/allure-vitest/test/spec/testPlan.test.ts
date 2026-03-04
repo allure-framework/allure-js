@@ -1,12 +1,22 @@
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
-import { runVitestInlineTest } from "../utils.js";
+import { beforeAll, describe, expect, it } from "vitest";
+import { type TestFileAccessor, createVitestBrowserConfig, createVitestConfig, runVitestInlineTest } from "../utils.js";
 
 describe("test plan", () => {
-  it("should support test plan", async () => {
-    const { tests } = await runVitestInlineTest(
-      {
-        "foo/sample.test.ts": `
+  for (const env of ["node", "browser"]) {
+    describe(`for "${env}"`, () => {
+      let configFileAccessor: TestFileAccessor;
+
+      beforeAll(() => {
+        configFileAccessor = ({ allureResultsPath }) =>
+          env === "node" ? createVitestConfig(allureResultsPath) : createVitestBrowserConfig(allureResultsPath);
+      });
+
+      it("should support test plan", async () => {
+        const { tests } = await runVitestInlineTest(
+          {
+            "vitest.config.ts": configFileAccessor,
+            "foo/sample.test.ts": `
           import { test, describe } from "vitest";
 
           test("foo", () => {});
@@ -33,27 +43,33 @@ describe("test plan", () => {
             await logStep(dummy);
           });
         `,
-        "testplan.json": JSON.stringify(
-          {
-            version: "1.0",
-            tests: [{ selector: "foo/sample.test.ts#baz" }, { id: 3 }, { selector: "foo/sample.test.ts#foo bar boop" }],
+            "testplan.json": JSON.stringify(
+              {
+                version: "1.0",
+                tests: [
+                  { selector: "foo/sample.test.ts#baz" },
+                  { id: 3 },
+                  { selector: "foo/sample.test.ts#foo bar boop" },
+                ],
+              },
+              null,
+              2,
+            ),
           },
-          null,
-          2,
-        ),
-      },
-      {
-        env: (testDir) => ({
-          ALLURE_TESTPLAN_PATH: join(testDir, "testplan.json"),
-        }),
-      },
-    );
+          {
+            env: (testDir) => ({
+              ALLURE_TESTPLAN_PATH: join(testDir, "testplan.json"),
+            }),
+          },
+        );
 
-    expect(tests).toHaveLength(3);
-    expect(tests).toContainEqual(expect.objectContaining({ name: "baz", fullName: "foo/sample.test.ts#baz" }));
-    expect(tests).toContainEqual(expect.objectContaining({ name: "beep", fullName: "foo/sample.test.ts#beep" }));
-    expect(tests).toContainEqual(
-      expect.objectContaining({ name: "boop", fullName: "foo/sample.test.ts#foo bar boop" }),
-    );
-  });
+        expect(tests).toHaveLength(3);
+        expect(tests).toContainEqual(expect.objectContaining({ name: "baz", fullName: "foo/sample.test.ts#baz" }));
+        expect(tests).toContainEqual(expect.objectContaining({ name: "beep", fullName: "foo/sample.test.ts#beep" }));
+        expect(tests).toContainEqual(
+          expect.objectContaining({ name: "boop", fullName: "foo/sample.test.ts#foo bar boop" }),
+        );
+      });
+    });
+  }
 });

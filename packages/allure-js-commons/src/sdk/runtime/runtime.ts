@@ -31,7 +31,10 @@ export const getGlobalTestRuntimeWithAutoconfig = (): TestRuntime | Promise<Test
   // protection from bundlers tree-shaking visiting (webpack, rollup)
   const pwAutoconfigModuleName = "allure-playwright/autoconfig";
 
-  return import(pwAutoconfigModuleName)
+  return import(
+    /* @vite-ignore */
+    pwAutoconfigModuleName
+  )
     .then(() => getGlobalTestRuntimeFunction()?.() ?? noopRuntime)
     .catch(() => noopRuntime);
 };
