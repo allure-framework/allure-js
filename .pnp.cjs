@@ -16660,10 +16660,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["jose", [\
-      ["npm:4.15.9", {\
-        "packageLocation": "./.yarn/cache/jose-npm-4.15.9-a725b711d7-256234b6f8.zip/node_modules/jose/",\
+      ["npm:6.2.0", {\
+        "packageLocation": "./.yarn/cache/jose-npm-6.2.0-04320f6b64-5b27d04aa2.zip/node_modules/jose/",\
         "packageDependencies": [\
-          ["jose", "npm:4.15.9"]\
+          ["jose", "npm:6.2.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -19784,7 +19784,7 @@ const RAW_RUNTIME_STATE =
           ["aws4", "npm:1.12.0"],\
           ["handlebars", "npm:4.7.8"],\
           ["httpntlm", "npm:1.8.13"],\
-          ["jose", "npm:4.15.9"],\
+          ["jose", "npm:6.2.0"],\
           ["js-sha512", "npm:0.9.0"],\
           ["lodash", "npm:4.17.23"],\
           ["mime-types", "npm:2.1.35"],\
