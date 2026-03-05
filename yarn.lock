@@ -13844,6 +13844,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"minimatch@npm:3.1.5":
+  version: 3.1.5
+  resolution: "minimatch@npm:3.1.5"
+  dependencies:
+    brace-expansion: "npm:^1.1.7"
+  checksum: 10/b11a7ee5773cd34c1a0c8436cdbe910901018fb4b6cb47aa508a18d567f6efd2148507959e35fba798389b161b8604a2d704ccef751ea36bd4582f9852b7d63f
+  languageName: node
+  linkType: hard
+
 "minimatch@npm:5.1.8":
   version: 5.1.8
   resolution: "minimatch@npm:5.1.8"
@@ -14160,7 +14169,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"multer@npm:^2.0.2":
+"multer@npm:2.1.0":
   version: 2.1.0
   resolution: "multer@npm:2.1.0"
   dependencies:
