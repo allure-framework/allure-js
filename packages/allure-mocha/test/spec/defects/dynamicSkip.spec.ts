@@ -1,5 +1,6 @@
-import { expect, it } from "vitest";
 import { issue } from "allure-js-commons";
+import { expect, it } from "vitest";
+
 import { runMochaInlineTest } from "../../utils.js";
 
 it("shouldn't overwrite the result of a dynamically skipped test", async () => {

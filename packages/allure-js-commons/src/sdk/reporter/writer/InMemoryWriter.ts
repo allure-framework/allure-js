@@ -1,4 +1,5 @@
 import { readFileSync } from "fs";
+
 import type { Globals, TestResult, TestResultContainer } from "../../../model.js";
 import type { AllureResults, Category, EnvironmentInfo } from "../../types.js";
 import type { Writer } from "../types.js";

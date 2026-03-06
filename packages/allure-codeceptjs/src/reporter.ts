@@ -1,9 +1,11 @@
-import { event, recorder } from "codeceptjs";
-import type * as Mocha from "mocha";
 import { env } from "node:process";
+
 import { LabelName, Stage, Status, type StepResult } from "allure-js-commons";
 import { getMessageAndTraceFromError, getStatusFromError, isMetadataTag, stripAnsi } from "allure-js-commons/sdk";
 import AllureMochaReporter from "allure-mocha";
+import { event, recorder } from "codeceptjs";
+import type * as Mocha from "mocha";
+
 import type { CodeceptBddStep, CodeceptError, CodeceptStep } from "./model.js";
 
 interface MetaStep {

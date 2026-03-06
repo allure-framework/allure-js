@@ -1,0 +1,6 @@
+**/test/fixtures/**
+**/dist/**
+out/**
+allure-report/**
+node_modules/**
+.yarn/**

@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
 import { LabelName } from "allure-js-commons";
+import { describe, expect, it } from "vitest";
+
 import { runVitestInlineTest } from "../../../utils.js";
 
 describe("labels", () => {

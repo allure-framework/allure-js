@@ -1,6 +1,8 @@
 import { join } from "node:path";
-import { expect, it } from "vitest";
+
 import type { TestPlanV1 } from "allure-js-commons/sdk";
+import { expect, it } from "vitest";
+
 import { runJestInlineTest } from "../utils.js";
 
 it("respects testplan", async () => {

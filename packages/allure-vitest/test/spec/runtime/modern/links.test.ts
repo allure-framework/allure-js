@@ -1,5 +1,6 @@
-import { beforeAll, describe, expect, it } from "vitest";
 import { LinkType } from "allure-js-commons";
+import { beforeAll, describe, expect, it } from "vitest";
+
 import {
   type TestFileAccessor,
   createVitestBrowserConfig,

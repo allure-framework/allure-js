@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import type { EventEmitter } from "events";
-import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
-import type { CollectionDefinition, Event, HeaderList, Item, Request, Response } from "postman-collection";
+
 import { ContentType, Stage, Status } from "allure-js-commons";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
@@ -14,6 +13,9 @@ import {
   getSuiteLabels,
   getThreadLabel,
 } from "allure-js-commons/sdk/reporter";
+import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
+import type { CollectionDefinition, Event, HeaderList, Item, Request, Response } from "postman-collection";
+
 import type { PmItem, RunningItem } from "./model.js";
 import { extractMeta } from "./utils.js";
 

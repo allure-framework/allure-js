@@ -1,5 +1,6 @@
-import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
+import { expect, it } from "vitest";
+
 import { runJestInlineTest } from "../utils.js";
 
 it("supports test.each", async () => {

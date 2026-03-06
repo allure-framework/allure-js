@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { runMochaInlineTest } from "../../utils.js";
 
 describe("extra reporters", () => {

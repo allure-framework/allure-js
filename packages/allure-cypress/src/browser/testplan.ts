@@ -1,5 +1,6 @@
 import { LabelName } from "allure-js-commons";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
+
 import type { CypressSuite, CypressTest } from "../types.js";
 import { getAllureTestPlan } from "./state.js";
 import { getTestMetadata, resolveSpecRelativePath } from "./utils.js";

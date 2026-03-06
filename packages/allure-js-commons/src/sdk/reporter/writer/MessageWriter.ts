@@ -1,6 +1,7 @@
 import { readFileSync } from "fs";
 import type { EventEmitter } from "node:events";
 import process from "process";
+
 import type { Globals, TestResult, TestResultContainer } from "../../../model.js";
 import type { Category, EnvironmentInfo } from "../../types.js";
 import type { Writer } from "../types.js";

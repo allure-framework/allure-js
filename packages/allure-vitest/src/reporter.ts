@@ -1,6 +1,3 @@
-import type { RunnerTask as Task } from "vitest";
-import type { TestModule } from "vitest/node";
-import type { Reporter } from "vitest/reporters";
 import { LabelName, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
@@ -15,6 +12,10 @@ import {
   getSuiteLabels,
   getThreadLabel,
 } from "allure-js-commons/sdk/reporter";
+import type { RunnerTask as Task } from "vitest";
+import type { TestModule } from "vitest/node";
+import type { Reporter } from "vitest/reporters";
+
 import { takeGlobalRuntimeMessages } from "./runtime.js";
 import { getTestMetadata } from "./utils.js";
 

@@ -2,6 +2,7 @@ import { hostname } from "node:os";
 import path from "node:path";
 import { env, pid } from "node:process";
 import { isMainThread, threadId } from "node:worker_threads";
+
 import type { Label } from "../../../model.js";
 import { LabelName } from "../../../model.js";
 import { getRelativePath } from "../utils.js";

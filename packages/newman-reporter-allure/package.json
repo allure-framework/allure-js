@@ -4,41 +4,41 @@
   "description": "Allure Newman integration",
   "keywords": [
     "allure",
-    "newman",
-    "postman",
     "api",
     "html",
-    "test",
+    "newman",
+    "postman",
     "report",
     "reporter",
+    "test",
     "testing",
     "testops"
   ],
   "homepage": "https://allurereport.org/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/allure-framework/allure-js.git",
-    "directory": "packages/newman-reporter-allure"
-  },
   "license": "Apache-2.0",
   "author": {
     "name": "Qameta Software",
     "email": "allure@qameta.io",
     "url": "https://qameta.io/"
   },
-  "exports": {
-    ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/types/index.d.ts"
-    }
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allure-framework/allure-js.git",
+    "directory": "packages/newman-reporter-allure"
   },
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/types/index.d.ts",
   "files": [
     "dist"
   ],
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
   "scripts": {
     "allure-report": "allure serve ./out/allure-results",
     "clean": "rimraf ./dist ./out",
@@ -48,8 +48,8 @@
     "compile:types": "tsc",
     "compile:fixup": "node ./scripts/fixup.mjs",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "lint": "eslint ./src ./test --ext .ts",
-    "lint:fix": "eslint ./src ./test --ext .ts --fix",
+    "lint": "oxlint --import-plugin src test",
+    "lint:fix": "oxlint --import-plugin --fix src test",
     "test": "ALLURE_TEST_MODE=1 ALLURE_LABEL_A=a ALLURE_LABEL_B=b vitest run"
   },
   "dependencies": {
@@ -60,25 +60,14 @@
     "@babel/core": "^7.28.0",
     "@babel/preset-env": "^7.28.0",
     "@babel/preset-typescript": "^7.27.1",
-    "@stylistic/eslint-plugin": "^2.6.1",
     "@types/babel__core": "^7.20.5",
     "@types/babel__preset-env": "^7.10.0",
-    "@types/eslint": "^8.56.11",
     "@types/newman": "^5.3.6",
-    "@types/node": "^20.14.2",
+    "@types/node": "^20.19.0",
     "@types/postman-collection": "^3.5.10",
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@typescript-eslint/parser": "^8.0.0",
     "allure-commandline": "^2.29.0",
     "allure-vitest": "workspace:*",
     "babel-plugin-add-module-exports": "^1.0.4",
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^10.0.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jsdoc": "^54.0.0",
-    "eslint-plugin-n": "^17.10.1",
-    "eslint-plugin-no-null": "^1.0.2",
-    "eslint-plugin-prefer-arrow": "^1.2.3",
     "msw": "1",
     "newman": "^6.2.1",
     "npm-run-all2": "^8.0.0",

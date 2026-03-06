@@ -1,5 +1,6 @@
-import { expect, it } from "vitest";
 import { LabelName } from "allure-js-commons";
+import { expect, it } from "vitest";
+
 import { runCodeceptJsInlineTest } from "../utils.js";
 
 it("supports codecept tags", async () => {

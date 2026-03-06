@@ -1,6 +1,7 @@
+import type { TestResult, TestResultContainer } from "allure-js-commons";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { Assertion } from "vitest";
-import type { TestResult, TestResultContainer } from "allure-js-commons";
+
 import { runMochaInlineTest } from "../../utils.js";
 
 describe("fixtures", () => {

@@ -1,6 +1,7 @@
 import type { StatusDetails } from "allure-js-commons";
 import { Status } from "allure-js-commons";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
+
 import type {
   ApiStepDescriptor,
   CypressStepFinalizeMessage,

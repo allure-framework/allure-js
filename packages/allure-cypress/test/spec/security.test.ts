@@ -1,5 +1,6 @@
-import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
+import { expect, it } from "vitest";
+
 import { runCypressInlineTest } from "../utils.js";
 
 it("shouldn't break the flow when access storage after the page reload", async () => {

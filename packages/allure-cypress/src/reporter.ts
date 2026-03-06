@@ -1,4 +1,3 @@
-import type Cypress from "cypress";
 import { ContentType, Stage, Status } from "allure-js-commons";
 import type { FixtureResult, TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
@@ -17,6 +16,8 @@ import {
   getThreadLabel,
   parseTestPlan,
 } from "allure-js-commons/sdk/reporter";
+import type Cypress from "cypress";
+
 import type {
   AllureCypressConfig,
   AllureCypressTaskArgs,

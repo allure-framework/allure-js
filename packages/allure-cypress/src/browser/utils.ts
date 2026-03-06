@@ -1,6 +1,7 @@
 import { Status } from "allure-js-commons";
 import type { StatusDetails } from "allure-js-commons";
 import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
+
 import type {
   CypressConsoleProps,
   CypressHook,

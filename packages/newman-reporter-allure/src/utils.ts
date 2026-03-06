@@ -1,6 +1,6 @@
-import type { EventList } from "postman-collection";
 import type { Label, Link } from "allure-js-commons";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
+import type { EventList } from "postman-collection";
 
 export const extractMeta = (eventList: EventList) => {
   const labels: Label[] = [];

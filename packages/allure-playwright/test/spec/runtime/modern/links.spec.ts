@@ -1,5 +1,6 @@
-import { expect, it } from "vitest";
 import { LinkType } from "allure-js-commons";
+import { expect, it } from "vitest";
+
 import { runPlaywrightInlineTest } from "../../../utils.js";
 
 it("sets runtime links", async () => {

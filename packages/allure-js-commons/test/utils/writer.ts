@@ -1,4 +1,5 @@
 import { type Mocked, vi } from "vitest";
+
 import type { Globals, TestResult, TestResultContainer } from "../../src/index.js";
 import type { Category, EnvironmentInfo } from "../../src/sdk/index.js";
 import type { Writer } from "../../src/sdk/reporter/index.js";

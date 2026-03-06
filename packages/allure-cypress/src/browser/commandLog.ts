@@ -1,4 +1,5 @@
 import type { Parameter } from "allure-js-commons";
+
 import type { CypressLogEntry, LogStepDescriptor } from "../types.js";
 import { isDefined } from "../utils.js";
 import { reportStepStart } from "./lifecycle.js";

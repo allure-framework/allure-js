@@ -1,7 +1,9 @@
 /* eslint max-lines: off */
 import { describe } from "node:test";
-import { expect, it } from "vitest";
+
 import { Stage, Status, issue } from "allure-js-commons";
+import { expect, it } from "vitest";
+
 import { runCypressInlineTest } from "../utils.js";
 
 it("reports spec-level hooks", async () => {

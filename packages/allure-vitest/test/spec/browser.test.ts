@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { createVitestBrowserConfig, runVitestInlineTest } from "../utils.js";
 
 describe("browser", () => {
