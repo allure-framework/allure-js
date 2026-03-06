@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { LabelName } from "../../../src/model.js";
 import { getSuiteLabels } from "../../../src/sdk/reporter/utils.js";
 

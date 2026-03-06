@@ -1,6 +1,7 @@
 import { ContentType, Status } from "allure-js-commons";
 import type { StatusDetails } from "allure-js-commons";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
+
 import type { CypressFailMessage, CypressHook, CypressSuite, CypressTest, StepDescriptor } from "../types.js";
 import { getTestRuntime } from "./runtime.js";
 import { dropCurrentTest, enqueueRuntimeMessage, getCurrentTest, setCurrentTest } from "./state.js";

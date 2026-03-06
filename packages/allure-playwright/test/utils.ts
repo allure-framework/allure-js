@@ -1,11 +1,13 @@
 import { fork } from "child_process";
-import { glob } from "glob";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, extname, join, relative } from "node:path";
-import { MessageReader } from "../../allure-js-commons/src/sdk/reporter/index.js";
+
 import { attachment, logStep, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
+import { glob } from "glob";
+
+import { MessageReader } from "../../allure-js-commons/src/sdk/reporter/index.js";
 
 type AllurePlaywrightTestResults = AllureResults & { restFiles: Record<string, string> };
 

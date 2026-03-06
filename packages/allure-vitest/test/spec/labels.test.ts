@@ -1,4 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
+
 import { type TestFileAccessor, createVitestBrowserConfig, createVitestConfig, runVitestInlineTest } from "../utils.js";
 
 describe("labels", () => {

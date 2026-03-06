@@ -1,6 +1,6 @@
-import * as Mocha from "mocha";
 import { sep } from "node:path";
 import { env } from "node:process";
+
 import { type AttachmentOptions, type ContentType, type Label, type Parameter } from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
@@ -16,9 +16,11 @@ import {
   getPackageLabel,
 } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
-import { MochaTestRuntime } from "./MochaTestRuntime.js";
+import * as Mocha from "mocha";
+
 import { doneAll, enableExtraReporters } from "./extraReporters.js";
 import { setLegacyApiRuntime } from "./legacyUtils.js";
+import { MochaTestRuntime } from "./MochaTestRuntime.js";
 import type { AllureMochaReporterConfig, TestPlanIndices } from "./types.js";
 import {
   applyTestPlan,

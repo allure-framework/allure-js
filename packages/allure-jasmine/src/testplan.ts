@@ -1,15 +1,17 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
 import { LabelName } from "allure-js-commons";
 import type { Label } from "allure-js-commons";
 import { addSkipLabelAsMeta, parseTestPlan } from "allure-js-commons/sdk/reporter";
+
 import type { JasmineSpecFn, JasmineSuiteFn, TestPlanIndex } from "./model.js";
 import { getAllureNamesAndLabels } from "./utils.js";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const getCallerFileStackTraceFormatFn = (_: Error, stackTraces: NodeJS.CallSite[]): string | undefined => {
-  return stackTraces[0]?.getFileName();
+  return stackTraces[0]?.getFileName() ?? undefined;
 };
 
 const getCallerFile = <TFn extends (...args: any) => any>(fn: TFn) => {

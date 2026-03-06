@@ -2,6 +2,7 @@ import type { Task } from "@vitest/runner";
 import { LabelName } from "allure-js-commons";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import { includedInTestPlan, parseTestPlan } from "allure-js-commons/sdk/reporter";
+
 import { getTestMetadata } from "../utils.js";
 
 declare module "vitest/browser" {

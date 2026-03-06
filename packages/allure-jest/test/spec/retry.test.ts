@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+
 import { runJestInlineTest } from "../utils.js";
 
 it("should work for test with retries", async () => {

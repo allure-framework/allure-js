@@ -1,9 +1,10 @@
+import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 /* eslint no-underscore-dangle: "off" */
 import { afterEach, beforeAll, beforeEach } from "vitest";
 import { commands } from "vitest/browser";
-import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
-import { VitestBrowserTestRuntime } from "../VitestBrowserTestRuntime.js";
+
 import { allureVitestLegacyApi } from "../legacy.js";
+import { VitestBrowserTestRuntime } from "../VitestBrowserTestRuntime.js";
 
 beforeAll(() => {
   setGlobalTestRuntime(new VitestBrowserTestRuntime());

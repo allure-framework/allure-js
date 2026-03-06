@@ -1,7 +1,8 @@
-/* eslint max-lines: 0 */
-import { beforeAll, describe, expect, it } from "vitest";
 import type { TestResult } from "allure-js-commons";
 import { Stage, Status, issue } from "allure-js-commons";
+/* eslint max-lines: 0 */
+import { beforeAll, describe, expect, it } from "vitest";
+
 import { runCypressInlineTest } from "../utils.js";
 
 it("should create steps from cypress commands", async () => {

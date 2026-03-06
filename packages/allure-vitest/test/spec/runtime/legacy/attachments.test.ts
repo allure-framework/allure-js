@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+
 import { runVitestInlineTest } from "../../../utils.js";
 
 it("adds attachments", async () => {

@@ -1,5 +1,6 @@
-import { afterAll, afterEach, beforeAll, expect, test } from "vitest";
 import { LabelName, Stage, Status } from "allure-js-commons";
+import { afterAll, afterEach, beforeAll, expect, test } from "vitest";
+
 import { server } from "../mocks/server.js";
 import { runNewmanCollection } from "../utils.js";
 

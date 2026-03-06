@@ -2,6 +2,7 @@ import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, extname, join, relative } from "node:path";
+
 import { attachment, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader, getPosixPath } from "allure-js-commons/sdk/reporter";

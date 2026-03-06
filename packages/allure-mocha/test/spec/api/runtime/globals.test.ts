@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+
 import { runMochaInlineTest } from "../../../utils.js";
 
 it("writes globals payload from runtime API calls", async () => {

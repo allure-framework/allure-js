@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+
 import { runCucumberInlineTest } from "../../../utils.js";
 
 it("writes globals payload from runtime API calls", async () => {

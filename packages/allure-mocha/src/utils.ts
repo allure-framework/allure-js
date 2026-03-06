@@ -1,10 +1,12 @@
-import type * as Mocha from "mocha";
 import { dirname, extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+
 import { LabelName } from "allure-js-commons";
 import type { TestPlanV1, TestPlanV1Test } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { getPosixPath, getRelativePath, md5, parseTestPlan } from "allure-js-commons/sdk/reporter";
+import type * as Mocha from "mocha";
+
 import type { AllureMochaTestData, HookCategory, HookScope, HookType, TestPlanIndices } from "./types.js";
 
 const filename = fileURLToPath(import.meta.url);

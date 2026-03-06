@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
+import { describe, expect, it } from "vitest";
+
 import { runPlaywrightInlineTest } from "../utils.js";
 
 describe("testplan with v1 reporter full names", () => {

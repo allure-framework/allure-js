@@ -1,5 +1,6 @@
-import type { Pickle } from "@cucumber/messages";
 import path from "node:path";
+
+import type { Pickle } from "@cucumber/messages";
 import { getPosixPath, getRelativePath } from "allure-js-commons/sdk/reporter";
 
 export const getPathRelativeToProjectRoot = ({ uri }: Pickle) =>

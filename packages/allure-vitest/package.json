@@ -4,27 +4,31 @@
   "description": "Allure Vitest integration",
   "keywords": [
     "allure",
-    "vitest",
     "html",
-    "test",
     "report",
     "reporter",
+    "test",
     "testing",
-    "testops"
+    "testops",
+    "vitest"
   ],
   "homepage": "https://allurereport.org/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/allure-framework/allure-js.git",
-    "directory": "packages/allure-vitest"
-  },
   "license": "Apache-2.0",
   "author": {
     "name": "Qameta Software",
     "email": "allure@qameta.io",
     "url": "https://qameta.io/"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allure-framework/allure-js.git",
+    "directory": "packages/allure-vitest"
+  },
+  "files": [
+    "dist"
+  ],
   "type": "module",
+  "types": "./dist/index.d.ts",
   "exports": {
     "./reporter": {
       "types": "./dist/reporter.d.ts",
@@ -47,17 +51,13 @@
       "default": "./dist/browser/setup.js"
     }
   },
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "allure-report": "allure serve ./out/allure-results",
     "clean": "rimraf ./dist ./out",
     "compile": "tsc --project ./tsconfig.json",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean --single-file",
-    "lint": "eslint ./src ./test --ext .ts",
-    "lint:fix": "eslint ./src ./test --ext .ts --fix",
+    "lint": "oxlint --import-plugin src test",
+    "lint:fix": "oxlint --import-plugin --fix src test",
     "pretest": "run-p clean compile",
     "test": "vitest run"
   },
@@ -65,25 +65,14 @@
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^2.6.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",
-    "@types/eslint": "^8.56.11",
-    "@types/node": "^20.14.2",
+    "@types/node": "^20.19.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@typescript-eslint/parser": "^8.0.0",
     "@vitest/browser-playwright": "^4.0.18",
     "@vitest/runner": "^4.0.18",
     "allure-commandline": "^2.29.0",
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^10.0.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jsdoc": "^54.0.0",
-    "eslint-plugin-n": "^17.10.1",
-    "eslint-plugin-no-null": "^1.0.2",
-    "eslint-plugin-prefer-arrow": "^1.2.3",
     "npm-run-all2": "^8.0.0",
     "playwright": "^1.58.2",
     "react": "^19.2.4",

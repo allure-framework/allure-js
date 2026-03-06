@@ -1,5 +1,7 @@
 import { EventEmitter } from "node:events";
+
 import { describe, expect, it } from "vitest";
+
 import type { Globals } from "../../../../src/model.js";
 import { MessageReader } from "../../../../src/sdk/reporter/writer/MessageReader.js";
 import { MessageWriter } from "../../../../src/sdk/reporter/writer/MessageWriter.js";

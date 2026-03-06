@@ -4,6 +4,7 @@ import fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+
 import type { Label, Link, Status, StepResult, TestResult } from "../../model.js";
 import { LabelName, LinkType, StatusByPriority } from "../../model.js";
 import type { LinkConfig, LinkTemplate } from "./types.js";

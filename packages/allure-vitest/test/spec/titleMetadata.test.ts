@@ -1,5 +1,6 @@
-import { beforeAll, describe, expect, it } from "vitest";
 import { LabelName } from "allure-js-commons";
+import { beforeAll, describe, expect, it } from "vitest";
+
 import { type TestFileAccessor, createVitestBrowserConfig, createVitestConfig, runVitestInlineTest } from "../utils.js";
 
 describe("title metadata", () => {

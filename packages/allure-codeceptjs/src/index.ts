@@ -1,6 +1,7 @@
-import { container } from "codeceptjs";
 import { attachment } from "allure-js-commons";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
+import { container } from "codeceptjs";
+
 import { allureCodeceptJsLegacyApi } from "./legacy.js";
 import { AllureCodeceptJsReporter } from "./reporter.js";
 

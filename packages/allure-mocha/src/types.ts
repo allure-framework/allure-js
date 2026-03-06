@@ -1,6 +1,6 @@
-import type { ReporterConstructor } from "mocha";
 import type { Label, Link } from "allure-js-commons";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
+import type { ReporterConstructor } from "mocha";
 
 export type TestPlanIndices = {
   fullNameIndex: ReadonlySet<string>;

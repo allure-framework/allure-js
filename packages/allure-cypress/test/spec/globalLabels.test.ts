@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+
 import { runCypressInlineTest } from "../utils.js";
 
 it("should handle global labels", async () => {

@@ -1,5 +1,6 @@
 /* eslint-disable @stylistic/quotes */
 import { afterAll, afterEach, beforeAll, expect, it } from "vitest";
+
 import { server } from "../mocks/server.js";
 import { runNewmanCollection } from "../utils.js";
 

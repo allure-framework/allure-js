@@ -2,7 +2,9 @@ import { randomUUID } from "crypto";
 import { mkdtempSync, writeFileSync } from "fs";
 import os from "os";
 import path from "path";
+
 import { afterEach, describe, expect, it } from "vitest";
+
 import type { Label } from "../../../src/model.js";
 import {
   addSkipLabel,

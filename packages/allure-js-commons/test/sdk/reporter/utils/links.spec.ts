@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { LinkType } from "../../../../src/model.js";
 import type { LinkConfig } from "../../../../src/sdk/reporter/types.js";
 import { formatLinks } from "../../../../src/sdk/reporter/utils.js";

@@ -1,5 +1,6 @@
-import { expect, it } from "vitest";
 import { LinkType } from "allure-js-commons";
+import { expect, it } from "vitest";
+
 import { runCypressInlineTest } from "../../../utils.js";
 
 it("adds all the possible links", async () => {

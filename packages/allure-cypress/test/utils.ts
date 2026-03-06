@@ -2,6 +2,7 @@ import { type ChildProcess, fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve as resolvePath } from "node:path";
+
 import type { TestResult, TestResultContainer } from "allure-js-commons";
 import { ContentType, attachment, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";

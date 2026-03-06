@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
 import { ContentType } from "allure-js-commons";
+import { describe, expect, it } from "vitest";
+
 import { runCypressInlineTest } from "../utils.js";
 
 describe("write video for every test", () => {

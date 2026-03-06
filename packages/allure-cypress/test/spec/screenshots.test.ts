@@ -1,5 +1,6 @@
-import { expect, it } from "vitest";
 import { ContentType, Stage, Status } from "allure-js-commons";
+import { expect, it } from "vitest";
+
 import { runCypressInlineTest } from "../utils.js";
 
 it("attaches screenshots for failed specs", async () => {

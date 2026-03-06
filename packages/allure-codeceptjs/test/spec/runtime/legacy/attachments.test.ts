@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+
 import { runCodeceptJsInlineTest } from "../../../utils.js";
 
 it("handles attachments in tests", async () => {
