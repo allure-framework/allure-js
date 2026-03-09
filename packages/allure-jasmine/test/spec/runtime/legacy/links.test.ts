@@ -1,7 +1,9 @@
 /* eslint  @typescript-eslint/no-require-imports: off */
 import { resolve } from "node:path";
-import { expect, it } from "vitest";
+
 import { LinkType } from "allure-js-commons";
+import { expect, it } from "vitest";
+
 import { runJasmineInlineTest } from "../../../utils.js";
 
 it("sets links", async () => {

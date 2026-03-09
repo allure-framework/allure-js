@@ -1,5 +1,6 @@
-import { beforeAll, describe, expect, it } from "vitest";
 import type { TestResult } from "allure-js-commons";
+import { beforeAll, describe, expect, it } from "vitest";
+
 import { SPEC_EXT, runMochaInlineTest } from "../../utils.js";
 
 describe("defaults", () => {

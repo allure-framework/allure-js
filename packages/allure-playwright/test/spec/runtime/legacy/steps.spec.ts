@@ -1,5 +1,6 @@
-import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
+import { expect, it } from "vitest";
+
 import { runPlaywrightInlineTest } from "../../../utils.js";
 
 it("handles single lambda step", async () => {

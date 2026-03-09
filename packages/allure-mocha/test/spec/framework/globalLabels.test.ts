@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
 import type { AllureResults } from "allure-js-commons/sdk";
+import { describe, expect, it } from "vitest";
+
 import { runMochaInlineTest } from "../../utils.js";
 
 describe("global labels", () => {

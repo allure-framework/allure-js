@@ -1,6 +1,7 @@
-import { expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
+import { expect, it } from "vitest";
+
 import { runCodeceptJsInlineTest } from "../utils.js";
 
 it("should support test plan", async () => {

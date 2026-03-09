@@ -1,5 +1,6 @@
-import { expect, it } from "vitest";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
+import { expect, it } from "vitest";
+
 import { runCucumberInlineTest } from "../utils.js";
 
 it("should skip tests based on test plan", async () => {

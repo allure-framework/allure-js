@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+
 import { expect, it } from "vitest";
+
 import { runPlaywrightInlineTest } from "../utils.js";
 
 it("doesn't not throw on missing attachment", async () => {

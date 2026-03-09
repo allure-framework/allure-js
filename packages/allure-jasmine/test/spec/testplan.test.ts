@@ -1,5 +1,6 @@
-import { expect, it } from "vitest";
 import { Status } from "allure-js-commons";
+import { expect, it } from "vitest";
+
 import { runJasmineInlineTest } from "../utils.js";
 
 it("should filter tests by selector", async () => {

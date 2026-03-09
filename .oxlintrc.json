@@ -1,0 +1,16 @@
+{
+  "plugins": ["typescript", "import", "jsdoc", "node"],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "ignorePatterns": [
+    "**/.yarn/**",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/out/**",
+    "**/.pnp.*",
+    "**/allure-report/**",
+    "**/test/fixtures/**"
+  ]
+}

@@ -1,5 +1,7 @@
 import assert from "node:assert";
+
 import { describe, expect, it } from "vitest";
+
 import { LabelName, Status } from "../../src/model.js";
 import type { FixtureResult, StepResult, TestResult } from "../../src/model.js";
 import {

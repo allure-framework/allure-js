@@ -1,6 +1,8 @@
 import { createServer } from "node:http";
-import { expect, it } from "vitest";
+
 import { Status } from "allure-js-commons";
+import { expect, it } from "vitest";
+
 import { runPlaywrightInlineTest } from "../utils.js";
 
 it("should handle playwright native screenshot testing", async () => {

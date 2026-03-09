@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { typeToExtension } from "../../../../src/sdk/reporter/utils/attachments.js";
 
 describe("typeToExtension", () => {

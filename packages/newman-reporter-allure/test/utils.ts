@@ -1,7 +1,7 @@
-import { run } from "newman";
-import type { CollectionDefinition } from "postman-collection";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
+import { run } from "newman";
+import type { CollectionDefinition } from "postman-collection";
 
 export const runNewmanCollection = async (collection: CollectionDefinition): Promise<AllureResults> => {
   const reader = new MessageReader();

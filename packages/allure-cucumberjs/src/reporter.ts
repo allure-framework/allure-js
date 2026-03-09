@@ -1,3 +1,5 @@
+import { extname } from "node:path";
+
 import type { IFormatterOptions, TestCaseHookDefinition } from "@cucumber/cucumber";
 import { Formatter, World } from "@cucumber/cucumber";
 import type * as messages from "@cucumber/messages";
@@ -9,7 +11,6 @@ import {
   type TestStepResult,
   TestStepResultStatus,
 } from "@cucumber/messages";
-import { extname } from "node:path";
 import type { Label, Link, TestResult } from "allure-js-commons";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import { type RuntimeMessage, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
@@ -28,6 +29,7 @@ import {
   getWorstTestStepResult,
   md5,
 } from "allure-js-commons/sdk/reporter";
+
 import { AllureCucumberWorld } from "./legacy.js";
 import type { AllureCucumberLinkConfig, AllureCucumberReporterConfig, LabelConfig } from "./model.js";
 import { getPathRelativeToProjectRoot, getPosixPathRelativeToProjectRoot } from "./utils.js";

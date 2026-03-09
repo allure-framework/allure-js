@@ -1,9 +1,10 @@
-import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 import { parseTestPlan } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
-import { VitestTestRuntime } from "./VitestTestRuntime.js";
+import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
+
 import { allureVitestLegacyApi } from "./legacy.js";
 import { existsInTestPlan } from "./utils.js";
+import { VitestTestRuntime } from "./VitestTestRuntime.js";
 
 beforeAll(() => {
   globalThis.allureTestPlan = parseTestPlan();

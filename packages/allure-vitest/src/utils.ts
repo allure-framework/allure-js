@@ -1,8 +1,8 @@
-import type { RunnerTestSuite as Suite, RunnerTask as Task } from "vitest";
 import { LabelName } from "allure-js-commons";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { getPosixPath, getRelativePath, includedInTestPlan } from "allure-js-commons/sdk/reporter";
+import type { RunnerTestSuite as Suite, RunnerTask as Task } from "vitest";
 
 export const getSuitePath = (task: Task): string[] => {
   const path = [];

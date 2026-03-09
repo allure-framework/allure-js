@@ -1,6 +1,8 @@
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+
 import type { TestPlanV1 } from "allure-js-commons/sdk";
+import { describe, expect, it } from "vitest";
+
 import { runCypressInlineTest } from "../utils.js";
 
 describe("fullName, and package", () => {

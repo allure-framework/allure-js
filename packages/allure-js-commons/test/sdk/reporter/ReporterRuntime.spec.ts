@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { describe, expect, it } from "vitest";
+
 import { type Link, Stage, Status, type TestResult } from "../../../src/model.js";
 import { getTestResultHistoryId } from "../../../src/sdk/reporter";
 import { ReporterRuntime, ShallowStepsStack } from "../../../src/sdk/reporter/ReporterRuntime.js";

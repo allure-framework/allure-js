@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { runCodeceptJsInlineTest } from "../utils.js";
 
 describe("categories", () => {

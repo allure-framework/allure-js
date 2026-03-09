@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+
 import { runJasmineInlineTest } from "../../../utils.js";
 
 it("handles json attachment", async () => {

@@ -1,4 +1,5 @@
 import { platform } from "node:process";
+
 /**
  * The implementation is based on https://github.com/gagle/node-properties.
  */

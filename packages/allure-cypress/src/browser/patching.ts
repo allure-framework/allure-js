@@ -1,4 +1,5 @@
 import { isPromise } from "allure-js-commons/sdk";
+
 import type { CypressSuiteFunction, DirectHookImplementation, HookImplementation } from "../types.js";
 import {
   completeSpecIfNoAfterHookLeft,

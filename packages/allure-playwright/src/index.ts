@@ -1,10 +1,11 @@
-/* eslint max-lines: off */
-import type { FullConfig } from "@playwright/test";
-import type { TestResult as PlaywrightTestResult, Suite, TestCase, TestStep } from "@playwright/test/reporter";
 import { existsSync } from "node:fs";
 import { access } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+
+/* eslint max-lines: off */
+import type { FullConfig } from "@playwright/test";
+import type { TestResult as PlaywrightTestResult, Suite, TestCase, TestStep } from "@playwright/test/reporter";
 import {
   ContentType,
   type ImageDiffAttachment,
@@ -44,6 +45,7 @@ import {
   randomUuid,
   readImageAsBase64,
 } from "allure-js-commons/sdk/reporter";
+
 import { allurePlaywrightLegacyApi } from "./legacy.js";
 import type { AllurePlaywrightReporterConfig, AttachStack, AttachmentTarget, ReporterV2 } from "./model.js";
 import {
@@ -300,7 +302,7 @@ export class AllureReporter implements ReporterV2 {
     };
 
     if (["test.attach", "attach"].includes(step.category) && !isHookStep) {
-      const parent = step.parent ? this.pwStepUuid.get(step.parent) ?? null : null;
+      const parent = step.parent ? (this.pwStepUuid.get(step.parent) ?? null) : null;
       const targets = this.attachmentTargets.get(test.id) ?? [];
       targets.push({ name: normalizeAttachStepTitle(step.title), stepUuid: parent ?? undefined });
       this.attachmentTargets.set(test.id, targets);
@@ -365,7 +367,7 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    const parentUuid = step.parent ? this.pwStepUuid.get(step.parent) ?? null : null;
+    const parentUuid = step.parent ? (this.pwStepUuid.get(step.parent) ?? null) : null;
     const createdUuid = this.allureRuntime!.startStep(testUuid, parentUuid, baseStep);
 
     if (createdUuid) {

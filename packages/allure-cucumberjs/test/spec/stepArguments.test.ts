@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+
 import { runCucumberInlineTest } from "../utils.js";
 
 it("reports steps with their arguments", async () => {

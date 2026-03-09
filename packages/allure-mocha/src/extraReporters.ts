@@ -1,6 +1,8 @@
-import * as Mocha from "mocha";
 import { createRequire } from "node:module";
 import path from "node:path";
+
+import * as Mocha from "mocha";
+
 import type { ReporterDoneFn, ReporterEntry, ReporterModuleOrCtor, ReporterOptions } from "./types.js";
 
 type CanonicalReporterEntry = readonly [ReporterModuleOrCtor, ReporterOptions];

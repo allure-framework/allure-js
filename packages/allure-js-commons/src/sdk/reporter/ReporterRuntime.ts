@@ -1,6 +1,7 @@
 /* eslint max-lines: 0 */
 import path from "node:path";
 import { extname } from "path";
+
 import {
   type Attachment,
   type AttachmentOptions,
@@ -25,9 +26,9 @@ import type {
   RuntimeStepMetadataMessage,
   RuntimeStopStepMessage,
 } from "../types.js";
+import { createFixtureResult, createStepResult, createTestResult } from "./factory.js";
 import { LifecycleState } from "./LifecycleState.js";
 import { Notifier } from "./Notifier.js";
-import { createFixtureResult, createStepResult, createTestResult } from "./factory.js";
 import { hasSkipLabel } from "./testplan.js";
 import type {
   FixtureResultWrapper,
@@ -115,7 +116,7 @@ export class ShallowStepsStack {
     const { stop, duration = 0 } = opts ?? {};
 
     this.updateStep((result) => {
-      result.stop = stop ?? result.start ? result.start! + duration : undefined;
+      result.stop = (stop ?? result.start) ? result.start! + duration : undefined;
     });
 
     this.#runningSteps.pop();

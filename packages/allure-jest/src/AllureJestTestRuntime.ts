@@ -1,6 +1,7 @@
 import type { Global } from "@jest/types";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { MessageTestRuntime } from "allure-js-commons/sdk/runtime";
+
 import type { AllureJestEnvironment } from "./model.js";
 
 export class AllureJestTestRuntime extends MessageTestRuntime {

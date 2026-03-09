@@ -1,4 +1,5 @@
 import { serialize } from "allure-js-commons/sdk";
+
 import { getConfig } from "./state.js";
 
 export default (value: unknown) => {

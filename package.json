@@ -11,24 +11,22 @@
     "compile": "yarn workspaces foreach -Avvt run compile",
     "lint": "yarn workspaces foreach -Avvt run lint",
     "lint:fix": "yarn workspaces foreach -Avvt run lint:fix",
+    "lint:type": "yarn oxlint --type-aware --import-plugin packages",
+    "format": "yarn format:write",
+    "format:check": "node ./scripts/run-oxfmt.cjs --check",
+    "format:write": "node ./scripts/run-oxfmt.cjs --write",
+    "verify": "yarn format:check && yarn lint && yarn lint:type --quiet",
     "prepare": "husky install",
-    "prettier:check": "prettier --check './packages/*/{src,test,features}/**/*.{mjs,cjs,js,ts}' 'package.json' 'packages/**/package.json' .prettierrc.js",
-    "prettier:format": "prettier --write './packages/*/{src,test,features}/**/*.{mjs,cjs,js,ts}' 'package.json' 'packages/**/package.json' .prettierrc.js",
     "test": "yarn workspaces foreach -Avvt run test"
   },
-  "lint-staged": {
-    "packages/*/{src,test,features}/**/*.{mjs,cjs,js,ts,tsx}": [
-      "prettier --write"
-    ],
-    "**/package.json": [
-      "prettier --write"
-    ],
-    ".prettierrc.js": [
-      "prettier --write"
-    ],
-    "plugin-ci-version.js": [
-      "prettier --write"
-    ]
+  "devDependencies": {
+    "husky": "^9.0.0",
+    "lint-staged": "^16.0.0",
+    "oxfmt": "0.36.0",
+    "oxlint": "1.51.0",
+    "oxlint-tsgolint": "0.16.0",
+    "rimraf": "^6.0.0",
+    "typescript": "^5.2.2"
   },
   "resolutions": {
     "@babel/helpers": "^7.26.10",
@@ -67,25 +65,14 @@
     "underscore": "^1.13.8",
     "undici": "^7.18.2"
   },
-  "devDependencies": {
-    "@stylistic/eslint-plugin": "^2.6.1",
-    "@trivago/prettier-plugin-sort-imports": "^5.0.0",
-    "@types/eslint": "^8.56.11",
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@typescript-eslint/parser": "^8.0.0",
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^10.0.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jsdoc": "^54.0.0",
-    "eslint-plugin-n": "^17.10.1",
-    "eslint-plugin-no-null": "^1.0.2",
-    "eslint-plugin-prefer-arrow": "^1.2.3",
-    "husky": "^9.0.0",
-    "lint-staged": "^16.0.0",
-    "prettier": "^3.2.5",
-    "prettier-plugin-packagejson": "^2.4.9",
-    "rimraf": "^6.0.0",
-    "typescript": "^5.2.2"
+  "lint-staged": {
+    "packages/*/{src,test,features}/**/*.{mjs,cjs,js,ts,tsx}": [
+      "oxlint --fix",
+      "oxfmt --write"
+    ],
+    "**/package.json": [
+      "oxfmt --write"
+    ]
   },
   "packageManager": "yarn@4.12.0"
 }

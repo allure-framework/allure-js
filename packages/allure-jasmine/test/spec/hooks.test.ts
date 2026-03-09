@@ -1,6 +1,7 @@
+import { Stage, Status } from "allure-js-commons";
 /* eslint max-lines: 0 */
 import { describe, expect, it } from "vitest";
-import { Stage, Status } from "allure-js-commons";
+
 import { runJasmineInlineTest } from "../utils.js";
 
 it("should support all types of hooks", async () => {

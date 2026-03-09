@@ -1,5 +1,7 @@
 import { join } from "node:path";
+
 import { beforeAll, describe, expect, it } from "vitest";
+
 import { type TestFileAccessor, createVitestBrowserConfig, createVitestConfig, runVitestInlineTest } from "../utils.js";
 
 describe("test plan", () => {

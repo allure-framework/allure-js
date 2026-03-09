@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
 import { Stage, Status } from "allure-js-commons";
+import { describe, expect, it } from "vitest";
+
 import { createVitestBrowserConfig, createVitestConfig, runVitestInlineTest } from "../../../utils.js";
 
 describe("steps", () => {

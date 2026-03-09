@@ -2,7 +2,9 @@ import { randomUUID } from "node:crypto";
 import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import * as os from "node:os";
 import path from "node:path";
+
 import { describe, expect, it } from "vitest";
+
 import { ContentType } from "../../../../src/model.js";
 import { ReporterRuntime } from "../../../../src/sdk/reporter/ReporterRuntime.js";
 import type { ReporterRuntimeConfig } from "../../../../src/sdk/reporter/types.js";
