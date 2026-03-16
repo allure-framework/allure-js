@@ -1,8 +1,8 @@
-# vitest-allure
+# allure-vitest
 
 > Allure framework integration for [Vitest](https://vitest.dev/) framework
 
-<img src="https://allurereport.org/public/img/allure-report.svg" height="85px" alt="Allure Report logo" align="right" />
+[<img src="https://allurereport.org/public/img/allure-report.svg" height="85px" alt="Allure Report logo" align="right" />](https://allurereport.org "Allure Report")
 
 - Learn more about Allure Report at https://allurereport.org
 - 📚 [Documentation](https://allurereport.org/docs/) – discover official documentation for Allure Report
@@ -18,6 +18,12 @@ The docs for Allure Vitest are available at [https://allurereport.org/docs/vites
 
 Also, check out the examples at [github.com/allure-examples](https://github.com/orgs/allure-examples/repositories?q=visibility%3Apublic+archived%3Afalse+topic%3Aexample+topic%3Avitest).
 
+## Features
+
+- writes Allure results from Vitest node and browser runs
+- supports labels, links, parameters, steps, and attachments through `allure-js-commons`
+- works with Allure Report 2 and Allure Report 3
+
 ## Installation
 
 Install `allure-vitest` using a package manager of your choice. For example:
@@ -31,6 +37,18 @@ npm install -D allure-vitest
 > yarn add --dev @vitest/runner allure-js-commons
 > ```
 > Keep in mind, that `allure-js-commons` and `allure-vitest` must have the same version. The same goes for `vitest` and `@vitest/runner`. Use [`yarn info`](https://yarnpkg.com/cli/info) to check the versions.
+
+Install Allure Report separately when you want to render the generated `allure-results`:
+
+- follow the [Allure Report 2 installation guide](https://allurereport.org/docs/install/) to use the `allure` CLI
+- or install Allure Report 3 with `npm install -D allure` to use `npx allure`
+
+## Supported versions and platforms
+
+- `vitest >= 1.3.0`
+- `@vitest/runner >= 1.3.0`
+- Linux, macOS, and Windows wherever Vitest supports Node.js
+- this repository is validated in CI on Node.js 20 and 22
 
 ## Usage
 
@@ -76,6 +94,22 @@ export default defineConfig({
 +    }
   },
 });
+```
+
+### View the report
+
+Use Allure Report 2:
+
+```bash
+allure generate ./allure-results -o ./allure-report
+allure open ./allure-report
+```
+
+Or use Allure Report 3:
+
+```bash
+npx allure generate ./allure-results
+npx allure open ./allure-report
 ```
 
 ## Allure API
