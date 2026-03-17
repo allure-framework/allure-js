@@ -22,6 +22,12 @@ The docs for Allure Jest are available at [https://allurereport.org/docs/jest/](
 
 Also, check out the examples at [github.com/allure-examples](https://github.com/orgs/allure-examples/repositories?q=visibility%3Apublic+archived%3Afalse+topic%3Aexample+topic%3Ajest).
 
+## Features
+
+- writes Allure results from the Jest Circus runtime
+- supports labels, links, parameters, nested steps, and attachments through `allure-js-commons`
+- works with Allure Report 2 and Allure Report 3
+
 ## Installation
 
 Install `allure-jest` using a package manager of your choice. For example:
@@ -35,6 +41,19 @@ npm install -D allure-jest
 > yarn add --dev jest-environment-node allure-js-commons
 > ```
 > Keep in mind, that `allure-js-commons` and `allure-jest` must have the same version. The same goes for all Jest packages (`jest`, `jest-circus`, `jest-environment-node`, etc). Use [`yarn info`](https://yarnpkg.com/cli/info) to check the versions.
+
+Install Allure Report separately when you want to render the generated `allure-results`:
+
+- follow the [Allure Report 2 installation guide](https://allurereport.org/docs/install/) to use the `allure` CLI
+- or install Allure Report 3 with `npm install -D allure` to use `npx allure`
+
+## Supported versions and platforms
+
+- `jest >= 24.8.0`
+- `jest-circus >= 24.8.0`
+- matching Jest CLI and environment packages `>= 24.8.0`
+- Linux, macOS, and Windows wherever Jest supports Node.js
+- this repository is validated in CI on Node.js 20 and 22
 
 ## Usage
 
@@ -59,18 +78,18 @@ You may select another location, or further customize the behavior of Allure Jes
 
 ### View the report
 
-> You need Allure Report to be installed on your machine to generate and open the report from the result files. See the [installation instructions](https://allurereport.org/docs/install/) on how to get it.
-
-Generate Allure Report after the tests are executed:
+Use Allure Report 2:
 
 ```bash
 allure generate ./allure-results -o ./allure-report
+allure open ./allure-report
 ```
 
-Open the generated report:
+Or use Allure Report 3:
 
 ```bash
-allure open ./allure-report
+npx allure generate ./allure-results
+npx allure open ./allure-report
 ```
 
 ## Allure API

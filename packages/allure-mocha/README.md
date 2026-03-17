@@ -18,6 +18,12 @@ The docs for Allure Mocha are available at [https://allurereport.org/docs/mocha/
 
 Also, check out the examples at [github.com/allure-examples](https://github.com/orgs/allure-examples/repositories?q=visibility%3Apublic+archived%3Afalse+topic%3Aexample+topic%3Amocha).
 
+## Features
+
+- writes Allure results from the Mocha reporter lifecycle
+- supports steps, attachments, metadata, retries, and runtime API calls through `allure-js-commons`
+- works with Allure Report 2 and Allure Report 3
+
 ## Installation
 
 Install `allure-mocha` using a package manager of your choice. For example:
@@ -25,6 +31,17 @@ Install `allure-mocha` using a package manager of your choice. For example:
 ```shell
 npm install -D allure-mocha
 ```
+
+Install Allure Report separately when you want to render the generated `allure-results`:
+
+- follow the [Allure Report 2 installation guide](https://allurereport.org/docs/install/) to use the `allure` CLI
+- or install Allure Report 3 with `npm install -D allure` to use `npx allure`
+
+## Supported versions and platforms
+
+- `mocha >= 6.2.0`
+- Linux, macOS, and Windows wherever Mocha supports Node.js
+- this repository is validated in CI on Node.js 20 and 22
 
 ## Usage
 
@@ -48,18 +65,18 @@ You may select another location, or further customize the reporter's behavior wi
 
 ### View the report
 
-> You need Allure Report to be installed on your machine to generate and open the report from the result files. See the [installation instructions](https://allurereport.org/docs/install/) on how to get it.
-
-Generate Allure Report after the tests are executed:
+Use Allure Report 2:
 
 ```bash
 allure generate ./allure-results -o ./allure-report
+allure open ./allure-report
 ```
 
-Open the generated report:
+Or use Allure Report 3:
 
 ```bash
-allure open ./allure-report
+npx allure generate ./allure-results
+npx allure open ./allure-report
 ```
 
 ## Allure API
