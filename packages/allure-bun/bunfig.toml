@@ -1,0 +1,3 @@
+[test]
+# Загрузить setup перед тестами
+preload = ["./dist/setup.js"]
