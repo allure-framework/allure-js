@@ -203,7 +203,7 @@ it("should support failed bdd steps", async () => {
     },
     {
       name: "Then all good",
-      status: Status.BROKEN,
+      status: Status.FAILED,
       statusDetails: {
         message: expect.stringContaining("an error"),
       },
@@ -214,7 +214,7 @@ it("should support failed bdd steps", async () => {
         },
         {
           name: "I fail",
-          status: Status.BROKEN,
+          status: Status.FAILED,
           statusDetails: {
             message: expect.stringContaining("an error"),
           },

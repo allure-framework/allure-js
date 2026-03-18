@@ -1,5 +1,3 @@
-import { env } from "node:process";
-
 import { LabelName, Stage, Status, type StepResult } from "allure-js-commons";
 import { getMessageAndTraceFromError, getStatusFromError, isMetadataTag, stripAnsi } from "allure-js-commons/sdk";
 import AllureMochaReporter from "allure-mocha";
@@ -14,15 +12,32 @@ interface MetaStep {
 }
 
 const MAX_META_STEP_NESTING = 10;
+// CodeceptJS tryTo() uses a dedicated "tryTo" recorder session.
+// Docs: https://codecept.io/effects.html
+const TRY_TO_SESSION = "tryTo";
+
+const getCodeceptStatusFromError = (error: Partial<Error>, hookName?: string): Status => {
+  const status = getStatusFromError(error);
+
+  if (status === Status.FAILED || hookName) {
+    return status;
+  }
+
+  return Status.FAILED;
+};
+
+const isTryToSession = () => recorder.getCurrentSessionId?.() === TRY_TO_SESSION;
 
 export class AllureCodeceptJsReporter extends AllureMochaReporter {
   protected currentBddStep?: string;
   protected metaStepStack: MetaStep[] = [];
   protected currentLeafStep?: string;
+  protected currentTestHookName?: string;
 
   constructor(runner: Mocha.Runner, opts: Mocha.MochaOptions, isInWorker: boolean) {
     super(runner, opts, isInWorker);
     this.registerEvents();
+    runner.on("fail", this.mochaTestFailed.bind(this));
   }
 
   registerEvents() {
@@ -45,6 +60,8 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
       return;
     }
 
+    this.currentTestHookName = undefined;
+
     const tags = test.tags || [];
     const extraTagLabels = tags
       .filter((tag) => tag && !isMetadataTag(tag))
@@ -58,9 +75,21 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     });
   }
 
-  testFailed(_: {}, error: Error) {
-    const status = getStatusFromError({ message: error.message } as Error);
+  testFailed(_: {}, error: Error, hookName?: string) {
+    this.currentTestHookName = hookName;
+    const status = getCodeceptStatusFromError(error, hookName);
     const statusDetails = getMessageAndTraceFromError(error);
+
+    if (this.currentTest) {
+      this.runtime.updateTest(this.currentTest, (result) => {
+        result.status = status;
+        result.statusDetails = {
+          ...result.statusDetails,
+          ...statusDetails,
+        };
+      });
+    }
+
     if (this.currentBddStep) {
       this.stopCurrentStep((result) => {
         result.stage = Stage.FINISHED;
@@ -88,6 +117,7 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
   }
 
   testFinished() {
+    this.currentTestHookName = undefined;
     if (this.currentBddStep) {
       this.runtime.updateStep(this.currentBddStep, (result) => {
         result.status = Status.PASSED;
@@ -187,10 +217,10 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
         if (!error.message && typeof error.inspect === "function") {
           error.message = error.inspect();
         }
-        result.status = getStatusFromError(error as unknown as Error);
+        result.status = isTryToSession() ? Status.BROKEN : getCodeceptStatusFromError(error as unknown as Error);
         result.statusDetails = getMessageAndTraceFromError(error as unknown as Error);
       } else {
-        result.status = env.TRY_TO === "true" ? Status.BROKEN : Status.FAILED;
+        result.status = isTryToSession() ? Status.BROKEN : Status.FAILED;
       }
     });
     this.runtime.stopStep(this.currentLeafStep);
@@ -248,7 +278,7 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
         }
         if (err instanceof Error || err.constructor.name === "Error") {
           this.runtime.updateStep(currentStep, (step) => {
-            step.status = getStatusFromError(err as Error);
+            step.status = isTryToSession() ? Status.BROKEN : getCodeceptStatusFromError(err as Error);
             step.statusDetails = { ...step.statusDetails, ...getMessageAndTraceFromError(err as Error) };
           });
         }
@@ -258,6 +288,20 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
 
     this.runtime.updateStep(currentStep, updateFunc);
     this.runtime.stopStep(currentStep);
+  }
+
+  mochaTestFailed(_: Mocha.Test, error: Error) {
+    if (!this.currentTest) {
+      return;
+    }
+
+    this.runtime.updateTest(this.currentTest, (result) => {
+      result.status = getCodeceptStatusFromError(error, this.currentTestHookName);
+      result.statusDetails = {
+        ...result.statusDetails,
+        ...getMessageAndTraceFromError(error),
+      };
+    });
   }
 
   protected getFrameworkName = () => "codeceptjs";

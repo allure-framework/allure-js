@@ -86,7 +86,7 @@ it("should support screenshotOnFail plugin", async () => {
         ],
       }),
       expect.objectContaining({
-        status: Status.BROKEN,
+        status: Status.FAILED,
         name: "login-scenario2",
         steps: [
           expect.objectContaining({
