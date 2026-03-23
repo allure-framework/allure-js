@@ -53,7 +53,56 @@ it("should log passed steps", async () => {
   );
 });
 
-it("should log failed steps", async () => {
+it("should log verification-like failed steps", async () => {
+  const { tests } = await runCodeceptJsInlineTest({
+    "steps.test.js": `
+        Feature("a feature");
+        Scenario("scenario 1", async ({ I }) => {
+          await I.pass();
+          await I.fail();
+        });
+      `,
+    "helper.js": `
+        const Helper = require("@codeceptjs/helper");
+
+        class MyHelper extends Helper {
+          async pass() {
+            await Promise.resolve();
+          }
+
+          async fail() {
+            await Promise.reject(new Error('Element "#popup" is not visible on page.'));
+          }
+        }
+
+        module.exports = MyHelper;
+      `,
+  });
+
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        status: Status.FAILED,
+        name: "scenario 1",
+        statusDetails: expect.objectContaining({
+          message: 'Element "#popup" is not visible on page.',
+        }),
+        steps: [
+          expect.objectContaining({
+            name: "I pass",
+            status: Status.PASSED,
+          }),
+          expect.objectContaining({
+            name: "I fail",
+            status: Status.FAILED,
+          }),
+        ],
+      }),
+    ]),
+  );
+});
+
+it("should keep raw errors broken", async () => {
   const { tests } = await runCodeceptJsInlineTest({
     "steps.test.js": `
         Feature("a feature");
@@ -67,7 +116,7 @@ it("should log failed steps", async () => {
   expect(tests).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
-        status: Status.FAILED,
+        status: Status.BROKEN,
         name: "scenario 1",
         statusDetails: expect.objectContaining({
           message: "an error",
@@ -79,7 +128,7 @@ it("should log failed steps", async () => {
           }),
           expect.objectContaining({
             name: "I fail",
-            status: Status.FAILED,
+            status: Status.BROKEN,
           }),
         ],
       }),

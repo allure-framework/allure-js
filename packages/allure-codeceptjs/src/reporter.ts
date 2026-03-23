@@ -16,6 +16,25 @@ const MAX_META_STEP_NESTING = 10;
 // Docs: https://codecept.io/effects.html
 const TRY_TO_SESSION = "tryTo";
 
+const knownCodeceptVerificationErrorPatterns = [
+  /^Element ".+" is (?:not visible on page|still visible on page|not seen in DOM|still seen in DOM)\.?$/i,
+  /^(?:Element|Clickable element|Context element|Frame|Option ".+" in|Custom locator .+) .*\b(?:not found|was not found)\b/i,
+  /^element \(.+\) .+ after \d+(?:\.\d+)? sec(?:\n|\.|$)/i,
+  /^Text ".+" was not found on page after \d+(?:\.\d+)? sec\.?$/i,
+  /^Expected \d+ tabs are not met after \d+(?:\.\d+)? sec\.?$/i,
+  /^Cookie .+ is not found after \d+(?:\.\d+)?s$/i,
+] as const;
+
+const isKnownCodeceptVerificationError = (error: Partial<Error>): boolean => {
+  const message = error.message ? stripAnsi(error.message) : "";
+
+  if (!message) {
+    return false;
+  }
+
+  return knownCodeceptVerificationErrorPatterns.some((pattern) => pattern.test(message));
+};
+
 const getCodeceptStatusFromError = (error: Partial<Error>, hookName?: string): Status => {
   const status = getStatusFromError(error);
 
@@ -23,10 +42,18 @@ const getCodeceptStatusFromError = (error: Partial<Error>, hookName?: string): S
     return status;
   }
 
-  return Status.FAILED;
+  return isKnownCodeceptVerificationError(error) ? Status.FAILED : Status.BROKEN;
 };
 
+const isErrorInstance = (value: unknown): value is Error =>
+  value instanceof Error ||
+  (typeof value === "object" &&
+    value !== null &&
+    (value as { constructor?: { name?: unknown } }).constructor?.name === "Error");
+
 const isTryToSession = () => recorder.getCurrentSessionId?.() === TRY_TO_SESSION;
+const getRecorderPromise = (): Promise<unknown> | undefined =>
+  (recorder.promise as (() => Promise<unknown> | undefined) | undefined)?.();
 
 export class AllureCodeceptJsReporter extends AllureMochaReporter {
   protected currentBddStep?: string;
@@ -204,14 +231,16 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     });
   }
 
-  // according to the docs, codeceptjs supposed to report the error,
-  // but actually it's never reported
+  // Step errors are usually reported directly, but some paths still require
+  // reading the recorder rejection to populate the final step status/details.
   stepFailed(_: CodeceptJS.Step, error?: CodeceptError) {
     if (!this.currentLeafStep) {
       return;
     }
 
-    this.runtime.updateStep(this.currentLeafStep, (result) => {
+    const currentLeafStep = this.currentLeafStep;
+
+    this.runtime.updateStep(currentLeafStep, (result) => {
       result.stage = Stage.FINISHED;
       if (error) {
         if (!error.message && typeof error.inspect === "function") {
@@ -220,10 +249,26 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
         result.status = isTryToSession() ? Status.BROKEN : getCodeceptStatusFromError(error as unknown as Error);
         result.statusDetails = getMessageAndTraceFromError(error as unknown as Error);
       } else {
-        result.status = isTryToSession() ? Status.BROKEN : Status.FAILED;
+        const promise = getRecorderPromise();
+        if (promise) {
+          promise.catch((err) => {
+            if (!err.message && typeof err.inspect === "function") {
+              err.message = err.inspect();
+            }
+            if (isErrorInstance(err)) {
+              this.runtime.updateStep(currentLeafStep, (step) => {
+                step.status = isTryToSession() ? Status.BROKEN : getCodeceptStatusFromError(err as Error);
+                step.statusDetails = getMessageAndTraceFromError(err as Error);
+              });
+            }
+            return Promise.reject(err);
+          });
+        }
+
+        result.status = Status.BROKEN;
       }
     });
-    this.runtime.stopStep(this.currentLeafStep);
+    this.runtime.stopStep(currentLeafStep);
     this.currentLeafStep = undefined;
   }
 
@@ -268,15 +313,14 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     if (!currentStep) {
       return;
     }
-    const promise = recorder.promise();
-    // @ts-ignore
+    const promise = getRecorderPromise();
     if (promise) {
       promise.catch((err) => {
         if (!err.message && typeof err.inspect === "function") {
           // AssertionFailedError doesn't set message attribute
           err.message = err.inspect();
         }
-        if (err instanceof Error || err.constructor.name === "Error") {
+        if (isErrorInstance(err)) {
           this.runtime.updateStep(currentStep, (step) => {
             step.status = isTryToSession() ? Status.BROKEN : getCodeceptStatusFromError(err as Error);
             step.statusDetails = { ...step.statusDetails, ...getMessageAndTraceFromError(err as Error) };

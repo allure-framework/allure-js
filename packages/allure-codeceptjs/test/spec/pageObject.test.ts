@@ -91,7 +91,7 @@ it("should support steps in page objects", async () => {
   });
 });
 
-it("should support failed steps in page objects", async () => {
+it("should report broken steps in page objects for raw errors", async () => {
   const { tests } = await runCodeceptJsInlineTest({
     "nested/login.test.js": `
         const { container } = require('codeceptjs')
@@ -160,7 +160,7 @@ it("should support failed steps in page objects", async () => {
   const [tr] = tests;
 
   expect(tr).toMatchObject({
-    status: Status.FAILED,
+    status: Status.BROKEN,
     name: "login-scenario1",
     statusDetails: {
       message: expect.stringContaining("an error"),
@@ -173,7 +173,7 @@ it("should support failed steps in page objects", async () => {
       },
       {
         name: "On login: on main page",
-        status: Status.FAILED,
+        status: Status.BROKEN,
         statusDetails: {
           message: expect.stringContaining("an error"),
           trace: expect.stringContaining("CustomHelper.fail"),
@@ -185,7 +185,7 @@ it("should support failed steps in page objects", async () => {
           },
           {
             name: "I fail",
-            status: Status.FAILED,
+            status: Status.BROKEN,
             statusDetails: {
               message: expect.stringContaining("an error"),
               trace: expect.stringContaining("CustomHelper.fail"),
@@ -286,7 +286,7 @@ it("should support actor steps", async () => {
   });
 });
 
-it("should support failed actor steps", async () => {
+it("should report broken actor steps for raw errors", async () => {
   const { tests } = await runCodeceptJsInlineTest({
     "nested/login.test.js": `
         const { container } = require('codeceptjs')
@@ -356,7 +356,7 @@ it("should support failed actor steps", async () => {
   expect(tests).toHaveLength(1);
   const [tr] = tests;
   expect(tr).toMatchObject({
-    status: Status.FAILED,
+    status: Status.BROKEN,
     statusDetails: {
       message: expect.stringContaining("an error"),
       trace: expect.stringContaining("CustomHelper.fail"),
@@ -369,7 +369,7 @@ it("should support failed actor steps", async () => {
       },
       {
         name: "I on main page",
-        status: Status.FAILED,
+        status: Status.BROKEN,
         statusDetails: {
           message: expect.stringContaining("an error"),
           trace: expect.stringContaining("CustomHelper.fail"),
@@ -381,7 +381,7 @@ it("should support failed actor steps", async () => {
           },
           {
             name: "I fail",
-            status: Status.FAILED,
+            status: Status.BROKEN,
             statusDetails: {
               message: expect.stringContaining("an error"),
               trace: expect.stringContaining("CustomHelper.fail"),

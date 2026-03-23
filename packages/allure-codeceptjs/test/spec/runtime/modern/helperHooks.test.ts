@@ -173,11 +173,12 @@ it("should support runtime API in helper _failed hook", async () => {
         ],
       }),
       expect.objectContaining({
-        status: Status.FAILED,
+        status: Status.BROKEN,
         name: "login-scenario2",
         steps: [
           expect.objectContaining({
             name: "I fail",
+            status: Status.BROKEN,
           }),
           expect.objectContaining({
             name: "_failed",

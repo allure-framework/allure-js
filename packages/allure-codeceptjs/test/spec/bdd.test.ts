@@ -131,7 +131,7 @@ it("should support helper steps in bdd steps", async () => {
   ]);
 });
 
-it("should support failed bdd steps", async () => {
+it("should support broken bdd steps for raw errors", async () => {
   const { tests } = await runCodeceptJsInlineTest({
     "features/basic.feature": `Feature: simple
   Scenario: passed
@@ -176,50 +176,53 @@ it("should support failed bdd steps", async () => {
 
   expect(tests).toHaveLength(1);
   const [tr] = tests;
-  expect(tr.steps).toMatchObject([
-    {
-      name: "Given a world",
-      status: Status.PASSED,
-      steps: [
-        {
-          name: "I pass",
-          status: Status.PASSED,
-        },
-      ],
-    },
-    {
-      name: "When we smile",
-      status: Status.PASSED,
-      steps: [
-        {
-          name: "I pass",
-          status: Status.PASSED,
-        },
-        {
-          name: "I next",
-          status: Status.PASSED,
-        },
-      ],
-    },
-    {
-      name: "Then all good",
-      status: Status.FAILED,
-      statusDetails: {
-        message: expect.stringContaining("an error"),
-      },
-      steps: [
-        {
-          name: "I next",
-          status: Status.PASSED,
-        },
-        {
-          name: "I fail",
-          status: Status.FAILED,
-          statusDetails: {
-            message: expect.stringContaining("an error"),
+  expect(tr).toMatchObject({
+    status: Status.BROKEN,
+    steps: [
+      {
+        name: "Given a world",
+        status: Status.PASSED,
+        steps: [
+          {
+            name: "I pass",
+            status: Status.PASSED,
           },
+        ],
+      },
+      {
+        name: "When we smile",
+        status: Status.PASSED,
+        steps: [
+          {
+            name: "I pass",
+            status: Status.PASSED,
+          },
+          {
+            name: "I next",
+            status: Status.PASSED,
+          },
+        ],
+      },
+      {
+        name: "Then all good",
+        status: Status.BROKEN,
+        statusDetails: {
+          message: expect.stringContaining("an error"),
         },
-      ],
-    },
-  ]);
+        steps: [
+          {
+            name: "I next",
+            status: Status.PASSED,
+          },
+          {
+            name: "I fail",
+            status: Status.BROKEN,
+            statusDetails: {
+              message: expect.stringContaining("an error"),
+            },
+          },
+        ],
+      },
+    ],
+  });
 });
