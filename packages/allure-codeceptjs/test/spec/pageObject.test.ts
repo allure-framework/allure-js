@@ -91,7 +91,7 @@ it("should support steps in page objects", async () => {
   });
 });
 
-it("should support failed steps in page objects", async () => {
+it("should report broken steps in page objects for raw errors", async () => {
   const { tests } = await runCodeceptJsInlineTest({
     "nested/login.test.js": `
         const { container } = require('codeceptjs')
@@ -286,7 +286,7 @@ it("should support actor steps", async () => {
   });
 });
 
-it("should support failed actor steps", async () => {
+it("should report broken actor steps for raw errors", async () => {
   const { tests } = await runCodeceptJsInlineTest({
     "nested/login.test.js": `
         const { container } = require('codeceptjs')

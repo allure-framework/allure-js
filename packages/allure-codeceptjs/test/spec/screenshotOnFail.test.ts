@@ -94,6 +94,7 @@ it("should support screenshotOnFail plugin", async () => {
           }),
           expect.objectContaining({
             name: "I fail",
+            status: Status.BROKEN,
           }),
           expect.objectContaining({
             name: "Main session - Last Seen Screenshot",
