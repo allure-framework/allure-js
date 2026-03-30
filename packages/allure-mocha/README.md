@@ -123,7 +123,7 @@ describe("signing in with a password", () => {
     });
 
     await allure.step("Assert the signed-in state", async () => {
-        // ...
+      // ...
     });
   });
 });

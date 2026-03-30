@@ -48,9 +48,7 @@ Create a helper file (e.g., `helpers/setup.js` or `helpers/setup.ts`) and set up
 ```ts
 import AllureJasmineReporter from "allure-jasmine";
 
-jasmine.getEnv().addReporter(
-  new AllureJasmineReporter(),
-);
+jasmine.getEnv().addReporter(new AllureJasmineReporter());
 ```
 
 > Make sure the helper file is matched against the `helpers` regular expression in [`spec/support/jasmine.json`](https://jasmine.github.io/setup/nodejs.html#configuration).
@@ -118,7 +116,7 @@ describe("signing in with a password", () => {
     });
 
     await allure.step("Assert the signed-in state", async () => {
-        // ...
+      // ...
     });
   });
 });

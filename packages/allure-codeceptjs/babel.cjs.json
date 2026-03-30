@@ -13,9 +13,7 @@
       }
     ]
   ],
-  "plugins": [
-    "babel-plugin-add-module-exports"
-  ],
+  "plugins": ["babel-plugin-add-module-exports"],
   "targets": {
     "esmodules": false,
     "node": 18

@@ -7,6 +7,8 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "oxc.oxc-vscode",
+  "oxc.path.oxfmt": ".vscode/oxfmt.sh",
+  "oxc.path.oxlint": ".vscode/oxlint.sh",
   "oxc.enable": true,
   "oxc.typeAware": true,
   "eslint.enable": false

@@ -89,7 +89,6 @@ npx allure open ./allure-report
 
 [Read more](/packages/allure-cucumberjs/README.md)
 
-
 ### Vitest
 
 ![npm](https://img.shields.io/npm/dm/allure-vitest.svg) ![npm](https://img.shields.io/npm/v/allure-vitest.svg)

@@ -33,9 +33,11 @@ npm install -D allure-vitest
 ```
 
 > If you're a **Yarn PnP** user, you must also explicitly install `@vitest/runner` and `allure-js-commons`:
+>
 > ```shell
 > yarn add --dev @vitest/runner allure-js-commons
 > ```
+>
 > Keep in mind, that `allure-js-commons` and `allure-vitest` must have the same version. The same goes for `vitest` and `@vitest/runner`. Use [`yarn info`](https://yarnpkg.com/cli/info) to check the versions.
 
 Install Allure Report separately when you want to render the generated `allure-results`:
@@ -156,7 +158,7 @@ describe("signing in with a password", () => {
     });
 
     await allure.step("Assert the signed-in state", async () => {
-        // ...
+      // ...
     });
   });
 });

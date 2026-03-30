@@ -48,7 +48,7 @@ Install Allure Report separately when you want to render the generated `allure-r
 Add `allure-playwright` as the reporter in the Playwright configuration file:
 
 ```js
-import { defineConfig } from '@playwright/test';
+import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   reporter: "allure-playwright",
@@ -58,7 +58,7 @@ export default defineConfig({
 Or, if you want to use more than one reporter:
 
 ```js
-import { defineConfig } from '@playwright/test';
+import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   reporter: [["line"], ["allure-playwright"]],
@@ -136,7 +136,7 @@ describe("signing in with a password", () => {
     });
 
     await allure.step("Assert the signed-in state", async () => {
-        // ...
+      // ...
     });
   });
 });
