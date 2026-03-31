@@ -37,9 +37,11 @@ npm install -D allure-jest
 ```
 
 > If you're a **Yarn PnP** user, you must also explicitly install the Jest environment package and `allure-js-commons`. For example:
+>
 > ```shell
 > yarn add --dev jest-environment-node allure-js-commons
 > ```
+>
 > Keep in mind, that `allure-js-commons` and `allure-jest` must have the same version. The same goes for all Jest packages (`jest`, `jest-circus`, `jest-environment-node`, etc). Use [`yarn info`](https://yarnpkg.com/cli/info) to check the versions.
 
 Install Allure Report separately when you want to render the generated `allure-results`:
@@ -59,8 +61,8 @@ Install Allure Report separately when you want to render the generated `allure-r
 
 Set the [`testEnvironment`](https://jestjs.io/docs/configuration#testenvironment-string) Jest option according to your needs:
 
-  - If you need access to DOM, set it to `"allure-jest/jsdom"` (make sure [jest-environment-jsdom](https://www.npmjs.com/package/jest-environment-jsdom) is installed).
-  - If you don't need access to DOM, set it to `"allure-jest/node"`.
+- If you need access to DOM, set it to `"allure-jest/jsdom"` (make sure [jest-environment-jsdom](https://www.npmjs.com/package/jest-environment-jsdom) is installed).
+- If you don't need access to DOM, set it to `"allure-jest/node"`.
 
 Example:
 
@@ -135,7 +137,7 @@ describe("signing in with a password", () => {
     });
 
     await allure.step("Assert the signed-in state", async () => {
-        // ...
+      // ...
     });
   });
 });

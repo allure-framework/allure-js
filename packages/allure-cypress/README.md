@@ -105,33 +105,34 @@ describe("signing in with a password", () => {
     allure.owner("eroshenkoam");
     allure.parameter("browser", Cypress.browser.family);
 
-    allure.step("Prepare the user", () => {
-      return createAnActiveUserInDb();
-    }).then((user) => {
-      allure.step("Make a sign-in attempt", () => {
-        allure.step("Navigate to the sign-in page", () => {
-          // ...
+    allure
+      .step("Prepare the user", () => {
+        return createAnActiveUserInDb();
+      })
+      .then((user) => {
+        allure.step("Make a sign-in attempt", () => {
+          allure.step("Navigate to the sign-in page", () => {
+            // ...
+          });
+
+          allure.step("Fill the sign-in form", (stepContext) => {
+            stepContext.parameter("login", user.login);
+            stepContext.parameter("password", user.password, "masked");
+
+            // ...
+          });
+
+          allure.step("Submit the form", () => {
+            // ...
+
+            allure.attachment("cookies", JSON.stringify(cy.getCookies()), { contentType: "application/json" });
+          });
         });
 
-        allure.step("Fill the sign-in form", (stepContext) => {
-          stepContext.parameter("login", user.login);
-          stepContext.parameter("password", user.password, "masked");
-
+        allure.step("Assert the signed-in state", () => {
           // ...
-        });
-
-        allure.step("Submit the form", () => {
-          // ...
-
-          allure.attachment("cookies", JSON.stringify(cy.getCookies()), { contentType: "application/json" });
         });
       });
-      
-
-      allure.step("Assert the signed-in state", () => {
-        // ...
-      });
-    });
   });
 });
 ```
@@ -212,8 +213,8 @@ Cypress can't compose multiple Node events, which are set in `setupNodeEvents`.
 
 Allure Cypress requires access to the following events:
 
-  - `after:spec`
-  - `after:run`
+- `after:spec`
+- `after:run`
 
 Otherwise, it may not work as expected.
 

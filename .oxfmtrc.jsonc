@@ -1,8 +1,25 @@
 {
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/refs/heads/main/npm/oxfmt/configuration_schema.json",
   "printWidth": 120,
   "trailingComma": "all",
   "singleQuote": false,
   "arrowParens": "always",
   "quoteProps": "consistent",
-  "experimentalSortImports": {}
+  "experimentalSortImports": {},
+  "ignorePatterns": [
+    "packages/*/dist/**",
+    "packages/*/out/**",
+    ".pnp.*",
+    ".yarnrc.yml",
+    "yarn.lock",
+    "plugin-ci-version.cjs",
+    ".yarn",
+    ".idea",
+    ".vscode",
+    "node_modules",
+    ".oxfmtrc.jsonc",
+    ".oxlintrc.json",
+    ".gitignore",
+    ".editorconfig"
+  ]
 }

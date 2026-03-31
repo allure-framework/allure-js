@@ -59,7 +59,7 @@ export const runCodeceptJsInlineTest = async (
         ALLURE_TEST_MODE: "1",
       },
       cwd: cwd ? join(testDir, cwd) : testDir,
-      stdio: "pipe",
+      silent: true,
     });
   });
 

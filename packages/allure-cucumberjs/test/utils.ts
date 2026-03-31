@@ -155,7 +155,7 @@ export const runCucumberInlineTest = async (
         ALLURE_TEST_MODE: "1",
       },
       cwd: processCwd,
-      stdio: "pipe",
+      silent: true,
     });
   });
 

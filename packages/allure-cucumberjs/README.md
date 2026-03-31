@@ -54,14 +54,13 @@ Enable the `allure-cucumberjs/reporter` formatter in [the Cucumber.js configurat
 ```json
 {
   "default": {
-    "format": [
-      "allure-cucumberjs/reporter"
-    ]
+    "format": ["allure-cucumberjs/reporter"]
   }
 }
 ```
 
 > Alternatively, you may specify the formatter via the CLI:
+>
 > ```shell
 > npx cucumber-js --format allure-cucumberjs/reporter
 > ```

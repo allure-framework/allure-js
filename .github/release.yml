@@ -2,24 +2,24 @@
 
 changelog:
   categories:
-    - title: '🚀 New Features'
+    - title: "🚀 New Features"
       labels:
-        - 'type:new feature'
-    - title: '🔬 Improvements'
+        - "type:new feature"
+    - title: "🔬 Improvements"
       labels:
-        - 'type:improvement'
-    - title: '🐞 Bug Fixes'
+        - "type:improvement"
+    - title: "🐞 Bug Fixes"
       labels:
-        - 'type:bug'
-    - title: '⬆️ Dependency Updates'
+        - "type:bug"
+    - title: "⬆️ Dependency Updates"
       labels:
-        - 'type:dependencies'
-    - title: '📖 Documentation improvements'
+        - "type:dependencies"
+    - title: "📖 Documentation improvements"
       labels:
-        - 'type:documentation'
-    - title: '⛔️ Security'
+        - "type:documentation"
+    - title: "⛔️ Security"
       labels:
-        - 'type:security'
-    - title: '👻 Internal changes'
+        - "type:security"
+    - title: "👻 Internal changes"
       labels:
-        - 'type:internal'
+        - "type:internal"

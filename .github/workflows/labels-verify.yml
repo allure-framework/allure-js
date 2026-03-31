@@ -2,7 +2,7 @@ name: "Verify type labels"
 
 on:
   pull_request:
-    types: [ opened, labeled, unlabeled, synchronize ]
+    types: [opened, labeled, unlabeled, synchronize]
 
 permissions:
   contents: read
@@ -13,4 +13,4 @@ jobs:
     steps:
       - uses: baev/match-label-action@master
         with:
-          allowed: 'type:bug,type:new feature,type:improvement,type:dependencies,type:internal,type:invalid,type:docs'
+          allowed: "type:bug,type:new feature,type:improvement,type:dependencies,type:internal,type:invalid,type:docs"
