@@ -92,7 +92,7 @@ export const runJestInlineTest = async (
         ...env?.(testDir),
       },
       cwd: testDir,
-      stdio: "pipe",
+      silent: true,
     });
   });
   const messageReader = new MessageReader();

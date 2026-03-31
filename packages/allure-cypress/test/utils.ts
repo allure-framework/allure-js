@@ -129,7 +129,7 @@ export const runCypressInlineTest = async (
         ...envVars,
       },
       cwd: processCwd,
-      stdio: "pipe",
+      silent: true,
     });
 
     testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {

@@ -69,7 +69,7 @@ export const runPlaywrightInlineTest = async (
         PW_DISABLE_TS_ESM: "1",
       },
       cwd: testDir,
-      stdio: "pipe",
+      silent: true,
     });
   });
 

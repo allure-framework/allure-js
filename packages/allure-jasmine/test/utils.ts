@@ -50,7 +50,7 @@ export const runJasmineInlineTest = async (
         ALLURE_TEST_MODE: "1",
       },
       cwd: testDir,
-      stdio: "pipe",
+      silent: true,
     });
   });
 
