@@ -164,7 +164,8 @@ function createWorkspaceScriptCommand(workspace, scriptName) {
 }
 
 async function runCommand(command, logPath) {
-  const printableCommand = formatCommand(command.args);
+  const yarnInvocation = createYarnInvocation(command.args);
+  const printableCommand = formatCommand(yarnInvocation.printableArgs);
 
   if (dryRun) {
     console.log(`[dry-run] ${printableCommand}`);
@@ -176,7 +177,7 @@ async function runCommand(command, logPath) {
 
   await new Promise((resolve, reject) => {
     let settled = false;
-    const child = spawn(YARN_BIN, command.args, {
+    const child = spawn(yarnInvocation.command, yarnInvocation.args, {
       cwd: ROOT_DIR,
       env: process.env,
       stdio: ["ignore", "pipe", "pipe"],
@@ -225,8 +226,24 @@ async function runCommand(command, logPath) {
   });
 }
 
+function createYarnInvocation(args) {
+  if (process.platform === "win32") {
+    return {
+      command: "cmd.exe",
+      args: ["/d", "/s", "/c", YARN_BIN, ...args],
+      printableArgs: [YARN_BIN, ...args],
+    };
+  }
+
+  return {
+    command: YARN_BIN,
+    args,
+    printableArgs: [YARN_BIN, ...args],
+  };
+}
+
 function formatCommand(args) {
-  return [YARN_BIN, ...args]
+  return args
     .map((arg) => (/\s/.test(arg) ? `"${arg}"` : arg))
     .join(" ");
 }
