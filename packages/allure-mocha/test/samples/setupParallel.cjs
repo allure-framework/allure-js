@@ -10,7 +10,12 @@ const createStreamDataHandler = (files, workerProcess, hostStream) => (data) =>
   hostStream.write(`In ${files.get(workerProcess.pid)}: ${data}`);
 
 const forwardStreamToTestEnv = (files, workerProcess, workerStream, hostStream) => {
-  workerStream.on("data", createStreamDataHandler(files, workerProcess, hostStream));
+  if (!workerStream) {
+    // This should not happen, but just in case
+    return;
+  }
+
+  workerStream.on("data", createStreamDataHandler(files, workerProcess, workerStream, hostStream));
 };
 
 const forwardMessagesToTestEnv = (workerProcess) => {
@@ -67,7 +72,7 @@ const createPatchedPoolCreateWorker = (files, original) =>
 const createPatchedPoolCreate =
   (original) =>
   (options = {}, ...args) => {
-    options.forkOpts = { ...(options.forkOpts ?? {}), stdio: "pipe" };
+    options.forkOpts = { ...(options.forkOpts ?? {}), silent: true };
     const files = new Map();
     const pool = original(options, ...args);
     const poolProto = pool._pool.constructor.prototype;
