@@ -92,6 +92,81 @@ describe("steps", () => {
       });
     });
 
+    it("handles runtime stages in node", async () => {
+      const { tests } = await runVitestInlineTest({
+        "vitest.config.ts": ({ allureResultsPath }) => createVitestConfig(allureResultsPath),
+        "sample.test.ts": `
+  import { test } from "vitest";
+  import { logStep, stage, step } from "allure-js-commons";
+
+  test("steps", async () => {
+    stage("stage 1");
+    await logStep("a");
+    await step("b", async () => {
+      await logStep("b 1");
+      stage("b 2");
+      await logStep("b 2 nested");
+    });
+
+    stage("stage 2");
+    await logStep("c");
+  });
+`,
+      });
+
+      expect(tests).toHaveLength(1);
+      expect(tests[0].steps).toMatchObject([
+        {
+          name: "stage 1",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          steps: [
+            {
+              name: "a",
+              status: Status.PASSED,
+              stage: Stage.FINISHED,
+            },
+            {
+              name: "b",
+              status: Status.PASSED,
+              stage: Stage.FINISHED,
+              steps: [
+                {
+                  name: "b 1",
+                  status: Status.PASSED,
+                  stage: Stage.FINISHED,
+                },
+                {
+                  name: "b 2",
+                  status: Status.PASSED,
+                  stage: Stage.FINISHED,
+                  steps: [
+                    {
+                      name: "b 2 nested",
+                      status: Status.PASSED,
+                      stage: Stage.FINISHED,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: "stage 2",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          steps: [
+            {
+              name: "c",
+              status: Status.PASSED,
+              stage: Stage.FINISHED,
+            },
+          ],
+        },
+      ]);
+    });
+
     it("handles step renaming", async () => {
       const { tests } = await runVitestInlineTest({
         "vitest.config.ts": ({ allureResultsPath }) => createVitestConfig(allureResultsPath),
@@ -228,6 +303,81 @@ describe("steps", () => {
         status: Status.PASSED,
         stage: Stage.FINISHED,
       });
+    });
+
+    it("handles runtime stages in browser", async () => {
+      const { tests } = await runVitestInlineTest({
+        "vitest.config.ts": ({ testDir }) => createVitestBrowserConfig(testDir),
+        "sample.test.ts": `
+  import { test } from "vitest";
+  import { logStep, stage, step } from "allure-js-commons";
+
+  test("steps", async () => {
+    stage("stage 1");
+    await logStep("a");
+    await step("b", async () => {
+      await logStep("b 1");
+      stage("b 2");
+      await logStep("b 2 nested");
+    });
+
+    stage("stage 2");
+    await logStep("c");
+  });
+`,
+      });
+
+      expect(tests).toHaveLength(1);
+      expect(tests[0].steps).toMatchObject([
+        {
+          name: "stage 1",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          steps: [
+            {
+              name: "a",
+              status: Status.PASSED,
+              stage: Stage.FINISHED,
+            },
+            {
+              name: "b",
+              status: Status.PASSED,
+              stage: Stage.FINISHED,
+              steps: [
+                {
+                  name: "b 1",
+                  status: Status.PASSED,
+                  stage: Stage.FINISHED,
+                },
+                {
+                  name: "b 2",
+                  status: Status.PASSED,
+                  stage: Stage.FINISHED,
+                  steps: [
+                    {
+                      name: "b 2 nested",
+                      status: Status.PASSED,
+                      stage: Stage.FINISHED,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: "stage 2",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          steps: [
+            {
+              name: "c",
+              status: Status.PASSED,
+              stage: Stage.FINISHED,
+            },
+          ],
+        },
+      ]);
     });
 
     it("handles step renaming", async () => {

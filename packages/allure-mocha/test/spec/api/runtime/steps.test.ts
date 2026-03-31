@@ -23,6 +23,7 @@ describe("step", () => {
       ["steps", "stepWithHiddenParameter"],
       ["steps", "stepReturnsValue"],
       ["steps", "stepReturnsPromise"],
+      ["steps", "stages"],
       ["steps", "fixtureWithStep"],
     );
     for (const testResult of results.tests) {
@@ -65,6 +66,61 @@ describe("step", () => {
             name: "foo",
             steps: [expect.objectContaining({ name: "bar" })],
           }),
+        ],
+      });
+    });
+
+    it("runtime stages", () => {
+      expect(testMap.get("runtime stages")).toMatchObject({
+        steps: [
+          {
+            name: "stage 1",
+            status: Status.PASSED,
+            stage: Stage.FINISHED,
+            steps: [
+              {
+                name: "a",
+                status: Status.PASSED,
+                stage: Stage.FINISHED,
+              },
+              {
+                name: "b",
+                status: Status.PASSED,
+                stage: Stage.FINISHED,
+                steps: [
+                  {
+                    name: "b 1",
+                    status: Status.PASSED,
+                    stage: Stage.FINISHED,
+                  },
+                  {
+                    name: "b 2",
+                    status: Status.PASSED,
+                    stage: Stage.FINISHED,
+                    steps: [
+                      {
+                        name: "b 2 nested",
+                        status: Status.PASSED,
+                        stage: Stage.FINISHED,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            name: "stage 2",
+            status: Status.PASSED,
+            stage: Stage.FINISHED,
+            steps: [
+              {
+                name: "c",
+                status: Status.PASSED,
+                stage: Stage.FINISHED,
+              },
+            ],
+          },
         ],
       });
     });

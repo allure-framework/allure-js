@@ -1,4 +1,4 @@
-import { ContentType, Status } from "allure-js-commons";
+import { ContentType, Stage, Status } from "allure-js-commons";
 import { expect, it } from "vitest";
 
 import { runCypressInlineTest } from "../../../utils.js";
@@ -105,6 +105,79 @@ it("nested steps with API calls", async () => {
         }),
       ],
     }),
+  ]);
+});
+
+it("stage runtime api", async () => {
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { logStep, stage, step } from "${allureCommonsModulePath}";
+
+    it("step", () => {
+      stage("stage 1");
+      logStep("a");
+      step("b", () => {
+        logStep("b 1");
+        stage("b 2");
+        logStep("b 2 nested");
+      });
+
+      stage("stage 2");
+      logStep("c");
+    });
+  `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toMatchObject([
+    {
+      name: "stage 1",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      steps: [
+        {
+          name: "a",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+        },
+        {
+          name: "b",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          steps: [
+            {
+              name: "b 1",
+              status: Status.PASSED,
+              stage: Stage.FINISHED,
+            },
+            {
+              name: "b 2",
+              status: Status.PASSED,
+              stage: Stage.FINISHED,
+              steps: [
+                {
+                  name: "b 2 nested",
+                  status: Status.PASSED,
+                  stage: Stage.FINISHED,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "stage 2",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      steps: [
+        {
+          name: "c",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+        },
+      ],
+    },
   ]);
 });
 

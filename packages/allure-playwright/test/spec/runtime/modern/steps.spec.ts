@@ -89,6 +89,75 @@ it("handles nested lambda steps", async () => {
   });
 });
 
+it("handles runtime stages", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.ts": `
+      import { test } from '@playwright/test';
+      import { logStep, stage, step } from "allure-js-commons";
+
+      test("steps", async () => {
+        stage("stage 1");
+        await logStep("a");
+        await step("b", async () => {
+          await logStep("b 1");
+          stage("b 2");
+          await logStep("b 2 nested");
+        });
+
+        stage("stage 2");
+        await logStep("c");
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  const runtimeSteps = tests[0].steps.filter((step) => step.name === "stage 1" || step.name === "stage 2");
+  expect(runtimeSteps).toHaveLength(2);
+
+  const collectStepNames = (steps: typeof runtimeSteps[number]["steps"]): string[] =>
+    steps.flatMap((step) => [step.name, ...collectStepNames(step.steps)]);
+  const findStepByName = (
+    steps: typeof tests[0]["steps"],
+    name: string,
+  ): (typeof tests[0]["steps"])[number] | undefined => {
+    for (const step of steps) {
+      if (step.name === name) {
+        return step;
+      }
+
+      const nestedStep = findStepByName(step.steps, name);
+      if (nestedStep) {
+        return nestedStep;
+      }
+    }
+
+    return undefined;
+  };
+
+  const [firstStage, secondStage] = runtimeSteps;
+  expect(firstStage).toMatchObject({
+    name: "stage 1",
+    status: Status.PASSED,
+    stage: Stage.FINISHED,
+  });
+  expect(collectStepNames(firstStage.steps)).toEqual(expect.arrayContaining(["a", "b 1"]));
+
+  expect(secondStage).toMatchObject({
+    name: "stage 2",
+    status: Status.PASSED,
+    stage: Stage.FINISHED,
+  });
+  expect(collectStepNames(secondStage.steps)).toEqual(expect.arrayContaining(["c"]));
+
+  const nestedStage = findStepByName(tests[0].steps, "b 2");
+  expect(nestedStage).toMatchObject({
+    name: "b 2",
+    status: Status.PASSED,
+    stage: Stage.FINISHED,
+  });
+  expect(collectStepNames(nestedStage?.steps ?? [])).toEqual(expect.arrayContaining(["b 2 nested"]));
+});
+
 it("should support log steps", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.ts": `
