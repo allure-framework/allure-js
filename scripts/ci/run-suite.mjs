@@ -243,9 +243,7 @@ function createYarnInvocation(args) {
 }
 
 function formatCommand(args) {
-  return args
-    .map((arg) => (/\s/.test(arg) ? `"${arg}"` : arg))
-    .join(" ");
+  return args.map((arg) => (/\s/.test(arg) ? `"${arg}"` : arg)).join(" ");
 }
 
 function exitWithUsage(code) {

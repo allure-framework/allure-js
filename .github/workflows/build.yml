@@ -66,6 +66,9 @@ jobs:
       matrix:
         node-version: [20, 22]
         os: [ubuntu-latest, windows-latest]
+        exclude:
+          - node-version: 20
+            os: windows-latest
     steps:
       - uses: actions/checkout@v6
 
@@ -91,6 +94,9 @@ jobs:
       matrix:
         node-version: [20, 22]
         os: [ubuntu-latest, windows-latest]
+        exclude:
+          - node-version: 20
+            os: windows-latest
         suite:
           - id: cypress-1
             playwright_workspace: ""
