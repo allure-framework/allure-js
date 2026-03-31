@@ -40,13 +40,7 @@ import type {
   TestScope,
   Writer,
 } from "./types.js";
-import {
-  deepClone,
-  formatLinks,
-  getTestResultHistoryId,
-  getTestResultTestCaseId,
-  randomUuid,
-} from "./utils.js";
+import { deepClone, formatLinks, getTestResultHistoryId, getTestResultTestCaseId, randomUuid } from "./utils.js";
 import { buildAttachmentFileName } from "./utils/attachments.js";
 import { resolveWriter } from "./writer/loader.js";
 

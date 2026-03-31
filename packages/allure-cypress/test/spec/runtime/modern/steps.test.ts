@@ -108,6 +108,42 @@ it("nested steps with API calls", async () => {
   ]);
 });
 
+it("keeps the parent step active for later runtime siblings", async () => {
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { logStep, step } from "${allureCommonsModulePath}";
+
+    it("step", () => {
+      step("outer", () => {
+        logStep("inner");
+        logStep("sibling");
+      });
+    });
+  `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toMatchObject([
+    {
+      name: "outer",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      steps: [
+        {
+          name: "inner",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+        },
+        {
+          name: "sibling",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+        },
+      ],
+    },
+  ]);
+});
+
 it("stage runtime api", async () => {
   const { tests } = await runCypressInlineTest({
     "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `

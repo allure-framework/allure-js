@@ -114,12 +114,12 @@ it("handles runtime stages", async () => {
   const runtimeSteps = tests[0].steps.filter((step) => step.name === "stage 1" || step.name === "stage 2");
   expect(runtimeSteps).toHaveLength(2);
 
-  const collectStepNames = (steps: typeof runtimeSteps[number]["steps"]): string[] =>
+  const collectStepNames = (steps: (typeof runtimeSteps)[number]["steps"]): string[] =>
     steps.flatMap((step) => [step.name, ...collectStepNames(step.steps)]);
   const findStepByName = (
-    steps: typeof tests[0]["steps"],
+    steps: (typeof tests)[0]["steps"],
     name: string,
-  ): (typeof tests[0]["steps"])[number] | undefined => {
+  ): (typeof tests)[0]["steps"][number] | undefined => {
     for (const step of steps) {
       if (step.name === name) {
         return step;
