@@ -93,6 +93,8 @@ export interface TestRuntime {
 
   logStep: (name: string, status?: Status, error?: Error) => PromiseLike<void>;
 
+  stage: (name: string) => PromiseLike<void>;
+
   step: <T = void>(name: string, body: () => T | PromiseLike<T>) => PromiseLike<T>;
 
   stepDisplayName: (name: string) => PromiseLike<void>;

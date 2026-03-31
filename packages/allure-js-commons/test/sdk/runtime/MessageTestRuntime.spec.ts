@@ -73,6 +73,24 @@ describe("logStep", () => {
   });
 });
 
+describe("stage", () => {
+  it("should create stage start message", async () => {
+    const messageTestRuntime = implementMessageTestRuntime();
+
+    await messageTestRuntime.stage("prepare data");
+
+    expect(messageTestRuntime.sendMessage).toBeCalledTimes(1);
+
+    const [[message]] = messageTestRuntime.sendMessage.mock.calls;
+    expect(message).toEqual({
+      type: "stage_start",
+      data: expect.objectContaining({
+        name: "prepare data",
+      }),
+    });
+  });
+});
+
 describe("global methods", () => {
   it("should create global attachment message", async () => {
     const messageTestRuntime = implementMessageTestRuntime();

@@ -1,6 +1,6 @@
 import { type Mocked, describe, expect, it, vi } from "vitest";
 
-import { globalAttachment, globalAttachmentPath, globalError, logStep } from "../src/facade.js";
+import { globalAttachment, globalAttachmentPath, globalError, logStep, stage } from "../src/facade.js";
 import { Status } from "../src/model.js";
 import { type TestRuntime } from "../src/sdk/runtime/index.js";
 
@@ -19,6 +19,7 @@ const mockRuntime = (): Mocked<TestRuntime> => {
     links: vi.fn(),
     logStep: vi.fn(),
     parameter: vi.fn(),
+    stage: vi.fn(),
     step: vi.fn(),
     stepDisplayName: vi.fn(),
     stepParameter: vi.fn(),
@@ -71,6 +72,17 @@ describe("logStep", () => {
     expect(name).toEqual("failed step");
     expect(status).toEqual(Status.FAILED);
     expect(error).toEqual(err);
+  });
+});
+
+describe("stage", () => {
+  it("should start stage", async () => {
+    const runtime = mockRuntime();
+    vi.stubGlobal("allureTestRuntime", () => runtime);
+
+    await stage("prepare data");
+
+    expect(runtime.stage).toHaveBeenCalledWith("prepare data");
   });
 });
 
