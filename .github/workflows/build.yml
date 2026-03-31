@@ -13,6 +13,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check-cache:
     runs-on: ubuntu-latest
@@ -54,8 +58,8 @@ jobs:
         run: |
           yarn dlx sherif
 
-  build:
-    name: "Build"
+  build-verify:
+    name: "Build Verify (${{ matrix.node-version }}, ${{ matrix.os }})"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -75,16 +79,72 @@ jobs:
         run: |
           yarn install --immutable --immutable-cache
 
-      - name: "Playwright install chromium for playwright"
-        run: yarn workspace allure-playwright playwright install chromium --with-deps
-
-      - name: "Playwright install chromium for vitest"
-        run: yarn workspace allure-vitest playwright install chromium --with-deps
-
-      - name: yarn build
+      - name: yarn build:ci
         run: |
-          yarn run build
+          yarn run build:ci
 
-      - name: yarn test
+  test-suite:
+    name: "Test ${{ matrix.suite.id }} (${{ matrix.node-version }}, ${{ matrix.os }})"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20, 22]
+        os: [ubuntu-latest, windows-latest]
+        suite:
+          - id: cypress-1
+            playwright_workspace: ""
+          - id: cypress-2
+            playwright_workspace: ""
+          - id: cypress-3
+            playwright_workspace: ""
+          - id: cypress-4
+            playwright_workspace: ""
+          - id: playwright-1
+            playwright_workspace: allure-playwright
+          - id: playwright-2
+            playwright_workspace: allure-playwright
+          - id: vitest
+            playwright_workspace: allure-vitest
+          - id: mocha-a
+            playwright_workspace: ""
+          - id: mocha-b
+            playwright_workspace: ""
+          - id: midweight
+            playwright_workspace: ""
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+
+      - name: yarn install
         run: |
-          yarn run test
+          yarn install --immutable --immutable-cache
+
+      - name: Compile suite dependencies
+        run: |
+          node ./scripts/ci/run-suite.mjs compile ${{ matrix.suite.id }}
+
+      - name: Install Playwright chromium
+        if: ${{ matrix.suite.playwright_workspace != '' }}
+        run: |
+          yarn workspace ${{ matrix.suite.playwright_workspace }} playwright install chromium --with-deps
+
+      - name: Run suite tests
+        run: |
+          node ./scripts/ci/run-suite.mjs test ${{ matrix.suite.id }}
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-${{ matrix.os }}-node${{ matrix.node-version }}-${{ matrix.suite.id }}
+          if-no-files-found: ignore
+          retention-days: 7
+          path: |
+            .ci-logs/**/*.log
+            packages/*/out/allure-results/**
