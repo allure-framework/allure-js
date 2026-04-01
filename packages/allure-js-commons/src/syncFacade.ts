@@ -8,7 +8,7 @@ import type {
   StatusDetails,
 } from "./model.js";
 import { type ContentType, LabelName, LinkType } from "./model.js";
-import { getGlobalSyncTestRuntime } from "./sdk/runtime/runtime.js";
+import { getGlobalSyncTestRuntimeWithAutoconfig } from "./sdk/runtime/runtime.js";
 import type { SyncStepContext, SyncTestRuntime } from "./sdk/runtime/types.js";
 
 const callRuntimeMethod = <
@@ -19,7 +19,7 @@ const callRuntimeMethod = <
   method: T,
   ...args: S
 ): R => {
-  const runtime = getGlobalSyncTestRuntime();
+  const runtime = getGlobalSyncTestRuntimeWithAutoconfig();
 
   // @ts-ignore
   return runtime[method](...args);

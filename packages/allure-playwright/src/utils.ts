@@ -4,6 +4,8 @@ import { Stage, Status, type StatusDetails, type StepResult } from "allure-js-co
 import { getMessageAndTraceFromError } from "allure-js-commons/sdk";
 import { getWorstTestStepResult } from "allure-js-commons/sdk/reporter";
 
+import { ALLURE_STEP_STATUS_ANNOTATION, isAllureStepStatus } from "./syncAnnotations.js";
+
 export const AFTER_HOOKS_ROOT_STEP_TITLE = "After Hooks";
 
 export const BEFORE_HOOKS_ROOT_STEP_TITLE = "Before Hooks";
@@ -64,6 +66,18 @@ export const getStepStatusData = (
   step: Pick<TestStep, "annotations" | "error">,
   nestedStatus?: Status,
 ): { status: Status; statusDetails?: StatusDetails } => {
+  const annotatedStatus = step.annotations.find(
+    (annotation) =>
+      annotation.type === ALLURE_STEP_STATUS_ANNOTATION && isAllureStepStatus(annotation.description),
+  )?.description;
+
+  if (isAllureStepStatus(annotatedStatus)) {
+    return {
+      status: annotatedStatus,
+      statusDetails: step.error ? { ...getMessageAndTraceFromError(step.error) } : undefined,
+    };
+  }
+
   if (step.error) {
     return {
       status: Status.FAILED,

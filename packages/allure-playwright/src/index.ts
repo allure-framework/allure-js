@@ -60,7 +60,6 @@ import {
   normalizeHookTitle,
   statusToAllureStats,
 } from "./utils.js";
-
 export class AllureReporter implements ReporterV2 {
   config!: FullConfig;
   suite!: Suite;
