@@ -1,5 +1,5 @@
-import { noopRuntime } from "./NoopTestRuntime.js";
-import type { TestRuntime } from "./types.js";
+import { noopRuntime, noopSyncRuntime } from "./NoopTestRuntime.js";
+import type { SyncTestRuntime, TestRuntime } from "./types.js";
 
 const ALLURE_TEST_RUNTIME_KEY = "allureTestRuntime";
 
@@ -19,6 +19,10 @@ export const getGlobalTestRuntime = (): TestRuntime => {
   }
 
   return noopRuntime;
+};
+
+export const getGlobalSyncTestRuntime = (): SyncTestRuntime => {
+  return getGlobalTestRuntime().sync ?? noopSyncRuntime;
 };
 
 export const getGlobalTestRuntimeWithAutoconfig = (): TestRuntime | Promise<TestRuntime> => {

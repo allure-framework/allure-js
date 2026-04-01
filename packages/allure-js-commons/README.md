@@ -99,6 +99,27 @@ await allure.step("Submit valid credentials", async () => {
 });
 ```
 
+## Sync facade
+
+When your test code runs synchronously, or when you want to integrate with synchronous helpers such as matcher libraries, you can use the sync facade:
+
+```ts
+import * as allure from "allure-js-commons/sync";
+
+allure.epic("Authentication");
+allure.parameter("browser", "chromium");
+
+allure.step("Submit valid credentials", () => {
+  allure.attachment("request", JSON.stringify({ login: "jane" }), {
+    contentType: "application/json",
+  });
+});
+```
+
+`allure-js-commons/sync` requires framework adapters to register sync runtime support. Until an adapter adds that support, the sync facade warns and safely no-ops.
+
+`allure.step()` from the sync facade is strict-sync only. Its callback must complete synchronously and must not return a `Promise`.
+
 ## Creating your own integration
 
 The official adapters in this repository follow the same basic flow:

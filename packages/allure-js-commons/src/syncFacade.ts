@@ -1,32 +1,28 @@
-import type { Status, StatusDetails } from "./model.js";
-import { ContentType } from "./model.js";
-import { type AttachmentOptions, type Label, type Link, type ParameterMode, type ParameterOptions } from "./model.js";
-import { LabelName, LinkType } from "./model.js";
-import { getGlobalTestRuntimeWithAutoconfig } from "./sdk/runtime/runtime.js";
-import type { TestRuntime } from "./sdk/runtime/types.js";
-import { isPromise } from "./sdk/utils.js";
-
-type AsyncRuntimeMethod = Exclude<keyof TestRuntime, "sync">;
+import type {
+  AttachmentOptions,
+  Label,
+  Link,
+  ParameterMode,
+  ParameterOptions,
+  Status,
+  StatusDetails,
+} from "./model.js";
+import { type ContentType, LabelName, LinkType } from "./model.js";
+import { getGlobalSyncTestRuntime } from "./sdk/runtime/runtime.js";
+import type { SyncStepContext, SyncTestRuntime } from "./sdk/runtime/types.js";
 
 const callRuntimeMethod = <
-  T extends AsyncRuntimeMethod,
-  S extends Parameters<NonNullable<TestRuntime[T]>>,
-  R extends ReturnType<NonNullable<TestRuntime[T]>>,
+  T extends keyof SyncTestRuntime,
+  S extends Parameters<SyncTestRuntime[T]>,
+  R extends ReturnType<SyncTestRuntime[T]>,
 >(
   method: T,
   ...args: S
 ): R => {
-  const runtime = getGlobalTestRuntimeWithAutoconfig();
+  const runtime = getGlobalSyncTestRuntime();
 
-  if (!isPromise(runtime)) {
-    // @ts-ignore
-    return runtime[method](...args);
-  }
-
-  return runtime.then((testRuntime) => {
-    // @ts-ignore
-    return testRuntime[method](...args);
-  }) as R;
+  // @ts-ignore
+  return runtime[method](...args);
 };
 
 export const label = (name: LabelName | string, value: string) => {
@@ -102,7 +98,7 @@ export const globalError = (details: StatusDetails) => {
 
 export const attachTrace = (name: string, path: string) => {
   return callRuntimeMethod("attachmentFromPath", name, path, {
-    contentType: ContentType.PLAYWRIGHT_TRACE,
+    contentType: "application/vnd.allure.playwright-trace",
   });
 };
 
@@ -115,25 +111,20 @@ export const attachmentPath = (
   return callRuntimeMethod("attachmentFromPath", name, path, opts);
 };
 
-export type StepContext = {
-  displayName: (name: string) => void | PromiseLike<void>;
-  parameter: (name: string, value: string, mode?: ParameterMode) => void | PromiseLike<void>;
-};
-
-const stepContext: () => StepContext = () => ({
+const stepContext = (): SyncStepContext => ({
   displayName: (name: string) => {
     return callRuntimeMethod("stepDisplayName", name);
   },
-  parameter: (name, value, mode?) => {
+  parameter: (name, value, mode?: ParameterMode) => {
     return callRuntimeMethod("stepParameter", name, value, mode);
   },
 });
 
-export const logStep = (name: string, status?: Status, error?: Error): PromiseLike<void> => {
+export const logStep = (name: string, status?: Status, error?: Error): void => {
   return callRuntimeMethod("logStep", name, status, error);
 };
 
-export const step = <T = void>(name: string, body: (context: StepContext) => T | PromiseLike<T>): PromiseLike<T> => {
+export const step = <T = void>(name: string, body: (context: SyncStepContext) => T): T => {
   return callRuntimeMethod("step", name, () => body(stepContext()));
 };
 
@@ -164,5 +155,11 @@ export const layer = (name: string) => label(LabelName.LAYER, name);
 export const tag = (name: string) => label(LabelName.TAG, name);
 
 export const tags = (...tagsList: string[]) => {
-  return callRuntimeMethod("labels", ...tagsList.map((value) => ({ name: LabelName.TAG, value })));
+  return callRuntimeMethod(
+    "labels",
+    ...tagsList.map((value) => ({
+      name: LabelName.TAG,
+      value,
+    })),
+  );
 };
