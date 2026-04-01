@@ -22,7 +22,5 @@ it("writes globals payload from sync runtime hooks", async () => {
 
   const beforeAttachmentRef = allAttachments.find((attachment) => attachment.name === "before-log");
   expect(beforeAttachmentRef?.type).toBe("text/plain");
-  expect(Buffer.from(attachments[beforeAttachmentRef!.source] as string, "base64").toString("utf-8")).toBe(
-    "before",
-  );
+  expect(Buffer.from(attachments[beforeAttachmentRef!.source] as string, "base64").toString("utf-8")).toBe("before");
 });

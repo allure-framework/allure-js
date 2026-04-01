@@ -323,8 +323,7 @@ export abstract class BaseMessageTestRuntime implements TestRuntime {
           },
         }),
       attachment: (name, content, options) => this.syncAttachment(sendMessageSync, name, content, options),
-      globalAttachment: (name, content, options) =>
-        this.syncGlobalAttachment(sendMessageSync, name, content, options),
+      globalAttachment: (name, content, options) => this.syncGlobalAttachment(sendMessageSync, name, content, options),
       globalAttachmentFromPath: (name, path, options) =>
         sendMessageSync({
           type: "global_attachment_path",
@@ -401,8 +400,7 @@ export abstract class BaseMessageTestRuntime implements TestRuntime {
         } catch (err) {
           const error = err as Error;
           const details = getMessageAndTraceFromError(error);
-          const status =
-            error.message === SYNC_STEP_PURE_FUNCTION_ERROR ? Status.BROKEN : getStatusFromError(error);
+          const status = error.message === SYNC_STEP_PURE_FUNCTION_ERROR ? Status.BROKEN : getStatusFromError(error);
 
           sendMessageSync({
             type: "step_stop",

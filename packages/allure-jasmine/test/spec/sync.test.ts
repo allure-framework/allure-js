@@ -67,7 +67,5 @@ it("writes globals payload from sync runtime API calls", async () => {
 
   const globalAttachmentRef = allAttachments.find((attachment) => attachment.name === "global-log");
   expect(globalAttachmentRef?.type).toBe("text/plain");
-  expect(Buffer.from(attachments[globalAttachmentRef!.source] as string, "base64").toString("utf-8")).toBe(
-    "hello",
-  );
+  expect(Buffer.from(attachments[globalAttachmentRef!.source] as string, "base64").toString("utf-8")).toBe("hello");
 });

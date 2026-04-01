@@ -76,9 +76,9 @@ it("supports sync steps nested inside async runtime steps", async () => {
 
   const asyncAttachmentStep = asyncOuter!.steps.find((step) => step.name === "async.txt");
   expect(asyncAttachmentStep).toBeDefined();
-  expect(Buffer.from(attachments[asyncAttachmentStep!.attachments[0].source] as string, "base64").toString("utf8")).toBe(
-    "async",
-  );
+  expect(
+    Buffer.from(attachments[asyncAttachmentStep!.attachments[0].source] as string, "base64").toString("utf8"),
+  ).toBe("async");
 
   const syncInner = asyncOuter!.steps.find((step) => step.name === "sync inner");
   expect(syncInner).toMatchObject({

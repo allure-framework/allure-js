@@ -72,8 +72,12 @@ it("keeps mixed sync and async runtime api calls scoped to the right steps", asy
     "sync-inside-sync-outer.txt",
   ]);
 
-  const asyncInsideSyncOuter = syncOuter!.attachments.find((attachment) => attachment.name === "async-inside-sync-outer.txt");
-  const syncInsideSyncOuter = syncOuter!.attachments.find((attachment) => attachment.name === "sync-inside-sync-outer.txt");
+  const asyncInsideSyncOuter = syncOuter!.attachments.find(
+    (attachment) => attachment.name === "async-inside-sync-outer.txt",
+  );
+  const syncInsideSyncOuter = syncOuter!.attachments.find(
+    (attachment) => attachment.name === "sync-inside-sync-outer.txt",
+  );
 
   expect(attachments[asyncInsideSyncOuter!.source] as string).toBe("async-inside-sync-outer");
   expect(attachments[syncInsideSyncOuter!.source] as string).toBe("sync-inside-sync-outer");
@@ -94,8 +98,12 @@ it("keeps mixed sync and async runtime api calls scoped to the right steps", asy
     "sync-inside-sync-child.txt",
   ]);
 
-  const asyncInsideSyncChild = syncChild!.attachments.find((attachment) => attachment.name === "async-inside-sync-child.txt");
-  const syncInsideSyncChild = syncChild!.attachments.find((attachment) => attachment.name === "sync-inside-sync-child.txt");
+  const asyncInsideSyncChild = syncChild!.attachments.find(
+    (attachment) => attachment.name === "async-inside-sync-child.txt",
+  );
+  const syncInsideSyncChild = syncChild!.attachments.find(
+    (attachment) => attachment.name === "sync-inside-sync-child.txt",
+  );
 
   expect(attachments[asyncInsideSyncChild!.source] as string).toBe("async-inside-sync-child");
   expect(attachments[syncInsideSyncChild!.source] as string).toBe("sync-inside-sync-child");

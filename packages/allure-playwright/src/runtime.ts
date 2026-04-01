@@ -1,4 +1,5 @@
 import { createRequire } from "node:module";
+
 import { test } from "@playwright/test";
 import { Status, type AttachmentOptions, type ParameterMode } from "allure-js-commons";
 import { getStatusFromError, isPromise, type RuntimeMessage } from "allure-js-commons/sdk";
@@ -42,7 +43,10 @@ type PlaywrightInternalTestInfo = ReturnType<typeof test.info> & {
 
 type PlaywrightInternals = {
   currentZone: () => {
-    with: (name: string, value: unknown) => {
+    with: (
+      name: string,
+      value: unknown,
+    ) => {
       run: <T>(cb: () => T) => T;
     };
   };
@@ -57,7 +61,8 @@ const getPlaywrightInternals = (): PlaywrightInternals => {
     const playwrightInternalRequire = createRequire(playwrightPackagePath);
 
     playwrightInternals = {
-      currentZone: playwrightInternalRequire("playwright-core/lib/utils").currentZone as PlaywrightInternals["currentZone"],
+      currentZone: playwrightInternalRequire("playwright-core/lib/utils")
+        .currentZone as PlaywrightInternals["currentZone"],
     };
   }
 
@@ -156,7 +161,10 @@ export class AllurePlaywrightTestRuntime extends MessageTestRuntime {
     });
   }
 
-  #attachStepMetadataSync(data: { name?: string; parameters?: { name: string; value: string; mode?: ParameterMode }[] }) {
+  #attachStepMetadataSync(data: {
+    name?: string;
+    parameters?: { name: string; value: string; mode?: ParameterMode }[];
+  }) {
     this.#attachSyntheticAttachStep("Allure Step Metadata", {
       name: "Allure Step Metadata",
       contentType: ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,

@@ -25,7 +25,7 @@ describe("sync steps", () => {
             });
           });
         `,
-});
+      });
       expect(tests).toHaveLength(1);
       expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "mode", value: "sync" }));
       expect(tests[0].steps[0]).toMatchObject({
@@ -40,5 +40,4 @@ describe("sync steps", () => {
       expect(Buffer.from(attachments[attachment.source] as string, "base64").toString("utf8")).toBe("bar");
     });
   });
-
 });

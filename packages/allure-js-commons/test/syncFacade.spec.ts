@@ -2,7 +2,6 @@ import { afterEach, describe, expect, it, vi, type Mocked } from "vitest";
 
 import { label as asyncLabel } from "../src/facade.js";
 import { Status } from "../src/model.js";
-import * as allureSync from "../src/sync.js";
 import {
   MessageHolderTestRuntime,
   MessageTestRuntime,
@@ -11,6 +10,7 @@ import {
   type TestRuntime,
 } from "../src/sdk/runtime/index.js";
 import { NOOP_SYNC_RUNTIME_WARNING, SYNC_STEP_PURE_FUNCTION_ERROR } from "../src/sdk/runtime/NoopTestRuntime.js";
+import * as allureSync from "../src/sync.js";
 
 const mockSyncRuntime = (): Mocked<SyncTestRuntime> => {
   return {
@@ -248,7 +248,10 @@ describe("sync facade", () => {
       }),
     ).toThrowError("assert mismatch");
 
-    const stopMessage = runtime.messages().filter((message) => message.type === "step_stop").pop();
+    const stopMessage = runtime
+      .messages()
+      .filter((message) => message.type === "step_stop")
+      .pop();
 
     expect(stopMessage).toEqual({
       type: "step_stop",
@@ -273,7 +276,10 @@ describe("sync facade", () => {
       }),
     ).toThrowError("boom");
 
-    const stopMessage = runtime.messages().filter((message) => message.type === "step_stop").pop();
+    const stopMessage = runtime
+      .messages()
+      .filter((message) => message.type === "step_stop")
+      .pop();
 
     expect(stopMessage).toEqual({
       type: "step_stop",
@@ -296,7 +302,10 @@ describe("sync facade", () => {
     );
 
     expect(consoleWarn).toHaveBeenCalledWith(SYNC_STEP_PURE_FUNCTION_ERROR);
-    const stopMessage = runtime.messages().filter((message) => message.type === "step_stop").pop();
+    const stopMessage = runtime
+      .messages()
+      .filter((message) => message.type === "step_stop")
+      .pop();
 
     expect(stopMessage).toEqual({
       type: "step_stop",
