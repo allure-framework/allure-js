@@ -29,6 +29,7 @@
     "typescript": "^5.2.2"
   },
   "resolutions": {
+    "@xmldom/xmldom": "npm:0.9.9",
     "cookie@npm:^0.4.2": "npm:0.7.2",
     "diff@npm:^7.0.0": "npm:8.0.4",
     "flatted@npm:3.2.6": "npm:3.4.2",

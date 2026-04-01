@@ -6498,7 +6498,7 @@ const RAW_RUNTIME_STATE =
           ["@mswjs/interceptors", "npm:0.17.10"],\
           ["@open-draft/until", "npm:1.0.3"],\
           ["@types/debug", "npm:4.1.12"],\
-          ["@xmldom/xmldom", "npm:0.8.10"],\
+          ["@xmldom/xmldom", "npm:0.9.9"],\
           ["debug", "virtual:66b3390b4eccbfa0e7f88b649ba0bbc12a2944432838d6fddbf862e3ce97448fd27286b33697fdcd278339dcbac4ff595eb84b91eeb93160166752a0fcae7007#npm:4.3.4"],\
           ["headers-polyfill", "npm:3.2.5"],\
           ["outvariant", "npm:1.4.2"],\
@@ -8644,17 +8644,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@xmldom/xmldom", [\
-      ["npm:0.8.10", {\
-        "packageLocation": "./.yarn/cache/@xmldom-xmldom-npm-0.8.10-c1bd991e61-62400bc5e0.zip/node_modules/@xmldom/xmldom/",\
+      ["npm:0.9.9", {\
+        "packageLocation": "./.yarn/cache/@xmldom-xmldom-npm-0.9.9-3c2287237f-292e4a25e7.zip/node_modules/@xmldom/xmldom/",\
         "packageDependencies": [\
-          ["@xmldom/xmldom", "npm:0.8.10"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
-      ["npm:0.9.8", {\
-        "packageLocation": "./.yarn/cache/@xmldom-xmldom-npm-0.9.8-69dad52410-5f88d27a50.zip/node_modules/@xmldom/xmldom/",\
-        "packageDependencies": [\
-          ["@xmldom/xmldom", "npm:0.9.8"]\
+          ["@xmldom/xmldom", "npm:0.9.9"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -10865,7 +10858,7 @@ const RAW_RUNTIME_STATE =
           ["@cucumber/cucumber-expressions", "npm:19.0.0"],\
           ["@cucumber/gherkin", "npm:39.0.0"],\
           ["@cucumber/messages", "npm:32.2.0"],\
-          ["@xmldom/xmldom", "npm:0.9.8"],\
+          ["@xmldom/xmldom", "npm:0.9.9"],\
           ["acorn", "npm:8.16.0"],\
           ["arrify", "npm:3.0.0"],\
           ["axios", "npm:1.13.6"],\
