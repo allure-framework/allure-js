@@ -29,6 +29,7 @@
     "typescript": "^5.2.2"
   },
   "resolutions": {
+    "@xmldom/xmldom": "npm:0.9.9",
     "cookie@npm:^0.4.2": "npm:0.7.2",
     "diff@npm:^7.0.0": "npm:8.0.4",
     "flatted@npm:3.2.6": "npm:3.4.2",
@@ -44,8 +45,7 @@
     "tar@npm:^6.1.2": "npm:7.5.13",
     "tmp@npm:0.2.3": "npm:0.2.5",
     "tmp@npm:^0.0.33": "npm:0.2.5",
-    "underscore@npm:~1.12.1": "npm:1.13.8",
-    "@xmldom/xmldom": "npm:0.9.9"
+    "underscore@npm:~1.12.1": "npm:1.13.8"
   },
   "packageManager": "yarn@4.12.0"
 }
