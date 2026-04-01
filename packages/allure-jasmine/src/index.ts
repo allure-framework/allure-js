@@ -26,8 +26,12 @@ class AllureJasmineTestRuntime extends MessageTestRuntime {
     super();
   }
 
-  async sendMessage(message: RuntimeMessage) {
+  sendMessageSync(message: RuntimeMessage) {
     this.allureJasmineReporter.handleAllureRuntimeMessages(message);
+  }
+
+  async sendMessage(message: RuntimeMessage) {
+    this.sendMessageSync(message);
     await Promise.resolve();
   }
 }
