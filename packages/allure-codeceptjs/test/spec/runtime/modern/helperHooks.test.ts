@@ -111,7 +111,7 @@ it.skip("should support runtime API in helper _passed", async () => {
         ],
       }),
       expect.objectContaining({
-        status: Status.BROKEN,
+        status: Status.FAILED,
         name: "login-scenario2",
         steps: [
           expect.objectContaining({
@@ -178,6 +178,7 @@ it("should support runtime API in helper _failed hook", async () => {
         steps: [
           expect.objectContaining({
             name: "I fail",
+            status: Status.BROKEN,
           }),
           expect.objectContaining({
             name: "_failed",

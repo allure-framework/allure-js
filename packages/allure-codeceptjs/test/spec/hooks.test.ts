@@ -215,3 +215,45 @@ it("should support steps in before & after hooks", async () => {
     ]),
   );
 });
+
+it("reports failing after hooks as broken fixtures", async () => {
+  const { tests, groups } = await runCodeceptJsInlineTest({
+    "sample.test.js": `
+      Feature("sample-feature");
+
+      After(() => {
+        throw new Error("after boom");
+      });
+
+      Scenario("sample-scenario", async ({ I }) => {
+        I.pass();
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0]).toMatchObject({
+    name: "sample-scenario",
+    status: Status.PASSED,
+    steps: [
+      expect.objectContaining({
+        name: "I pass",
+        status: Status.PASSED,
+      }),
+    ],
+  });
+
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: String.raw`"after each" hook: After`,
+        afters: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.BROKEN,
+            name: String.raw`"after each" hook: After`,
+          }),
+        ]),
+      }),
+    ]),
+  );
+});
