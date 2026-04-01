@@ -10,6 +10,7 @@ import { getPosixPath, parseEnvInfo } from "allure-js-commons/sdk/reporter";
 
 type AllureCypressPaths = {
   allureCommonsModulePath: string;
+  allureCommonsSyncModulePath: string;
   allureCypressModulePath: string;
   allureCypressReporterModulePath: string;
   supportFilePath: string;
@@ -82,6 +83,7 @@ export const runCypressInlineTest = async (
 
   await step("Prepare files", async () => {
     const allureCommonsModulePath = require.resolve("allure-js-commons");
+    const allureCommonsSyncModulePath = require.resolve("allure-js-commons/sync");
     const allureCypressModulePath = require.resolve("allure-cypress");
     const allureCypressReporterModulePath = require.resolve("allure-cypress/reporter");
 
@@ -90,6 +92,7 @@ export const runCypressInlineTest = async (
       await mkdir(fileDir, { recursive: true });
       const content = getContent({
         allureCommonsModulePath: getPosixPath(relative(fileDir, allureCommonsModulePath)),
+        allureCommonsSyncModulePath: getPosixPath(relative(fileDir, allureCommonsSyncModulePath)),
         allureCypressModulePath: getPosixPath(relative(fileDir, allureCypressModulePath)),
         allureCypressReporterModulePath: getPosixPath(relative(fileDir, allureCypressReporterModulePath)),
         supportFilePath: getPosixPath(relative(processCwd, join(testDir, "cypress/support/e2e.js"))),
