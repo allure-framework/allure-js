@@ -13,9 +13,12 @@ export class AllureJestTestRuntime extends MessageTestRuntime {
     context.allureTestRuntime = () => this;
   }
 
-  async sendMessage(message: RuntimeMessage) {
+  sendMessageSync(message: RuntimeMessage) {
     this.jestEnvironment.handleAllureRuntimeMessage(message);
+  }
 
+  async sendMessage(message: RuntimeMessage) {
+    this.sendMessageSync(message);
     await Promise.resolve();
   }
 }
