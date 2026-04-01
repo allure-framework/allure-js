@@ -236,7 +236,6 @@ export class AllurePlaywrightTestRuntime extends MessageTestRuntime {
       return result;
     } catch (error) {
       const runtimeError = error as Error;
-      const stepError = this.#toPlaywrightStepError(runtimeError);
       const status = getStatusFromError(runtimeError);
 
       if (status !== Status.FAILED) {
