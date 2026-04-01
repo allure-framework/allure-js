@@ -5,6 +5,7 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "lib": ["dom", "esnext"],
+    "rootDir": "./src",
     "types": ["node"],
     "outDir": "./dist/types",
     "module": "es2020",

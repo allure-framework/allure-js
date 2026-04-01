@@ -4,6 +4,7 @@
   "compilerOptions": {
     "declaration": true,
     "lib": ["dom", "esnext"],
+    "rootDir": "./src",
     "types": ["node"],
     "outDir": "./dist",
     "module": "node16",

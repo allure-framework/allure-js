@@ -6,6 +6,7 @@
     "emitDeclarationOnly": true,
     "skipLibCheck": true,
     "module": "ES2022",
+    "rootDir": "./src",
     "target": "ES2022",
     "moduleResolution": "bundler",
     "lib": ["dom", "esnext"],
