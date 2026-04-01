@@ -82,7 +82,7 @@ const RAW_RUNTIME_STATE =
           ["lefthook", "npm:2.1.4"],\
           ["oxfmt", "npm:0.43.0"],\
           ["oxlint", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.58.0"],\
-          ["oxlint-tsgolint", "npm:0.16.0"],\
+          ["oxlint-tsgolint", "npm:0.19.0"],\
           ["rimraf", "npm:6.0.0"],\
           ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"]\
         ],\
@@ -6743,55 +6743,55 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@oxlint-tsgolint/darwin-arm64", [\
-      ["npm:0.16.0", {\
-        "packageLocation": "./.yarn/unplugged/@oxlint-tsgolint-darwin-arm64-npm-0.16.0-ccd3abd5bf/node_modules/@oxlint-tsgolint/darwin-arm64/",\
+      ["npm:0.19.0", {\
+        "packageLocation": "./.yarn/unplugged/@oxlint-tsgolint-darwin-arm64-npm-0.19.0-9eb42b20da/node_modules/@oxlint-tsgolint/darwin-arm64/",\
         "packageDependencies": [\
-          ["@oxlint-tsgolint/darwin-arm64", "npm:0.16.0"]\
+          ["@oxlint-tsgolint/darwin-arm64", "npm:0.19.0"]\
         ],\
         "linkType": "HARD"\
       }]\
     ]],\
     ["@oxlint-tsgolint/darwin-x64", [\
-      ["npm:0.16.0", {\
-        "packageLocation": "./.yarn/unplugged/@oxlint-tsgolint-darwin-x64-npm-0.16.0-c42817ce67/node_modules/@oxlint-tsgolint/darwin-x64/",\
+      ["npm:0.19.0", {\
+        "packageLocation": "./.yarn/unplugged/@oxlint-tsgolint-darwin-x64-npm-0.19.0-7c0cf4e61a/node_modules/@oxlint-tsgolint/darwin-x64/",\
         "packageDependencies": [\
-          ["@oxlint-tsgolint/darwin-x64", "npm:0.16.0"]\
+          ["@oxlint-tsgolint/darwin-x64", "npm:0.19.0"]\
         ],\
         "linkType": "HARD"\
       }]\
     ]],\
     ["@oxlint-tsgolint/linux-arm64", [\
-      ["npm:0.16.0", {\
-        "packageLocation": "./.yarn/unplugged/@oxlint-tsgolint-linux-arm64-npm-0.16.0-3a1a2a423b/node_modules/@oxlint-tsgolint/linux-arm64/",\
+      ["npm:0.19.0", {\
+        "packageLocation": "./.yarn/unplugged/@oxlint-tsgolint-linux-arm64-npm-0.19.0-df14cd9c8f/node_modules/@oxlint-tsgolint/linux-arm64/",\
         "packageDependencies": [\
-          ["@oxlint-tsgolint/linux-arm64", "npm:0.16.0"]\
+          ["@oxlint-tsgolint/linux-arm64", "npm:0.19.0"]\
         ],\
         "linkType": "HARD"\
       }]\
     ]],\
     ["@oxlint-tsgolint/linux-x64", [\
-      ["npm:0.16.0", {\
-        "packageLocation": "./.yarn/unplugged/@oxlint-tsgolint-linux-x64-npm-0.16.0-6d3ff06ffc/node_modules/@oxlint-tsgolint/linux-x64/",\
+      ["npm:0.19.0", {\
+        "packageLocation": "./.yarn/unplugged/@oxlint-tsgolint-linux-x64-npm-0.19.0-5584274eed/node_modules/@oxlint-tsgolint/linux-x64/",\
         "packageDependencies": [\
-          ["@oxlint-tsgolint/linux-x64", "npm:0.16.0"]\
+          ["@oxlint-tsgolint/linux-x64", "npm:0.19.0"]\
         ],\
         "linkType": "HARD"\
       }]\
     ]],\
     ["@oxlint-tsgolint/win32-arm64", [\
-      ["npm:0.16.0", {\
-        "packageLocation": "./.yarn/unplugged/@oxlint-tsgolint-win32-arm64-npm-0.16.0-7778d8df4a/node_modules/@oxlint-tsgolint/win32-arm64/",\
+      ["npm:0.19.0", {\
+        "packageLocation": "./.yarn/unplugged/@oxlint-tsgolint-win32-arm64-npm-0.19.0-1f6cc810f2/node_modules/@oxlint-tsgolint/win32-arm64/",\
         "packageDependencies": [\
-          ["@oxlint-tsgolint/win32-arm64", "npm:0.16.0"]\
+          ["@oxlint-tsgolint/win32-arm64", "npm:0.19.0"]\
         ],\
         "linkType": "HARD"\
       }]\
     ]],\
     ["@oxlint-tsgolint/win32-x64", [\
-      ["npm:0.16.0", {\
-        "packageLocation": "./.yarn/unplugged/@oxlint-tsgolint-win32-x64-npm-0.16.0-c3b246137d/node_modules/@oxlint-tsgolint/win32-x64/",\
+      ["npm:0.19.0", {\
+        "packageLocation": "./.yarn/unplugged/@oxlint-tsgolint-win32-x64-npm-0.19.0-eba4da47a4/node_modules/@oxlint-tsgolint/win32-x64/",\
         "packageDependencies": [\
-          ["@oxlint-tsgolint/win32-x64", "npm:0.16.0"]\
+          ["@oxlint-tsgolint/win32-x64", "npm:0.19.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -8952,7 +8952,7 @@ const RAW_RUNTIME_STATE =
           ["lefthook", "npm:2.1.4"],\
           ["oxfmt", "npm:0.43.0"],\
           ["oxlint", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.58.0"],\
-          ["oxlint-tsgolint", "npm:0.16.0"],\
+          ["oxlint-tsgolint", "npm:0.19.0"],\
           ["rimraf", "npm:6.0.0"],\
           ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"]\
         ],\
@@ -17426,7 +17426,7 @@ const RAW_RUNTIME_STATE =
           ["@oxlint/binding-win32-x64-msvc", "npm:1.58.0"],\
           ["@types/oxlint-tsgolint", null],\
           ["oxlint", "virtual:a59b12f7fe7bf3b80fc61d73eaaa33af60483f6ce31789d384fbe8ef169791f667d2559ec5f2fbae1a273a658ce021f1f5f1ea0718c56f81b30ad4e95a5668dd#npm:1.58.0"],\
-          ["oxlint-tsgolint", "npm:0.16.0"]\
+          ["oxlint-tsgolint", "npm:0.19.0"]\
         ],\
         "packagePeers": [\
           "@types/oxlint-tsgolint",\
@@ -17436,16 +17436,16 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["oxlint-tsgolint", [\
-      ["npm:0.16.0", {\
-        "packageLocation": "./.yarn/cache/oxlint-tsgolint-npm-0.16.0-57890d0c5b-b75b4aeac5.zip/node_modules/oxlint-tsgolint/",\
+      ["npm:0.19.0", {\
+        "packageLocation": "./.yarn/cache/oxlint-tsgolint-npm-0.19.0-cb7d1de836-b87f965002.zip/node_modules/oxlint-tsgolint/",\
         "packageDependencies": [\
-          ["@oxlint-tsgolint/darwin-arm64", "npm:0.16.0"],\
-          ["@oxlint-tsgolint/darwin-x64", "npm:0.16.0"],\
-          ["@oxlint-tsgolint/linux-arm64", "npm:0.16.0"],\
-          ["@oxlint-tsgolint/linux-x64", "npm:0.16.0"],\
-          ["@oxlint-tsgolint/win32-arm64", "npm:0.16.0"],\
-          ["@oxlint-tsgolint/win32-x64", "npm:0.16.0"],\
-          ["oxlint-tsgolint", "npm:0.16.0"]\
+          ["@oxlint-tsgolint/darwin-arm64", "npm:0.19.0"],\
+          ["@oxlint-tsgolint/darwin-x64", "npm:0.19.0"],\
+          ["@oxlint-tsgolint/linux-arm64", "npm:0.19.0"],\
+          ["@oxlint-tsgolint/linux-x64", "npm:0.19.0"],\
+          ["@oxlint-tsgolint/win32-arm64", "npm:0.19.0"],\
+          ["@oxlint-tsgolint/win32-x64", "npm:0.19.0"],\
+          ["oxlint-tsgolint", "npm:0.19.0"]\
         ],\
         "linkType": "HARD"\
       }]\
