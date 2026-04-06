@@ -112,6 +112,37 @@ it("should support log steps", async () => {
   );
 });
 
+it("should keep buffered log steps ordered with lambda steps", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.ts": `
+      import { test } from "@playwright/test";
+      import { logStep, step } from "allure-js-commons";
+
+      test("steps", async () => {
+        await step("1: lambda", async () => {
+          await logStep("1.1: log");
+          await step("1.2: lambda", async () => {});
+        });
+
+        await test.step("2: lambda", async () => {
+          await logStep("2.1: log");
+          await test.step("2.2: lambda", async () => {});
+          await logStep("2.3: log");
+        });
+      });
+    `,
+  });
+
+  const [testResult] = tests;
+  expect(testResult.steps.map((step) => step.name)).toEqual(["Before Hooks", "1: lambda", "2: lambda", "After Hooks"]);
+
+  const firstLambda = testResult.steps[1];
+  const secondLambda = testResult.steps[2];
+
+  expect(firstLambda.steps.map((step) => step.name)).toEqual(["1.1: log", "1.2: lambda"]);
+  expect(secondLambda.steps.map((step) => step.name)).toEqual(["2.1: log", "2.2: lambda", "2.3: log"]);
+});
+
 it("should allow to set step metadata through its context", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.ts": `

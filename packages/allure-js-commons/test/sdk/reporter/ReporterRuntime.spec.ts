@@ -439,6 +439,78 @@ describe("ReporterRuntime", () => {
       );
     });
 
+    it("should keep nested runtime steps in source order when using applyRuntimeMessages only", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+      const rootUuid = runtime.startTest({ name: "steps" });
+
+      runtime.applyRuntimeMessages(rootUuid, [
+        { type: "step_start", data: { name: "1: lambda", start: 10 } },
+        { type: "step_start", data: { name: "1.1: log", start: 11 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 11 } },
+        { type: "step_start", data: { name: "1.2: lambda", start: 12 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 13 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 14 } },
+        { type: "step_start", data: { name: "2: lambda", start: 20 } },
+        { type: "step_start", data: { name: "2.1: log", start: 21 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 21 } },
+        { type: "step_start", data: { name: "2.2: lambda", start: 22 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 23 } },
+        { type: "step_start", data: { name: "2.3: log", start: 24 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 24 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 25 } },
+      ]);
+
+      runtime.stopTest(rootUuid);
+      runtime.writeTest(rootUuid);
+
+      const [testResult] = writer.writeResult.mock.calls[0];
+
+      expect(testResult.steps.map((step) => step.name)).toEqual(["1: lambda", "2: lambda"]);
+      expect(testResult.steps[0].steps.map((step) => step.name)).toEqual(["1.1: log", "1.2: lambda"]);
+      expect(testResult.steps[1].steps.map((step) => step.name)).toEqual(["2.1: log", "2.2: lambda", "2.3: log"]);
+    });
+
+    it("should append buffered runtime log steps after already-stopped lambda steps in the hybrid flow", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+      const rootUuid = runtime.startTest({ name: "steps" });
+
+      const firstLambdaUuid = runtime.startStep(rootUuid, undefined, { name: "1: lambda", start: 10 });
+      const firstNestedLambdaUuid = runtime.startStep(rootUuid, firstLambdaUuid, { name: "1.2: lambda", start: 12 });
+      runtime.stopStep(firstNestedLambdaUuid!, { stop: 13 });
+      runtime.stopStep(firstLambdaUuid!, { stop: 14 });
+
+      const secondLambdaUuid = runtime.startStep(rootUuid, undefined, { name: "2: lambda", start: 20 });
+      const secondNestedLambdaUuid = runtime.startStep(rootUuid, secondLambdaUuid, { name: "2.2: lambda", start: 22 });
+      runtime.stopStep(secondNestedLambdaUuid!, { stop: 23 });
+      runtime.stopStep(secondLambdaUuid!, { stop: 24 });
+
+      runtime.applyRuntimeMessages(rootUuid, [
+        { type: "step_start", data: { name: "1.1: log", start: 11 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 11 } },
+        { type: "step_start", data: { name: "2.1: log", start: 21 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 21 } },
+        { type: "step_start", data: { name: "2.3: log", start: 25 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 25 } },
+      ]);
+
+      runtime.stopTest(rootUuid);
+      runtime.writeTest(rootUuid);
+
+      const [testResult] = writer.writeResult.mock.calls[0];
+
+      expect(testResult.steps.map((step) => step.name)).toEqual([
+        "1: lambda",
+        "2: lambda",
+        "1.1: log",
+        "2.1: log",
+        "2.3: log",
+      ]);
+      expect(testResult.steps[0].steps.map((step) => step.name)).toEqual(["1.2: lambda"]);
+      expect(testResult.steps[1].steps.map((step) => step.name)).toEqual(["2.2: lambda"]);
+    });
+
     it("should ignore results with ALLURE_TESTPLAN_SKIP label", () => {
       const writer = mockWriter();
       const runtime = new ReporterRuntime({ writer });
