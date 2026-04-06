@@ -250,11 +250,7 @@ it("should keep buffered log steps ordered with lambda steps in after hooks", as
   });
   expect(afterHooks!.steps[0].steps.map((step) => step.name)).toEqual(["1: lambda", "2: lambda"]);
   expect(afterHooks!.steps[0].steps[0].steps.map((step) => step.name)).toEqual(["1.1: log", "1.2: lambda"]);
-  expect(afterHooks!.steps[0].steps[1].steps.map((step) => step.name)).toEqual([
-    "2.1: log",
-    "2.2: lambda",
-    "2.3: log",
-  ]);
+  expect(afterHooks!.steps[0].steps[1].steps.map((step) => step.name)).toEqual(["2.1: log", "2.2: lambda", "2.3: log"]);
 });
 
 it("should hook steps have attachments", async () => {

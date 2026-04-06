@@ -920,6 +920,10 @@ export class AllureReporter implements ReporterV2 {
   }
 
   private isEmptyPassedHookRoot(step: StepResult) {
+    if (this.options.detail) {
+      return false;
+    }
+
     return (
       (step.name === BEFORE_HOOKS_ROOT_STEP_TITLE || step.name === AFTER_HOOKS_ROOT_STEP_TITLE) &&
       step.steps.length === 0 &&
