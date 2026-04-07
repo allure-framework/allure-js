@@ -78,6 +78,37 @@ When the test run completes, the result files will be generated in the `./allure
 
 You may select another location, or further customize the behavior of Allure Jest with [the configuration options](https://allurereport.org/docs/jest-configuration/).
 
+## Bun Usage
+
+Bun support is provided through Bun's documented preload hook. Keep your test imports unchanged and preload `allure-jest/bun` from `bunfig.toml`:
+
+```toml
+[test]
+preload = ["allure-jest/bun"]
+```
+
+Example:
+
+```ts
+import { describe, expect, it } from "bun:test";
+import { label, step } from "allure-js-commons";
+
+describe("signing in", () => {
+  it("works", async () => {
+    await label("severity", "critical");
+    await step("submit form", async () => {});
+
+    expect(1 + 1).toBe(2);
+  });
+});
+```
+
+Notes:
+
+- `allure-jest/bun` is the supported Bun integration path. It uses Bun preload and is not a Jest environment.
+- Keep using Bun's regular test API in test files, including hooks, `.each`, and supported non-concurrent modifiers.
+- Concurrent Bun execution is not supported. `test.concurrent`, `test.concurrent.each`, and `bun test --concurrent` fail fast with a descriptive error.
+
 ### View the report
 
 Use Allure Report 2:

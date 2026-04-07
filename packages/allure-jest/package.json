@@ -4,6 +4,7 @@
   "description": "Allure Jest integration",
   "keywords": [
     "allure",
+    "bun",
     "circus",
     "html",
     "jasmine",
@@ -44,6 +45,11 @@
       "types": "./dist/types/jsdom.d.ts",
       "import": "./dist/esm/jsdom.js",
       "require": "./dist/cjs/jsdom.js"
+    },
+    "./bun": {
+      "types": "./dist/types/bun.d.ts",
+      "import": "./dist/esm/bun.js",
+      "require": "./dist/cjs/bun.js"
     }
   },
   "scripts": {
@@ -57,6 +63,7 @@
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "oxlint --import-plugin src test",
     "lint:fix": "oxlint --import-plugin --fix src test",
+    "pretest": "yarn workspace allure-js-commons compile && yarn run compile",
     "test": "vitest run"
   },
   "dependencies": {
