@@ -16,6 +16,29 @@ import {
 
 type BunTestModule = typeof import("bun:test");
 
+const copyMissingProperties = (target: BunWrappedFn, source: BunWrappedFn) => {
+  for (const key of Object.getOwnPropertyNames(source)) {
+    if (key in target) {
+      continue;
+    }
+
+    const descriptor = Object.getOwnPropertyDescriptor(source, key);
+
+    if (descriptor) {
+      Object.defineProperty(target, key, descriptor);
+    }
+  }
+};
+
+const getCallableProp = (source: Record<string, unknown>, key: string) => {
+  try {
+    const value = source[key];
+    return typeof value === "function" ? value : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
 export const installBunModuleMock = (bunTest: BunTestModule, allureModule: typeof allure) => {
   const runtime = new BunTestRuntime();
   const fileContexts = new Map<string, BunFileContext>();
@@ -86,18 +109,28 @@ export const installBunModuleMock = (bunTest: BunTestModule, allureModule: typeo
   (globalThis as any).allureTestRuntime = () => runtime;
   setGlobalTestRuntime(runtime);
 
+  const wrappedDescribe = createWrappedDescribe(originals.describe, { activateFileContext, getFileContext });
+  const wrappedIt = createWrappedTest(originals.it, { activateFileContext, getFileContext });
+  const wrappedTest = createWrappedTest(originals.test, { activateFileContext, getFileContext });
+
+  // Bun exposes `test` and `it` as aliases, but their modifier props are not always symmetrical in CI.
+  copyMissingProperties(wrappedTest, wrappedIt);
+  copyMissingProperties(wrappedIt, wrappedTest);
+
   const mock = (bunTest as any).mock as {
     module: (name: string, factory: () => unknown) => void;
   };
 
-  mock.module("bun:test", () => ({
-    ...bunTest,
-    describe: createWrappedDescribe(originals.describe, { activateFileContext, getFileContext }),
-    it: createWrappedTest(originals.it, { activateFileContext, getFileContext }),
-    test: createWrappedTest(originals.test, { activateFileContext, getFileContext }),
-    beforeAll: createWrappedHook(originals.beforeAll, { activateFileContext, getFileContext }, "beforeAll"),
-    afterAll: createWrappedHook(originals.afterAll, { activateFileContext, getFileContext }, "afterAll"),
-    beforeEach: createWrappedHook(originals.beforeEach, { activateFileContext, getFileContext }, "beforeEach"),
-    afterEach: createWrappedHook(originals.afterEach, { activateFileContext, getFileContext }, "afterEach"),
-  }));
+  mock.module("bun:test", () => {
+    return {
+      ...bunTest,
+      describe: wrappedDescribe,
+      it: wrappedIt,
+      test: wrappedTest,
+      beforeAll: createWrappedHook(originals.beforeAll, { activateFileContext, getFileContext }, "beforeAll"),
+      afterAll: createWrappedHook(originals.afterAll, { activateFileContext, getFileContext }, "afterAll"),
+      beforeEach: createWrappedHook(originals.beforeEach, { activateFileContext, getFileContext }, "beforeEach"),
+      afterEach: createWrappedHook(originals.afterEach, { activateFileContext, getFileContext }, "afterEach"),
+    };
+  });
 };

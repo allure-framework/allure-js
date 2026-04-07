@@ -255,11 +255,14 @@ await import("${allureJestBunPath}");
 
   const bunArgs = [`--config=${join(testDir, "bunfig.toml")}`, "test", ...args];
   const testProcess = await step(`${bunBinary} ${bunArgs.join(" ")}`, () => {
+    const bunTodoModeEnabled = args.includes("--todo");
+
     return spawn(bunBinary, bunArgs, {
       cwd: cwd ? join(testDir, cwd) : testDir,
       env: {
         ...process.env,
         ALLURE_RESULTS_DIR: resultsDir,
+        ALLURE_BUN_TODO_MODE: bunTodoModeEnabled ? "1" : process.env.ALLURE_BUN_TODO_MODE,
         ...env?.(testDir),
       },
       stdio: "pipe",

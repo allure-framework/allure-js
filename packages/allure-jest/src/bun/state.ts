@@ -29,6 +29,16 @@ const hasCliFlag = (value: string[] | string, flag: string) => {
 };
 
 const detectBunTodoMode = () => {
+  if (process.env.ALLURE_BUN_TODO_MODE === "1") {
+    bunTodoModeEnabled = true;
+    return bunTodoModeEnabled;
+  }
+
+  if (process.env.ALLURE_BUN_TODO_MODE === "0") {
+    bunTodoModeEnabled = false;
+    return bunTodoModeEnabled;
+  }
+
   if (bunTodoModeEnabled !== undefined) {
     return bunTodoModeEnabled;
   }

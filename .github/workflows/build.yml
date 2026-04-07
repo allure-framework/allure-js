@@ -131,6 +131,12 @@ jobs:
         run: |
           yarn install --immutable --immutable-cache
 
+      - name: Setup Bun
+        if: ${{ matrix.suite.id == 'midweight' }}
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.11
+
       - name: Compile suite dependencies
         run: |
           node ./scripts/ci/run-suite.mjs compile ${{ matrix.suite.id }}
