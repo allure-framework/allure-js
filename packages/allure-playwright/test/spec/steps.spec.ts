@@ -153,6 +153,135 @@ it("reports failed test steps", async () => {
   ]);
 });
 
+it("reports skipped test steps", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.ts": `
+      import { test } from '@playwright/test';
+
+      test('should report skipped steps', async ({}) => {
+        await test.step('inline skip', async step => {
+          step.skip(true, 'Skipping a step for testing');
+        });
+
+        await test.step.skip('declarative skip', async () => {
+        });
+
+        await test.step('normal step', async () => {
+        });
+      });
+    `,
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright"),
+             {
+               resultsDir: "./allure-results",
+               detail: false,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests).toEqual([
+    expect.objectContaining({
+      name: "should report skipped steps",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      steps: [
+        expect.objectContaining({
+          name: "inline skip",
+          status: Status.SKIPPED,
+          stage: Stage.FINISHED,
+          statusDetails: expect.objectContaining({
+            message: "Skipping a step for testing",
+          }),
+        }),
+        expect.objectContaining({
+          name: "declarative skip",
+          status: Status.SKIPPED,
+          stage: Stage.FINISHED,
+        }),
+        expect.objectContaining({
+          name: "normal step",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+        }),
+      ],
+    }),
+  ]);
+});
+
+it("propagates skipped status from nested test steps", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.ts": `
+      import { test } from '@playwright/test';
+
+      test('should propagate nested skipped steps', async ({}) => {
+        await test.step('outer step', async () => {
+          await test.step('nested inline skip', async step => {
+            step.skip(true, 'Nested skip reason');
+          });
+        });
+      });
+    `,
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright"),
+             {
+               resultsDir: "./allure-results",
+               detail: false,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests).toEqual([
+    expect.objectContaining({
+      name: "should propagate nested skipped steps",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      steps: [
+        expect.objectContaining({
+          name: "outer step",
+          status: Status.SKIPPED,
+          stage: Stage.FINISHED,
+          steps: [
+            expect.objectContaining({
+              name: "nested inline skip",
+              status: Status.SKIPPED,
+              stage: Stage.FINISHED,
+              statusDetails: expect.objectContaining({
+                message: "Nested skip reason",
+              }),
+            }),
+          ],
+        }),
+      ],
+    }),
+  ]);
+});
+
 it("should support steps with names longer then 50 chars", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "a.test.js": `
