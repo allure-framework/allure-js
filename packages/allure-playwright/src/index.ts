@@ -52,6 +52,7 @@ import {
   AFTER_HOOKS_ROOT_STEP_TITLE,
   BEFORE_HOOKS_ROOT_STEP_TITLE,
   diffEndRegexp,
+  finalizeStepResult,
   isAfterHookStep,
   isBeforeHookStep,
   isDescendantOfStepWithTitle,
@@ -386,14 +387,7 @@ export class AllureReporter implements ReporterV2 {
 
       // If stack exists (was lazily created), finalize the root hook step
       if (stack) {
-        stack.updateStep((stepResult) => {
-          const { status = Status.PASSED } = getWorstTestStepResult(stepResult.steps) ?? {};
-          stepResult.status = step.error ? Status.FAILED : status;
-          stepResult.stage = Stage.FINISHED;
-          if (step.error) {
-            stepResult.statusDetails = { ...getMessageAndTraceFromError(step.error) };
-          }
-        });
+        stack.updateStep((stepResult) => finalizeStepResult(stepResult, step));
         stack.stopStep({
           duration: step.duration,
         });
@@ -422,14 +416,7 @@ export class AllureReporter implements ReporterV2 {
         return;
       }
 
-      stack.updateStep((stepResult) => {
-        const { status = Status.PASSED } = getWorstTestStepResult(stepResult.steps) ?? {};
-        stepResult.status = step.error ? Status.FAILED : status;
-        stepResult.stage = Stage.FINISHED;
-        if (step.error) {
-          stepResult.statusDetails = { ...getMessageAndTraceFromError(step.error) };
-        }
-      });
+      stack.updateStep((stepResult) => finalizeStepResult(stepResult, step));
       stack.stopStep({
         duration: step.duration,
       });
@@ -448,14 +435,7 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    this.allureRuntime!.updateStep(stepUuid, (stepResult) => {
-      const { status = Status.PASSED } = getWorstTestStepResult(stepResult.steps) ?? {};
-      stepResult.status = step.error ? Status.FAILED : status;
-      stepResult.stage = Stage.FINISHED;
-      if (step.error) {
-        stepResult.statusDetails = { ...getMessageAndTraceFromError(step.error) };
-      }
-    });
+    this.allureRuntime!.updateStep(stepUuid, (stepResult) => finalizeStepResult(stepResult, step));
     this.allureRuntime!.stopStep(stepUuid, { duration: step.duration });
   }
 
