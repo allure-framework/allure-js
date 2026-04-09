@@ -36,6 +36,7 @@ import {
   getEnvironmentLabels,
   getFrameworkLabel,
   getHostLabel,
+  includedInTestPlan,
   getLanguageLabel,
   getPackageLabel,
   getThreadLabel,
@@ -79,6 +80,7 @@ export class AllureReporter implements ReporterV2 {
   private beforeHooksAttachmentsStack: Map<string, AttachStack[]> = new Map();
   private afterHooksAttachmentsStack: Map<string, AttachStack[]> = new Map();
   private readonly pwStepUuid = new WeakMap<TestStep, string>();
+  private readonly testPlan = parseTestPlan();
 
   constructor(config: AllurePlaywrightReporterConfig) {
     this.options = { suiteTitle: true, detail: true, ...config };
@@ -89,7 +91,7 @@ export class AllureReporter implements ReporterV2 {
     this.outputDir = config.projects[0].outputDir;
     this.snapshotDir = config.projects[0].snapshotDir;
 
-    const testPlan = parseTestPlan();
+    const testPlan = this.testPlan;
 
     if (!testPlan) {
       return;
@@ -102,7 +104,14 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
+    configElement.preOnlyTestFilters.push((test: TestCase) => this.isInTestPlan(test));
+
+    if (testPlan.tests.some((test) => test.id !== undefined)) {
+      return;
+    }
+
     const testsWithSelectors = testPlan.tests.filter((test) => test.selector);
+
     const v1ReporterTests: TestPlanV1Test[] = [];
     const v2ReporterTests: TestPlanV1Test[] = [];
     const cliArgs: string[] = [];
@@ -164,31 +173,22 @@ export class AllureReporter implements ReporterV2 {
   }
 
   onTestBegin(test: TestCase) {
-    const suite = test.parent;
-    const titleMetadata = extractMetadataFromString(test.title);
-    const project = suite.project()!;
-    const testFilePath = path.relative(project?.testDir, test.location.file);
-    const relativeFileParts = testFilePath.split(path.sep);
-    const relativeFile = relativeFileParts.join("/");
-    // root > project > file path > test.describe...
-    const [, , , ...suiteTitles] = suite.titlePath();
-    const nameSuites = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
-    const testCaseIdBase = `${relativeFile}#${nameSuites}${test.title}`;
+    const metadata = this.getStaticTestMetadata(test);
     const result: Partial<TestResult> = {
-      name: titleMetadata.cleanTitle,
-      labels: [...titleMetadata.labels, ...getEnvironmentLabels()],
-      links: [...titleMetadata.links],
+      name: metadata.titleMetadata.cleanTitle,
+      labels: [...metadata.titleMetadata.labels, ...getEnvironmentLabels()],
+      links: [...metadata.titleMetadata.links],
       parameters: [],
       steps: [],
-      testCaseId: md5(testCaseIdBase),
-      fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
-      titlePath: relativeFileParts.concat(...suiteTitles),
+      testCaseId: md5(metadata.testCaseIdBase),
+      fullName: metadata.fullName,
+      titlePath: metadata.relativeFileParts.concat(...metadata.suiteTitles),
     };
 
     result.labels!.push(getLanguageLabel());
     result.labels!.push(getFrameworkLabel("playwright"));
-    result.labels!.push(getPackageLabel(testFilePath));
-    result.labels!.push({ name: "titlePath", value: suite.titlePath().join(" > ") });
+    result.labels!.push(getPackageLabel(metadata.testFilePath));
+    result.labels!.push({ name: "titlePath", value: test.parent.titlePath().join(" > ") });
 
     // support for earlier playwright versions
     if ("tags" in test) {
@@ -249,18 +249,18 @@ export class AllureReporter implements ReporterV2 {
       }
     }
 
-    if (project?.name) {
-      result.parameters!.push({ name: "Project", value: project.name });
+    if (metadata.project?.name) {
+      result.parameters!.push({ name: "Project", value: metadata.project.name });
     }
 
-    if (project?.repeatEach > 1) {
+    if (metadata.project?.repeatEach > 1) {
       result.parameters!.push({ name: "Repetition", value: `${test.repeatEachIndex + 1}` });
     }
 
     const testUuid = this.allureRuntime!.startTest(result);
 
     this.allureResultsUuids.set(test.id, testUuid);
-    this.startedTestCasesTitlesCache.push(titleMetadata.cleanTitle);
+    this.startedTestCasesTitlesCache.push(metadata.titleMetadata.cleanTitle);
   }
 
   #shouldIgnoreStep(step: TestStep) {
@@ -640,6 +640,72 @@ export class AllureReporter implements ReporterV2 {
 
   printsToStdio(): boolean {
     return false;
+  }
+
+  private getStaticTestMetadata(test: TestCase) {
+    const titleMetadata = extractMetadataFromString(test.title);
+    const project =
+      test.parent.project() ??
+      this.config.projects.find(
+        (candidate) =>
+          test.location.file === candidate.testDir || test.location.file.startsWith(`${candidate.testDir}${path.sep}`),
+      ) ??
+      this.config.projects[0];
+    const testFilePath = path.relative(project.testDir, test.location.file);
+    const relativeFileParts = testFilePath.split(path.sep);
+    const relativeFile = relativeFileParts.join("/");
+    const normalizedAbsoluteFile = path.normalize(test.location.file);
+    const normalizedRelativeFile = path.normalize(testFilePath);
+    const fileTitleCandidates = new Set([normalizedAbsoluteFile, normalizedRelativeFile, relativeFile]);
+    let suiteTitles = test.parent.titlePath().filter(Boolean);
+
+    if (project.name && suiteTitles[0] === project.name) {
+      suiteTitles = suiteTitles.slice(1);
+    }
+
+    if (suiteTitles.length > 0 && fileTitleCandidates.has(path.normalize(suiteTitles[0]))) {
+      suiteTitles = suiteTitles.slice(1);
+    }
+
+    const suitePrefix = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
+    const legacyFullName = `${relativeFile}#${suitePrefix}${titleMetadata.cleanTitle}`;
+    let staticAllureId = titleMetadata.labels.find((label) => label.name === LabelName.ALLURE_ID)?.value;
+
+    // Test-plan matching happens during discovery, so runtime API labels are intentionally excluded here.
+    if (!staticAllureId && "annotations" in test) {
+      for (const annotation of test.annotations) {
+        const label = getMetadataLabel(annotation.type, annotation.description);
+        if (label?.name === LabelName.ALLURE_ID) {
+          staticAllureId = label.value;
+          break;
+        }
+      }
+    }
+
+    return {
+      project,
+      testFilePath,
+      relativeFileParts,
+      suiteTitles,
+      testCaseIdBase: `${relativeFile}#${suitePrefix}${test.title}`,
+      titleMetadata,
+      fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
+      legacyFullName,
+      staticAllureId,
+    };
+  }
+
+  private isInTestPlan(test: TestCase) {
+    if (!this.testPlan) {
+      return true;
+    }
+
+    const { fullName, legacyFullName, staticAllureId } = this.getStaticTestMetadata(test);
+
+    return (
+      includedInTestPlan(this.testPlan, { fullName, id: staticAllureId }) ||
+      includedInTestPlan(this.testPlan, { fullName: legacyFullName, id: staticAllureId })
+    );
   }
 
   private processStepMetadataMessage(attachmentStepUuid: string, message: RuntimeStepMetadataMessage) {
