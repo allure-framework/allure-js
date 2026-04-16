@@ -13,7 +13,7 @@ export const DEFAULT_RUNTIME_CONFIG = {
  * @returns An array of popped items. The first popped item becomes the first element of this array.
  */
 export const popUntilFindIncluded = <T>(items: T[], pred: (value: T) => boolean) => {
-  const index = items.findIndex(pred);
+  const index = items.findLastIndex(pred);
   return index !== -1 ? toReversed(items.splice(index)) : [];
 };
 
