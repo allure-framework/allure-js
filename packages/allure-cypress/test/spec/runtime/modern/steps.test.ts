@@ -53,31 +53,59 @@ it("multiple steps", async () => {
   expect(tests[0].steps).toContainEqual(expect.objectContaining({ name: "baz" }));
 });
 
-it("nested steps", async () => {
+it("nested steps with API calls", async () => {
   const { tests } = await runCypressInlineTest({
     "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
     import { label, step } from "${allureCommonsModulePath}";
 
     it("step", () => {
-      step("foo", () => {
-        step("bar", () => {
-           step("baz", () => {
-             label("foo", "bar");
-           });
+      step("step 1", () => {
+        step("step 1.1", () => {
+          step("step 1.1.1", () => {
+            label("foo", "1");
+          });
+          step("step 1.1.2", () => {
+            label("bar", "2");
+          });
+        });
+        step("step 1.2", () => {
+          step("step 1.2.1", () => {
+            label("baz", "3");
+          });
+          step("step 1.2.2", () => {
+            label("qux", "4");
+          });
         });
       });
     });
   `,
   });
 
-  expect(tests).toHaveLength(1);
-  expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
-  expect(tests[0].steps).toHaveLength(1);
-  expect(tests[0].steps).toContainEqual(expect.objectContaining({ name: "foo" }));
-  expect(tests[0].steps[0].steps).toHaveLength(1);
-  expect(tests[0].steps[0].steps).toContainEqual(expect.objectContaining({ name: "bar" }));
-  expect(tests[0].steps[0].steps[0].steps).toHaveLength(1);
-  expect(tests[0].steps[0].steps[0].steps).toContainEqual(expect.objectContaining({ name: "baz" }));
+  expect(tests).toMatchObject([
+    expect.objectContaining({
+      labels: expect.arrayContaining([
+        { name: "foo", value: "1" },
+        { name: "bar", value: "2" },
+        { name: "baz", value: "3" },
+        { name: "qux", value: "4" },
+      ]),
+      steps: [
+        expect.objectContaining({
+          name: "step 1",
+          steps: [
+            expect.objectContaining({
+              name: "step 1.1",
+              steps: [expect.objectContaining({ name: "step 1.1.1" }), expect.objectContaining({ name: "step 1.1.2" })],
+            }),
+            expect.objectContaining({
+              name: "step 1.2",
+              steps: [expect.objectContaining({ name: "step 1.2.1" }), expect.objectContaining({ name: "step 1.2.2" })],
+            }),
+          ],
+        }),
+      ],
+    }),
+  ]);
 });
 
 it("step with attachments", async () => {
