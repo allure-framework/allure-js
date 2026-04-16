@@ -577,7 +577,10 @@ describe("mixed steps", () => {
       logGroupStop,
       testStop,
     ];
-    const actualOrder = [...expectedOrder].sort();
+
+    expect(expectedOrder.every((e) => e !== undefined)).toBeTruthy();
+
+    const actualOrder = [...expectedOrder].sort((f, s) => f! - s!);
 
     expect(actualOrder).toEqual(expectedOrder);
   });
@@ -907,7 +910,10 @@ describe("failed and broken tests with mixed steps", () => {
       apiStep1StopBroken,
       testStopBroken,
     ];
-    const actualOrder = [...expectedOrder].sort();
+
+    expect(expectedOrder.every((e) => e !== undefined)).toBeTruthy();
+
+    const actualOrder = [...expectedOrder].sort((f, s) => f! - s!);
 
     expect(actualOrder).toEqual(expectedOrder);
   });
