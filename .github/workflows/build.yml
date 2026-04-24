@@ -92,6 +92,8 @@ jobs:
     env:
       ALLURE_MATRIX_ENV: ${{ matrix.os }}-node-${{ matrix.node-version }}
       ALLURE_DUMP_NAME: allure-results-${{ matrix.os }}-node${{ matrix.node-version }}-${{ matrix.suite.id }}
+      TESTCAFE_BROWSER: ${{ matrix.os == 'ubuntu-latest' && 'chromium:headless --guest --no-sandbox' || 'chromium:headless --guest' }}
+      PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/pw-browsers
     strategy:
       fail-fast: false
       matrix:
@@ -102,25 +104,25 @@ jobs:
             os: windows-latest
         suite:
           - id: cypress-1
-            playwright_workspace: ""
+            requirePwChromium: false
           - id: cypress-2
-            playwright_workspace: ""
+            requirePwChromium: false
           - id: cypress-3
-            playwright_workspace: ""
+            requirePwChromium: false
           - id: cypress-4
-            playwright_workspace: ""
+            requirePwChromium: false
           - id: playwright-1
-            playwright_workspace: allure-playwright
+            requirePwChromium: true
           - id: playwright-2
-            playwright_workspace: allure-playwright
+            requirePwChromium: true
           - id: vitest
-            playwright_workspace: allure-vitest
+            requirePwChromium: true
           - id: mocha-a
-            playwright_workspace: ""
+            requirePwChromium: false
           - id: mocha-b
-            playwright_workspace: ""
+            requirePwChromium: false
           - id: midweight
-            playwright_workspace: ""
+            requirePwChromium: true
     steps:
       - uses: actions/checkout@v6
 
@@ -144,12 +146,15 @@ jobs:
         run: |
           node ./scripts/ci/run-suite.mjs compile ${{ matrix.suite.id }}
 
-      - name: Install Playwright chromium
-        if: ${{ matrix.suite.playwright_workspace != '' }}
+      - name: Install Playwright Chromium
+        id: pw-chromium
+        if: ${{ matrix.suite.requirePwChromium }}
         run: |
-          yarn workspace ${{ matrix.suite.playwright_workspace }} playwright install chromium --with-deps
+          node ./scripts/ci/install-playwright-chromium.mjs ${{ matrix.os == 'ubuntu-latest' && '--with-deps' || '' }}
 
       - name: Run suite tests
+        env:
+          PW_CHROMIUM_PATH: ${{ steps.pw-chromium.outputs.path }}
         run: |
           yarn allure run --config ./allurerc.mjs --environment="${{ env.ALLURE_MATRIX_ENV }}" --dump="${{ env.ALLURE_DUMP_NAME }}" --rerun 2 -- node ./scripts/ci/run-suite.mjs test ${{ matrix.suite.id }}
 
