@@ -25,6 +25,9 @@ it("respects testplan", async () => {
         id: 4,
         selector: "notaga.test.js#a",
       },
+      {
+        id: 5,
+      },
     ],
   };
   const testPlanFilename = "example-testplan.json";
@@ -62,7 +65,7 @@ it("respects testplan", async () => {
     ["--runInBand"],
   );
 
-  expect(tests).toHaveLength(4);
+  expect(tests).toHaveLength(5);
   expect(tests).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
@@ -80,6 +83,10 @@ it("respects testplan", async () => {
       expect.objectContaining({
         name: "a",
         fullName: "notaga.test.js#a",
+      }),
+      expect.objectContaining({
+        name: "selected name",
+        fullName: "aga.test.js#selected name",
       }),
     ]),
   );

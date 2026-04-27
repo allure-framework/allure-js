@@ -338,24 +338,19 @@ bunIt("supports Bun only.each variants", async () => {
     `,
   });
 
-  if (testOnly.tests.length > 0) {
-    expect(testOnly.tests).toHaveLength(2);
-    expect(getTestByName(testOnly.tests, "only alpha")).toEqual(
-      expect.objectContaining({
-        status: Status.PASSED,
-        stage: Stage.FINISHED,
-      }),
-    );
-    expect(getTestByName(testOnly.tests, "only beta")).toEqual(
-      expect.objectContaining({
-        status: Status.PASSED,
-        stage: Stage.FINISHED,
-      }),
-    );
-  } else {
-    expect(`${testOnly.stdout.join("\n")}\n${testOnly.stderr.join("\n")}`).toContain("only alpha");
-    expect(`${testOnly.stdout.join("\n")}\n${testOnly.stderr.join("\n")}`).toContain("only beta");
-  }
+  expect(testOnly.tests).toHaveLength(2);
+  expect(getTestByName(testOnly.tests, "only alpha")).toEqual(
+    expect.objectContaining({
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+    }),
+  );
+  expect(getTestByName(testOnly.tests, "only beta")).toEqual(
+    expect.objectContaining({
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+    }),
+  );
 
   const describeOnly = await runBunInlineTest({
     "sample.test.ts": `
@@ -369,15 +364,10 @@ bunIt("supports Bun only.each variants", async () => {
     `,
   });
 
-  if (describeOnly.tests.length > 0) {
-    expect(describeOnly.tests).toHaveLength(2);
-    expect(getTestsByName(describeOnly.tests, "runs").map((test) => test.fullName)).toEqual(
-      expect.arrayContaining(["sample.test.ts#only suite 1 runs", "sample.test.ts#only suite 2 runs"]),
-    );
-  } else {
-    expect(`${describeOnly.stdout.join("\n")}\n${describeOnly.stderr.join("\n")}`).toContain("only suite 1 > runs");
-    expect(`${describeOnly.stdout.join("\n")}\n${describeOnly.stderr.join("\n")}`).toContain("only suite 2 > runs");
-  }
+  expect(describeOnly.tests).toHaveLength(2);
+  expect(getTestsByName(describeOnly.tests, "runs").map((test) => test.fullName)).toEqual(
+    expect.arrayContaining(["sample.test.ts#only suite 1 runs", "sample.test.ts#only suite 2 runs"]),
+  );
 });
 
 bunIt("matches Bun's current each title formatting", async () => {

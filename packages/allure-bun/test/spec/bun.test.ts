@@ -4,8 +4,8 @@ import { Stage, Status } from "allure-js-commons";
 import type { TestResult, TestResultContainer } from "allure-js-commons";
 import { expect, it } from "vitest";
 
-import { finishFileContext } from "../../src/bun/lifecycle.js";
-import { createFileContext, createRunState } from "../../src/bun/state.js";
+import { finishFileContext } from "../../src/lifecycle.js";
+import { createFileContext, createRunState } from "../../src/state.js";
 import { isBunAvailable, runBunInlineTest } from "../utils.js";
 
 const bunIt = isBunAvailable ? it : it.skip;
@@ -455,6 +455,50 @@ bunIt("respects the Allure test plan at registration time", async () => {
     }),
   );
   expect(groups).toHaveLength(0);
+});
+
+bunIt("respects Allure test plan ids from title metadata", async () => {
+  const testPlanFilename = "testplan.json";
+  const { tests, exitCode } = await runBunInlineTest(
+    {
+      [testPlanFilename]: JSON.stringify({
+        version: "1.0",
+        tests: [{ id: 77 }],
+      }),
+      "sample.test.ts": `
+        import { expect, it } from "bun:test";
+
+        it("selected by id @allure.id=77", () => {
+          expect(true).toBe(true);
+        });
+
+        it("excluded by plan @allure.id=78", () => {
+          throw new Error("excluded test executed");
+        });
+      `,
+    },
+    {
+      env: (testDir) => ({
+        ALLURE_TESTPLAN_PATH: join(testDir, testPlanFilename),
+      }),
+    },
+  );
+
+  expect(exitCode).toBe(0);
+  expect(tests).toHaveLength(1);
+  expect(tests[0]).toEqual(
+    expect.objectContaining({
+      name: "selected by id",
+      status: Status.PASSED,
+      fullName: "sample.test.ts#selected by id",
+      labels: expect.arrayContaining([
+        expect.objectContaining({
+          name: "ALLURE_ID",
+          value: "77",
+        }),
+      ]),
+    }),
+  );
 });
 
 bunIt("matches Bun --todo mode for expected todo failures", async () => {

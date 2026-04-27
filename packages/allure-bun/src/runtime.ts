@@ -1,8 +1,8 @@
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { MessageTestRuntime } from "allure-js-commons/sdk/runtime";
 
-import { last } from "../utils.js";
 import type { BunFileContext } from "./types.js";
+import { last } from "./utils.js";
 
 export class BunTestRuntime extends MessageTestRuntime {
   private context: BunFileContext | null = null;

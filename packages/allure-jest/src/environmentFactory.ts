@@ -18,13 +18,14 @@ import {
   getPosixPath,
   getSuiteLabels,
   getThreadLabel,
+  includedInTestPlan,
   parseTestPlan,
 } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 
 import { AllureJestTestRuntime } from "./AllureJestTestRuntime.js";
 import type { AllureJestConfig, AllureJestEnvironment, AllureJestProjectConfig, RunContext } from "./model.js";
-import { getTestId, getTestPath, isTestPresentInTestPlan, last, shouldHookBeSkipped } from "./utils.js";
+import { getTestId, getTestPath, last, shouldHookBeSkipped } from "./utils.js";
 
 const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
   // @ts-expect-error (ts(2545)) Incorrect assumption about a mixin class: https://github.com/microsoft/TypeScript/issues/37142
@@ -195,7 +196,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const { cleanTitle, labels, links } = extractMetadataFromString(test.name);
       const newTestFullName = this.#getTestFullName(test, cleanTitle);
 
-      if (this.testPlan && !isTestPresentInTestPlan(newTestFullName, this.testPlan)) {
+      if (this.testPlan && !includedInTestPlan(this.testPlan, { fullName: newTestFullName, tags: [test.name] })) {
         test.mode = "skip";
         this.runContext.skippedTestsFullNamesByTestPlan.push(newTestFullName);
         return;

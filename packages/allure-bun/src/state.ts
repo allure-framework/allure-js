@@ -4,9 +4,14 @@ import { relative } from "node:path";
 
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
-import { ReporterRuntime, createDefaultWriter, getPosixPath, parseTestPlan } from "allure-js-commons/sdk/reporter";
+import {
+  ReporterRuntime,
+  createDefaultWriter,
+  getPosixPath,
+  includedInTestPlan,
+  parseTestPlan,
+} from "allure-js-commons/sdk/reporter";
 
-import { getTestId, isTestPresentInTestPlan } from "../utils.js";
 import type {
   BunDescribeBlock,
   BunFileContext,
@@ -15,6 +20,7 @@ import type {
   BunStaticMode,
   BunTestBehavior,
 } from "./types.js";
+import { getTestId } from "./utils.js";
 
 let bunTodoModeEnabled: boolean | undefined;
 
@@ -51,7 +57,7 @@ const detectBunTodoMode = () => {
   }
 
   try {
-    const procArgs = readFileSync("/proc/self/cmdline", "utf8").replace(/\0/g, " ");
+    const procArgs = readFileSync("/proc/self/cmdline", "utf8").split("\u0000").join(" ");
 
     if (hasCliFlag(procArgs, "--todo")) {
       bunTodoModeEnabled = true;
@@ -96,9 +102,9 @@ export const getCallerFilePath = (stack: string | undefined) => {
     const normalizedPath = filePath.replace(/\\/g, "/");
 
     if (
-      !normalizedPath.includes("/packages/allure-jest/src/") &&
-      !normalizedPath.includes("/packages/allure-jest/dist/") &&
-      !normalizedPath.includes("/node_modules/allure-jest/")
+      !normalizedPath.includes("/packages/allure-bun/src/") &&
+      !normalizedPath.includes("/packages/allure-bun/dist/") &&
+      !normalizedPath.includes("/node_modules/allure-bun/")
     ) {
       return filePath;
     }
@@ -277,5 +283,7 @@ export const isTestSelectedByPlan = (
     return true;
   }
 
-  return isTestPresentInTestPlan(getRegisteredTestFullName(fileContext, test), testPlan);
+  const fullName = getRegisteredTestFullName(fileContext, test);
+
+  return includedInTestPlan(testPlan, { fullName, tags: [test.name] });
 };

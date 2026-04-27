@@ -267,7 +267,7 @@ const wrapTestEach = (
         const current = selectedRows[runtimeIndex++]?.test;
 
         if (!current) {
-          throw new Error("allure-jest/bun failed to match a parameterized Bun test invocation");
+          throw new Error("allure-bun failed to match a parameterized Bun test invocation");
         }
 
         return executeWrappedTest(createLifecycleDeps(deps), fileContext, current, originalFn, args);

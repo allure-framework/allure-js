@@ -13,10 +13,10 @@ import {
   getThreadLabel,
 } from "allure-js-commons/sdk/reporter";
 
-import { last } from "../utils.js";
 import { FAILING_UNEXPECTED_PASS_MESSAGE, TODO_MESSAGE, TODO_UNEXPECTED_PASS_MESSAGE } from "./constants.js";
 import { getRegisteredTestFullName, getSuiteNames, getSuitePath, isSuiteDescendantOf } from "./state.js";
 import type { BunDescribeBlock, BunFileContext, BunHookType, BunOriginalFn, BunRegisteredTest } from "./types.js";
+import { last } from "./utils.js";
 
 type BunLifecycleDeps = {
   activateFileContext: (fileContext: BunFileContext) => void;

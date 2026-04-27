@@ -30,15 +30,6 @@ const copyMissingProperties = (target: BunWrappedFn, source: BunWrappedFn) => {
   }
 };
 
-const getCallableProp = (source: Record<string, unknown>, key: string) => {
-  try {
-    const value = source[key];
-    return typeof value === "function" ? value : undefined;
-  } catch {
-    return undefined;
-  }
-};
-
 export const installBunModuleMock = (bunTest: BunTestModule, allureModule: typeof allure) => {
   const runtime = new BunTestRuntime();
   const fileContexts = new Map<string, BunFileContext>();

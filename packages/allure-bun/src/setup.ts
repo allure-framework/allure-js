@@ -4,7 +4,7 @@ import * as bunTest from "bun:test";
 
 import * as allure from "allure-js-commons";
 
-import { installBunModuleMock } from "./bun/index.js";
+import { installBunModuleMock } from "./index.js";
 
 installBunModuleMock(bunTest, allure);
 
