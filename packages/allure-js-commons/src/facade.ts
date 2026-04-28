@@ -1,5 +1,5 @@
 import type { Status, StatusDetails } from "./model.js";
-import { type ContentType } from "./model.js";
+import { ContentType } from "./model.js";
 import { type AttachmentOptions, type Label, type Link, type ParameterMode, type ParameterOptions } from "./model.js";
 import { LabelName, LinkType } from "./model.js";
 import { getGlobalTestRuntimeWithAutoconfig } from "./sdk/runtime/runtime.js";
@@ -100,7 +100,7 @@ export const globalError = (details: StatusDetails) => {
 
 export const attachTrace = (name: string, path: string) => {
   return callRuntimeMethod("attachmentFromPath", name, path, {
-    contentType: "application/vnd.allure.playwright-trace",
+    contentType: ContentType.PLAYWRIGHT_TRACE,
   });
 };
 

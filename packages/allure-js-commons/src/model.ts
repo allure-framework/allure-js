@@ -168,6 +168,7 @@ export enum ContentType {
   JPEG = "image/jpeg",
   MP4 = "video/mp4",
   IMAGEDIFF = "application/vnd.allure.image.diff",
+  PLAYWRIGHT_TRACE = "application/vnd.allure.playwright-trace",
 }
 
 /* eslint-disable no-shadow */

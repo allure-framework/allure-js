@@ -516,6 +516,18 @@ export default class AllureCucumberReporter extends Formatter {
     }
 
     if (message.mediaType === ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE) {
+      if (fixtureUuid && testUuid) {
+        const runtimeMessages = this.parseRuntimeMessages(message.body);
+        const hasPlaywrightTrace = runtimeMessages.some(
+          (msg) =>
+            (msg.type === "attachment_content" || msg.type === "attachment_path") &&
+            msg.data.contentType === ContentType.PLAYWRIGHT_TRACE,
+        );
+        if (hasPlaywrightTrace) {
+          this.applyRuntimeAttachmentMessages(testUuid, message.body);
+          return;
+        }
+      }
       this.applyRuntimeAttachmentMessages(rootUuid, message.body);
       return;
     }
