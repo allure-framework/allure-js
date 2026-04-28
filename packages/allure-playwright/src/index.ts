@@ -40,7 +40,6 @@ import {
   getLanguageLabel,
   getPackageLabel,
   getThreadLabel,
-  getWorstTestStepResult,
   md5,
   parseTestPlan,
   randomUuid,

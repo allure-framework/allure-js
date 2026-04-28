@@ -129,7 +129,7 @@ const loadReporterModule = (moduleOrCtor: ReporterModuleOrCtor) => {
 const getReporterModulePath = (module: string) => {
   try {
     return localRequire.resolve(module);
-  } catch (e) {}
+  } catch {}
 
   try {
     return path.resolve(module);

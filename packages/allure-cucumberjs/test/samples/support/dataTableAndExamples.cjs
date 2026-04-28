@@ -1,7 +1,7 @@
 const { Given, When, Then } = require("@cucumber/cucumber");
 
-Given(/^a table$/, (table) => {});
+Given(/^a table$/, (_table) => {});
 
-When(/^I add (\d+) to (\d+)$/, (a, b) => {});
+When(/^I add (\d+) to (\d+)$/, (_a, _b) => {});
 
-Then(/^result is (\d+)$/, (c) => {});
+Then(/^result is (\d+)$/, (_c) => {});
