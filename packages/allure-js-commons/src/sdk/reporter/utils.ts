@@ -192,7 +192,7 @@ const isUrl = (potentialUrl: string) => {
   try {
     new URL(potentialUrl);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 };

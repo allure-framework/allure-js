@@ -31,7 +31,7 @@ export const getTestPath = (test: Circus.TestEntry | Circus.DescribeBlock): stri
 /**
  * Returns starndartized test name what can be used as test Id
  *
- * @doc https://github.com/jestjs/jest/blob/25a8785584c9d54a05887001ee7f498d489a5441/packages/jest-circus/src/utils.ts#L410
+ * @see https://github.com/jestjs/jest/blob/25a8785584c9d54a05887001ee7f498d489a5441/packages/jest-circus/src/utils.ts#L410
  * @param path Path memebers
  * @returns
  */

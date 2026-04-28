@@ -1,6 +1,6 @@
 const { Given, When, Then } = require("@cucumber/cucumber");
 
-Given(/^a table step$/, (table) => {});
+Given(/^a table step$/, (_table) => {});
 
 When(/^I add (\d+) to (\d+)$/, (a, b) => {
   console.log(a, b);

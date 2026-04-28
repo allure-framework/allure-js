@@ -308,12 +308,12 @@ class AllureCypressTestRuntime implements TestRuntime {
         if (!cyExists || !cyTaskExists) {
           return true;
         }
-      } catch (error) {
+      } catch {
         return true;
       }
 
       return false;
-    } catch (error) {
+    } catch {
       return true;
     }
   }

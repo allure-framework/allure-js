@@ -9,7 +9,7 @@ class MyHelper extends Helper {
     await Promise.resolve();
   }
 
-  async parameters(page, element) {
+  async parameters(_page, _element) {
     await Promise.resolve();
   }
 
