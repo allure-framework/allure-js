@@ -1,5 +1,6 @@
+import type { Parameter, Status } from "allure-js-commons";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
-import type { ReporterRuntime } from "allure-js-commons/sdk/reporter";
+import type { ReporterConfig, ReporterRuntime } from "allure-js-commons/sdk/reporter";
 
 export type BunWrappedFn = ((...args: any[]) => unknown) & Record<string, unknown>;
 export type BunOriginalFn = (...args: any[]) => unknown;
@@ -17,6 +18,11 @@ export type BunDescribeBlock = {
 export type BunRegisteredTest = {
   name: string;
   parent: BunDescribeBlock;
+  parameters: Parameter[];
+  retry: number;
+  attempt: number;
+  startedAttempts: number;
+  lastStatus?: Status;
   errors: unknown[];
   startedAt: number;
   duration?: number;
@@ -28,15 +34,19 @@ export type BunRegisteredTest = {
 };
 
 export type BunRunState = {
-  environmentInfoWritten: boolean;
-  categoriesWritten: boolean;
+  allureRuntime: ReporterRuntime;
+  allureConfig: ReporterConfig;
+  allureEnvironmentInfoWritten: boolean;
+  allureCategoriesWritten: boolean;
 };
 
 export type BunFileContext = {
-  runtime: ReporterRuntime;
+  allureRuntime: ReporterRuntime;
   runState: BunRunState;
   testPath: string;
   testPlan?: TestPlanV1;
+  defaultRetry: number;
+  testNamePattern: RegExp | undefined;
   todoModeEnabled: boolean;
   rootDescribeBlock: BunDescribeBlock;
   scopes: string[];
@@ -45,8 +55,10 @@ export type BunFileContext = {
   activeSuites: BunDescribeBlock[];
   tests: BunRegisteredTest[];
   nextPendingTestIndex: number;
+  nextRetryTest: BunRegisteredTest | undefined;
   currentTest?: BunRegisteredTest;
   afterEachHookRegistered: boolean;
+  afterAllHookRegistered: boolean;
   rootScopeActive: boolean;
   runFinished: boolean;
 };

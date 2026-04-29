@@ -89,6 +89,11 @@ const readAllureResults = async (resultsDir: string): Promise<AllureResults> => 
       continue;
     }
 
+    if (file.endsWith("-globals.json")) {
+      results.globals![file] = JSON.parse(await readFile(filePath, "utf8"));
+      continue;
+    }
+
     if (file === "categories.json") {
       results.categories = JSON.parse(await readFile(filePath, "utf8"));
       continue;
@@ -154,6 +159,15 @@ await import("${allureBunSetupPath}");
   const bunArgs = [`--config=${join(testDir, "bunfig.toml")}`, "test", ...args];
   const testProcess = await step(`${bunBinary} ${bunArgs.join(" ")}`, () => {
     const bunTodoModeEnabled = args.includes("--todo");
+    const testNamePatternIndex = args.findIndex((arg) => arg === "-t" || arg === "--test-name-pattern");
+    const testNamePatternArg = args.find((arg) => arg.startsWith("--test-name-pattern="));
+    const testNamePattern =
+      testNamePatternIndex === -1
+        ? testNamePatternArg?.slice("--test-name-pattern=".length)
+        : args[testNamePatternIndex + 1];
+    const retryIndex = args.findIndex((arg) => arg === "--retry");
+    const retryArg = args.find((arg) => arg.startsWith("--retry="));
+    const retry = retryIndex === -1 ? retryArg?.slice("--retry=".length) : args[retryIndex + 1];
 
     return spawn(bunBinary, bunArgs, {
       cwd: cwd ? join(testDir, cwd) : testDir,
@@ -161,6 +175,10 @@ await import("${allureBunSetupPath}");
         ...process.env,
         ALLURE_RESULTS_DIR: resultsDir,
         ALLURE_BUN_TODO_MODE: bunTodoModeEnabled ? "1" : process.env.ALLURE_BUN_TODO_MODE,
+        ALLURE_BUN_CONCURRENT_MODE: args.includes("--concurrent") ? "1" : process.env.ALLURE_BUN_CONCURRENT_MODE,
+        ALLURE_BUN_RANDOMIZE_MODE: args.includes("--randomize") ? "1" : process.env.ALLURE_BUN_RANDOMIZE_MODE,
+        ALLURE_BUN_TEST_NAME_PATTERN: testNamePattern ?? process.env.ALLURE_BUN_TEST_NAME_PATTERN,
+        ALLURE_BUN_RETRY: retry ?? process.env.ALLURE_BUN_RETRY,
         ...env?.(testDir),
       },
       stdio: "pipe",

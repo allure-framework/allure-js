@@ -1,28 +1,34 @@
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { MessageTestRuntime } from "allure-js-commons/sdk/runtime";
 
-import type { BunFileContext } from "./types.js";
+import type { BunFileContext, BunRunState } from "./types.js";
 import { last } from "./utils.js";
 
 export class BunTestRuntime extends MessageTestRuntime {
-  private context: BunFileContext | null = null;
+  private activeFileContext: BunFileContext | null = null;
 
-  setContext(context: BunFileContext) {
-    this.context = context;
+  constructor(private readonly runState: BunRunState) {
+    super();
+  }
+
+  setContext(fileContext: BunFileContext) {
+    this.activeFileContext = fileContext;
   }
 
   async sendMessage(message: RuntimeMessage) {
-    if (!this.context) {
+    if (!this.activeFileContext) {
+      this.runState.allureRuntime.applyGlobalRuntimeMessages([message]);
+      await Promise.resolve();
       return;
     }
 
-    const { runtime, executables } = this.context;
+    const { allureRuntime, executables } = this.activeFileContext;
     const executableUuid = last(executables);
 
     if (executableUuid) {
-      runtime.applyRuntimeMessages(executableUuid, [message]);
+      allureRuntime.applyRuntimeMessages(executableUuid, [message]);
     } else {
-      runtime.applyGlobalRuntimeMessages([message]);
+      allureRuntime.applyGlobalRuntimeMessages([message]);
     }
 
     await Promise.resolve();

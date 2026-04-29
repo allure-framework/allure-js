@@ -45,11 +45,37 @@ describe("signing in", () => {
 
 When the test run completes, the result files will be generated in the `./allure-results` directory.
 
+## Configuration
+
+`allure-bun/setup` accepts the common Allure reporter configuration through `globalThis.allureBunConfig` or the `ALLURE_BUN_CONFIG` environment variable. Use a custom preload when you need values that JSON can't represent, such as listener functions or link-template functions:
+
+```ts
+import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
+
+globalThis.allureBunConfig = {
+  resultsDir: "allure-results",
+  environmentInfo: {
+    bun: Bun.version,
+  },
+  globalLabels: {
+    layer: "api",
+  },
+  links: {
+    issue: {
+      urlTemplate: "https://issues.example/%s",
+    },
+  },
+} satisfies ReporterConfig;
+
+await import("allure-bun/setup");
+```
+
 ## Notes
 
 - `allure-bun/setup` uses Bun preload and is not a Jest environment.
 - Keep using Bun's regular test API in test files, including hooks, `.each`, and supported non-concurrent modifiers.
 - Concurrent Bun execution is not supported. `test.concurrent`, `test.concurrent.each`, and `bun test --concurrent` fail fast with a descriptive error.
+- Randomized Bun execution is not supported. `bun test --randomize` fails fast because Bun doesn't expose the current test identity to `beforeEach` hooks.
 - Test-plan selection is handled while Bun tests are registered. Excluded test and hook bodies are not invoked, but top-level module code and `describe(...)` registration callbacks still run.
 
 ## View the report

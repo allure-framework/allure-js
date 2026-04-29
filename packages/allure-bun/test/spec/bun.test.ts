@@ -18,6 +18,14 @@ const getTestByName = (tests: TestResult[], name: string) => {
   return test!;
 };
 
+const getTestsByName = (tests: TestResult[], name: string) => {
+  const matches = tests.filter((entry) => entry.name === name);
+
+  expect(matches, `Expected Bun results named "${name}" to be present`).not.toHaveLength(0);
+
+  return matches;
+};
+
 const hasFixtureStep = (groups: TestResultContainer[], fixtureType: "befores" | "afters", stepName: string) => {
   return groups.some(
     (group) =>
@@ -36,12 +44,12 @@ it("writes Bun global metadata once across multiple file contexts", () => {
   let categoriesWrites = 0;
 
   for (const fileContext of [firstFileContext, secondFileContext]) {
-    fileContext.runtime.environmentInfo = { build: "123" };
-    fileContext.runtime.categories = [{ name: "known issue" }];
-    fileContext.runtime.writeEnvironmentInfo = () => {
+    fileContext.allureRuntime.environmentInfo = { build: "123" };
+    fileContext.allureRuntime.categories = [{ name: "known issue" }];
+    fileContext.allureRuntime.writeEnvironmentInfo = () => {
       environmentInfoWrites += 1;
     };
-    fileContext.runtime.writeCategoriesDefinitions = () => {
+    fileContext.allureRuntime.writeCategoriesDefinitions = () => {
       categoriesWrites += 1;
     };
   }
@@ -70,6 +78,14 @@ bunIt("reports Bun tests, hooks, serial tests, skips and todos", async () => {
     "sample.test.ts": `
       import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, test } from "bun:test";
       import { label, logStep, step } from "allure-js-commons";
+
+      beforeAll(async () => {
+        await logStep("root before all");
+      });
+
+      afterAll(async () => {
+        await logStep("root after all");
+      });
 
       describe("Allure Bun", () => {
         beforeAll(async () => {
@@ -195,6 +211,236 @@ bunIt("reports Bun tests, hooks, serial tests, skips and todos", async () => {
 
   expect(hasFixtureStep(groups, "befores", "suite before each")).toBe(true);
   expect(hasFixtureStep(groups, "afters", "suite after each")).toBe(true);
+  expect(hasFixtureStep(groups, "befores", "root before all")).toBe(true);
+  expect(hasFixtureStep(groups, "afters", "root after all")).toBe(true);
+});
+
+bunIt("reports afterAll registered after top-level await", async () => {
+  const { tests, groups, exitCode } = await runBunInlineTest({
+    "sample.test.ts": `
+      import { afterAll, expect, test } from "bun:test";
+      import { logStep } from "allure-js-commons";
+
+      test("before await", () => {
+        expect(true).toBe(true);
+      });
+
+      await Promise.resolve();
+
+      afterAll(async () => {
+        await logStep("late after all");
+      });
+    `,
+  });
+
+  expect(exitCode).toBe(0);
+  expect(getTestByName(tests, "before await")).toEqual(
+    expect.objectContaining({
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+    }),
+  );
+  expect(hasFixtureStep(groups, "afters", "late after all")).toBe(true);
+});
+
+bunIt("supports the full Allure runtime facade in Bun context", async () => {
+  const { tests, groups, globals, envInfo, categories, attachments, exitCode } = await runBunInlineTest(
+    {
+      "payload.txt": "payload from path",
+      "sample.test.ts": `
+        import { beforeAll, beforeEach, expect, test } from "bun:test";
+        import {
+          Status,
+          attachment,
+          attachmentPath,
+          description,
+          descriptionHtml,
+          displayName,
+          globalAttachment,
+          globalAttachmentPath,
+          globalError,
+          historyId,
+          issue,
+          label,
+          link,
+          logStep,
+          parameter,
+          parentSuite,
+          step,
+          subSuite,
+          suite,
+          tag,
+          testCaseId,
+        } from "allure-js-commons";
+
+        await globalAttachment("before registration", "early", { contentType: "text/plain" });
+
+        beforeAll(async () => {
+          await label("fromBeforeAll", "yes");
+        });
+
+        beforeEach(async () => {
+          await parameter("hookParam", "hook", { excluded: true });
+        });
+
+        test("full runtime @allure.id=42", async () => {
+          await displayName("renamed runtime test");
+          await description("runtime markdown");
+          await descriptionHtml("<b>runtime html</b>");
+          await historyId("manual-history");
+          await testCaseId("manual-case");
+          await suite("custom suite");
+          await parentSuite("custom parent");
+          await subSuite("custom sub");
+          await label("custom", "value");
+          await tag("runtime");
+          await parameter("secret", "hidden", { mode: "hidden" });
+          await link("https://example.test/generic", "generic", "link");
+          await issue("ISSUE-1", "issue name");
+          await attachment("inline attachment", "hello", { contentType: "text/plain" });
+          await attachmentPath("path attachment", "./payload.txt", { contentType: "text/plain" });
+          await globalAttachmentPath("global path", "./payload.txt", { contentType: "text/plain" });
+          await globalError({ message: "global problem", trace: "trace" });
+          await logStep("instant broken", Status.BROKEN, new Error("instant err"));
+          await step("outer step", async (ctx) => {
+            await ctx.displayName("renamed outer");
+            await ctx.parameter("stepParam", "stepValue");
+            await step("inner step", async () => {});
+          });
+
+          expect(true).toBe(true);
+        });
+      `,
+    },
+    {
+      env: () => ({
+        ALLURE_BUN_CONFIG: JSON.stringify({
+          environmentInfo: { runtime: "bun" },
+          categories: [{ name: "known", messageRegex: "global problem" }],
+          globalLabels: { layer: "api" },
+          links: {
+            issue: {
+              urlTemplate: "https://issues.example/%s",
+            },
+          },
+        }),
+      }),
+    },
+  );
+
+  expect(exitCode).toBe(0);
+  expect(envInfo).toEqual({ runtime: "bun" });
+  expect(categories).toEqual([expect.objectContaining({ name: "known", messageRegex: "global problem" })]);
+
+  const result = getTestByName(tests, "renamed runtime test");
+
+  expect(result).toEqual(
+    expect.objectContaining({
+      historyId: "manual-history",
+      testCaseId: "manual-case",
+      description: "runtime markdown",
+      descriptionHtml: "<b>runtime html</b>",
+      status: Status.PASSED,
+    }),
+  );
+  expect(result.fullName).toBe("sample.test.ts#full runtime");
+  expect(result.labels).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ name: "ALLURE_ID", value: "42" }),
+      expect.objectContaining({ name: "custom", value: "value" }),
+      expect.objectContaining({ name: "tag", value: "runtime" }),
+      expect.objectContaining({ name: "fromBeforeAll", value: "yes" }),
+      expect.objectContaining({ name: "layer", value: "api" }),
+      expect.objectContaining({ name: "parentSuite", value: "custom parent" }),
+      expect.objectContaining({ name: "suite", value: "custom suite" }),
+      expect.objectContaining({ name: "subSuite", value: "custom sub" }),
+    ]),
+  );
+  expect(result.labels.filter(({ name }) => name === "suite")).toEqual([{ name: "suite", value: "custom suite" }]);
+  expect(result.labels.filter(({ name }) => name === "subSuite")).toEqual([{ name: "subSuite", value: "custom sub" }]);
+  expect(result.parameters).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ name: "secret", value: "hidden", mode: "hidden" }),
+      expect.objectContaining({ name: "hookParam", value: "hook", excluded: true }),
+    ]),
+  );
+  expect(result.links).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ type: "link", url: "https://example.test/generic", name: "generic" }),
+      expect.objectContaining({ type: "issue", url: "https://issues.example/ISSUE-1", name: "issue name" }),
+    ]),
+  );
+  expect(result.steps).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ name: "inline attachment" }),
+      expect.objectContaining({ name: "path attachment" }),
+      expect.objectContaining({
+        name: "instant broken",
+        status: Status.BROKEN,
+        statusDetails: expect.objectContaining({ message: "instant err" }),
+      }),
+      expect.objectContaining({
+        name: "renamed outer",
+        parameters: [expect.objectContaining({ name: "stepParam", value: "stepValue" })],
+        steps: [expect.objectContaining({ name: "inner step" })],
+      }),
+    ]),
+  );
+  expect(Object.values(attachments).map((value) => value.toString())).toEqual(
+    expect.arrayContaining(["hello", "payload from path"]),
+  );
+  expect(
+    Object.values(globals ?? {}).flatMap((entry) => entry.attachments.map((attachment) => attachment.name)),
+  ).toEqual(expect.arrayContaining(["before registration", "global path"]));
+  expect(Object.values(globals ?? {}).flatMap((entry) => entry.errors.map((error) => error.message))).toEqual([
+    "global problem",
+  ]);
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "beforeAll",
+        befores: expect.arrayContaining([expect.objectContaining({ status: Status.PASSED })]),
+      }),
+    ]),
+  );
+});
+
+bunIt("reports Bun retry attempts as separate Allure results", async () => {
+  const { tests, exitCode } = await runBunInlineTest({
+    "sample.test.ts": `
+      import { expect, test } from "bun:test";
+
+      let attempts = 0;
+
+      test("flaky retry", { retry: 1 }, () => {
+        attempts += 1;
+        expect(attempts).toBe(2);
+      });
+    `,
+  });
+
+  expect(exitCode).toBe(0);
+
+  const retryResults = getTestsByName(tests, "flaky retry");
+  const failedAttempt = retryResults.find((test) => test.status === Status.FAILED);
+  const passedAttempt = retryResults.find((test) => test.status === Status.PASSED);
+
+  expect(retryResults).toHaveLength(2);
+  expect(failedAttempt).toEqual(
+    expect.objectContaining({
+      stage: Stage.FINISHED,
+      statusDetails: expect.objectContaining({
+        message: expect.stringContaining("Expected: 2"),
+      }),
+    }),
+  );
+  expect(passedAttempt).toEqual(
+    expect.objectContaining({
+      stage: Stage.FINISHED,
+      parameters: expect.arrayContaining([expect.objectContaining({ name: "Retry", value: "1", excluded: true })]),
+    }),
+  );
+  expect(passedAttempt?.historyId).toBe(failedAttempt?.historyId);
 });
 
 bunIt("keeps hook context isolated across multiple Bun files", async () => {

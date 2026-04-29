@@ -1,6 +1,6 @@
 import { sep } from "node:path";
 
-import { Stage, Status } from "allure-js-commons";
+import { LabelName, Stage, Status, type TestResult } from "allure-js-commons";
 import { serialize } from "allure-js-commons/sdk";
 import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import {
@@ -14,8 +14,21 @@ import {
 } from "allure-js-commons/sdk/reporter";
 
 import { FAILING_UNEXPECTED_PASS_MESSAGE, TODO_MESSAGE, TODO_UNEXPECTED_PASS_MESSAGE } from "./constants.js";
-import { getRegisteredTestFullName, getSuiteNames, getSuitePath, isSuiteDescendantOf } from "./state.js";
-import type { BunDescribeBlock, BunFileContext, BunHookType, BunOriginalFn, BunRegisteredTest } from "./types.js";
+import {
+  getRegisteredTestFullName,
+  getSuiteNames,
+  getSuitePath,
+  isSuiteDescendantOf,
+  isTestSelectedByBunNamePattern,
+} from "./state.js";
+import type {
+  BunDescribeBlock,
+  BunFileContext,
+  BunHookType,
+  BunOriginalFn,
+  BunRegisteredTest,
+  BunRunState,
+} from "./types.js";
 import { last } from "./utils.js";
 
 type BunLifecycleDeps = {
@@ -55,15 +68,65 @@ const getStatusAndDetails = (errors: unknown[]) => {
   };
 };
 
+const suiteLabelNames = new Set<string>([LabelName.PARENT_SUITE, LabelName.SUITE, LabelName.SUB_SUITE]);
+
+const makeUserSuiteLabelsOverrideGenerated = (allureResult: TestResult) => {
+  const lastSuiteLabelIndexes = new Map<string, number>();
+
+  allureResult.labels.forEach((label, index) => {
+    if (suiteLabelNames.has(label.name)) {
+      lastSuiteLabelIndexes.set(label.name, index);
+    }
+  });
+
+  allureResult.labels = allureResult.labels.filter((label, index) => {
+    if (!suiteLabelNames.has(label.name)) {
+      return true;
+    }
+
+    return lastSuiteLabelIndexes.get(label.name) === index;
+  });
+};
+
+const writeTestResult = (fileContext: BunFileContext, testUuid: string) => {
+  fileContext.allureRuntime.updateTest(testUuid, makeUserSuiteLabelsOverrideGenerated);
+  fileContext.allureRuntime.writeTest(testUuid);
+};
+
+const writeRunMetadata = (runState: BunRunState, allureRuntime: BunFileContext["allureRuntime"]) => {
+  if (!runState.allureEnvironmentInfoWritten && allureRuntime.environmentInfo !== undefined) {
+    allureRuntime.writeEnvironmentInfo();
+    runState.allureEnvironmentInfoWritten = true;
+  }
+
+  if (!runState.allureCategoriesWritten && allureRuntime.categories !== undefined) {
+    allureRuntime.writeCategoriesDefinitions();
+    runState.allureCategoriesWritten = true;
+  }
+};
+
+const getAttemptParameters = (test: BunRegisteredTest) => {
+  if (test.attempt === 0) {
+    return [];
+  }
+
+  return [
+    {
+      name: test.lastStatus === Status.PASSED ? "Repetition" : "Retry",
+      value: String(test.attempt),
+      excluded: true,
+    },
+  ];
+};
+
 const startAllureTest = (fileContext: BunFileContext, test: BunRegisteredTest) => {
-  const { runtime, testPath, scopes } = fileContext;
+  const { allureRuntime, testPath, scopes } = fileContext;
   const suitePath = getSuiteNames(test.parent);
   const fsPath = testPath.split(sep);
   const titlePath = fsPath.concat(suitePath);
   const { cleanTitle, labels, links } = extractMetadataFromString(test.name);
   const fullName = getRegisteredTestFullName(fileContext, test);
-
-  const testUuid = runtime.startTest(
+  const testUuid = allureRuntime.startTest(
     {
       name: cleanTitle,
       fullName,
@@ -81,6 +144,7 @@ const startAllureTest = (fileContext: BunFileContext, test: BunRegisteredTest) =
       ],
       titlePath,
       links,
+      parameters: [...test.parameters, ...getAttemptParameters(test)],
     },
     scopes,
   );
@@ -93,7 +157,7 @@ export const ensureRootScope = (fileContext: BunFileContext) => {
     return;
   }
 
-  fileContext.scopes.push(fileContext.runtime.startScope());
+  fileContext.scopes.push(fileContext.allureRuntime.startScope());
   fileContext.rootScopeActive = true;
 };
 
@@ -111,15 +175,16 @@ export const transitionToSuite = (fileContext: BunFileContext, suite: BunDescrib
 
   while (fileContext.activeSuites.length > sharedLength) {
     const scopeUuid = fileContext.scopes.pop();
+
     if (scopeUuid) {
-      fileContext.runtime.writeScope(scopeUuid);
+      fileContext.allureRuntime.writeScope(scopeUuid);
     }
     fileContext.activeSuites.pop();
   }
 
   while (fileContext.activeSuites.length < targetPath.length) {
     fileContext.activeSuites.push(targetPath[fileContext.activeSuites.length]!);
-    fileContext.scopes.push(fileContext.runtime.startScope());
+    fileContext.scopes.push(fileContext.allureRuntime.startScope());
   }
 };
 
@@ -161,20 +226,33 @@ const claimNextPendingTest = (fileContext: BunFileContext, expected?: BunRegiste
 };
 
 const startRegisteredTest = (deps: BunLifecycleDeps, fileContext: BunFileContext, test: BunRegisteredTest) => {
-  if (test.started) {
+  if (test.started && !test.completed) {
     return test;
   }
 
   claimNextPendingTest(fileContext, test);
+
+  if (fileContext.nextRetryTest === test) {
+    fileContext.nextRetryTest = undefined;
+  }
+
   ensureRootScope(fileContext);
   transitionToSuite(fileContext, test.parent);
   deps.activateFileContext(fileContext);
 
+  test.attempt = test.startedAttempts;
+  test.startedAttempts += 1;
   test.started = true;
+  test.completed = false;
+  test.resultEmitted = false;
+  test.errors = [];
+
+  delete test.duration;
+
   test.startedAt = Date.now();
   fileContext.currentTest = test;
 
-  fileContext.scopes.push(fileContext.runtime.startScope());
+  fileContext.scopes.push(fileContext.allureRuntime.startScope());
   startAllureTest(fileContext, test);
   test.resultEmitted = true;
 
@@ -186,6 +264,8 @@ export const ensureCurrentTest = (
   fileContext: BunFileContext,
   expected?: BunRegisteredTest,
 ) => {
+  expected ??= fileContext.nextRetryTest;
+
   if (fileContext.currentTest) {
     if (expected && fileContext.currentTest !== expected && !fileContext.currentTest.completed) {
       deps.throwConcurrentUnsupported();
@@ -214,26 +294,33 @@ export const finalizeTest = (fileContext: BunFileContext, test: BunRegisteredTes
 
   if (testUuid) {
     let currentStatus: Status | undefined;
-    fileContext.runtime.updateTest(testUuid, (result) => {
-      currentStatus = result.status;
+    fileContext.allureRuntime.updateTest(testUuid, (allureResult) => {
+      currentStatus = allureResult.status;
     });
 
-    if (currentStatus === undefined) {
+    let finalStatus = currentStatus;
+
+    if (finalStatus === undefined) {
       const { details } = getStatusAndDetails(test.errors);
-      fileContext.runtime.updateTest(testUuid, (result) => {
-        result.stage = Stage.FINISHED;
-        result.status = Status.SKIPPED;
-        result.statusDetails = { ...result.statusDetails, ...details };
+
+      fileContext.allureRuntime.updateTest(testUuid, (allureResult) => {
+        allureResult.stage = Stage.FINISHED;
+        allureResult.status = Status.SKIPPED;
+        allureResult.statusDetails = { ...allureResult.statusDetails, ...details };
       });
-      fileContext.runtime.stopTest(testUuid, { duration: 0 });
+
+      fileContext.allureRuntime.stopTest(testUuid, { duration: 0 });
+      finalStatus = Status.SKIPPED;
     }
 
-    fileContext.runtime.writeTest(testUuid);
+    test.lastStatus = finalStatus;
+    writeTestResult(fileContext, testUuid);
   }
 
   const scopeUuid = fileContext.scopes.pop();
+
   if (scopeUuid) {
-    fileContext.runtime.writeScope(scopeUuid);
+    fileContext.allureRuntime.writeScope(scopeUuid);
   }
 
   test.completed = true;
@@ -242,12 +329,16 @@ export const finalizeTest = (fileContext: BunFileContext, test: BunRegisteredTes
     fileContext.currentTest = undefined;
   }
 
+  if (test.lastStatus !== Status.PASSED && test.attempt < test.retry) {
+    fileContext.nextRetryTest = test;
+  }
+
   advancePendingIndex(fileContext);
 };
 
 const onHookStart = (fileContext: BunFileContext, type: BunHookType) => {
   const scopeUuid = last(fileContext.scopes);
-  const fixtureUuid = fileContext.runtime.startFixture(scopeUuid, /after/i.test(type) ? "after" : "before", {
+  const fixtureUuid = fileContext.allureRuntime.startFixture(scopeUuid, /after/i.test(type) ? "after" : "before", {
     name: type,
   });
 
@@ -263,11 +354,11 @@ const onHookSuccess = (fileContext: BunFileContext) => {
     return;
   }
 
-  fileContext.runtime.updateFixture(fixtureUuid, (result) => {
-    result.status = Status.PASSED;
-    result.stage = Stage.FINISHED;
+  fileContext.allureRuntime.updateFixture(fixtureUuid, (allureResult) => {
+    allureResult.status = Status.PASSED;
+    allureResult.stage = Stage.FINISHED;
   });
-  fileContext.runtime.stopFixture(fixtureUuid);
+  fileContext.allureRuntime.stopFixture(fixtureUuid);
 };
 
 const onHookFailure = (fileContext: BunFileContext, error: unknown) => {
@@ -280,12 +371,12 @@ const onHookFailure = (fileContext: BunFileContext, error: unknown) => {
   const status = error instanceof Error ? getStatusFromError(error) : Status.BROKEN;
   const details = error instanceof Error ? getMessageAndTraceFromError(error) : { message: serialize(error) };
 
-  fileContext.runtime.updateFixture(fixtureUuid, (result) => {
-    result.status = status;
-    result.statusDetails = details;
-    result.stage = Stage.FINISHED;
+  fileContext.allureRuntime.updateFixture(fixtureUuid, (allureResult) => {
+    allureResult.status = status;
+    allureResult.statusDetails = details;
+    allureResult.stage = Stage.FINISHED;
   });
-  fileContext.runtime.stopFixture(fixtureUuid);
+  fileContext.allureRuntime.stopFixture(fixtureUuid);
 };
 
 const onTestSuccess = (fileContext: BunFileContext, test: BunRegisteredTest) => {
@@ -295,11 +386,11 @@ const onTestSuccess = (fileContext: BunFileContext, test: BunRegisteredTest) => 
     return;
   }
 
-  fileContext.runtime.updateTest(testUuid, (result) => {
-    result.stage = Stage.FINISHED;
-    result.status = Status.PASSED;
+  fileContext.allureRuntime.updateTest(testUuid, (allureResult) => {
+    allureResult.stage = Stage.FINISHED;
+    allureResult.status = Status.PASSED;
   });
-  fileContext.runtime.stopTest(testUuid, { duration: test.duration ?? 0 });
+  fileContext.allureRuntime.stopTest(testUuid, { duration: test.duration ?? 0 });
 };
 
 const onTestFailure = (fileContext: BunFileContext, test: BunRegisteredTest) => {
@@ -311,12 +402,12 @@ const onTestFailure = (fileContext: BunFileContext, test: BunRegisteredTest) => 
 
   const { status, details } = getStatusAndDetails(test.errors);
 
-  fileContext.runtime.updateTest(testUuid, (result) => {
-    result.stage = Stage.FINISHED;
-    result.status = status;
-    result.statusDetails = { ...result.statusDetails, ...details };
+  fileContext.allureRuntime.updateTest(testUuid, (allureResult) => {
+    allureResult.stage = Stage.FINISHED;
+    allureResult.status = status;
+    allureResult.statusDetails = { ...allureResult.statusDetails, ...details };
   });
-  fileContext.runtime.stopTest(testUuid, { duration: test.duration ?? 0 });
+  fileContext.allureRuntime.stopTest(testUuid, { duration: test.duration ?? 0 });
 };
 
 const onTodoTestUnexpectedPass = (fileContext: BunFileContext, test: BunRegisteredTest) => {
@@ -326,15 +417,15 @@ const onTodoTestUnexpectedPass = (fileContext: BunFileContext, test: BunRegister
     return;
   }
 
-  fileContext.runtime.updateTest(testUuid, (result) => {
-    result.stage = Stage.FINISHED;
-    result.status = Status.FAILED;
-    result.statusDetails = {
-      ...result.statusDetails,
+  fileContext.allureRuntime.updateTest(testUuid, (allureResult) => {
+    allureResult.stage = Stage.FINISHED;
+    allureResult.status = Status.FAILED;
+    allureResult.statusDetails = {
+      ...allureResult.statusDetails,
       message: TODO_UNEXPECTED_PASS_MESSAGE,
     };
   });
-  fileContext.runtime.stopTest(testUuid, { duration: test.duration ?? 0 });
+  fileContext.allureRuntime.stopTest(testUuid, { duration: test.duration ?? 0 });
 };
 
 const onTodoTestExpectedFailure = (fileContext: BunFileContext, test: BunRegisteredTest) => {
@@ -346,16 +437,16 @@ const onTodoTestExpectedFailure = (fileContext: BunFileContext, test: BunRegiste
 
   const { details } = getStatusAndDetails(test.errors);
 
-  fileContext.runtime.updateTest(testUuid, (result) => {
-    result.stage = Stage.FINISHED;
-    result.status = Status.SKIPPED;
-    result.statusDetails = {
-      ...result.statusDetails,
+  fileContext.allureRuntime.updateTest(testUuid, (allureResult) => {
+    allureResult.stage = Stage.FINISHED;
+    allureResult.status = Status.SKIPPED;
+    allureResult.statusDetails = {
+      ...allureResult.statusDetails,
       ...details,
       message: details.message ? `${TODO_MESSAGE}: ${details.message}` : TODO_MESSAGE,
     };
   });
-  fileContext.runtime.stopTest(testUuid, { duration: test.duration ?? 0 });
+  fileContext.allureRuntime.stopTest(testUuid, { duration: test.duration ?? 0 });
 };
 
 const onFailingTestExpectedFailure = (fileContext: BunFileContext, test: BunRegisteredTest) => {
@@ -365,12 +456,12 @@ const onFailingTestExpectedFailure = (fileContext: BunFileContext, test: BunRegi
     return;
   }
 
-  fileContext.runtime.updateTest(testUuid, (result) => {
-    result.stage = Stage.FINISHED;
-    result.status = Status.PASSED;
-    result.statusDetails = {};
+  fileContext.allureRuntime.updateTest(testUuid, (allureResult) => {
+    allureResult.stage = Stage.FINISHED;
+    allureResult.status = Status.PASSED;
+    allureResult.statusDetails = {};
   });
-  fileContext.runtime.stopTest(testUuid, { duration: test.duration ?? 0 });
+  fileContext.allureRuntime.stopTest(testUuid, { duration: test.duration ?? 0 });
 };
 
 const onFailingTestUnexpectedPass = (fileContext: BunFileContext, test: BunRegisteredTest) => {
@@ -380,15 +471,15 @@ const onFailingTestUnexpectedPass = (fileContext: BunFileContext, test: BunRegis
     return;
   }
 
-  fileContext.runtime.updateTest(testUuid, (result) => {
-    result.stage = Stage.FINISHED;
-    result.status = Status.FAILED;
-    result.statusDetails = {
-      ...result.statusDetails,
+  fileContext.allureRuntime.updateTest(testUuid, (allureResult) => {
+    allureResult.stage = Stage.FINISHED;
+    allureResult.status = Status.FAILED;
+    allureResult.statusDetails = {
+      ...allureResult.statusDetails,
       message: FAILING_UNEXPECTED_PASS_MESSAGE,
     };
   });
-  fileContext.runtime.stopTest(testUuid, { duration: test.duration ?? 0 });
+  fileContext.allureRuntime.stopTest(testUuid, { duration: test.duration ?? 0 });
 };
 
 export const executeWrappedTest = async (
@@ -402,7 +493,7 @@ export const executeWrappedTest = async (
   ensureCurrentTest(deps, fileContext, test);
 
   try {
-    const result = await originalFn(...args);
+    const testResult = await originalFn(...args);
     test.duration = Date.now() - test.startedAt;
 
     switch (test.behavior) {
@@ -417,7 +508,7 @@ export const executeWrappedTest = async (
         break;
     }
 
-    return result;
+    return testResult;
   } catch (error) {
     test.duration = Date.now() - test.startedAt;
     test.errors = [adaptErrorForJestStatus(error)];
@@ -447,27 +538,30 @@ export const emitStaticTest = (deps: BunLifecycleDeps, fileContext: BunFileConte
   ensureRootScope(fileContext);
   transitionToSuite(fileContext, test.parent);
 
-  fileContext.scopes.push(fileContext.runtime.startScope());
+  fileContext.scopes.push(fileContext.allureRuntime.startScope());
   startAllureTest(fileContext, test);
+
   test.resultEmitted = true;
+
   const testUuid = fileContext.executables.pop();
 
   if (testUuid) {
-    fileContext.runtime.updateTest(testUuid, (result) => {
-      result.stage = Stage.FINISHED;
-      result.status = Status.SKIPPED;
+    fileContext.allureRuntime.updateTest(testUuid, (allureResult) => {
+      allureResult.stage = Stage.FINISHED;
+      allureResult.status = Status.SKIPPED;
 
       if (test.mode === "todo") {
-        result.statusDetails = { ...result.statusDetails, message: TODO_MESSAGE };
+        allureResult.statusDetails = { ...allureResult.statusDetails, message: TODO_MESSAGE };
       }
     });
-    fileContext.runtime.stopTest(testUuid, { duration: 0 });
-    fileContext.runtime.writeTest(testUuid);
+    fileContext.allureRuntime.stopTest(testUuid, { duration: 0 });
+    writeTestResult(fileContext, testUuid);
   }
 
   const scopeUuid = fileContext.scopes.pop();
+
   if (scopeUuid) {
-    fileContext.runtime.writeScope(scopeUuid);
+    fileContext.allureRuntime.writeScope(scopeUuid);
   }
 
   test.completed = true;
@@ -518,9 +612,11 @@ export const executeHook = async (
   onHookStart(fileContext, type);
 
   try {
-    const result = await fn(...args);
+    const hookResult = await fn(...args);
+
     onHookSuccess(fileContext);
-    return result;
+
+    return hookResult;
   } catch (error) {
     if (type === "beforeEach" && fileContext.currentTest) {
       fileContext.currentTest.errors = [adaptErrorForJestStatus(error)];
@@ -560,35 +656,41 @@ export const finishFileContext = (deps: BunLifecycleDeps, fileContext: BunFileCo
   }
 
   for (const test of fileContext.tests) {
-    if (test.behavior === "todo" && !test.started && !test.resultEmitted) {
+    if (
+      test.behavior === "todo" &&
+      !test.started &&
+      !test.resultEmitted &&
+      isTestSelectedByBunNamePattern(fileContext, test)
+    ) {
       emitStaticTest(deps, fileContext, test);
     }
   }
 
   while (fileContext.activeSuites.length > 0) {
     const scopeUuid = fileContext.scopes.pop();
+
     if (scopeUuid) {
-      fileContext.runtime.writeScope(scopeUuid);
+      fileContext.allureRuntime.writeScope(scopeUuid);
     }
+
     fileContext.activeSuites.pop();
   }
 
   if (fileContext.rootScopeActive) {
     const scopeUuid = fileContext.scopes.pop();
+
     if (scopeUuid) {
-      fileContext.runtime.writeScope(scopeUuid);
+      fileContext.allureRuntime.writeScope(scopeUuid);
     }
+
     fileContext.rootScopeActive = false;
   }
 
-  if (!fileContext.runState.environmentInfoWritten && fileContext.runtime.environmentInfo !== undefined) {
-    fileContext.runtime.writeEnvironmentInfo();
-    fileContext.runState.environmentInfoWritten = true;
-  }
+  writeRunMetadata(fileContext.runState, fileContext.allureRuntime);
 
-  if (!fileContext.runState.categoriesWritten && fileContext.runtime.categories !== undefined) {
-    fileContext.runtime.writeCategoriesDefinitions();
-    fileContext.runState.categoriesWritten = true;
-  }
   fileContext.runFinished = true;
+};
+
+export const finishRunState = (runState: BunRunState) => {
+  writeRunMetadata(runState, runState.allureRuntime);
 };

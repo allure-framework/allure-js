@@ -150,6 +150,90 @@ bunIt("supports conditional and failing Bun modifier factories", async () => {
   );
 });
 
+bunIt("fails fast for Bun concurrent mode before tests execute", async () => {
+  const { tests, exitCode, stdout, stderr } = await runBunInlineTest(
+    {
+      "sample.test.ts": `
+        import { expect, test } from "bun:test";
+
+        test("first concurrent candidate", async () => {
+          await new Promise((resolve) => setTimeout(resolve, 10));
+          expect(true).toBe(true);
+        });
+
+        test("second concurrent candidate", async () => {
+          await new Promise((resolve) => setTimeout(resolve, 10));
+          expect(true).toBe(true);
+        });
+      `,
+    },
+    {
+      args: ["--concurrent"],
+    },
+  );
+
+  expect(exitCode).toBe(1);
+  expect(tests).toHaveLength(0);
+  expect(`${stdout.join("\n")}\n${stderr.join("\n")}`).toContain("allure-bun does not support concurrent tests");
+  expect(`${stdout.join("\n")}\n${stderr.join("\n")}`).not.toContain("(pass)");
+});
+
+bunIt("fails fast for randomized Bun order before tests execute", async () => {
+  const { tests, exitCode, stdout, stderr } = await runBunInlineTest(
+    {
+      "sample.test.ts": `
+        import { expect, test } from "bun:test";
+
+        test("first random candidate", () => {
+          expect(true).toBe(true);
+        });
+
+        test("second random candidate", () => {
+          expect(true).toBe(true);
+        });
+      `,
+    },
+    {
+      args: ["--randomize"],
+    },
+  );
+
+  expect(exitCode).toBe(1);
+  expect(tests).toHaveLength(0);
+  expect(`${stdout.join("\n")}\n${stderr.join("\n")}`).toContain("allure-bun does not support randomized test order");
+  expect(`${stdout.join("\n")}\n${stderr.join("\n")}`).not.toContain("(pass)");
+});
+
+bunIt("does not report static skipped tests excluded by Bun name pattern", async () => {
+  const { tests, exitCode } = await runBunInlineTest(
+    {
+      "sample.test.ts": `
+        import { expect, test } from "bun:test";
+
+        test.skip("static skipped outside filter", () => {
+          throw new Error("should not run");
+        });
+
+        test("selected by pattern", () => {
+          expect(true).toBe(true);
+        });
+      `,
+    },
+    {
+      args: ["-t", "selected"],
+    },
+  );
+
+  expect(exitCode).toBe(0);
+  expect(tests).toHaveLength(1);
+  expect(getTestByName(tests, "selected by pattern")).toEqual(
+    expect.objectContaining({
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+    }),
+  );
+});
+
 bunIt("supports parameterized Bun test factories", async () => {
   const { tests, exitCode } = await runBunInlineTest({
     "sample.test.ts": `
@@ -196,6 +280,10 @@ bunIt("supports parameterized Bun test factories", async () => {
     expect.objectContaining({
       status: Status.PASSED,
       stage: Stage.FINISHED,
+      parameters: expect.arrayContaining([
+        expect.objectContaining({ name: "arg0", value: "alpha" }),
+        expect.objectContaining({ name: "arg1", value: "1" }),
+      ]),
     }),
   );
   expect(getTestByName(tests, "skip case 2")).toEqual(

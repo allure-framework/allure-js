@@ -1,5 +1,15 @@
-import { CONCURRENT_UNSUPPORTED_MESSAGE } from "./constants.js";
-import { emitStaticTest, ensureCurrentTest, executeHook, executeWrappedTest, finalizeTest } from "./lifecycle.js";
+import type { Parameter } from "allure-js-commons";
+import { serialize } from "allure-js-commons/sdk";
+
+import { CONCURRENT_UNSUPPORTED_MESSAGE, RANDOMIZE_UNSUPPORTED_MESSAGE } from "./constants.js";
+import {
+  emitStaticTest,
+  ensureCurrentTest,
+  executeHook,
+  executeWrappedTest,
+  finalizeTest,
+  finishFileContext,
+} from "./lifecycle.js";
 import {
   combineModes,
   createDescribeBlock,
@@ -7,6 +17,7 @@ import {
   getCallerFilePath,
   getCurrentRegistrationSuite,
   getSuiteMode,
+  isTestSelectedByBunNamePattern,
   isTestSelectedByPlan,
   markSuiteSelected,
   resolveTestBehavior,
@@ -40,6 +51,8 @@ type WrapOptions = {
   allowModifiers: boolean;
 };
 
+const unsupportedModifierMarker = Symbol("allureBunUnsupportedModifier");
+
 const getCallableProp = (source: Record<string, unknown>, key: string) => {
   try {
     const value = source[key];
@@ -49,8 +62,38 @@ const getCallableProp = (source: Record<string, unknown>, key: string) => {
   }
 };
 
+export const isUnsupportedModifier = (value: unknown) =>
+  typeof value === "function" && Boolean((value as unknown as Record<symbol, unknown>)[unsupportedModifierMarker]);
+
 export const throwConcurrentUnsupported = (): never => {
   throw new Error(CONCURRENT_UNSUPPORTED_MESSAGE);
+};
+
+export const throwRandomizeUnsupported = (): never => {
+  throw new Error(RANDOMIZE_UNSUPPORTED_MESSAGE);
+};
+
+const createUnsupportedModifierApi = (name: string) => {
+  const unsupported = (() => {
+    throw new Error(`allure-bun can't preserve ${name} semantics because bun:test did not expose ${name}`);
+  }) as unknown as BunWrappedFn;
+
+  (unsupported as unknown as Record<symbol, boolean>)[unsupportedModifierMarker] = true;
+  unsupported.each = () => {
+    throw new Error(`allure-bun can't preserve ${name}.each semantics because bun:test did not expose ${name}`);
+  };
+
+  return unsupported;
+};
+
+const createUnsupportedModifierFactory = (name: string) => {
+  const unsupported = (() => {
+    throw new Error(`allure-bun can't preserve ${name} semantics because bun:test did not expose ${name}`);
+  }) as unknown as BunWrappedFn;
+
+  (unsupported as unknown as Record<symbol, boolean>)[unsupportedModifierMarker] = true;
+
+  return unsupported;
 };
 
 const createConcurrentUnsupportedApi = () => {
@@ -100,13 +143,47 @@ const registerManualEachCase = (
   return source(title, ...nextRest);
 };
 
-const registerSelectedTest = (fileContext: BunFileContext, name: string, config: TestWrapperConfig) => {
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+};
+
+const getRetryFromRest = (fileContext: BunFileContext, rest: any[]) => {
+  const options = rest.find((value) => isRecord(value) && typeof value.retry === "number");
+
+  return Math.max(0, Math.trunc((options?.retry as number | undefined) ?? fileContext.defaultRetry));
+};
+
+const getEachParameters = (row: ReturnType<typeof normalizeEachRows>[number]): Parameter[] => {
+  if (row.objectValues) {
+    return Object.entries(row.objectValues).map(([name, value]) => ({
+      name,
+      value: serialize(value),
+    }));
+  }
+
+  return row.args.map((value, index) => ({
+    name: `arg${index}`,
+    value: serialize(value),
+  }));
+};
+
+const registerSelectedTest = (
+  fileContext: BunFileContext,
+  name: string,
+  config: TestWrapperConfig,
+  options: {
+    parameters?: Parameter[];
+    retry?: number;
+  } = {},
+) => {
   const parent = getCurrentRegistrationSuite(fileContext);
   const mode = combineModes(getSuiteMode(parent), config.mode);
   const behavior = resolveTestBehavior(mode, config.behavior);
   const test = createTestEntry(name, parent, {
     mode,
     behavior,
+    parameters: options.parameters,
+    retry: options.retry,
   });
 
   if (!isTestSelectedByPlan(fileContext.testPlan, fileContext, test)) {
@@ -128,6 +205,11 @@ const emitStaticSelectedTests = (deps: BunWrapperDeps, fileContext: BunFileConte
   const lifecycleDeps = createLifecycleDeps(deps);
 
   for (const test of tests) {
+    if (!isTestSelectedByBunNamePattern(fileContext, test)) {
+      test.completed = true;
+      continue;
+    }
+
     emitStaticTest(lifecycleDeps, fileContext, test);
   }
 };
@@ -214,7 +296,10 @@ const wrapTestEach = (
     const selectedRows = normalizedRows
       .map((row) => {
         const title = formatEachTitle(name, row);
-        const test = registerSelectedTest(fileContext, title, config);
+        const test = registerSelectedTest(fileContext, title, config, {
+          parameters: getEachParameters(row),
+          retry: getRetryFromRest(fileContext, rest),
+        });
 
         if (!test) {
           return undefined;
@@ -264,7 +349,8 @@ const wrapTestEach = (
       const nextRest = rest.slice();
 
       nextRest[fnIndex] = (...args: any[]) => {
-        const current = selectedRows[runtimeIndex++]?.test;
+        const contextTest = selectedRows.find(({ test }) => test === fileContext.currentTest)?.test;
+        const current = contextTest ?? selectedRows[runtimeIndex++]?.test;
 
         if (!current) {
           throw new Error("allure-bun failed to match a parameterized Bun test invocation");
@@ -329,75 +415,81 @@ export const wrapDescribeCallable = (
     return wrapped;
   }
 
-  // Same fallback strategy as wrapTestCallable: always assign every modifier so that
-  // e.g. describe.only.each(…) never throws even when Bun hasn't attached .only yet.
   const only = getCallableProp(source, "only");
-  wrapped.only = wrapDescribeCallable((only ?? source) as BunWrappedFn, deps, config, {
-    allowModifiers: false,
-  });
-
   const skip = getCallableProp(source, "skip");
-  wrapped.skip = wrapDescribeCallable(
-    (skip ?? source) as BunWrappedFn,
-    deps,
-    {
-      mode: combineModes(config.mode, "skip"),
-    },
-    {
-      allowModifiers: false,
-    },
-  );
-
   const todo = getCallableProp(source, "todo");
-  wrapped.todo = wrapDescribeCallable(
-    (todo ?? source) as BunWrappedFn,
-    deps,
-    {
-      mode: combineModes(config.mode, "todo"),
-    },
-    {
-      allowModifiers: false,
-    },
-  );
-
   const ifFactory = getCallableProp(source, "if");
-  wrapped.if = (condition: boolean) =>
-    wrapDescribeCallable(
-      (ifFactory ? (ifFactory as BunOriginalFn).call(source, condition) : source) as BunWrappedFn,
-      deps,
-      {
-        mode: combineModes(config.mode, condition ? undefined : "skip"),
-      },
-      {
-        allowModifiers: false,
-      },
-    );
-
   const skipIf = getCallableProp(source, "skipIf");
-  wrapped.skipIf = (condition: boolean) =>
-    wrapDescribeCallable(
-      (skipIf ? (skipIf as BunOriginalFn).call(source, condition) : source) as BunWrappedFn,
-      deps,
-      {
-        mode: combineModes(config.mode, condition ? "skip" : undefined),
-      },
-      {
-        allowModifiers: false,
-      },
-    );
-
   const todoIf = getCallableProp(source, "todoIf");
-  wrapped.todoIf = (condition: boolean) =>
-    wrapDescribeCallable(
-      (todoIf ? (todoIf as BunOriginalFn).call(source, condition) : source) as BunWrappedFn,
-      deps,
-      {
-        mode: combineModes(config.mode, condition ? "todo" : undefined),
-      },
-      {
+
+  wrapped.only = only
+    ? wrapDescribeCallable(only as BunWrappedFn, deps, config, {
         allowModifiers: false,
-      },
-    );
+      })
+    : createUnsupportedModifierApi("describe.only");
+  wrapped.skip = skip
+    ? wrapDescribeCallable(
+        skip as BunWrappedFn,
+        deps,
+        {
+          mode: combineModes(config.mode, "skip"),
+        },
+        {
+          allowModifiers: false,
+        },
+      )
+    : createUnsupportedModifierApi("describe.skip");
+  wrapped.todo = todo
+    ? wrapDescribeCallable(
+        todo as BunWrappedFn,
+        deps,
+        {
+          mode: combineModes(config.mode, "todo"),
+        },
+        {
+          allowModifiers: false,
+        },
+      )
+    : createUnsupportedModifierApi("describe.todo");
+  wrapped.if = ifFactory
+    ? (condition: boolean) =>
+        wrapDescribeCallable(
+          (ifFactory as BunOriginalFn).call(source, condition) as BunWrappedFn,
+          deps,
+          {
+            mode: combineModes(config.mode, condition ? undefined : "skip"),
+          },
+          {
+            allowModifiers: false,
+          },
+        )
+    : createUnsupportedModifierFactory("describe.if");
+  wrapped.skipIf = skipIf
+    ? (condition: boolean) =>
+        wrapDescribeCallable(
+          (skipIf as BunOriginalFn).call(source, condition) as BunWrappedFn,
+          deps,
+          {
+            mode: combineModes(config.mode, condition ? "skip" : undefined),
+          },
+          {
+            allowModifiers: false,
+          },
+        )
+    : createUnsupportedModifierFactory("describe.skipIf");
+  wrapped.todoIf = todoIf
+    ? (condition: boolean) =>
+        wrapDescribeCallable(
+          (todoIf as BunOriginalFn).call(source, condition) as BunWrappedFn,
+          deps,
+          {
+            mode: combineModes(config.mode, condition ? "todo" : undefined),
+          },
+          {
+            allowModifiers: false,
+          },
+        )
+    : createUnsupportedModifierFactory("describe.todoIf");
 
   return wrapped;
 };
@@ -411,7 +503,9 @@ export const wrapTestCallable = (
   const wrapped = ((name: string, ...rest: any[]) => {
     const filePath = getCallerFilePath(new Error().stack);
     const fileContext = deps.getFileContext(filePath);
-    const test = registerSelectedTest(fileContext, name, config);
+    const test = registerSelectedTest(fileContext, name, config, {
+      retry: getRetryFromRest(fileContext, rest),
+    });
 
     if (!test) {
       return undefined;
@@ -446,103 +540,106 @@ export const wrapTestCallable = (
     return wrapped;
   }
 
-  // Each modifier is always assigned. When Bun does not expose the modifier on the
-  // source function (e.g. test.only is not yet attached at preload time), we fall back
-  // to `source` itself so the wrapper is always callable and test.only.each(…) never
-  // throws "undefined is not an object". Tests registered via a fallback modifier run
-  // as ordinary tests from Bun's perspective (no Bun-level filtering), but Allure still
-  // tracks them with the correct mode/behavior.
   const only = getCallableProp(source, "only");
-  wrapped.only = wrapTestCallable((only ?? source) as BunWrappedFn, deps, config, {
-    allowModifiers: false,
-  });
-
   const serial = getCallableProp(source, "serial");
-  wrapped.serial = wrapTestCallable((serial ?? source) as BunWrappedFn, deps, config, {
-    allowModifiers: false,
-  });
-
   const skip = getCallableProp(source, "skip");
-  wrapped.skip = wrapTestCallable(
-    (skip ?? source) as BunWrappedFn,
-    deps,
-    {
-      ...config,
-      mode: combineModes(config.mode, "skip"),
-    },
-    {
-      allowModifiers: false,
-    },
-  );
-
   const todo = getCallableProp(source, "todo");
-  wrapped.todo = wrapTestCallable(
-    (todo ?? source) as BunWrappedFn,
-    deps,
-    {
-      ...config,
-      mode: combineModes(config.mode, "todo"),
-    },
-    {
-      allowModifiers: false,
-    },
-  );
-
   const failing = getCallableProp(source, "failing");
-  wrapped.failing = wrapTestCallable(
-    (failing ?? source) as BunWrappedFn,
-    deps,
-    {
-      ...config,
-      behavior: "failing",
-    },
-    {
-      allowModifiers: false,
-    },
-  );
-
   const ifFactory = getCallableProp(source, "if");
-  wrapped.if = (condition: boolean) =>
-    wrapTestCallable(
-      (ifFactory ? (ifFactory as BunOriginalFn).call(source, condition) : source) as BunWrappedFn,
-      deps,
-      {
-        ...config,
-        mode: combineModes(config.mode, condition ? undefined : "skip"),
-      },
-      {
-        allowModifiers: false,
-      },
-    );
-
   const skipIf = getCallableProp(source, "skipIf");
-  wrapped.skipIf = (condition: boolean) =>
-    wrapTestCallable(
-      (skipIf ? (skipIf as BunOriginalFn).call(source, condition) : source) as BunWrappedFn,
-      deps,
-      {
-        ...config,
-        mode: combineModes(config.mode, condition ? "skip" : undefined),
-      },
-      {
-        allowModifiers: false,
-      },
-    );
-
   const todoIf = getCallableProp(source, "todoIf");
-  wrapped.todoIf = (condition: boolean) =>
-    wrapTestCallable(
-      (todoIf ? (todoIf as BunOriginalFn).call(source, condition) : source) as BunWrappedFn,
-      deps,
-      {
-        ...config,
-        mode: combineModes(config.mode, condition ? "todo" : undefined),
-      },
-      {
-        allowModifiers: false,
-      },
-    );
 
+  wrapped.only = only
+    ? wrapTestCallable(only as BunWrappedFn, deps, config, {
+        allowModifiers: false,
+      })
+    : createUnsupportedModifierApi("test.only");
+  wrapped.serial = serial
+    ? wrapTestCallable(serial as BunWrappedFn, deps, config, {
+        allowModifiers: false,
+      })
+    : createUnsupportedModifierApi("test.serial");
+  wrapped.skip = skip
+    ? wrapTestCallable(
+        skip as BunWrappedFn,
+        deps,
+        {
+          ...config,
+          mode: combineModes(config.mode, "skip"),
+        },
+        {
+          allowModifiers: false,
+        },
+      )
+    : createUnsupportedModifierApi("test.skip");
+  wrapped.todo = todo
+    ? wrapTestCallable(
+        todo as BunWrappedFn,
+        deps,
+        {
+          ...config,
+          mode: combineModes(config.mode, "todo"),
+        },
+        {
+          allowModifiers: false,
+        },
+      )
+    : createUnsupportedModifierApi("test.todo");
+  wrapped.failing = failing
+    ? wrapTestCallable(
+        failing as BunWrappedFn,
+        deps,
+        {
+          ...config,
+          behavior: "failing",
+        },
+        {
+          allowModifiers: false,
+        },
+      )
+    : createUnsupportedModifierApi("test.failing");
+  wrapped.if = ifFactory
+    ? (condition: boolean) =>
+        wrapTestCallable(
+          (ifFactory as BunOriginalFn).call(source, condition) as BunWrappedFn,
+          deps,
+          {
+            ...config,
+            mode: combineModes(config.mode, condition ? undefined : "skip"),
+          },
+          {
+            allowModifiers: false,
+          },
+        )
+    : createUnsupportedModifierFactory("test.if");
+  wrapped.skipIf = skipIf
+    ? (condition: boolean) =>
+        wrapTestCallable(
+          (skipIf as BunOriginalFn).call(source, condition) as BunWrappedFn,
+          deps,
+          {
+            ...config,
+            mode: combineModes(config.mode, condition ? "skip" : undefined),
+          },
+          {
+            allowModifiers: false,
+          },
+        )
+    : createUnsupportedModifierFactory("test.skipIf");
+  wrapped.todoIf = todoIf
+    ? (condition: boolean) =>
+        wrapTestCallable(
+          (todoIf as BunOriginalFn).call(source, condition) as BunWrappedFn,
+          deps,
+          {
+            ...config,
+            mode: combineModes(config.mode, condition ? "todo" : undefined),
+          },
+          {
+            allowModifiers: false,
+          },
+        )
+    : createUnsupportedModifierFactory("test.todoIf");
   wrapped.concurrent = createConcurrentUnsupportedApi();
 
   return wrapped;
@@ -606,5 +703,17 @@ export const createSyntheticAfterEach = (fileContext: BunFileContext) => {
     }
 
     finalizeTest(fileContext, currentTest);
+  };
+};
+
+export const createSyntheticAfterAll = (deps: BunWrapperDeps, fileContext: BunFileContext) => {
+  return () => {
+    finishFileContext(
+      {
+        activateFileContext: deps.activateFileContext,
+        throwConcurrentUnsupported,
+      },
+      fileContext,
+    );
   };
 };

@@ -5,6 +5,7 @@ import { relative } from "node:path";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import {
+  type ReporterConfig,
   ReporterRuntime,
   createDefaultWriter,
   getPosixPath,
@@ -23,6 +24,10 @@ import type {
 import { getTestId } from "./utils.js";
 
 let bunTodoModeEnabled: boolean | undefined;
+let bunConcurrentModeEnabled: boolean | undefined;
+let bunRandomizeModeEnabled: boolean | undefined;
+let bunRetryValue: number | undefined;
+let bunTestNamePattern: RegExp | undefined | null;
 
 const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -32,6 +37,85 @@ const hasCliFlag = (value: string[] | string, flag: string) => {
   }
 
   return new RegExp(`(^|\\s)${escapeRegex(flag)}(?=\\s|$)`).test(value);
+};
+
+const getPsCommand = () => {
+  try {
+    return execFileSync("ps", ["-o", "command=", "-p", String(process.pid)], {
+      encoding: "utf8",
+    }).trim();
+  } catch {
+    return "";
+  }
+};
+
+const tokenizeCliCommand = (command: string) => {
+  const tokens: string[] = [];
+  const tokenPattern = /"([^"\\]*(?:\\.[^"\\]*)*)"|'([^'\\]*(?:\\.[^'\\]*)*)'|(\S+)/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = tokenPattern.exec(command))) {
+    tokens.push((match[1] ?? match[2] ?? match[3] ?? "").replace(/\\(["'])/g, "$1"));
+  }
+
+  return tokens;
+};
+
+const getKnownCliArgs = () => [
+  ...process.execArgv,
+  ...process.argv,
+  ...(((globalThis as any).Bun?.argv as string[]) ?? []),
+  ...tokenizeCliCommand(getPsCommand()),
+];
+
+const detectBunCliFlag = (flag: string) => {
+  const knownArgs = getKnownCliArgs();
+
+  if (hasCliFlag(knownArgs, flag)) {
+    return true;
+  }
+
+  try {
+    const procArgs = readFileSync("/proc/self/cmdline", "utf8").split("\u0000").join(" ");
+
+    if (hasCliFlag(procArgs, flag)) {
+      return true;
+    }
+  } catch {
+    // Linux-only procfs is not always available.
+  }
+
+  return false;
+};
+
+const getBunCliOptionValue = (...flags: string[]) => {
+  const knownArgs = getKnownCliArgs();
+
+  for (let i = 0; i < knownArgs.length; i += 1) {
+    const arg = knownArgs[i]!;
+
+    for (const flag of flags) {
+      if (arg === flag) {
+        return knownArgs[i + 1];
+      }
+
+      if (arg.startsWith(`${flag}=`)) {
+        return arg.slice(flag.length + 1);
+      }
+    }
+  }
+
+  return undefined;
+};
+
+const parseIntegerOption = (value: string | undefined) => {
+  if (!value) {
+    return 0;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
 };
 
 const detectBunTodoMode = () => {
@@ -45,39 +129,117 @@ const detectBunTodoMode = () => {
     return bunTodoModeEnabled;
   }
 
-  if (bunTodoModeEnabled !== undefined) {
-    return bunTodoModeEnabled;
+  if (bunTodoModeEnabled === undefined) {
+    bunTodoModeEnabled = detectBunCliFlag("--todo");
   }
 
-  const knownArgs = [...process.execArgv, ...process.argv, ...(((globalThis as any).Bun?.argv as string[]) ?? [])];
+  return bunTodoModeEnabled;
+};
 
-  if (hasCliFlag(knownArgs, "--todo")) {
-    bunTodoModeEnabled = true;
-    return bunTodoModeEnabled;
+export const detectBunConcurrentMode = () => {
+  if (process.env.ALLURE_BUN_CONCURRENT_MODE === "1") {
+    bunConcurrentModeEnabled = true;
+
+    return bunConcurrentModeEnabled;
+  }
+
+  if (process.env.ALLURE_BUN_CONCURRENT_MODE === "0") {
+    bunConcurrentModeEnabled = false;
+
+    return bunConcurrentModeEnabled;
+  }
+
+  if (bunConcurrentModeEnabled === undefined) {
+    bunConcurrentModeEnabled = detectBunCliFlag("--concurrent");
+  }
+
+  return bunConcurrentModeEnabled;
+};
+
+export const detectBunRandomizeMode = () => {
+  if (process.env.ALLURE_BUN_RANDOMIZE_MODE === "1") {
+    bunRandomizeModeEnabled = true;
+
+    return bunRandomizeModeEnabled;
+  }
+
+  if (process.env.ALLURE_BUN_RANDOMIZE_MODE === "0") {
+    bunRandomizeModeEnabled = false;
+
+    return bunRandomizeModeEnabled;
+  }
+
+  if (bunRandomizeModeEnabled === undefined) {
+    bunRandomizeModeEnabled = detectBunCliFlag("--randomize");
+  }
+
+  return bunRandomizeModeEnabled;
+};
+
+const getBunRetryValue = () => {
+  if (process.env.ALLURE_BUN_RETRY) {
+    bunRetryValue = parseIntegerOption(process.env.ALLURE_BUN_RETRY);
+
+    return bunRetryValue;
+  }
+
+  if (bunRetryValue === undefined) {
+    bunRetryValue = parseIntegerOption(getBunCliOptionValue("--retry"));
+  }
+
+  return bunRetryValue;
+};
+
+const getBunTestNamePattern = () => {
+  const pattern = process.env.ALLURE_BUN_TEST_NAME_PATTERN ?? getBunCliOptionValue("--test-name-pattern", "-t");
+
+  if (bunTestNamePattern !== undefined) {
+    return bunTestNamePattern ?? undefined;
+  }
+
+  if (!pattern) {
+    bunTestNamePattern = null;
+
+    return undefined;
   }
 
   try {
-    const procArgs = readFileSync("/proc/self/cmdline", "utf8").split("\u0000").join(" ");
+    bunTestNamePattern = new RegExp(pattern);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("could not parse Bun test name pattern", error);
+    bunTestNamePattern = null;
+  }
 
-    if (hasCliFlag(procArgs, "--todo")) {
-      bunTodoModeEnabled = true;
-      return bunTodoModeEnabled;
+  return bunTestNamePattern ?? undefined;
+};
+
+export const getBunReporterConfig = (): ReporterConfig => {
+  const globalConfig = (globalThis as any).allureBunConfig;
+
+  if (globalConfig && typeof globalConfig === "object") {
+    return globalConfig as ReporterConfig;
+  }
+
+  if (process.env.ALLURE_BUN_CONFIG) {
+    try {
+      return JSON.parse(process.env.ALLURE_BUN_CONFIG) as ReporterConfig;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("could not parse ALLURE_BUN_CONFIG", error);
     }
-  } catch {
-    // Linux-only procfs is not always available.
   }
 
-  try {
-    const command = execFileSync("ps", ["-o", "command=", "-p", String(process.pid)], {
-      encoding: "utf8",
-    }).trim();
+  return {};
+};
 
-    bunTodoModeEnabled = hasCliFlag(command, "--todo");
-    return bunTodoModeEnabled;
-  } catch {
-    bunTodoModeEnabled = false;
-    return bunTodoModeEnabled;
-  }
+const createReporterRuntime = (allureConfig: ReporterConfig) => {
+  const { resultsDir, ...runtimeConfig } = allureConfig;
+
+  return new ReporterRuntime({
+    ...runtimeConfig,
+    writer: createDefaultWriter({ resultsDir: resultsDir ?? process.env.ALLURE_RESULTS_DIR }),
+  });
 };
 
 export const getCallerFilePath = (stack: string | undefined) => {
@@ -113,9 +275,11 @@ export const getCallerFilePath = (stack: string | undefined) => {
   return process.cwd();
 };
 
-export const createRunState = (): BunRunState => ({
-  environmentInfoWritten: false,
-  categoriesWritten: false,
+export const createRunState = (allureConfig: ReporterConfig = getBunReporterConfig()): BunRunState => ({
+  allureRuntime: createReporterRuntime(allureConfig),
+  allureConfig,
+  allureEnvironmentInfoWritten: false,
+  allureCategoriesWritten: false,
 });
 
 export const createFileContext = (filePath: string, runState: BunRunState): BunFileContext => {
@@ -124,15 +288,15 @@ export const createFileContext = (filePath: string, runState: BunRunState): BunF
     hasSelectedTests: false,
   };
   const testPath = relative(process.cwd(), filePath);
-  const runtime = new ReporterRuntime({
-    writer: createDefaultWriter({ resultsDir: process.env.ALLURE_RESULTS_DIR }),
-  });
+  const allureRuntime = createReporterRuntime(runState.allureConfig);
 
   return {
-    runtime,
+    allureRuntime,
     runState,
     testPath,
     testPlan: parseTestPlan(),
+    defaultRetry: getBunRetryValue(),
+    testNamePattern: getBunTestNamePattern(),
     todoModeEnabled: detectBunTodoMode(),
     rootDescribeBlock,
     scopes: [],
@@ -141,7 +305,9 @@ export const createFileContext = (filePath: string, runState: BunRunState): BunF
     activeSuites: [],
     tests: [],
     nextPendingTestIndex: 0,
+    nextRetryTest: undefined,
     afterEachHookRegistered: false,
+    afterAllHookRegistered: false,
     rootScopeActive: false,
     runFinished: false,
   };
@@ -168,10 +334,16 @@ export const createTestEntry = (
   options: {
     mode?: BunStaticMode;
     behavior: BunTestBehavior;
+    parameters?: BunRegisteredTest["parameters"];
+    retry?: number;
   },
 ): BunRegisteredTest => ({
   name,
   parent,
+  parameters: options.parameters ?? [],
+  retry: options.retry ?? 0,
+  attempt: 0,
+  startedAttempts: 0,
   errors: [],
   startedAt: 0,
   mode: options.mode,
@@ -286,4 +458,23 @@ export const isTestSelectedByPlan = (
   const fullName = getRegisteredTestFullName(fileContext, test);
 
   return includedInTestPlan(testPlan, { fullName, tags: [test.name] });
+};
+
+export const isTestSelectedByBunNamePattern = (
+  fileContext: BunFileContext,
+  test: Pick<BunRegisteredTest, "name" | "parent">,
+) => {
+  if (!fileContext.testNamePattern) {
+    return true;
+  }
+
+  fileContext.testNamePattern.lastIndex = 0;
+
+  if (fileContext.testNamePattern.test(test.name)) {
+    return true;
+  }
+
+  fileContext.testNamePattern.lastIndex = 0;
+
+  return fileContext.testNamePattern.test(getRegisteredTestFullName(fileContext, test));
 };
