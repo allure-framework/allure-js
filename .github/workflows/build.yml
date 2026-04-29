@@ -90,7 +90,7 @@ jobs:
     name: "Test ${{ matrix.suite.id }} (${{ matrix.node-version }}, ${{ matrix.os }})"
     runs-on: ${{ matrix.os }}
     env:
-      ALLURE_MATRIX_ENV: ${{ matrix.os }}-node-${{ matrix.node-version }}-${{ matrix.suite.id }}
+      ALLURE_MATRIX_ENV: ${{ matrix.os }}-node-${{ matrix.node-version }}
       ALLURE_DUMP_NAME: allure-results-${{ matrix.os }}-node${{ matrix.node-version }}-${{ matrix.suite.id }}
     strategy:
       fail-fast: false
