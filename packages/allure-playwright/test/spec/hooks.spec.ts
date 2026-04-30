@@ -303,7 +303,7 @@ it("should hook steps have attachments", async () => {
   ]);
 });
 
-it("should not loose tests metadata when when there are hooks in the test", async () => {
+it("keeps hook metadata without rendering empty hook sections", async () => {
   const results = await runPlaywrightInlineTest({
     "sample.test.js": `
        import test from '@playwright/test';
@@ -325,10 +325,29 @@ it("should not loose tests metadata when when there are hooks in the test", asyn
          await allure.label("hook", "4");
        });
 
-       test("should contain label", async ({ page }) => {
+       test("should contain label", async () => {
          await allure.label("hook", "5");
        });
      `,
+    "playwright.config.js": `
+       module.exports = {
+         reporter: [
+           [
+             require.resolve("allure-playwright"),
+             {
+               resultsDir: "./allure-results",
+               detail: false,
+             },
+           ],
+           ["dot"],
+         ],
+         projects: [
+           {
+             name: "project",
+           },
+         ],
+       };
+    `,
   });
 
   expect(results.tests).toHaveLength(1);
@@ -350,23 +369,233 @@ it("should not loose tests metadata when when there are hooks in the test", asyn
         name: "hook",
         value: "4",
       },
-      {
-        name: "hook",
-        value: "5",
-      },
     ]),
   );
-  expect(results.tests[0].steps).toHaveLength(2);
-  expect(results.tests[0].steps).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining({
-        name: "Before Hooks",
-      }),
-      expect.objectContaining({
-        name: "After Hooks",
-      }),
+  expect(results.tests[0].steps).toEqual([]);
+});
+
+it("applies beforeEach runtime metadata without creating noisy hook steps when detail is false", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.ts": `
+      import { test, expect } from '@playwright/test';
+      import * as allure from 'allure-js-commons';
+
+      test.beforeEach(async () => {
+        await allure.epic('epic');
+        await allure.feature('feature');
+        await allure.suite('suite');
+        await allure.parentSuite('parentSuite');
+        await allure.tms('tms1');
+        await allure.tms('tms2');
+        await allure.link('https://example.com', 'link');
+      });
+
+      test('shows metadata silently', async () => {
+        expect(true).toBe(true);
+      });
+    `,
+    "playwright.config.js": `
+      module.exports = {
+        reporter: [
+          [
+            require.resolve("allure-playwright"),
+            {
+              resultsDir: "./allure-results",
+              detail: false,
+            },
+          ],
+          ["dot"],
+        ],
+        projects: [
+          {
+            name: "project",
+          },
+        ],
+      };
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0]).toMatchObject({
+    name: "shows metadata silently",
+    status: Status.PASSED,
+    labels: expect.arrayContaining([
+      { name: "epic", value: "epic" },
+      { name: "feature", value: "feature" },
+      { name: "parentSuite", value: "parentSuite" },
+      { name: "suite", value: "suite" },
     ]),
-  );
+    links: expect.arrayContaining([
+      expect.objectContaining({ type: "tms", url: "tms1" }),
+      expect.objectContaining({ type: "tms", url: "tms2" }),
+      expect.objectContaining({ name: "link", url: "https://example.com" }),
+    ]),
+    steps: [],
+  });
+});
+
+it("keeps real hook steps while filtering runtime metadata transport steps", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.ts": `
+      import { test, expect } from '@playwright/test';
+      import * as allure from 'allure-js-commons';
+
+      test.beforeEach(async () => {
+        await allure.epic('epic');
+        await test.step('real hook step', async () => {
+        });
+      });
+
+      test('keeps real hook step', async () => {
+        expect(true).toBe(true);
+      });
+    `,
+    "playwright.config.js": `
+      module.exports = {
+        reporter: [
+          [
+            require.resolve("allure-playwright"),
+            {
+              resultsDir: "./allure-results",
+              detail: false,
+            },
+          ],
+          ["dot"],
+        ],
+        projects: [
+          {
+            name: "project",
+          },
+        ],
+      };
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].labels).toEqual(expect.arrayContaining([{ name: "epic", value: "epic" }]));
+  expect(tests[0].steps).toEqual([
+    expect.objectContaining({
+      name: "Before Hooks",
+      steps: [expect.objectContaining({ name: "real hook step" })],
+    }),
+  ]);
+});
+
+it("applies hook step metadata without rendering transport steps when detail is false", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.ts": `
+      import { test, expect } from '@playwright/test';
+      import * as allure from 'allure-js-commons';
+
+      test.beforeEach(async () => {
+        await allure.step('hook step', async (ctx) => {
+          await ctx.displayName('renamed hook step');
+          await ctx.parameter('hook-param', 'hook-value');
+        });
+      });
+
+      test('uses hook step metadata silently', async () => {
+        expect(true).toBe(true);
+      });
+    `,
+    "playwright.config.js": `
+      module.exports = {
+        reporter: [
+          [
+            require.resolve("allure-playwright"),
+            {
+              resultsDir: "./allure-results",
+              detail: false,
+            },
+          ],
+          ["dot"],
+        ],
+        projects: [
+          {
+            name: "project",
+          },
+        ],
+      };
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toEqual([
+    expect.objectContaining({
+      name: "Before Hooks",
+      steps: [
+        expect.objectContaining({
+          name: "renamed hook step",
+          parameters: [expect.objectContaining({ name: "hook-param", value: "hook-value" })],
+          steps: [],
+        }),
+      ],
+    }),
+  ]);
+});
+
+it("keeps real hook attachments even when their names match runtime transport names", async () => {
+  const { tests, attachments } = await runPlaywrightInlineTest({
+    "sample.test.ts": `
+      import { test, expect } from '@playwright/test';
+
+      test.beforeEach(async () => {
+        await test.info().attach("Allure Metadata (metadata)", {
+          body: Buffer.from("hook-data-1"),
+          contentType: "text/plain",
+        });
+        await test.info().attach("Allure Step Metadata", {
+          body: Buffer.from("hook-data-2"),
+          contentType: "text/plain",
+        });
+      });
+
+      test('keeps reserved-name attachments in hooks', async () => {
+        expect(true).toBe(true);
+      });
+    `,
+    "playwright.config.js": `
+      module.exports = {
+        reporter: [
+          [
+            require.resolve("allure-playwright"),
+            {
+              resultsDir: "./allure-results",
+              detail: false,
+            },
+          ],
+          ["dot"],
+        ],
+        projects: [
+          {
+            name: "project",
+          },
+        ],
+      };
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toEqual([
+    expect.objectContaining({
+      name: "Before Hooks",
+      steps: [
+        expect.objectContaining({
+          name: "Allure Metadata (metadata)",
+          attachments: [expect.objectContaining({ name: "Allure Metadata (metadata)", type: "text/plain" })],
+        }),
+        expect.objectContaining({
+          name: "Allure Step Metadata",
+          attachments: [expect.objectContaining({ name: "Allure Step Metadata", type: "text/plain" })],
+        }),
+      ],
+    }),
+  ]);
+
+  const [attachment1] = tests[0].steps[0].steps[0].attachments;
+  const [attachment2] = tests[0].steps[0].steps[1].attachments;
+  expect(Buffer.from(attachments[attachment1.source] as string, "base64").toString("utf8")).toBe("hook-data-1");
+  expect(Buffer.from(attachments[attachment2.source] as string, "base64").toString("utf8")).toBe("hook-data-2");
 });
 
 it("handles test.step inside beforeEach when detail: false", async () => {
@@ -431,6 +660,55 @@ it("handles test.step inside beforeEach when detail: false", async () => {
       }),
     ]),
   );
+});
+
+it("preserves failed hook root when transport-only steps are pruned", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.ts": `
+      import { test, expect } from '@playwright/test';
+
+      test.beforeEach(async () => {
+        await test.info().attach("Allure Metadata (metadata)", {
+          body: Buffer.from(JSON.stringify({ type: "metadata", data: { labels: [{ name: "epic", value: "epic" }] } })),
+          contentType: "application/vnd.allure.message+json",
+        });
+        throw new Error('hook failed');
+      });
+
+      test('never runs', async () => {
+        expect(true).toBe(true);
+      });
+    `,
+    "playwright.config.js": `
+      module.exports = {
+        reporter: [
+          [
+            require.resolve("allure-playwright"),
+            {
+              resultsDir: "./allure-results",
+              detail: false,
+            },
+          ],
+          ["dot"],
+        ],
+        projects: [
+          {
+            name: "project",
+          },
+        ],
+      };
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].labels).toEqual(expect.arrayContaining([{ name: "epic", value: "epic" }]));
+  expect(tests[0].steps).toEqual([
+    expect.objectContaining({
+      name: "Before Hooks",
+      status: Status.FAILED,
+      stage: Stage.FINISHED,
+    }),
+  ]);
 });
 
 it("handles test.step inside afterEach when detail: false", async () => {
