@@ -194,7 +194,7 @@ it("should report failed beforeAll hooks", async () => {
     expect.arrayContaining([
       expect.objectContaining({
         name: "test 1",
-        status: Status.SKIPPED,
+        status: Status.BROKEN,
         stage: Stage.FINISHED,
         statusDetails: expect.objectContaining({
           message: "foo",
@@ -204,7 +204,7 @@ it("should report failed beforeAll hooks", async () => {
 
       expect.objectContaining({
         name: "test 2",
-        status: Status.SKIPPED,
+        status: Status.BROKEN,
         stage: Stage.FINISHED,
         statusDetails: expect.objectContaining({
           message: "foo",
@@ -252,7 +252,7 @@ it("should report failed beforeEach hooks", async () => {
   expect(testResult).toEqual(
     expect.objectContaining({
       name: "sample test",
-      status: Status.SKIPPED,
+      status: Status.BROKEN,
       stage: Stage.FINISHED,
       statusDetails: expect.objectContaining({
         message: "foo",
@@ -278,6 +278,50 @@ it("should report failed beforeEach hooks", async () => {
         ]),
         afters: [],
         children: [testResult.uuid],
+      }),
+    ]),
+  );
+});
+
+it("should report tests as failed on failed assertions in before hooks", async () => {
+  const { tests } = await runJestInlineTest({
+    "sample.test.js": `
+      describe("beforeAll assertion", () => {
+        beforeAll(() => {
+          expect(1).toStrictEqual(2);
+        });
+
+        it("test 1", () => {});
+        it("test 2", () => {});
+      });
+
+      describe("beforeEach assertion", () => {
+        beforeEach(() => {
+          expect(1).toStrictEqual(2);
+        });
+
+        it("test 3", () => {});
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(3);
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "test 1",
+        status: Status.FAILED,
+        stage: Stage.FINISHED,
+      }),
+      expect.objectContaining({
+        name: "test 2",
+        status: Status.FAILED,
+        stage: Stage.FINISHED,
+      }),
+      expect.objectContaining({
+        name: "test 3",
+        status: Status.FAILED,
+        stage: Stage.FINISHED,
       }),
     ]),
   );
