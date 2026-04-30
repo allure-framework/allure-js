@@ -31,6 +31,25 @@ let bunTestNamePattern: RegExp | undefined | null;
 
 const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+const isSafeRegexPattern = (value: string) => {
+  // Keep this conservative: reject overly large or commonly catastrophic constructs.
+  if (value.length > 256) {
+    return false;
+  }
+
+  // Reject nested quantifiers like `(a+)+`, `(.*)+`, etc.
+  if (/\((?:[^()\\]|\\.)*[+*](?:[^()\\]|\\.)*\)[+*{]/.test(value)) {
+    return false;
+  }
+
+  // Reject quantified groups with alternation, a common backtracking hotspot.
+  if (/\((?:[^()\\]|\\.)*\|(?:[^()\\]|\\.)*\)[+*{]/.test(value)) {
+    return false;
+  }
+
+  return true;
+};
+
 const hasCliFlag = (value: string[] | string, flag: string) => {
   if (Array.isArray(value)) {
     return value.includes(flag);
@@ -204,6 +223,13 @@ const getBunTestNamePattern = () => {
   }
 
   try {
+    if (!isSafeRegexPattern(pattern)) {
+      // eslint-disable-next-line no-console
+      console.error("could not parse Bun test name pattern", new Error("unsafe regex pattern"));
+      bunTestNamePattern = null;
+      return undefined;
+    }
+
     bunTestNamePattern = new RegExp(pattern);
   } catch (error) {
     // eslint-disable-next-line no-console
