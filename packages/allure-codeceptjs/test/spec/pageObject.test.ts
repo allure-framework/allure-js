@@ -517,3 +517,99 @@ it("should support nested page object steps", async () => {
     ],
   });
 });
+
+it("should close page object steps before unrelated sibling steps", async () => {
+  const { tests } = await runCodeceptJsInlineTest({
+    "nested/login.test.js": `
+        Feature("login-feature");
+        Scenario("login-scenario1", ({ I, login }) => {
+          login.onMainPage();
+          I.delay(300);
+          login.onMainPage();
+        });
+      `,
+    "codecept.conf.js": `
+        const path = require("node:path");
+        const { setCommonPlugins } = require("@codeceptjs/configure");
+
+        setCommonPlugins();
+
+        exports.config = {
+          tests: "./**/*.test.js",
+          output: path.resolve(__dirname, "./output"),
+          plugins: {
+            allure: {
+              require: require.resolve("allure-codeceptjs"),
+              enabled: true,
+            }
+          },
+          helpers: {
+            CustomHelper: {
+              require: "./helper.js",
+            }
+          },
+          include: {
+            login: './pages/login.js',
+          }
+        };
+      `,
+    "helper.js": `
+        const Helper = require("@codeceptjs/helper");
+
+        class CustomHelper extends Helper {
+          async pass() {
+            await Promise.resolve();
+          }
+
+          async delay(ms) {
+            await new Promise((resolve) => setTimeout(resolve, ms));
+          }
+        }
+
+        module.exports = CustomHelper;
+      `,
+    "pages/login.js": `
+        const { I } = inject();
+
+        module.exports = {
+            onMainPage() {
+                I.pass();
+            }
+        }
+        `,
+  });
+
+  expect(tests).toHaveLength(1);
+  const [tr] = tests;
+  const [firstPageStep, delayStep, secondPageStep] = tr.steps ?? [];
+
+  expect(firstPageStep).toMatchObject({
+    name: "On login: on main page",
+    status: Status.PASSED,
+    steps: [
+      {
+        name: "I pass",
+        status: Status.PASSED,
+      },
+    ],
+  });
+  expect(delayStep).toMatchObject({
+    name: "I delay 300",
+    status: Status.PASSED,
+  });
+  expect(secondPageStep).toMatchObject({
+    name: "On login: on main page",
+    status: Status.PASSED,
+    steps: [
+      {
+        name: "I pass",
+        status: Status.PASSED,
+      },
+    ],
+  });
+
+  expect(firstPageStep.stop).toBeLessThanOrEqual(delayStep.start!);
+  expect(delayStep.stop! - delayStep.start!).toBeGreaterThanOrEqual(250);
+  expect(firstPageStep.stop! - firstPageStep.start!).toBeLessThan(250);
+  expect(secondPageStep.stop! - secondPageStep.start!).toBeLessThan(250);
+});
