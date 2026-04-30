@@ -768,7 +768,7 @@ export class AllureReporter implements ReporterV2 {
     } else {
       const contentType =
         attachment.name === "trace" && attachment.contentType === "application/zip"
-          ? "application/vnd.allure.playwright-trace"
+          ? ContentType.PLAYWRIGHT_TRACE
           : attachment.contentType;
 
       this.allureRuntime!.writeAttachment(testUuid, parentUuid, attachment.name, attachment.path!, {
