@@ -1,26 +1,39 @@
 import { Stage, Status } from "allure-js-commons";
-import type { TestResult } from "allure-js-commons";
 import { expect, it } from "vitest";
 
-import { isBunAvailable, runBunInlineTest } from "../utils.js";
+import { createFileContext, createRunState } from "../../src/state.js";
+import type { BunWrappedFn } from "../../src/types.js";
+import { createWrappedTest } from "../../src/wrappers.js";
+import { runBunInlineTest } from "../utils.js";
+import { bunIt, getTestByName, getTestsByName } from "./helpers.js";
 
-const bunIt = isBunAvailable ? it : it.skip;
+it("resolves native test modifiers lazily from aliases", () => {
+  const registered: string[] = [];
+  const source = (() => undefined) as BunWrappedFn;
+  const alias = (() => undefined) as BunWrappedFn;
+  const aliasOnly = function (this: BunWrappedFn, name: string) {
+    expect(this).toBe(alias);
+    registered.push(name);
+  } as BunWrappedFn;
+  const fileContext = createFileContext("/tmp/lazy-only.test.ts", createRunState());
+  const wrapped = createWrappedTest(
+    source,
+    {
+      activateFileContext: () => {},
+      getFileContext: () => fileContext,
+    },
+    [alias],
+  );
 
-const getTestByName = (tests: TestResult[], name: string) => {
-  const test = tests.find((entry) => entry.name === name);
+  alias.only = aliasOnly;
+  aliasOnly.each = () => {
+    registered.push("native only.each");
+    return () => {};
+  };
+  (wrapped.only as BunWrappedFn).each([["alpha"], ["beta"]])("only %s", () => {});
 
-  expect(test, `Expected Bun result "${name}" to be present`).toBeDefined();
-
-  return test!;
-};
-
-const getTestsByName = (tests: TestResult[], name: string) => {
-  const matches = tests.filter((entry) => entry.name === name);
-
-  expect(matches, `Expected Bun results named "${name}" to be present`).not.toHaveLength(0);
-
-  return matches;
-};
+  expect(registered).toEqual(["only alpha", "only beta"]);
+});
 
 bunIt("supports conditional and failing Bun modifier factories", async () => {
   const { tests, exitCode } = await runBunInlineTest({
@@ -416,15 +429,20 @@ bunIt("supports parameterized Bun describe factories", async () => {
 });
 
 bunIt("supports Bun only.each variants", async () => {
-  const testOnly = await runBunInlineTest({
-    "sample.test.ts": `
+  const testOnly = await runBunInlineTest(
+    {
+      "sample.test.ts": `
       import { expect, test } from "bun:test";
 
       test.only.each([["alpha"], ["beta"]])("only %s", (label) => {
         expect(typeof label).toBe("string");
       });
     `,
-  });
+    },
+    {
+      args: ["--only"],
+    },
+  );
 
   expect(testOnly.tests).toHaveLength(2);
   expect(getTestByName(testOnly.tests, "only alpha")).toEqual(
@@ -440,8 +458,9 @@ bunIt("supports Bun only.each variants", async () => {
     }),
   );
 
-  const describeOnly = await runBunInlineTest({
-    "sample.test.ts": `
+  const describeOnly = await runBunInlineTest(
+    {
+      "sample.test.ts": `
       import { describe, expect, test } from "bun:test";
 
       describe.only.each([[1], [2]])("only suite %i", (value) => {
@@ -450,7 +469,11 @@ bunIt("supports Bun only.each variants", async () => {
         });
       });
     `,
-  });
+    },
+    {
+      args: ["--only"],
+    },
+  );
 
   expect(describeOnly.tests).toHaveLength(2);
   expect(getTestsByName(describeOnly.tests, "runs").map((test) => test.fullName)).toEqual(

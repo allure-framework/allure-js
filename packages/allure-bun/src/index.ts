@@ -18,26 +18,11 @@ import {
   createWrappedDescribe,
   createWrappedHook,
   createWrappedTest,
-  isUnsupportedModifier,
   throwRandomizeUnsupported,
   throwConcurrentUnsupported,
 } from "./wrappers.js";
 
 type BunTestModule = typeof import("bun:test");
-
-const copyMissingProperties = (target: BunWrappedFn, source: BunWrappedFn) => {
-  for (const key of Object.getOwnPropertyNames(source)) {
-    if (key in target && !isUnsupportedModifier((target as Record<string, unknown>)[key])) {
-      continue;
-    }
-
-    const descriptor = Object.getOwnPropertyDescriptor(source, key);
-
-    if (descriptor) {
-      Object.defineProperty(target, key, descriptor);
-    }
-  }
-};
 
 export const installBunModuleMock = (
   bunTest: BunTestModule,
@@ -130,12 +115,8 @@ export const installBunModuleMock = (
   ensureProcessExitHook();
 
   const wrappedDescribe = createWrappedDescribe(originals.describe, { activateFileContext, getFileContext });
-  const wrappedIt = createWrappedTest(originals.it, { activateFileContext, getFileContext });
-  const wrappedTest = createWrappedTest(originals.test, { activateFileContext, getFileContext });
-
-  // Bun exposes `test` and `it` as aliases, but their modifier props are not always symmetrical in CI.
-  copyMissingProperties(wrappedTest, wrappedIt);
-  copyMissingProperties(wrappedIt, wrappedTest);
+  const wrappedIt = createWrappedTest(originals.it, { activateFileContext, getFileContext }, [originals.test]);
+  const wrappedTest = createWrappedTest(originals.test, { activateFileContext, getFileContext }, [originals.it]);
 
   const mock = (bunTest as any).mock as {
     module: (name: string, factory: () => unknown) => void;

@@ -41,29 +41,42 @@ type BunWrapperDeps = {
 type TestWrapperConfig = {
   behavior: BunTestBehavior;
   mode?: BunStaticMode;
+  preferManualEach?: boolean;
 };
 
 type DescribeWrapperConfig = {
   mode?: BunStaticMode;
+  preferManualEach?: boolean;
 };
 
 type WrapOptions = {
   allowModifiers: boolean;
+  modifierSources?: BunWrappedFn[];
 };
 
-const unsupportedModifierMarker = Symbol("allureBunUnsupportedModifier");
-
-const getCallableProp = (source: Record<string, unknown>, key: string) => {
+const getCallableProp = (source: Record<string, unknown>, key: string): BunOriginalFn | undefined => {
   try {
     const value = source[key];
-    return typeof value === "function" ? value : undefined;
+    return typeof value === "function" ? (value as BunOriginalFn) : undefined;
   } catch {
     return undefined;
   }
 };
 
-export const isUnsupportedModifier = (value: unknown) =>
-  typeof value === "function" && Boolean((value as unknown as Record<symbol, unknown>)[unsupportedModifierMarker]);
+const getCallablePropMatch = (sources: BunWrappedFn[], key: string) => {
+  for (const source of sources) {
+    const value = getCallableProp(source, key);
+
+    if (value) {
+      return {
+        owner: source,
+        value,
+      };
+    }
+  }
+
+  return undefined;
+};
 
 export const throwConcurrentUnsupported = (): never => {
   throw new Error(CONCURRENT_UNSUPPORTED_MESSAGE);
@@ -78,7 +91,6 @@ const createUnsupportedModifierApi = (name: string) => {
     throw new Error(`allure-bun can't preserve ${name} semantics because bun:test did not expose ${name}`);
   }) as unknown as BunWrappedFn;
 
-  (unsupported as unknown as Record<symbol, boolean>)[unsupportedModifierMarker] = true;
   unsupported.each = () => {
     throw new Error(`allure-bun can't preserve ${name}.each semantics because bun:test did not expose ${name}`);
   };
@@ -91,9 +103,57 @@ const createUnsupportedModifierFactory = (name: string) => {
     throw new Error(`allure-bun can't preserve ${name} semantics because bun:test did not expose ${name}`);
   }) as unknown as BunWrappedFn;
 
-  (unsupported as unknown as Record<symbol, boolean>)[unsupportedModifierMarker] = true;
-
   return unsupported;
+};
+
+const createLazyModifierApi = (
+  name: string,
+  key: string,
+  sources: BunWrappedFn[],
+  wrap: (source: BunWrappedFn) => BunWrappedFn,
+) => {
+  let cachedOwner: BunWrappedFn | undefined;
+  let cachedSource: BunOriginalFn | undefined;
+  let cachedWrapped: BunWrappedFn | undefined;
+
+  const resolve = () => {
+    const match = getCallablePropMatch(sources, key);
+
+    if (!match) {
+      return createUnsupportedModifierApi(name);
+    }
+
+    if (cachedOwner !== match.owner || cachedSource !== match.value) {
+      cachedOwner = match.owner;
+      cachedSource = match.value;
+      cachedWrapped = wrap(((...args: any[]) => match.value.call(match.owner, ...args)) as BunWrappedFn);
+    }
+
+    return cachedWrapped!;
+  };
+
+  const lazy = ((...args: any[]) => resolve()(...args)) as BunWrappedFn;
+
+  lazy.each = (rows: readonly unknown[]) => (resolve().each as BunOriginalFn)(rows);
+
+  return lazy;
+};
+
+const createLazyModifierFactory = (
+  name: string,
+  key: string,
+  sources: BunWrappedFn[],
+  wrap: (match: { owner: BunWrappedFn; value: BunOriginalFn }, ...args: any[]) => BunWrappedFn,
+) => {
+  return ((...args: any[]) => {
+    const match = getCallablePropMatch(sources, key);
+
+    if (!match) {
+      return createUnsupportedModifierFactory(name)(...args);
+    }
+
+    return wrap(match, ...args);
+  }) as BunWrappedFn;
 };
 
 const createConcurrentUnsupportedApi = () => {
@@ -220,7 +280,7 @@ const wrapDescribeEach = (
   deps: BunWrapperDeps,
   config: DescribeWrapperConfig,
 ) => {
-  const eachFactory = createEachFactory(source, rows);
+  const eachFactory = config.preferManualEach ? undefined : createEachFactory(source, rows);
 
   return ((name: string, fn?: (...args: any[]) => unknown, ...rest: any[]) => {
     if (typeof fn !== "function") {
@@ -322,10 +382,12 @@ const wrapTestEach = (
     const fnIndex = rest.findIndex((value) => typeof value === "function");
     const firstTest = selectedRows[0]!.test;
     const isStaticTest = firstTest.mode === "skip" || (firstTest.behavior === "todo" && !fileContext.todoModeEnabled);
-    const eachFactory = createEachFactory(
-      source,
-      selectedRows.map(({ row }) => row.raw),
-    );
+    const eachFactory = config.preferManualEach
+      ? undefined
+      : createEachFactory(
+          source,
+          selectedRows.map(({ row }) => row.raw),
+        );
 
     if (isStaticTest || fnIndex === -1) {
       const registrationResult = eachFactory
@@ -415,81 +477,91 @@ export const wrapDescribeCallable = (
     return wrapped;
   }
 
-  const only = getCallableProp(source, "only");
-  const skip = getCallableProp(source, "skip");
-  const todo = getCallableProp(source, "todo");
-  const ifFactory = getCallableProp(source, "if");
-  const skipIf = getCallableProp(source, "skipIf");
-  const todoIf = getCallableProp(source, "todoIf");
+  const modifierSources = [source, ...(options.modifierSources ?? [])];
 
-  wrapped.only = only
-    ? wrapDescribeCallable(only as BunWrappedFn, deps, config, {
+  wrapped.only = createLazyModifierApi("describe.only", "only", modifierSources, (modifierSource) =>
+    wrapDescribeCallable(
+      modifierSource,
+      deps,
+      { ...config, preferManualEach: true },
+      {
         allowModifiers: false,
-      })
-    : createUnsupportedModifierApi("describe.only");
-  wrapped.skip = skip
-    ? wrapDescribeCallable(
-        skip as BunWrappedFn,
+      },
+    ),
+  );
+  wrapped.skip = createLazyModifierApi("describe.skip", "skip", modifierSources, (modifierSource) =>
+    wrapDescribeCallable(
+      modifierSource,
+      deps,
+      {
+        mode: combineModes(config.mode, "skip"),
+        preferManualEach: true,
+      },
+      {
+        allowModifiers: false,
+      },
+    ),
+  );
+  wrapped.todo = createLazyModifierApi("describe.todo", "todo", modifierSources, (modifierSource) =>
+    wrapDescribeCallable(
+      modifierSource,
+      deps,
+      {
+        mode: combineModes(config.mode, "todo"),
+        preferManualEach: true,
+      },
+      {
+        allowModifiers: false,
+      },
+    ),
+  );
+  wrapped.if = createLazyModifierFactory("describe.if", "if", modifierSources, (match, condition: boolean) =>
+    wrapDescribeCallable(
+      match.value.call(match.owner, condition) as BunWrappedFn,
+      deps,
+      {
+        mode: combineModes(config.mode, condition ? undefined : "skip"),
+        preferManualEach: true,
+      },
+      {
+        allowModifiers: false,
+      },
+    ),
+  );
+  wrapped.skipIf = createLazyModifierFactory(
+    "describe.skipIf",
+    "skipIf",
+    modifierSources,
+    (match, condition: boolean) =>
+      wrapDescribeCallable(
+        match.value.call(match.owner, condition) as BunWrappedFn,
         deps,
         {
-          mode: combineModes(config.mode, "skip"),
+          mode: combineModes(config.mode, condition ? "skip" : undefined),
+          preferManualEach: true,
         },
         {
           allowModifiers: false,
         },
-      )
-    : createUnsupportedModifierApi("describe.skip");
-  wrapped.todo = todo
-    ? wrapDescribeCallable(
-        todo as BunWrappedFn,
+      ),
+  );
+  wrapped.todoIf = createLazyModifierFactory(
+    "describe.todoIf",
+    "todoIf",
+    modifierSources,
+    (match, condition: boolean) =>
+      wrapDescribeCallable(
+        match.value.call(match.owner, condition) as BunWrappedFn,
         deps,
         {
-          mode: combineModes(config.mode, "todo"),
+          mode: combineModes(config.mode, condition ? "todo" : undefined),
+          preferManualEach: true,
         },
         {
           allowModifiers: false,
         },
-      )
-    : createUnsupportedModifierApi("describe.todo");
-  wrapped.if = ifFactory
-    ? (condition: boolean) =>
-        wrapDescribeCallable(
-          (ifFactory as BunOriginalFn).call(source, condition) as BunWrappedFn,
-          deps,
-          {
-            mode: combineModes(config.mode, condition ? undefined : "skip"),
-          },
-          {
-            allowModifiers: false,
-          },
-        )
-    : createUnsupportedModifierFactory("describe.if");
-  wrapped.skipIf = skipIf
-    ? (condition: boolean) =>
-        wrapDescribeCallable(
-          (skipIf as BunOriginalFn).call(source, condition) as BunWrappedFn,
-          deps,
-          {
-            mode: combineModes(config.mode, condition ? "skip" : undefined),
-          },
-          {
-            allowModifiers: false,
-          },
-        )
-    : createUnsupportedModifierFactory("describe.skipIf");
-  wrapped.todoIf = todoIf
-    ? (condition: boolean) =>
-        wrapDescribeCallable(
-          (todoIf as BunOriginalFn).call(source, condition) as BunWrappedFn,
-          deps,
-          {
-            mode: combineModes(config.mode, condition ? "todo" : undefined),
-          },
-          {
-            allowModifiers: false,
-          },
-        )
-    : createUnsupportedModifierFactory("describe.todoIf");
+      ),
+  );
 
   return wrapped;
 };
@@ -540,106 +612,112 @@ export const wrapTestCallable = (
     return wrapped;
   }
 
-  const only = getCallableProp(source, "only");
-  const serial = getCallableProp(source, "serial");
-  const skip = getCallableProp(source, "skip");
-  const todo = getCallableProp(source, "todo");
-  const failing = getCallableProp(source, "failing");
-  const ifFactory = getCallableProp(source, "if");
-  const skipIf = getCallableProp(source, "skipIf");
-  const todoIf = getCallableProp(source, "todoIf");
+  const modifierSources = [source, ...(options.modifierSources ?? [])];
 
-  wrapped.only = only
-    ? wrapTestCallable(only as BunWrappedFn, deps, config, {
+  wrapped.only = createLazyModifierApi("test.only", "only", modifierSources, (modifierSource) =>
+    wrapTestCallable(
+      modifierSource,
+      deps,
+      { ...config, preferManualEach: true },
+      {
         allowModifiers: false,
-      })
-    : createUnsupportedModifierApi("test.only");
-  wrapped.serial = serial
-    ? wrapTestCallable(serial as BunWrappedFn, deps, config, {
+      },
+    ),
+  );
+  wrapped.serial = createLazyModifierApi("test.serial", "serial", modifierSources, (modifierSource) =>
+    wrapTestCallable(
+      modifierSource,
+      deps,
+      { ...config, preferManualEach: true },
+      {
         allowModifiers: false,
-      })
-    : createUnsupportedModifierApi("test.serial");
-  wrapped.skip = skip
-    ? wrapTestCallable(
-        skip as BunWrappedFn,
-        deps,
-        {
-          ...config,
-          mode: combineModes(config.mode, "skip"),
-        },
-        {
-          allowModifiers: false,
-        },
-      )
-    : createUnsupportedModifierApi("test.skip");
-  wrapped.todo = todo
-    ? wrapTestCallable(
-        todo as BunWrappedFn,
-        deps,
-        {
-          ...config,
-          mode: combineModes(config.mode, "todo"),
-        },
-        {
-          allowModifiers: false,
-        },
-      )
-    : createUnsupportedModifierApi("test.todo");
-  wrapped.failing = failing
-    ? wrapTestCallable(
-        failing as BunWrappedFn,
-        deps,
-        {
-          ...config,
-          behavior: "failing",
-        },
-        {
-          allowModifiers: false,
-        },
-      )
-    : createUnsupportedModifierApi("test.failing");
-  wrapped.if = ifFactory
-    ? (condition: boolean) =>
-        wrapTestCallable(
-          (ifFactory as BunOriginalFn).call(source, condition) as BunWrappedFn,
-          deps,
-          {
-            ...config,
-            mode: combineModes(config.mode, condition ? undefined : "skip"),
-          },
-          {
-            allowModifiers: false,
-          },
-        )
-    : createUnsupportedModifierFactory("test.if");
-  wrapped.skipIf = skipIf
-    ? (condition: boolean) =>
-        wrapTestCallable(
-          (skipIf as BunOriginalFn).call(source, condition) as BunWrappedFn,
-          deps,
-          {
-            ...config,
-            mode: combineModes(config.mode, condition ? "skip" : undefined),
-          },
-          {
-            allowModifiers: false,
-          },
-        )
-    : createUnsupportedModifierFactory("test.skipIf");
-  wrapped.todoIf = todoIf
-    ? (condition: boolean) =>
-        wrapTestCallable(
-          (todoIf as BunOriginalFn).call(source, condition) as BunWrappedFn,
-          deps,
-          {
-            ...config,
-            mode: combineModes(config.mode, condition ? "todo" : undefined),
-          },
-          {
-            allowModifiers: false,
-          },
-        )
-    : createUnsupportedModifierFactory("test.todoIf");
+      },
+    ),
+  );
+  wrapped.skip = createLazyModifierApi("test.skip", "skip", modifierSources, (modifierSource) =>
+    wrapTestCallable(
+      modifierSource,
+      deps,
+      {
+        ...config,
+        mode: combineModes(config.mode, "skip"),
+        preferManualEach: true,
+      },
+      {
+        allowModifiers: false,
+      },
+    ),
+  );
+  wrapped.todo = createLazyModifierApi("test.todo", "todo", modifierSources, (modifierSource) =>
+    wrapTestCallable(
+      modifierSource,
+      deps,
+      {
+        ...config,
+        mode: combineModes(config.mode, "todo"),
+        preferManualEach: true,
+      },
+      {
+        allowModifiers: false,
+      },
+    ),
+  );
+  wrapped.failing = createLazyModifierApi("test.failing", "failing", modifierSources, (modifierSource) =>
+    wrapTestCallable(
+      modifierSource,
+      deps,
+      {
+        ...config,
+        behavior: "failing",
+        preferManualEach: true,
+      },
+      {
+        allowModifiers: false,
+      },
+    ),
+  );
+  wrapped.if = createLazyModifierFactory("test.if", "if", modifierSources, (match, condition: boolean) =>
+    wrapTestCallable(
+      match.value.call(match.owner, condition) as BunWrappedFn,
+      deps,
+      {
+        ...config,
+        mode: combineModes(config.mode, condition ? undefined : "skip"),
+        preferManualEach: true,
+      },
+      {
+        allowModifiers: false,
+      },
+    ),
+  );
+  wrapped.skipIf = createLazyModifierFactory("test.skipIf", "skipIf", modifierSources, (match, condition: boolean) =>
+    wrapTestCallable(
+      match.value.call(match.owner, condition) as BunWrappedFn,
+      deps,
+      {
+        ...config,
+        mode: combineModes(config.mode, condition ? "skip" : undefined),
+        preferManualEach: true,
+      },
+      {
+        allowModifiers: false,
+      },
+    ),
+  );
+  wrapped.todoIf = createLazyModifierFactory("test.todoIf", "todoIf", modifierSources, (match, condition: boolean) =>
+    wrapTestCallable(
+      match.value.call(match.owner, condition) as BunWrappedFn,
+      deps,
+      {
+        ...config,
+        mode: combineModes(config.mode, condition ? "todo" : undefined),
+        preferManualEach: true,
+      },
+      {
+        allowModifiers: false,
+      },
+    ),
+  );
   wrapped.concurrent = createConcurrentUnsupportedApi();
 
   return wrapped;
@@ -649,8 +727,8 @@ export const createWrappedDescribe = (source: BunWrappedFn, deps: BunWrapperDeps
   return wrapDescribeCallable(source, deps, {}, { allowModifiers: true });
 };
 
-export const createWrappedTest = (source: BunWrappedFn, deps: BunWrapperDeps) => {
-  return wrapTestCallable(source, deps, { behavior: "normal" }, { allowModifiers: true });
+export const createWrappedTest = (source: BunWrappedFn, deps: BunWrapperDeps, modifierSources: BunWrappedFn[] = []) => {
+  return wrapTestCallable(source, deps, { behavior: "normal" }, { allowModifiers: true, modifierSources });
 };
 
 export const createWrappedHook = (source: BunOriginalFn, deps: BunWrapperDeps, type: BunHookType) => {
