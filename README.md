@@ -51,6 +51,7 @@ This repository is currently validated in CI on:
 Minimum supported framework versions by package:
 
 - `allure-codeceptjs`: `codeceptjs >= 2.3.6`
+- `allure-bun`: Bun test
 - `allure-cucumberjs`: `@cucumber/cucumber >= 10.8.0`
 - `allure-cypress`: `cypress >= 12.17.4`
 - `allure-jasmine`: `jasmine >= 2.7.0`
@@ -100,6 +101,12 @@ npx allure open ./allure-report
 ![npm](https://img.shields.io/npm/dm/allure-jest.svg) ![npm](https://img.shields.io/npm/v/allure-jest.svg)
 
 [Read more](/packages/allure-jest/README.md)
+
+### Bun
+
+![npm](https://img.shields.io/npm/dm/allure-bun.svg) ![npm](https://img.shields.io/npm/v/allure-bun.svg)
+
+[Read more](/packages/allure-bun/README.md)
 
 ### Jasmine
 

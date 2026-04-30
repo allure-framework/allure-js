@@ -11,6 +11,18 @@ type TestFileWriter = (opts: { allureJestNodePath: string }) => string;
 
 type TestFiles = Record<string, string | TestFileWriter>;
 
+const writeInlineFile = async (testDir: string, testFile: string, content: string) => {
+  const testFilePath = join(testDir, testFile);
+
+  await mkdir(dirname(testFilePath), { recursive: true });
+  await writeFile(testFilePath, content, "utf8");
+  await attachment(testFile, content, {
+    contentType: "text/plain",
+    encoding: "utf-8",
+    fileExtension: extname(testFile),
+  });
+};
+
 export const runJestInlineTest = async (
   testFiles: TestFiles,
   env?: (testDir: string) => Record<string, string>,
@@ -59,7 +71,6 @@ export const runJestInlineTest = async (
   // eslint-disable-next-line guard-for-in
   for (const testFile in testFilesToWrite) {
     await step(testFile, async () => {
-      const testFilePath = join(testDir, testFile);
       let testFileContent: string;
 
       if (typeof testFilesToWrite[testFile] === "string") {
@@ -70,13 +81,7 @@ export const runJestInlineTest = async (
         });
       }
 
-      await mkdir(dirname(testFilePath), { recursive: true });
-      await writeFile(testFilePath, testFileContent, "utf8");
-      await attachment(testFile, testFileContent, {
-        contentType: "text/plain",
-        encoding: "utf-8",
-        fileExtension: extname(testFile),
-      });
+      await writeInlineFile(testDir, testFile, testFileContent);
     });
   }
 
@@ -108,7 +113,7 @@ export const runJestInlineTest = async (
 
   return new Promise((resolve) => {
     testProcess.on("exit", async () => {
-      await rm(testDir, { recursive: true });
+      await rm(testDir, { recursive: true, maxRetries: 3, retryDelay: 1000 });
       await messageReader.attachResults();
 
       return resolve(messageReader.results);

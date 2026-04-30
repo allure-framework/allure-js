@@ -78,7 +78,7 @@ When the test run completes, the result files will be generated in the `./allure
 
 You may select another location, or further customize the behavior of Allure Jest with [the configuration options](https://allurereport.org/docs/jest-configuration/).
 
-### View the report
+## View the report
 
 Use Allure Report 2:
 

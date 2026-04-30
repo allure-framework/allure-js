@@ -5850,6 +5850,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"allure-bun@workspace:packages/allure-bun":
+  version: 0.0.0-use.local
+  resolution: "allure-bun@workspace:packages/allure-bun"
+  dependencies:
+    "@babel/cli": "npm:^7.28.0"
+    "@babel/core": "npm:^7.28.0"
+    "@babel/preset-env": "npm:^7.28.0"
+    "@babel/preset-typescript": "npm:^7.27.1"
+    "@types/babel__core": "npm:^7.20.5"
+    "@types/babel__preset-env": "npm:^7.10.0"
+    "@types/node": "npm:^20.19.0"
+    allure-commandline: "npm:^2.29.0"
+    allure-js-commons: "workspace:*"
+    allure-vitest: "workspace:*"
+    babel-plugin-add-module-exports: "npm:^1.0.4"
+    npm-run-all2: "npm:^8.0.0"
+    rimraf: "npm:^6.0.0"
+    typescript: "npm:^5.2.2"
+    vitest: "npm:^4.0.18"
+  languageName: unknown
+  linkType: soft
+
 "allure-codeceptjs@workspace:packages/allure-codeceptjs":
   version: 0.0.0-use.local
   resolution: "allure-codeceptjs@workspace:packages/allure-codeceptjs"

@@ -102,6 +102,40 @@ describe("includedInTestPlan", () => {
     const r2 = includedInTestPlan(exampleTestPlan, { tags: ["@allure.id=122"] });
     expect(r2).toBe(false);
   });
+
+  it("should match @allure.id metadata from a full test name", () => {
+    const exampleTestPlan: TestPlanV1 = {
+      version: "1.0",
+      tests: [
+        {
+          id: 77,
+          selector: "Suite > a different test",
+        },
+      ],
+    };
+
+    const result = includedInTestPlan(exampleTestPlan, {
+      fullName: "Suite > case @allure.id=77",
+      tags: ["Suite > case @allure.id=77"],
+    });
+
+    expect(result).toBe(true);
+  });
+
+  it("should match full test names by selector", () => {
+    const exampleTestPlan: TestPlanV1 = {
+      version: "1.0",
+      tests: [
+        {
+          selector: "Suite > selected test",
+        },
+      ],
+    };
+
+    expect(includedInTestPlan(exampleTestPlan, { fullName: "Suite > selected test" })).toBe(true);
+    expect(includedInTestPlan(exampleTestPlan, { fullName: "Suite > other test" })).toBe(false);
+  });
+
   it("should match by id", () => {
     const exampleTestPlan: TestPlanV1 = {
       version: "1.0",
