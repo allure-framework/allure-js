@@ -151,7 +151,7 @@ jobs:
 
       - name: Run suite tests
         run: |
-          npx -y allure@3 run --config ./allurerc.mjs --environment="${{ env.ALLURE_MATRIX_ENV }}" --dump="${{ env.ALLURE_DUMP_NAME }}" --rerun 2 -- node ./scripts/ci/run-suite.mjs test ${{ matrix.suite.id }}
+          yarn allure run --config ./allurerc.mjs --environment="${{ env.ALLURE_MATRIX_ENV }}" --dump="${{ env.ALLURE_DUMP_NAME }}" --rerun 2 -- node ./scripts/ci/run-suite.mjs test ${{ matrix.suite.id }}
 
       - name: Upload test results
         if: always()
@@ -179,6 +179,11 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 20
+          cache: "yarn"
+
+      - name: yarn install
+        run: |
+          yarn install --immutable --immutable-cache
 
       - name: Download Allure dumps
         uses: actions/download-artifact@v6
@@ -189,8 +194,18 @@ jobs:
           merge-multiple: true
 
       - name: Generate Allure report
+        id: generate-report
         run: |
-          npx -y allure@3 generate --config ./allurerc.mjs --dump="allure-results-*.zip" --output=./out/allure-report
+          yarn allure generate --config ./allurerc.mjs --dump="allure-results-*.zip" --output=./out/allure-report
+
+      - name: Upload Allure logs
+        if: failure() && steps.generate-report.outcome == 'failure'
+        uses: actions/upload-artifact@v7
+        with:
+          name: allure-report-logs
+          if-no-files-found: ignore
+          retention-days: 7
+          path: /home/runner/.allure/logs/
 
       - name: Post Allure summary
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false
