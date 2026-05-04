@@ -237,16 +237,16 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       const testUuid = this.runContext.executables.pop();
 
       if (testUuid) {
-        const { details } = this.#statusAndDetails(test.errors);
+        const { status, details } = this.#statusAndDetails(test.errors);
         let tr: TestResult | undefined;
         this.runtime.updateTest(testUuid, (result) => {
           tr = result;
         });
-        // hook failure, finish as skipped
+        // hook failure, finish with the status reported by Jest
         if (tr?.status === undefined && tr?.stage === Stage.RUNNING) {
           this.runtime.updateTest(testUuid, (result) => {
             result.stage = Stage.FINISHED;
-            result.status = Status.SKIPPED;
+            result.status = status;
             result.statusDetails = {
               ...result.statusDetails,
               ...details,
