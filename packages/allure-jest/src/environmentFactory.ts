@@ -6,7 +6,12 @@ import type { Circus } from "@jest/types";
 import * as allure from "allure-js-commons";
 import { Stage, Status, type StatusDetails, type TestResult } from "allure-js-commons";
 import { type RuntimeMessage, type TestPlanV1, serialize } from "allure-js-commons/sdk";
-import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
+import {
+  extractMetadataFromString,
+  getMessageAndTraceFromError,
+  getStatusFromError,
+  isPromise,
+} from "allure-js-commons/sdk";
 import {
   ReporterRuntime,
   createDefaultWriter,
@@ -45,6 +50,30 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     constructor(config: AllureJestConfig | AllureJestProjectConfig, context: EnvironmentContext) {
       super(config as JestEnvironmentConfig, context);
 
+      const handleTestEvent = this.handleTestEvent?.bind(this) as
+        | ((event: Circus.Event, state: Circus.State) => void | PromiseLike<void>)
+        | undefined;
+
+      // Preserve any event handler defined by the base or custom environment.
+      this.handleTestEvent = (event: Circus.Event, state: Circus.State) => {
+        const handleAllureEvent = () => this.#handleTestEvent(event, state);
+
+        // Keep Allure's lifecycle in sync even if the custom environment fails,
+        // then rethrow the original error so Jest keeps its native behavior.
+        try {
+          const result = handleTestEvent?.(event, state);
+
+          if (isPromise(result)) {
+            return Promise.resolve(result).finally(handleAllureEvent);
+          }
+        } catch (error) {
+          handleAllureEvent();
+          throw error;
+        }
+
+        handleAllureEvent();
+      };
+
       const projectConfig = "projectConfig" in config ? config.projectConfig : config;
       const { resultsDir, ...restConfig } = projectConfig?.testEnvironmentOptions || {};
 
@@ -81,7 +110,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       }
     }
 
-    handleTestEvent = (event: Circus.Event) => {
+    #handleTestEvent(event: Circus.Event, state: Circus.State) {
       switch (event.name) {
         case "hook_start":
           this.#handleHookStart(event.hook);
@@ -125,7 +154,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         default:
           break;
       }
-    };
+    }
 
     #getTestFullName(test: Circus.TestEntry, testTitle: string = test.name) {
       const newTestSuitePath = getTestPath(test.parent);

@@ -7,7 +7,7 @@ import { attachment, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader, getPosixPath } from "allure-js-commons/sdk/reporter";
 
-type TestFileWriter = (opts: { allureJestNodePath: string }) => string;
+type TestFileWriter = (opts: { allureJestFactoryPath: string; allureJestNodePath: string }) => string;
 
 type TestFiles = Record<string, string | TestFileWriter>;
 
@@ -31,7 +31,9 @@ export const runJestInlineTest = async (
   const testDir = join(__dirname, "fixtures", randomUUID());
   const configFileName = "jest.config.js";
   const configFilePath = join(testDir, configFileName);
+  const allureJestFactory = require.resolve("allure-jest/factory");
   const allureJestNode = require.resolve("allure-jest/node");
+  const allureJestFactoryPath = getPosixPath(relative(testDir, allureJestFactory));
   const allureJestNodePath = getPosixPath(relative(testDir, allureJestNode));
   const testFilesToWrite: TestFiles = {
     [configFileName]: `
@@ -77,6 +79,7 @@ export const runJestInlineTest = async (
         testFileContent = testFilesToWrite[testFile] as string;
       } else {
         testFileContent = (testFilesToWrite[testFile] as TestFileWriter)({
+          allureJestFactoryPath,
           allureJestNodePath,
         });
       }
