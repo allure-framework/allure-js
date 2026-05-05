@@ -51,7 +51,7 @@ This repository is currently validated in CI on:
 Minimum supported framework versions by package:
 
 - `allure-codeceptjs`: `codeceptjs >= 2.3.6`
-- `allure-bun`: Bun test
+- `allure-bun`: `Bun test >= 1.3.11`
 - `allure-cucumberjs`: `@cucumber/cucumber >= 10.8.0`
 - `allure-cypress`: `cypress >= 12.17.4`
 - `allure-jasmine`: `jasmine >= 2.7.0`
