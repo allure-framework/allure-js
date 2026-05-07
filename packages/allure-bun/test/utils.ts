@@ -123,6 +123,7 @@ export const runBunInlineTest = async (
   const packagesDir = join(__dirname, "..", "..");
   const allureJsCommonsDistDir = join(packagesDir, "allure-js-commons", "dist", "esm");
   const allureJsCommonsPath = getPosixPath(join(allureJsCommonsDistDir, "index.js"));
+  const allureJsCommonsSyncPath = getPosixPath(join(allureJsCommonsDistDir, "sync.js"));
   const allureJsCommonsSdkPath = getPosixPath(join(allureJsCommonsDistDir, "sdk", "index.js"));
   const allureJsCommonsReporterPath = getPosixPath(join(allureJsCommonsDistDir, "sdk", "reporter", "index.js"));
   const allureJsCommonsRuntimePath = getPosixPath(join(allureJsCommonsDistDir, "sdk", "runtime", "index.js"));
@@ -137,6 +138,7 @@ preload = ["./preload.ts"]
 import { mock } from "bun:test";
 
 mock.module("allure-js-commons", () => import("${allureJsCommonsPath}"));
+mock.module("allure-js-commons/sync", () => import("${allureJsCommonsSyncPath}"));
 mock.module("allure-js-commons/sdk", () => import("${allureJsCommonsSdkPath}"));
 mock.module("allure-js-commons/sdk/reporter", () => import("${allureJsCommonsReporterPath}"));
 mock.module("allure-js-commons/sdk/runtime", () => import("${allureJsCommonsRuntimePath}"));
