@@ -76,6 +76,8 @@ export class AllureReporter implements ReporterV2 {
   private readonly attachmentTargets: Map<string, AttachmentTarget[]> = new Map();
   private beforeHooksStepsStack: Map<string, ShallowStepsStack> = new Map();
   private afterHooksStepsStack: Map<string, ShallowStepsStack> = new Map();
+  private pendingAttachmentTasks: Map<string, Promise<void>[]> = new Map();
+  private readonly attachmentTargetByStep = new WeakMap<TestStep, AttachmentTarget>();
   private readonly pwStepUuid = new WeakMap<TestStep, string>();
   private readonly testPlan = parseTestPlan();
 
@@ -296,6 +298,257 @@ export class AllureReporter implements ReporterV2 {
     return stack;
   }
 
+  private queueAttachmentTask(testId: string, task: Promise<void>) {
+    const tasks = this.pendingAttachmentTasks.get(testId) ?? [];
+    tasks.push(task);
+    this.pendingAttachmentTasks.set(testId, tasks);
+  }
+
+  private async flushAttachmentTasks(testId: string) {
+    const tasks = this.pendingAttachmentTasks.get(testId) ?? [];
+
+    this.pendingAttachmentTasks.delete(testId);
+
+    if (tasks.length > 0) {
+      await Promise.all(tasks);
+    }
+  }
+
+  private recordAttachmentTarget(testId: string, target: AttachmentTarget) {
+    const targets = this.attachmentTargets.get(testId) ?? [];
+    targets.push(target);
+    this.attachmentTargets.set(testId, targets);
+  }
+
+  private getHookStepsStack(testId: string, hookStep: AttachStack) {
+    return hookStep.hookScope === "before"
+      ? this.beforeHooksStepsStack.get(testId)
+      : this.afterHooksStepsStack.get(testId);
+  }
+
+  private removeHookAttachmentPlaceholder(steps: StepResult[], stepUuid: string): boolean {
+    const index = steps.findIndex((step) => step.uuid === stepUuid);
+
+    if (index !== -1) {
+      steps.splice(index, 1);
+      return true;
+    }
+
+    for (const step of steps) {
+      if (this.removeHookAttachmentPlaceholder(step.steps, stepUuid)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private addAttachmentToHookStep(
+    test: TestCase,
+    hookStep: AttachStack,
+    attachment: { name: string; contentType: string; path?: string; body?: Buffer },
+  ) {
+    const targetStack = this.getHookStepsStack(test.id, hookStep);
+
+    if (!targetStack) {
+      return;
+    }
+
+    const stepResult = targetStack.findStepByUuid(hookStep.uuid);
+
+    if (!stepResult) {
+      return;
+    }
+
+    const fileName = targetStack.addAttachment(attachment, this.allureRuntime!.writer);
+    stepResult.attachments.push({
+      name: attachment.name,
+      type: attachment.contentType,
+      source: fileName,
+    });
+  }
+
+  private addRuntimeAttachmentToHookStack(
+    targetStack: ShallowStepsStack,
+    attachment: { name: string; contentType: string; path?: string; body?: Buffer },
+    options?: { wrapInStep?: boolean; timestamp?: number },
+  ) {
+    const currentStep = targetStack.currentStep();
+
+    if (!currentStep) {
+      return;
+    }
+
+    const addAttachment = (stepResult: StepResult) => {
+      const fileName = targetStack.addAttachment(attachment, this.allureRuntime!.writer);
+      stepResult.attachments.push({
+        name: attachment.name,
+        type: attachment.contentType,
+        source: fileName,
+      });
+    };
+
+    if (options?.wrapInStep) {
+      targetStack.startStep({
+        name: attachment.name,
+        start: options.timestamp,
+      });
+      addAttachment(targetStack.currentStep()!);
+      targetStack.stopStep({ stop: options.timestamp });
+      return;
+    }
+
+    addAttachment(currentStep);
+  }
+
+  private processHookRuntimeMessage(
+    test: TestCase,
+    testUuid: string,
+    hookStep: AttachStack,
+    attachment: { name: string; contentType: string; path?: string; body?: Buffer },
+  ) {
+    if (!attachment.body) {
+      return false;
+    }
+
+    const targetStack = this.getHookStepsStack(test.id, hookStep);
+
+    if (!targetStack) {
+      return false;
+    }
+
+    this.removeHookAttachmentPlaceholder(targetStack.steps, hookStep.uuid);
+
+    const message = JSON.parse(attachment.body.toString()) as RuntimeMessage;
+
+    switch (message.type) {
+      case "step_start":
+        targetStack.startStep({ ...message.data });
+        return true;
+      case "step_stop": {
+        const currentStep = targetStack.currentStep();
+
+        if (!currentStep) {
+          return false;
+        }
+
+        targetStack.updateStep((stepResult) => {
+          if (message.data.status && !stepResult.status) {
+            stepResult.status = message.data.status;
+          }
+
+          if (message.data.statusDetails) {
+            stepResult.statusDetails = { ...stepResult.statusDetails, ...message.data.statusDetails };
+          }
+        });
+        targetStack.stopStep({ stop: message.data.stop });
+        return true;
+      }
+      case "step_metadata": {
+        const currentStep = targetStack.currentStep();
+
+        if (!currentStep) {
+          return false;
+        }
+
+        if (message.data.name) {
+          currentStep.name = message.data.name;
+        }
+
+        currentStep.parameters.push(...(message.data.parameters ?? []));
+        return true;
+      }
+      case "attachment_content":
+        this.addRuntimeAttachmentToHookStack(
+          targetStack,
+          {
+            name: message.data.name,
+            body: Buffer.from(message.data.content, message.data.encoding),
+            contentType: message.data.contentType,
+          },
+          {
+            wrapInStep: message.data.wrapInStep,
+            timestamp: message.data.timestamp,
+          },
+        );
+        return true;
+      case "attachment_path":
+        this.addRuntimeAttachmentToHookStack(
+          targetStack,
+          {
+            name: message.data.name,
+            path: message.data.path,
+            contentType: message.data.contentType,
+          },
+          {
+            wrapInStep: message.data.wrapInStep,
+            timestamp: message.data.timestamp,
+          },
+        );
+        return true;
+      default:
+        this.queueAttachmentTask(test.id, this.processAttachment(testUuid, undefined, attachment));
+        return true;
+    }
+  }
+
+  private shouldProcessAttachmentAtTestEnd(attachment: { name: string; contentType: string; path?: string }) {
+    if (attachment.name.match(diffEndRegexp)) {
+      return true;
+    }
+
+    if (attachment.contentType === "application/vnd.allure.playwright-trace") {
+      return true;
+    }
+
+    return attachment.name === "trace" && attachment.contentType === "application/zip";
+  }
+
+  private processStepEndAttachments(test: TestCase, step: TestStep) {
+    const testUuid = this.allureResultsUuids.get(test.id)!;
+    const stepAttachments = step.attachments ?? [];
+    const stepInfo = this.attachmentTargetByStep.get(step);
+    const hasExplicitParent = Boolean(stepInfo?.hookStep || stepInfo?.stepUuid);
+
+    if (stepAttachments.length === 0) {
+      if (stepInfo) {
+        this.recordAttachmentTarget(test.id, stepInfo);
+      }
+      return;
+    }
+
+    for (const attachment of stepAttachments) {
+      const isRuntimeMessage = attachment.contentType === ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE;
+      const attachmentTarget: AttachmentTarget = {
+        ...stepInfo,
+        name: attachment.name,
+      };
+
+      this.recordAttachmentTarget(test.id, attachmentTarget);
+
+      if (this.shouldProcessAttachmentAtTestEnd(attachment) || (!isRuntimeMessage && !hasExplicitParent)) {
+        continue;
+      }
+
+      attachmentTarget.processedAtStepEnd = true;
+
+      if (stepInfo?.hookStep && isRuntimeMessage) {
+        if (!this.processHookRuntimeMessage(test, testUuid, stepInfo.hookStep, attachment)) {
+          attachmentTarget.processedAtStepEnd = false;
+        }
+        continue;
+      }
+
+      if (stepInfo?.hookStep) {
+        this.addAttachmentToHookStep(test, stepInfo.hookStep, attachment);
+        continue;
+      }
+
+      const attachmentStepUuid = stepInfo?.hookStep?.uuid ?? stepInfo?.stepUuid;
+      this.queueAttachmentTask(test.id, this.processAttachment(testUuid, attachmentStepUuid, attachment));
+    }
+  }
+
   onStepBegin(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
     const isRootBeforeHook = step.title === BEFORE_HOOKS_ROOT_STEP_TITLE;
     const isRootAfterHook = step.title === AFTER_HOOKS_ROOT_STEP_TITLE;
@@ -319,9 +572,10 @@ export class AllureReporter implements ReporterV2 {
 
     if (["test.attach", "attach"].includes(step.category) && !isHookStep) {
       const parent = step.parent ? (this.pwStepUuid.get(step.parent) ?? null) : null;
-      const targets = this.attachmentTargets.get(test.id) ?? [];
-      targets.push({ name: normalizeAttachStepTitle(step.title), stepUuid: parent ?? undefined });
-      this.attachmentTargets.set(test.id, targets);
+      this.attachmentTargetByStep.set(step, {
+        name: normalizeAttachStepTitle(step.title),
+        stepUuid: parent ?? undefined,
+      });
       return;
     }
 
@@ -335,19 +589,21 @@ export class AllureReporter implements ReporterV2 {
         stack.startStep(baseStep);
 
         stack.updateStep((stepResult) => {
-          hookStepWithUuid = { ...step, uuid: stepResult.uuid as string } as AttachStack;
+          hookStepWithUuid = {
+            ...step,
+            uuid: stepResult.uuid as string,
+            hookScope: isBeforeHookDescendant ? "before" : "after",
+          } as AttachStack;
           stepResult.name = normalizeHookTitle(stepResult.name!);
           stepResult.stage = Stage.FINISHED;
         });
         stack.stopStep();
 
-        const targets = this.attachmentTargets.get(test.id) ?? [];
-        targets.push({
+        this.attachmentTargetByStep.set(step, {
           name: attachmentName,
           hookStep: hookStepWithUuid,
           stepUuid: attachmentName === "Allure Step Metadata" ? parentHookStepUuid : undefined,
         });
-        this.attachmentTargets.set(test.id, targets);
         return;
       }
 
@@ -398,8 +654,9 @@ export class AllureReporter implements ReporterV2 {
     if (this.#shouldIgnoreStep(step)) {
       return;
     }
-    // ignore test.attach steps since attachments are already in the report
+
     if (["test.attach", "attach"].includes(step.category)) {
+      this.processStepEndAttachments(test, step);
       return;
     }
     const testUuid = this.allureResultsUuids.get(test.id)!;
@@ -527,17 +784,21 @@ export class AllureReporter implements ReporterV2 {
       const isRuntimeMessage = attachment.contentType === ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE;
       const stepInfo = takeByName(attachment.name);
 
+      if (stepInfo?.processedAtStepEnd) {
+        continue;
+      }
+
       if (isRuntimeMessage) {
         const message = attachment.body ? (JSON.parse(attachment.body.toString()) as RuntimeMessage) : undefined;
 
         if (stepInfo?.hookStep) {
-          const targetStack = isBeforeHookStep(stepInfo.hookStep) ? beforeHooksStack : afterHooksStack;
+          const targetStack = this.getHookStepsStack(test.id, stepInfo.hookStep);
           this.removeStepFromHookStack(targetStack, stepInfo.hookStep.uuid);
         }
 
         if (message?.type === "step_metadata" && stepInfo?.stepUuid) {
           if (stepInfo.hookStep) {
-            const targetStack = isBeforeHookStep(stepInfo.hookStep) ? beforeHooksStack : afterHooksStack;
+            const targetStack = this.getHookStepsStack(test.id, stepInfo.hookStep);
             this.processHookStepMetadataMessage(targetStack, stepInfo.stepUuid, message);
           } else {
             this.processStepMetadataMessage(stepInfo.stepUuid, message);
@@ -551,11 +812,10 @@ export class AllureReporter implements ReporterV2 {
       }
 
       if (stepInfo?.hookStep) {
-        const hookStep = stepInfo.hookStep;
-        const targetStack = isBeforeHookStep(hookStep) ? beforeHooksStack : afterHooksStack;
+        const targetStack = this.getHookStepsStack(test.id, stepInfo.hookStep);
 
         if (targetStack) {
-          const stepResult = targetStack.findStepByUuid(hookStep.uuid);
+          const stepResult = targetStack.findStepByUuid(stepInfo.hookStep.uuid);
           if (stepResult) {
             const fileName = targetStack.addAttachment(attachment, this.allureRuntime!.writer);
             stepResult.attachments.push({
@@ -575,6 +835,8 @@ export class AllureReporter implements ReporterV2 {
 
       await this.processAttachment(testUuid, undefined, attachment);
     }
+
+    await this.flushAttachmentTasks(test.id);
 
     // FIXME: temp logic for labels override, we need it here to keep the reporter compatible with v2 API
     // in next iterations we need to implement the logic for every javascript integration
@@ -603,12 +865,12 @@ export class AllureReporter implements ReporterV2 {
       });
 
       if (beforeHooksStack) {
-        testResult.steps.unshift(...beforeHooksStack.steps);
+        testResult.steps.unshift(...this.pruneEmptyHookRoots(beforeHooksStack.steps));
       }
       this.beforeHooksStepsStack.delete(test.id);
 
       if (afterHooksStack) {
-        testResult.steps.push(...afterHooksStack.steps);
+        testResult.steps.push(...this.pruneEmptyHookRoots(afterHooksStack.steps));
       }
       this.afterHooksStepsStack.delete(test.id);
 
@@ -617,6 +879,7 @@ export class AllureReporter implements ReporterV2 {
     this.allureRuntime!.stopTest(testUuid, { duration: result.duration });
     this.allureRuntime!.writeTest(testUuid);
     this.attachmentTargets.delete(test.id);
+    this.pendingAttachmentTasks.delete(test.id);
   }
 
   async addSkippedResults() {
@@ -656,6 +919,28 @@ export class AllureReporter implements ReporterV2 {
     return false;
   }
 
+  private isEmptyPassedHookRoot(step: StepResult) {
+    if (this.options.detail) {
+      return false;
+    }
+
+    return (
+      (step.name === BEFORE_HOOKS_ROOT_STEP_TITLE || step.name === AFTER_HOOKS_ROOT_STEP_TITLE) &&
+      step.steps.length === 0 &&
+      step.attachments.length === 0 &&
+      step.status === Status.PASSED
+    );
+  }
+
+  private pruneEmptyHookRoots(steps: StepResult[]): StepResult[] {
+    return steps
+      .map((step) => ({
+        ...step,
+        steps: this.pruneEmptyHookRoots(step.steps),
+      }))
+      .filter((step) => !this.isEmptyPassedHookRoot(step));
+  }
+
   private removeStepFromHookStack(stack: ShallowStepsStack | undefined, stepUuid: string) {
     if (!stack) {
       return;
@@ -668,13 +953,7 @@ export class AllureReporter implements ReporterV2 {
           ...step,
           steps: removeRecursively(step.steps),
         }))
-        .filter(
-          (step) =>
-            (step.name !== BEFORE_HOOKS_ROOT_STEP_TITLE && step.name !== AFTER_HOOKS_ROOT_STEP_TITLE) ||
-            step.steps.length > 0 ||
-            step.attachments.length > 0 ||
-            step.status !== Status.PASSED,
-        );
+        .filter((step) => !this.isEmptyPassedHookRoot(step));
     };
 
     stack.steps = removeRecursively(stack.steps);

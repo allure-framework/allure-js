@@ -14,14 +14,18 @@ export interface AllurePlaywrightReporterConfig extends ReporterConfig {
   suiteTitle?: boolean;
 }
 
+export type HookScope = "before" | "after";
+
 export interface AttachStack extends TestStep {
   uuid: string;
+  hookScope: HookScope;
 }
 
 export type AttachmentTarget = {
   name: string;
   stepUuid?: string;
   hookStep?: AttachStack;
+  processedAtStepEnd?: boolean;
 };
 
 export interface ReporterV2 {
