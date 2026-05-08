@@ -80,7 +80,7 @@ export class AllureReporter implements ReporterV2 {
   private readonly testPlan = parseTestPlan();
 
   constructor(config: AllurePlaywrightReporterConfig) {
-    this.options = { suiteTitle: true, detail: true, ...config };
+    this.options = { suiteTitle: true, detail: true, flattenReport: false, ...config };
   }
 
   onConfigure(config: FullConfig): void {
@@ -550,7 +550,7 @@ export class AllureReporter implements ReporterV2 {
         continue;
       }
 
-      if (stepInfo?.hookStep) {
+      if (stepInfo?.hookStep && !this.options.flattenReport) {
         const hookStep = stepInfo.hookStep;
         const targetStack = isBeforeHookStep(hookStep) ? beforeHooksStack : afterHooksStack;
 
@@ -568,12 +568,22 @@ export class AllureReporter implements ReporterV2 {
         continue;
       }
 
+      // flattenReport: true — remove the phantom synthetic step that was created in onStepBegin
+      // so it doesn't appear as an empty step inside the hook hierarchy
+      if (stepInfo?.hookStep) {
+        const targetStack = isBeforeHookStep(stepInfo.hookStep) ? beforeHooksStack : afterHooksStack;
+        this.removeStepFromHookStack(targetStack, stepInfo.hookStep.uuid);
+      }
+
       if (stepInfo?.stepUuid) {
         await this.processAttachment(testUuid, stepInfo.stepUuid, attachment);
         continue;
       }
 
-      await this.processAttachment(testUuid, undefined, attachment);
+      // When flattenReport is enabled, pass null so the attachment is written directly to the
+      // test root (no synthetic step wrapper). Undefined preserves the legacy behaviour of
+      // wrapping in a synthetic step at the current runtime context.
+      await this.processAttachment(testUuid, this.options.flattenReport ? null : undefined, attachment);
     }
 
     // FIXME: temp logic for labels override, we need it here to keep the reporter compatible with v2 API
@@ -778,9 +788,23 @@ export class AllureReporter implements ReporterV2 {
     step.parameters.push(...parameters);
   }
 
+  private startAndStopAttachmentStep(testUuid: string, attachmentStepUuid: string | undefined, name: string) {
+    const parentUuid = this.allureRuntime!.startStep(testUuid, attachmentStepUuid, { name });
+    // only stop if step is created. Step may not be created only if test with specified uuid doesn't exist.
+    // usually, missing test by uuid means we should completely skip result processing;
+    // the later operations are safe and will only produce console warnings
+    if (parentUuid) {
+      this.allureRuntime!.stopStep(parentUuid, undefined);
+    }
+    return parentUuid;
+  }
+
   private async processAttachment(
     testUuid: string,
-    attachmentStepUuid: string | undefined,
+    // null  → write directly to the test root (no synthetic step wrapper)
+    // undefined → wrap in a synthetic step at the current context (legacy behaviour)
+    // string → write inside the specified step
+    attachmentStepUuid: string | null | undefined,
     attachment: {
       name: string;
       contentType: string;
@@ -804,14 +828,9 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    const parentUuid = this.allureRuntime!.startStep(testUuid, attachmentStepUuid, { name: attachment.name });
-
-    // only stop if step is created. Step may not be created only if test with specified uuid doesn't exists.
-    // usually, missing test by uuid means we should completely skip result processing;
-    // the later operations are safe and will only produce console warnings
-    if (parentUuid) {
-      this.allureRuntime!.stopStep(parentUuid, undefined);
-    }
+    // null → attach directly to test root (no synthetic step); undefined/string → wrap in a step
+    const parentUuid =
+      attachmentStepUuid === null ? null : this.startAndStopAttachmentStep(testUuid, attachmentStepUuid, attachment.name);
 
     if (attachment.body) {
       this.allureRuntime!.writeAttachment(testUuid, parentUuid, attachment.name, attachment.body, {
@@ -821,7 +840,7 @@ export class AllureReporter implements ReporterV2 {
       return;
     } else {
       const contentType =
-        attachment.name === "trace" && attachment.contentType === "application/zip"
+        attachment.name === "trace" && attachment.contentType === ContentType.ZIP
           ? ContentType.PLAYWRIGHT_TRACE
           : attachment.contentType;
 
