@@ -6,7 +6,6 @@ import type { SyncTestRuntime } from "allure-js-commons/sdk/runtime";
 import { MessageTestRuntime } from "allure-js-commons/sdk/runtime";
 
 import {
-  getPlaywrightInternals,
   type PlaywrightInternalAttachment,
   type PlaywrightInternalStep,
   type PlaywrightInternalTestInfo,
@@ -22,6 +21,7 @@ const toAttachmentBody = (content: Uint8Array | Buffer | string, encoding?: Buff
 
 export class AllurePlaywrightTestRuntime extends MessageTestRuntime {
   private cachedPlaywrightSyncRuntime?: SyncTestRuntime;
+  #syncStepStack: PlaywrightInternalStep[] = [];
 
   override get sync(): SyncTestRuntime {
     if (!this.cachedPlaywrightSyncRuntime) {
@@ -140,10 +140,13 @@ export class AllurePlaywrightTestRuntime extends MessageTestRuntime {
 
   #attachSyntheticAttachStep(name: string, attachment: PlaywrightInternalAttachment) {
     const info = this.#getInternalTestInfo();
-    const attachStep = info._addStep({
-      category: "test.attach",
-      title: `Attach "${name}"`,
-    });
+    const attachStep = info._addStep(
+      {
+        category: "test.attach",
+        title: `Attach "${name}"`,
+      },
+      this.#currentSyncStep(),
+    );
 
     try {
       info._attach(attachment, attachStep.stepId);
@@ -170,9 +173,12 @@ export class AllurePlaywrightTestRuntime extends MessageTestRuntime {
 
   #stepSync<T>(name: string, body: () => T): T {
     const step = this.#startSyncStep(name);
+    let completed = false;
+
+    this.#syncStepStack.push(step);
 
     try {
-      const result = this.#runInStepZone(step, body);
+      const result = body();
 
       if (isPromise(result)) {
         const error = this.createSyncPromiseError();
@@ -181,36 +187,46 @@ export class AllurePlaywrightTestRuntime extends MessageTestRuntime {
           description: Status.BROKEN,
         });
         step.complete({ error });
+        completed = true;
         throw error;
       }
 
       step.complete({});
+      completed = true;
       return result;
     } catch (error) {
       const runtimeError = error as Error;
       const status = getStatusFromError(runtimeError);
 
-      if (status !== Status.FAILED) {
+      if (!completed && status !== Status.FAILED) {
         step.info.annotations.push({
           type: ALLURE_STEP_STATUS_ANNOTATION,
           description: status,
         });
       }
 
-      step.complete({ error });
+      if (!completed) {
+        step.complete({ error });
+      }
+
       throw error;
+    } finally {
+      this.#syncStepStack.pop();
     }
   }
 
   #startSyncStep(name: string): PlaywrightInternalStep {
-    return this.#getInternalTestInfo()._addStep({
-      category: "test.step",
-      title: name,
-    });
+    return this.#getInternalTestInfo()._addStep(
+      {
+        category: "test.step",
+        title: name,
+      },
+      this.#currentSyncStep(),
+    );
   }
 
-  #runInStepZone<T>(step: PlaywrightInternalStep, body: () => T): T {
-    return getPlaywrightInternals().currentZone().with("stepZone", step).run(body);
+  #currentSyncStep(): PlaywrightInternalStep | undefined {
+    return this.#syncStepStack.at(-1);
   }
 
   #toPlaywrightStepError(error: Error): Error {

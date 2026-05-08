@@ -3,7 +3,12 @@ import { expect, it } from "vitest";
 
 import { runPlaywrightInlineTest } from "../../../utils.js";
 
-it("handles sync steps with nested expect steps and attachments", async () => {
+type RuntimeStep = {
+  name?: string;
+  steps: RuntimeStep[];
+};
+
+it("handles sync steps with nested sync steps, expect steps, and attachments", async () => {
   const { tests, attachments } = await runPlaywrightInlineTest({
     "sample.test.ts": `
       import { test, expect } from "@playwright/test";
@@ -18,6 +23,7 @@ it("handles sync steps with nested expect steps and attachments", async () => {
 
           step("inner", () => {
             expect("abc").toContain("a");
+            attachment("bar.txt", Buffer.from("baz"), { contentType: "text/plain" });
           });
         });
       });
@@ -32,15 +38,20 @@ it("handles sync steps with nested expect steps and attachments", async () => {
     parameters: [{ name: "browser", value: "chromium" }],
   });
 
-  const expectStep = outer!.steps.find((step) => step.name.includes('Expect "toBe"'));
-  expect(expectStep).toBeDefined();
-
   const inner = outer!.steps.find((step) => step.name === "inner");
   expect(inner).toMatchObject({
     status: Status.PASSED,
     stage: Stage.FINISHED,
   });
-  expect(inner!.steps[0].name).toContain('Expect "toContain"');
+  expect(outer!.steps.find((step) => step.name.includes('Expect "toBe"'))).toBeUndefined();
+  expect(inner!.steps.find((step) => step.name.includes('Expect "toContain"'))).toBeUndefined();
+  expect(tests[0].steps.find((step) => step.name.includes('Expect "toBe"'))).toBeDefined();
+  expect(tests[0].steps.find((step) => step.name.includes('Expect "toContain"'))).toBeDefined();
+
+  const innerAttachmentStep = inner!.steps.find((step) => step.name === "bar.txt");
+  expect(innerAttachmentStep).toBeDefined();
+  const [innerAttachmentRef] = innerAttachmentStep!.attachments;
+  expect(Buffer.from(attachments[innerAttachmentRef.source] as string, "base64").toString("utf8")).toBe("baz");
 
   const attachmentStep = outer!.steps.find((step) => step.name === "foo.txt");
   expect(attachmentStep).toBeDefined();
@@ -85,13 +96,75 @@ it("supports sync steps nested inside async runtime steps", async () => {
     status: Status.PASSED,
     stage: Stage.FINISHED,
   });
-  expect(syncInner!.steps.find((step) => step.name.includes('Expect "toBe"'))).toBeDefined();
+  expect(syncInner!.steps.find((step) => step.name.includes('Expect "toBe"'))).toBeUndefined();
+  expect(asyncOuter!.steps.find((step) => step.name.includes('Expect "toBe"'))).toBeDefined();
 
   const syncAttachmentStep = syncInner!.steps.find((step) => step.name === "sync.txt");
   expect(syncAttachmentStep).toBeDefined();
   expect(Buffer.from(attachments[syncAttachmentStep!.attachments[0].source] as string, "base64").toString("utf8")).toBe(
     "sync",
   );
+});
+
+it("keeps mixed async and sync runtime step nesting isolated", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.ts": `
+      import { test } from "@playwright/test";
+      import { step as asyncStep } from "allure-js-commons";
+      import { step as syncStep } from "allure-js-commons/sync";
+
+      test("mixed step tree", async () => {
+        await asyncStep("async step1", async () => {
+          await asyncStep("async step1.1", async () => {
+            syncStep("sync step1.1.1", () => {});
+          });
+
+          syncStep("sync step1.2", () => {
+            syncStep("sync step1.2.1", () => {});
+          });
+
+          await asyncStep("async step1.3", async () => {
+            await asyncStep("async step1.3.1", async () => {});
+            syncStep("sync step1.3.2", () => {});
+          });
+        });
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+
+  const assertPassedStep = (step: RuntimeStep | undefined) => {
+    expect(step).toMatchObject({
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+    });
+    return step!;
+  };
+
+  const step1 = assertPassedStep(tests[0].steps.find((step) => step.name === "async step1"));
+  expect(step1.steps.map((step) => step.name)).toEqual(["async step1.1", "sync step1.2", "async step1.3"]);
+
+  const step11 = assertPassedStep(step1.steps.find((step) => step.name === "async step1.1"));
+  expect(step11.steps.map((step) => step.name)).toEqual(["sync step1.1.1"]);
+
+  const step111 = assertPassedStep(step11.steps.find((step) => step.name === "sync step1.1.1"));
+  expect(step111.steps).toEqual([]);
+
+  const step12 = assertPassedStep(step1.steps.find((step) => step.name === "sync step1.2"));
+  expect(step12.steps.map((step) => step.name)).toEqual(["sync step1.2.1"]);
+
+  const step121 = assertPassedStep(step12.steps.find((step) => step.name === "sync step1.2.1"));
+  expect(step121.steps).toEqual([]);
+
+  const step13 = assertPassedStep(step1.steps.find((step) => step.name === "async step1.3"));
+  expect(step13.steps.map((step) => step.name)).toEqual(["async step1.3.1", "sync step1.3.2"]);
+
+  const step131 = assertPassedStep(step13.steps.find((step) => step.name === "async step1.3.1"));
+  expect(step131.steps).toEqual([]);
+
+  const step132 = assertPassedStep(step13.steps.find((step) => step.name === "sync step1.3.2"));
+  expect(step132.steps).toEqual([]);
 });
 
 it("marks generic sync step errors as broken", async () => {
@@ -139,7 +212,8 @@ it("marks assertion failures inside sync steps as failed", async () => {
     status: Status.FAILED,
     stage: Stage.FINISHED,
   });
-  expect(failedStep!.steps.find((step) => step.name.includes('Expect "toBe"'))).toBeDefined();
+  expect(failedStep!.steps.find((step) => step.name.includes('Expect "toBe"'))).toBeUndefined();
+  expect(tests[0].steps.find((step) => step.name.includes('Expect "toBe"'))).toBeDefined();
 });
 
 it("doesn't infect parent sync steps with handled child step failures", async () => {

@@ -1,5 +1,3 @@
-import { createRequire } from "node:module";
-
 import type { TestInfo } from "@playwright/test";
 
 export type PlaywrightInternalAttachment = {
@@ -31,34 +29,4 @@ export type PlaywrightInternalTestInfo = TestInfo & {
     parentStep?: PlaywrightInternalStep,
   ) => PlaywrightInternalStep;
   _attach: (attachment: PlaywrightInternalAttachment, stepId?: string) => void;
-};
-
-export type PlaywrightInternals = {
-  currentZone: () => {
-    with: (
-      name: string,
-      value: unknown,
-    ) => {
-      run: <T>(cb: () => T) => T;
-    };
-  };
-};
-
-let playwrightInternals: PlaywrightInternals | undefined;
-
-const localRequire = typeof require === "function" ? require : createRequire(`${process.cwd()}/package.json`);
-
-export const getPlaywrightInternals = (): PlaywrightInternals => {
-  if (!playwrightInternals) {
-    const playwrightTestRequire = createRequire(localRequire.resolve("@playwright/test/package.json"));
-    const playwrightPackagePath = playwrightTestRequire.resolve("playwright");
-    const playwrightInternalRequire = createRequire(playwrightPackagePath);
-
-    playwrightInternals = {
-      currentZone: playwrightInternalRequire("playwright-core/lib/utils")
-        .currentZone as PlaywrightInternals["currentZone"],
-    };
-  }
-
-  return playwrightInternals;
 };

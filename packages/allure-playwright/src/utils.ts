@@ -71,9 +71,9 @@ export const getStepStatusData = (
     (annotation) => annotation.type === ALLURE_STEP_STATUS_ANNOTATION && isAllureStepStatus(annotation.description),
   )?.description;
 
-  if (isAllureStepStatus(annotatedStatus)) {
+  if (annotatedStatus !== undefined) {
     return {
-      status: annotatedStatus,
+      status: annotatedStatus as Status,
       statusDetails: step.error ? { ...getMessageAndTraceFromError(step.error) } : undefined,
     };
   }
