@@ -221,7 +221,7 @@ it("reports skipped test steps", async () => {
   ]);
 });
 
-it("propagates skipped status from nested test steps", async () => {
+it("doesn't propagate skipped status from nested test steps", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "a.test.ts": `
       import { test } from '@playwright/test';
@@ -264,7 +264,7 @@ it("propagates skipped status from nested test steps", async () => {
       steps: [
         expect.objectContaining({
           name: "outer step",
-          status: Status.SKIPPED,
+          status: Status.PASSED,
           stage: Stage.FINISHED,
           steps: [
             expect.objectContaining({

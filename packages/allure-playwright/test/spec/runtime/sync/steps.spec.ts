@@ -142,6 +142,38 @@ it("marks assertion failures inside sync steps as failed", async () => {
   expect(failedStep!.steps.find((step) => step.name.includes('Expect "toBe"'))).toBeDefined();
 });
 
+it("doesn't infect parent sync steps with handled child step failures", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.ts": `
+      import { test, expect } from "@playwright/test";
+      import { step } from "allure-js-commons/sync";
+
+      test("steps", async () => {
+        step("outer", () => {
+          try {
+            step("inner", () => {
+              expect(1).toBe(2);
+            });
+          } catch {}
+        });
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  const outer = tests[0].steps.find((step) => step.name === "outer");
+  expect(outer).toMatchObject({
+    status: Status.PASSED,
+    stage: Stage.FINISHED,
+  });
+
+  const inner = outer!.steps.find((step) => step.name === "inner");
+  expect(inner).toMatchObject({
+    status: Status.FAILED,
+    stage: Stage.FINISHED,
+  });
+});
+
 it("rejects promise-returning sync steps", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.ts": `

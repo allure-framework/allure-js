@@ -27,7 +27,6 @@ export type PlaywrightInternalTestInfo = TestInfo & {
     data: {
       category: string;
       title: string;
-      infectParentStepsWithError?: boolean;
     },
     parentStep?: PlaywrightInternalStep,
   ) => PlaywrightInternalStep;

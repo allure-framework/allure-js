@@ -206,7 +206,6 @@ export class AllurePlaywrightTestRuntime extends MessageTestRuntime {
     return this.#getInternalTestInfo()._addStep({
       category: "test.step",
       title: name,
-      infectParentStepsWithError: true,
     });
   }
 
