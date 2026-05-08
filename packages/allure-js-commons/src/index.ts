@@ -32,7 +32,7 @@ export {
   testCaseId,
   tms,
 } from "./facade.js";
-export type { StepContext } from "./facade.js";
+export type { StepContext } from "./sdk/runtime/types.js";
 export type {
   Attachment,
   AttachmentOptions,

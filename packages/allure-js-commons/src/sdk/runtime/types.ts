@@ -8,6 +8,12 @@ import type {
   StatusDetails,
 } from "../../model.js";
 
+export interface StepContext {
+  displayName: (name: string) => void | PromiseLike<void>;
+
+  parameter: (name: string, value: string, mode?: ParameterMode) => void | PromiseLike<void>;
+}
+
 export interface SyncStepContext {
   displayName: (name: string) => void;
 

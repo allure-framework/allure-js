@@ -1,10 +1,12 @@
 import type { Status, StatusDetails } from "./model.js";
 import { ContentType } from "./model.js";
-import { type AttachmentOptions, type Label, type Link, type ParameterMode, type ParameterOptions } from "./model.js";
+import { type AttachmentOptions, type Label, type Link, type ParameterOptions } from "./model.js";
 import { LabelName, LinkType } from "./model.js";
 import { getGlobalTestRuntimeWithAutoconfig } from "./sdk/runtime/runtime.js";
-import type { TestRuntime } from "./sdk/runtime/types.js";
+import type { StepContext, TestRuntime } from "./sdk/runtime/types.js";
 import { isPromise } from "./sdk/utils.js";
+
+export type { StepContext } from "./sdk/runtime/types.js";
 
 type AsyncRuntimeMethod = Exclude<keyof TestRuntime, "sync">;
 
@@ -113,11 +115,6 @@ export const attachmentPath = (
 ) => {
   const opts = typeof options === "string" ? { contentType: options } : options;
   return callRuntimeMethod("attachmentFromPath", name, path, opts);
-};
-
-export type StepContext = {
-  displayName: (name: string) => void | PromiseLike<void>;
-  parameter: (name: string, value: string, mode?: ParameterMode) => void | PromiseLike<void>;
 };
 
 const stepContext: () => StepContext = () => ({
