@@ -1,5 +1,3 @@
-import { createRequire } from "node:module";
-
 import { test } from "@playwright/test";
 import { Status, type AttachmentOptions, type ParameterMode } from "allure-js-commons";
 import { getStatusFromError, isPromise, type RuntimeMessage } from "allure-js-commons/sdk";
@@ -7,67 +5,13 @@ import { ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/sdk/repor
 import type { SyncTestRuntime } from "allure-js-commons/sdk/runtime";
 import { MessageTestRuntime } from "allure-js-commons/sdk/runtime";
 
+import {
+  getPlaywrightInternals,
+  type PlaywrightInternalAttachment,
+  type PlaywrightInternalStep,
+  type PlaywrightInternalTestInfo,
+} from "./playwrightInternals.js";
 import { ALLURE_STEP_STATUS_ANNOTATION } from "./syncAnnotations.js";
-
-type PlaywrightInternalAttachment = {
-  name: string;
-  contentType: string;
-  body?: Buffer;
-  path?: string;
-};
-
-type PlaywrightInternalAnnotation = {
-  type: string;
-  description?: string;
-};
-
-type PlaywrightInternalStep = {
-  stepId: string;
-  info: {
-    annotations: PlaywrightInternalAnnotation[];
-  };
-  complete: (result: { error?: unknown }) => void;
-};
-
-type PlaywrightInternalTestInfo = ReturnType<typeof test.info> & {
-  _addStep: (
-    data: {
-      category: string;
-      title: string;
-      infectParentStepsWithError?: boolean;
-    },
-    parentStep?: PlaywrightInternalStep,
-  ) => PlaywrightInternalStep;
-  _attach: (attachment: PlaywrightInternalAttachment, stepId?: string) => void;
-};
-
-type PlaywrightInternals = {
-  currentZone: () => {
-    with: (
-      name: string,
-      value: unknown,
-    ) => {
-      run: <T>(cb: () => T) => T;
-    };
-  };
-};
-
-let playwrightInternals: PlaywrightInternals | undefined;
-
-const getPlaywrightInternals = (): PlaywrightInternals => {
-  if (!playwrightInternals) {
-    const playwrightTestRequire = createRequire(require.resolve("@playwright/test/package.json"));
-    const playwrightPackagePath = playwrightTestRequire.resolve("playwright");
-    const playwrightInternalRequire = createRequire(playwrightPackagePath);
-
-    playwrightInternals = {
-      currentZone: playwrightInternalRequire("playwright-core/lib/utils")
-        .currentZone as PlaywrightInternals["currentZone"],
-    };
-  }
-
-  return playwrightInternals;
-};
 
 const toAttachmentBody = (content: Uint8Array | Buffer | string, encoding?: BufferEncoding) =>
   content instanceof Uint8Array

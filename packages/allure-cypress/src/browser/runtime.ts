@@ -247,12 +247,8 @@ class AllureCypressTestRuntime implements TestRuntime {
   }
 
   #enqueueMessageAsync(message: CypressMessage): PromiseLike<void> {
-    this.#enqueueMessageSync(message);
-    return Cypress.Promise.resolve();
-  }
-
-  #enqueueMessageSync(message: CypressMessage) {
     enqueueRuntimeMessage(message);
+    return Cypress.Promise.resolve();
   }
 
   #dequeueAllMessages() {
@@ -332,21 +328,21 @@ class AllureCypressTestRuntime implements TestRuntime {
   #createSyncRuntime(): SyncTestRuntime {
     return {
       labels: (...labels) =>
-        this.#enqueueMessageSync({
+        enqueueRuntimeMessage({
           type: "metadata",
           data: {
             labels,
           },
         }),
       links: (...links) =>
-        this.#enqueueMessageSync({
+        enqueueRuntimeMessage({
           type: "metadata",
           data: {
             links,
           },
         }),
       parameter: (name, value, options) =>
-        this.#enqueueMessageSync({
+        enqueueRuntimeMessage({
           type: "metadata",
           data: {
             parameters: [
@@ -359,35 +355,35 @@ class AllureCypressTestRuntime implements TestRuntime {
           },
         }),
       description: (markdown) =>
-        this.#enqueueMessageSync({
+        enqueueRuntimeMessage({
           type: "metadata",
           data: {
             description: markdown,
           },
         }),
       descriptionHtml: (html) =>
-        this.#enqueueMessageSync({
+        enqueueRuntimeMessage({
           type: "metadata",
           data: {
             descriptionHtml: html,
           },
         }),
       displayName: (name) =>
-        this.#enqueueMessageSync({
+        enqueueRuntimeMessage({
           type: "metadata",
           data: {
             displayName: name,
           },
         }),
       historyId: (value) =>
-        this.#enqueueMessageSync({
+        enqueueRuntimeMessage({
           type: "metadata",
           data: {
             historyId: value,
           },
         }),
       testCaseId: (value) =>
-        this.#enqueueMessageSync({
+        enqueueRuntimeMessage({
           type: "metadata",
           data: {
             testCaseId: value,
@@ -398,7 +394,7 @@ class AllureCypressTestRuntime implements TestRuntime {
           content as Uint8Array | Buffer | string | SerializedBuffer,
         );
 
-        this.#enqueueMessageSync({
+        enqueueRuntimeMessage({
           type: "attachment_content",
           data: {
             name,
@@ -410,7 +406,7 @@ class AllureCypressTestRuntime implements TestRuntime {
         });
       },
       attachmentFromPath: (name, path, options) =>
-        this.#enqueueMessageSync({
+        enqueueRuntimeMessage({
           type: "attachment_path",
           data: {
             name,
@@ -424,7 +420,7 @@ class AllureCypressTestRuntime implements TestRuntime {
           content as Uint8Array | Buffer | string | SerializedBuffer,
         );
 
-        this.#enqueueMessageSync({
+        enqueueRuntimeMessage({
           type: "global_attachment_content",
           data: {
             name,
@@ -436,7 +432,7 @@ class AllureCypressTestRuntime implements TestRuntime {
         });
       },
       globalAttachmentFromPath: (name, path, options) =>
-        this.#enqueueMessageSync({
+        enqueueRuntimeMessage({
           type: "global_attachment_path",
           data: {
             name,
@@ -446,7 +442,7 @@ class AllureCypressTestRuntime implements TestRuntime {
           },
         }),
       globalError: (details) =>
-        this.#enqueueMessageSync({
+        enqueueRuntimeMessage({
           type: "global_error",
           data: details,
         }),
@@ -477,14 +473,14 @@ class AllureCypressTestRuntime implements TestRuntime {
         }
       },
       stepDisplayName: (name) =>
-        this.#enqueueMessageSync({
+        enqueueRuntimeMessage({
           type: "step_metadata",
           data: {
             name,
           },
         }),
       stepParameter: (name, value, mode) =>
-        this.#enqueueMessageSync({
+        enqueueRuntimeMessage({
           type: "step_metadata",
           data: {
             parameters: [{ name, value, mode }],

@@ -3,7 +3,31 @@ import type { SyncTestRuntime, TestRuntime } from "./types.js";
 
 const ALLURE_TEST_RUNTIME_KEY = "allureTestRuntime";
 const pwAutoconfigModuleName = "allure-playwright/autoconfig";
-const localRequire = typeof require === "function" ? require : undefined;
+
+type NodeCreateRequire = (filename: string | URL) => NodeRequire;
+
+type NodeProcessWithBuiltins = {
+  cwd?: () => string;
+  getBuiltinModule?: (id: string) => { createRequire?: NodeCreateRequire } | undefined;
+};
+
+const getNodeCreateRequire = (): NodeCreateRequire | undefined => {
+  const process = (globalThis as { process?: NodeProcessWithBuiltins }).process;
+
+  return (
+    process?.getBuiltinModule?.("node:module")?.createRequire ?? process?.getBuiltinModule?.("module")?.createRequire
+  );
+};
+
+const getNodeRequire = (): NodeRequire | undefined => {
+  const process = (globalThis as { process?: NodeProcessWithBuiltins }).process;
+  const cwd = process?.cwd?.();
+  const createRequire = getNodeCreateRequire();
+
+  return cwd && createRequire ? createRequire(`${cwd}/package.json`) : undefined;
+};
+
+const localRequire = typeof require === "function" ? require : getNodeRequire();
 
 export const setGlobalTestRuntime = (runtime: TestRuntime) => {
   (globalThis as any)[ALLURE_TEST_RUNTIME_KEY] = () => runtime;
