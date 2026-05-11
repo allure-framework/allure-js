@@ -462,6 +462,9 @@ class AllureCypressTestRuntime implements TestRuntime {
         startAllureApiStep(name);
         stopCurrentAllureApiStep(status, error ? getMessageAndTraceFromError(error) : undefined);
       },
+      stage: (name) => {
+        startAllureStage(name);
+      },
       step: (name, body) => {
         startAllureApiStep(name);
 
