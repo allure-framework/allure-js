@@ -80,14 +80,33 @@ export const addMessage = (meta: TaskMeta, message: RuntimeMessage) => {
   addMessageToMeta(meta, ALLURE_VITEST_RUNTIME_MESSAGES_META_KEY, message);
 };
 
+const logMissingVitestContext = () => {
+  // eslint-disable-next-line no-console
+  console.error(
+    "no vitest context is detected. Please ensure you're using allure API within vitest test (it, test) " +
+      "or setup (beforeAll, beforeEach, afterAll, afterEach) function. Make sure vitest@1.6.0 or above is used",
+  );
+};
+
 export class BaseVitestTestRuntime extends BaseMessageTestRuntime {
+  sendMessageSync(message: RuntimeMessage): void {
+    if (!this.processMessage(message)) {
+      logMissingVitestContext();
+    }
+  }
+
   sendMessage(message: RuntimeMessage): Promise<void> {
+    this.sendMessageSync(message);
+    return Promise.resolve();
+  }
+
+  protected processMessage(message: RuntimeMessage): boolean {
     const currentTest = getCurrentTest();
 
     if (isGlobalRuntimeMessage(message)) {
       if (currentTest) {
         addMessageToMeta(currentTest.meta, ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_META_KEY, message);
-        return Promise.resolve();
+        return true;
       }
 
       try {
@@ -96,19 +115,19 @@ export class BaseVitestTestRuntime extends BaseMessageTestRuntime {
         if (currentSuite) {
           const hasTargetTest = attachGlobalMessageToFirstTest(currentSuite, message);
           if (hasTargetTest) {
-            return Promise.resolve();
+            return true;
           }
         }
       } catch {}
 
       addGlobalMessage(message);
-      return Promise.resolve();
+      return true;
     }
 
     if (currentTest) {
       addMessage(currentTest.meta, message);
 
-      return Promise.resolve();
+      return true;
     }
 
     try {
@@ -116,16 +135,10 @@ export class BaseVitestTestRuntime extends BaseMessageTestRuntime {
 
       if (currentSuite) {
         processTask(currentSuite, message);
-        return Promise.resolve();
+        return true;
       }
     } catch {}
 
-    // eslint-disable-next-line no-console
-    console.error(
-      "no vitest context is detected. Please ensure you're using allure API within vitest test (it, test) " +
-        "or setup (beforeAll, beforeEach, afterAll, afterEach) function. Make sure vitest@1.6.0 or above is used",
-    );
-
-    return Promise.resolve();
+    return false;
   }
 }

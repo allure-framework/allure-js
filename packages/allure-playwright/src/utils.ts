@@ -2,7 +2,8 @@ import type { TestStatus } from "@playwright/test";
 import type { TestStep } from "@playwright/test/reporter";
 import { Stage, Status, type StatusDetails, type StepResult } from "allure-js-commons";
 import { getMessageAndTraceFromError } from "allure-js-commons/sdk";
-import { getWorstTestStepResult } from "allure-js-commons/sdk/reporter";
+
+import { ALLURE_STEP_STATUS_ANNOTATION, isAllureStepStatus } from "./syncAnnotations.js";
 
 export const AFTER_HOOKS_ROOT_STEP_TITLE = "After Hooks";
 
@@ -62,8 +63,21 @@ export const getSkipAnnotation = (step: Pick<TestStep, "annotations">) => {
 
 export const getStepStatusData = (
   step: Pick<TestStep, "annotations" | "error">,
-  nestedStatus?: Status,
-): { status: Status; statusDetails?: StatusDetails } => {
+): {
+  status: Status;
+  statusDetails?: StatusDetails;
+} => {
+  const annotatedStatus = step.annotations.find(
+    (annotation) => annotation.type === ALLURE_STEP_STATUS_ANNOTATION && isAllureStepStatus(annotation.description),
+  )?.description;
+
+  if (annotatedStatus !== undefined) {
+    return {
+      status: annotatedStatus as Status,
+      statusDetails: step.error ? { ...getMessageAndTraceFromError(step.error) } : undefined,
+    };
+  }
+
   if (step.error) {
     return {
       status: Status.FAILED,
@@ -81,13 +95,12 @@ export const getStepStatusData = (
   }
 
   return {
-    status: nestedStatus ?? Status.PASSED,
+    status: Status.PASSED,
   };
 };
 
 export const finalizeStepResult = (stepResult: StepResult, step: Pick<TestStep, "annotations" | "error">) => {
-  const { status = Status.PASSED } = getWorstTestStepResult(stepResult.steps) ?? {};
-  const { status: nextStatus, statusDetails } = getStepStatusData(step, status);
+  const { status: nextStatus, statusDetails } = getStepStatusData(step);
 
   stepResult.status = nextStatus;
   stepResult.stage = Stage.FINISHED;

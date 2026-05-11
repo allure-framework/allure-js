@@ -1,13 +1,16 @@
 import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions, StatusDetails } from "allure-js-commons";
 import { Status } from "allure-js-commons";
-import { getMessageAndTraceFromError } from "allure-js-commons/sdk";
-import type { TestRuntime } from "allure-js-commons/sdk/runtime";
+import { getMessageAndTraceFromError, getStatusFromError, isPromise } from "allure-js-commons/sdk";
+import type { SyncTestRuntime, TestRuntime } from "allure-js-commons/sdk/runtime";
 import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 
 import type { AllureCypressTaskArgs, CypressMessage } from "../types.js";
 import { enqueueRuntimeMessage, getRuntimeMessages, setRuntimeMessages } from "./state.js";
 import { ALLURE_STEP_CMD_SUBJECT, startAllureApiStep, stopCurrentAllureApiStep } from "./steps.js";
 import { uint8ArrayToBase64 } from "./utils.js";
+
+const SYNC_STEP_PURE_FUNCTION_ERROR =
+  "allure-js-commons/sync step body must be synchronous and must not return a Promise";
 
 export const initTestRuntime = () => setGlobalTestRuntime(new AllureCypressTestRuntime() as TestRuntime);
 
@@ -21,6 +24,10 @@ type SerializedBuffer = {
 class AllureCypressTestRuntime implements TestRuntime {
   constructor() {
     this.#resetMessages();
+  }
+
+  get sync(): SyncTestRuntime {
+    return this.#createSyncRuntime();
   }
 
   labels(...labels: Label[]) {
@@ -250,7 +257,7 @@ class AllureCypressTestRuntime implements TestRuntime {
     return messages;
   }
 
-  #buildAttachmentContent(content: Buffer | string | SerializedBuffer): [string, BufferEncoding] {
+  #buildAttachmentContent(content: Uint8Array | Buffer | string | SerializedBuffer): [string, BufferEncoding] {
     const rawContent = this.#normalizeAttachmentContent(content);
     const encoding: BufferEncoding = typeof rawContent === "string" ? "utf8" : "base64";
 
@@ -316,5 +323,169 @@ class AllureCypressTestRuntime implements TestRuntime {
     } catch {
       return true;
     }
+  }
+
+  #createSyncRuntime(): SyncTestRuntime {
+    return {
+      labels: (...labels) =>
+        enqueueRuntimeMessage({
+          type: "metadata",
+          data: {
+            labels,
+          },
+        }),
+      links: (...links) =>
+        enqueueRuntimeMessage({
+          type: "metadata",
+          data: {
+            links,
+          },
+        }),
+      parameter: (name, value, options) =>
+        enqueueRuntimeMessage({
+          type: "metadata",
+          data: {
+            parameters: [
+              {
+                name,
+                value,
+                ...options,
+              },
+            ],
+          },
+        }),
+      description: (markdown) =>
+        enqueueRuntimeMessage({
+          type: "metadata",
+          data: {
+            description: markdown,
+          },
+        }),
+      descriptionHtml: (html) =>
+        enqueueRuntimeMessage({
+          type: "metadata",
+          data: {
+            descriptionHtml: html,
+          },
+        }),
+      displayName: (name) =>
+        enqueueRuntimeMessage({
+          type: "metadata",
+          data: {
+            displayName: name,
+          },
+        }),
+      historyId: (value) =>
+        enqueueRuntimeMessage({
+          type: "metadata",
+          data: {
+            historyId: value,
+          },
+        }),
+      testCaseId: (value) =>
+        enqueueRuntimeMessage({
+          type: "metadata",
+          data: {
+            testCaseId: value,
+          },
+        }),
+      attachment: (name, content, options) => {
+        const [attachmentContent, actualEncoding] = this.#buildAttachmentContent(
+          content as Uint8Array | Buffer | string | SerializedBuffer,
+        );
+
+        enqueueRuntimeMessage({
+          type: "attachment_content",
+          data: {
+            name,
+            content: attachmentContent,
+            encoding: actualEncoding,
+            contentType: options.contentType,
+            fileExtension: options.fileExtension,
+          },
+        });
+      },
+      attachmentFromPath: (name, path, options) =>
+        enqueueRuntimeMessage({
+          type: "attachment_path",
+          data: {
+            name,
+            path,
+            contentType: options.contentType,
+            fileExtension: options.fileExtension,
+          },
+        }),
+      globalAttachment: (name, content, options) => {
+        const [attachmentContent, actualEncoding] = this.#buildAttachmentContent(
+          content as Uint8Array | Buffer | string | SerializedBuffer,
+        );
+
+        enqueueRuntimeMessage({
+          type: "global_attachment_content",
+          data: {
+            name,
+            content: attachmentContent,
+            encoding: actualEncoding,
+            contentType: options.contentType,
+            fileExtension: options.fileExtension,
+          },
+        });
+      },
+      globalAttachmentFromPath: (name, path, options) =>
+        enqueueRuntimeMessage({
+          type: "global_attachment_path",
+          data: {
+            name,
+            path,
+            contentType: options.contentType,
+            fileExtension: options.fileExtension,
+          },
+        }),
+      globalError: (details) =>
+        enqueueRuntimeMessage({
+          type: "global_error",
+          data: details,
+        }),
+      logStep: (name, status = Status.PASSED, error) => {
+        startAllureApiStep(name);
+        stopCurrentAllureApiStep(status, error ? getMessageAndTraceFromError(error) : undefined);
+      },
+      step: (name, body) => {
+        startAllureApiStep(name);
+
+        try {
+          const result = body();
+
+          if (isPromise(result)) {
+            // eslint-disable-next-line no-console
+            console.warn(SYNC_STEP_PURE_FUNCTION_ERROR);
+            throw new Error(SYNC_STEP_PURE_FUNCTION_ERROR);
+          }
+
+          stopCurrentAllureApiStep();
+
+          return result;
+        } catch (err) {
+          const error = err as Error;
+
+          stopCurrentAllureApiStep(getStatusFromError(error), getMessageAndTraceFromError(error));
+          throw err;
+        }
+      },
+      stepDisplayName: (name) =>
+        enqueueRuntimeMessage({
+          type: "step_metadata",
+          data: {
+            name,
+          },
+        }),
+      stepParameter: (name, value, mode) =>
+        enqueueRuntimeMessage({
+          type: "step_metadata",
+          data: {
+            parameters: [{ name, value, mode }],
+          },
+        }),
+    };
   }
 }

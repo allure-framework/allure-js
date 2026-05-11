@@ -9,6 +9,10 @@ export class MessageHolderTestRuntime extends MessageTestRuntime {
     return Promise.resolve();
   }
 
+  sendMessageSync(message: RuntimeMessage) {
+    this.messagesHolder.push(message);
+  }
+
   messages(): RuntimeMessage[] {
     return [...this.messagesHolder];
   }

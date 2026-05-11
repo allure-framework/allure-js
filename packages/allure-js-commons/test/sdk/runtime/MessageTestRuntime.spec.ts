@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { Status } from "../../../src/model.js";
+import type { RuntimeMessage } from "../../../src/sdk/index.js";
 import { MessageTestRuntime } from "../../../src/sdk/runtime/MessageTestRuntime.js";
 
 const implementMessageTestRuntime = () =>
@@ -8,6 +9,8 @@ const implementMessageTestRuntime = () =>
     sendMessage = vi
       .fn<Parameters<MessageTestRuntime["sendMessage"]>, ReturnType<MessageTestRuntime["sendMessage"]>>()
       .mockImplementation(() => Promise.resolve());
+
+    sendMessageSync = vi.fn<[RuntimeMessage], void>().mockImplementation(() => undefined);
   })();
 
 describe("logStep", () => {
@@ -164,5 +167,108 @@ describe("step", () => {
         }),
       }),
     });
+  });
+});
+
+describe("sync runtime", () => {
+  it("should create sync log step messages", () => {
+    const messageTestRuntime = implementMessageTestRuntime();
+
+    messageTestRuntime.sync.logStep("sync log step");
+
+    expect(messageTestRuntime.sendMessageSync).toBeCalledTimes(2);
+
+    const [[message1], [message2]] = messageTestRuntime.sendMessageSync.mock.calls;
+    expect(message1).toEqual({
+      type: "step_start",
+      data: expect.objectContaining({
+        name: "sync log step",
+      }),
+    });
+    expect(message2).toEqual({
+      type: "step_stop",
+      data: expect.objectContaining({
+        status: Status.PASSED,
+      }),
+    });
+  });
+
+  it("should create sync attachment message", () => {
+    const messageTestRuntime = implementMessageTestRuntime();
+
+    messageTestRuntime.sync.attachment("log.txt", "content", { contentType: "text/plain" });
+
+    expect(messageTestRuntime.sendMessageSync).toBeCalledWith({
+      type: "attachment_content",
+      data: expect.objectContaining({
+        name: "log.txt",
+        content: Buffer.from("content", "utf-8").toString("base64"),
+        encoding: "base64",
+        contentType: "text/plain",
+      }),
+    });
+  });
+
+  it("should create sync global attachment message", () => {
+    const messageTestRuntime = implementMessageTestRuntime();
+
+    messageTestRuntime.sync.globalAttachment("global.txt", "content", { contentType: "text/plain" });
+
+    expect(messageTestRuntime.sendMessageSync).toBeCalledWith({
+      type: "global_attachment_content",
+      data: {
+        name: "global.txt",
+        content: Buffer.from("content", "utf-8").toString("base64"),
+        encoding: "base64",
+        contentType: "text/plain",
+        fileExtension: undefined,
+      },
+    });
+  });
+
+  it("should create sync step messages and return a value", () => {
+    const messageTestRuntime = implementMessageTestRuntime();
+
+    const result = messageTestRuntime.sync.step("sync step", () => {
+      messageTestRuntime.sync.stepDisplayName("custom sync step");
+      messageTestRuntime.sync.stepParameter("foo", "bar");
+      return 42;
+    });
+
+    expect(result).toBe(42);
+    expect(messageTestRuntime.sendMessageSync.mock.calls).toEqual([
+      [
+        {
+          type: "step_start",
+          data: expect.objectContaining({
+            name: "sync step",
+          }),
+        },
+      ],
+      [
+        {
+          type: "step_metadata",
+          data: {
+            name: "custom sync step",
+          },
+        },
+      ],
+      [
+        {
+          type: "step_metadata",
+          data: {
+            parameters: [{ name: "foo", value: "bar", mode: undefined }],
+          },
+        },
+      ],
+      [
+        {
+          type: "step_stop",
+          data: expect.objectContaining({
+            status: Status.PASSED,
+          }),
+        },
+      ],
+    ]);
   });
 });
