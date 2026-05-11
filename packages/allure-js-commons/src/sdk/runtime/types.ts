@@ -49,6 +49,8 @@ export interface SyncTestRuntime {
 
   logStep: (name: string, status?: Status, error?: Error) => void;
 
+  stage: (name: string) => void;
+
   step: <T = void>(name: string, body: () => T) => T;
 
   stepDisplayName: (name: string) => void;

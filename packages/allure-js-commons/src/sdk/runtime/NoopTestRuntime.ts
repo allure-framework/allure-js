@@ -60,6 +60,10 @@ export class NoopSyncTestRuntime implements SyncTestRuntime {
     this.warning();
   }
 
+  stage(_: string) {
+    this.warning();
+  }
+
   step<T>(_: string, body: () => T): T {
     this.warning();
 

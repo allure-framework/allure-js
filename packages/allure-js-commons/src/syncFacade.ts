@@ -124,6 +124,10 @@ export const logStep = (name: string, status?: Status, error?: Error): void => {
   return callRuntimeMethod("logStep", name, status, error);
 };
 
+export const stage = (name: string): void => {
+  return callRuntimeMethod("stage", name);
+};
+
 export const step = <T = void>(name: string, body: (context: SyncStepContext) => T): T => {
   return callRuntimeMethod("step", name, () => body(stepContext()));
 };

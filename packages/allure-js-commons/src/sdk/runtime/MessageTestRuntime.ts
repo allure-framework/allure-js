@@ -383,6 +383,14 @@ export abstract class BaseMessageTestRuntime implements TestRuntime {
           },
         });
       },
+      stage: (name) =>
+        sendMessageSync({
+          type: "stage_start",
+          data: {
+            name,
+            start: Date.now(),
+          },
+        }),
       step: (name, body) => {
         sendMessageSync({
           type: "step_start",

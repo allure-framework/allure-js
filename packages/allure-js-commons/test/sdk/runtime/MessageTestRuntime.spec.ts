@@ -211,6 +211,22 @@ describe("sync runtime", () => {
     });
   });
 
+  it("should create sync stage start message", () => {
+    const messageTestRuntime = implementMessageTestRuntime();
+
+    messageTestRuntime.sync.stage("sync prepare data");
+
+    expect(messageTestRuntime.sendMessageSync).toBeCalledTimes(1);
+
+    const [[message]] = messageTestRuntime.sendMessageSync.mock.calls;
+    expect(message).toEqual({
+      type: "stage_start",
+      data: expect.objectContaining({
+        name: "sync prepare data",
+      }),
+    });
+  });
+
   it("should create sync attachment message", () => {
     const messageTestRuntime = implementMessageTestRuntime();
 
