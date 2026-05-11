@@ -55,6 +55,81 @@ describe("sync steps", () => {
     expect(readAttachment(attachments, attachmentRef.source)).toBe("bar");
   });
 
+  bunIt("handles sync runtime stages", async () => {
+    const { tests, exitCode } = await runBunInlineTest({
+      "sample.test.ts": `
+        import { test } from "bun:test";
+        import { logStep, stage, step } from "allure-js-commons/sync";
+
+        test("sync stages", () => {
+          stage("stage 1");
+          logStep("a");
+          step("b", () => {
+            logStep("b 1");
+            stage("b 2");
+            logStep("b 2 nested");
+          });
+
+          stage("stage 2");
+          logStep("c");
+        });
+      `,
+    });
+
+    expect(exitCode).toBe(0);
+    expect(tests).toHaveLength(1);
+    expect(tests[0].steps).toMatchObject([
+      {
+        name: "stage 1",
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+        steps: [
+          {
+            name: "a",
+            status: Status.PASSED,
+            stage: Stage.FINISHED,
+          },
+          {
+            name: "b",
+            status: Status.PASSED,
+            stage: Stage.FINISHED,
+            steps: [
+              {
+                name: "b 1",
+                status: Status.PASSED,
+                stage: Stage.FINISHED,
+              },
+              {
+                name: "b 2",
+                status: Status.PASSED,
+                stage: Stage.FINISHED,
+                steps: [
+                  {
+                    name: "b 2 nested",
+                    status: Status.PASSED,
+                    stage: Stage.FINISHED,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "stage 2",
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+        steps: [
+          {
+            name: "c",
+            status: Status.PASSED,
+            stage: Stage.FINISHED,
+          },
+        ],
+      },
+    ]);
+  });
+
   bunIt("rejects promise-returning sync steps", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
