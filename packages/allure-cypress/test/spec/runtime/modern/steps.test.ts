@@ -150,6 +150,7 @@ it("stage runtime api", async () => {
     import { logStep, stage, step } from "${allureCommonsModulePath}";
 
     it("step", () => {
+      // Cypress runtime API calls are intentionally awaitless here; they enqueue Cypress commands.
       stage("stage 1");
       logStep("a");
       step("b", () => {

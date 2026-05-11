@@ -100,15 +100,15 @@ describe("steps", () => {
   import { logStep, stage, step } from "allure-js-commons";
 
   test("steps", async () => {
-    stage("stage 1");
+    await stage("stage 1");
     await logStep("a");
     await step("b", async () => {
       await logStep("b 1");
-      stage("b 2");
+      await stage("b 2");
       await logStep("b 2 nested");
     });
 
-    stage("stage 2");
+    await stage("stage 2");
     await logStep("c");
   });
 `,
@@ -313,15 +313,15 @@ describe("steps", () => {
   import { logStep, stage, step } from "allure-js-commons";
 
   test("steps", async () => {
-    stage("stage 1");
+    await stage("stage 1");
     await logStep("a");
     await step("b", async () => {
       await logStep("b 1");
-      stage("b 2");
+      await stage("b 2");
       await logStep("b 2 nested");
     });
 
-    stage("stage 2");
+    await stage("stage 2");
     await logStep("c");
   });
 `,
