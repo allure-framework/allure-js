@@ -1,6 +1,6 @@
 {
   "name": "allure-cucumberjs",
-  "version": "3.7.2",
+  "version": "3.8.0",
   "description": "Allure Cucumber.JS integration",
   "keywords": [
     "allure",
