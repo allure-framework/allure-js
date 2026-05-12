@@ -1,3 +1,5 @@
+import { createServer, type IncomingHttpHeaders, type IncomingMessage, type ServerResponse } from "node:http";
+import type { Socket } from "node:net";
 import { Readable } from "node:stream";
 
 import {
@@ -8,10 +10,156 @@ import {
 } from "allure-js-commons";
 import type { RuntimeAttachmentContentMessage, RuntimeMessage } from "allure-js-commons/sdk";
 import { MessageHolderTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
-import { getLocal, type Mockttp } from "mockttp";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { type AllureFetchOptions, type FetchLike, instrumentGlobalFetch, withAllure } from "../../src/index.js";
+
+type TestResponseHeaders = Record<string, number | readonly string[] | string>;
+
+type TestRouteAction =
+  | {
+      body?: Buffer | string;
+      headers: TestResponseHeaders;
+      status: number;
+      type: "reply";
+    }
+  | {
+      headers: TestResponseHeaders;
+      status: number;
+      stream: Readable;
+      type: "stream";
+    }
+  | {
+      type: "close";
+    }
+  | {
+      type: "timeout";
+    };
+
+type TestRoute = {
+  action: TestRouteAction;
+  endpoint: TestEndpoint;
+  method: string;
+  path: string;
+};
+
+type TestMultipartPart = {
+  data: Buffer;
+  filename?: string;
+  name?: string;
+  type?: string;
+};
+
+type TestSeenRequest = {
+  body: TestRequestBody;
+  headers: IncomingHttpHeaders;
+};
+
+type TestHttpServer = {
+  forGet: (path: string) => TestRequestBuilder;
+  forPost: (path: string) => TestRequestBuilder;
+  stop: () => Promise<void>;
+  urlFor: (path: string) => string;
+};
+
+class TestRequestBody {
+  constructor(
+    private readonly headers: IncomingHttpHeaders,
+    readonly buffer: Buffer,
+  ) {}
+
+  async getMultipartFormData(): Promise<TestMultipartPart[] | undefined> {
+    return parseMultipartFormData(this.headers["content-type"], this.buffer);
+  }
+
+  async getText(): Promise<string> {
+    return this.buffer.toString("utf8");
+  }
+}
+
+class TestEndpoint {
+  private readonly seenRequests: TestSeenRequest[] = [];
+
+  addSeenRequest(request: TestSeenRequest) {
+    this.seenRequests.push(request);
+  }
+
+  async getSeenRequests(): Promise<TestSeenRequest[]> {
+    return this.seenRequests;
+  }
+}
+
+class TestRequestBuilder {
+  constructor(
+    private readonly routes: TestRoute[],
+    private readonly method: string,
+    private readonly path: string,
+  ) {}
+
+  thenCloseConnection(): TestEndpoint {
+    return this.addRoute({
+      type: "close",
+    });
+  }
+
+  thenReply(status: number): TestEndpoint;
+  thenReply(status: number, body: Buffer | string, headers?: TestResponseHeaders): TestEndpoint;
+  thenReply(
+    status: number,
+    statusMessage: string,
+    body: Buffer | string,
+    headers?: TestResponseHeaders,
+  ): TestEndpoint;
+  thenReply(
+    status: number,
+    first?: Buffer | string,
+    second?: Buffer | string | TestResponseHeaders,
+    third?: TestResponseHeaders,
+  ): TestEndpoint {
+    const hasStatusMessage = typeof second === "string" || Buffer.isBuffer(second);
+    const body = hasStatusMessage ? second : first;
+    const headers = hasStatusMessage ? third : (second as TestResponseHeaders | undefined);
+
+    return this.addRoute({
+      body,
+      headers: headers ?? {},
+      status,
+      type: "reply",
+    });
+  }
+
+  thenStream(status: number, stream: Readable, headers: TestResponseHeaders = {}): TestEndpoint {
+    return this.addRoute({
+      headers,
+      status,
+      stream,
+      type: "stream",
+    });
+  }
+
+  thenTimeout(): TestEndpoint {
+    return this.addRoute({
+      type: "timeout",
+    });
+  }
+
+  waitForRequestBody(): this {
+    return this;
+  }
+
+  private addRoute(action: TestRouteAction): TestEndpoint {
+    const endpoint = new TestEndpoint();
+
+    this.routes.push({
+      action,
+      endpoint,
+      method: this.method,
+      path: this.path,
+    });
+
+    return endpoint;
+  }
+}
 
 type TestRuntimeResult<T> = {
   messages: RuntimeMessage[];
@@ -27,6 +175,194 @@ type HttpTestResult<T> = {
 
 type GlobalRuntimeHolder = typeof globalThis & {
   allureTestRuntime?: () => unknown;
+};
+
+const createTestServer = async (): Promise<TestHttpServer> => {
+  const routes: TestRoute[] = [];
+  const sockets = new Set<Socket>();
+  const server = createServer((request, response) => {
+    handleTestRequest(request, response, routes).catch(() => {
+      if (!response.headersSent) {
+        response.statusCode = 500;
+      }
+
+      response.end();
+    });
+  });
+
+  server.on("connection", (socket) => {
+    sockets.add(socket);
+    socket.once("close", () => {
+      sockets.delete(socket);
+    });
+  });
+
+  await new Promise<void>((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", () => {
+      server.off("error", reject);
+      resolve();
+    });
+  });
+
+  const address = server.address();
+
+  if (address === null || typeof address === "string") {
+    throw new Error("failed to start local HTTP test server");
+  }
+
+  const origin = `http://127.0.0.1:${address.port}`;
+
+  return {
+    forGet: (path) => new TestRequestBuilder(routes, "GET", path),
+    forPost: (path) => new TestRequestBuilder(routes, "POST", path),
+    stop: async () => {
+      for (const socket of sockets) {
+        socket.destroy();
+      }
+
+      if (!server.listening) {
+        return;
+      }
+
+      await new Promise<void>((resolve, reject) => {
+        server.close((err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      });
+    },
+    urlFor: (path) => new URL(path, origin).toString(),
+  };
+};
+
+const handleTestRequest = async (
+  request: IncomingMessage,
+  response: ServerResponse,
+  routes: TestRoute[],
+): Promise<void> => {
+  const route = routes.find(({ method, path }) => method === request.method && path === parseRequestPath(request.url));
+
+  if (!route) {
+    response.statusCode = 404;
+    response.end();
+
+    return;
+  }
+
+  if (route.action.type === "close") {
+    request.socket.destroy();
+
+    return;
+  }
+
+  if (route.action.type === "timeout") {
+    return;
+  }
+
+  const bodyBuffer = await readIncomingBody(request);
+
+  route.endpoint.addSeenRequest({
+    body: new TestRequestBody(request.headers, bodyBuffer),
+    headers: request.headers,
+  });
+
+  response.statusCode = route.action.status;
+
+  for (const [name, value] of Object.entries(route.action.headers)) {
+    response.setHeader(name, value);
+  }
+
+  if (route.action.type === "reply") {
+    response.end(route.action.body);
+
+    return;
+  }
+
+  route.action.stream.on("error", () => {
+    response.destroy();
+  });
+  route.action.stream.pipe(response);
+};
+
+const parseRequestPath = (url: string | undefined): string => {
+  return new URL(url ?? "/", "http://127.0.0.1").pathname;
+};
+
+const readIncomingBody = async (request: IncomingMessage): Promise<Buffer> => {
+  const chunks: Buffer[] = [];
+
+  for await (const chunk of request) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+
+  return Buffer.concat(chunks);
+};
+
+const parseMultipartFormData = (
+  rawContentType: IncomingHttpHeaders["content-type"],
+  buffer: Buffer,
+): TestMultipartPart[] | undefined => {
+  const contentType = Array.isArray(rawContentType) ? rawContentType[0] : rawContentType;
+  const boundaryMatch = contentType?.match(/boundary=(?:"([^"]+)"|([^;]+))/i);
+  const boundary = boundaryMatch?.[1] ?? boundaryMatch?.[2];
+
+  if (!boundary) {
+    return undefined;
+  }
+
+  const parts: TestMultipartPart[] = [];
+  const delimiter = `--${boundary}`;
+  const rawParts = buffer.toString("binary").split(delimiter).slice(1);
+
+  for (const rawPart of rawParts) {
+    if (rawPart.startsWith("--")) {
+      break;
+    }
+
+    const part = rawPart.replace(/^\r\n/, "");
+    const headerEndIndex = part.indexOf("\r\n\r\n");
+
+    if (headerEndIndex === -1) {
+      continue;
+    }
+
+    const rawHeaders = part.slice(0, headerEndIndex).split("\r\n");
+    const headers = new Map<string, string>();
+    let data = part.slice(headerEndIndex + 4);
+
+    if (data.endsWith("\r\n")) {
+      data = data.slice(0, -2);
+    }
+
+    for (const rawHeader of rawHeaders) {
+      const separatorIndex = rawHeader.indexOf(":");
+
+      if (separatorIndex === -1) {
+        continue;
+      }
+
+      headers.set(rawHeader.slice(0, separatorIndex).trim().toLowerCase(), rawHeader.slice(separatorIndex + 1).trim());
+    }
+
+    const disposition = headers.get("content-disposition") ?? "";
+
+    parts.push({
+      data: Buffer.from(data, "binary"),
+      filename: getHeaderParameter(disposition, "filename"),
+      name: getHeaderParameter(disposition, "name"),
+      type: headers.get("content-type"),
+    });
+  }
+
+  return parts;
+};
+
+const getHeaderParameter = (header: string, name: string): string | undefined => {
+  return header.match(new RegExp(`${name}="([^"]*)"`, "i"))?.[1];
 };
 
 const withTestRuntime = async <T>(body: () => T | Promise<T>): Promise<TestRuntimeResult<T>> => {
@@ -77,12 +413,10 @@ const parseHttpExchangeAttachment = (message: RuntimeAttachmentContentMessage): 
 };
 
 const runHttpTest = async <T>(
-  body: (server: Mockttp, fetch: FetchLike) => T | Promise<T>,
+  body: (server: TestHttpServer, fetch: FetchLike) => T | Promise<T>,
   options: AllureFetchOptions = {},
 ): Promise<HttpTestResult<T>> => {
-  const server = getLocal();
-
-  await server.start();
+  const server = await createTestServer();
 
   try {
     const { messages, result } = await withTestRuntime(async () => {

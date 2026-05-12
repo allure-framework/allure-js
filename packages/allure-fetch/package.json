@@ -65,7 +65,6 @@
     "allure-commandline": "^2.29.0",
     "allure-vitest": "workspace:*",
     "babel-plugin-add-module-exports": "^1.0.4",
-    "mockttp": "^4.4.1",
     "npm-run-all2": "^8.0.0",
     "rimraf": "^6.0.0",
     "typescript": "^5.2.2",
