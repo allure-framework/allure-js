@@ -110,6 +110,7 @@ export const EXTENSIONS_BY_TYPE: Record<string, string> = {
   "application/vnd.airzip.filesecure.azf": ".azf",
   "application/vnd.airzip.filesecure.azs": ".azs",
   "application/vnd.allure.image.diff": ".imagediff",
+  "application/vnd.allure.http+json": ".httpexchange",
   "application/vnd.allure.metadata+json": ".metadata",
   "application/vnd.amazon.ebook": ".azw",
   "application/vnd.americandynamics.acc": ".acc",
