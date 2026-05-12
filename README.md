@@ -52,6 +52,7 @@ Minimum supported framework versions by package:
 
 - `allure-codeceptjs`: `codeceptjs >= 2.3.6`
 - `allure-bun`: `Bun test >= 1.3.11`
+- `allure-chai`: `chai >= 4 < 7`
 - `allure-cucumberjs`: `@cucumber/cucumber >= 10.8.0`
 - `allure-cypress`: `cypress >= 12.17.4`
 - `allure-jasmine`: `jasmine >= 2.7.0`
@@ -119,6 +120,12 @@ npx allure open ./allure-report
 ![npm](https://img.shields.io/npm/dm/allure-mocha.svg) ![npm](https://img.shields.io/npm/v/allure-mocha.svg)
 
 [Read more](/packages/allure-mocha/README.md)
+
+### Chai
+
+![npm](https://img.shields.io/npm/dm/allure-chai.svg) ![npm](https://img.shields.io/npm/v/allure-chai.svg)
+
+[Read more](/packages/allure-chai/README.md)
 
 ### Playwright
 
