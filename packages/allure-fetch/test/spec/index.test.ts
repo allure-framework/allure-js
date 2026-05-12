@@ -104,12 +104,7 @@ class TestRequestBuilder {
 
   thenReply(status: number): TestEndpoint;
   thenReply(status: number, body: Buffer | string, headers?: TestResponseHeaders): TestEndpoint;
-  thenReply(
-    status: number,
-    statusMessage: string,
-    body: Buffer | string,
-    headers?: TestResponseHeaders,
-  ): TestEndpoint;
+  thenReply(status: number, statusMessage: string, body: Buffer | string, headers?: TestResponseHeaders): TestEndpoint;
   thenReply(
     status: number,
     first?: Buffer | string,
