@@ -128,9 +128,13 @@ export const runCypressInlineTest = async (
 
     await ctx.parameter("CWD", processCwd);
 
+    const childEnv = { ...process.env };
+    delete childEnv.ALLURE_TESTPLAN_PATH;
+    delete childEnv.ALLURE_RERUN;
+
     const testProcess = fork(modulePath, args, {
       env: {
-        ...process.env,
+        ...childEnv,
         ...envVars,
       },
       cwd: processCwd,

@@ -11,7 +11,7 @@ describe("write video for every test", () => {
 
         it("bar", () => {});
       `,
-      "cypress.config.js": () =>
+      "cypress.config.js": ({ allureDirPath }) =>
         `
       const { allureCypress } = require("allure-cypress/reporter");
 
@@ -22,6 +22,7 @@ describe("write video for every test", () => {
           video: true,
           setupNodeEvents: (on, config) => {
             allureCypress(on, {
+              resultsDir: "${allureDirPath}",
               links: [
                 {
                   type: "issue",
@@ -69,7 +70,7 @@ describe("write video for failed tests only", () => {
       "cypress/e2e/sample.cy.js": () => `
         it("foo", () => {});
       `,
-      "cypress.config.js": () =>
+      "cypress.config.js": ({ allureDirPath }) =>
         `
           const { allureCypress } = require("allure-cypress/reporter");
 
@@ -80,6 +81,7 @@ describe("write video for failed tests only", () => {
               video: true,
               setupNodeEvents: (on, config) => {
                 allureCypress(on, {
+                  resultsDir: "${allureDirPath}",
                   videoOnFailOnly: true,
                   links: [
                     {
@@ -111,7 +113,7 @@ describe("write video for failed tests only", () => {
           cy.wrap(1).eq(2);
         });
       `,
-      "cypress.config.js": () =>
+      "cypress.config.js": ({ allureDirPath }) =>
         `
           const { allureCypress } = require("allure-cypress/reporter");
 
@@ -123,6 +125,7 @@ describe("write video for failed tests only", () => {
               testTimeout: 500,
               setupNodeEvents: (on, config) => {
                 allureCypress(on, {
+                  resultsDir: "${allureDirPath}",
                   videoOnFailOnly: true,
                   links: [
                     {
@@ -171,7 +174,7 @@ describe("write video for failed tests only", () => {
           throw new Error("foo");
         });
       `,
-      "cypress.config.js": () =>
+      "cypress.config.js": ({ allureDirPath }) =>
         `
           const { allureCypress } = require("allure-cypress/reporter");
 
@@ -183,6 +186,7 @@ describe("write video for failed tests only", () => {
               testTimeout: 500,
               setupNodeEvents: (on, config) => {
                 allureCypress(on, {
+                  resultsDir: "${allureDirPath}",
                   videoOnFailOnly: true,
                   links: [
                     {
@@ -235,7 +239,7 @@ describe("write video for failed tests only", () => {
           cy.wrap(1).eq(2);
         });
       `,
-      "cypress.config.js": () =>
+      "cypress.config.js": ({ allureDirPath }) =>
         `
           const { allureCypress } = require("allure-cypress/reporter");
 
@@ -247,6 +251,7 @@ describe("write video for failed tests only", () => {
               testTimeout: 500,
               setupNodeEvents: (on, config) => {
                 allureCypress(on, {
+                  resultsDir: "${allureDirPath}",
                   videoOnFailOnly: true,
                   links: [
                     {
