@@ -31,6 +31,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:packages/allure-cypress"\
     },\
     {\
+      "name": "allure-fetch",\
+      "reference": "workspace:packages/allure-fetch"\
+    },\
+    {\
       "name": "allure-jasmine",\
       "reference": "workspace:packages/allure-jasmine"\
     },\
@@ -67,6 +71,7 @@ const RAW_RUNTIME_STATE =
     ["allure-codeceptjs", ["workspace:packages/allure-codeceptjs"]],\
     ["allure-cucumberjs", ["workspace:packages/allure-cucumberjs"]],\
     ["allure-cypress", ["workspace:packages/allure-cypress"]],\
+    ["allure-fetch", ["workspace:packages/allure-fetch"]],\
     ["allure-jasmine", ["workspace:packages/allure-jasmine"]],\
     ["allure-jest", ["workspace:packages/allure-jest"]],\
     ["allure-js", ["workspace:."]],\
@@ -8908,6 +8913,30 @@ const RAW_RUNTIME_STATE =
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
           ["cypress", "npm:15.0.0"],\
           ["esbuild", "npm:0.27.0"],\
+          ["npm-run-all2", "npm:8.0.1"],\
+          ["rimraf", "npm:6.0.0"],\
+          ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\
+          ["vitest", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#npm:4.0.18"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["allure-fetch", [\
+      ["workspace:packages/allure-fetch", {\
+        "packageLocation": "./packages/allure-fetch/",\
+        "packageDependencies": [\
+          ["@babel/cli", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#npm:7.28.0"],\
+          ["@babel/core", "npm:7.28.0"],\
+          ["@babel/preset-env", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#npm:7.28.0"],\
+          ["@babel/preset-typescript", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#npm:7.27.1"],\
+          ["@types/babel__core", "npm:7.20.5"],\
+          ["@types/babel__preset-env", "npm:7.10.0"],\
+          ["@types/node", "npm:20.19.37"],\
+          ["allure-commandline", "npm:2.29.0"],\
+          ["allure-fetch", "workspace:packages/allure-fetch"],\
+          ["allure-js-commons", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#workspace:packages/allure-js-commons"],\
+          ["allure-vitest", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#workspace:packages/allure-vitest"],\
+          ["babel-plugin-add-module-exports", "npm:1.0.4"],\
           ["npm-run-all2", "npm:8.0.1"],\
           ["rimraf", "npm:6.0.0"],\
           ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\

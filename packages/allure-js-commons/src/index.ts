@@ -34,6 +34,24 @@ export {
 } from "./facade.js";
 export type { StepContext } from "./sdk/runtime/types.js";
 export type {
+  HttpExchange,
+  HttpExchangeBody,
+  HttpExchangeBodyPart,
+  HttpExchangeCookie,
+  HttpExchangeError,
+  HttpExchangeInformationalResponse,
+  HttpExchangeNameValue,
+  HttpExchangeRequest,
+  HttpExchangeResponse,
+  HttpExchangeStream,
+} from "./http.js";
+export {
+  ALLURE_HTTP_EXCHANGE_CONTENT_TYPE,
+  ALLURE_HTTP_EXCHANGE_FILE_EXTENSION,
+  ALLURE_HTTP_EXCHANGE_SCHEMA_VERSION,
+  ALLURE_HTTP_REDACTED_VALUE,
+} from "./http.js";
+export type {
   Attachment,
   AttachmentOptions,
   FixtureResult,

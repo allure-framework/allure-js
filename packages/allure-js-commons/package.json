@@ -51,6 +51,12 @@
       "require": "./dist/cjs/sync.js",
       "default": "./dist/cjs/sync.js"
     },
+    "./http": {
+      "types": "./dist/types/http.d.ts",
+      "import": "./dist/esm/http.js",
+      "require": "./dist/cjs/http.js",
+      "default": "./dist/cjs/http.js"
+    },
     "./sdk": {
       "types": "./dist/types/sdk/index.d.ts",
       "import": "./dist/esm/sdk/index.js",
