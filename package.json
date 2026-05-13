@@ -31,6 +31,7 @@
   },
   "resolutions": {
     "@xmldom/xmldom": "npm:0.9.9",
+    "axios@npm:1.13.6": "npm:1.16.0",
     "cookie@npm:^0.4.2": "npm:0.7.2",
     "diff@npm:^7.0.0": "npm:8.0.4",
     "flatted@npm:3.2.6": "npm:3.4.2",

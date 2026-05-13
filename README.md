@@ -51,6 +51,7 @@ This repository is currently validated in CI on:
 Minimum supported framework versions by package:
 
 - `allure-codeceptjs`: `codeceptjs >= 2.3.6`
+- `allure-axios`: `axios >= 1.16.0 < 2`
 - `allure-bun`: `Bun test >= 1.3.11`
 - `allure-chai`: `chai >= 4 < 7`
 - `allure-cucumberjs`: `@cucumber/cucumber >= 10.8.0`
@@ -139,6 +140,12 @@ npx allure open ./allure-report
 ![npm](https://img.shields.io/npm/dm/allure-cypress.svg) ![npm](https://img.shields.io/npm/v/allure-cypress.svg)
 
 [Read more](/packages/allure-cypress/README.md)
+
+### Axios
+
+![npm](https://img.shields.io/npm/dm/allure-axios.svg) ![npm](https://img.shields.io/npm/v/allure-axios.svg)
+
+[Read more](/packages/allure-axios/README.md)
 
 ### Fetch
 
