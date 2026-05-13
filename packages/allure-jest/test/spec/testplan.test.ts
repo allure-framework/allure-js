@@ -86,7 +86,7 @@ it("respects testplan", async () => {
       }),
       expect.objectContaining({
         name: "selected name",
-        fullName: "aga.test.js#selected name",
+        fullName: "allure-jest:aga.test.js#selected name",
       }),
     ]),
   );

@@ -1,5 +1,6 @@
-import { expect, it } from "vitest";
 import { md5 } from "allure-js-commons/sdk/reporter";
+import { expect, it } from "vitest";
+
 import { runPlaywrightInlineTest } from "../utils.js";
 
 it("should preserve fullName format and include fallback testCaseId", async () => {

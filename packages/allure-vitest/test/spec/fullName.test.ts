@@ -1,5 +1,5 @@
-import { beforeAll, describe, expect, it } from "vitest";
 import { md5 } from "allure-js-commons/sdk/reporter";
+import { beforeAll, describe, expect, it } from "vitest";
 
 import { type TestFileAccessor, createVitestBrowserConfig, createVitestConfig, runVitestInlineTest } from "../utils.js";
 

@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
 import { md5 } from "allure-js-commons/sdk/reporter";
+import { describe, expect, it } from "vitest";
+
 import { runCypressInlineTest } from "../utils.js";
 
 describe("fullName and package", () => {

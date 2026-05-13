@@ -1,5 +1,6 @@
-import { expect, it } from "vitest";
 import { md5 } from "allure-js-commons/sdk/reporter";
+import { expect, it } from "vitest";
+
 import { runJasmineInlineTest } from "../utils.js";
 
 it("should include package name in fullName", async () => {

@@ -1,6 +1,7 @@
-import { expect, it } from "vitest";
 import { Status } from "allure-js-commons";
 import { md5 } from "allure-js-commons/sdk/reporter";
+import { expect, it } from "vitest";
+
 import { runCucumberInlineTest } from "../utils.js";
 
 it("should set full name", async () => {
