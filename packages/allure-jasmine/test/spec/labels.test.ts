@@ -172,7 +172,7 @@ it("should add package label", async () => {
         labels: expect.arrayContaining([
           {
             name: LabelName.PACKAGE,
-            value: "spec.test.sample.spec.js",
+            value: "dummy.spec.test.sample.spec.js",
           },
         ]),
       }),
@@ -181,7 +181,7 @@ it("should add package label", async () => {
         labels: expect.arrayContaining([
           {
             name: LabelName.PACKAGE,
-            value: "spec.test.sample.spec.js",
+            value: "dummy.spec.test.sample.spec.js",
           },
         ]),
       }),
@@ -190,7 +190,7 @@ it("should add package label", async () => {
         labels: expect.arrayContaining([
           {
             name: LabelName.PACKAGE,
-            value: "spec.test.sample.spec.js",
+            value: "dummy.spec.test.sample.spec.js",
           },
         ]),
       }),

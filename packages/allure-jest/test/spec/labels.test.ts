@@ -57,7 +57,7 @@ it("should add package label", async () => {
         labels: expect.arrayContaining([
           {
             name: "package",
-            value: "nested.sample.spec.js",
+            value: "allure-jest.nested.sample.spec.js",
           },
         ]),
       }),

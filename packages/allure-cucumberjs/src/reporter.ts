@@ -21,10 +21,12 @@ import {
   createDefaultWriter,
   createStepResult,
   getEnvironmentLabels,
+  getFallbackTestCaseIdLabel,
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
   getPackageLabel,
+  getProjectName,
   getThreadLabel,
   getWorstTestStepResult,
   md5,
@@ -240,9 +242,12 @@ export default class AllureCucumberReporter extends Formatter {
     const [scenarioId, ...astIds] = pickle.astNodeIds;
     const scenario = this.scenarioMap.get(scenarioId);
 
+    const projectName = getProjectName();
     const posixPath = getPosixPathRelativeToProjectRoot(pickle);
-    const fullName = `${posixPath}#${pickle.name}`;
-    const testCaseId = md5(`${posixPath}#${scenario?.name ?? pickle.name}`);
+    const fullNameBase = projectName ? `${projectName}:${posixPath}` : posixPath;
+    const fullName = `${fullNameBase}#${pickle.name}`;
+    const testCaseId = md5(`${fullNameBase}#${scenario?.name ?? pickle.name}`);
+    const legacyTestCaseId = md5(`${posixPath}#${scenario?.name ?? pickle.name}`);
     const result: Partial<TestResult> = {
       name: pickle.name,
       description: (scenario?.description || doc?.feature?.description || "").trim(),
@@ -258,6 +263,7 @@ export default class AllureCucumberReporter extends Formatter {
       getLanguageLabel(),
       getFrameworkLabel("cucumberjs"),
       getPackageLabel(getPathRelativeToProjectRoot(pickle)),
+      getFallbackTestCaseIdLabel(legacyTestCaseId),
       getHostLabel(),
       getThreadLabel(data.workerId),
     );
@@ -276,10 +282,11 @@ export default class AllureCucumberReporter extends Formatter {
     const scenarioLinks = this.parseTagsLinks(scenario?.tags || []);
 
     // remove feature file name from the title path
-    result.titlePath = posixPath
+    const titlePath = posixPath
       .split("/")
       .slice(0, -1)
       .concat([doc?.feature?.name].filter(Boolean) as string[]);
+    result.titlePath = projectName ? [projectName, ...titlePath] : titlePath;
     result.labels!.push(...featureLabels, ...scenarioLabels, ...pickleLabels);
     result.links!.push(...featureLinks, ...scenarioLinks);
 

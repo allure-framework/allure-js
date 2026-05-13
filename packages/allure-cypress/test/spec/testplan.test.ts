@@ -11,19 +11,19 @@ it("respects testplan", async () => {
     tests: [
       {
         id: 1,
-        selector: "cypress/e2e/nested/super strange nested/super strange name.cy.js#also nested should execute",
+        selector: "dummy:cypress/e2e/nested/super strange nested/super strange name.cy.js#also nested should execute",
       },
       {
         id: 2,
-        selector: "cypress/e2e/b.cy.js#should execute",
+        selector: "dummy:cypress/e2e/b.cy.js#should execute",
       },
       {
         id: 3,
-        selector: "cypress/e2e/.+.cy.js#+.",
+        selector: "dummy:cypress/e2e/.+.cy.js#+.",
       },
       {
         id: 4,
-        selector: "cypress/e2e/notaga.cy.js#a",
+        selector: "dummy:cypress/e2e/notaga.cy.js#a",
       },
     ],
   };
@@ -80,9 +80,9 @@ it("respects testplan", async () => {
   expect(tests).toHaveLength(3);
   expect(tests.map(({ fullName }) => fullName)).toEqual(
     expect.arrayContaining([
-      "cypress/e2e/b.cy.js#should execute",
-      "cypress/e2e/notaga.cy.js#a",
-      "cypress/e2e/nested/super strange nested/super strange name.cy.js#also nested should execute",
+      "dummy:cypress/e2e/b.cy.js#should execute",
+      "dummy:cypress/e2e/notaga.cy.js#a",
+      "dummy:cypress/e2e/nested/super strange nested/super strange name.cy.js#also nested should execute",
     ]),
   );
 });
@@ -138,7 +138,7 @@ it("should deselect all tests not in test plan", async () => {
 it("should not trigger hooks", async () => {
   const exampleTestPlan: TestPlanV1 = {
     version: "1.0",
-    tests: [{ selector: "cypress/e2e/sample.cy.js#bar" }],
+    tests: [{ selector: "dummy:cypress/e2e/sample.cy.js#bar" }],
   };
   const testPlanFilename = "testplan.json";
   const { tests, groups } = await runCypressInlineTest(

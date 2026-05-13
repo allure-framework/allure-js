@@ -14,6 +14,7 @@ describe("titlePath", () => {
     const [tr] = tests;
 
     expect(tr.titlePath).toEqual([
+      "allure-mocha",
       "test",
       "fixtures",
       expect.any(String),
@@ -26,6 +27,7 @@ describe("titlePath", () => {
     const [, tr] = tests;
 
     expect(tr.titlePath).toEqual([
+      "allure-mocha",
       "test",
       "fixtures",
       expect.any(String),

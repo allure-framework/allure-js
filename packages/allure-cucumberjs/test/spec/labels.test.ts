@@ -61,7 +61,7 @@ it("should add package label", async () => {
         labels: expect.arrayContaining([
           {
             name: "package",
-            value: "features.simple.feature",
+            value: "dummy.features.simple.feature",
           },
         ]),
       }),
@@ -70,7 +70,7 @@ it("should add package label", async () => {
         labels: expect.arrayContaining([
           {
             name: "package",
-            value: "features.simple.feature",
+            value: "dummy.features.simple.feature",
           },
         ]),
       }),
@@ -79,7 +79,7 @@ it("should add package label", async () => {
         labels: expect.arrayContaining([
           {
             name: "package",
-            value: "features.simple.feature",
+            value: "dummy.features.simple.feature",
           },
         ]),
       }),
@@ -88,7 +88,9 @@ it("should add package label", async () => {
 });
 
 it("should calculate package label in a CWD-independent manner", async () => {
-  const { tests } = await runCucumberInlineTest(["nested/simple"], ["simple"], { cwd: "features/nested" });
+  const { tests } = await runCucumberInlineTest(["nested/simple"], ["simple"], {
+    cwd: "features/nested",
+  });
 
   expect(tests).toEqual(
     expect.arrayContaining([
@@ -97,7 +99,7 @@ it("should calculate package label in a CWD-independent manner", async () => {
         labels: expect.arrayContaining([
           {
             name: "package",
-            value: "features.nested.simple.feature",
+            value: "dummy.features.nested.simple.feature",
           },
         ]),
       }),
@@ -106,7 +108,7 @@ it("should calculate package label in a CWD-independent manner", async () => {
         labels: expect.arrayContaining([
           {
             name: "package",
-            value: "features.nested.simple.feature",
+            value: "dummy.features.nested.simple.feature",
           },
         ]),
       }),
@@ -115,7 +117,7 @@ it("should calculate package label in a CWD-independent manner", async () => {
         labels: expect.arrayContaining([
           {
             name: "package",
-            value: "features.nested.simple.feature",
+            value: "dummy.features.nested.simple.feature",
           },
         ]),
       }),

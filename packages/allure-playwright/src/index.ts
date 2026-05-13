@@ -34,11 +34,13 @@ import {
   escapeRegExp,
   formatLink,
   getEnvironmentLabels,
+  getFallbackTestCaseIdLabel,
   getFrameworkLabel,
   getHostLabel,
   includedInTestPlan,
   getLanguageLabel,
   getPackageLabel,
+  getProjectName,
   getThreadLabel,
   md5,
   parseTestPlan,
@@ -173,6 +175,9 @@ export class AllureReporter implements ReporterV2 {
 
   onTestBegin(test: TestCase) {
     const metadata = this.getStaticTestMetadata(test);
+    const titlePath = metadata.projectName
+      ? [metadata.projectName, ...metadata.relativeFileParts, ...metadata.suiteTitles]
+      : metadata.relativeFileParts.concat(...metadata.suiteTitles);
     const result: Partial<TestResult> = {
       name: metadata.titleMetadata.cleanTitle,
       labels: [...metadata.titleMetadata.labels, ...getEnvironmentLabels()],
@@ -181,12 +186,13 @@ export class AllureReporter implements ReporterV2 {
       steps: [],
       testCaseId: md5(metadata.testCaseIdBase),
       fullName: metadata.fullName,
-      titlePath: metadata.relativeFileParts.concat(...metadata.suiteTitles),
+      titlePath,
     };
 
     result.labels!.push(getLanguageLabel());
     result.labels!.push(getFrameworkLabel("playwright"));
     result.labels!.push(getPackageLabel(metadata.testFilePath));
+    result.labels!.push(getFallbackTestCaseIdLabel(md5(metadata.legacyTestCaseIdBase)));
     result.labels!.push({ name: "titlePath", value: test.parent.titlePath().join(" > ") });
 
     // support for earlier playwright versions
@@ -985,6 +991,8 @@ export class AllureReporter implements ReporterV2 {
     }
 
     const suitePrefix = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
+    const projectName = getProjectName();
+    const testCaseIdBase = `${relativeFile}#${suitePrefix}${test.title}`;
     const legacyFullName = `${relativeFile}#${suitePrefix}${titleMetadata.cleanTitle}`;
     let staticAllureId = titleMetadata.labels.find((label) => label.name === LabelName.ALLURE_ID)?.value;
 
@@ -1004,7 +1012,9 @@ export class AllureReporter implements ReporterV2 {
       testFilePath,
       relativeFileParts,
       suiteTitles,
-      testCaseIdBase: `${relativeFile}#${suitePrefix}${test.title}`,
+      projectName,
+      testCaseIdBase: projectName ? `${projectName}:${testCaseIdBase}` : testCaseIdBase,
+      legacyTestCaseIdBase: testCaseIdBase,
       titleMetadata,
       fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
       legacyFullName,
