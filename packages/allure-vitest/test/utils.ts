@@ -19,6 +19,10 @@ export type TestFileAccessor = (opts: {
 
 export type TestFiles = Record<string, string | TestFileAccessor>;
 
+type VitestConfigOptions = {
+  reportMatchers?: boolean;
+};
+
 type Opts = {
   env?: (testDir: string) => Record<string, string>;
   cwd?: string;
@@ -30,7 +34,20 @@ export const setupModulePath = getPosixPath(require.resolve("allure-vitest/setup
 
 export const reporterModulePath = getPosixPath(require.resolve("allure-vitest/reporter"));
 
-export const createVitestConfig = (allureResultsPath: string) => `
+const createReporterOptions = (allureResultsPath: string, options: VitestConfigOptions = {}) => `
+          links: {
+            issue: {
+              urlTemplate: "https://example.org/issue/%s",
+            },
+            tms: {
+              urlTemplate: "https://example.org/tms/%s",
+            },
+          },
+          resultsDir: "${allureResultsPath}",
+          ${options.reportMatchers === undefined ? "" : `reportMatchers: ${options.reportMatchers},`}
+`;
+
+export const createVitestConfig = (allureResultsPath: string, options: VitestConfigOptions = {}) => `
   import { defineConfig } from "vitest/config";
 
   export default defineConfig({
@@ -41,22 +58,14 @@ export const createVitestConfig = (allureResultsPath: string) => `
       reporters: [
         "verbose",
         ["${reporterModulePath}", {
-          links: {
-            issue: {
-              urlTemplate: "https://example.org/issue/%s",
-            },
-            tms: {
-              urlTemplate: "https://example.org/tms/%s",
-            },
-          },
-          resultsDir: "${allureResultsPath}",
+${createReporterOptions(allureResultsPath, options)}
         }]
       ],
     },
   });
 `;
 
-export const createVitestBrowserConfig = (allureResultsPath: string) => `
+export const createVitestBrowserConfig = (allureResultsPath: string, options: VitestConfigOptions = {}) => `
   import { defineConfig } from "vitest/config";
   import { playwright } from "@vitest/browser-playwright";
 
@@ -68,15 +77,7 @@ export const createVitestBrowserConfig = (allureResultsPath: string) => `
       reporters: [
         "verbose",
         ["${reporterModulePath}", {
-          links: {
-            issue: {
-              urlTemplate: "https://example.org/issue/%s",
-            },
-            tms: {
-              urlTemplate: "https://example.org/tms/%s",
-            },
-          },
-          resultsDir: "${allureResultsPath}",
+${createReporterOptions(allureResultsPath, options)}
         }]
       ],
       browser: {

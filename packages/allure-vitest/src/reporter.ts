@@ -23,10 +23,15 @@ import type { TestModule, Vitest } from "vitest/node";
 import type { Reporter } from "vitest/reporters";
 
 import { commands as allureBrowserCommands } from "./browser/index.js";
+import { isMatcherMessage } from "./matcherMessages.js";
 import { takeGlobalRuntimeMessages } from "./runtime.js";
 import { getTestMetadata } from "./utils.js";
 
 const localRequire = createRequire(import.meta.url);
+
+export type AllureVitestReporterConfig = ReporterConfig & {
+  reportMatchers?: boolean;
+};
 
 const setupModulePath = fileURLToPath(new URL("./setup.js", import.meta.url));
 
@@ -37,10 +42,10 @@ const normalizeSetupFilePath = (setupFilePath: string) =>
 
 export default class AllureVitestReporter implements Reporter {
   private allureReporterRuntime?: ReporterRuntime;
-  private config: ReporterConfig;
+  private config: AllureVitestReporterConfig;
   private globalRuntimeMessages: RuntimeMessage[] = [];
 
-  constructor(config: ReporterConfig) {
+  constructor(config: AllureVitestReporterConfig) {
     this.config = config;
   }
 
@@ -48,7 +53,7 @@ export default class AllureVitestReporter implements Reporter {
     this.registerSetupFile(vitest);
     this.enableConcurrencySupport(vitest);
 
-    const { listeners, resultsDir, ...config } = this.config;
+    const { listeners, resultsDir, reportMatchers: _reportMatchers, ...config } = this.config;
 
     this.allureReporterRuntime = new ReporterRuntime({
       ...config,
@@ -187,8 +192,13 @@ export default class AllureVitestReporter implements Reporter {
         result.labels.push(getPackageLabel(task.file.filepath));
       }
 
-      if (allureRuntimeMessages.length) {
-        this.allureReporterRuntime!.applyRuntimeMessages(testUuid, allureRuntimeMessages);
+      const runtimeMessages =
+        this.config.reportMatchers ?? true
+          ? allureRuntimeMessages
+          : allureRuntimeMessages.filter((m) => !isMatcherMessage(m));
+
+      if (runtimeMessages.length) {
+        this.allureReporterRuntime!.applyRuntimeMessages(testUuid, runtimeMessages);
       }
 
       switch (task.result?.state) {
