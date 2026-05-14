@@ -5,6 +5,9 @@ import {
   ALLURE_HTTP_EXCHANGE_CONTENT_TYPE,
   ALLURE_HTTP_EXCHANGE_FILE_EXTENSION,
   ALLURE_HTTP_REDACTED_VALUE,
+  ContentType,
+  attachment,
+  step,
   type HttpExchange,
 } from "allure-js-commons";
 import type { RuntimeAttachmentContentMessage, RuntimeMessage } from "allure-js-commons/sdk";
@@ -42,9 +45,64 @@ type TestSeenRequest = {
   headers: IncomingHttpHeaders;
 };
 
+type TestLogHeader = {
+  name: string;
+  value: string | string[];
+};
+
+type TestMockLog = {
+  action:
+    | {
+        bodySize: number;
+        headers: TestLogHeader[];
+        status: number;
+        type: "reply";
+      }
+    | {
+        type: "close" | "timeout";
+      };
+  method: string;
+  path: string;
+};
+
+type TestInteractionLog = {
+  matched: boolean;
+  matchedMock?: {
+    method: string;
+    path: string;
+  };
+  method: string;
+  path: string;
+  request: {
+    bodySize?: number;
+    headers: TestLogHeader[];
+    url: string;
+  };
+  response:
+    | {
+        bodySize: number;
+        headers: TestLogHeader[];
+        status: number;
+        type: "reply";
+      }
+    | {
+        status: number;
+        type: "not_found";
+      }
+    | {
+        type: "close" | "timeout";
+      };
+};
+
+type TestHttpServerLog = {
+  interactions: TestInteractionLog[];
+  mocks: TestMockLog[];
+};
+
 type TestHttpServer = {
   forGet: (path: string) => TestRequestBuilder;
   forPost: (path: string) => TestRequestBuilder;
+  getLog: () => TestHttpServerLog;
   stop: () => Promise<void>;
   urlFor: (path: string) => string;
 };
@@ -133,9 +191,10 @@ type GlobalRuntimeHolder = typeof globalThis & {
 
 const createTestServer = async (): Promise<TestHttpServer> => {
   const routes: TestRoute[] = [];
+  const interactions: TestInteractionLog[] = [];
   const sockets = new Set<Socket>();
   const server = createServer((request, response) => {
-    handleTestRequest(request, response, routes).catch(() => {
+    handleTestRequest(request, response, routes, interactions).catch(() => {
       if (!response.headersSent) {
         response.statusCode = 500;
       }
@@ -170,6 +229,10 @@ const createTestServer = async (): Promise<TestHttpServer> => {
   return {
     forGet: (path) => new TestRequestBuilder(routes, "GET", path),
     forPost: (path) => new TestRequestBuilder(routes, "POST", path),
+    getLog: () => ({
+      interactions,
+      mocks: routes.map(createMockLog),
+    }),
     stop: async () => {
       for (const socket of sockets) {
         socket.destroy();
@@ -197,10 +260,15 @@ const handleTestRequest = async (
   request: IncomingMessage,
   response: ServerResponse,
   routes: TestRoute[],
+  interactions: TestInteractionLog[],
 ): Promise<void> => {
-  const route = routes.find(({ method, path }) => method === request.method && path === parseRequestPath(request.url));
+  const requestPath = parseRequestPath(request.url);
+  const route = routes.find(({ method, path }) => method === request.method && path === requestPath);
 
   if (!route) {
+    interactions.push(
+      createInteractionLog(request, requestPath, undefined, undefined, { status: 404, type: "not_found" }),
+    );
     response.statusCode = 404;
     response.end();
 
@@ -208,16 +276,20 @@ const handleTestRequest = async (
   }
 
   if (route.action.type === "close") {
+    interactions.push(createInteractionLog(request, requestPath, route, undefined, { type: "close" }));
     request.socket.destroy();
 
     return;
   }
 
   if (route.action.type === "timeout") {
+    interactions.push(createInteractionLog(request, requestPath, route, undefined, { type: "timeout" }));
+
     return;
   }
 
   const bodyBuffer = await readIncomingBody(request);
+  const interaction = createInteractionLog(request, requestPath, route, bodyBuffer, createReplyLog(route.action));
 
   route.endpoint.addSeenRequest({
     body: new TestRequestBody(bodyBuffer),
@@ -231,6 +303,7 @@ const handleTestRequest = async (
   }
 
   response.end(route.action.body);
+  interactions.push(interaction);
 };
 
 const parseRequestPath = (url: string | undefined): string => {
@@ -245,6 +318,95 @@ const readIncomingBody = async (request: IncomingMessage): Promise<Buffer> => {
   }
 
   return Buffer.concat(chunks);
+};
+
+const createMockLog = ({ action, method, path }: TestRoute): TestMockLog => {
+  if (action.type !== "reply") {
+    return {
+      action: {
+        type: action.type,
+      },
+      method,
+      path,
+    };
+  }
+
+  return {
+    action: createReplyLog(action),
+    method,
+    path,
+  };
+};
+
+const createReplyLog = (action: Extract<TestRouteAction, { type: "reply" }>) => ({
+  bodySize: getTestBodySize(action.body),
+  headers: normalizeLogHeaders(action.headers),
+  status: action.status,
+  type: "reply" as const,
+});
+
+const createInteractionLog = (
+  request: IncomingMessage,
+  path: string,
+  route: TestRoute | undefined,
+  body: Buffer | undefined,
+  response: TestInteractionLog["response"],
+): TestInteractionLog => ({
+  matched: route !== undefined,
+  matchedMock: route
+    ? {
+        method: route.method,
+        path: route.path,
+      }
+    : undefined,
+  method: request.method ?? "UNKNOWN",
+  path,
+  request: {
+    bodySize: body?.length,
+    headers: normalizeLogHeaders(request.headers),
+    url: sanitizeLogUrl(request.url),
+  },
+  response,
+});
+
+const getTestBodySize = (body: Buffer | string | undefined): number => {
+  if (body === undefined) {
+    return 0;
+  }
+
+  return Buffer.isBuffer(body) ? body.length : Buffer.byteLength(body);
+};
+
+const normalizeLogHeaders = (headers: IncomingHttpHeaders | TestResponseHeaders): TestLogHeader[] =>
+  Object.entries(headers).flatMap(([name, value]) => {
+    if (value === undefined) {
+      return [];
+    }
+
+    return [
+      {
+        name,
+        value: shouldKeepLogHeaderValue(name)
+          ? Array.isArray(value)
+            ? value.map(String)
+            : String(value)
+          : ALLURE_HTTP_REDACTED_VALUE,
+      },
+    ];
+  });
+
+const sanitizeLogUrl = (url: string | undefined): string => {
+  const parsedUrl = new URL(url ?? "/", "http://127.0.0.1");
+
+  for (const name of Array.from(parsedUrl.searchParams.keys())) {
+    parsedUrl.searchParams.set(name, ALLURE_HTTP_REDACTED_VALUE);
+  }
+
+  return `${parsedUrl.pathname}${parsedUrl.search}`;
+};
+
+const shouldKeepLogHeaderValue = (name: string): boolean => {
+  return /^(?:accept|content-length|content-type)$/i.test(name);
 };
 
 const withTestRuntime = async <T>(body: () => T | Promise<T>): Promise<TestRuntimeResult<T>> => {
@@ -298,31 +460,35 @@ const runAxiosTest = async <T>(
   body: (server: TestHttpServer, client: AxiosInstance) => T | Promise<T>,
   options: AllureAxiosOptions = {},
 ): Promise<HttpTestResult<T>> => {
-  const server = await createTestServer();
+  return await step("Run Axios exchange", async () => {
+    const server = await createTestServer();
 
-  try {
-    const { messages, result } = await withTestRuntime(async () => {
-      const client = axios.create();
-      const restore = instrumentAxios(client, options);
+    try {
+      const { messages, result } = await withTestRuntime(async () => {
+        const client = axios.create();
+        const restore = instrumentAxios(client, options);
 
-      try {
-        return await body(server, client);
-      } finally {
-        restore();
-      }
-    });
-    const attachments = getHttpExchangeAttachmentMessages(messages);
-    const exchanges = attachments.map(parseHttpExchangeAttachment);
+        try {
+          return await body(server, client);
+        } finally {
+          restore();
+        }
+      });
+      const attachments = getHttpExchangeAttachmentMessages(messages);
+      const exchanges = attachments.map(parseHttpExchangeAttachment);
 
-    return {
-      attachments,
-      exchanges,
-      messages,
-      result,
-    };
-  } finally {
-    await server.stop();
-  }
+      await attachment("HTTP mock interactions", JSON.stringify(server.getLog(), undefined, 2), ContentType.JSON);
+
+      return {
+        attachments,
+        exchanges,
+        messages,
+        result,
+      };
+    } finally {
+      await server.stop();
+    }
+  });
 };
 
 describe("allure-axios", () => {
@@ -681,23 +847,33 @@ describe("allure-axios", () => {
   });
 
   it("ejects installed interceptors when restored", async () => {
-    const { messages } = await withTestRuntime(async () => {
-      const client = axios.create({
-        adapter: async (config): Promise<AxiosResponse> => ({
-          config,
-          data: "ok",
-          headers: {},
-          request: {},
-          status: 200,
-          statusText: "OK",
-        }),
-      });
-      const restore = instrumentAxios(client);
+    const { messages } = await step("Run restored Axios instance without active instrumentation", () =>
+      withTestRuntime(async () => {
+        const client = axios.create({
+          adapter: async (config): Promise<AxiosResponse> => ({
+            config,
+            data: "ok",
+            headers: {},
+            request: {},
+            status: 200,
+            statusText: "OK",
+          }),
+        });
+        const restore = instrumentAxios(client);
 
-      restore();
-      await client.get("https://api.example.com/ping");
-    });
+        restore();
+        await client.get("https://api.example.com/ping");
+      }),
+    );
 
-    expect(getHttpExchangeAttachmentMessages(messages)).toHaveLength(0);
+    const attachments = getHttpExchangeAttachmentMessages(messages);
+
+    await attachment(
+      "interceptor restore summary",
+      JSON.stringify({ capturedAttachmentCount: attachments.length }),
+      ContentType.JSON,
+    );
+
+    expect(attachments).toHaveLength(0);
   });
 });
