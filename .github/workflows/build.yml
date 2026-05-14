@@ -89,6 +89,9 @@ jobs:
   test-suite:
     name: "Test ${{ matrix.suite.id }} (${{ matrix.node-version }}, ${{ matrix.os }})"
     runs-on: ${{ matrix.os }}
+    env:
+      ALLURE_MATRIX_ENV: ${{ matrix.os }}-node-${{ matrix.node-version }}
+      ALLURE_DUMP_NAME: allure-results-${{ matrix.os }}-node${{ matrix.node-version }}-${{ matrix.suite.id }}
     strategy:
       fail-fast: false
       matrix:
@@ -148,15 +151,65 @@ jobs:
 
       - name: Run suite tests
         run: |
-          node ./scripts/ci/run-suite.mjs test ${{ matrix.suite.id }}
+          yarn allure run --config ./allurerc.mjs --environment="${{ env.ALLURE_MATRIX_ENV }}" --dump="${{ env.ALLURE_DUMP_NAME }}" --rerun 2 -- node ./scripts/ci/run-suite.mjs test ${{ matrix.suite.id }}
 
-      - name: Upload failure artifacts
-        if: failure()
+      - name: Upload test results
+        if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: failure-${{ matrix.os }}-node${{ matrix.node-version }}-${{ matrix.suite.id }}
+          name: ${{ env.ALLURE_DUMP_NAME }}
+          if-no-files-found: error
+          retention-days: 7
+          path: ./${{ env.ALLURE_DUMP_NAME }}.zip
+
+  report:
+    needs: [test-suite]
+    name: Build report
+    runs-on: ubuntu-latest
+    if: always()
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+    env:
+      ALLURE_SERVICE_TOKEN: ${{ secrets.ALLURE_SERVICE_TOKEN }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: "yarn"
+
+      - name: yarn install
+        run: |
+          yarn install --immutable --immutable-cache
+
+      - name: Download Allure dumps
+        uses: actions/download-artifact@v6
+        continue-on-error: true
+        with:
+          pattern: allure-results-*
+          path: ./
+          merge-multiple: true
+
+      - name: Generate Allure report
+        id: generate-report
+        run: |
+          yarn allure generate --config ./allurerc.mjs --dump="allure-results-*.zip" --output=./out/allure-report
+
+      - name: Upload Allure logs
+        if: failure() && steps.generate-report.outcome == 'failure'
+        uses: actions/upload-artifact@v7
+        with:
+          name: allure-report-logs
           if-no-files-found: ignore
           retention-days: 7
-          path: |
-            .ci-logs/**/*.log
-            packages/*/out/allure-results/**
+          path: /home/runner/.allure/logs/
+
+      - name: Post Allure summary
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false
+        uses: allure-framework/allure-action@v0
+        with:
+          report-directory: ./out/allure-report
+          github-token: ${{ secrets.GITHUB_TOKEN }}

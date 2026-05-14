@@ -100,7 +100,7 @@ it("reports tests in real time", async () => {
 
 it("can be used with custom Node events", async () => {
   const { tests, groups, envInfo } = await runCypressInlineTest({
-    "cypress.config.js": () => `
+    "cypress.config.js": ({ allureDirPath }) => `
       const { defineConfig } = require("cypress");
       const { allureCypress } = require("allure-cypress/reporter");
 
@@ -110,6 +110,7 @@ it("can be used with custom Node events", async () => {
           viewportWidth: 1240,
           setupNodeEvents: (on, config) => {
             const reporter = allureCypress(on, config, {
+              resultsDir: "${allureDirPath}",
               environmentInfo: { foo: "bar" },
             });
             on("after:spec", (spec, results) => {

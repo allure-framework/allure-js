@@ -7,7 +7,7 @@ it("has environment info", async () => {
     "cypress/e2e/sample.cy.js": () => `
       it('sample test', () => {});
      `,
-    "cypress.config.js": ({ allureCypressReporterModulePath }) => `
+    "cypress.config.js": ({ allureCypressReporterModulePath, allureDirPath }) => `
       const { allureCypress } = require("${allureCypressReporterModulePath}");
 
       module.exports = {
@@ -16,6 +16,7 @@ it("has environment info", async () => {
           viewportWidth: 1240,
           setupNodeEvents: (on, config) => {
             allureCypress(on, {
+              resultsDir: "${allureDirPath}",
               environmentInfo: {
                 envVar1: "envVar1Value",
                 envVar2: "envVar2Value",

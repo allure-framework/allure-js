@@ -264,7 +264,7 @@ describe("parameter serialization", () => {
           cy.wrap({ foo: { bar: { }, baz: "qux" } }) // should remove 'bar' that creates nesting level 3 but keep 'baz'
         });
       `,
-      "cypress.config.js": ({ allureCypressReporterModulePath }) => `
+      "cypress.config.js": ({ allureCypressReporterModulePath, allureDirPath }) => `
         const { allureCypress } = require("${allureCypressReporterModulePath}");
 
         module.exports = {
@@ -273,6 +273,7 @@ describe("parameter serialization", () => {
             viewportWidth: 1240,
             setupNodeEvents: (on, config) => {
               allureCypress(on, config, {
+                resultsDir: "${allureDirPath}",
                 stepsFromCommands: {
                   maxArgumentLength: 25,
                   maxArgumentDepth: 2,

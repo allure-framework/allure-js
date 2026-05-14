@@ -185,7 +185,7 @@ async function runCommand(command, logPath) {
     let settled = false;
     const child = spawn(yarnInvocation.command, yarnInvocation.args, {
       cwd: ROOT_DIR,
-      env: process.env,
+      env: createCommandEnv(),
       stdio: ["ignore", "pipe", "pipe"],
     });
 
@@ -230,6 +230,14 @@ async function runCommand(command, logPath) {
       });
     });
   });
+}
+
+function createCommandEnv() {
+  return {
+    ...process.env,
+    FORCE_COLOR: "0",
+    NO_COLOR: "1",
+  };
 }
 
 function createYarnInvocation(args) {

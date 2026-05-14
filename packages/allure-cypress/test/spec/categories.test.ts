@@ -8,7 +8,7 @@ it("has categories", async () => {
     "cypress/e2e/sample.cy.js": () => `
       it('sample test', () => {});
     `,
-    "cypress.config.js": ({ allureCypressReporterModulePath }) => `
+    "cypress.config.js": ({ allureCypressReporterModulePath, allureDirPath }) => `
       const { allureCypress } = require("${allureCypressReporterModulePath}");
 
       module.exports = {
@@ -17,6 +17,7 @@ it("has categories", async () => {
           viewportWidth: 1240,
           setupNodeEvents: (on, config) => {
             allureCypress(on, {
+              resultsDir: "${allureDirPath}",
               categories: [
                  {
                    name: "Sad tests",
