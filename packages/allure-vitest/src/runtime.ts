@@ -35,7 +35,7 @@ const getCurrentTask = (): Task | undefined => {
   const task = asyncContext?.currentTaskStorage.getStore();
 
   if (task) {
-    return asyncContext?.activeTasks?.has(task) ?? true ? task : undefined;
+    return (asyncContext?.activeTasks?.has(task) ?? true) ? task : undefined;
   }
 
   return getCurrentTest();
