@@ -1,5 +1,0 @@
-{
-  "extends": ["config:base", ":preserveSemverRanges"],
-  "labels": ["type:dependencies"],
-  "branchConcurrentLimit": 5
-}
