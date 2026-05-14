@@ -58,6 +58,7 @@ const suites = new Map([
     {
       compileFrom: [
         "allure-js-commons",
+        "allure-axios",
         "allure-fetch",
         "allure-bun",
         "allure-chai",
@@ -69,6 +70,7 @@ const suites = new Map([
       ],
       testCommands: [
         createWorkspaceScriptCommand("allure-js-commons", "test"),
+        createWorkspaceScriptCommand("allure-axios", "test"),
         createWorkspaceScriptCommand("allure-fetch", "test"),
         createWorkspaceScriptCommand("allure-bun", "test"),
         createWorkspaceScriptCommand("allure-chai", "test"),

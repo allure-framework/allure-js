@@ -6847,6 +6847,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"allure-axios@workspace:packages/allure-axios":
+  version: 0.0.0-use.local
+  resolution: "allure-axios@workspace:packages/allure-axios"
+  dependencies:
+    "@babel/cli": "npm:^7.28.0"
+    "@babel/core": "npm:^7.28.0"
+    "@babel/preset-env": "npm:^7.28.0"
+    "@babel/preset-typescript": "npm:^7.27.1"
+    "@types/babel__core": "npm:^7.20.5"
+    "@types/babel__preset-env": "npm:^7.10.0"
+    "@types/node": "npm:^20.19.0"
+    allure-commandline: "npm:^2.29.0"
+    allure-js-commons: "workspace:*"
+    allure-vitest: "workspace:*"
+    axios: "npm:1.16.0"
+    babel-plugin-add-module-exports: "npm:^1.0.4"
+    npm-run-all2: "npm:^8.0.0"
+    rimraf: "npm:^6.0.0"
+    typescript: "npm:^5.2.2"
+    vitest: "npm:^4.0.18"
+  peerDependencies:
+    axios: ">=1.16.0 <2"
+  languageName: unknown
+  linkType: soft
+
 "allure-bun@workspace:packages/allure-bun":
   version: 0.0.0-use.local
   resolution: "allure-bun@workspace:packages/allure-bun"
@@ -7529,18 +7554,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.13.6":
-  version: 1.13.6
-  resolution: "axios@npm:1.13.6"
-  dependencies:
-    follow-redirects: "npm:^1.15.11"
-    form-data: "npm:^4.0.5"
-    proxy-from-env: "npm:^1.1.0"
-  checksum: 10/a7ed83c2af3ef21d64609df0f85e76893a915a864c5934df69241001d0578082d6521a0c730bf37518ee458821b5695957cb10db9fc705f2a8996c8686ea7a89
-  languageName: node
-  linkType: hard
-
-"axios@npm:^1.15.2":
+"axios@npm:1.16.0, axios@npm:^1.15.2":
   version: 1.16.0
   resolution: "axios@npm:1.16.0"
   dependencies:
@@ -10814,16 +10828,6 @@ __metadata:
   version: 1.1.0
   resolution: "fn.name@npm:1.1.0"
   checksum: 10/000198af190ae02f0138ac5fa4310da733224c628e0230c81e3fff7c4e094af7e0e8bb9f4357cabd21db601759d89f3445da744afbae20623cfa41edf3888397
-  languageName: node
-  linkType: hard
-
-"follow-redirects@npm:^1.15.11":
-  version: 1.15.11
-  resolution: "follow-redirects@npm:1.15.11"
-  peerDependenciesMeta:
-    debug:
-      optional: true
-  checksum: 10/07372fd74b98c78cf4d417d68d41fdaa0be4dcacafffb9e67b1e3cf090bc4771515e65020651528faab238f10f9b9c0d9707d6c1574a6c0387c5de1042cde9ba
   languageName: node
   linkType: hard
 
@@ -16237,13 +16241,6 @@ __metadata:
   version: 1.0.0
   resolution: "proxy-from-env@npm:1.0.0"
   checksum: 10/f26b59c0f21dd118c23a0eb1f5250848a23b5029ec5c9f2b4011b6439b19fa83da50858d84e9261da94aa4e67778c1bac5483afce884b7770a96895a4e6b9a19
-  languageName: node
-  linkType: hard
-
-"proxy-from-env@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "proxy-from-env@npm:1.1.0"
-  checksum: 10/f0bb4a87cfd18f77bc2fba23ae49c3b378fb35143af16cc478171c623eebe181678f09439707ad80081d340d1593cd54a33a0113f3ccb3f4bc9451488780ee23
   languageName: node
   linkType: hard
 

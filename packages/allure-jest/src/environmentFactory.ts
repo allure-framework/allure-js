@@ -113,7 +113,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
       }
     }
 
-    #handleTestEvent(event: Circus.Event, state: Circus.State) {
+    #handleTestEvent(event: Circus.Event, _state: Circus.State) {
       switch (event.name) {
         case "hook_start":
           this.#handleHookStart(event.hook);
