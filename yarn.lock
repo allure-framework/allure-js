@@ -6270,12 +6270,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.19.0":
-  version: 20.19.37
-  resolution: "@types/node@npm:20.19.37"
+"@types/node@npm:^24.0.0":
+  version: 24.12.4
+  resolution: "@types/node@npm:24.12.4"
   dependencies:
-    undici-types: "npm:~6.21.0"
-  checksum: 10/7e0d561d0d980109a0b64c6f797584a69d706421f18c0b24850206a15a4286443e676032abfa438590f25e4dfc3561ffc8d7f5c0c90edf08b705f6f9c35febba
+    undici-types: "npm:~7.16.0"
+  checksum: 10/4e5ce6faaf0e6f291114d6ac14fe546d491812b306107620802d5bef00ca36fb290637e79ec4fc24f33214f78f58c9b63254bd0ce94788bebfec03f26d45f2ea
   languageName: node
   linkType: hard
 
@@ -6857,7 +6857,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.27.1"
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
-    "@types/node": "npm:^20.19.0"
+    "@types/node": "npm:^24.0.0"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
     allure-vitest: "workspace:*"
@@ -6882,7 +6882,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.27.1"
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
-    "@types/node": "npm:^20.19.0"
+    "@types/node": "npm:^24.0.0"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
     allure-vitest: "workspace:*"
@@ -6905,7 +6905,7 @@ __metadata:
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
     "@types/chai": "npm:^5.2.2"
-    "@types/node": "npm:^20.19.0"
+    "@types/node": "npm:^24.0.0"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
     allure-vitest: "workspace:*"
@@ -6937,7 +6937,7 @@ __metadata:
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
     "@types/jasmine": "npm:^5.1.4"
-    "@types/node": "npm:^20.19.0"
+    "@types/node": "npm:^24.0.0"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
     allure-mocha: "workspace:*"
@@ -6976,7 +6976,7 @@ __metadata:
     "@cucumber/messages": "npm:^32.0.0"
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
-    "@types/node": "npm:^20.19.0"
+    "@types/node": "npm:^24.0.0"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
     allure-vitest: "workspace:*"
@@ -7002,7 +7002,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.27.1"
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
-    "@types/node": "npm:^20.19.0"
+    "@types/node": "npm:^24.0.0"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
     allure-vitest: "workspace:*"
@@ -7031,7 +7031,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.27.1"
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
-    "@types/node": "npm:^20.19.0"
+    "@types/node": "npm:^24.0.0"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
     allure-vitest: "workspace:*"
@@ -7054,7 +7054,7 @@ __metadata:
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
     "@types/jasmine": "npm:^5.1.4"
-    "@types/node": "npm:^20.19.0"
+    "@types/node": "npm:^24.0.0"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
     allure-vitest: "workspace:*"
@@ -7086,7 +7086,7 @@ __metadata:
     "@jest/types": "npm:^30.0.0"
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
-    "@types/node": "npm:^20.19.0"
+    "@types/node": "npm:^24.0.0"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
     allure-vitest: "workspace:*"
@@ -7130,7 +7130,7 @@ __metadata:
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
     "@types/md5": "npm:^2"
-    "@types/node": "npm:^20.19.0"
+    "@types/node": "npm:^24.0.0"
     md5: "npm:^2.3.0"
     npm-run-all2: "npm:^8.0.0"
     rimraf: "npm:^6.0.0"
@@ -7169,7 +7169,7 @@ __metadata:
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
     "@types/mocha": "npm:^10.0.1"
-    "@types/node": "npm:^20.19.0"
+    "@types/node": "npm:^24.0.0"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
     allure-vitest: "workspace:*"
@@ -7198,7 +7198,7 @@ __metadata:
     "@playwright/test": "npm:^1.56.1"
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
-    "@types/node": "npm:^20.19.0"
+    "@types/node": "npm:^24.0.0"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
     allure-vitest: "workspace:*"
@@ -7218,7 +7218,7 @@ __metadata:
   dependencies:
     "@testing-library/dom": "npm:^10.4.1"
     "@testing-library/react": "npm:^16.3.2"
-    "@types/node": "npm:^20.19.0"
+    "@types/node": "npm:^24.0.0"
     "@types/react": "npm:^19"
     "@types/react-dom": "npm:^19"
     "@vitest/browser-playwright": "npm:^4.0.18"
@@ -14837,7 +14837,7 @@ __metadata:
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
     "@types/newman": "npm:^5.3.6"
-    "@types/node": "npm:^20.19.0"
+    "@types/node": "npm:^24.0.0"
     "@types/postman-collection": "npm:^3.5.10"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
@@ -18461,10 +18461,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~6.21.0":
-  version: 6.21.0
-  resolution: "undici-types@npm:6.21.0"
-  checksum: 10/ec8f41aa4359d50f9b59fa61fe3efce3477cc681908c8f84354d8567bb3701fafdddf36ef6bff307024d3feb42c837cf6f670314ba37fc8145e219560e473d14
+"undici-types@npm:~7.16.0":
+  version: 7.16.0
+  resolution: "undici-types@npm:7.16.0"
+  checksum: 10/db43439f69c2d94cc29f75cbfe9de86df87061d6b0c577ebe9bb3255f49b22c50162a7d7eb413b0458b6510b8ca299ac7cff38c3a29fbd31af9f504bcf7fbc0d
   languageName: node
   linkType: hard
 
