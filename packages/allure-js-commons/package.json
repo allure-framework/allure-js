@@ -1,6 +1,6 @@
 {
   "name": "allure-js-commons",
-  "version": "3.7.2",
+  "version": "3.8.0",
   "description": "Allure JS Commons",
   "keywords": [
     "allure",
@@ -44,6 +44,18 @@
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js",
       "default": "./dist/cjs/index.js"
+    },
+    "./sync": {
+      "types": "./dist/types/sync.d.ts",
+      "import": "./dist/esm/sync.js",
+      "require": "./dist/cjs/sync.js",
+      "default": "./dist/cjs/sync.js"
+    },
+    "./http": {
+      "types": "./dist/types/http.d.ts",
+      "import": "./dist/esm/http.js",
+      "require": "./dist/cjs/http.js",
+      "default": "./dist/cjs/http.js"
     },
     "./sdk": {
       "types": "./dist/types/sdk/index.d.ts",

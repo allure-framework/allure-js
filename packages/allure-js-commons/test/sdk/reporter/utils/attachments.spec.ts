@@ -45,6 +45,14 @@ describe("typeToExtension", () => {
     expect(extension).toBe(".zip");
   });
 
+  it("should get an httpexchange extension for Allure HTTP exchange", () => {
+    const extension = typeToExtension({
+      contentType: "application/vnd.allure.http+json",
+    });
+
+    expect(extension).toBe(".httpexchange");
+  });
+
   it("should get an empty extension for unknown type", () => {
     const extension = typeToExtension({
       contentType: "application/vnd.unknown",

@@ -27,7 +27,7 @@ it("doesn't report skipped features and steps", async () => {
   expect(tests).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
-        fullName: "skipped_feature1.test.js: logout-feature1 > logout-scenario1",
+        fullName: "dummy:skipped_feature1.test.js: logout-feature1 > logout-scenario1",
         name: "logout-scenario1",
         status: Status.SKIPPED,
         statusDetails: expect.objectContaining({
@@ -35,7 +35,7 @@ it("doesn't report skipped features and steps", async () => {
         }),
       }),
       expect.objectContaining({
-        fullName: "skipped_feature2.test.js: logout-feature2 > logout-scenario1",
+        fullName: "dummy:skipped_feature2.test.js: logout-feature2 > logout-scenario1",
         name: "logout-scenario1",
         status: Status.SKIPPED,
         statusDetails: expect.objectContaining({
@@ -43,7 +43,7 @@ it("doesn't report skipped features and steps", async () => {
         }),
       }),
       expect.objectContaining({
-        fullName: "skipped_scenario1.test.js: logout-feature3 > logout-scenario1",
+        fullName: "dummy:skipped_scenario1.test.js: logout-feature3 > logout-scenario1",
         name: "logout-scenario1",
         status: Status.SKIPPED,
         statusDetails: expect.objectContaining({
@@ -51,7 +51,7 @@ it("doesn't report skipped features and steps", async () => {
         }),
       }),
       expect.objectContaining({
-        fullName: "skipped_scenario2.test.js: logout-feature4 > logout-scenario1",
+        fullName: "dummy:skipped_scenario2.test.js: logout-feature4 > logout-scenario1",
         name: "logout-scenario1",
         status: Status.SKIPPED,
         statusDetails: expect.objectContaining({

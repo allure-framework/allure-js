@@ -143,3 +143,23 @@ describe("signing in with a password", () => {
 ```
 
 More details about the API are available at [https://allurereport.org/docs/playwright-reference/](https://allurereport.org/docs/playwright-reference/).
+
+### Sync API
+
+When your Playwright test uses synchronous helpers or matcher integrations, you can use the sync facade from `allure-js-commons/sync`.
+
+```ts
+import { test, expect } from "@playwright/test";
+import * as allure from "allure-js-commons/sync";
+
+test("sign in with a valid password", async () => {
+  allure.epic("Signing in");
+  allure.parameter("browser", "chromium");
+
+  allure.step("Assert the signed-in state", () => {
+    expect(1).toBe(1);
+  });
+});
+```
+
+The sync facade is strict-sync only: `allure.step()` must finish synchronously and must not return a `Promise`.

@@ -1,0 +1,16 @@
+{
+  "presets": [
+    [
+      "@babel/preset-typescript",
+      {
+        "rewriteImportExtensions": true
+      }
+    ],
+    ["@babel/preset-env", { "modules": false }]
+  ],
+  "plugins": ["babel-plugin-transform-import-meta"],
+  "targets": {
+    "esmodules": true,
+    "node": 18
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["./src/**/*"],
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "lib": ["esnext"],
+    "rootDir": "./src",
+    "types": ["node"],
+    "outDir": "./dist/types",
+    "module": "node16",
+    "moduleResolution": "node16",
+    "target": "es2020"
+  }
+}

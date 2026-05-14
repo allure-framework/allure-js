@@ -15,10 +15,9 @@ export class BunTestRuntime extends MessageTestRuntime {
     this.activeFileContext = fileContext;
   }
 
-  async sendMessage(message: RuntimeMessage) {
+  private applyMessage(message: RuntimeMessage) {
     if (!this.activeFileContext) {
       this.runState.allureRuntime.applyGlobalRuntimeMessages([message]);
-      await Promise.resolve();
       return;
     }
 
@@ -30,6 +29,14 @@ export class BunTestRuntime extends MessageTestRuntime {
     } else {
       allureRuntime.applyGlobalRuntimeMessages([message]);
     }
+  }
+
+  sendMessageSync(message: RuntimeMessage) {
+    this.applyMessage(message);
+  }
+
+  async sendMessage(message: RuntimeMessage) {
+    this.applyMessage(message);
 
     await Promise.resolve();
   }

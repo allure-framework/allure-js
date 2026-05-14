@@ -129,3 +129,17 @@ Scenario("Signing in with a correct password", async () => {
 ```
 
 More details about the API are available at [https://allurereport.org/docs/codeceptjs-reference/](https://allurereport.org/docs/codeceptjs-reference/).
+
+### Sync API
+
+When your test code uses synchronous helpers or matcher integrations, you can use the sync facade from `allure-js-commons/sync`.
+
+```js
+import * as allure from "allure-js-commons/sync";
+
+allure.step("check result", () => {
+  allure.parameter("mode", "sync");
+});
+```
+
+The sync facade is strict-sync only: `allure.step()` must finish synchronously and must not return a `Promise`.

@@ -43,6 +43,20 @@ describe("signing in", () => {
 });
 ```
 
+### Sync API
+
+When your Bun test uses synchronous helpers or matcher integrations, you can use the sync facade from `allure-js-commons/sync`.
+
+```ts
+import * as allure from "allure-js-commons/sync";
+
+allure.step("check result", () => {
+  allure.parameter("mode", "sync");
+});
+```
+
+The sync facade is strict-sync only: `allure.step()` must finish synchronously and must not return a `Promise`.
+
 When the test run completes, the result files will be generated in the `./allure-results` directory.
 
 ## Configuration

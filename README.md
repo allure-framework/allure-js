@@ -52,8 +52,10 @@ Minimum supported framework versions by package:
 
 - `allure-codeceptjs`: `codeceptjs >= 2.3.6`
 - `allure-bun`: `Bun test >= 1.3.11`
+- `allure-chai`: `chai >= 4 < 7`
 - `allure-cucumberjs`: `@cucumber/cucumber >= 10.8.0`
 - `allure-cypress`: `cypress >= 12.17.4`
+- `allure-fetch`: Fetch API in Node.js >= 18 or a custom fetch-compatible implementation
 - `allure-jasmine`: `jasmine >= 2.7.0`
 - `allure-jest`: `jest`, `jest-circus`, and matching Jest environments `>= 24.8.0`
 - `allure-mocha`: `mocha >= 6.2.0`
@@ -120,6 +122,12 @@ npx allure open ./allure-report
 
 [Read more](/packages/allure-mocha/README.md)
 
+### Chai
+
+![npm](https://img.shields.io/npm/dm/allure-chai.svg) ![npm](https://img.shields.io/npm/v/allure-chai.svg)
+
+[Read more](/packages/allure-chai/README.md)
+
 ### Playwright
 
 ![npm](https://img.shields.io/npm/dm/allure-playwright.svg) ![npm](https://img.shields.io/npm/v/allure-playwright.svg)
@@ -131,6 +139,12 @@ npx allure open ./allure-report
 ![npm](https://img.shields.io/npm/dm/allure-cypress.svg) ![npm](https://img.shields.io/npm/v/allure-cypress.svg)
 
 [Read more](/packages/allure-cypress/README.md)
+
+### Fetch
+
+![npm](https://img.shields.io/npm/dm/allure-fetch.svg) ![npm](https://img.shields.io/npm/v/allure-fetch.svg)
+
+[Read more](/packages/allure-fetch/README.md)
 
 ### Newman
 

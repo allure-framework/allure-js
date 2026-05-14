@@ -177,6 +177,82 @@ it("keeps correct hooks structure when something failed", async () => {
   });
 });
 
+it("should keep buffered log steps ordered with lambda steps in before hooks", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.ts": `
+      import { test } from "@playwright/test";
+      import { logStep, step } from "allure-js-commons";
+
+      test.beforeEach(async () => {
+        await step("1: lambda", async () => {
+          await logStep("1.1: log");
+          await step("1.2: lambda", async () => {});
+        });
+
+        await test.step("2: lambda", async () => {
+          await logStep("2.1: log");
+          await test.step("2.2: lambda", async () => {});
+          await logStep("2.3: log");
+        });
+      });
+
+      test("steps", async () => {});
+    `,
+  });
+
+  const [testResult] = tests;
+  const beforeHooks = testResult.steps.find((step) => step.name === "Before Hooks");
+
+  expect(beforeHooks).toBeDefined();
+  expect(beforeHooks!.steps).toHaveLength(1);
+  expect(beforeHooks!.steps[0]).toMatchObject({
+    name: "beforeEach hook",
+  });
+  expect(beforeHooks!.steps[0].steps.map((step) => step.name)).toEqual(["1: lambda", "2: lambda"]);
+  expect(beforeHooks!.steps[0].steps[0].steps.map((step) => step.name)).toEqual(["1.1: log", "1.2: lambda"]);
+  expect(beforeHooks!.steps[0].steps[1].steps.map((step) => step.name)).toEqual([
+    "2.1: log",
+    "2.2: lambda",
+    "2.3: log",
+  ]);
+});
+
+it("should keep buffered log steps ordered with lambda steps in after hooks", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "sample.test.ts": `
+      import { test } from "@playwright/test";
+      import { logStep, step } from "allure-js-commons";
+
+      test.afterEach(async () => {
+        await step("1: lambda", async () => {
+          await logStep("1.1: log");
+          await step("1.2: lambda", async () => {});
+        });
+
+        await test.step("2: lambda", async () => {
+          await logStep("2.1: log");
+          await test.step("2.2: lambda", async () => {});
+          await logStep("2.3: log");
+        });
+      });
+
+      test("steps", async () => {});
+    `,
+  });
+
+  const [testResult] = tests;
+  const afterHooks = testResult.steps.find((step) => step.name === "After Hooks");
+
+  expect(afterHooks).toBeDefined();
+  expect(afterHooks!.steps).toHaveLength(1);
+  expect(afterHooks!.steps[0]).toMatchObject({
+    name: "afterEach hook",
+  });
+  expect(afterHooks!.steps[0].steps.map((step) => step.name)).toEqual(["1: lambda", "2: lambda"]);
+  expect(afterHooks!.steps[0].steps[0].steps.map((step) => step.name)).toEqual(["1.1: log", "1.2: lambda"]);
+  expect(afterHooks!.steps[0].steps[1].steps.map((step) => step.name)).toEqual(["2.1: log", "2.2: lambda", "2.3: log"]);
+});
+
 it("should hook steps have attachments", async () => {
   const results = await runPlaywrightInlineTest({
     "sample.test.js": `

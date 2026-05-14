@@ -4,8 +4,9 @@ export default defineConfig({
   test: {
     dir: "./test/spec",
     fileParallelism: false,
-    testTimeout: 45000,
-    hookTimeout: 45000,
+    // Inline Cypress runs can be slow to boot on Windows CI, so keep some extra headroom.
+    testTimeout: 90000,
+    hookTimeout: 90000,
     setupFiles: ["./vitest-setup.ts"],
     reporters: [
       "default",

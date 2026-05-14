@@ -4,8 +4,12 @@ import { ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE } from "allure-js-commons/sdk/repor
 import { MessageTestRuntime } from "allure-js-commons/sdk/runtime";
 
 export class AllureCucumberTestRuntime extends MessageTestRuntime {
-  async sendMessage(message: RuntimeMessage) {
+  sendMessageSync(message: RuntimeMessage) {
     world.attach(JSON.stringify(message), ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE as string);
+  }
+
+  async sendMessage(message: RuntimeMessage) {
+    this.sendMessageSync(message);
     await Promise.resolve();
   }
 }

@@ -19,6 +19,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:packages/allure-bun"\
     },\
     {\
+      "name": "allure-chai",\
+      "reference": "workspace:packages/allure-chai"\
+    },\
+    {\
       "name": "allure-codeceptjs",\
       "reference": "workspace:packages/allure-codeceptjs"\
     },\
@@ -29,6 +33,10 @@ const RAW_RUNTIME_STATE =
     {\
       "name": "allure-cypress",\
       "reference": "workspace:packages/allure-cypress"\
+    },\
+    {\
+      "name": "allure-fetch",\
+      "reference": "workspace:packages/allure-fetch"\
     },\
     {\
       "name": "allure-jasmine",\
@@ -64,9 +72,11 @@ const RAW_RUNTIME_STATE =
   "pnpZipBackend": "libzip",\
   "fallbackExclusionList": [\
     ["allure-bun", ["workspace:packages/allure-bun"]],\
+    ["allure-chai", ["workspace:packages/allure-chai"]],\
     ["allure-codeceptjs", ["workspace:packages/allure-codeceptjs"]],\
     ["allure-cucumberjs", ["workspace:packages/allure-cucumberjs"]],\
     ["allure-cypress", ["workspace:packages/allure-cypress"]],\
+    ["allure-fetch", ["workspace:packages/allure-fetch"]],\
     ["allure-jasmine", ["workspace:packages/allure-jasmine"]],\
     ["allure-jest", ["workspace:packages/allure-jest"]],\
     ["allure-js", ["workspace:."]],\
@@ -8822,6 +8832,38 @@ const RAW_RUNTIME_STATE =
         "linkType": "SOFT"\
       }]\
     ]],\
+    ["allure-chai", [\
+      ["workspace:packages/allure-chai", {\
+        "packageLocation": "./packages/allure-chai/",\
+        "packageDependencies": [\
+          ["@babel/cli", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#npm:7.28.0"],\
+          ["@babel/core", "npm:7.28.0"],\
+          ["@babel/preset-env", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#npm:7.28.0"],\
+          ["@babel/preset-typescript", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#npm:7.27.1"],\
+          ["@types/babel__core", "npm:7.20.5"],\
+          ["@types/babel__preset-env", "npm:7.10.0"],\
+          ["@types/chai", "npm:5.2.2"],\
+          ["@types/node", "npm:20.19.37"],\
+          ["allure-chai", "workspace:packages/allure-chai"],\
+          ["allure-commandline", "npm:2.29.0"],\
+          ["allure-js-commons", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#workspace:packages/allure-js-commons"],\
+          ["allure-vitest", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#workspace:packages/allure-vitest"],\
+          ["babel-plugin-add-module-exports", "npm:1.0.4"],\
+          ["babel-plugin-transform-import-meta", "virtual:d10e825d76338dedaee6647c8486ff1b2de1919ee4a2fdffe7a975104693ccf29afd00c4e48ffcb4f47ef8d1f4877527ac7198a342ce42052f0432baff921fd1#npm:2.3.3"],\
+          ["chai", "npm:6.2.2"],\
+          ["chai4", [\
+            "chai",\
+            "npm:4.5.0"\
+          ]],\
+          ["mocha", "npm:11.7.5"],\
+          ["npm-run-all2", "npm:8.0.1"],\
+          ["rimraf", "npm:6.0.0"],\
+          ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\
+          ["vitest", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#npm:4.0.18"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
     ["allure-codeceptjs", [\
       ["workspace:packages/allure-codeceptjs", {\
         "packageLocation": "./packages/allure-codeceptjs/",\
@@ -8916,6 +8958,30 @@ const RAW_RUNTIME_STATE =
         "linkType": "SOFT"\
       }]\
     ]],\
+    ["allure-fetch", [\
+      ["workspace:packages/allure-fetch", {\
+        "packageLocation": "./packages/allure-fetch/",\
+        "packageDependencies": [\
+          ["@babel/cli", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#npm:7.28.0"],\
+          ["@babel/core", "npm:7.28.0"],\
+          ["@babel/preset-env", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#npm:7.28.0"],\
+          ["@babel/preset-typescript", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#npm:7.27.1"],\
+          ["@types/babel__core", "npm:7.20.5"],\
+          ["@types/babel__preset-env", "npm:7.10.0"],\
+          ["@types/node", "npm:20.19.37"],\
+          ["allure-commandline", "npm:2.29.0"],\
+          ["allure-fetch", "workspace:packages/allure-fetch"],\
+          ["allure-js-commons", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#workspace:packages/allure-js-commons"],\
+          ["allure-vitest", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#workspace:packages/allure-vitest"],\
+          ["babel-plugin-add-module-exports", "npm:1.0.4"],\
+          ["npm-run-all2", "npm:8.0.1"],\
+          ["rimraf", "npm:6.0.0"],\
+          ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\
+          ["vitest", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#npm:4.0.18"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
     ["allure-jasmine", [\
       ["workspace:packages/allure-jasmine", {\
         "packageLocation": "./packages/allure-jasmine/",\
@@ -8933,7 +8999,7 @@ const RAW_RUNTIME_STATE =
           ["allure-js-commons", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#workspace:packages/allure-vitest"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
-          ["babel-plugin-transform-import-meta", "virtual:8777974d67ca967787ddf661a32d550d0663f57378df24bfab492231e53787c89acb197ff79f0e441260027390ebee7bd28e363b51b41022d36965a24dd5a3ca#npm:2.3.3"],\
+          ["babel-plugin-transform-import-meta", "virtual:d10e825d76338dedaee6647c8486ff1b2de1919ee4a2fdffe7a975104693ccf29afd00c4e48ffcb4f47ef8d1f4877527ac7198a342ce42052f0432baff921fd1#npm:2.3.3"],\
           ["jasmine", "npm:5.1.0"],\
           ["npm-run-all2", "npm:8.0.1"],\
           ["rimraf", "npm:6.0.0"],\
@@ -9082,7 +9148,7 @@ const RAW_RUNTIME_STATE =
           ["allure-mocha", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#workspace:packages/allure-mocha"],\
           ["allure-vitest", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#workspace:packages/allure-vitest"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
-          ["babel-plugin-transform-import-meta", "virtual:8777974d67ca967787ddf661a32d550d0663f57378df24bfab492231e53787c89acb197ff79f0e441260027390ebee7bd28e363b51b41022d36965a24dd5a3ca#npm:2.3.3"],\
+          ["babel-plugin-transform-import-meta", "virtual:d10e825d76338dedaee6647c8486ff1b2de1919ee4a2fdffe7a975104693ccf29afd00c4e48ffcb4f47ef8d1f4877527ac7198a342ce42052f0432baff921fd1#npm:2.3.3"],\
           ["glob", "npm:11.1.0"],\
           ["mocha", "npm:11.7.5"],\
           ["npm-run-all2", "npm:8.0.1"],\
@@ -9108,7 +9174,7 @@ const RAW_RUNTIME_STATE =
           ["allure-mocha", "workspace:packages/allure-mocha"],\
           ["allure-vitest", "virtual:0e5707bde7c7e0f6ceb7ba4d70ec47d8a3f05364445f4bb8fa416b0aa7a191f0c489075fc419d83edcf81262c292d2b21c2b824933e86d3c4a380c3e3a6b6d8c#workspace:packages/allure-vitest"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
-          ["babel-plugin-transform-import-meta", "virtual:8777974d67ca967787ddf661a32d550d0663f57378df24bfab492231e53787c89acb197ff79f0e441260027390ebee7bd28e363b51b41022d36965a24dd5a3ca#npm:2.3.3"],\
+          ["babel-plugin-transform-import-meta", "virtual:d10e825d76338dedaee6647c8486ff1b2de1919ee4a2fdffe7a975104693ccf29afd00c4e48ffcb4f47ef8d1f4877527ac7198a342ce42052f0432baff921fd1#npm:2.3.3"],\
           ["glob", "npm:11.1.0"],\
           ["mocha", "npm:11.7.5"],\
           ["npm-run-all2", "npm:8.0.1"],\
@@ -9388,6 +9454,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/assert-plus-npm-1.0.0-cac95ef098-f4f991ae2d.zip/node_modules/assert-plus/",\
         "packageDependencies": [\
           ["assert-plus", "npm:1.0.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["assertion-error", [\
+      ["npm:1.1.0", {\
+        "packageLocation": "./.yarn/cache/assertion-error-npm-1.1.0-66b893015e-fd9429d3a3.zip/node_modules/assertion-error/",\
+        "packageDependencies": [\
+          ["assertion-error", "npm:1.1.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -9827,13 +9902,13 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:8777974d67ca967787ddf661a32d550d0663f57378df24bfab492231e53787c89acb197ff79f0e441260027390ebee7bd28e363b51b41022d36965a24dd5a3ca#npm:2.3.3", {\
-        "packageLocation": "./.yarn/__virtual__/babel-plugin-transform-import-meta-virtual-bd839cb8f9/0/cache/babel-plugin-transform-import-meta-npm-2.3.3-95b2cf570c-5dd9326307.zip/node_modules/babel-plugin-transform-import-meta/",\
+      ["virtual:d10e825d76338dedaee6647c8486ff1b2de1919ee4a2fdffe7a975104693ccf29afd00c4e48ffcb4f47ef8d1f4877527ac7198a342ce42052f0432baff921fd1#npm:2.3.3", {\
+        "packageLocation": "./.yarn/__virtual__/babel-plugin-transform-import-meta-virtual-8440ae090a/0/cache/babel-plugin-transform-import-meta-npm-2.3.3-95b2cf570c-5dd9326307.zip/node_modules/babel-plugin-transform-import-meta/",\
         "packageDependencies": [\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/template", "npm:7.25.9"],\
           ["@types/babel__core", "npm:7.20.5"],\
-          ["babel-plugin-transform-import-meta", "virtual:8777974d67ca967787ddf661a32d550d0663f57378df24bfab492231e53787c89acb197ff79f0e441260027390ebee7bd28e363b51b41022d36965a24dd5a3ca#npm:2.3.3"],\
+          ["babel-plugin-transform-import-meta", "virtual:d10e825d76338dedaee6647c8486ff1b2de1919ee4a2fdffe7a975104693ccf29afd00c4e48ffcb4f47ef8d1f4877527ac7198a342ce42052f0432baff921fd1#npm:2.3.3"],\
           ["tslib", "npm:2.8.1"]\
         ],\
         "packagePeers": [\
@@ -10505,6 +10580,20 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["chai", [\
+      ["npm:4.5.0", {\
+        "packageLocation": "./.yarn/cache/chai-npm-4.5.0-428447e206-cde341aee1.zip/node_modules/chai/",\
+        "packageDependencies": [\
+          ["assertion-error", "npm:1.1.0"],\
+          ["chai", "npm:4.5.0"],\
+          ["check-error", "npm:1.0.3"],\
+          ["deep-eql", "npm:4.1.4"],\
+          ["get-func-name", "npm:2.0.2"],\
+          ["loupe", "npm:2.3.7"],\
+          ["pathval", "npm:1.1.1"],\
+          ["type-detect", "npm:4.1.0"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
       ["npm:6.2.2", {\
         "packageLocation": "./.yarn/cache/chai-npm-6.2.2-e1795cadaa-13cda42cc4.zip/node_modules/chai/",\
         "packageDependencies": [\
@@ -10580,6 +10669,16 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/charset-npm-1.0.1-56ffb0a667-3b6a8ba900.zip/node_modules/charset/",\
         "packageDependencies": [\
           ["charset", "npm:1.0.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["check-error", [\
+      ["npm:1.0.3", {\
+        "packageLocation": "./.yarn/cache/check-error-npm-1.0.3-137994eabc-e2131025cf.zip/node_modules/check-error/",\
+        "packageDependencies": [\
+          ["check-error", "npm:1.0.3"],\
+          ["get-func-name", "npm:2.0.2"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -11609,6 +11708,16 @@ const RAW_RUNTIME_STATE =
         "packagePeers": [\
           "@types/babel-plugin-macros",\
           "babel-plugin-macros"\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["deep-eql", [\
+      ["npm:4.1.4", {\
+        "packageLocation": "./.yarn/cache/deep-eql-npm-4.1.4-bc4d39c2ca-f04f4d581f.zip/node_modules/deep-eql/",\
+        "packageDependencies": [\
+          ["deep-eql", "npm:4.1.4"],\
+          ["type-detect", "npm:4.1.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -12987,6 +13096,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/get-caller-file-npm-2.0.5-80e8a86305-b9769a836d.zip/node_modules/get-caller-file/",\
         "packageDependencies": [\
           ["get-caller-file", "npm:2.0.5"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["get-func-name", [\
+      ["npm:2.0.2", {\
+        "packageLocation": "./.yarn/cache/get-func-name-npm-2.0.2-409dbe3703-3f62f4c236.zip/node_modules/get-func-name/",\
+        "packageDependencies": [\
+          ["get-func-name", "npm:2.0.2"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -15730,6 +15848,16 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["loupe", [\
+      ["npm:2.3.7", {\
+        "packageLocation": "./.yarn/cache/loupe-npm-2.3.7-f294c2ef33-635c8f0914.zip/node_modules/loupe/",\
+        "packageDependencies": [\
+          ["get-func-name", "npm:2.0.2"],\
+          ["loupe", "npm:2.3.7"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["lower-case", [\
       ["npm:2.0.2", {\
         "packageLocation": "./.yarn/cache/lower-case-npm-2.0.2-151055f1c2-83a0a5f159.zip/node_modules/lower-case/",\
@@ -17750,6 +17878,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/pathe-npm-2.0.3-0924246ee0-01e9a69928.zip/node_modules/pathe/",\
         "packageDependencies": [\
           ["pathe", "npm:2.0.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["pathval", [\
+      ["npm:1.1.1", {\
+        "packageLocation": "./.yarn/cache/pathval-npm-1.1.1-ce0311d7e0-b50a475106.zip/node_modules/pathval/",\
+        "packageDependencies": [\
+          ["pathval", "npm:1.1.1"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -20355,6 +20492,13 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/type-detect-npm-4.0.8-8d8127b901-5179e3b8eb.zip/node_modules/type-detect/",\
         "packageDependencies": [\
           ["type-detect", "npm:4.0.8"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:4.1.0", {\
+        "packageLocation": "./.yarn/cache/type-detect-npm-4.1.0-171d011a73-e363bf0352.zip/node_modules/type-detect/",\
+        "packageDependencies": [\
+          ["type-detect", "npm:4.1.0"]\
         ],\
         "linkType": "HARD"\
       }]\

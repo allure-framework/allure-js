@@ -7,11 +7,14 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getFallbackTestCaseIdLabel,
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
+  getProjectName,
   getSuiteLabels,
   getThreadLabel,
+  md5,
 } from "allure-js-commons/sdk/reporter";
 import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
 import type { CollectionDefinition, Event, HeaderList, Item, Request, Response } from "postman-collection";
@@ -94,20 +97,24 @@ class AllureReporter {
     const item = args.item;
     const fullName = this.#getFullName(item);
     const testPath = this.#pathToItem(item);
+    const projectName = getProjectName();
+    const titlePath = projectName ? [projectName, ...testPath] : testPath;
     const hostLabel = getHostLabel();
     const threadLabel = getThreadLabel();
     const { labels, links } = extractMeta(args.item.events);
+    const legacyFullName = `${testPath.join("/")}#${item.name}`;
 
     this.currentTest = this.allureRuntime.startTest({
       name: args.item.name,
       fullName,
-      titlePath: testPath,
+      titlePath,
       stage: Stage.RUNNING,
       labels: [
         getLanguageLabel(),
         getFrameworkLabel("newman"),
         hostLabel,
         threadLabel,
+        getFallbackTestCaseIdLabel(md5(legacyFullName)),
         ...labels,
         ...getEnvironmentLabels(),
       ],
@@ -434,8 +441,10 @@ class AllureReporter {
 
   #getFullName(item: Item): string {
     const chain = this.#pathToItem(item);
+    const projectName = getProjectName();
+    const fullNameBase = projectName ? `${projectName}:${chain.join("/")}` : chain.join("/");
 
-    return `${chain.join("/")}#${item.name}`;
+    return `${fullNameBase}#${item.name}`;
   }
 
   #attachString(name: string, value: string | string[]) {

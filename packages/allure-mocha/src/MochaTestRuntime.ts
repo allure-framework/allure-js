@@ -6,8 +6,12 @@ export class MochaTestRuntime extends MessageTestRuntime {
     super();
   }
 
-  async sendMessage(message: RuntimeMessage) {
+  sendMessageSync(message: RuntimeMessage) {
     this.messageProcessor(message);
+  }
+
+  async sendMessage(message: RuntimeMessage) {
+    this.sendMessageSync(message);
     return Promise.resolve();
   }
 }

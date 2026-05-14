@@ -13,7 +13,7 @@ it("single step", async () => {
         await label("foo", "bar");
       });
     });
-  `,
+    `,
   });
 
   expect(tests).toHaveLength(1);
