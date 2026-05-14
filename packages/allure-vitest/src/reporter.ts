@@ -21,10 +21,13 @@ import type { RunnerTask as Task } from "vitest";
 import type { TestModule, Vitest } from "vitest/node";
 import type { Reporter } from "vitest/reporters";
 
+import { commands as allureBrowserCommands } from "./browser/index.js";
 import { takeGlobalRuntimeMessages } from "./runtime.js";
 import { getTestMetadata } from "./utils.js";
 
 const setupModulePath = fileURLToPath(new URL("./setup.js", import.meta.url));
+
+const browserSetupModulePath = fileURLToPath(new URL("./browser/setup.js", import.meta.url));
 
 const normalizeSetupFilePath = (setupFilePath: string) =>
   setupFilePath.startsWith("file://") ? fileURLToPath(setupFilePath) : setupFilePath;
@@ -56,16 +59,22 @@ export default class AllureVitestReporter implements Reporter {
 
   private registerSetupFile(vitest: Vitest) {
     for (const project of vitest.projects) {
-      if (project.config.browser.enabled) {
-        continue;
-      }
+      const setupFilePath = project.config.browser.enabled ? browserSetupModulePath : setupModulePath;
 
       const hasSetupFile = project.config.setupFiles.some(
-        (setupFile) => normalizeSetupFilePath(setupFile) === setupModulePath,
+        (setupFile) => normalizeSetupFilePath(setupFile) === setupFilePath,
       );
 
       if (!hasSetupFile) {
-        project.config.setupFiles.unshift(setupModulePath);
+        project.config.setupFiles.unshift(setupFilePath);
+      }
+
+      if (project.config.browser.enabled) {
+        project.config.browser.commands ??= {};
+
+        for (const [name, command] of Object.entries(allureBrowserCommands)) {
+          project.config.browser.commands[name] ??= command;
+        }
       }
     }
   }

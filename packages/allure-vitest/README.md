@@ -54,14 +54,13 @@ Install Allure Report separately when you want to render the generated `allure-r
 
 ## Usage
 
-Add next changes to your config file if you want to use vitest to run NodeJS tests only:
+Add the reporter to your config file if you want to use Vitest to run Node.js tests only:
 
 ```diff
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-+    setupFiles: ["allure-vitest/setup"],
     reporters: [
       "default",
       "allure-vitest/reporter",
@@ -70,15 +69,17 @@ export default defineConfig({
 });
 ```
 
-In case if you want to use [vitest for browser testing](https://vitest.dev/guide/browser/) add next changes:
+The reporter registers the Allure setup module automatically. If your project already lists `allure-vitest/setup` in
+`setupFiles`, you can keep it for compatibility or remove it from the config.
+
+If you want to use [Vitest for browser testing](https://vitest.dev/guide/browser/), add the browser provider config:
 
 ```diff
 import { defineConfig } from "vitest/config";
-+ import { commands } from "allure-vitest/browser"
++ import { playwright } from "@vitest/browser-playwright";
 
 export default defineConfig({
   test: {
-+    setupFiles: ["allure-vitest/browser/setup"],
     reporters: [
       "default",
       "allure-vitest/reporter",
@@ -91,12 +92,16 @@ export default defineConfig({
     instances: [
       { browser: "chromium" },
     ],
-+    commands: {
-+      ...commands,
-+    }
   },
 });
 ```
+
+The reporter also registers `allure-vitest/browser/setup` and the Allure browser command automatically when browser
+mode is enabled. If your project already lists them in the config, you can keep them for compatibility or remove them.
+
+Browser mode does not have a stable async context primitive equivalent to Node.js `AsyncLocalStorage`, so Allure runtime
+API calls in `describe.concurrent` browser tests may still be attributed incorrectly after async boundaries. Prefer
+non-concurrent browser tests when using the context-free Allure runtime API.
 
 ### View the report
 
