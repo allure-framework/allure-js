@@ -30,7 +30,7 @@
     "typescript": "^5.2.2"
   },
   "resolutions": {
-    "@xmldom/xmldom": "npm:0.9.9",
+    "@xmldom/xmldom": "npm:@xmldom/xmldom@0.9.10",
     "axios@npm:1.13.6": "npm:1.16.0",
     "cookie@npm:^0.4.2": "npm:0.7.2",
     "diff@npm:^7.0.0": "npm:8.0.4",
