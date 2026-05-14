@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+
 import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
@@ -16,11 +18,19 @@ import {
   md5,
 } from "allure-js-commons/sdk/reporter";
 import type { RunnerTask as Task } from "vitest";
-import type { TestModule } from "vitest/node";
+import type { TestModule, Vitest } from "vitest/node";
 import type { Reporter } from "vitest/reporters";
 
+import { commands as allureBrowserCommands } from "./browser/index.js";
 import { takeGlobalRuntimeMessages } from "./runtime.js";
 import { getTestMetadata } from "./utils.js";
+
+const setupModulePath = fileURLToPath(new URL("./setup.js", import.meta.url));
+
+const browserSetupModulePath = fileURLToPath(new URL("./browser/setup.js", import.meta.url));
+
+const normalizeSetupFilePath = (setupFilePath: string) =>
+  setupFilePath.startsWith("file://") ? fileURLToPath(setupFilePath) : setupFilePath;
 
 export default class AllureVitestReporter implements Reporter {
   private allureReporterRuntime?: ReporterRuntime;
@@ -31,7 +41,9 @@ export default class AllureVitestReporter implements Reporter {
     this.config = config;
   }
 
-  onInit() {
+  onInit(vitest: Vitest) {
+    this.registerSetupFile(vitest);
+
     const { listeners, resultsDir, ...config } = this.config;
 
     this.allureReporterRuntime = new ReporterRuntime({
@@ -43,6 +55,28 @@ export default class AllureVitestReporter implements Reporter {
     this.allureReporterRuntime.writeCategoriesDefinitions();
     this.allureReporterRuntime.writeEnvironmentInfo();
     this.globalRuntimeMessages = [];
+  }
+
+  private registerSetupFile(vitest: Vitest) {
+    for (const project of vitest.projects) {
+      const setupFilePath = project.config.browser.enabled ? browserSetupModulePath : setupModulePath;
+
+      const hasSetupFile = project.config.setupFiles.some(
+        (setupFile) => normalizeSetupFilePath(setupFile) === setupFilePath,
+      );
+
+      if (!hasSetupFile) {
+        project.config.setupFiles.unshift(setupFilePath);
+      }
+
+      if (project.config.browser.enabled) {
+        project.config.browser.commands ??= {};
+
+        for (const [name, command] of Object.entries(allureBrowserCommands)) {
+          project.config.browser.commands[name] ??= command;
+        }
+      }
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/array-type

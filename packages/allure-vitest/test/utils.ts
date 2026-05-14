@@ -28,8 +28,6 @@ const fileDirname = dirname(fileURLToPath(import.meta.url));
 
 export const setupModulePath = getPosixPath(require.resolve("allure-vitest/setup"));
 
-export const browserSetupModulePath = getPosixPath(require.resolve("allure-vitest/browser/setup"));
-
 export const reporterModulePath = getPosixPath(require.resolve("allure-vitest/reporter"));
 
 export const createVitestConfig = (allureResultsPath: string) => `
@@ -40,7 +38,6 @@ export const createVitestConfig = (allureResultsPath: string) => `
       openTelemetry: {
         enabled: false,
       },
-      setupFiles: ["${setupModulePath}"],
       reporters: [
         "verbose",
         ["${reporterModulePath}", {
@@ -61,7 +58,6 @@ export const createVitestConfig = (allureResultsPath: string) => `
 
 export const createVitestBrowserConfig = (allureResultsPath: string) => `
   import { defineConfig } from "vitest/config";
-  import { commands } from "allure-vitest/browser"
   import { playwright } from "@vitest/browser-playwright";
 
   export default defineConfig({
@@ -69,7 +65,6 @@ export const createVitestBrowserConfig = (allureResultsPath: string) => `
       openTelemetry: {
         enabled: false,
       },
-      setupFiles: ["${browserSetupModulePath}"],
       reporters: [
         "verbose",
         ["${reporterModulePath}", {
@@ -91,9 +86,6 @@ export const createVitestBrowserConfig = (allureResultsPath: string) => `
         instances: [
           { browser: "chromium" },
         ],
-        commands: {
-          ...commands,
-        }
       },
     },
   });

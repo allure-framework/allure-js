@@ -1,12 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 
-import {
-  type TestFileAccessor,
-  browserSetupModulePath,
-  reporterModulePath,
-  runVitestInlineTest,
-  setupModulePath,
-} from "../utils.js";
+import { type TestFileAccessor, reporterModulePath, runVitestInlineTest } from "../utils.js";
 
 describe("categories", () => {
   for (const env of ["node", "browser"]) {
@@ -21,7 +15,6 @@ describe("categories", () => {
 
           export default defineConfig({
             test: {
-              setupFiles: ["${setupModulePath}"],
               reporters: [
                 "default",
                 [
@@ -42,13 +35,11 @@ describe("categories", () => {
           }
           return `
           import { defineConfig } from "vitest/config";
-          import { commands } from "allure-vitest/browser";
           import { playwright } from "@vitest/browser-playwright";
 
           export default defineConfig({
             test: {
               openTelemetry: { enabled: false },
-              setupFiles: ["${browserSetupModulePath}"],
               reporters: [
                 "default",
                 [
@@ -68,7 +59,6 @@ describe("categories", () => {
                 enabled: true,
                 headless: true,
                 instances: [{ browser: "chromium" }],
-                commands: { ...commands },
               },
             },
           });

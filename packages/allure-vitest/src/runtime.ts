@@ -9,6 +9,8 @@ export const ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_META_KEY = "allureGlobalRunti
 
 export const ALLURE_VITEST_RUNTIME_MESSAGES_META_KEY = "allureRuntimeMessages";
 
+export const ALLURE_VITEST_ASYNC_CONTEXT_KEY = "__allureVitestAsyncContext";
+
 export type RuntimeMessageMetaKey =
   | typeof ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_META_KEY
   | typeof ALLURE_VITEST_RUNTIME_MESSAGES_META_KEY;
@@ -16,6 +18,27 @@ export type RuntimeMessageMetaKey =
 export type RuntimeMessageTaskMeta = TaskMeta & {
   [ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_META_KEY]?: RuntimeMessage[];
   [ALLURE_VITEST_RUNTIME_MESSAGES_META_KEY]?: RuntimeMessage[];
+};
+
+type AllureVitestAsyncContext = {
+  currentTaskStorage: {
+    getStore: () => Task | undefined;
+  };
+  activeTasks?: {
+    has: (task: Task) => boolean;
+  };
+};
+
+const getCurrentTask = (): Task | undefined => {
+  const holder = globalThis as unknown as Record<string, AllureVitestAsyncContext | undefined>;
+  const asyncContext = holder[ALLURE_VITEST_ASYNC_CONTEXT_KEY];
+  const task = asyncContext?.currentTaskStorage.getStore();
+
+  if (task) {
+    return (asyncContext?.activeTasks?.has(task) ?? true) ? task : undefined;
+  }
+
+  return getCurrentTest();
 };
 
 export const addGlobalMessage = (message: RuntimeMessage) => {
@@ -101,7 +124,7 @@ export class BaseVitestTestRuntime extends BaseMessageTestRuntime {
   }
 
   protected processMessage(message: RuntimeMessage): boolean {
-    const currentTest = getCurrentTest();
+    const currentTest = getCurrentTask();
 
     if (isGlobalRuntimeMessage(message)) {
       if (currentTest) {
