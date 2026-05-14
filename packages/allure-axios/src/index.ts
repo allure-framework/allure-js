@@ -1,10 +1,3 @@
-import axios, {
-  type AxiosAdapter,
-  type AxiosError,
-  type AxiosInstance,
-  type AxiosResponse,
-  type InternalAxiosRequestConfig,
-} from "axios";
 import {
   ALLURE_HTTP_EXCHANGE_FILE_EXTENSION,
   ALLURE_HTTP_EXCHANGE_SCHEMA_VERSION,
@@ -19,6 +12,13 @@ import {
   type HttpExchangeRequest,
   type HttpExchangeResponse,
 } from "allure-js-commons";
+import axios, {
+  type AxiosAdapter,
+  type AxiosError,
+  type AxiosInstance,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
+} from "axios";
 
 export type RedactionKind = "header" | "query" | "cookie" | "form";
 
@@ -305,7 +305,7 @@ const resolveRequestUrl = (instance: AxiosInstance, request: InternalAxiosReques
 const resolveResponseUrl = (response: AxiosResponse): string => {
   const responseUrl = response.request?.res?.responseUrl ?? response.request?.responseURL;
 
-  return typeof responseUrl === "string" && responseUrl ? responseUrl : response.config.url ?? "";
+  return typeof responseUrl === "string" && responseUrl ? responseUrl : (response.config.url ?? "");
 };
 
 const captureHeaders = (

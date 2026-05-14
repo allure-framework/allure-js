@@ -1,7 +1,6 @@
 import { createServer, type IncomingHttpHeaders, type IncomingMessage, type ServerResponse } from "node:http";
 import type { Socket } from "node:net";
 
-import axios, { type AxiosInstance, type AxiosResponse, AxiosError } from "axios";
 import {
   ALLURE_HTTP_EXCHANGE_CONTENT_TYPE,
   ALLURE_HTTP_EXCHANGE_FILE_EXTENSION,
@@ -10,6 +9,7 @@ import {
 } from "allure-js-commons";
 import type { RuntimeAttachmentContentMessage, RuntimeMessage } from "allure-js-commons/sdk";
 import { MessageHolderTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
+import axios, { type AxiosInstance, type AxiosResponse, AxiosError } from "axios";
 import { describe, expect, it } from "vitest";
 
 import { type AllureAxiosOptions, instrumentAxios } from "../../src/index.js";
@@ -346,7 +346,9 @@ describe("allure-axios", () => {
 
     expect(result).toEqual({ ok: true });
     expect(attachments).toHaveLength(1);
-    expect(attachments[0]?.data.name).toMatch(/GET http:\/\/127\.0\.0\.1:\d+\/v1\/orders\/42\?dryRun=true&token=secret$/);
+    expect(attachments[0]?.data.name).toMatch(
+      /GET http:\/\/127\.0\.0\.1:\d+\/v1\/orders\/42\?dryRun=true&token=secret$/,
+    );
     expect(attachments[0]?.data.wrapInStep).toBe(true);
     expect(exchanges).toHaveLength(1);
 
@@ -472,10 +474,13 @@ describe("allure-axios", () => {
   it("captures binary request and response bodies as base64 and marks truncation", async () => {
     const { exchanges, result } = await runAxiosTest(
       async (server, client) => {
-        const endpoint = await server.forPost("/binary").waitForRequestBody().thenReply(200, Buffer.from([4, 5, 6, 7]), {
-          "content-length": "4",
-          "content-type": "application/octet-stream",
-        });
+        const endpoint = await server
+          .forPost("/binary")
+          .waitForRequestBody()
+          .thenReply(200, Buffer.from([4, 5, 6, 7]), {
+            "content-length": "4",
+            "content-type": "application/octet-stream",
+          });
 
         const response = await client.post(server.urlFor("/binary"), Buffer.from([0, 1, 2, 3]), {
           headers: {
