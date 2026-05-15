@@ -143,7 +143,10 @@ function formatAsymmetricMatcher(value: AsymmetricMatcher): string {
   }
 
   if (constructorName === "CloseTo") {
-    const args = [value.sample, value.precision].filter((arg) => arg !== undefined).map(formatValue).join(", ");
+    const args = [value.sample, value.precision]
+      .filter((arg) => arg !== undefined)
+      .map(formatValue)
+      .join(", ");
 
     return `expect.${inversePrefix}closeTo(${args})`;
   }
@@ -336,8 +339,8 @@ const isPromise = (value: unknown): value is Promise<unknown> => value instanceo
 const isThenable = (value: unknown): value is PromiseLike<unknown> =>
   Boolean(
     value &&
-      (typeof value === "object" || typeof value === "function") &&
-      typeof (value as PromiseLike<unknown>).then === "function",
+    (typeof value === "object" || typeof value === "function") &&
+    typeof (value as PromiseLike<unknown>).then === "function",
   );
 
 const observePromise = <T>(promise: Promise<T>, stop: StepStop) => {

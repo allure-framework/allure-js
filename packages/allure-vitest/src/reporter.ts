@@ -193,7 +193,7 @@ export default class AllureVitestReporter implements Reporter {
       }
 
       const runtimeMessages =
-        this.config.reportMatchers ?? true
+        (this.config.reportMatchers ?? true)
           ? allureRuntimeMessages
           : allureRuntimeMessages.filter((m) => !isMatcherMessage(m));
 
