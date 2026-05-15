@@ -55,8 +55,8 @@
     "compile:types": "tsc",
     "compile:fixup": "node ./scripts/fixup.mjs",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "lint": "oxlint --import-plugin src test",
-    "lint:fix": "oxlint --import-plugin --fix src test",
+    "lint": "yarn run -T oxlint --import-plugin src test",
+    "lint:fix": "yarn run -T oxlint --import-plugin --fix src test",
     "pretest": "run-p clean compile",
     "test": "vitest run"
   },
