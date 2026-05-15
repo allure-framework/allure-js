@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import { access } from "node:fs/promises";
+import { createRequire } from "node:module";
 import path from "node:path";
 import process from "node:process";
 
@@ -63,6 +64,17 @@ import {
   statusToAllureStats,
 } from "./utils.js";
 
+type PlaywrightSuitePrototype = {
+  _addTest?: (test: TestCase) => void;
+};
+
+type PatchedPlaywrightSuitePrototype = PlaywrightSuitePrototype & Record<symbol, unknown>;
+type TestPlanExecutionFilter = (test: TestCase, parentSuite?: Suite) => boolean;
+
+const localRequire = typeof require === "function" ? require : createRequire(import.meta.url);
+const testPlanFilterSymbol = Symbol.for("allure-playwright.testPlanFilter");
+const testPlanFilterPatchSymbol = Symbol.for("allure-playwright.testPlanFilterPatch");
+
 export class AllureReporter implements ReporterV2 {
   config!: FullConfig;
   suite!: Suite;
@@ -97,6 +109,8 @@ export class AllureReporter implements ReporterV2 {
     if (!testPlan) {
       return;
     }
+
+    this.installTestPlanExecutionFilter();
 
     const configElement = Object.getOwnPropertySymbols(config)
       .map((symbol) => (config as unknown as Record<symbol, unknown>)[symbol])
@@ -176,10 +190,6 @@ export class AllureReporter implements ReporterV2 {
   }
 
   onTestBegin(test: TestCase) {
-    if (!this.isSelectedByTestPlan(test)) {
-      return;
-    }
-
     const metadata = this.getStaticTestMetadata(test);
     const titlePath = metadata.projectName
       ? [metadata.projectName, ...metadata.relativeFileParts, ...metadata.suiteTitles]
@@ -565,13 +575,11 @@ export class AllureReporter implements ReporterV2 {
     const testUuid = this.allureResultsUuids.get(test.id);
 
     if (!testUuid) {
-      if (this.isSelectedByTestPlan(test)) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `[allure-playwright] Ignoring onStepBegin for "${test.title}", step "${step.title}" (${step.category}) ` +
-            "because no Allure test result has been started.",
-        );
-      }
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[allure-playwright] Ignoring onStepBegin for "${test.title}", step "${step.title}" (${step.category}) ` +
+          "because no Allure test result has been started.",
+      );
       return;
     }
 
@@ -660,13 +668,11 @@ export class AllureReporter implements ReporterV2 {
     const testUuid = this.allureResultsUuids.get(test.id);
 
     if (!testUuid) {
-      if (this.isSelectedByTestPlan(test)) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `[allure-playwright] Ignoring onStepEnd for "${test.title}", step "${step.title}" (${step.category}) ` +
-            "because no Allure test result has been started.",
-        );
-      }
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[allure-playwright] Ignoring onStepEnd for "${test.title}", step "${step.title}" (${step.category}) ` +
+          "because no Allure test result has been started.",
+      );
       return;
     }
 
@@ -736,13 +742,10 @@ export class AllureReporter implements ReporterV2 {
     const testUuid = this.allureResultsUuids.get(test.id);
 
     if (!testUuid) {
-      if (this.isSelectedByTestPlan(test)) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `[allure-playwright] Ignoring onTestEnd for "${test.title}" ` +
-            "because no Allure test result has been started.",
-        );
-      }
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[allure-playwright] Ignoring onTestEnd for "${test.title}" because no Allure test result has been started.`,
+      );
       return;
     }
 
@@ -932,10 +935,6 @@ export class AllureReporter implements ReporterV2 {
 
   async addSkippedResults() {
     const unprocessedCases = this.suite.allTests().filter((testCase) => {
-      if (!this.isSelectedByTestPlan(testCase)) {
-        return false;
-      }
-
       const { title } = testCase;
       const titleMetadata = extractMetadataFromString(title);
 
@@ -1012,10 +1011,11 @@ export class AllureReporter implements ReporterV2 {
     stack.steps = removeRecursively(stack.steps);
   }
 
-  private getStaticTestMetadata(test: TestCase) {
+  private getStaticTestMetadata(test: TestCase, parentSuite?: Suite) {
     const titleMetadata = extractMetadataFromString(test.title);
+    const testParent = parentSuite ?? test.parent;
     const project =
-      test.parent.project() ??
+      testParent?.project() ??
       this.config.projects.find(
         (candidate) =>
           test.location.file === candidate.testDir || test.location.file.startsWith(`${candidate.testDir}${path.sep}`),
@@ -1027,7 +1027,7 @@ export class AllureReporter implements ReporterV2 {
     const normalizedAbsoluteFile = path.normalize(test.location.file);
     const normalizedRelativeFile = path.normalize(testFilePath);
     const fileTitleCandidates = new Set([normalizedAbsoluteFile, normalizedRelativeFile, relativeFile]);
-    let suiteTitles = test.parent.titlePath().filter(Boolean);
+    let suiteTitles = testParent?.titlePath().filter(Boolean) ?? [];
 
     if (project.name && suiteTitles[0] === project.name) {
       suiteTitles = suiteTitles.slice(1);
@@ -1071,12 +1071,12 @@ export class AllureReporter implements ReporterV2 {
     };
   }
 
-  private isInTestPlan(test: TestCase) {
+  private isInTestPlan(test: TestCase, parentSuite?: Suite) {
     if (!this.testPlan) {
       return true;
     }
 
-    const { fullName, legacyFullName, staticAllureId } = this.getStaticTestMetadata(test);
+    const { fullName, legacyFullName, staticAllureId } = this.getStaticTestMetadata(test, parentSuite);
 
     return (
       includedInTestPlan(this.testPlan, { fullName, id: staticAllureId }) ||
@@ -1084,8 +1084,54 @@ export class AllureReporter implements ReporterV2 {
     );
   }
 
-  private isSelectedByTestPlan(test: TestCase) {
-    return !this.testPlan || this.isInTestPlan(test);
+  private installTestPlanExecutionFilter() {
+    const suitePrototype = this.getPlaywrightSuitePrototype();
+
+    if (!suitePrototype?._addTest) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        "[allure-playwright] Could not install the test plan execution filter because Playwright " +
+          "Suite.prototype._addTest was not found. Tests outside ALLURE_TESTPLAN_PATH may still run. " +
+          "Please report this compatibility issue to https://github.com/allure-framework/allure-js/issues.",
+      );
+      return;
+    }
+
+    const patchedSuitePrototype = suitePrototype as PatchedPlaywrightSuitePrototype;
+
+    patchedSuitePrototype[testPlanFilterSymbol] = (test: TestCase, parentSuite?: Suite) =>
+      this.isInTestPlan(test, parentSuite);
+
+    if (patchedSuitePrototype[testPlanFilterPatchSymbol]) {
+      return;
+    }
+
+    const addTest = suitePrototype._addTest;
+
+    // Dear Pavel: break us all day long you may; find the way back, my Codex and I always will.
+    suitePrototype._addTest = function (this: Suite, test: TestCase) {
+      const testPlanFilter = patchedSuitePrototype[testPlanFilterSymbol] as TestPlanExecutionFilter | undefined;
+
+      if (testPlanFilter && !testPlanFilter(test, this)) {
+        return;
+      }
+
+      return addTest.call(this, test);
+    };
+    patchedSuitePrototype[testPlanFilterPatchSymbol] = true;
+  }
+
+  private getPlaywrightSuitePrototype(): PlaywrightSuitePrototype | undefined {
+    try {
+      const playwrightTestRequire = createRequire(localRequire.resolve("@playwright/test"));
+      const playwrightCommon = playwrightTestRequire("playwright/lib/common") as {
+        test?: { Suite?: { prototype?: PlaywrightSuitePrototype } };
+      };
+
+      return playwrightCommon.test?.Suite?.prototype;
+    } catch {
+      return undefined;
+    }
   }
 
   private processStepMetadataMessage(attachmentStepUuid: string, message: RuntimeStepMetadataMessage) {
