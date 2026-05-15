@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 import { Stage, Status } from "allure-js-commons";
@@ -25,6 +26,8 @@ import { commands as allureBrowserCommands } from "./browser/index.js";
 import { takeGlobalRuntimeMessages } from "./runtime.js";
 import { getTestMetadata } from "./utils.js";
 
+const localRequire = createRequire(import.meta.url);
+
 const setupModulePath = fileURLToPath(new URL("./setup.js", import.meta.url));
 
 const browserSetupModulePath = fileURLToPath(new URL("./browser/setup.js", import.meta.url));
@@ -43,6 +46,7 @@ export default class AllureVitestReporter implements Reporter {
 
   onInit(vitest: Vitest) {
     this.registerSetupFile(vitest);
+    this.enableConcurrencySupport(vitest);
 
     const { listeners, resultsDir, ...config } = this.config;
 
@@ -75,6 +79,16 @@ export default class AllureVitestReporter implements Reporter {
         for (const [name, command] of Object.entries(allureBrowserCommands)) {
           project.config.browser.commands[name] ??= command;
         }
+      }
+    }
+  }
+
+  private enableConcurrencySupport(vitest: Vitest) {
+    for (const project of vitest.projects) {
+      if (!project.config.browser.enabled) {
+        // @ts-ignore
+        project.provide("__allure_vitest_custom_runner_module__", project.config.runner);
+        project.config.runner = localRequire.resolve("./runner.js");
       }
     }
   }
