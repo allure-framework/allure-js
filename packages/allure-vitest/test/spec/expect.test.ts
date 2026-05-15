@@ -58,8 +58,16 @@ describe("expect", () => {
             name: "fail test",
             status: "failed",
             statusDetails: {
-              expected: "Object {\n" + '  "nested": Object {\n' + '    "obj": "some",\n' + "  },\n" + "}",
-              actual: "Object {\n" + '  "nested": Object {\n' + '    "obj": "value",\n' + "  },\n" + "}",
+              expected: expect.toBeOneOf([
+                // Vitest < 4.1
+                "Object {\n" + '  "nested": Object {\n' + '    "obj": "some",\n' + "  },\n" + "}",
+                // Vitest 4.1+
+                "{\n" + '  "nested": {\n' + '    "obj": "some",\n' + "  },\n" + "}",
+              ]),
+              actual: expect.toBeOneOf([
+                "Object {\n" + '  "nested": Object {\n' + '    "obj": "value",\n' + "  },\n" + "}",
+                "{\n" + '  "nested": {\n' + '    "obj": "value",\n' + "  },\n" + "}",
+              ]),
             },
           },
         ]);
