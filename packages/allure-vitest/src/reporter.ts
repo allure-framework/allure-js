@@ -86,7 +86,6 @@ export default class AllureVitestReporter implements Reporter {
   private enableConcurrencySupport(vitest: Vitest) {
     for (const project of vitest.projects) {
       if (!project.config.browser.enabled) {
-        // @ts-ignore
         project.provide("__allure_vitest_custom_runner_module__", project.config.runner);
         project.config.runner = localRequire.resolve("./runner.js");
       }
@@ -133,13 +132,7 @@ export default class AllureVitestReporter implements Reporter {
       vitestWorker,
       browser,
       allureSkip = false,
-    } = task.meta as {
-      allureRuntimeMessages: RuntimeMessage[];
-      allureGlobalRuntimeMessages: RuntimeMessage[];
-      vitestWorker: string;
-      allureSkip?: boolean;
-      browser?: string;
-    };
+    } = task.meta;
 
     // do not report tests skipped by test plan
     if (allureSkip) {

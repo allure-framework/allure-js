@@ -7,7 +7,6 @@ import { getAsyncContext } from "./concurrentState.js";
 type VitestRunnerCtor = new (config: SerializedConfig) => VitestRunner;
 
 const resolveRunnerBaseClass = async (): Promise<VitestRunnerCtor> => {
-  //@ts-ignore
   const customRunnerModulePath = vitest.inject("__allure_vitest_custom_runner_module__");
   if (customRunnerModulePath) {
     // The value comes from config.runner, which is always resolved to an absolute
