@@ -1192,20 +1192,6 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    if (!attachmentStepUuid && attachment.name === "error-context" && attachment.contentType === "text/markdown") {
-      if (attachment.body) {
-        this.allureRuntime!.writeAttachment(testUuid, undefined, attachment.name, attachment.body, {
-          contentType: attachment.contentType,
-        });
-      } else if (existsSync(attachment.path!)) {
-        this.allureRuntime!.writeAttachment(testUuid, undefined, attachment.name, attachment.path!, {
-          contentType: attachment.contentType,
-        });
-      }
-
-      return;
-    }
-
     const parentUuid = this.allureRuntime!.startStep(testUuid, attachmentStepUuid, { name: attachment.name });
 
     // only stop if step is created. Step may not be created only if test with specified uuid doesn't exists.
