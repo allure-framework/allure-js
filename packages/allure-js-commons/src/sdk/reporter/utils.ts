@@ -78,43 +78,24 @@ export const readImageAsBase64 = async (filePath: string): Promise<string | unde
   }
 };
 
-export const getProjectName = (() => {
-  let cachedProjectName: string | undefined | null = null;
+export const getProjectRoot = (() => {
+  const cachedProjectRootBySearchFrom = new Map<string, string>();
 
-  return (): string | undefined => {
-    if (cachedProjectName !== null) {
-      return cachedProjectName ?? undefined;
-    }
-
-    const projectRoot = getProjectRoot();
-    const packageJsonPath = path.join(projectRoot, "package.json");
+  const resolveSearchDir = (searchFrom?: string) => {
+    const target = path.resolve(searchFrom ?? process.cwd());
 
     try {
-      const packageJsonContent = fs.readFileSync(packageJsonPath, "utf-8");
-      const packageJson = JSON.parse(packageJsonContent);
-
-      if (packageJson.name && typeof packageJson.name === "string") {
-        const name = packageJson.name;
-        cachedProjectName = name;
-        return name;
-      }
-    } catch {}
-
-    cachedProjectName = undefined;
-    return cachedProjectName;
+      return fs.statSync(target).isFile() ? path.dirname(target) : target;
+    } catch {
+      return target;
+    }
   };
-})();
 
-export const getProjectRoot = (() => {
-  let cachedProjectRoot: string | null = null;
+  const resolveProjectRootByPath = (searchFrom?: string) => {
+    const searchDir = resolveSearchDir(searchFrom);
+    let dir = searchDir;
 
-  const resolveProjectRootByPath = () => {
-    const cwd = process.cwd();
-    let nextDir = cwd;
-    let dir;
-
-    do {
-      dir = nextDir;
+    while (true) {
       try {
         fs.accessSync(path.join(dir, "package.json"), fs.constants.F_OK);
 
@@ -122,24 +103,64 @@ export const getProjectRoot = (() => {
         return dir;
       } catch {}
 
-      nextDir = path.dirname(dir);
-    } while (nextDir.length < dir.length);
+      const parent = path.dirname(dir);
 
-    // package.json doesn't exist in any parent; fall back to CWD
-    return cwd;
+      if (parent === dir) {
+        // package.json doesn't exist in any parent; fall back to the search directory
+        return searchDir;
+      }
+
+      dir = parent;
+    }
   };
 
-  return () => {
-    if (!cachedProjectRoot) {
-      cachedProjectRoot = resolveProjectRootByPath();
+  return (searchFrom?: string) => {
+    const searchDir = resolveSearchDir(searchFrom);
+    const cachedProjectRoot = cachedProjectRootBySearchFrom.get(searchDir);
+
+    if (cachedProjectRoot) {
+      return cachedProjectRoot;
     }
-    return cachedProjectRoot;
+
+    const projectRoot = resolveProjectRootByPath(searchDir);
+
+    cachedProjectRootBySearchFrom.set(searchDir, projectRoot);
+
+    return projectRoot;
   };
 })();
 
-export const getRelativePath = (filepath: string) => {
+export const getProjectName = (() => {
+  const cachedProjectNameByRoot = new Map<string, string | undefined>();
+
+  return (searchFrom?: string): string | undefined => {
+    const projectRoot = getProjectRoot(searchFrom);
+
+    if (cachedProjectNameByRoot.has(projectRoot)) {
+      return cachedProjectNameByRoot.get(projectRoot);
+    }
+
+    const packageJsonPath = path.join(projectRoot, "package.json");
+    let projectName: string | undefined;
+
+    try {
+      const packageJsonContent = fs.readFileSync(packageJsonPath, "utf-8");
+      const packageJson = JSON.parse(packageJsonContent);
+
+      if (packageJson.name && typeof packageJson.name === "string") {
+        projectName = packageJson.name;
+      }
+    } catch {}
+
+    cachedProjectNameByRoot.set(projectRoot, projectName);
+
+    return projectName;
+  };
+})();
+
+export const getRelativePath = (filepath: string, searchFrom?: string) => {
   if (path.isAbsolute(filepath)) {
-    const projectRoot = getProjectRoot();
+    const projectRoot = getProjectRoot(searchFrom);
     filepath = path.relative(projectRoot, filepath);
   }
 

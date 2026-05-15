@@ -8087,11 +8087,11 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@playwright/test", [\
-      ["npm:1.56.1", {\
-        "packageLocation": "./.yarn/cache/@playwright-test-npm-1.56.1-74bef72ba3-9933fa9f8e.zip/node_modules/@playwright/test/",\
+      ["npm:1.60.0", {\
+        "packageLocation": "./.yarn/cache/@playwright-test-npm-1.60.0-b1772ab412-a13d369014.zip/node_modules/@playwright/test/",\
         "packageDependencies": [\
-          ["@playwright/test", "npm:1.56.1"],\
-          ["playwright", "npm:1.56.1"]\
+          ["@playwright/test", "npm:1.60.0"],\
+          ["playwright", "npm:1.60.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -9893,7 +9893,7 @@ const RAW_RUNTIME_STATE =
           ["@vitest/browser", "virtual:2f55e1a1e10a67f13ad458dec39ab492a786f114a0059a2ff052dc4cd4d291d5282af8d0375dafe3fdfac0731db144be5702d3a48f3fb629ebb7ba57ffcb4e8d#npm:4.0.18"],\
           ["@vitest/browser-playwright", "virtual:50928963fbc2450b2935c7ba3082f560301f784487710b02801586aa5f3d524d2b33c57b78a8826d162bd332e975e706d8525d6cd253b504852f2b0eb76f1e1c#npm:4.0.18"],\
           ["@vitest/mocker", "virtual:2f55e1a1e10a67f13ad458dec39ab492a786f114a0059a2ff052dc4cd4d291d5282af8d0375dafe3fdfac0731db144be5702d3a48f3fb629ebb7ba57ffcb4e8d#npm:4.0.18"],\
-          ["playwright", "npm:1.58.2"],\
+          ["playwright", "npm:1.60.0"],\
           ["tinyrainbow", "npm:3.0.3"],\
           ["vitest", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:4.0.18"]\
         ],\
@@ -9913,7 +9913,7 @@ const RAW_RUNTIME_STATE =
           ["@vitest/browser", "virtual:9d8d3fc7f147196497c0571f8d92f6acbc3ac722a70951314020460a43945d956070cd7f4cf8141725f00b36753be8e0c5e8f7ab1660e80fbb7dda8cd925cdd3#npm:4.0.18"],\
           ["@vitest/browser-playwright", "virtual:f37ad3099f3665d5bbc9ee71081416c8874087a5d9739472f56367e210ca9246356f462b31407a28e510bc022801edd4632f86364db715287d62bd50b42e2c00#npm:4.0.18"],\
           ["@vitest/mocker", "virtual:2f55e1a1e10a67f13ad458dec39ab492a786f114a0059a2ff052dc4cd4d291d5282af8d0375dafe3fdfac0731db144be5702d3a48f3fb629ebb7ba57ffcb4e8d#npm:4.0.18"],\
-          ["playwright", "npm:1.58.2"],\
+          ["playwright", "npm:1.60.0"],\
           ["tinyrainbow", "npm:3.0.3"],\
           ["vitest", "virtual:f37ad3099f3665d5bbc9ee71081416c8874087a5d9739472f56367e210ca9246356f462b31407a28e510bc022801edd4632f86364db715287d62bd50b42e2c00#npm:4.0.18"]\
         ],\
@@ -10704,7 +10704,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/plugin-transform-modules-commonjs", "virtual:799de7047ec984c6c76064fe587c3275ef377eb947c3ced539527c591b7cef71c5430134b7c5d6a449c67479a56f0d556a60a8a07354e45b18c83f419c10a557#npm:7.27.1"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.27.1"],\
-          ["@playwright/test", "npm:1.56.1"],\
+          ["@playwright/test", "npm:1.60.0"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
           ["@types/node", "npm:20.19.37"],\
@@ -10738,7 +10738,7 @@ const RAW_RUNTIME_STATE =
           ["allure-js-commons", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#workspace:packages/allure-vitest"],\
           ["npm-run-all2", "npm:8.0.1"],\
-          ["playwright", "npm:1.58.2"],\
+          ["playwright", "npm:1.60.0"],\
           ["react", "npm:19.2.4"],\
           ["react-dom", "virtual:50928963fbc2450b2935c7ba3082f560301f784487710b02801586aa5f3d524d2b33c57b78a8826d162bd332e975e706d8525d6cd253b504852f2b0eb76f1e1c#npm:19.2.4"],\
           ["rimraf", "npm:6.0.0"],\
@@ -10766,7 +10766,7 @@ const RAW_RUNTIME_STATE =
           ["allure-js-commons", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "workspace:packages/allure-vitest"],\
           ["npm-run-all2", "npm:8.0.1"],\
-          ["playwright", "npm:1.58.2"],\
+          ["playwright", "npm:1.60.0"],\
           ["react", "npm:19.2.4"],\
           ["react-dom", "virtual:50928963fbc2450b2935c7ba3082f560301f784487710b02801586aa5f3d524d2b33c57b78a8826d162bd332e975e706d8525d6cd253b504852f2b0eb76f1e1c#npm:19.2.4"],\
           ["rimraf", "npm:6.0.0"],\
@@ -20229,37 +20229,21 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["playwright", [\
-      ["npm:1.56.1", {\
-        "packageLocation": "./.yarn/cache/playwright-npm-1.56.1-a3ae71eaf6-f1743f93b2.zip/node_modules/playwright/",\
+      ["npm:1.60.0", {\
+        "packageLocation": "./.yarn/cache/playwright-npm-1.60.0-f1d6ab02ce-8569770637.zip/node_modules/playwright/",\
         "packageDependencies": [\
           ["fsevents", "patch:fsevents@npm%3A2.3.2#optional!builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"],\
-          ["playwright", "npm:1.56.1"],\
-          ["playwright-core", "npm:1.56.1"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
-      ["npm:1.58.2", {\
-        "packageLocation": "./.yarn/cache/playwright-npm-1.58.2-0c12daad27-d89d6c8a32.zip/node_modules/playwright/",\
-        "packageDependencies": [\
-          ["fsevents", "patch:fsevents@npm%3A2.3.2#optional!builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"],\
-          ["playwright", "npm:1.58.2"],\
-          ["playwright-core", "npm:1.58.2"]\
+          ["playwright", "npm:1.60.0"],\
+          ["playwright-core", "npm:1.60.0"]\
         ],\
         "linkType": "HARD"\
       }]\
     ]],\
     ["playwright-core", [\
-      ["npm:1.56.1", {\
-        "packageLocation": "./.yarn/cache/playwright-core-npm-1.56.1-3f4e0b135f-df785eb3b3.zip/node_modules/playwright-core/",\
+      ["npm:1.60.0", {\
+        "packageLocation": "./.yarn/cache/playwright-core-npm-1.60.0-3d53a7d2d6-66c0f83d62.zip/node_modules/playwright-core/",\
         "packageDependencies": [\
-          ["playwright-core", "npm:1.56.1"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
-      ["npm:1.58.2", {\
-        "packageLocation": "./.yarn/cache/playwright-core-npm-1.58.2-7d85ddc78a-8a98fcf122.zip/node_modules/playwright-core/",\
-        "packageDependencies": [\
-          ["playwright-core", "npm:1.58.2"]\
+          ["playwright-core", "npm:1.60.0"]\
         ],\
         "linkType": "HARD"\
       }]\

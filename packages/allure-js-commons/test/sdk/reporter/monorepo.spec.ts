@@ -1,9 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, sep } from "node:path";
 
 import { describe, expect, it, vi } from "vitest";
+
+import { LabelName } from "../../../src/model.js";
 
 describe("monorepo scenario", () => {
   it("should resolve project name per package", async () => {
@@ -42,6 +44,43 @@ describe("monorepo scenario", () => {
       expect(path2).toBe(join("test", "spec", "user.test.ts"));
     } finally {
       cwdSpy.mockRestore();
+      rmSync(monorepoRoot, { recursive: true, force: true });
+    }
+  });
+
+  it("should resolve project metadata from an explicit search root", async () => {
+    const monorepoRoot = join(tmpdir(), `allure-monorepo-test-${randomUUID()}`);
+    const package1Dir = join(monorepoRoot, "packages", "frontend");
+    const package2Dir = join(monorepoRoot, "packages", "backend");
+    const relativeFile = join("test", "spec", "user.test.ts");
+    const absoluteFile1 = join(package1Dir, relativeFile);
+    const absoluteFile2 = join(package2Dir, relativeFile);
+    const packagePath = relativeFile.split(sep).join(".");
+
+    try {
+      mkdirSync(join(package1Dir, "test", "spec"), { recursive: true });
+      mkdirSync(join(package2Dir, "test", "spec"), { recursive: true });
+      writeFileSync(join(package1Dir, "package.json"), JSON.stringify({ name: "frontend" }), "utf8");
+      writeFileSync(join(package2Dir, "package.json"), JSON.stringify({ name: "backend" }), "utf8");
+      writeFileSync(absoluteFile1, "", "utf8");
+      writeFileSync(absoluteFile2, "", "utf8");
+
+      vi.resetModules();
+      const { getPackageLabel, getProjectName, getRelativePath } = await import("../../../src/sdk/reporter/index.js");
+
+      expect(getProjectName(package1Dir)).toBe("frontend");
+      expect(getProjectName(package2Dir)).toBe("backend");
+      expect(getRelativePath(absoluteFile1, package1Dir)).toBe(relativeFile);
+      expect(getRelativePath(absoluteFile2, package2Dir)).toBe(relativeFile);
+      expect(getPackageLabel(relativeFile, package1Dir)).toEqual({
+        name: LabelName.PACKAGE,
+        value: `frontend.${packagePath}`,
+      });
+      expect(getPackageLabel(relativeFile, package2Dir)).toEqual({
+        name: LabelName.PACKAGE,
+        value: `backend.${packagePath}`,
+      });
+    } finally {
       rmSync(monorepoRoot, { recursive: true, force: true });
     }
   });

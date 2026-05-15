@@ -98,14 +98,14 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    // @ts-ignore
-    const configElement = config[Object.getOwnPropertySymbols(config)[0]];
+    const configElement = Object.getOwnPropertySymbols(config)
+      .map((symbol) => (config as unknown as Record<symbol, unknown>)[symbol])
+      .find(
+        (value): value is { preOnlyTestFilters?: ((test: TestCase) => boolean)[]; cliArgs?: string[] } =>
+          typeof value === "object" && value !== null && ("preOnlyTestFilters" in value || "cliArgs" in value),
+      );
 
-    if (!configElement) {
-      return;
-    }
-
-    configElement.preOnlyTestFilters.push((test: TestCase) => this.isInTestPlan(test));
+    configElement?.preOnlyTestFilters?.push((test: TestCase) => this.isInTestPlan(test));
 
     if (testPlan.tests.some((test) => test.id !== undefined)) {
       return;
@@ -154,7 +154,9 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    configElement.cliArgs = cliArgs;
+    if (configElement) {
+      configElement.cliArgs = cliArgs;
+    }
   }
 
   onError(): void {}
@@ -174,6 +176,10 @@ export class AllureReporter implements ReporterV2 {
   }
 
   onTestBegin(test: TestCase) {
+    if (!this.isSelectedByTestPlan(test)) {
+      return;
+    }
+
     const metadata = this.getStaticTestMetadata(test);
     const titlePath = metadata.projectName
       ? [metadata.projectName, ...metadata.relativeFileParts, ...metadata.suiteTitles]
@@ -191,7 +197,7 @@ export class AllureReporter implements ReporterV2 {
 
     result.labels!.push(getLanguageLabel());
     result.labels!.push(getFrameworkLabel("playwright"));
-    result.labels!.push(getPackageLabel(metadata.testFilePath));
+    result.labels!.push(getPackageLabel(metadata.testFilePath, metadata.projectRootSearchFrom));
     result.labels!.push(getFallbackTestCaseIdLabel(md5(metadata.legacyTestCaseIdBase)));
     result.labels!.push({ name: "titlePath", value: test.parent.titlePath().join(" > ") });
 
@@ -556,13 +562,25 @@ export class AllureReporter implements ReporterV2 {
   }
 
   onStepBegin(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
+    const testUuid = this.allureResultsUuids.get(test.id);
+
+    if (!testUuid) {
+      if (this.isSelectedByTestPlan(test)) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[allure-playwright] Ignoring onStepBegin for "${test.title}", step "${step.title}" (${step.category}) ` +
+            "because no Allure test result has been started.",
+        );
+      }
+      return;
+    }
+
     const isRootBeforeHook = step.title === BEFORE_HOOKS_ROOT_STEP_TITLE;
     const isRootAfterHook = step.title === AFTER_HOOKS_ROOT_STEP_TITLE;
     const isRootHook = isRootBeforeHook || isRootAfterHook;
     const isBeforeHookDescendant = isBeforeHookStep(step);
     const isAfterHookDescendant = isAfterHookStep(step);
     const isHookStep = isBeforeHookDescendant || isAfterHookDescendant;
-    const testUuid = this.allureResultsUuids.get(test.id)!;
 
     if (this.#shouldIgnoreStep(step)) {
       return;
@@ -639,6 +657,19 @@ export class AllureReporter implements ReporterV2 {
   }
 
   onStepEnd(test: TestCase, _result: PlaywrightTestResult, step: TestStep): void {
+    const testUuid = this.allureResultsUuids.get(test.id);
+
+    if (!testUuid) {
+      if (this.isSelectedByTestPlan(test)) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[allure-playwright] Ignoring onStepEnd for "${test.title}", step "${step.title}" (${step.category}) ` +
+            "because no Allure test result has been started.",
+        );
+      }
+      return;
+    }
+
     const isRootBeforeHook = step.title === BEFORE_HOOKS_ROOT_STEP_TITLE;
     const isRootAfterHook = step.title === AFTER_HOOKS_ROOT_STEP_TITLE;
     const isRootHook = isRootBeforeHook || isRootAfterHook;
@@ -665,7 +696,6 @@ export class AllureReporter implements ReporterV2 {
       this.processStepEndAttachments(test, step);
       return;
     }
-    const testUuid = this.allureResultsUuids.get(test.id)!;
     const isBeforeHookDescendant = isBeforeHookStep(step);
     const isAfterHookDescendant = isAfterHookStep(step);
     const isAfterHook = isAfterHookDescendant;
@@ -703,7 +733,19 @@ export class AllureReporter implements ReporterV2 {
   }
 
   async onTestEnd(test: TestCase, result: PlaywrightTestResult) {
-    const testUuid = this.allureResultsUuids.get(test.id)!;
+    const testUuid = this.allureResultsUuids.get(test.id);
+
+    if (!testUuid) {
+      if (this.isSelectedByTestPlan(test)) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[allure-playwright] Ignoring onTestEnd for "${test.title}" ` +
+            "because no Allure test result has been started.",
+        );
+      }
+      return;
+    }
+
     // We need to check parallelIndex first because pw introduced this field only in v1.30.0
     const threadId = result.parallelIndex !== undefined ? result.parallelIndex : result.workerIndex;
     const thread = `pid-${process.pid}-worker-${threadId}`;
@@ -889,7 +931,12 @@ export class AllureReporter implements ReporterV2 {
   }
 
   async addSkippedResults() {
-    const unprocessedCases = this.suite.allTests().filter(({ title }) => {
+    const unprocessedCases = this.suite.allTests().filter((testCase) => {
+      if (!this.isSelectedByTestPlan(testCase)) {
+        return false;
+      }
+
+      const { title } = testCase;
       const titleMetadata = extractMetadataFromString(title);
 
       return !this.startedTestCasesTitlesCache.includes(titleMetadata.cleanTitle);
@@ -991,7 +1038,8 @@ export class AllureReporter implements ReporterV2 {
     }
 
     const suitePrefix = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
-    const projectName = getProjectName();
+    const projectRootSearchFrom = path.dirname(test.location.file);
+    const projectName = getProjectName(projectRootSearchFrom);
     const testCaseIdBase = `${relativeFile}#${suitePrefix}${test.title}`;
     const legacyFullName = `${relativeFile}#${suitePrefix}${titleMetadata.cleanTitle}`;
     let staticAllureId = titleMetadata.labels.find((label) => label.name === LabelName.ALLURE_ID)?.value;
@@ -1013,6 +1061,7 @@ export class AllureReporter implements ReporterV2 {
       relativeFileParts,
       suiteTitles,
       projectName,
+      projectRootSearchFrom,
       testCaseIdBase: projectName ? `${projectName}:${testCaseIdBase}` : testCaseIdBase,
       legacyTestCaseIdBase: testCaseIdBase,
       titleMetadata,
@@ -1033,6 +1082,10 @@ export class AllureReporter implements ReporterV2 {
       includedInTestPlan(this.testPlan, { fullName, id: staticAllureId }) ||
       includedInTestPlan(this.testPlan, { fullName: legacyFullName, id: staticAllureId })
     );
+  }
+
+  private isSelectedByTestPlan(test: TestCase) {
+    return !this.testPlan || this.isInTestPlan(test);
   }
 
   private processStepMetadataMessage(attachmentStepUuid: string, message: RuntimeStepMetadataMessage) {
@@ -1090,6 +1143,20 @@ export class AllureReporter implements ReporterV2 {
     if (allureRuntimeMessage) {
       const message = JSON.parse(attachment.body!.toString()) as RuntimeMessage;
       this.allureRuntime!.applyRuntimeMessages(testUuid, [message]);
+      return;
+    }
+
+    if (!attachmentStepUuid && attachment.name === "error-context" && attachment.contentType === "text/markdown") {
+      if (attachment.body) {
+        this.allureRuntime!.writeAttachment(testUuid, undefined, attachment.name, attachment.body, {
+          contentType: attachment.contentType,
+        });
+      } else if (existsSync(attachment.path!)) {
+        this.allureRuntime!.writeAttachment(testUuid, undefined, attachment.name, attachment.path!, {
+          contentType: attachment.contentType,
+        });
+      }
+
       return;
     }
 
