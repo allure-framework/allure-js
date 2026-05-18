@@ -45,9 +45,9 @@ export const getThreadLabel = (userProvidedThreadId?: string): Label => {
   };
 };
 
-export const getPackageLabel = (filepath: string): Label => {
-  const projectName = getProjectName();
-  const pathParts = getRelativePath(filepath)
+export const getPackageLabel = (filepath: string, searchFrom?: string): Label => {
+  const projectName = getProjectName(searchFrom);
+  const pathParts = getRelativePath(filepath, searchFrom)
     .split(path.sep)
     .filter((v) => v);
   const labelParts = projectName ? [projectName, ...pathParts] : pathParts;

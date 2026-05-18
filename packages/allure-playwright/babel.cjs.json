@@ -7,5 +7,6 @@
       }
     ],
     ["@babel/preset-env"]
-  ]
+  ],
+  "plugins": ["babel-plugin-transform-import-meta"]
 }
