@@ -30,6 +30,8 @@ export type RuntimeMessageTaskMeta = TaskMeta & {
   [ALLURE_VITEST_RUNTIME_MESSAGES_META_KEY]?: RuntimeMessage[];
 };
 
+export const getCurrentTask = (): Task | undefined => getCurrentTest();
+
 export const addGlobalMessage = (message: RuntimeMessage) => {
   const holder = globalThis as unknown as Record<string, RuntimeMessage[] | undefined>;
   const messages = (holder[ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_KEY] ??= []);

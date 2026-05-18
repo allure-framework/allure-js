@@ -4,11 +4,13 @@ import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 
 import { getCurrentTest } from "./concurrentState.js";
 import { allureVitestLegacyApi } from "./legacy.js";
+import { registerAllureVitestExpect } from "./matchers.js";
 import { setGetCurrentTest } from "./runtime.js";
 import { existsInTestPlan } from "./utils.js";
 import { VitestTestRuntime } from "./VitestTestRuntime.js";
 
 setGetCurrentTest(getCurrentTest);
+registerAllureVitestExpect();
 
 beforeAll(() => {
   globalThis.allureTestPlan = parseTestPlan();

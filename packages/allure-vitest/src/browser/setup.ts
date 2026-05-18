@@ -4,7 +4,10 @@ import { afterEach, beforeAll, beforeEach } from "vitest";
 import { commands } from "vitest/browser";
 
 import { allureVitestLegacyApi } from "../legacy.js";
+import { registerAllureVitestExpect } from "../matchers.js";
 import { VitestBrowserTestRuntime } from "../VitestBrowserTestRuntime.js";
+
+registerAllureVitestExpect();
 
 beforeAll(() => {
   setGlobalTestRuntime(new VitestBrowserTestRuntime());
