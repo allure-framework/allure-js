@@ -3995,6 +3995,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jasminejs/reporters@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@jasminejs/reporters@npm:1.0.0"
+  checksum: 10/1a9c502dee39c5cbec18d60ee9b350c2d602a4d15cad5a19fff6902ac2217c2bddfb777e47526d13bd57f018bcd670c1c0aeda55210224250cf0a1c2c754e1be
+  languageName: node
+  linkType: hard
+
 "@jest/console@npm:30.0.0":
   version: 30.0.0
   resolution: "@jest/console@npm:30.0.0"
@@ -6196,10 +6203,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jasmine@npm:^5.1.4":
-  version: 5.1.4
-  resolution: "@types/jasmine@npm:5.1.4"
-  checksum: 10/6b21eb0fc75e38783b7ee3f162ac47fd32ceaca3fb9eca0f4ed0730e56269bd61728e38ebe7c0d40b2d09382cc245deeabc556b2e46670eefee27f8d84c3f84c
+"@types/jasmine@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "@types/jasmine@npm:6.0.0"
+  checksum: 10/22a838ab8d3221da78629819744b7a0065ce6381d198d745258c3ec29974470240160d47fb06b629c1653f285ed23c15c101f0f6939d2817abc02f253ff491b7
   languageName: node
   linkType: hard
 
@@ -6936,7 +6943,7 @@ __metadata:
     "@codeceptjs/helper": "npm:^2.0.4"
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
-    "@types/jasmine": "npm:^5.1.4"
+    "@types/jasmine": "npm:^6.0.0"
     "@types/node": "npm:^20.19.0"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
@@ -7053,14 +7060,14 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.27.1"
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
-    "@types/jasmine": "npm:^5.1.4"
+    "@types/jasmine": "npm:^6.0.0"
     "@types/node": "npm:^20.19.0"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
     allure-vitest: "workspace:*"
     babel-plugin-add-module-exports: "npm:^1.0.4"
     babel-plugin-transform-import-meta: "npm:^2.3.3"
-    jasmine: "npm:^5.1.0"
+    jasmine: "npm:^6.2.0"
     npm-run-all2: "npm:^8.0.0"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^5.2.2"
@@ -11155,6 +11162,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"glob@npm:^10.2.2 || ^11.0.3 || ^12.0.0 || ^13.0.0, glob@npm:^13.0.6":
+  version: 13.0.6
+  resolution: "glob@npm:13.0.6"
+  dependencies:
+    minimatch: "npm:^10.2.2"
+    minipass: "npm:^7.1.3"
+    path-scurry: "npm:^2.0.2"
+  checksum: 10/201ad69e5f0aa74e1d8c00a481581f8b8c804b6a4fbfabeeb8541f5d756932800331daeba99b58fb9e4cd67e12ba5a7eba5b82fb476691588418060b84353214
+  languageName: node
+  linkType: hard
+
 "glob@npm:^10.2.2, glob@npm:^10.3.10, glob@npm:^10.4.2, glob@npm:^10.4.5":
   version: 10.5.0
   resolution: "glob@npm:10.5.0"
@@ -11168,17 +11186,6 @@ __metadata:
   bin:
     glob: dist/esm/bin.mjs
   checksum: 10/ab3bccfefcc0afaedbd1f480cd0c4a2c0e322eb3f0aa7ceaa31b3f00b825069f17cf0f1fc8b6f256795074b903f37c0ade37ddda6a176aa57f1c2bbfe7240653
-  languageName: node
-  linkType: hard
-
-"glob@npm:^13.0.6":
-  version: 13.0.6
-  resolution: "glob@npm:13.0.6"
-  dependencies:
-    minimatch: "npm:^10.2.2"
-    minipass: "npm:^7.1.3"
-    path-scurry: "npm:^2.0.2"
-  checksum: 10/201ad69e5f0aa74e1d8c00a481581f8b8c804b6a4fbfabeeb8541f5d756932800331daeba99b58fb9e4cd67e12ba5a7eba5b82fb476691588418060b84353214
   languageName: node
   linkType: hard
 
@@ -12273,22 +12280,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jasmine-core@npm:~5.1.0":
-  version: 5.1.2
-  resolution: "jasmine-core@npm:5.1.2"
-  checksum: 10/b885618b040c1ead7d27d954ca32ad77faddf8e722cffcd0883e39dbc3909a1b85316c7ccfa0a2e5b312f2bed02d8d6bd577e835da88d892bb18c354581bee26
+"jasmine-core@npm:~6.2.0":
+  version: 6.2.0
+  resolution: "jasmine-core@npm:6.2.0"
+  checksum: 10/00a02cdc961f5e3502e2b458e86b7806bdb4951455e9bb40e8b73b91824a55caac73d3031fad8a41f8499757e30a7ef1864cc9b24910ba63da0f51c61990d010
   languageName: node
   linkType: hard
 
-"jasmine@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "jasmine@npm:5.1.0"
+"jasmine@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "jasmine@npm:6.2.0"
   dependencies:
-    glob: "npm:^10.2.2"
-    jasmine-core: "npm:~5.1.0"
+    "@jasminejs/reporters": "npm:^1.0.0"
+    glob: "npm:^10.2.2 || ^11.0.3 || ^12.0.0 || ^13.0.0"
+    jasmine-core: "npm:~6.2.0"
   bin:
     jasmine: bin/jasmine.js
-  checksum: 10/f7de7ff57a6f3cfde9094a73cac768d5e951e94c954f7fb24cf33b3b112c352daddc64e042b84fa1b99919acc5339774409e30bfc6e53f97829a7882dfc11896
+  checksum: 10/d85cf576bfb8670349f76620725d85c84e4a9d1d0305962d6136df86fbef468b11d593179923a3156e7a7cdf78e908c5b0039146c5e14cc2fbd6aff70fa9b8e0
   languageName: node
   linkType: hard
 

@@ -6452,6 +6452,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["@jasminejs/reporters", [\
+      ["npm:1.0.0", {\
+        "packageLocation": "./.yarn/cache/@jasminejs-reporters-npm-1.0.0-f460ff52dc-1a9c502dee.zip/node_modules/@jasminejs/reporters/",\
+        "packageDependencies": [\
+          ["@jasminejs/reporters", "npm:1.0.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["@jest/console", [\
       ["npm:30.0.0", {\
         "packageLocation": "./.yarn/cache/@jest-console-npm-30.0.0-956690d56f-e57961e910.zip/node_modules/@jest/console/",\
@@ -9384,10 +9393,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@types/jasmine", [\
-      ["npm:5.1.4", {\
-        "packageLocation": "./.yarn/cache/@types-jasmine-npm-5.1.4-2a05d96f38-6b21eb0fc7.zip/node_modules/@types/jasmine/",\
+      ["npm:6.0.0", {\
+        "packageLocation": "./.yarn/cache/@types-jasmine-npm-6.0.0-50ea535205-22a838ab8d.zip/node_modules/@types/jasmine/",\
         "packageDependencies": [\
-          ["@types/jasmine", "npm:5.1.4"]\
+          ["@types/jasmine", "npm:6.0.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -10386,7 +10395,7 @@ const RAW_RUNTIME_STATE =
           ["@codeceptjs/helper", "npm:2.0.4"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
-          ["@types/jasmine", "npm:5.1.4"],\
+          ["@types/jasmine", "npm:6.0.0"],\
           ["@types/node", "npm:20.19.37"],\
           ["allure-codeceptjs", "workspace:packages/allure-codeceptjs"],\
           ["allure-commandline", "npm:2.29.0"],\
@@ -10501,7 +10510,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/preset-typescript", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.27.1"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
-          ["@types/jasmine", "npm:5.1.4"],\
+          ["@types/jasmine", "npm:6.0.0"],\
           ["@types/node", "npm:20.19.37"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-jasmine", "workspace:packages/allure-jasmine"],\
@@ -10509,7 +10518,7 @@ const RAW_RUNTIME_STATE =
           ["allure-vitest", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#workspace:packages/allure-vitest"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
           ["babel-plugin-transform-import-meta", "virtual:d10e825d76338dedaee6647c8486ff1b2de1919ee4a2fdffe7a975104693ccf29afd00c4e48ffcb4f47ef8d1f4877527ac7198a342ce42052f0432baff921fd1#npm:2.3.3"],\
-          ["jasmine", "npm:5.1.0"],\
+          ["jasmine", "npm:6.2.0"],\
           ["npm-run-all2", "npm:8.0.1"],\
           ["rimraf", "npm:6.0.0"],\
           ["typescript", "patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"],\
@@ -16423,21 +16432,22 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["jasmine", [\
-      ["npm:5.1.0", {\
-        "packageLocation": "./.yarn/cache/jasmine-npm-5.1.0-0fc0381342-f7de7ff57a.zip/node_modules/jasmine/",\
+      ["npm:6.2.0", {\
+        "packageLocation": "./.yarn/cache/jasmine-npm-6.2.0-10b513387f-d85cf576bf.zip/node_modules/jasmine/",\
         "packageDependencies": [\
-          ["glob", "npm:10.5.0"],\
-          ["jasmine", "npm:5.1.0"],\
-          ["jasmine-core", "npm:5.1.2"]\
+          ["@jasminejs/reporters", "npm:1.0.0"],\
+          ["glob", "npm:13.0.6"],\
+          ["jasmine", "npm:6.2.0"],\
+          ["jasmine-core", "npm:6.2.0"]\
         ],\
         "linkType": "HARD"\
       }]\
     ]],\
     ["jasmine-core", [\
-      ["npm:5.1.2", {\
-        "packageLocation": "./.yarn/cache/jasmine-core-npm-5.1.2-b8ab393496-b885618b04.zip/node_modules/jasmine-core/",\
+      ["npm:6.2.0", {\
+        "packageLocation": "./.yarn/cache/jasmine-core-npm-6.2.0-fdc5df0ac5-00a02cdc96.zip/node_modules/jasmine-core/",\
         "packageDependencies": [\
-          ["jasmine-core", "npm:5.1.2"]\
+          ["jasmine-core", "npm:6.2.0"]\
         ],\
         "linkType": "HARD"\
       }]\
