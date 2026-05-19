@@ -9423,10 +9423,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@types/md5", [\
-      ["npm:2.3.5", {\
-        "packageLocation": "./.yarn/cache/@types-md5-npm-2.3.5-bd5c825c57-a86baf0521.zip/node_modules/@types/md5/",\
+      ["npm:2.3.6", {\
+        "packageLocation": "./.yarn/cache/@types-md5-npm-2.3.6-d317be84c8-88d041abea.zip/node_modules/@types/md5/",\
         "packageDependencies": [\
-          ["@types/md5", "npm:2.3.5"]\
+          ["@types/md5", "npm:2.3.6"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -10585,7 +10585,7 @@ const RAW_RUNTIME_STATE =
           ["@types/allure-playwright", null],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
-          ["@types/md5", "npm:2.3.5"],\
+          ["@types/md5", "npm:2.3.6"],\
           ["@types/node", "npm:20.19.37"],\
           ["allure-js-commons", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#workspace:packages/allure-js-commons"],\
           ["allure-playwright", null],\
@@ -10612,7 +10612,7 @@ const RAW_RUNTIME_STATE =
           ["@types/allure-playwright", null],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
-          ["@types/md5", "npm:2.3.5"],\
+          ["@types/md5", "npm:2.3.6"],\
           ["@types/node", "npm:20.19.37"],\
           ["allure-js-commons", "virtual:3b04c8c38dde7165df844f9cd74e94cc47d78164564600cf56ba5f8c6011d25ef0d3afc13d610f3da970f6807c830914053ff96a43c86ba17f3ec650dfd687d3#workspace:packages/allure-js-commons"],\
           ["allure-playwright", "workspace:packages/allure-playwright"],\
@@ -10638,7 +10638,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/preset-typescript", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.27.1"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
-          ["@types/md5", "npm:2.3.5"],\
+          ["@types/md5", "npm:2.3.6"],\
           ["@types/node", "npm:20.19.37"],\
           ["allure-js-commons", "workspace:packages/allure-js-commons"],\
           ["md5", "npm:2.3.0"],\
