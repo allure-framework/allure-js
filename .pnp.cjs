@@ -615,17 +615,17 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@babel/cli", [\
-      ["npm:7.28.0", {\
-        "packageLocation": "./.yarn/cache/@babel-cli-npm-7.28.0-c4a4243863-9f26c6e871.zip/node_modules/@babel/cli/",\
+      ["npm:7.28.6", {\
+        "packageLocation": "./.yarn/cache/@babel-cli-npm-7.28.6-b4e455ce7e-49279aa65d.zip/node_modules/@babel/cli/",\
         "packageDependencies": [\
-          ["@babel/cli", "npm:7.28.0"]\
+          ["@babel/cli", "npm:7.28.6"]\
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0", {\
-        "packageLocation": "./.yarn/__virtual__/@babel-cli-virtual-b557edb532/0/cache/@babel-cli-npm-7.28.0-c4a4243863-9f26c6e871.zip/node_modules/@babel/cli/",\
+      ["virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6", {\
+        "packageLocation": "./.yarn/__virtual__/@babel-cli-virtual-d5858e1f6a/0/cache/@babel-cli-npm-7.28.6-b4e455ce7e-49279aa65d.zip/node_modules/@babel/cli/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@jridgewell/trace-mapping", "npm:0.3.29"],\
           ["@nicolo-ribaudo/chokidar-2", "npm:2.1.8-no-fsevents.3"],\
@@ -10305,7 +10305,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/allure-axios", {\
         "packageLocation": "./packages/allure-axios/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.27.1"],\
@@ -10330,7 +10330,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/allure-bun", {\
         "packageLocation": "./packages/allure-bun/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.27.1"],\
@@ -10354,7 +10354,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/allure-chai", {\
         "packageLocation": "./packages/allure-chai/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.27.1"],\
@@ -10386,7 +10386,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/allure-codeceptjs", {\
         "packageLocation": "./packages/allure-codeceptjs/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/plugin-transform-modules-commonjs", "virtual:799de7047ec984c6c76064fe587c3275ef377eb947c3ced539527c591b7cef71c5430134b7c5d6a449c67479a56f0d556a60a8a07354e45b18c83f419c10a557#npm:7.27.1"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
@@ -10426,7 +10426,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/allure-cucumberjs", {\
         "packageLocation": "./packages/allure-cucumberjs/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/plugin-transform-modules-commonjs", "virtual:799de7047ec984c6c76064fe587c3275ef377eb947c3ced539527c591b7cef71c5430134b7c5d6a449c67479a56f0d556a60a8a07354e45b18c83f419c10a557#npm:7.27.1"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
@@ -10453,7 +10453,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/allure-cypress", {\
         "packageLocation": "./packages/allure-cypress/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/plugin-transform-modules-commonjs", "virtual:799de7047ec984c6c76064fe587c3275ef377eb947c3ced539527c591b7cef71c5430134b7c5d6a449c67479a56f0d556a60a8a07354e45b18c83f419c10a557#npm:7.27.1"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
@@ -10480,7 +10480,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/allure-fetch", {\
         "packageLocation": "./packages/allure-fetch/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.27.1"],\
@@ -10504,7 +10504,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/allure-jasmine", {\
         "packageLocation": "./packages/allure-jasmine/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.27.1"],\
@@ -10531,7 +10531,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/allure-jest", {\
         "packageLocation": "./packages/allure-jest/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.27.1"],\
@@ -10577,7 +10577,7 @@ const RAW_RUNTIME_STATE =
       ["virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#workspace:packages/allure-js-commons", {\
         "packageLocation": "./.yarn/__virtual__/allure-js-commons-virtual-9e6aca4be2/1/packages/allure-js-commons/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/plugin-transform-modules-commonjs", "virtual:799de7047ec984c6c76064fe587c3275ef377eb947c3ced539527c591b7cef71c5430134b7c5d6a449c67479a56f0d556a60a8a07354e45b18c83f419c10a557#npm:7.27.1"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
@@ -10604,7 +10604,7 @@ const RAW_RUNTIME_STATE =
       ["virtual:3b04c8c38dde7165df844f9cd74e94cc47d78164564600cf56ba5f8c6011d25ef0d3afc13d610f3da970f6807c830914053ff96a43c86ba17f3ec650dfd687d3#workspace:packages/allure-js-commons", {\
         "packageLocation": "./.yarn/__virtual__/allure-js-commons-virtual-539bb5689e/1/packages/allure-js-commons/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/plugin-transform-modules-commonjs", "virtual:799de7047ec984c6c76064fe587c3275ef377eb947c3ced539527c591b7cef71c5430134b7c5d6a449c67479a56f0d556a60a8a07354e45b18c83f419c10a557#npm:7.27.1"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
@@ -10631,7 +10631,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/allure-js-commons", {\
         "packageLocation": "./packages/allure-js-commons/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/plugin-transform-modules-commonjs", "virtual:799de7047ec984c6c76064fe587c3275ef377eb947c3ced539527c591b7cef71c5430134b7c5d6a449c67479a56f0d556a60a8a07354e45b18c83f419c10a557#npm:7.27.1"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
@@ -10654,7 +10654,7 @@ const RAW_RUNTIME_STATE =
       ["virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#workspace:packages/allure-mocha", {\
         "packageLocation": "./.yarn/__virtual__/allure-mocha-virtual-8777974d67/1/packages/allure-mocha/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.27.1"],\
@@ -10680,7 +10680,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/allure-mocha", {\
         "packageLocation": "./packages/allure-mocha/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.27.1"],\
@@ -10708,7 +10708,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/allure-playwright", {\
         "packageLocation": "./packages/allure-playwright/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/plugin-transform-modules-commonjs", "virtual:799de7047ec984c6c76064fe587c3275ef377eb947c3ced539527c591b7cef71c5430134b7c5d6a449c67479a56f0d556a60a8a07354e45b18c83f419c10a557#npm:7.27.1"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
@@ -19257,7 +19257,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/newman-reporter-allure", {\
         "packageLocation": "./packages/newman-reporter-allure/",\
         "packageDependencies": [\
-          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
+          ["@babel/cli", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.6"],\
           ["@babel/core", "npm:7.28.0"],\
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.27.1"],\
