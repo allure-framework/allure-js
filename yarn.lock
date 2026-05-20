@@ -11215,7 +11215,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:>=9.0.0 <12, glob@npm:^11.0.0, glob@npm:^11.1.0":
+"glob@npm:>=9.0.0 <12, glob@npm:^11.1.0":
   version: 11.1.0
   resolution: "glob@npm:11.1.0"
   dependencies:
@@ -11231,7 +11231,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^10.2.2 || ^11.0.3 || ^12.0.0 || ^13.0.0, glob@npm:^13.0.6":
+"glob@npm:^10.2.2 || ^11.0.3 || ^12.0.0 || ^13.0.0, glob@npm:^13.0.3, glob@npm:^13.0.6":
   version: 13.0.6
   resolution: "glob@npm:13.0.6"
   dependencies:
@@ -15665,6 +15665,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"package-json-from-dist@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "package-json-from-dist@npm:1.0.1"
+  checksum: 10/58ee9538f2f762988433da00e26acc788036914d57c71c246bf0be1b60cdbd77dd60b6a3e1a30465f0b248aeb80079e0b34cb6050b1dfa18c06953bb1cbc7602
+  languageName: node
+  linkType: hard
+
 "pad-right@npm:^0.2.2":
   version: 0.2.2
   resolution: "pad-right@npm:0.2.2"
@@ -17050,13 +17057,14 @@ __metadata:
   linkType: hard
 
 "rimraf@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "rimraf@npm:6.0.0"
+  version: 6.1.3
+  resolution: "rimraf@npm:6.1.3"
   dependencies:
-    glob: "npm:^11.0.0"
+    glob: "npm:^13.0.3"
+    package-json-from-dist: "npm:^1.0.1"
   bin:
     rimraf: dist/esm/bin.mjs
-  checksum: 10/8a2e161f89b4fb8d7f3cab9bdea5360e9ab2ddc13d8120508b56eb93ba0c6f4506b799598900db6558628194b09f89705d1b98a591d7f727508e427e247befea
+  checksum: 10/dd98ec2ad7cd2cccae1c7110754d472eac8edb2bab8a8b057dce04edfe1433dab246a889b3fd85a66c78ca81caa1429caa0e736c7647f6832b04fd5d4dfb8ab8
   languageName: node
   linkType: hard
 
