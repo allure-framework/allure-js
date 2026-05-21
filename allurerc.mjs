@@ -12,7 +12,7 @@ export default {
   plugins: {
     awesome: {
       options: {
-        publish: true,
+        publish: false,
       },
     },
   },
