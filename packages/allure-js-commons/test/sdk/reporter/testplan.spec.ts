@@ -28,6 +28,12 @@ const writeToTempFile = (val: any) => {
   return filename;
 };
 
+const writeRawToTempFile = (val: string) => {
+  const filename = path.join(tmpDir, `${randomUUID()}.json`);
+  writeFileSync(filename, val);
+  return filename;
+};
+
 describe("parseTestPlan", () => {
   it("should return testplan", () => {
     const exampleTestPlan = {
@@ -65,6 +71,69 @@ describe("parseTestPlan", () => {
     process.env = {
       ...originalEnv,
       ALLURE_TESTPLAN_PATH: writeToTempFile(exampleTestPlan),
+    };
+
+    const res = parseTestPlan();
+
+    expect(res).toBeUndefined();
+  });
+
+  it("should return undefined if testplan tests are missing", () => {
+    const exampleTestPlan = {
+      version: "1.0",
+    };
+
+    process.env = {
+      ...originalEnv,
+      ALLURE_TESTPLAN_PATH: writeToTempFile(exampleTestPlan),
+    };
+
+    const res = parseTestPlan();
+
+    expect(res).toBeUndefined();
+  });
+
+  it("should return undefined if testplan tests are not an array", () => {
+    const exampleTestPlan = {
+      version: "1.0",
+      tests: "not an array",
+    };
+
+    process.env = {
+      ...originalEnv,
+      ALLURE_TESTPLAN_PATH: writeToTempFile(exampleTestPlan),
+    };
+
+    const res = parseTestPlan();
+
+    expect(res).toBeUndefined();
+  });
+
+  it("should return undefined if testplan version is unsupported", () => {
+    const exampleTestPlan = {
+      version: "2.0",
+      tests: [
+        {
+          id: 1,
+          selector: "some strange text",
+        },
+      ],
+    };
+
+    process.env = {
+      ...originalEnv,
+      ALLURE_TESTPLAN_PATH: writeToTempFile(exampleTestPlan),
+    };
+
+    const res = parseTestPlan();
+
+    expect(res).toBeUndefined();
+  });
+
+  it("should return undefined if testplan is invalid JSON", () => {
+    process.env = {
+      ...originalEnv,
+      ALLURE_TESTPLAN_PATH: writeRawToTempFile("{"),
     };
 
     const res = parseTestPlan();
@@ -136,6 +205,20 @@ describe("includedInTestPlan", () => {
     expect(includedInTestPlan(exampleTestPlan, { fullName: "Suite > other test" })).toBe(false);
   });
 
+  it("should match native selectors by selector", () => {
+    const exampleTestPlan: TestPlanV1 = {
+      version: "1.0",
+      tests: [
+        {
+          selector: "native://suite/test",
+        },
+      ],
+    };
+
+    expect(includedInTestPlan(exampleTestPlan, { nativeSelector: "native://suite/test" })).toBe(true);
+    expect(includedInTestPlan(exampleTestPlan, { nativeSelector: "native://suite/other-test" })).toBe(false);
+  });
+
   it("should match by id", () => {
     const exampleTestPlan: TestPlanV1 = {
       version: "1.0",
@@ -151,6 +234,24 @@ describe("includedInTestPlan", () => {
     expect(r1).toBe(true);
 
     const r2 = includedInTestPlan(exampleTestPlan, { id: "442", tags: ["@allure.id=123"] });
+    expect(r2).toBe(false);
+  });
+
+  it("should match by explicit allureId", () => {
+    const exampleTestPlan: TestPlanV1 = {
+      version: "1.0",
+      tests: [
+        {
+          id: 123,
+          selector: "some strange text",
+        },
+      ],
+    };
+
+    const r1 = includedInTestPlan(exampleTestPlan, { allureId: "123", tags: ["@allure.id=133"] });
+    expect(r1).toBe(true);
+
+    const r2 = includedInTestPlan(exampleTestPlan, { allureId: "442", tags: ["@allure.id=123"] });
     expect(r2).toBe(false);
   });
 });
