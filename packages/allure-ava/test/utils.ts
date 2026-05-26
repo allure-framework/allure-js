@@ -4,7 +4,7 @@ import { existsSync } from "node:fs";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { dirname, extname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { attachment, logStep, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
@@ -62,6 +62,8 @@ const resolveAllureCommonsEsm = () => {
   return join(packageRoot, "dist", "esm", "index.js");
 };
 
+const toImportSpecifier = (path: string) => pathToFileURL(path).href;
+
 const normalizeRunOptions = (options: string[] | AvaRunOptions): AvaRunOptions =>
   Array.isArray(options) ? { args: options } : options;
 
@@ -77,12 +79,12 @@ export const runAvaInlineTest = async (
     resultsDir: allureResultsPath,
   };
   const fixtureAccessorOpts = {
-    allureAvaIndexPath: getPosixPath(join(packageDirname, "dist", "index.js")),
-    allureAvaSetupPath: getPosixPath(join(packageDirname, "dist", "setup.js")),
+    allureAvaIndexPath: toImportSpecifier(join(packageDirname, "dist", "index.js")),
+    allureAvaSetupPath: toImportSpecifier(join(packageDirname, "dist", "setup.js")),
     allureResultsPath,
-    avaCliPath: getPosixPath(resolveAvaCli()),
-    avaModulePath: getPosixPath(localRequire.resolve("ava")),
-    commonsModulePath: getPosixPath(resolveAllureCommonsEsm()),
+    avaCliPath: resolveAvaCli(),
+    avaModulePath: toImportSpecifier(localRequire.resolve("ava")),
+    commonsModulePath: toImportSpecifier(resolveAllureCommonsEsm()),
     testDir: getPosixPath(testDir),
   };
   const testFilesToWrite: TestFiles = {
