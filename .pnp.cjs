@@ -5633,7 +5633,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/@cucumber-gherkin-npm-39.0.0-56c5f11b10-979581d6a1.zip/node_modules/@cucumber/gherkin/",\
         "packageDependencies": [\
           ["@cucumber/gherkin", "npm:39.0.0"],\
-          ["@cucumber/messages", "npm:32.2.0"]\
+          ["@cucumber/messages", "npm:32.3.1"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -5676,7 +5676,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@cucumber/gherkin", "npm:28.0.0"],\
           ["@cucumber/gherkin-utils", "npm:9.0.0"],\
-          ["@cucumber/messages", "npm:24.0.1"],\
+          ["@cucumber/messages", "npm:24.1.0"],\
           ["@teppeis/multimaps", "npm:3.0.0"],\
           ["commander", "npm:12.0.0"],\
           ["source-map-support", "npm:0.5.21"]\
@@ -5729,17 +5729,6 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@cucumber/messages", [\
-      ["npm:24.0.1", {\
-        "packageLocation": "./.yarn/cache/@cucumber-messages-npm-24.0.1-561a811df8-fdaeb71eaa.zip/node_modules/@cucumber/messages/",\
-        "packageDependencies": [\
-          ["@cucumber/messages", "npm:24.0.1"],\
-          ["@types/uuid", "npm:9.0.7"],\
-          ["class-transformer", "npm:0.5.1"],\
-          ["reflect-metadata", "npm:0.2.1"],\
-          ["uuid", "npm:9.0.1"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:24.1.0", {\
         "packageLocation": "./.yarn/cache/@cucumber-messages-npm-24.1.0-c6e46c47d9-a0e28349af.zip/node_modules/@cucumber/messages/",\
         "packageDependencies": [\
@@ -5755,6 +5744,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/@cucumber-messages-npm-32.2.0-707e5fe14d-b041c14497.zip/node_modules/@cucumber/messages/",\
         "packageDependencies": [\
           ["@cucumber/messages", "npm:32.2.0"],\
+          ["class-transformer", "npm:0.5.1"],\
+          ["reflect-metadata", "npm:0.2.2"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:32.3.1", {\
+        "packageLocation": "./.yarn/cache/@cucumber-messages-npm-32.3.1-e7d7767488-eb02dff7dd.zip/node_modules/@cucumber/messages/",\
+        "packageDependencies": [\
+          ["@cucumber/messages", "npm:32.3.1"],\
           ["class-transformer", "npm:0.5.1"],\
           ["reflect-metadata", "npm:0.2.2"]\
         ],\
@@ -9665,13 +9663,6 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@types/uuid", [\
-      ["npm:9.0.7", {\
-        "packageLocation": "./.yarn/cache/@types-uuid-npm-9.0.7-c380bb8654-c7321194ae.zip/node_modules/@types/uuid/",\
-        "packageDependencies": [\
-          ["@types/uuid", "npm:9.0.7"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:9.0.8", {\
         "packageLocation": "./.yarn/cache/@types-uuid-npm-9.0.8-3eeeaa5abb-b8c60b7ba8.zip/node_modules/@types/uuid/",\
         "packageDependencies": [\
@@ -10495,7 +10486,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/preset-env", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:2ecc1e95c1d00dc9958b1b002bacd33b93499eda964824ca098f5d458945e68ac78b36c75c288e72d1af771baf072dca7432317fe3381c51ab8c749004dda38d#npm:7.27.1"],\
           ["@cucumber/cucumber", "npm:10.8.0"],\
-          ["@cucumber/messages", "npm:32.2.0"],\
+          ["@cucumber/messages", "npm:32.3.1"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
           ["@types/node", "npm:20.19.37"],\
