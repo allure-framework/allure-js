@@ -64,7 +64,7 @@
     "@types/node": "^20.19.0",
     "allure-commandline": "^2.29.0",
     "allure-vitest": "workspace:*",
-    "axios": "1.16.0",
+    "axios": "1.16.1",
     "babel-plugin-add-module-exports": "^1.0.4",
     "npm-run-all2": "^8.0.0",
     "rimraf": "^6.0.0",
