@@ -58,6 +58,7 @@ const suites = new Map([
     {
       compileFrom: [
         "allure-js-commons",
+        "allure-ava",
         "allure-axios",
         "allure-fetch",
         "allure-bun",
@@ -70,6 +71,7 @@ const suites = new Map([
       ],
       testCommands: [
         createWorkspaceScriptCommand("allure-js-commons", "test"),
+        createWorkspaceScriptCommand("allure-ava", "test", { minNodeMajor: 22 }),
         createWorkspaceScriptCommand("allure-axios", "test"),
         createWorkspaceScriptCommand("allure-fetch", "test"),
         createWorkspaceScriptCommand("allure-bun", "test"),
@@ -164,16 +166,32 @@ function createVitestCommand(workspace, { shard, browserHeavy = false } = {}) {
   };
 }
 
-function createWorkspaceScriptCommand(workspace, scriptName) {
+function createWorkspaceScriptCommand(workspace, scriptName, options = {}) {
   return {
     label: `${workspace} ${scriptName}`,
     args: ["workspace", workspace, "run", scriptName],
+    ...options,
   };
 }
 
 async function runCommand(command, logPath) {
   const yarnInvocation = createYarnInvocation(command.args);
   const printableCommand = formatCommand(yarnInvocation.printableArgs);
+  const nodeMajor = Number(process.versions.node.split(".")[0]);
+
+  if (command.minNodeMajor && nodeMajor < command.minNodeMajor) {
+    const message = `[skip] ${command.label} requires Node.js ${command.minNodeMajor}+ (current ${process.versions.node})`;
+
+    if (dryRun) {
+      console.log(message);
+      return;
+    }
+
+    const logStream = createWriteStream(logPath, { flags: "a" });
+    logStream.end(`${message}${os.EOL}`);
+    console.log(message);
+    return;
+  }
 
   if (dryRun) {
     console.log(`[dry-run] ${printableCommand}`);
