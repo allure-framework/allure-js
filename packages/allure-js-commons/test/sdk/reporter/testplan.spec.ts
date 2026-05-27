@@ -57,6 +57,11 @@ describe("parseTestPlan", () => {
   });
 
   it("should return undefiend if ALLURE_TESTPLAN_PATH not set", () => {
+    process.env = {
+      ...originalEnv,
+    };
+    delete process.env.ALLURE_TESTPLAN_PATH;
+
     const res = parseTestPlan();
 
     expect(res).toBeUndefined();
