@@ -129,11 +129,15 @@ export const runAvaInlineTest = async (
   await mkdir(forkCwd, { recursive: true });
 
   const allArgs = [...(options.args ?? [])];
+  const childEnv = { ...process.env };
+  delete childEnv.ALLURE_TESTPLAN_PATH;
+  delete childEnv.ALLURE_RERUN;
+
   const testProcess = await step(`${fixtureAccessorOpts.avaCliPath} ${allArgs.join(" ")}`, () =>
     fork(fixtureAccessorOpts.avaCliPath, allArgs, {
       cwd: forkCwd,
       env: {
-        ...process.env,
+        ...childEnv,
         ALLURE_TEST_MODE: "1",
       },
       silent: true,
