@@ -92,7 +92,6 @@ jobs:
     env:
       ALLURE_MATRIX_ENV: ${{ matrix.os }}-node-${{ matrix.node-version }}
       ALLURE_DUMP_NAME: allure-results-${{ matrix.os }}-node${{ matrix.node-version }}-${{ matrix.suite.id }}
-      TESTCAFE_BROWSER: ${{ matrix.os == 'ubuntu-latest' && 'chromium:headless --guest --no-sandbox' || 'chromium:headless --guest' }}
     strategy:
       fail-fast: false
       matrix:
