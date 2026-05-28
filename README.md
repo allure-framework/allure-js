@@ -62,6 +62,7 @@ Minimum supported framework versions by package:
 - `allure-jest`: `jest`, `jest-circus`, and matching Jest environments `>= 24.8.0`
 - `allure-mocha`: `mocha >= 6.2.0`
 - `allure-playwright`: `@playwright/test >= 1.53.0`
+- `testcafe-reporter-allure-official`: `testcafe >= 2.5.0`
 - `allure-vitest`: `vitest >= 1.3.0`
 - `newman-reporter-allure`: `newman >= 3.5.0`
 - `allure-js-commons`: shared runtime and reporter SDK used to build integrations
@@ -141,6 +142,12 @@ npx allure open ./allure-report
 ![npm](https://img.shields.io/npm/dm/allure-playwright.svg) ![npm](https://img.shields.io/npm/v/allure-playwright.svg)
 
 [Read more](/packages/allure-playwright/README.md)
+
+### TestCafe
+
+Canonical package name: `testcafe-reporter-allure-official`
+
+[Read more](/packages/testcafe-reporter-allure-official/README.md)
 
 ### Cypress
 
