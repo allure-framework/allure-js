@@ -204,3 +204,11 @@ it("should create same test case id for scenario outline tests with template nam
   const [tr1, tr2] = tests;
   expect(tr1.testCaseId).toEqual(tr2.testCaseId);
 });
+
+it("should create different test case ids for scenarios with duplicate names in the same feature", async () => {
+  const { tests } = await runCucumberInlineTest(["duplicate-names"], ["simple"]);
+
+  expect(tests).toHaveLength(2);
+  const [tr1, tr2] = tests;
+  expect(tr1.testCaseId).not.toEqual(tr2.testCaseId);
+});
