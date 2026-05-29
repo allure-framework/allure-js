@@ -3,11 +3,10 @@ import { randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { dirname, extname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { attachment, step } from "allure-js-commons";
 import { stripAnsi, type AllureResults } from "allure-js-commons/sdk";
-import { getPosixPath } from "allure-js-commons/sdk/reporter";
 
 import { parseEnvInfo } from "../../allure-js-commons/src/sdk/reporter/utils/envInfo.js";
 
@@ -107,7 +106,7 @@ const getPnpArgs = () => {
   }
 
   if (existsSync(pnpLoader)) {
-    args.push("--experimental-loader", pnpLoader);
+    args.push("--experimental-loader", pathToFileURL(pnpLoader).href);
   }
 
   return args;
@@ -119,8 +118,8 @@ export const runNodeInlineTest = async (
 ): Promise<NodeInlineTestResult> => {
   const testDir = join(fileDirname, "fixtures", randomUUID());
   const resultsDir = join(testDir, "allure-results");
-  const reporterModulePath = getPosixPath(join(fileDirname, "..", "dist", "esm", "reporter.js"));
-  const setupModulePath = getPosixPath(join(fileDirname, "..", "dist", "esm", "setup.js"));
+  const reporterModulePath = pathToFileURL(join(fileDirname, "..", "dist", "esm", "reporter.js")).href;
+  const setupModulePath = pathToFileURL(join(fileDirname, "..", "dist", "esm", "setup.js")).href;
   const testFilePaths: string[] = [];
 
   await step("create test dir", async () => {
