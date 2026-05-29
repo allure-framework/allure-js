@@ -12,7 +12,8 @@ if (flags.includes("--with-deps")) {
 }
 
 const runYarn = (args, options = {}) => {
-  const result = spawnSync(YARN_BIN, args, {
+  const yarnInvocation = createYarnInvocation(args);
+  const result = spawnSync(yarnInvocation.command, yarnInvocation.args, {
     stdio: options.captureOutput ? ["ignore", "pipe", "inherit"] : "inherit",
     encoding: "utf8",
     env: process.env,
@@ -28,6 +29,20 @@ const runYarn = (args, options = {}) => {
 
   return result.stdout?.trim() ?? "";
 };
+
+function createYarnInvocation(args) {
+  if (process.platform === "win32") {
+    return {
+      command: "cmd.exe",
+      args: ["/d", "/s", "/c", YARN_BIN, ...args],
+    };
+  }
+
+  return {
+    command: YARN_BIN,
+    args,
+  };
+}
 
 runYarn(installArgs);
 

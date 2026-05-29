@@ -62,20 +62,21 @@ type AllureResultsWithTimestamps = AllureResults & {
 };
 
 const ALLURE_TEST_RUNTIME_KEY = "allureTestRuntime";
-const DEFAULT_BROWSER_CMD = process.platform === "linux" ? "--headless --guest --no-sandbox" : "--headless --guest";
+const DEFAULT_BROWSER_ARGS = process.platform === "linux" ? "--guest --no-sandbox" : "--guest";
+const createChromiumBrowserAlias = (browserPath?: string) =>
+  browserPath
+    ? `chromium:${browserPath}:headless ${DEFAULT_BROWSER_ARGS}`
+    : `chromium:headless ${DEFAULT_BROWSER_ARGS}`;
 const DEFAULT_BROWSER = (() => {
   if (process.env.TESTCAFE_BROWSER) {
     return process.env.TESTCAFE_BROWSER;
   }
 
   if (process.env.PW_CHROMIUM_PATH) {
-    return {
-      path: process.env.PW_CHROMIUM_PATH,
-      cmd: DEFAULT_BROWSER_CMD,
-    } satisfies TestCafeBrowserOption;
+    return createChromiumBrowserAlias(process.env.PW_CHROMIUM_PATH);
   }
 
-  return process.platform === "linux" ? "chromium:headless --guest --no-sandbox" : "chromium:headless --guest";
+  return createChromiumBrowserAlias();
 })();
 
 const CONTENT_TYPE_BY_EXTENSION: Record<string, string> = {
@@ -508,11 +509,21 @@ export const runTestCafeInlineTest = async (
   }
 };
 
+const toRequirePath = (fromDir: string, resolvedPath: string) => {
+  const relativePath = relative(fromDir, resolvedPath);
+  const normalizedPath = relativePath.replaceAll("\\", "/");
+
+  if (isAbsolute(relativePath)) {
+    return normalizedPath;
+  }
+
+  return normalizedPath.startsWith(".") ? normalizedPath : `./${normalizedPath}`;
+};
+
 export const getPackageRequirePath = (request: string, fromDir: string) => {
   const resolvedPath = isAbsolute(request) ? request : require.resolve(request);
-  const relativePath = relative(fromDir, resolvedPath).replaceAll("\\", "/");
 
-  return relativePath.startsWith(".") ? relativePath : `./${relativePath}`;
+  return toRequirePath(fromDir, resolvedPath);
 };
 
 export const check = async <T>(name: string, body: () => T | Promise<T>) => {
