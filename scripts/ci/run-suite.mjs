@@ -68,6 +68,7 @@ const suites = new Map([
         "allure-cucumberjs",
         "allure-codeceptjs",
         "newman-reporter-allure",
+        "testcafe-reporter-allure-official",
       ],
       testCommands: [
         createWorkspaceScriptCommand("allure-js-commons", "test"),
@@ -81,6 +82,7 @@ const suites = new Map([
         createWorkspaceScriptCommand("allure-jest", "test"),
         createWorkspaceScriptCommand("allure-codeceptjs", "test"),
         createWorkspaceScriptCommand("newman-reporter-allure", "test"),
+        createWorkspaceScriptCommand("testcafe-reporter-allure-official", "test"),
       ],
     },
   ],
