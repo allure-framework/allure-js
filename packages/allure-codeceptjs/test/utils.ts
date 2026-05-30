@@ -81,18 +81,10 @@ export const runCodeceptJsInlineTest = async (
   testProcess.on("message", messageReader.handleMessage);
 
   return new Promise((resolve) => {
-    // Kill the child process after 30s to prevent the test from hanging
-    // indefinitely when CodeceptJS gets stuck (e.g. on Windows with Node 26
-    // after a synchronous throw inside a page-object step).
     const killTimeout = setTimeout(() => testProcess.kill(), 30_000);
 
     testProcess.on("exit", async () => {
       clearTimeout(killTimeout);
-
-      // On Windows the "exit" event can fire before all pending IPC messages
-      // (sent via process.send() in the child) have been dispatched to our
-      // "message" listener.  Yielding to the event loop once lets those
-      // callbacks run before we read messageReader.results.
       await new Promise<void>((r) => setImmediate(r));
 
       await messageReader.attachResults();
