@@ -1,0 +1,15 @@
+{
+  "presets": [
+    [
+      "@babel/preset-typescript",
+      {
+        "rewriteImportExtensions": true
+      }
+    ],
+    ["@babel/preset-env", { "modules": "commonjs" }]
+  ],
+  "plugins": ["add-module-exports"],
+  "targets": {
+    "node": 18
+  }
+}
