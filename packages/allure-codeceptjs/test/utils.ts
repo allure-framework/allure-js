@@ -81,7 +81,12 @@ export const runCodeceptJsInlineTest = async (
   testProcess.on("message", messageReader.handleMessage);
 
   return new Promise((resolve) => {
+    const killTimeout = setTimeout(() => testProcess.kill(), 30_000);
+
     testProcess.on("exit", async () => {
+      clearTimeout(killTimeout);
+      await new Promise<void>((r) => setImmediate(r));
+
       await messageReader.attachResults();
       if (stdout.length) {
         await attachment("stdout", stdout.join("\n"), { contentType: "text/plain" });
