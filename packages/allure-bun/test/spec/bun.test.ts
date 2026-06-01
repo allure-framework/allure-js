@@ -313,10 +313,10 @@ bunIt("keeps hook context isolated across multiple Bun files", async () => {
   expect(alphaTest.fullName).toBe("hook-context-a.test.ts#alpha test");
   expect(betaTest.fullName).toBe("hook-context-b.test.ts#beta test");
   expect(alphaTest.labels).toEqual(
-    expect.arrayContaining([expect.objectContaining({ name: "package", value: "hook-context-a.test.ts" })]),
+    expect.arrayContaining([expect.objectContaining({ name: "package", value: "dummy.hook-context-a.test.ts" })]),
   );
   expect(betaTest.labels).toEqual(
-    expect.arrayContaining([expect.objectContaining({ name: "package", value: "hook-context-b.test.ts" })]),
+    expect.arrayContaining([expect.objectContaining({ name: "package", value: "dummy.hook-context-b.test.ts" })]),
   );
 });
 
@@ -364,7 +364,7 @@ bunIt("keeps Bun file paths with parentheses in the reported package name", asyn
       fullName: "paren(dir)/file(name).test.ts#paren path",
       titlePath: ["paren(dir)", "file(name).test.ts"],
       labels: expect.arrayContaining([
-        expect.objectContaining({ name: "package", value: "paren(dir).file(name).test.ts" }),
+        expect.objectContaining({ name: "package", value: "dummy.paren(dir).file(name).test.ts" }),
       ]),
     }),
   );

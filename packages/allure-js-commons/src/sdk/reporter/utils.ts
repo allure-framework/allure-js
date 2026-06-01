@@ -19,6 +19,13 @@ export const md5 = (str: string) => {
   return createHash("md5").update(str).digest("hex");
 };
 
+export const FALLBACK_TEST_CASE_ID_LABEL_NAME = "_fallbackTestCaseId";
+
+export const getFallbackTestCaseIdLabel = (value: string): Label => ({
+  name: FALLBACK_TEST_CASE_ID_LABEL_NAME,
+  value,
+});
+
 export const getTestResultHistoryId = (result: TestResult) => {
   if (result.historyId) {
     return result.historyId;
@@ -72,15 +79,23 @@ export const readImageAsBase64 = async (filePath: string): Promise<string | unde
 };
 
 export const getProjectRoot = (() => {
-  let cachedProjectRoot: string | null = null;
+  const cachedProjectRootBySearchFrom = new Map<string, string>();
 
-  const resolveProjectRootByPath = () => {
-    const cwd = process.cwd();
-    let nextDir = cwd;
-    let dir;
+  const resolveSearchDir = (searchFrom?: string) => {
+    const target = path.resolve(searchFrom ?? process.cwd());
 
-    do {
-      dir = nextDir;
+    try {
+      return fs.statSync(target).isFile() ? path.dirname(target) : target;
+    } catch {
+      return target;
+    }
+  };
+
+  const resolveProjectRootByPath = (searchFrom?: string) => {
+    const searchDir = resolveSearchDir(searchFrom);
+    let dir = searchDir;
+
+    while (true) {
       try {
         fs.accessSync(path.join(dir, "package.json"), fs.constants.F_OK);
 
@@ -88,26 +103,67 @@ export const getProjectRoot = (() => {
         return dir;
       } catch {}
 
-      nextDir = path.dirname(dir);
-    } while (nextDir.length < dir.length);
+      const parent = path.dirname(dir);
 
-    // package.json doesn't exist in any parent; fall back to CWD
-    return cwd;
+      if (parent === dir) {
+        // package.json doesn't exist in any parent; fall back to the search directory
+        return searchDir;
+      }
+
+      dir = parent;
+    }
   };
 
-  return () => {
-    if (!cachedProjectRoot) {
-      cachedProjectRoot = resolveProjectRootByPath();
+  return (searchFrom?: string) => {
+    const searchDir = resolveSearchDir(searchFrom);
+    const cachedProjectRoot = cachedProjectRootBySearchFrom.get(searchDir);
+
+    if (cachedProjectRoot) {
+      return cachedProjectRoot;
     }
-    return cachedProjectRoot;
+
+    const projectRoot = resolveProjectRootByPath(searchDir);
+
+    cachedProjectRootBySearchFrom.set(searchDir, projectRoot);
+
+    return projectRoot;
   };
 })();
 
-export const getRelativePath = (filepath: string) => {
+export const getProjectName = (() => {
+  const cachedProjectNameByRoot = new Map<string, string | undefined>();
+
+  return (searchFrom?: string): string | undefined => {
+    const projectRoot = getProjectRoot(searchFrom);
+
+    if (cachedProjectNameByRoot.has(projectRoot)) {
+      return cachedProjectNameByRoot.get(projectRoot);
+    }
+
+    const packageJsonPath = path.join(projectRoot, "package.json");
+    let projectName: string | undefined;
+
+    try {
+      const packageJsonContent = fs.readFileSync(packageJsonPath, "utf-8");
+      const packageJson = JSON.parse(packageJsonContent);
+
+      if (packageJson.name && typeof packageJson.name === "string") {
+        projectName = packageJson.name;
+      }
+    } catch {}
+
+    cachedProjectNameByRoot.set(projectRoot, projectName);
+
+    return projectName;
+  };
+})();
+
+export const getRelativePath = (filepath: string, searchFrom?: string) => {
   if (path.isAbsolute(filepath)) {
-    const projectRoot = getProjectRoot();
+    const projectRoot = getProjectRoot(searchFrom);
     filepath = path.relative(projectRoot, filepath);
   }
+
   return filepath;
 };
 

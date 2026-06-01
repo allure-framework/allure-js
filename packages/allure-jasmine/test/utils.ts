@@ -42,10 +42,14 @@ export const runJasmineInlineTest = async (
     path.resolve(require.resolve("jasmine"), "../../bin/jasmine.js"),
   );
   const args: string[] = [];
+  const childEnv = { ...process.env };
+  delete childEnv.ALLURE_TESTPLAN_PATH;
+  delete childEnv.ALLURE_RERUN;
+
   const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
     return fork(modulePath, args, {
       env: {
-        ...process.env,
+        ...childEnv,
         ...env,
         ALLURE_TEST_MODE: "1",
       },

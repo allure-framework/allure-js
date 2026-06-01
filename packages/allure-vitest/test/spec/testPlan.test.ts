@@ -49,9 +49,9 @@ describe("test plan", () => {
               {
                 version: "1.0",
                 tests: [
-                  { selector: "foo/sample.test.ts#baz" },
+                  { selector: "dummy:foo/sample.test.ts#baz" },
                   { id: 3 },
-                  { selector: "foo/sample.test.ts#foo bar boop" },
+                  { selector: "dummy:foo/sample.test.ts#foo bar boop" },
                 ],
               },
               null,
@@ -66,10 +66,14 @@ describe("test plan", () => {
         );
 
         expect(tests).toHaveLength(3);
-        expect(tests).toContainEqual(expect.objectContaining({ name: "baz", fullName: "foo/sample.test.ts#baz" }));
-        expect(tests).toContainEqual(expect.objectContaining({ name: "beep", fullName: "foo/sample.test.ts#beep" }));
         expect(tests).toContainEqual(
-          expect.objectContaining({ name: "boop", fullName: "foo/sample.test.ts#foo bar boop" }),
+          expect.objectContaining({ name: "baz", fullName: "dummy:foo/sample.test.ts#baz" }),
+        );
+        expect(tests).toContainEqual(
+          expect.objectContaining({ name: "beep", fullName: "dummy:foo/sample.test.ts#beep" }),
+        );
+        expect(tests).toContainEqual(
+          expect.objectContaining({ name: "boop", fullName: "dummy:foo/sample.test.ts#foo bar boop" }),
         );
       });
     });

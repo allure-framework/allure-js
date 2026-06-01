@@ -10,7 +10,7 @@ describe("fullName, and package", () => {
     it("should not depend on a CWD", async () => {
       const testPlan: TestPlanV1 = {
         version: "1.0",
-        tests: [{ selector: "cypress/e2e/sample.cy.js#foo" }],
+        tests: [{ selector: "dummy:cypress/e2e/sample.cy.js#foo" }],
       };
       const { tests } = await runCypressInlineTest(
         {
@@ -26,8 +26,10 @@ describe("fullName, and package", () => {
       );
 
       expect(tests).toHaveLength(1);
-      expect(tests[0].labels).toEqual(expect.arrayContaining([{ name: "package", value: "cypress.e2e.sample.cy.js" }]));
-      expect(tests[0].fullName).toEqual("cypress/e2e/sample.cy.js#foo");
+      expect(tests[0].labels).toEqual(
+        expect.arrayContaining([{ name: "package", value: "dummy.cypress.e2e.sample.cy.js" }]),
+      );
+      expect(tests[0].fullName).toEqual("dummy:cypress/e2e/sample.cy.js#foo");
     });
   });
 
@@ -64,8 +66,10 @@ describe("fullName, and package", () => {
       );
 
       expect(tests).toHaveLength(1);
-      expect(tests[0].labels).toEqual(expect.arrayContaining([{ name: "package", value: "cypress.e2e.sample.cy.js" }]));
-      expect(tests[0].fullName).toEqual("cypress/e2e/sample.cy.js#foo");
+      expect(tests[0].labels).toEqual(
+        expect.arrayContaining([{ name: "package", value: "dummy.cypress.e2e.sample.cy.js" }]),
+      );
+      expect(tests[0].fullName).toEqual("dummy:cypress/e2e/sample.cy.js#foo");
     });
   });
 });

@@ -10,7 +10,7 @@ it("handles tests retries", async () => {
         cy.wrap(1).should("eq", 2);
       });
     `,
-    "cypress.config.js": ({ allureCypressReporterModulePath }) => `
+    "cypress.config.js": ({ allureCypressReporterModulePath, allureDirPath }) => `
       const { allureCypress } = require("${allureCypressReporterModulePath}");
 
       module.exports = {
@@ -24,6 +24,7 @@ it("handles tests retries", async () => {
           viewportWidth: 1240,
           setupNodeEvents: (on, config) => {
             allureCypress(on, {
+              resultsDir: "${allureDirPath}",
               links: {
                 issue: {
                   urlTemplate: "https://allurereport.org/issues/%s"

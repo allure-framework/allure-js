@@ -43,6 +43,8 @@ export const runCypressInlineTest = async (
     timestamps: new Map(),
   };
   const testDir = join(__dirname, "fixtures", randomUUID());
+  // Keep inner Cypress results invisible to top-level `allure run` collection.
+  const allureResultsDir = join(testDir, "inline-allure-results");
   const processCwd = cwd ? join(testDir, cwd) : testDir;
   const configFilePath = relative(processCwd, join(testDir, "cypress.config.js"));
 
@@ -97,7 +99,7 @@ export const runCypressInlineTest = async (
         allureCypressReporterModulePath: getPosixPath(relative(fileDir, allureCypressReporterModulePath)),
         supportFilePath: getPosixPath(relative(processCwd, join(testDir, "cypress/support/e2e.js"))),
         specPattern: getPosixPath(relative(processCwd, join(testDir, "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}"))),
-        allureDirPath: getPosixPath(join(testDir, "allure-results")),
+        allureDirPath: getPosixPath(allureResultsDir),
       });
       await writeFile(join(testDir, testFile), content, "utf8");
       await attachment(testFile, content, ContentType.TEXT);
@@ -126,9 +128,13 @@ export const runCypressInlineTest = async (
 
     await ctx.parameter("CWD", processCwd);
 
+    const childEnv = { ...process.env };
+    delete childEnv.ALLURE_TESTPLAN_PATH;
+    delete childEnv.ALLURE_RERUN;
+
     const testProcess = fork(modulePath, args, {
       env: {
-        ...process.env,
+        ...childEnv,
         ...envVars,
       },
       cwd: processCwd,
@@ -171,7 +177,7 @@ export const runCypressInlineTest = async (
           await testProcessStep;
 
           await step("Parse Allure results", async () => {
-            const testResultsDir = join(testDir, "allure-results");
+            const testResultsDir = allureResultsDir;
             try {
               const resultFiles = await readdir(testResultsDir);
 

@@ -56,7 +56,7 @@ describe("labels", () => {
           expect.arrayContaining([
             {
               name: "package",
-              value: "sample.test.ts",
+              value: "dummy.sample.test.ts",
             },
           ]),
         );
@@ -77,7 +77,7 @@ describe("labels", () => {
           expect.arrayContaining([
             {
               name: "package",
-              value: "foo.bar.baz.test.ts",
+              value: "dummy.foo.bar.baz.test.ts",
             },
           ]),
         );

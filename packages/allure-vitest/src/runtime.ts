@@ -1,7 +1,19 @@
-import { type SuiteCollector, type Task, getCurrentSuite, getCurrentTest } from "@vitest/runner";
+import {
+  type SuiteCollector,
+  type Task,
+  type Test,
+  getCurrentSuite,
+  getCurrentTest as getCurrentTestGlobal,
+} from "@vitest/runner";
 import { type RuntimeMessage, isGlobalRuntimeMessage } from "allure-js-commons/sdk";
 import { BaseMessageTestRuntime } from "allure-js-commons/sdk/runtime";
 import type { TaskMeta } from "vitest";
+
+let getCurrentTest: () => Test | undefined = getCurrentTestGlobal;
+
+export const setGetCurrentTest = (fn: () => Test | undefined) => {
+  getCurrentTest = fn;
+};
 
 export const ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_KEY = "__allureVitestGlobalRuntimeMessages";
 
@@ -17,6 +29,8 @@ export type RuntimeMessageTaskMeta = TaskMeta & {
   [ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_META_KEY]?: RuntimeMessage[];
   [ALLURE_VITEST_RUNTIME_MESSAGES_META_KEY]?: RuntimeMessage[];
 };
+
+export const getCurrentTask = (): Task | undefined => getCurrentTest();
 
 export const addGlobalMessage = (message: RuntimeMessage) => {
   const holder = globalThis as unknown as Record<string, RuntimeMessage[] | undefined>;

@@ -13,7 +13,8 @@ it("should filter tests by selector", async () => {
         it("qux", () => {});
       `,
       "testplan.json": JSON.stringify({
-        tests: [{ selector: "spec/test/sample.spec.js#foo" }, { selector: "spec/test/sample.spec.js#baz" }],
+        version: "1.0",
+        tests: [{ selector: "dummy:spec/test/sample.spec.js#foo" }, { selector: "dummy:spec/test/sample.spec.js#baz" }],
       }),
     },
     { ALLURE_TESTPLAN_PATH: "testplan.json" },
@@ -44,6 +45,7 @@ it("should filter tests by id", async () => {
         it("qux @allure.id:1006", () => {});
       `,
       "testplan.json": JSON.stringify({
+        version: "1.0",
         tests: [{ id: "1004" }, { id: "1005" }],
       }),
     },

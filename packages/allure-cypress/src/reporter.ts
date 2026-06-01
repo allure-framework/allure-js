@@ -5,15 +5,18 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getFallbackTestCaseIdLabel,
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
   getPackageLabel,
   getPosixPath,
+  getProjectName,
   getProjectRoot,
   getRelativePath,
   getSuiteLabels,
   getThreadLabel,
+  md5,
   parseTestPlan,
 } from "allure-js-commons/sdk/reporter";
 import type Cypress from "cypress";
@@ -306,7 +309,12 @@ export class AllureCypress {
     { labels: metadataLabels = [], ...otherTestData }: Partial<TestResult>,
     scopes: string[],
   ) => {
+    const projectName = getProjectName();
     const posixPath = getPosixPath(context.specPath);
+    const fullNameBase = projectName ? `${projectName}:${posixPath}` : posixPath;
+    const legacyFullName = `${posixPath}#${fullNameSuffix}`;
+
+    const titlePath = posixPath.split("/").concat(context.suiteNames);
 
     return this.allureRuntime.startTest(
       {
@@ -320,9 +328,10 @@ export class AllureCypress {
           getHostLabel(),
           getThreadLabel(),
           getPackageLabel(context.specPath),
+          getFallbackTestCaseIdLabel(md5(legacyFullName)),
         ],
-        fullName: `${posixPath}#${fullNameSuffix}`,
-        titlePath: posixPath.split("/").concat(context.suiteNames),
+        fullName: `${fullNameBase}#${fullNameSuffix}`,
+        titlePath: projectName ? [projectName, ...titlePath] : titlePath,
         ...otherTestData,
       },
       scopes,
@@ -539,6 +548,7 @@ const createRuntimeState = (allureConfig?: AllureCypressConfig): AllureSpecState
   messages: [],
   testPlan: parseTestPlan(),
   projectDir: getProjectRoot(),
+  projectName: getProjectName(),
   stepStack: [],
   stepsToFinalize: [],
   nextApiStepId: 0,

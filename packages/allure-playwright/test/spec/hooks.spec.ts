@@ -110,6 +110,15 @@ it("should mark step as failed when any child step is failed", async () => {
         status: Status.FAILED,
       }),
       expect.objectContaining({
+        name: "error-context",
+        attachments: [
+          expect.objectContaining({
+            name: "error-context",
+            type: "text/markdown",
+          }),
+        ],
+      }),
+      expect.objectContaining({
         name: "After Hooks",
         status: Status.PASSED,
       }),
@@ -161,18 +170,41 @@ it("keeps correct hooks structure when something failed", async () => {
        };
     `,
   });
+  const { steps } = results.tests[0];
 
-  expect(results.tests[0].steps).toHaveLength(4);
-  expect(results.tests[0].steps[0]).toMatchObject({
+  expect(steps).toHaveLength(6);
+  expect(steps[0]).toMatchObject({
     name: "Before Hooks",
   });
-  expect(results.tests[0].steps[1]).toMatchObject({
+  expect(steps[1]).toMatchObject({
     name: "step 1",
   });
-  expect(results.tests[0].steps[2]).toMatchObject({
+  expect(steps[2]).toMatchObject({
     name: "screenshot",
   });
-  expect(results.tests[0].steps[3]).toMatchObject({
+  expect(steps[3]).toEqual(
+    expect.objectContaining({
+      name: "error-context",
+      attachments: [
+        expect.objectContaining({
+          name: "error-context",
+          type: "text/markdown",
+        }),
+      ],
+    }),
+  );
+  expect(steps[4]).toEqual(
+    expect.objectContaining({
+      name: "error-context",
+      attachments: [
+        expect.objectContaining({
+          name: "error-context",
+          type: "text/markdown",
+        }),
+      ],
+    }),
+  );
+  expect(steps[5]).toMatchObject({
     name: "After Hooks",
   });
 });
@@ -783,6 +815,15 @@ it("preserves failed hook root when transport-only steps are pruned", async () =
       name: "Before Hooks",
       status: Status.FAILED,
       stage: Stage.FINISHED,
+    }),
+    expect.objectContaining({
+      name: "error-context",
+      attachments: [
+        expect.objectContaining({
+          name: "error-context",
+          type: "text/markdown",
+        }),
+      ],
     }),
   ]);
 });

@@ -7,6 +7,7 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getFallbackTestCaseIdLabel,
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
@@ -14,12 +15,19 @@ import {
   getSuiteLabels,
   getThreadLabel,
   hasSkipLabel,
+  md5,
 } from "allure-js-commons/sdk/reporter";
 import { MessageTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 
 import type { JasmineBeforeAfterFn } from "./model.js";
 import { enableAllureJasmineTestPlan } from "./testplan.js";
 import { findAnyError, findMessageAboutThrow, getAllureNamesAndLabels, last } from "./utils.js";
+
+type JasmineSpecConstructor = {
+  prototype: {
+    addExpectationResult: (this: unknown, passed: boolean, data: unknown, isError?: boolean) => void;
+  };
+};
 
 class AllureJasmineTestRuntime extends MessageTestRuntime {
   constructor(private readonly allureJasmineReporter: AllureJasmineReporter) {
@@ -90,15 +98,24 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
   jasmineStarted(): void {
     const allureRuntime = this.allureRuntime;
-    const globalJasmine = globalThis.jasmine;
+    const globalJasmine = globalThis.jasmine as typeof jasmine & {
+      Spec?: JasmineSpecConstructor;
+      private?: {
+        Spec?: JasmineSpecConstructor;
+      };
+    };
     const currentAllureStepResultGetter = () =>
       this.currentAllureTestUuid ? this.allureRuntime.currentStep(this.currentAllureTestUuid) : undefined;
-    // @ts-ignore
-    const originalExpectationHandler = globalJasmine.Spec.prototype.addExpectationResult;
+    const Spec = globalJasmine.Spec ?? globalJasmine.private?.Spec;
+
+    if (!Spec) {
+      return;
+    }
+
+    const originalExpectationHandler = Spec.prototype.addExpectationResult;
 
     // soft-asserts support (when failed assertions don't throw errors)
-    // @ts-ignore
-    globalJasmine.Spec.prototype.addExpectationResult = function (passed, data, isError) {
+    Spec.prototype.addExpectationResult = function (passed, data, isError) {
       const isStepFailed = !passed && !isError;
 
       const stepUuid = currentAllureStepResultGetter();
@@ -124,13 +141,16 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   }
 
   specStarted(spec: jasmine.SpecResult & { filename?: string }): void {
-    const { fullName, titlePath, labels, links, name } = getAllureNamesAndLabels(
+    const { fullName, legacyFullName, titlePath, labels, links, name } = getAllureNamesAndLabels(
       spec.filename,
       this.getCurrentSpecPath(),
       spec.description,
     );
 
     if (!hasSkipLabel(labels)) {
+      if (legacyFullName) {
+        labels.push(getFallbackTestCaseIdLabel(md5(legacyFullName)));
+      }
       this.#startScope();
       this.currentAllureTestUuid = this.allureRuntime.startTest(
         {

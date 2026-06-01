@@ -1,4 +1,7 @@
-import { LabelName, Stage, Status } from "allure-js-commons";
+import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
+
+import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
@@ -6,30 +9,51 @@ import {
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
+  getFallbackTestCaseIdLabel,
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
+  getPackageLabel,
   getSuiteLabels,
   getThreadLabel,
+  md5,
 } from "allure-js-commons/sdk/reporter";
 import type { RunnerTask as Task } from "vitest";
-import type { TestModule } from "vitest/node";
+import type { TestModule, Vitest } from "vitest/node";
 import type { Reporter } from "vitest/reporters";
 
+import { commands as allureBrowserCommands } from "./browser/index.js";
+import { isMatcherMessage } from "./matcherMessages.js";
 import { takeGlobalRuntimeMessages } from "./runtime.js";
 import { getTestMetadata } from "./utils.js";
 
+const localRequire = createRequire(import.meta.url);
+
+export type AllureVitestReporterConfig = ReporterConfig & {
+  reportMatchers?: boolean;
+};
+
+const setupModulePath = fileURLToPath(new URL("./setup.js", import.meta.url));
+
+const browserSetupModulePath = fileURLToPath(new URL("./browser/setup.js", import.meta.url));
+
+const normalizeSetupFilePath = (setupFilePath: string) =>
+  setupFilePath.startsWith("file://") ? fileURLToPath(setupFilePath) : setupFilePath;
+
 export default class AllureVitestReporter implements Reporter {
   private allureReporterRuntime?: ReporterRuntime;
-  private config: ReporterConfig;
+  private config: AllureVitestReporterConfig;
   private globalRuntimeMessages: RuntimeMessage[] = [];
 
-  constructor(config: ReporterConfig) {
+  constructor(config: AllureVitestReporterConfig) {
     this.config = config;
   }
 
-  onInit() {
-    const { listeners, resultsDir, ...config } = this.config;
+  onInit(vitest: Vitest) {
+    this.registerSetupFile(vitest);
+    this.enableConcurrencySupport(vitest);
+
+    const { listeners, resultsDir, reportMatchers: _reportMatchers, ...config } = this.config;
 
     this.allureReporterRuntime = new ReporterRuntime({
       ...config,
@@ -40,6 +64,37 @@ export default class AllureVitestReporter implements Reporter {
     this.allureReporterRuntime.writeCategoriesDefinitions();
     this.allureReporterRuntime.writeEnvironmentInfo();
     this.globalRuntimeMessages = [];
+  }
+
+  private registerSetupFile(vitest: Vitest) {
+    for (const project of vitest.projects) {
+      const setupFilePath = project.config.browser.enabled ? browserSetupModulePath : setupModulePath;
+
+      const hasSetupFile = project.config.setupFiles.some(
+        (setupFile) => normalizeSetupFilePath(setupFile) === setupFilePath,
+      );
+
+      if (!hasSetupFile) {
+        project.config.setupFiles.unshift(setupFilePath);
+      }
+
+      if (project.config.browser.enabled) {
+        project.config.browser.commands ??= {};
+
+        for (const [name, command] of Object.entries(allureBrowserCommands)) {
+          project.config.browser.commands[name] ??= command;
+        }
+      }
+    }
+  }
+
+  private enableConcurrencySupport(vitest: Vitest) {
+    for (const project of vitest.projects) {
+      if (!project.config.browser.enabled) {
+        project.provide("__allure_vitest_custom_runner_module__", project.config.runner);
+        project.config.runner = localRequire.resolve("./runner.js");
+      }
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/array-type
@@ -82,13 +137,7 @@ export default class AllureVitestReporter implements Reporter {
       vitestWorker,
       browser,
       allureSkip = false,
-    } = task.meta as {
-      allureRuntimeMessages: RuntimeMessage[];
-      allureGlobalRuntimeMessages: RuntimeMessage[];
-      vitestWorker: string;
-      allureSkip?: boolean;
-      browser?: string;
-    };
+    } = task.meta;
 
     // do not report tests skipped by test plan
     if (allureSkip) {
@@ -99,7 +148,16 @@ export default class AllureVitestReporter implements Reporter {
       this.globalRuntimeMessages.push(...allureGlobalRuntimeMessages);
     }
 
-    const { specPath, fullName, name, suitePath, labels: metadataLabels, links: metadataLinks } = getTestMetadata(task);
+    const {
+      projectName,
+      specPath,
+      fullName,
+      legacyFullName,
+      name,
+      suitePath,
+      labels: metadataLabels,
+      links: metadataLinks,
+    } = getTestMetadata(task);
     const testUuid = this.allureReporterRuntime!.startTest({
       name,
       start: task.result?.startTime,
@@ -108,7 +166,8 @@ export default class AllureVitestReporter implements Reporter {
     this.allureReporterRuntime!.updateTest(testUuid, (result) => {
       const suiteLabels = getSuiteLabels(suitePath);
       const fsPath = specPath.split("/");
-      const titlePath = [...fsPath, ...suitePath];
+      const baseTitlePath = [...fsPath, ...suitePath];
+      const titlePath = projectName ? [projectName, ...baseTitlePath] : baseTitlePath;
 
       result.fullName = fullName;
       result.titlePath = titlePath;
@@ -119,6 +178,7 @@ export default class AllureVitestReporter implements Reporter {
       result.labels.push(...getEnvironmentLabels());
       result.labels.push(getHostLabel());
       result.labels.push(getThreadLabel(vitestWorker && `vitest-worker-${vitestWorker}`));
+      result.labels.push(getFallbackTestCaseIdLabel(md5(legacyFullName)));
       result.links.push(...metadataLinks);
 
       if (browser) {
@@ -128,15 +188,17 @@ export default class AllureVitestReporter implements Reporter {
         });
       }
 
-      if (specPath) {
-        result.labels.push({
-          name: LabelName.PACKAGE,
-          value: specPath.replaceAll("/", "."),
-        });
+      if (task.file.filepath) {
+        result.labels.push(getPackageLabel(task.file.filepath));
       }
 
-      if (allureRuntimeMessages.length) {
-        this.allureReporterRuntime!.applyRuntimeMessages(testUuid, allureRuntimeMessages);
+      const runtimeMessages =
+        (this.config.reportMatchers ?? true)
+          ? allureRuntimeMessages
+          : allureRuntimeMessages.filter((m) => !isMatcherMessage(m));
+
+      if (runtimeMessages.length) {
+        this.allureReporterRuntime!.applyRuntimeMessages(testUuid, runtimeMessages);
       }
 
       switch (task.result?.state) {

@@ -19,6 +19,10 @@ export type TestFileAccessor = (opts: {
 
 export type TestFiles = Record<string, string | TestFileAccessor>;
 
+type VitestConfigOptions = {
+  reportMatchers?: boolean;
+};
+
 type Opts = {
   env?: (testDir: string) => Record<string, string>;
   cwd?: string;
@@ -28,22 +32,9 @@ const fileDirname = dirname(fileURLToPath(import.meta.url));
 
 export const setupModulePath = getPosixPath(require.resolve("allure-vitest/setup"));
 
-export const browserSetupModulePath = getPosixPath(require.resolve("allure-vitest/browser/setup"));
-
 export const reporterModulePath = getPosixPath(require.resolve("allure-vitest/reporter"));
 
-export const createVitestConfig = (allureResultsPath: string) => `
-  import { defineConfig } from "vitest/config";
-
-  export default defineConfig({
-    test: {
-      openTelemetry: {
-        enabled: false,
-      },
-      setupFiles: ["${setupModulePath}"],
-      reporters: [
-        "verbose",
-        ["${reporterModulePath}", {
+const createReporterOptions = (allureResultsPath: string, options: VitestConfigOptions = {}) => `
           links: {
             issue: {
               urlTemplate: "https://example.org/issue/%s",
@@ -53,15 +44,29 @@ export const createVitestConfig = (allureResultsPath: string) => `
             },
           },
           resultsDir: "${allureResultsPath}",
+          ${options.reportMatchers === undefined ? "" : `reportMatchers: ${options.reportMatchers},`}
+`;
+
+export const createVitestConfig = (allureResultsPath: string, options: VitestConfigOptions = {}) => `
+  import { defineConfig } from "vitest/config";
+
+  export default defineConfig({
+    test: {
+      openTelemetry: {
+        enabled: false,
+      },
+      reporters: [
+        "verbose",
+        ["${reporterModulePath}", {
+${createReporterOptions(allureResultsPath, options)}
         }]
       ],
     },
   });
 `;
 
-export const createVitestBrowserConfig = (allureResultsPath: string) => `
+export const createVitestBrowserConfig = (allureResultsPath: string, options: VitestConfigOptions = {}) => `
   import { defineConfig } from "vitest/config";
-  import { commands } from "allure-vitest/browser"
   import { playwright } from "@vitest/browser-playwright";
 
   export default defineConfig({
@@ -69,19 +74,10 @@ export const createVitestBrowserConfig = (allureResultsPath: string) => `
       openTelemetry: {
         enabled: false,
       },
-      setupFiles: ["${browserSetupModulePath}"],
       reporters: [
         "verbose",
         ["${reporterModulePath}", {
-          links: {
-            issue: {
-              urlTemplate: "https://example.org/issue/%s",
-            },
-            tms: {
-              urlTemplate: "https://example.org/tms/%s",
-            },
-          },
-          resultsDir: "${allureResultsPath}",
+${createReporterOptions(allureResultsPath, options)}
         }]
       ],
       browser: {
@@ -91,9 +87,6 @@ export const createVitestBrowserConfig = (allureResultsPath: string) => `
         instances: [
           { browser: "chromium" },
         ],
-        commands: {
-          ...commands,
-        }
       },
     },
   });

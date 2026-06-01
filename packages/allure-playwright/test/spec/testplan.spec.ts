@@ -34,7 +34,7 @@ describe("testplan with v1 reporter full names", () => {
         "a.test.ts": /* ts */ `
         import { test, expect } from '@playwright/test';
         test('should not execute', async ({}, testInfo) => {
-         expect(1).toBe(1);
+         (await import('node:fs')).writeFileSync('v1-not-selected-ran.txt', 'yes'); expect(1).toBe(1);
         });
       `,
         "b.test.ts": /* ts */ `
@@ -89,6 +89,7 @@ describe("testplan with v1 reporter full names", () => {
         "notaga.test.ts:3:13",
       ]),
     );
+    expect(results.restFiles["v1-not-selected-ran.txt"]).toBeUndefined();
   });
 });
 
@@ -123,7 +124,7 @@ describe("testplan with v2 reporter full names", () => {
         "a.test.ts": /* ts */ `
         import { test, expect } from '@playwright/test';
         test('should not execute', async ({}, testInfo) => {
-         expect(1).toBe(1);
+         (await import('node:fs')).writeFileSync('v2-not-selected-ran.txt', 'yes'); expect(1).toBe(1);
         });
       `,
         "b.test.ts": /* ts */ `
@@ -178,6 +179,7 @@ describe("testplan with v2 reporter full names", () => {
         "aga.test.ts:3:13",
       ]),
     );
+    expect(results.restFiles["v2-not-selected-ran.txt"]).toBeUndefined();
   });
 });
 
@@ -194,10 +196,10 @@ describe("testplan with id fallback", () => {
         "a.test.ts": /* ts */ `
         import { test, expect } from '@playwright/test';
         test('should not execute', async () => {
-          expect(1).toBe(1);
+          (await import('node:fs')).writeFileSync('not-selected-ran.txt', 'yes'); expect(1).toBe(1);
         });
         test('selected name @allure.id=5', async () => {
-          expect(1).toBe(1);
+          (await import('node:fs')).writeFileSync('selected-ran.txt', 'yes'); expect(1).toBe(1);
         });
       `,
       },
@@ -213,6 +215,8 @@ describe("testplan with id fallback", () => {
         fullName: "a.test.ts:6:13",
       }),
     ]);
+    expect(results.restFiles["selected-ran.txt"]).toBe("yes");
+    expect(results.restFiles["not-selected-ran.txt"]).toBeUndefined();
   });
 
   it("supports annotation-based ids", async () => {
@@ -227,12 +231,12 @@ describe("testplan with id fallback", () => {
         "a.test.ts": /* ts */ `
         import { test, expect } from '@playwright/test';
         test('should not execute', async () => {
-          expect(1).toBe(1);
+          (await import('node:fs')).writeFileSync('annotation-not-selected-ran.txt', 'yes'); expect(1).toBe(1);
         });
         test('selected name', {
           annotation: { type: "@allure.id", description: "5" },
         }, async () => {
-          expect(1).toBe(1);
+          (await import('node:fs')).writeFileSync('annotation-selected-ran.txt', 'yes'); expect(1).toBe(1);
         });
       `,
       },
@@ -249,6 +253,8 @@ describe("testplan with id fallback", () => {
         fullName: "a.test.ts:6:13",
       }),
     ]);
+    expect(results.restFiles["annotation-selected-ran.txt"]).toBe("yes");
+    expect(results.restFiles["annotation-not-selected-ran.txt"]).toBeUndefined();
   });
 
   it("falls back to id when selector is stale", async () => {
@@ -373,10 +379,15 @@ describe("testplan with id fallback", () => {
         [testPlanFilename]: JSON.stringify(exampleTestPlan),
         "a.test.ts": /* ts */ `
         import { test, expect } from '@playwright/test';
+        test.beforeAll(async () => {
+          (await import('node:fs')).writeFileSync('not-selected-before-all-ran.txt', 'yes');
+        });
         test('selected by selector', async () => {
+          (await import('node:fs')).writeFileSync('not-selected-by-selector-ran.txt', 'yes');
           expect(1).toBe(1);
         });
         test('selected by id', async () => {
+          (await import('node:fs')).writeFileSync('not-selected-by-id-ran.txt', 'yes');
           expect(1).toBe(1);
         });
       `,
@@ -388,6 +399,9 @@ describe("testplan with id fallback", () => {
     );
 
     expect(results.tests).toEqual([]);
+    expect(results.restFiles["not-selected-before-all-ran.txt"]).toBeUndefined();
+    expect(results.restFiles["not-selected-by-selector-ran.txt"]).toBeUndefined();
+    expect(results.restFiles["not-selected-by-id-ran.txt"]).toBeUndefined();
   });
 
   it("does not match runtime-only allure ids", async () => {

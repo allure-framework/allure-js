@@ -1,12 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 
-import {
-  type TestFileAccessor,
-  browserSetupModulePath,
-  reporterModulePath,
-  runVitestInlineTest,
-  setupModulePath,
-} from "../utils.js";
+import { type TestFileAccessor, reporterModulePath, runVitestInlineTest } from "../utils.js";
 
 describe("global labels", () => {
   for (const env of ["node", "browser"]) {
@@ -21,7 +15,6 @@ describe("global labels", () => {
 
         export default defineConfig({
           test: {
-            setupFiles: ["${setupModulePath}"],
             reporters: [
               "default",
               [
@@ -41,13 +34,11 @@ describe("global labels", () => {
           }
           return `
         import { defineConfig } from "vitest/config";
-        import { commands } from "allure-vitest/browser";
         import { playwright } from "@vitest/browser-playwright";
 
         export default defineConfig({
           test: {
             openTelemetry: { enabled: false },
-            setupFiles: ["${browserSetupModulePath}"],
             reporters: [
               "default",
               [
@@ -66,7 +57,6 @@ describe("global labels", () => {
               enabled: true,
               headless: true,
               instances: [{ browser: "chromium" }],
-              commands: { ...commands },
             },
           },
         });
