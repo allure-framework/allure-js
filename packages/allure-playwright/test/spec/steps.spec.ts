@@ -148,6 +148,15 @@ it("reports failed test steps", async () => {
             }),
           ],
         }),
+        expect.objectContaining({
+          name: "error-context",
+          attachments: [
+            expect.objectContaining({
+              name: "error-context",
+              type: "text/markdown",
+            }),
+          ],
+        }),
       ],
     }),
   ]);

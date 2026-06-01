@@ -58,18 +58,22 @@ const suites = new Map([
     {
       compileFrom: [
         "allure-js-commons",
+        "allure-ava",
         "allure-axios",
         "allure-fetch",
         "allure-bun",
         "allure-chai",
         "allure-jasmine",
         "allure-jest",
+        "allure-node-test",
         "allure-cucumberjs",
         "allure-codeceptjs",
         "newman-reporter-allure",
+        "testcafe-reporter-allure-official",
       ],
       testCommands: [
         createWorkspaceScriptCommand("allure-js-commons", "test"),
+        createWorkspaceScriptCommand("allure-ava", "test", { minNodeMajor: 22 }),
         createWorkspaceScriptCommand("allure-axios", "test"),
         createWorkspaceScriptCommand("allure-fetch", "test"),
         createWorkspaceScriptCommand("allure-bun", "test"),
@@ -77,8 +81,10 @@ const suites = new Map([
         createWorkspaceScriptCommand("allure-cucumberjs", "test"),
         createWorkspaceScriptCommand("allure-jasmine", "test"),
         createWorkspaceScriptCommand("allure-jest", "test"),
+        createWorkspaceScriptCommand("allure-node-test", "test", { minNodeMajor: 26 }),
         createWorkspaceScriptCommand("allure-codeceptjs", "test"),
         createWorkspaceScriptCommand("newman-reporter-allure", "test"),
+        createWorkspaceScriptCommand("testcafe-reporter-allure-official", "test"),
       ],
     },
   ],
@@ -164,16 +170,32 @@ function createVitestCommand(workspace, { shard, browserHeavy = false } = {}) {
   };
 }
 
-function createWorkspaceScriptCommand(workspace, scriptName) {
+function createWorkspaceScriptCommand(workspace, scriptName, options = {}) {
   return {
     label: `${workspace} ${scriptName}`,
     args: ["workspace", workspace, "run", scriptName],
+    ...options,
   };
 }
 
 async function runCommand(command, logPath) {
   const yarnInvocation = createYarnInvocation(command.args);
   const printableCommand = formatCommand(yarnInvocation.printableArgs);
+  const nodeMajor = Number(process.versions.node.split(".")[0]);
+
+  if (command.minNodeMajor && nodeMajor < command.minNodeMajor) {
+    const message = `[skip] ${command.label} requires Node.js ${command.minNodeMajor}+ (current ${process.versions.node})`;
+
+    if (dryRun) {
+      console.log(message);
+      return;
+    }
+
+    const logStream = createWriteStream(logPath, { flags: "a" });
+    logStream.end(`${message}${os.EOL}`);
+    console.log(message);
+    return;
+  }
 
   if (dryRun) {
     console.log(`[dry-run] ${printableCommand}`);

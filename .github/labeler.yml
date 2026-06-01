@@ -35,6 +35,9 @@
 "theme:playwright":
   - "packages/allure-playwright/**"
 
+"theme:testcafe":
+  - "packages/testcafe-reporter-allure-official/**"
+
 "theme:vitest":
   - "packages/allure-vitest/**"
 

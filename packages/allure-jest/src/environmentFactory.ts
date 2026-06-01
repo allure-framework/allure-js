@@ -35,7 +35,11 @@ import { AllureJestTestRuntime } from "./AllureJestTestRuntime.js";
 import type { AllureJestConfig, AllureJestEnvironment, AllureJestProjectConfig, RunContext } from "./model.js";
 import { getTestId, getTestPath, last, shouldHookBeSkipped } from "./utils.js";
 
-const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => {
+type JestEnvironmentConstructor = new (...args: any[]) => any;
+type JestEventHandler = NonNullable<JestEnvironment["handleTestEvent"]>;
+type CallableJestEventHandler = (event: any, state: Circus.State) => void | PromiseLike<void> | undefined;
+
+const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T => {
   // @ts-expect-error (ts(2545)) Incorrect assumption about a mixin class: https://github.com/microsoft/TypeScript/issues/37142
   return class extends Base {
     testPath: string;
@@ -53,13 +57,11 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
     constructor(config: AllureJestConfig | AllureJestProjectConfig, context: EnvironmentContext) {
       super(config as JestEnvironmentConfig, context);
 
-      const handleTestEvent = this.handleTestEvent?.bind(this) as
-        | ((event: Circus.Event, state: Circus.State) => void | PromiseLike<void>)
-        | undefined;
+      const handleTestEvent = this.handleTestEvent?.bind(this) as CallableJestEventHandler | undefined;
 
       // Preserve any event handler defined by the base or custom environment.
-      this.handleTestEvent = (event: Circus.Event, state: Circus.State) => {
-        const handleAllureEvent = () => this.#handleTestEvent(event, state);
+      this.handleTestEvent = ((event: any, state: Circus.State) => {
+        const handleAllureEvent = () => this.#handleTestEvent(event as Circus.Event, state as Circus.State);
 
         // Keep Allure's lifecycle in sync even if the custom environment fails,
         // then rethrow the original error so Jest keeps its native behavior.
@@ -75,7 +77,7 @@ const createJestEnvironment = <T extends typeof JestEnvironment>(Base: T): T => 
         }
 
         handleAllureEvent();
-      };
+      }) as JestEventHandler;
 
       const projectConfig = "projectConfig" in config ? config.projectConfig : config;
       const { resultsDir, ...restConfig } = projectConfig?.testEnvironmentOptions || {};

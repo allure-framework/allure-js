@@ -1,6 +1,6 @@
 {
   "name": "allure-cucumberjs",
-  "version": "3.8.0",
+  "version": "3.9.0",
   "description": "Allure Cucumber.JS integration",
   "keywords": [
     "allure",
@@ -75,7 +75,7 @@
     "babel-plugin-add-module-exports": "^1.0.4",
     "npm-run-all2": "^8.0.0",
     "rimraf": "^6.0.0",
-    "typescript": "^5.2.2",
+    "typescript": "^6.0.3",
     "vitest": "^4.0.18"
   },
   "peerDependencies": {

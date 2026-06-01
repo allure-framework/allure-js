@@ -32,6 +32,12 @@ describe("expect.extend", () => {
           expect.objectContaining({
             name: "fail test",
             status: "failed",
+            steps: [
+              expect.objectContaining({
+                name: "expect({}).toFail()",
+                status: "failed",
+              }),
+            ],
             statusDetails: expect.objectContaining({
               message: "some message",
             }),

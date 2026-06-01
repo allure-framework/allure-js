@@ -1,15 +1,25 @@
-import { type SuiteCollector, type Task, getCurrentSuite, getCurrentTest } from "@vitest/runner";
+import {
+  type SuiteCollector,
+  type Task,
+  type Test,
+  getCurrentSuite,
+  getCurrentTest as getCurrentTestGlobal,
+} from "@vitest/runner";
 import { type RuntimeMessage, isGlobalRuntimeMessage } from "allure-js-commons/sdk";
 import { BaseMessageTestRuntime } from "allure-js-commons/sdk/runtime";
 import type { TaskMeta } from "vitest";
+
+let getCurrentTest: () => Test | undefined = getCurrentTestGlobal;
+
+export const setGetCurrentTest = (fn: () => Test | undefined) => {
+  getCurrentTest = fn;
+};
 
 export const ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_KEY = "__allureVitestGlobalRuntimeMessages";
 
 export const ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_META_KEY = "allureGlobalRuntimeMessages";
 
 export const ALLURE_VITEST_RUNTIME_MESSAGES_META_KEY = "allureRuntimeMessages";
-
-export const ALLURE_VITEST_ASYNC_CONTEXT_KEY = "__allureVitestAsyncContext";
 
 export type RuntimeMessageMetaKey =
   | typeof ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_META_KEY
@@ -20,26 +30,7 @@ export type RuntimeMessageTaskMeta = TaskMeta & {
   [ALLURE_VITEST_RUNTIME_MESSAGES_META_KEY]?: RuntimeMessage[];
 };
 
-type AllureVitestAsyncContext = {
-  currentTaskStorage: {
-    getStore: () => Task | undefined;
-  };
-  activeTasks?: {
-    has: (task: Task) => boolean;
-  };
-};
-
-const getCurrentTask = (): Task | undefined => {
-  const holder = globalThis as unknown as Record<string, AllureVitestAsyncContext | undefined>;
-  const asyncContext = holder[ALLURE_VITEST_ASYNC_CONTEXT_KEY];
-  const task = asyncContext?.currentTaskStorage.getStore();
-
-  if (task) {
-    return (asyncContext?.activeTasks?.has(task) ?? true) ? task : undefined;
-  }
-
-  return getCurrentTest();
-};
+export const getCurrentTask = (): Task | undefined => getCurrentTest();
 
 export const addGlobalMessage = (message: RuntimeMessage) => {
   const holder = globalThis as unknown as Record<string, RuntimeMessage[] | undefined>;
@@ -124,7 +115,7 @@ export class BaseVitestTestRuntime extends BaseMessageTestRuntime {
   }
 
   protected processMessage(message: RuntimeMessage): boolean {
-    const currentTest = getCurrentTask();
+    const currentTest = getCurrentTest();
 
     if (isGlobalRuntimeMessage(message)) {
       if (currentTest) {

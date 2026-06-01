@@ -23,6 +23,12 @@ import type { JasmineBeforeAfterFn } from "./model.js";
 import { enableAllureJasmineTestPlan } from "./testplan.js";
 import { findAnyError, findMessageAboutThrow, getAllureNamesAndLabels, last } from "./utils.js";
 
+type JasmineSpecConstructor = {
+  prototype: {
+    addExpectationResult: (this: unknown, passed: boolean, data: unknown, isError?: boolean) => void;
+  };
+};
+
 class AllureJasmineTestRuntime extends MessageTestRuntime {
   constructor(private readonly allureJasmineReporter: AllureJasmineReporter) {
     super();
@@ -92,15 +98,24 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
   jasmineStarted(): void {
     const allureRuntime = this.allureRuntime;
-    const globalJasmine = globalThis.jasmine;
+    const globalJasmine = globalThis.jasmine as typeof jasmine & {
+      Spec?: JasmineSpecConstructor;
+      private?: {
+        Spec?: JasmineSpecConstructor;
+      };
+    };
     const currentAllureStepResultGetter = () =>
       this.currentAllureTestUuid ? this.allureRuntime.currentStep(this.currentAllureTestUuid) : undefined;
-    // @ts-ignore
-    const originalExpectationHandler = globalJasmine.Spec.prototype.addExpectationResult;
+    const Spec = globalJasmine.Spec ?? globalJasmine.private?.Spec;
+
+    if (!Spec) {
+      return;
+    }
+
+    const originalExpectationHandler = Spec.prototype.addExpectationResult;
 
     // soft-asserts support (when failed assertions don't throw errors)
-    // @ts-ignore
-    globalJasmine.Spec.prototype.addExpectationResult = function (passed, data, isError) {
+    Spec.prototype.addExpectationResult = function (passed, data, isError) {
       const isStepFailed = !passed && !isError;
 
       const stepUuid = currentAllureStepResultGetter();

@@ -19,14 +19,20 @@ export const parseTestPlan = (): TestPlanV1 | undefined => {
 
   try {
     const file = readFileSync(testPlanPath, "utf8");
-    const testPlan = JSON.parse(file) as TestPlanV1;
+    const testPlan = JSON.parse(file) as Partial<TestPlanV1> & { version?: string };
 
-    // Execute all tests if test plan is empty
-    if ((testPlan.tests || []).length === 0) {
+    if (testPlan.version !== "1.0") {
+      // eslint-disable-next-line no-console
+      console.error("Test plan version is unsupported. Skipping test plan usage:", testPlan.version);
       return undefined;
     }
 
-    return testPlan;
+    // Execute all tests if test plan is empty
+    if (!Array.isArray(testPlan.tests) || testPlan.tests.length === 0) {
+      return undefined;
+    }
+
+    return testPlan as TestPlanV1;
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(`could not parse test plan ${testPlanPath}`, e);
@@ -36,17 +42,20 @@ export const parseTestPlan = (): TestPlanV1 | undefined => {
 
 export const includedInTestPlan = (
   testPlan: TestPlanV1,
-  subject: { id?: string; fullName?: string; tags?: string[] },
+  subject: { allureId?: string; id?: string; fullName?: string; nativeSelector?: string; tags?: string[] },
 ): boolean => {
-  const { id, fullName, tags = [] } = subject;
+  const { allureId, id, fullName, nativeSelector, tags = [] } = subject;
   const effectiveId =
-    id ?? tags.map((tag) => tag?.match(allureIdRegexp)?.groups?.id).find((maybeId) => maybeId !== undefined);
+    allureId ??
+    id ??
+    tags.map((tag) => tag?.match(allureIdRegexp)?.groups?.id).find((maybeId) => maybeId !== undefined);
 
   return testPlan.tests.some((test) => {
-    const idMatched = effectiveId && test.id ? String(test.id) === effectiveId : false;
-    const selectorMatched = fullName && test.selector === fullName;
+    const idMatched = effectiveId !== undefined && test.id !== undefined && String(test.id) === effectiveId;
+    const selectorMatched = fullName !== undefined && test.selector === fullName;
+    const nativeSelectorMatched = nativeSelector !== undefined && test.selector === nativeSelector;
 
-    return idMatched || selectorMatched;
+    return idMatched || selectorMatched || nativeSelectorMatched;
   });
 };
 

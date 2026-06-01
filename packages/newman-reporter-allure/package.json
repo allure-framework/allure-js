@@ -1,6 +1,6 @@
 {
   "name": "newman-reporter-allure",
-  "version": "3.8.0",
+  "version": "3.9.0",
   "description": "Allure Newman integration",
   "keywords": [
     "allure",
@@ -73,7 +73,7 @@
     "npm-run-all2": "^8.0.0",
     "postman-collection": "^5.0.0",
     "rimraf": "^6.0.0",
-    "typescript": "^5.2.2",
+    "typescript": "^6.0.3",
     "vitest": "^4.0.18"
   },
   "peerDependencies": {

@@ -189,7 +189,7 @@ describe("allureChai", () => {
     expect(results.stepNames).toEqual(["expect([1,2,3]).to.include.members([2,3])"]);
   });
 
-  it("doesn't record Vitest expect assertions through allureChai", () => {
+  it("doesn't duplicate Vitest expect assertions through allureChai", () => {
     const results = runChai(() => {
       expect(1).toEqual(1);
       expect(undefined).toBeUndefined();
@@ -202,7 +202,14 @@ describe("allureChai", () => {
     });
 
     expect(results.error).toBeUndefined();
-    expect(results.stepNames).toEqual([]);
+    expect(results.stepNames).toEqual([
+      "expect(1).toEqual(1)",
+      "expect(undefined).toBeUndefined()",
+      "expect([1,2]).toHaveLength(2)",
+      "expect([1,2]).toContain(1)",
+      'expect({"name":"Error","message":"email is required"}).toBeInstanceOf([Function Error])',
+      'expect([Function]).toThrow("email is required")',
+    ]);
   });
 
   it("records Chai assertions while ignoring Vitest expects in the same run", () => {
@@ -214,7 +221,12 @@ describe("allureChai", () => {
     });
 
     expect(results.error).toBeUndefined();
-    expect(results.stepNames).toEqual(["expect(2).to.equal(2)", "expect([1,2]).to.include(2)"]);
+    expect(results.stepNames).toEqual([
+      "expect(1).toEqual(1)",
+      "expect(2).to.equal(2)",
+      "expect([1,2]).toHaveLength(2)",
+      "expect([1,2]).to.include(2)",
+    ]);
   });
 
   it("doesn't record assertions from Cypress global Chai", () => {

@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 import { Stage, Status } from "allure-js-commons";
@@ -22,8 +23,15 @@ import type { TestModule, Vitest } from "vitest/node";
 import type { Reporter } from "vitest/reporters";
 
 import { commands as allureBrowserCommands } from "./browser/index.js";
+import { isMatcherMessage } from "./matcherMessages.js";
 import { takeGlobalRuntimeMessages } from "./runtime.js";
 import { getTestMetadata } from "./utils.js";
+
+const localRequire = createRequire(import.meta.url);
+
+export type AllureVitestReporterConfig = ReporterConfig & {
+  reportMatchers?: boolean;
+};
 
 const setupModulePath = fileURLToPath(new URL("./setup.js", import.meta.url));
 
@@ -34,17 +42,18 @@ const normalizeSetupFilePath = (setupFilePath: string) =>
 
 export default class AllureVitestReporter implements Reporter {
   private allureReporterRuntime?: ReporterRuntime;
-  private config: ReporterConfig;
+  private config: AllureVitestReporterConfig;
   private globalRuntimeMessages: RuntimeMessage[] = [];
 
-  constructor(config: ReporterConfig) {
+  constructor(config: AllureVitestReporterConfig) {
     this.config = config;
   }
 
   onInit(vitest: Vitest) {
     this.registerSetupFile(vitest);
+    this.enableConcurrencySupport(vitest);
 
-    const { listeners, resultsDir, ...config } = this.config;
+    const { listeners, resultsDir, reportMatchers: _reportMatchers, ...config } = this.config;
 
     this.allureReporterRuntime = new ReporterRuntime({
       ...config,
@@ -75,6 +84,15 @@ export default class AllureVitestReporter implements Reporter {
         for (const [name, command] of Object.entries(allureBrowserCommands)) {
           project.config.browser.commands[name] ??= command;
         }
+      }
+    }
+  }
+
+  private enableConcurrencySupport(vitest: Vitest) {
+    for (const project of vitest.projects) {
+      if (!project.config.browser.enabled) {
+        project.provide("__allure_vitest_custom_runner_module__", project.config.runner);
+        project.config.runner = localRequire.resolve("./runner.js");
       }
     }
   }
@@ -119,13 +137,7 @@ export default class AllureVitestReporter implements Reporter {
       vitestWorker,
       browser,
       allureSkip = false,
-    } = task.meta as {
-      allureRuntimeMessages: RuntimeMessage[];
-      allureGlobalRuntimeMessages: RuntimeMessage[];
-      vitestWorker: string;
-      allureSkip?: boolean;
-      browser?: string;
-    };
+    } = task.meta;
 
     // do not report tests skipped by test plan
     if (allureSkip) {
@@ -180,8 +192,13 @@ export default class AllureVitestReporter implements Reporter {
         result.labels.push(getPackageLabel(task.file.filepath));
       }
 
-      if (allureRuntimeMessages.length) {
-        this.allureReporterRuntime!.applyRuntimeMessages(testUuid, allureRuntimeMessages);
+      const runtimeMessages =
+        (this.config.reportMatchers ?? true)
+          ? allureRuntimeMessages
+          : allureRuntimeMessages.filter((m) => !isMatcherMessage(m));
+
+      if (runtimeMessages.length) {
+        this.allureReporterRuntime!.applyRuntimeMessages(testUuid, runtimeMessages);
       }
 
       switch (task.result?.state) {

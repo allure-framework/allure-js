@@ -52,6 +52,7 @@ Minimum supported framework versions by package:
 
 - `allure-codeceptjs`: `codeceptjs >= 2.3.6`
 - `allure-axios`: `axios >= 1.16.0 < 2`
+- `allure-ava`: `ava >= 8.0.0`
 - `allure-bun`: `Bun test >= 1.3.11`
 - `allure-chai`: `chai >= 4 < 7`
 - `allure-cucumberjs`: `@cucumber/cucumber >= 10.8.0`
@@ -60,7 +61,9 @@ Minimum supported framework versions by package:
 - `allure-jasmine`: `jasmine >= 2.7.0`
 - `allure-jest`: `jest`, `jest-circus`, and matching Jest environments `>= 24.8.0`
 - `allure-mocha`: `mocha >= 6.2.0`
+- `allure-node-test`: native Node.js test runner, Node.js >= 26.1.0 for runtime API support
 - `allure-playwright`: `@playwright/test >= 1.53.0`
+- `testcafe-reporter-allure-official`: `testcafe >= 2.5.0`
 - `allure-vitest`: `vitest >= 1.3.0`
 - `newman-reporter-allure`: `newman >= 3.5.0`
 - `allure-js-commons`: shared runtime and reporter SDK used to build integrations
@@ -93,6 +96,12 @@ npx allure open ./allure-report
 
 [Read more](/packages/allure-cucumberjs/README.md)
 
+### AVA
+
+![npm](https://img.shields.io/npm/dm/allure-ava.svg) ![npm](https://img.shields.io/npm/v/allure-ava.svg)
+
+[Read more](/packages/allure-ava/README.md)
+
 ### Vitest
 
 ![npm](https://img.shields.io/npm/dm/allure-vitest.svg) ![npm](https://img.shields.io/npm/v/allure-vitest.svg)
@@ -110,6 +119,12 @@ npx allure open ./allure-report
 ![npm](https://img.shields.io/npm/dm/allure-bun.svg) ![npm](https://img.shields.io/npm/v/allure-bun.svg)
 
 [Read more](/packages/allure-bun/README.md)
+
+### Node.js test runner
+
+![npm](https://img.shields.io/npm/dm/allure-node-test.svg) ![npm](https://img.shields.io/npm/v/allure-node-test.svg)
+
+[Read more](/packages/allure-node-test/README.md)
 
 ### Jasmine
 
@@ -134,6 +149,12 @@ npx allure open ./allure-report
 ![npm](https://img.shields.io/npm/dm/allure-playwright.svg) ![npm](https://img.shields.io/npm/v/allure-playwright.svg)
 
 [Read more](/packages/allure-playwright/README.md)
+
+### TestCafe
+
+Canonical package name: `testcafe-reporter-allure-official`
+
+[Read more](/packages/testcafe-reporter-allure-official/README.md)
 
 ### Cypress
 
