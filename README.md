@@ -61,6 +61,7 @@ Minimum supported framework versions by package:
 - `allure-jasmine`: `jasmine >= 2.7.0`
 - `allure-jest`: `jest`, `jest-circus`, and matching Jest environments `>= 24.8.0`
 - `allure-mocha`: `mocha >= 6.2.0`
+- `allure-node-test`: native Node.js test runner, Node.js >= 26.1.0 for runtime API support
 - `allure-playwright`: `@playwright/test >= 1.53.0`
 - `testcafe-reporter-allure-official`: `testcafe >= 2.5.0`
 - `allure-vitest`: `vitest >= 1.3.0`
@@ -118,6 +119,12 @@ npx allure open ./allure-report
 ![npm](https://img.shields.io/npm/dm/allure-bun.svg) ![npm](https://img.shields.io/npm/v/allure-bun.svg)
 
 [Read more](/packages/allure-bun/README.md)
+
+### Node.js test runner
+
+![npm](https://img.shields.io/npm/dm/allure-node-test.svg) ![npm](https://img.shields.io/npm/v/allure-node-test.svg)
+
+[Read more](/packages/allure-node-test/README.md)
 
 ### Jasmine
 

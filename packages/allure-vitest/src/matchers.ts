@@ -81,7 +81,14 @@ const MODIFIER_CHAINS = new Set([
   "rejects",
 ]);
 
-const SKIPPED_ASSERTION_METHODS = new Set(["assert", "constructor", "withContext", "withTest"]);
+const SKIPPED_ASSERTION_METHODS = new Set([
+  "assert",
+  "constructor",
+  "withContext",
+  "withTest",
+  "toMatchInlineSnapshot",
+  "toMatchSnapshot",
+]);
 const SKIPPED_ASSERTION_PROPERTIES = new Set(["_obj", "__flags", "__methods", "callable", "iterable", "numeric"]);
 const ASYMMETRIC_MATCHER_FACTORIES = new Map([
   ["ArrayContaining", "arrayContaining"],

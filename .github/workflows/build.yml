@@ -92,8 +92,6 @@ jobs:
     env:
       ALLURE_MATRIX_ENV: ${{ matrix.os }}-node-${{ matrix.node-version }}
       ALLURE_DUMP_NAME: allure-results-${{ matrix.os }}-node${{ matrix.node-version }}-${{ matrix.suite.id }}
-      TESTCAFE_BROWSER: ${{ matrix.os == 'ubuntu-latest' && 'chromium:headless --guest --no-sandbox' || 'chromium:headless --guest' }}
-      PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/pw-browsers
     strategy:
       fail-fast: false
       matrix:
@@ -149,11 +147,14 @@ jobs:
       - name: Install Playwright Chromium
         id: pw-chromium
         if: ${{ matrix.suite.requirePwChromium }}
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/pw-browsers
         run: |
           node ./scripts/ci/install-playwright-chromium.mjs ${{ matrix.os == 'ubuntu-latest' && '--with-deps' || '' }}
 
       - name: Run suite tests
         env:
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/pw-browsers
           PW_CHROMIUM_PATH: ${{ steps.pw-chromium.outputs.path }}
         run: |
           yarn allure run --config ./allurerc.mjs --environment="${{ env.ALLURE_MATRIX_ENV }}" --dump="${{ env.ALLURE_DUMP_NAME }}" --rerun 2 -- node ./scripts/ci/run-suite.mjs test ${{ matrix.suite.id }}

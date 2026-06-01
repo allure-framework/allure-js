@@ -8835,6 +8835,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"allure-node-test@workspace:packages/allure-node-test":
+  version: 0.0.0-use.local
+  resolution: "allure-node-test@workspace:packages/allure-node-test"
+  dependencies:
+    "@babel/cli": "npm:^7.28.0"
+    "@babel/core": "npm:^7.28.0"
+    "@babel/preset-env": "npm:^7.28.0"
+    "@babel/preset-typescript": "npm:^7.27.1"
+    "@types/babel__core": "npm:^7.20.5"
+    "@types/babel__preset-env": "npm:^7.10.0"
+    "@types/node": "npm:^20.19.0"
+    allure-commandline: "npm:^2.29.0"
+    allure-js-commons: "workspace:*"
+    allure-vitest: "workspace:*"
+    babel-plugin-add-module-exports: "npm:^1.0.4"
+    npm-run-all2: "npm:^8.0.0"
+    rimraf: "npm:^6.0.0"
+    typescript: "npm:^6.0.3"
+    vitest: "npm:^4.0.18"
+  languageName: unknown
+  linkType: soft
+
 "allure-playwright@workspace:packages/allure-playwright":
   version: 0.0.0-use.local
   resolution: "allure-playwright@workspace:packages/allure-playwright"
@@ -15608,9 +15630,9 @@ __metadata:
   linkType: hard
 
 "js-cookie@npm:^3.0.5":
-  version: 3.0.5
-  resolution: "js-cookie@npm:3.0.5"
-  checksum: 10/366494b1630b9fb8abaef3659748db5dfd52c58c6fc3459b9f0a03b492593bc1b01c6dfcc066b46f6413c28edb3a00cc68fb61ea8cdf6991bedf1f100f8a389d
+  version: 3.0.7
+  resolution: "js-cookie@npm:3.0.7"
+  checksum: 10/c0542acd416806182baaaecaae9a1dd7754b48699589c5c3a088495cee9fc2e44f81e66567b6e76e16d29c469655fdc9cd948edb2cfd9ece446f8817b9046ce9
   languageName: node
   linkType: hard
 
