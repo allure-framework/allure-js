@@ -1,0 +1,14 @@
+{
+  "presets": [
+    [
+      "@babel/preset-typescript",
+      {
+        "rewriteImportExtensions": true
+      }
+    ],
+    ["@babel/preset-env", { "modules": false }]
+  ],
+  "targets": {
+    "node": 18
+  }
+}

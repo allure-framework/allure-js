@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           cache: "yarn"
       - name: yarn install & check-cache
         run: |
@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           cache: "yarn"
       - name: yarn install
         run: |
@@ -64,7 +64,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [20, 22]
+        node-version: [20, 26]
         os: [ubuntu-latest, windows-latest]
         exclude:
           - node-version: 20
@@ -95,32 +95,32 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [20, 22]
+        node-version: [20, 26]
         os: [ubuntu-latest, windows-latest]
         exclude:
           - node-version: 20
             os: windows-latest
         suite:
           - id: cypress-1
-            playwright_workspace: ""
+            requirePwChromium: false
           - id: cypress-2
-            playwright_workspace: ""
+            requirePwChromium: false
           - id: cypress-3
-            playwright_workspace: ""
+            requirePwChromium: false
           - id: cypress-4
-            playwright_workspace: ""
+            requirePwChromium: false
           - id: playwright-1
-            playwright_workspace: allure-playwright
+            requirePwChromium: true
           - id: playwright-2
-            playwright_workspace: allure-playwright
+            requirePwChromium: true
           - id: vitest
-            playwright_workspace: allure-vitest
+            requirePwChromium: true
           - id: mocha-a
-            playwright_workspace: ""
+            requirePwChromium: false
           - id: mocha-b
-            playwright_workspace: ""
+            requirePwChromium: false
           - id: midweight
-            playwright_workspace: ""
+            requirePwChromium: true
     steps:
       - uses: actions/checkout@v6
 
@@ -144,12 +144,18 @@ jobs:
         run: |
           node ./scripts/ci/run-suite.mjs compile ${{ matrix.suite.id }}
 
-      - name: Install Playwright chromium
-        if: ${{ matrix.suite.playwright_workspace != '' }}
+      - name: Install Playwright Chromium
+        id: pw-chromium
+        if: ${{ matrix.suite.requirePwChromium }}
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/pw-browsers
         run: |
-          yarn workspace ${{ matrix.suite.playwright_workspace }} playwright install chromium --with-deps
+          node ./scripts/ci/install-playwright-chromium.mjs ${{ matrix.os == 'ubuntu-latest' && '--with-deps' || '' }}
 
       - name: Run suite tests
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/pw-browsers
+          PW_CHROMIUM_PATH: ${{ steps.pw-chromium.outputs.path }}
         run: |
           yarn allure run --config ./allurerc.mjs --environment="${{ env.ALLURE_MATRIX_ENV }}" --dump="${{ env.ALLURE_DUMP_NAME }}" --rerun 2 -- node ./scripts/ci/run-suite.mjs test ${{ matrix.suite.id }}
 
@@ -178,7 +184,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           cache: "yarn"
 
       - name: yarn install
