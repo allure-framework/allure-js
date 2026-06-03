@@ -219,16 +219,6 @@ export class AllureCypress {
   };
 
   #startRun = (absolutePath: string) => {
-    // In `cypress run` this fires exactly once per spec. In `cypress open`
-    // it may fire again when the user re-runs a spec; by then `endSpec` has
-    // already deleted the context, so the `has` check is false and we start
-    // fresh as expected.
-    // If a spec triggers a secondary browser context (e.g. cross-origin
-    // cy.visit), Cypress may re-fire the Mocha "start" event mid-run, sending
-    // a second cypress_run_start for the same spec path while the first
-    // context is still live. Reinitialising in that case would discard all
-    // in-progress state and produce duplicate / pending result files, so we
-    // skip the initialisation when the context already exists.
     if (!this.specContextByAbsolutePath.has(absolutePath)) {
       this.#initializeSpecContext(absolutePath);
     }

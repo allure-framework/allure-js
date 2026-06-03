@@ -2,9 +2,6 @@ import { Stage, Status } from "allure-js-commons";
 import { InMemoryWriter, ReporterRuntime } from "allure-js-commons/sdk/reporter";
 import { describe, expect, it, vi } from "vitest";
 
-// getProjectName, getRelativePath and related helpers read the filesystem and env at call time,
-// which is not available in the Vite SSR context used by Vitest.  Mock them out so we can drive
-// the full test-lifecycle path (cypress_test_start → end) from unit tests.
 vi.mock("allure-js-commons/sdk/reporter", async (importOriginal) => {
   const mod = await importOriginal<typeof import("allure-js-commons/sdk/reporter")>();
   return {
@@ -26,8 +23,6 @@ vi.mock("allure-js-commons/sdk/reporter", async (importOriginal) => {
 
 import { AllureCypress } from "../../src/reporter.js";
 import type { AllureCypressTaskArgs, CypressMessage } from "../../src/types.js";
-
-// ─── helpers ──────────────────────────────────────────────────────────────────
 
 const SPEC_A = "/cypress/e2e/spec-a.cy.js";
 const SPEC_B = "/cypress/e2e/spec-b.cy.js";
@@ -81,8 +76,6 @@ const testLifecycle = (name: string): CypressMessage[] => [
   { type: "cypress_test_pass", data: {} },
   { type: "cypress_test_end", data: { duration: 1, retries: 0 } },
 ];
-
-// ─── tests ────────────────────────────────────────────────────────────────────
 
 describe("duplicate cypress_run_start — context identity", () => {
   it("preserves the same context object when a second cypress_run_start arrives", () => {
@@ -142,10 +135,8 @@ describe("duplicate cypress_run_start — context identity", () => {
     const ctx = reporter.specContextByAbsolutePath.get(SPEC_A)!;
     const suiteCountBefore = ctx.suiteScopes.length;
 
-    // Second runStart mid-batch, followed by more suite messages.
     send(tasks, [runStart(), suiteStart("s1"), suiteStart("s2")]);
 
-    // The two extra suite starts must be applied to the *same* context.
     expect(reporter.specContextByAbsolutePath.get(SPEC_A)).toBe(ctx);
     expect(ctx.suiteScopes.length).toBe(suiteCountBefore + 2);
   });
@@ -178,7 +169,6 @@ describe("duplicate cypress_run_start — test results", () => {
 
     reporter.endSpec(SPEC_A);
 
-    // Must be exactly one result, not two.
     expect(writer.tests).toHaveLength(1);
     expect(writer.tests[0].status).toBe(Status.PASSED);
     expect(writer.tests[0].stage).toBe(Stage.FINISHED);
@@ -196,12 +186,10 @@ describe("spec path isolation", () => {
     const ctxA = reporter.specContextByAbsolutePath.get(SPEC_A);
     const ctxB = reporter.specContextByAbsolutePath.get(SPEC_B);
 
-    // Both specs have independent contexts.
     expect(ctxA).toBeDefined();
     expect(ctxB).toBeDefined();
     expect(ctxA).not.toBe(ctxB);
 
-    // Second start for A must not touch B.
     send(tasks, [runStart()], { specPath: SPEC_A });
     expect(reporter.specContextByAbsolutePath.get(SPEC_B)).toBe(ctxB);
   });
@@ -215,7 +203,6 @@ describe("reportFinalAllureCypressSpecMessages", () => {
     send(tasks, [runStart()]);
     send(tasks, [runStart(), suiteEnd(true)], { isFinal: true, isInteractive: false });
 
-    // Context must still be present; endSpec is driven by after:spec in non-interactive mode.
     expect(reporter.specContextByAbsolutePath.has(SPEC_A)).toBe(true);
   });
 
@@ -226,7 +213,6 @@ describe("reportFinalAllureCypressSpecMessages", () => {
     send(tasks, [runStart(), suiteStart("root", "", true), suiteEnd(true)]);
     send(tasks, [runStart()], { isFinal: true, isInteractive: true });
 
-    // endSpec deletes the context in interactive mode.
     expect(reporter.specContextByAbsolutePath.has(SPEC_A)).toBe(false);
   });
 });
