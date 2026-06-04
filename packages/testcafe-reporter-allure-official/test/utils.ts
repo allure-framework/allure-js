@@ -1,8 +1,12 @@
+import { execFile } from "node:child_process";
 import { mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
+import { createRequire } from "node:module";
+import type { Socket } from "node:net";
 import { tmpdir } from "node:os";
 import { dirname, extname, isAbsolute, join, relative, resolve } from "node:path";
 import process from "node:process";
+import { promisify } from "node:util";
 
 import type { TestResult, TestResultContainer } from "allure-js-commons";
 import { ContentType, attachment, step } from "allure-js-commons";
@@ -61,23 +65,47 @@ type AllureResultsWithTimestamps = AllureResults & {
   timestamps: Map<string, Date>;
 };
 
+type TestCafeTempCleanupProcess = {
+  init?: () => Promise<boolean> | boolean;
+  addDirectory?: (path: string) => Promise<void> | void;
+  removeDirectory?: (path: string) => Promise<void> | void;
+  initialized?: boolean;
+  __allureCleanupPatched?: boolean;
+};
+
 const ALLURE_TEST_RUNTIME_KEY = "allureTestRuntime";
-const DEFAULT_BROWSER_ARGS = process.platform === "linux" ? "--guest --no-sandbox" : "--guest";
-const createChromiumBrowserAlias = (browserPath?: string) =>
-  browserPath
-    ? `chromium:${browserPath}:headless ${DEFAULT_BROWSER_ARGS}`
-    : `chromium:headless ${DEFAULT_BROWSER_ARGS}`;
+const IS_WINDOWS = process.platform === "win32";
+const DEFAULT_BROWSER_ARGS = [
+  ...(process.platform === "darwin" ? ["--use-mock-keychain"] : []),
+  ...(process.platform === "linux" ? ["--no-sandbox", "--password-store=basic"] : []),
+].join(" ");
+const createTestCafeBrowserAlias = (browserPath?: string) => {
+  const browserAlias = browserPath ? `chrome:${browserPath}:headless` : "chromium:headless";
+
+  return [browserAlias, DEFAULT_BROWSER_ARGS].filter(Boolean).join(" ");
+};
 const DEFAULT_BROWSER = (() => {
   if (process.env.TESTCAFE_BROWSER) {
     return process.env.TESTCAFE_BROWSER;
   }
 
-  if (process.env.PW_CHROMIUM_PATH) {
-    return createChromiumBrowserAlias(process.env.PW_CHROMIUM_PATH);
+  if (IS_WINDOWS) {
+    return "chrome:headless";
   }
 
-  return createChromiumBrowserAlias();
+  if (process.env.PW_CHROMIUM_PATH) {
+    return createTestCafeBrowserAlias(process.env.PW_CHROMIUM_PATH);
+  }
+
+  return createTestCafeBrowserAlias();
 })();
+const DEFAULT_RUN_OPTIONS: Record<string, unknown> = {
+  disableNativeAutomation: true,
+  browserInitTimeout: 45_000,
+};
+const localRequire = createRequire(import.meta.url);
+const execFileAsync = promisify(execFile);
+const trackedTestCafeTempDirs = new Set<string>();
 
 const CONTENT_TYPE_BY_EXTENSION: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -109,7 +137,7 @@ export const createTempFixtureDir = async (testDirName?: string) => {
   if (testDirName) {
     const fixtureDir = join(TESTCAFE_TEMP_ROOT, testDirName);
 
-    await rm(fixtureDir, { recursive: true, force: true });
+    await removePath(fixtureDir);
     await mkdir(fixtureDir, { recursive: true });
 
     return fixtureDir;
@@ -127,6 +155,109 @@ const createEmptyResults = (): AllureResultsWithTimestamps => ({
   envInfo: undefined,
   timestamps: new Map(),
 });
+
+const removePath = async (targetPath: string, { ignoreErrors = false }: { ignoreErrors?: boolean } = {}) => {
+  try {
+    await rm(targetPath, {
+      recursive: true,
+      force: true,
+      maxRetries: 2,
+      retryDelay: 100,
+    });
+  } catch (error) {
+    if (!ignoreErrors) {
+      throw error;
+    }
+  }
+};
+
+const disableTestCafeTempCleanupProcess = () => {
+  if (!IS_WINDOWS) {
+    return;
+  }
+
+  try {
+    const cleanupProcess = localRequire(
+      "testcafe/lib/utils/temp-directory/cleanup-process",
+    ) as TestCafeTempCleanupProcess;
+
+    if (cleanupProcess.__allureCleanupPatched) {
+      return;
+    }
+
+    // TestCafe's detached cleanup worker can inherit a fixture cwd on Windows and keep it locked.
+    cleanupProcess.init = () => {
+      cleanupProcess.initialized = true;
+
+      return true;
+    };
+    cleanupProcess.addDirectory = (path) => {
+      trackedTestCafeTempDirs.add(path);
+    };
+    cleanupProcess.removeDirectory = (path) => {
+      trackedTestCafeTempDirs.add(path);
+    };
+    cleanupProcess.initialized = true;
+    cleanupProcess.__allureCleanupPatched = true;
+  } catch {
+    // The harness can still run if TestCafe changes this internal module.
+  }
+};
+
+const cleanupTrackedTestCafeTempDirs = async () => {
+  if (trackedTestCafeTempDirs.size === 0) {
+    return;
+  }
+
+  const tempDirs = [...trackedTestCafeTempDirs];
+
+  for (const tempDir of tempDirs) {
+    await removePath(tempDir, { ignoreErrors: true });
+
+    const stillExists = await stat(tempDir)
+      .then(() => true)
+      .catch(() => false);
+
+    if (!stillExists) {
+      trackedTestCafeTempDirs.delete(tempDir);
+    }
+  }
+};
+
+const cleanupTestCafeBrowserProcesses = async () => {
+  if (!IS_WINDOWS) {
+    return;
+  }
+
+  const command = `
+$ErrorActionPreference = 'SilentlyContinue'
+function Get-TestCafeChromeProcess {
+  @(Get-CimInstance Win32_Process -Filter "Name = 'chrome.exe'" | Where-Object {
+    $_.CommandLine -like '*--user-data-dir=*\\testcafe\\chrome-profile-*' -or
+    $_.CommandLine -like '*--user-data-dir=*/testcafe/chrome-profile-*' -or
+    $_.CommandLine -like '*127.0.0.1*/browser/connect/*'
+  })
+}
+$processes = @(Get-TestCafeChromeProcess)
+if ($processes.Count -gt 0) {
+  $processes | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+  $deadline = (Get-Date).AddSeconds(10)
+  do {
+    Start-Sleep -Milliseconds 200
+    $remaining = @(Get-TestCafeChromeProcess)
+  } while ($remaining.Count -gt 0 -and (Get-Date) -lt $deadline)
+}
+`.trim();
+
+  try {
+    await execFileAsync("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command", command], {
+      timeout: 15_000,
+      windowsHide: true,
+    });
+  } catch {
+    // Best effort cleanup for leaked TestCafe browser processes.
+  }
+};
 
 const restoreAllureTestRuntime = (runtime: unknown) => {
   if (runtime === undefined) {
@@ -211,7 +342,10 @@ const withEnv = async (env: Record<string, string | undefined>, body: () => Prom
 
 const startStaticServer = async (rootDir: string) => {
   const resolvedRoot = resolve(rootDir);
+  const sockets = new Set<Socket>();
   const server = createServer(async (req, res) => {
+    res.setHeader("Connection", "close");
+
     try {
       const requestUrl = new URL(req.url ?? "/", "http://127.0.0.1");
       const pathname = decodeURIComponent(requestUrl.pathname === "/" ? "/index.html" : requestUrl.pathname);
@@ -234,6 +368,11 @@ const startStaticServer = async (rootDir: string) => {
     }
   });
 
+  server.on("connection", (socket) => {
+    sockets.add(socket);
+    socket.once("close", () => sockets.delete(socket));
+  });
+
   await new Promise<void>((resolvePromise, rejectPromise) => {
     server.once("error", rejectPromise);
     server.listen(0, "127.0.0.1", () => {
@@ -252,7 +391,18 @@ const startStaticServer = async (rootDir: string) => {
     baseUrl: `http://127.0.0.1:${address.port}`,
     close: async () => {
       await new Promise<void>((resolvePromise, rejectPromise) => {
+        const forceCloseTimer = setTimeout(() => {
+          server.closeAllConnections?.();
+          for (const socket of sockets) {
+            socket.destroy();
+          }
+        }, 1_000);
+
+        forceCloseTimer.unref();
+
         server.close((error) => {
+          clearTimeout(forceCloseTimer);
+
           if (error) {
             rejectPromise(error);
             return;
@@ -260,6 +410,8 @@ const startStaticServer = async (rootDir: string) => {
 
           resolvePromise();
         });
+
+        server.closeIdleConnections?.();
       });
     },
   };
@@ -333,7 +485,7 @@ export const runTestCafeInlineTest = async (
     testDirName,
     screenshots = false,
     video = false,
-    runOptions = { disableNativeAutomation: true },
+    runOptions = {},
     projectCwd,
     projectCwdRelative,
     reporterConfig = {},
@@ -343,6 +495,8 @@ export const runTestCafeInlineTest = async (
   const executionCwd = projectCwd ?? (projectCwdRelative ? join(testDir, projectCwdRelative) : testDir);
   const resolvedResultsDir = isAbsolute(resultsDir) ? resultsDir : join(executionCwd, resultsDir);
   const packageJsonPath = join(executionCwd, "package.json");
+  const effectiveRunOptions = { ...DEFAULT_RUN_OPTIONS, ...runOptions };
+  const effectiveBrowser = browser;
   const shouldCreateFixturePackageJson = createFixturePackageJson && isPathInside(testDir, packageJsonPath);
   const previousAllureRuntime = (globalThis as Record<string, unknown>)[ALLURE_TEST_RUNTIME_KEY];
   const oldCwd = process.cwd();
@@ -384,9 +538,10 @@ export const runTestCafeInlineTest = async (
       .map((filename) => join(testDir, filename));
 
     staticServer = await startStaticServer(testDir);
-    await rm(resolvedResultsDir, { recursive: true, force: true });
+    await removePath(resolvedResultsDir);
 
     await withEnv({ ...env, TESTCAFE_BASE_URL: staticServer.baseUrl }, async () => {
+      disableTestCafeTempCleanupProcess();
       process.chdir(executionCwd);
 
       const testcafe = await createTestCafe("127.0.0.1");
@@ -394,7 +549,7 @@ export const runTestCafeInlineTest = async (
       try {
         const runner = testcafe.createRunner();
 
-        runner.src(testFiles).browsers(browser);
+        runner.src(testFiles).browsers(effectiveBrowser);
         if (typeof concurrency === "number" && concurrency > 1) {
           runner.concurrency(concurrency);
         }
@@ -454,7 +609,7 @@ export const runTestCafeInlineTest = async (
         }
 
         await step("run testcafe", async (ctx) => {
-          await ctx.parameter("Browser", JSON.stringify(browser));
+          await ctx.parameter("Browser", JSON.stringify(effectiveBrowser));
           if (typeof concurrency === "number") {
             await ctx.parameter("Concurrency", String(concurrency));
           }
@@ -463,15 +618,21 @@ export const runTestCafeInlineTest = async (
             await attachment("Extra environment variables", JSON.stringify(env), ContentType.JSON);
           }
 
-          const failed = await runner.run({
+          const runnerOptions = {
             skipJsErrors: true,
-            ...runOptions,
-          });
+            ...effectiveRunOptions,
+          };
+          const failed = await runner.run(runnerOptions);
 
           await ctx.parameter("Failed tests", String(failed));
         });
       } finally {
-        await testcafe.close();
+        try {
+          await testcafe.close();
+        } finally {
+          await cleanupTestCafeBrowserProcesses();
+          await cleanupTrackedTestCafeTempDirs();
+        }
       }
     });
 
@@ -504,8 +665,11 @@ export const runTestCafeInlineTest = async (
       }
     }
 
-    await rm(resolvedResultsDir, { recursive: true, force: true });
-    await rm(testDir, { recursive: true, force: true });
+    await cleanupTestCafeBrowserProcesses();
+    await cleanupTrackedTestCafeTempDirs();
+
+    await removePath(resolvedResultsDir, { ignoreErrors: true });
+    await removePath(testDir, { ignoreErrors: true });
   }
 };
 
