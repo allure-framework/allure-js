@@ -9,7 +9,7 @@ describe("createAllureTestCafeReporter", () => {
     expect(typeof result.reportTaskDone).toBe("function");
   });
 
-  it("returns a plugin object when called with undefined (as TestCafe string-name loader does)", () => {
+  it("returns a plugin object when called with undefined", () => {
     const result = createAllureTestCafeReporter(undefined as any);
     expect(typeof result).toBe("object");
     expect(typeof result.reportTaskDone).toBe("function");
