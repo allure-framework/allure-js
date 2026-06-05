@@ -6,7 +6,7 @@ export type { AllureTestCafeReporterConfig } from "./model.js";
 export function createAllureTestCafeReporter(): TestCafeReporterPlugin;
 export function createAllureTestCafeReporter(config: AllureTestCafeReporterConfig): TestCafeReporterFactory;
 export function createAllureTestCafeReporter(config?: AllureTestCafeReporterConfig) {
-  if (arguments.length === 0) {
+  if (config === undefined) {
     return createReporterObject();
   }
 
