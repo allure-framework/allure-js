@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -38,11 +38,4 @@ writeFileSync(
 );
 
 const cjsIndexPath = join(cjsBuildPath, "index.js");
-const cjsIndex = readFileSync(cjsIndexPath, "utf8");
-writeFileSync(
-  cjsIndexPath,
-  cjsIndex +
-    '\nmodule.exports = exports["default"];\n' +
-    "Object.assign(module.exports, exports);\n",
-  "utf8",
-);
+appendFileSync(cjsIndexPath, '\nmodule.exports = exports["default"];\nObject.assign(module.exports, exports);\n', "utf8");
