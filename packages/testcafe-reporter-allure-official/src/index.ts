@@ -2,7 +2,6 @@ import type { AllureTestCafeReporterConfig, TestCafeReporterFactory, TestCafeRep
 import { createReporterObject } from "./reporter.js";
 
 export type { AllureTestCafeReporterConfig } from "./model.js";
-export { createAllureTestPlanFilter } from "./testplan.js";
 
 export function createAllureTestCafeReporter(): TestCafeReporterPlugin;
 export function createAllureTestCafeReporter(config: AllureTestCafeReporterConfig): TestCafeReporterFactory;
