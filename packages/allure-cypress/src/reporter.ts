@@ -219,12 +219,9 @@ export class AllureCypress {
   };
 
   #startRun = (absolutePath: string) => {
-    // This function is executed once on `cypress run`, but it can be executed
-    // multiple times during an interactive session (`cypress open`). Ideally,
-    // in that case, we should remove previous result objects that haven't been
-    // written yet, but it would've required support in ReporterRuntime.
-    // Currently, we're discarding the entire spec context.
-    this.#initializeSpecContext(absolutePath);
+    if (!this.specContextByAbsolutePath.has(absolutePath)) {
+      this.#initializeSpecContext(absolutePath);
+    }
   };
 
   #startSuite = (context: SpecContext, { data: { id, name, root } }: CypressSuiteStartMessage) => {
