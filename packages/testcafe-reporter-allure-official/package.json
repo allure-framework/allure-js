@@ -75,7 +75,7 @@
     "rimraf": "^6.0.0",
     "testcafe": "^3.7.2",
     "typescript": "^6.0.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   },
   "peerDependencies": {
     "testcafe": ">=2.5.0"
