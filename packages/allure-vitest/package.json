@@ -65,13 +65,14 @@
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
+    "@opentelemetry/api": "^1.9.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^20.19.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@vitest/browser-playwright": "^4.0.18",
-    "@vitest/runner": "^4.0.18",
+    "@vitest/browser-playwright": "^4.1.0",
+    "@vitest/runner": "^4.1.0",
     "allure-commandline": "^2.29.0",
     "npm-run-all2": "^8.0.0",
     "playwright": "^1.60.0",
@@ -79,7 +80,7 @@
     "react-dom": "^19.2.4",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   },
   "peerDependencies": {
     "@vitest/runner": ">=1.3.0",
