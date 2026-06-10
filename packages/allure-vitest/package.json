@@ -74,7 +74,7 @@
     "@vitest/browser-playwright": "^4.1.0",
     "@vitest/runner": "^4.1.0",
     "allure-commandline": "^2.29.0",
-    "npm-run-all2": "^8.0.0",
+    "npm-run-all2": "^9.0.1",
     "playwright": "^1.60.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

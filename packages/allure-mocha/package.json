@@ -77,7 +77,7 @@
     "babel-plugin-transform-import-meta": "^2.3.3",
     "glob": "^11.1.0",
     "mocha": "^11.0.0",
-    "npm-run-all2": "^8.0.0",
+    "npm-run-all2": "^9.0.1",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.0"
