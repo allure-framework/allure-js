@@ -246,7 +246,8 @@ export default class AllureCucumberReporter extends Formatter {
     const posixPath = getPosixPathRelativeToProjectRoot(pickle);
     const fullNameBase = projectName ? `${projectName}:${posixPath}` : posixPath;
     const fullName = `${fullNameBase}#${pickle.name}`;
-    const testCaseId = md5(`${fullNameBase}#${scenario?.name ?? pickle.name}`);
+    const scenarioLine = scenario?.location?.line ?? "";
+    const testCaseId = md5(`${fullNameBase}#${scenario?.name ?? pickle.name}#${scenarioLine}`);
     const legacyTestCaseId = md5(`${posixPath}#${scenario?.name ?? pickle.name}`);
     const result: Partial<TestResult> = {
       name: pickle.name,
