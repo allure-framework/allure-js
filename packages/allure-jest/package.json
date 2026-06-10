@@ -79,7 +79,7 @@
     "jest-cli": "^30.0.0",
     "jest-environment-jsdom": "^30.0.0",
     "jest-environment-node": "^30.0.0",
-    "npm-run-all2": "^8.0.0",
+    "npm-run-all2": "^9.0.1",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.0"
