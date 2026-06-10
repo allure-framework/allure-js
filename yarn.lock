@@ -4658,7 +4658,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cucumber/messages@npm:24.1.0, @cucumber/messages@npm:>=19.1.4 <=24":
+"@cucumber/messages@npm:24.1.0, @cucumber/messages@npm:>=19.1.4 <=24, @cucumber/messages@npm:^24.0.0":
   version: 24.1.0
   resolution: "@cucumber/messages@npm:24.1.0"
   dependencies:
@@ -4670,7 +4670,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cucumber/messages@npm:32.2.0, @cucumber/messages@npm:>=31.0.0 <33, @cucumber/messages@npm:^32.0.0":
+"@cucumber/messages@npm:32.2.0":
   version: 32.2.0
   resolution: "@cucumber/messages@npm:32.2.0"
   dependencies:
@@ -4680,15 +4680,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cucumber/messages@npm:^24.0.0":
-  version: 24.0.1
-  resolution: "@cucumber/messages@npm:24.0.1"
+"@cucumber/messages@npm:>=31.0.0 <33, @cucumber/messages@npm:^32.0.0":
+  version: 32.3.1
+  resolution: "@cucumber/messages@npm:32.3.1"
   dependencies:
-    "@types/uuid": "npm:9.0.7"
     class-transformer: "npm:0.5.1"
-    reflect-metadata: "npm:0.2.1"
-    uuid: "npm:9.0.1"
-  checksum: 10/fdaeb71eaa996b4cb45943b42b50d1060b4d7a65a2a698b96796a5fc355799969f16a2ff472f88913740ea8c0983e7485be71a3f11ddd1e4f414cf529a4134f8
+    reflect-metadata: "npm:0.2.2"
+  checksum: 10/eb02dff7dd7471a08a090736ec9eadb1ff9370724a50384ceada4a54819a388dacea9bdf8bd74427338dc7432b178810bcdf48387cd3c94c522b94b07542dacd
   languageName: node
   linkType: hard
 
@@ -7904,13 +7902,6 @@ __metadata:
   version: 2.0.7
   resolution: "@types/trusted-types@npm:2.0.7"
   checksum: 10/8e4202766a65877efcf5d5a41b7dd458480b36195e580a3b1085ad21e948bc417d55d6f8af1fd2a7ad008015d4117d5fdfe432731157da3c68678487174e4ba3
-  languageName: node
-  linkType: hard
-
-"@types/uuid@npm:9.0.7":
-  version: 9.0.7
-  resolution: "@types/uuid@npm:9.0.7"
-  checksum: 10/c7321194aeba9ea173efd1e721403bdf4e7ae6945f8f8cdbc87c791f4b505ccf3dbc4a8883d90b394ef13b7c2dc778045792b05dbb23b3c746f8ea347804d448
   languageName: node
   linkType: hard
 
