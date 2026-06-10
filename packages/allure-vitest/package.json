@@ -58,7 +58,7 @@
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean --single-file",
     "lint": "oxlint --import-plugin src test",
     "lint:fix": "oxlint --import-plugin --fix src test",
-    "pretest": "run-p clean compile",
+    "pretest": "run-p compile",
     "test": "vitest run"
   },
   "dependencies": {

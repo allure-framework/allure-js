@@ -53,7 +53,7 @@
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean --single-file",
     "lint": "oxlint --import-plugin src test",
     "lint:fix": "oxlint --import-plugin --fix src test",
-    "test": "yarn workspace allure-js-commons compile && run-s clean compile && vitest run"
+    "test": "yarn workspace allure-js-commons compile && yarn run compile && vitest run"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
