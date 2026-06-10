@@ -23,7 +23,7 @@
   "devDependencies": {
     "allure": "^3.10.0",
     "lefthook": "^2.1.4",
-    "oxfmt": "0.43.0",
+    "oxfmt": "0.54.0",
     "oxlint": "1.64.0",
     "oxlint-tsgolint": "0.19.0",
     "rimraf": "^6.0.0",
