@@ -17194,7 +17194,7 @@ const RAW_RUNTIME_STATE =
           ["sanitize-filename", "npm:1.6.3"],\
           ["semver", "npm:7.6.3"],\
           ["serialize-error", "npm:8.1.0"],\
-          ["shell-quote", "npm:1.8.2"],\
+          ["shell-quote", "npm:1.8.4"],\
           ["signal-exit", "npm:3.0.7"],\
           ["stream-json", "npm:1.9.1"],\
           ["strip-ansi", "npm:6.0.1"],\
@@ -23726,7 +23726,7 @@ const RAW_RUNTIME_STATE =
           ["npm-run-all2", "npm:8.0.1"],\
           ["pidtree", "npm:0.6.0"],\
           ["read-package-json-fast", "npm:4.0.0"],\
-          ["shell-quote", "npm:1.8.1"],\
+          ["shell-quote", "npm:1.8.4"],\
           ["which", "npm:5.0.0"]\
         ],\
         "linkType": "HARD"\
@@ -25241,7 +25241,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/react-devtools-core-npm-5.3.2-db6ad5b4f3-640123f775.zip/node_modules/react-devtools-core/",\
         "packageDependencies": [\
           ["react-devtools-core", "npm:5.3.2"],\
-          ["shell-quote", "npm:1.8.2"],\
+          ["shell-quote", "npm:1.8.4"],\
           ["ws", "virtual:f5211d03eceb5c615629f746a3045d2fa91c38ed5392d5803bbd628fe39c1e446acff433cc73b52e3dd04db2cd7cd15da2104cc82362f80d1b6e17fa5edd6959#npm:7.5.10"]\
         ],\
         "linkType": "HARD"\
@@ -25250,7 +25250,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/react-devtools-core-npm-6.1.5-b0ab3c4460-0323f1d006.zip/node_modules/react-devtools-core/",\
         "packageDependencies": [\
           ["react-devtools-core", "npm:6.1.5"],\
-          ["shell-quote", "npm:1.8.2"],\
+          ["shell-quote", "npm:1.8.4"],\
           ["ws", "virtual:f5211d03eceb5c615629f746a3045d2fa91c38ed5392d5803bbd628fe39c1e446acff433cc73b52e3dd04db2cd7cd15da2104cc82362f80d1b6e17fa5edd6959#npm:7.5.10"]\
         ],\
         "linkType": "HARD"\
@@ -26482,17 +26482,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["shell-quote", [\
-      ["npm:1.8.1", {\
-        "packageLocation": "./.yarn/cache/shell-quote-npm-1.8.1-fcccf06093-af19ab5a1e.zip/node_modules/shell-quote/",\
+      ["npm:1.8.4", {\
+        "packageLocation": "./.yarn/cache/shell-quote-npm-1.8.4-13eacaabff-a3e3796385.zip/node_modules/shell-quote/",\
         "packageDependencies": [\
-          ["shell-quote", "npm:1.8.1"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
-      ["npm:1.8.2", {\
-        "packageLocation": "./.yarn/cache/shell-quote-npm-1.8.2-6153748703-3ae4804fd8.zip/node_modules/shell-quote/",\
-        "packageDependencies": [\
-          ["shell-quote", "npm:1.8.2"]\
+          ["shell-quote", "npm:1.8.4"]\
         ],\
         "linkType": "HARD"\
       }]\
