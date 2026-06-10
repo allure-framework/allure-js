@@ -57,7 +57,7 @@
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "yarn run -T oxlint --import-plugin src test",
     "lint:fix": "yarn run -T oxlint --import-plugin --fix src test",
-    "pretest": "run-p clean compile",
+    "pretest": "run-p compile",
     "test": "vitest run"
   },
   "dependencies": {
