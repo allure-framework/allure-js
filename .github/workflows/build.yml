@@ -121,6 +121,8 @@ jobs:
             requirePwChromium: false
           - id: midweight
             requirePwChromium: true
+          - id: testcafe
+            requirePwChromium: true
     steps:
       - uses: actions/checkout@v6
 
@@ -146,7 +148,7 @@ jobs:
 
       - name: Install Playwright Chromium
         id: pw-chromium
-        if: ${{ matrix.suite.requirePwChromium }}
+        if: ${{ matrix.suite.requirePwChromium && (matrix.suite.id != 'testcafe' || matrix.os != 'windows-latest') }}
         env:
           PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/pw-browsers
         run: |
