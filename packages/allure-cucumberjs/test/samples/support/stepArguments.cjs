@@ -4,6 +4,6 @@ Given(/^a is (\d+)$/, (_) => {});
 
 Given(/^b is (\d+)$/, (_) => {});
 
-When(/^I add a to b$/, () => {});
+When(/^I plus a and b$/, () => {});
 
-Then(/^result is (\d+)$/, (_) => {});
+Then(/^the result is (\d+)$/, (_) => {});
