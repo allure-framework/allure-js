@@ -9,6 +9,7 @@ import {
   type Globals,
   type Label,
   Stage,
+  Status,
   type StepResult,
   type TestResult,
 } from "../../model.js";
@@ -22,6 +23,7 @@ import type {
   RuntimeGlobalErrorMessage,
   RuntimeMessage,
   RuntimeMetadataMessage,
+  RuntimeStartStageMessage,
   RuntimeStartStepMessage,
   RuntimeStepMetadataMessage,
   RuntimeStopStepMessage,
@@ -207,6 +209,7 @@ export class ReporterRuntime {
   private readonly state = new LifecycleState();
   private notifier: Notifier;
   private stepStack: StepStack = new DefaultStepStack();
+  private readonly activeStagesByRoot = new Map<string, Set<string>>();
   writer: Writer;
   categories?: Category[];
   environmentInfo?: EnvironmentInfo;
@@ -312,6 +315,7 @@ export class ReporterRuntime {
     }
 
     const startStop = this.#calculateTimings(fixture.start, opts?.stop, opts?.duration);
+    this.#finalizeRunningSteps(uuid, startStop.stop, fixture.status, fixture.statusDetails);
     fixture.start = startStop.start;
     fixture.stop = startStop.stop;
 
@@ -401,6 +405,7 @@ export class ReporterRuntime {
     testResult.historyId ??= getTestResultHistoryId(testResult);
 
     const startStop = this.#calculateTimings(testResult.start, opts?.stop, opts?.duration);
+    this.#finalizeRunningSteps(uuid, startStop.stop, testResult.status, testResult.statusDetails);
 
     testResult.start = startStop.start;
     testResult.stop = startStop.stop;
@@ -418,6 +423,8 @@ export class ReporterRuntime {
 
     if (hasSkipLabel(testResult.labels)) {
       this.state.deleteTestResult(uuid);
+      this.stepStack.removeRoot(uuid);
+      this.activeStagesByRoot.delete(uuid);
       return;
     }
 
@@ -425,6 +432,8 @@ export class ReporterRuntime {
 
     this.writer.writeResult(testResult);
     this.state.deleteTestResult(uuid);
+    this.stepStack.removeRoot(uuid);
+    this.activeStagesByRoot.delete(uuid);
 
     this.notifier.afterTestResultWrite(testResult);
   };
@@ -486,6 +495,10 @@ export class ReporterRuntime {
     step.stop = startStop.stop;
 
     step.stage = Stage.FINISHED;
+
+    this.activeStagesByRoot.forEach((activeStages) => {
+      activeStages.delete(uuid);
+    });
 
     this.stepStack.removeStep(uuid);
 
@@ -567,6 +580,9 @@ export class ReporterRuntime {
           return;
         case "step_start":
           this.#handleStartStepMessage(rootUuid, message.data);
+          return;
+        case "stage_start":
+          this.#handleStartStageMessage(rootUuid, message.data);
           return;
         case "step_stop":
           this.#handleStopStepMessage(rootUuid, message.data);
@@ -712,10 +728,28 @@ export class ReporterRuntime {
   };
 
   #handleStartStepMessage = (rootUuid: string, message: RuntimeStartStepMessage["data"]) => {
-    this.startStep(rootUuid, undefined, { ...message });
+    this.startStep(rootUuid, undefined, {
+      name: message.name,
+      start: message.start,
+    });
+  };
+
+  #handleStartStageMessage = (rootUuid: string, message: RuntimeStartStageMessage["data"]) => {
+    this.#finalizeCurrentStages(rootUuid, message.start);
+
+    const stageUuid = this.startStep(rootUuid, undefined, {
+      name: message.name,
+      start: message.start,
+    });
+
+    if (stageUuid) {
+      this.#activeStages(rootUuid).add(stageUuid);
+    }
   };
 
   #handleStopStepMessage = (rootUuid: string, message: RuntimeStopStepMessage["data"]) => {
+    this.#finalizeCurrentStages(rootUuid, message.stop, message.status, message.statusDetails);
+
     const stepUuid = this.currentStep(rootUuid);
     if (!stepUuid) {
       // eslint-disable-next-line no-console
@@ -784,6 +818,71 @@ export class ReporterRuntime {
     });
   };
 
+  #activeStages = (rootUuid: string) => {
+    const existing = this.activeStagesByRoot.get(rootUuid);
+    if (existing) {
+      return existing;
+    }
+
+    const created = new Set<string>();
+    this.activeStagesByRoot.set(rootUuid, created);
+    return created;
+  };
+
+  #finalizeStage = (
+    rootUuid: string,
+    uuid: string,
+    stop: number | undefined,
+    fallbackStatus?: Status,
+    fallbackStatusDetails?: StepResult["statusDetails"],
+  ) => {
+    this.updateStep(uuid, (stepResult) => {
+      if (stepResult.status) {
+        return;
+      }
+
+      stepResult.status = fallbackStatus ?? Status.PASSED;
+      if (fallbackStatusDetails) {
+        stepResult.statusDetails = { ...stepResult.statusDetails, ...fallbackStatusDetails };
+      }
+    });
+    this.#activeStages(rootUuid).delete(uuid);
+    this.stopStep(uuid, { stop });
+  };
+
+  #finalizeCurrentStages = (
+    rootUuid: string,
+    stop: number | undefined,
+    fallbackStatus?: Status,
+    fallbackStatusDetails?: StepResult["statusDetails"],
+  ) => {
+    while (this.currentStep(rootUuid)) {
+      const currentStepUuid = this.currentStep(rootUuid)!;
+      if (!this.#activeStages(rootUuid).has(currentStepUuid)) {
+        return;
+      }
+
+      this.#finalizeStage(rootUuid, currentStepUuid, stop, fallbackStatus, fallbackStatusDetails);
+    }
+  };
+
+  #finalizeRunningSteps = (
+    rootUuid: string,
+    stop: number | undefined,
+    fallbackStatus?: Status,
+    fallbackStatusDetails?: StepResult["statusDetails"],
+  ) => {
+    while (this.currentStep(rootUuid)) {
+      const currentStepUuid = this.currentStep(rootUuid)!;
+      if (this.#activeStages(rootUuid).has(currentStepUuid)) {
+        this.#finalizeStage(rootUuid, currentStepUuid, stop, fallbackStatus, fallbackStatusDetails);
+        continue;
+      }
+
+      this.stopStep(currentStepUuid, { stop });
+    }
+  };
+
   #findParent = (
     rootUuid: string,
     parentStepUuid: string | null | undefined,
@@ -844,6 +943,8 @@ export class ReporterRuntime {
         if (!writtenFixtures.has(wrappedFixture.uuid)) {
           this.#writeContainer(tests, wrappedFixture);
           this.state.deleteFixtureResult(wrappedFixture.uuid);
+          this.stepStack.removeRoot(wrappedFixture.uuid);
+          this.activeStagesByRoot.delete(wrappedFixture.uuid);
           writtenFixtures.add(wrappedFixture.uuid);
         }
       }

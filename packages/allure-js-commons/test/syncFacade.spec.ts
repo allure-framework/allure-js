@@ -27,6 +27,7 @@ const mockSyncRuntime = (): Mocked<SyncTestRuntime> => {
     links: vi.fn(),
     logStep: vi.fn(),
     parameter: vi.fn(),
+    stage: vi.fn(),
     step: vi.fn((_, body) => body()),
     stepDisplayName: vi.fn(),
     stepParameter: vi.fn(),
@@ -51,6 +52,7 @@ const mockRuntime = (): Mocked<TestRuntime> & { sync: Mocked<SyncTestRuntime> } 
     links: vi.fn().mockResolvedValue(undefined),
     logStep: vi.fn().mockResolvedValue(undefined),
     parameter: vi.fn().mockResolvedValue(undefined),
+    stage: vi.fn().mockResolvedValue(undefined),
     step: vi.fn(async (_, body) => await body()),
     stepDisplayName: vi.fn().mockResolvedValue(undefined),
     stepParameter: vi.fn().mockResolvedValue(undefined),
@@ -163,6 +165,22 @@ describe("sync facade", () => {
         },
       ]),
     );
+  });
+
+  it("should start a sync runtime stage", () => {
+    const runtime = new MessageHolderTestRuntime();
+    setGlobalTestRuntime(runtime);
+
+    allureSync.stage("prepare data");
+
+    expect(runtime.messages()).toEqual([
+      {
+        type: "stage_start",
+        data: expect.objectContaining({
+          name: "prepare data",
+        }),
+      },
+    ]);
   });
 
   it("should handle sync steps, nested steps, attachments and step metadata", () => {

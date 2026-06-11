@@ -6,7 +6,7 @@ import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sd
 
 import type { AllureCypressTaskArgs, CypressMessage } from "../types.js";
 import { enqueueRuntimeMessage, getRuntimeMessages, setRuntimeMessages } from "./state.js";
-import { ALLURE_STEP_CMD_SUBJECT, startAllureApiStep, stopCurrentAllureApiStep } from "./steps.js";
+import { ALLURE_STEP_CMD_SUBJECT, startAllureApiStep, startAllureStage, stopCurrentAllureApiStep } from "./steps.js";
 import { uint8ArrayToBase64 } from "./utils.js";
 
 const SYNC_STEP_PURE_FUNCTION_ERROR =
@@ -190,6 +190,18 @@ class AllureCypressTestRuntime implements TestRuntime {
         stopCurrentAllureApiStep(status, error ? getMessageAndTraceFromError(error) : undefined);
         return Cypress.Promise.resolve();
       });
+  }
+
+  stage(name: string): PromiseLike<void> {
+    if (this.#isInOriginContext()) {
+      startAllureStage(name);
+      return Cypress.Promise.resolve();
+    }
+
+    return cy.wrap(ALLURE_STEP_CMD_SUBJECT, { log: false }).then(() => {
+      startAllureStage(name);
+      return Cypress.Promise.resolve();
+    });
   }
 
   step<T = void>(name: string, body: () => T | PromiseLike<T>) {
@@ -449,6 +461,9 @@ class AllureCypressTestRuntime implements TestRuntime {
       logStep: (name, status = Status.PASSED, error) => {
         startAllureApiStep(name);
         stopCurrentAllureApiStep(status, error ? getMessageAndTraceFromError(error) : undefined);
+      },
+      stage: (name) => {
+        startAllureStage(name);
       },
       step: (name, body) => {
         startAllureApiStep(name);

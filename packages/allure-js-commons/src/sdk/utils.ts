@@ -218,7 +218,9 @@ export const hasLabel = (testResult: TestResult, labelName: LabelName | string):
 };
 
 export const hasStepMessage = (messages: RuntimeMessage[]) => {
-  return messages.some((message) => message.type === "step_start" || message.type === "step_stop");
+  return messages.some(
+    (message) => message.type === "step_start" || message.type === "stage_start" || message.type === "step_stop",
+  );
 };
 
 export const isGlobalRuntimeMessage = (
@@ -236,11 +238,11 @@ export const isGlobalRuntimeMessage = (
 
 export const getStepsMessagesPair = (messages: RuntimeMessage[]) =>
   messages.reduce((acc, message) => {
-    if (message.type !== "step_start" && message.type !== "step_stop") {
+    if (message.type !== "step_start" && message.type !== "stage_start" && message.type !== "step_stop") {
       return acc;
     }
 
-    if (message.type === "step_start") {
+    if (message.type === "step_start" || message.type === "stage_start") {
       acc.push([message]);
 
       return acc;

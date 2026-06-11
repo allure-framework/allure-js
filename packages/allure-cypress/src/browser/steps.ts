@@ -6,6 +6,7 @@ import type {
   ApiStepDescriptor,
   CypressStepFinalizeMessage,
   LogStepDescriptor,
+  StageDescriptor,
   StepDescriptor,
   StepFinalizer,
 } from "../types.js";
@@ -14,9 +15,11 @@ import { reportStepStart, reportStepStop } from "./lifecycle.js";
 import {
   clearStepsToFinalize,
   enqueueRuntimeMessage,
+  getCurrentStep,
   getStepStack,
   getStepsToFinalize,
   popAllSteps,
+  popStep,
   pushStep,
   setupStepFinalization,
 } from "./state.js";
@@ -28,15 +31,30 @@ export const isApiStep = (descriptor: StepDescriptor): descriptor is ApiStepDesc
   return descriptor.type === "api";
 };
 
+export const isStageStep = (descriptor: StepDescriptor): descriptor is StageDescriptor => {
+  return descriptor.type === "stage";
+};
+
 export const isLogStep = (descriptor: StepDescriptor): descriptor is LogStepDescriptor => {
   return descriptor.type === "log";
 };
 
 export const startAllureApiStep = (name: string) => reportStepStart(pushAllureStep(), name);
 
+export const startAllureStage = (name: string) => {
+  stopCurrentAllureStages();
+  reportStepStart(pushAllureStage(), name);
+};
+
 export const pushAllureStep = () => {
   const id = generateApiStepId();
   pushStep({ id, type: "api" });
+  return id;
+};
+
+export const pushAllureStage = () => {
+  const id = generateApiStepId();
+  pushStep({ id, type: "stage" });
   return id;
 };
 
@@ -66,6 +84,12 @@ export const reportStepError = (error: Error) => {
 export const stopCurrentAllureApiStep = (status?: Status, statusDetails?: StatusDetails) =>
   findAndStopStepWithSubsteps((stepDescriptor) => isApiStep(stepDescriptor), status, statusDetails);
 
+export const stopCurrentAllureStages = (status?: Status, statusDetails?: StatusDetails) => {
+  while (getCurrentStep() && isStageStep(getCurrentStep()!)) {
+    stopCurrentStep(status, statusDetails);
+  }
+};
+
 export const findAndStopStepWithSubsteps = (
   pred: (stepEntry: StepDescriptor) => boolean,
   status?: Status,
@@ -74,6 +98,13 @@ export const findAndStopStepWithSubsteps = (
 
 export const stopAllSteps = (status?: Status, statusDetails?: StatusDetails) =>
   stopSelectedSteps(popAllSteps(), status, statusDetails);
+
+export const stopCurrentStep = (status?: Status, statusDetails?: StatusDetails) => {
+  const step = getCurrentStep();
+  if (step) {
+    stopSelectedSteps([popStep()!], status, statusDetails);
+  }
+};
 
 export const finalizeSteps = () => {
   // This will stop all dangling steps (like log groups with missing endGroup calls or logs that haven't been

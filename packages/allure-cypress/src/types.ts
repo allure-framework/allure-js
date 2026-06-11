@@ -228,7 +228,11 @@ export type ApiStepDescriptor = StepDescriptorBase & {
   type: "api";
 };
 
-export type StepDescriptor = LogStepDescriptor | ApiStepDescriptor;
+export type StageDescriptor = StepDescriptorBase & {
+  type: "stage";
+};
+
+export type StepDescriptor = LogStepDescriptor | ApiStepDescriptor | StageDescriptor;
 
 export type StepFinalizer = (message: CypressStepFinalizeMessage["data"]) => void;
 

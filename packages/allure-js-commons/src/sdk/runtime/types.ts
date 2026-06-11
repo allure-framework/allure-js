@@ -49,6 +49,8 @@ export interface SyncTestRuntime {
 
   logStep: (name: string, status?: Status, error?: Error) => void;
 
+  stage: (name: string) => void;
+
   step: <T = void>(name: string, body: () => T) => T;
 
   stepDisplayName: (name: string) => void;
@@ -92,6 +94,8 @@ export interface TestRuntime {
   attachmentFromPath: (name: string, path: string, options: Omit<AttachmentOptions, "encoding">) => PromiseLike<void>;
 
   logStep: (name: string, status?: Status, error?: Error) => PromiseLike<void>;
+
+  stage: (name: string) => PromiseLike<void>;
 
   step: <T = void>(name: string, body: () => T | PromiseLike<T>) => PromiseLike<T>;
 

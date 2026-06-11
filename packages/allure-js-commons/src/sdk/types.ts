@@ -33,6 +33,13 @@ export type RuntimeStartStepMessage = RuntimeMessageBase<"step_start"> & {
   };
 };
 
+export type RuntimeStartStageMessage = RuntimeMessageBase<"stage_start"> & {
+  data: {
+    name: string;
+    start: number;
+  };
+};
+
 export type RuntimeStepMetadataMessage = RuntimeMessageBase<"step_metadata"> & {
   data: {
     name?: string;
@@ -97,6 +104,7 @@ export type RuntimeGlobalErrorMessage = RuntimeMessageBase<"global_error"> & {
 export type RuntimeMessage =
   | RuntimeMetadataMessage
   | RuntimeStartStepMessage
+  | RuntimeStartStageMessage
   | RuntimeStepMetadataMessage
   | RuntimeStopStepMessage
   | RuntimeAttachmentContentMessage

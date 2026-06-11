@@ -197,6 +197,16 @@ export abstract class BaseMessageTestRuntime implements TestRuntime {
     });
   }
 
+  async stage(name: string) {
+    await this.sendMessage({
+      type: "stage_start",
+      data: {
+        name,
+        start: Date.now(),
+      },
+    });
+  }
+
   async step<T = void>(name: string, body: () => T | PromiseLike<T>) {
     await this.sendMessage({
       type: "step_start",
@@ -373,6 +383,14 @@ export abstract class BaseMessageTestRuntime implements TestRuntime {
           },
         });
       },
+      stage: (name) =>
+        sendMessageSync({
+          type: "stage_start",
+          data: {
+            name,
+            start: Date.now(),
+          },
+        }),
       step: (name, body) => {
         sendMessageSync({
           type: "step_start",

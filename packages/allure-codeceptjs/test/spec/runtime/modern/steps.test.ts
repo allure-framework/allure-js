@@ -45,3 +45,77 @@ it("handles lambda steps", async () => {
     ]),
   );
 });
+
+it("handles runtime stages", async () => {
+  const { tests } = await runCodeceptJsInlineTest({
+    "sample.test.js": `
+      const { logStep, stage, step } = require("allure-js-commons");
+
+      Feature("sample-feature-1");
+      Scenario("scenario1", async () => {
+        await stage("stage 1");
+        await logStep("a");
+        await step("b", async () => {
+          await logStep("b 1");
+          await stage("b 2");
+          await logStep("b 2 nested");
+        });
+
+        await stage("stage 2");
+        await logStep("c");
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toMatchObject([
+    {
+      name: "stage 1",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      steps: [
+        {
+          name: "a",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+        },
+        {
+          name: "b",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          steps: [
+            {
+              name: "b 1",
+              status: Status.PASSED,
+              stage: Stage.FINISHED,
+            },
+            {
+              name: "b 2",
+              status: Status.PASSED,
+              stage: Stage.FINISHED,
+              steps: [
+                {
+                  name: "b 2 nested",
+                  status: Status.PASSED,
+                  stage: Stage.FINISHED,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "stage 2",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      steps: [
+        {
+          name: "c",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+        },
+      ],
+    },
+  ]);
+});

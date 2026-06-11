@@ -23,6 +23,7 @@ export {
   parameter,
   parentSuite,
   severity,
+  stage,
   step,
   story,
   subSuite,

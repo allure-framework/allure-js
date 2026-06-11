@@ -413,6 +413,184 @@ describe("ReporterRuntime", () => {
       );
     });
 
+    it("should create sibling stages from runtime messages", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const rootUuid = runtime.startTest({});
+      runtime.applyRuntimeMessages(rootUuid, [
+        { type: "stage_start", data: { name: "stage 1", start: 10 } },
+        { type: "step_start", data: { name: "a", start: 11 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 11 } },
+        { type: "step_start", data: { name: "b", start: 12 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 12 } },
+        { type: "stage_start", data: { name: "stage 2", start: 13 } },
+        { type: "step_start", data: { name: "c", start: 14 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 14 } },
+      ]);
+      runtime.stopTest(rootUuid, { stop: 15 });
+      runtime.writeTest(rootUuid);
+
+      const [testResult] = writer.writeResult.mock.calls[0];
+      expect(testResult.steps).toEqual([
+        expect.objectContaining({
+          name: "stage 1",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          start: 10,
+          stop: 13,
+          steps: [
+            expect.objectContaining({ name: "a", status: Status.PASSED }),
+            expect.objectContaining({ name: "b", status: Status.PASSED }),
+          ],
+        }),
+        expect.objectContaining({
+          name: "stage 2",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          start: 13,
+          stop: 15,
+          steps: [expect.objectContaining({ name: "c", status: Status.PASSED })],
+        }),
+      ]);
+    });
+
+    it("should nest stages under the current step context", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const rootUuid = runtime.startTest({});
+      runtime.applyRuntimeMessages(rootUuid, [
+        { type: "stage_start", data: { name: "stage 1", start: 10 } },
+        { type: "step_start", data: { name: "a", start: 11 } },
+        { type: "step_start", data: { name: "a 1", start: 12 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 12 } },
+        { type: "stage_start", data: { name: "a 2", start: 13 } },
+        { type: "step_start", data: { name: "a 2 nested!", start: 14 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 14 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 15 } },
+        { type: "step_start", data: { name: "b", start: 16 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 16 } },
+        { type: "stage_start", data: { name: "stage 2", start: 17 } },
+        { type: "step_start", data: { name: "c", start: 18 } },
+        { type: "step_stop", data: { status: Status.PASSED, stop: 18 } },
+      ]);
+      runtime.stopTest(rootUuid, { stop: 19 });
+      runtime.writeTest(rootUuid);
+
+      const [testResult] = writer.writeResult.mock.calls[0];
+      expect(testResult.steps).toEqual([
+        expect.objectContaining({
+          name: "stage 1",
+          steps: [
+            expect.objectContaining({
+              name: "a",
+              status: Status.PASSED,
+              steps: [
+                expect.objectContaining({ name: "a 1", status: Status.PASSED }),
+                expect.objectContaining({
+                  name: "a 2",
+                  status: Status.PASSED,
+                  steps: [expect.objectContaining({ name: "a 2 nested!", status: Status.PASSED })],
+                }),
+              ],
+            }),
+            expect.objectContaining({ name: "b", status: Status.PASSED }),
+          ],
+        }),
+        expect.objectContaining({
+          name: "stage 2",
+          steps: [expect.objectContaining({ name: "c", status: Status.PASSED })],
+        }),
+      ]);
+    });
+
+    it("should finalize an active stage with the test failure status", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const rootUuid = runtime.startTest({});
+      runtime.applyRuntimeMessages(rootUuid, [{ type: "stage_start", data: { name: "stage 1", start: 10 } }]);
+      runtime.updateTest(rootUuid, (result) => {
+        result.status = Status.FAILED;
+        result.statusDetails = { message: "boom" };
+      });
+      runtime.stopTest(rootUuid, { stop: 11 });
+      runtime.writeTest(rootUuid);
+
+      const [testResult] = writer.writeResult.mock.calls[0];
+      expect(testResult.steps).toEqual([
+        expect.objectContaining({
+          name: "stage 1",
+          status: Status.FAILED,
+          statusDetails: expect.objectContaining({ message: "boom" }),
+          stage: Stage.FINISHED,
+          start: 10,
+          stop: 11,
+        }),
+      ]);
+    });
+
+    it("should keep stage passed when only a child step fails", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const rootUuid = runtime.startTest({});
+      runtime.applyRuntimeMessages(rootUuid, [
+        { type: "stage_start", data: { name: "stage 1", start: 10 } },
+        { type: "step_start", data: { name: "child step", start: 11 } },
+        { type: "step_stop", data: { status: Status.FAILED, stop: 11 } },
+      ]);
+      runtime.stopTest(rootUuid, { stop: 12 });
+      runtime.writeTest(rootUuid);
+
+      const [testResult] = writer.writeResult.mock.calls[0];
+      expect(testResult.steps).toEqual([
+        expect.objectContaining({
+          name: "stage 1",
+          status: Status.PASSED,
+          steps: [expect.objectContaining({ name: "child step", status: Status.FAILED })],
+        }),
+      ]);
+    });
+
+    it("should finalize an active nested stage before a failing step stops", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const rootUuid = runtime.startTest({});
+      runtime.applyRuntimeMessages(rootUuid, [
+        { type: "step_start", data: { name: "do action", start: 10 } },
+        { type: "stage_start", data: { name: "execute", start: 11 } },
+        {
+          type: "step_stop",
+          data: {
+            status: Status.FAILED,
+            statusDetails: { message: "boom" },
+            stop: 12,
+          },
+        },
+      ]);
+      runtime.stopTest(rootUuid, { stop: 13 });
+      runtime.writeTest(rootUuid);
+
+      const [testResult] = writer.writeResult.mock.calls[0];
+      expect(testResult.steps).toEqual([
+        expect.objectContaining({
+          name: "do action",
+          status: Status.FAILED,
+          steps: [
+            expect.objectContaining({
+              name: "execute",
+              status: Status.FAILED,
+              statusDetails: expect.objectContaining({ message: "boom" }),
+              stop: 12,
+            }),
+          ],
+        }),
+      ]);
+    });
+
     it("should not override step status on step_stop event", () => {
       const writer = mockWriter();
       const runtime = new ReporterRuntime({ writer });

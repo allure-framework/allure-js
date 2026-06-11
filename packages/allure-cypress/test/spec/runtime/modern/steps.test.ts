@@ -1,4 +1,4 @@
-import { ContentType, Status } from "allure-js-commons";
+import { ContentType, Stage, Status } from "allure-js-commons";
 import { expect, it } from "vitest";
 
 import { runCypressInlineTest } from "../../../utils.js";
@@ -105,6 +105,116 @@ it("nested steps with API calls", async () => {
         }),
       ],
     }),
+  ]);
+});
+
+it("keeps the parent step active for later runtime siblings", async () => {
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { logStep, step } from "${allureCommonsModulePath}";
+
+    it("step", () => {
+      step("outer", () => {
+        logStep("inner");
+        logStep("sibling");
+      });
+    });
+  `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toMatchObject([
+    {
+      name: "outer",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      steps: [
+        {
+          name: "inner",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+        },
+        {
+          name: "sibling",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+        },
+      ],
+    },
+  ]);
+});
+
+it("stage runtime api", async () => {
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath }) => `
+    import { logStep, stage, step } from "${allureCommonsModulePath}";
+
+    it("step", () => {
+      // Cypress runtime API calls are intentionally awaitless here; they enqueue Cypress commands.
+      stage("stage 1");
+      logStep("a");
+      step("b", () => {
+        logStep("b 1");
+        stage("b 2");
+        logStep("b 2 nested");
+      });
+
+      stage("stage 2");
+      logStep("c");
+    });
+  `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toMatchObject([
+    {
+      name: "stage 1",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      steps: [
+        {
+          name: "a",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+        },
+        {
+          name: "b",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+          steps: [
+            {
+              name: "b 1",
+              status: Status.PASSED,
+              stage: Stage.FINISHED,
+            },
+            {
+              name: "b 2",
+              status: Status.PASSED,
+              stage: Stage.FINISHED,
+              steps: [
+                {
+                  name: "b 2 nested",
+                  status: Status.PASSED,
+                  stage: Stage.FINISHED,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "stage 2",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      steps: [
+        {
+          name: "c",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+        },
+      ],
+    },
   ]);
 });
 
