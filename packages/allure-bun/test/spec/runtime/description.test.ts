@@ -1,10 +1,9 @@
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { runBunInlineTest } from "../../utils.js";
-import { bunIt } from "../helpers.js";
 
 describe("description", () => {
-  bunIt("sets markdown description", async () => {
+  it("sets markdown description", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";
@@ -21,7 +20,7 @@ describe("description", () => {
     expect(tests[0].description).toBe("markdown description");
   });
 
-  bunIt("sets html description", async () => {
+  it("sets html description", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";
@@ -38,7 +37,7 @@ describe("description", () => {
     expect(tests[0].descriptionHtml).toBe("<b>html description</b>");
   });
 
-  bunIt("adds descriptions from before fixtures to linked tests", async () => {
+  it("adds descriptions from before fixtures to linked tests", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { beforeAll, test } from "bun:test";

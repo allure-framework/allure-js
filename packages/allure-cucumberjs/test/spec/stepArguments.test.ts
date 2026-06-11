@@ -1,3 +1,4 @@
+import { Status } from "allure-js-commons";
 import { expect, it } from "vitest";
 
 import { runCucumberInlineTest } from "../utils.js";
@@ -8,6 +9,7 @@ it("reports steps with their arguments", async () => {
   expect(tests).toHaveLength(1);
   expect(tests).toContainEqual(
     expect.objectContaining({
+      status: Status.PASSED,
       steps: expect.arrayContaining([
         expect.objectContaining({
           name: "Given a is 5",

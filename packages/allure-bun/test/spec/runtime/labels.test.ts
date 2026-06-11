@@ -1,8 +1,8 @@
 import { LabelName } from "allure-js-commons";
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { runBunInlineTest } from "../../utils.js";
-import { bunIt, getTestByName } from "../helpers.js";
+import { getTestByName } from "../helpers.js";
 
 describe("labels", () => {
   const labelCases = [
@@ -81,7 +81,7 @@ describe("labels", () => {
   ];
 
   for (const labelCase of labelCases) {
-    bunIt(labelCase.title, async () => {
+    it(labelCase.title, async () => {
       const { tests, exitCode } = await runBunInlineTest({
         "sample.test.ts": `
           import { test } from "bun:test";
@@ -99,7 +99,7 @@ describe("labels", () => {
     });
   }
 
-  bunIt("labels", async () => {
+  it("labels", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";
@@ -121,7 +121,7 @@ describe("labels", () => {
     );
   });
 
-  bunIt("tags", async () => {
+  it("tags", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";
@@ -143,7 +143,7 @@ describe("labels", () => {
     );
   });
 
-  bunIt("adds labels from before fixtures to linked tests", async () => {
+  it("adds labels from before fixtures to linked tests", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { beforeAll, test } from "bun:test";
@@ -164,7 +164,7 @@ describe("labels", () => {
     });
   });
 
-  bunIt("adds configured global labels to every test", async () => {
+  it("adds configured global labels to every test", async () => {
     const { tests, exitCode } = await runBunInlineTest(
       {
         "sample.test.ts": `
@@ -193,7 +193,7 @@ describe("labels", () => {
     );
   });
 
-  bunIt("user suite labels override generated suite labels", async () => {
+  it("user suite labels override generated suite labels", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { describe, test } from "bun:test";

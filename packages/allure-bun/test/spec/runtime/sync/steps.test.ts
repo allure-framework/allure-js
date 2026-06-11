@@ -1,11 +1,11 @@
 import { Stage, Status } from "allure-js-commons";
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { runBunInlineTest } from "../../../utils.js";
-import { bunIt, readAttachment } from "../../helpers.js";
+import { readAttachment } from "../../helpers.js";
 
 describe("sync steps", () => {
-  bunIt("handles sync runtime api", async () => {
+  it("handles sync runtime api", async () => {
     const { tests, attachments, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { expect, test } from "bun:test";
@@ -55,7 +55,7 @@ describe("sync steps", () => {
     expect(readAttachment(attachments, attachmentRef.source)).toBe("bar");
   });
 
-  bunIt("rejects promise-returning sync steps", async () => {
+  it("rejects promise-returning sync steps", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";

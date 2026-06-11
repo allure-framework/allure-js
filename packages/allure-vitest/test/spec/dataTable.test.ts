@@ -1,21 +1,19 @@
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { type TestFileAccessor, createVitestBrowserConfig, createVitestConfig, runVitestInlineTest } from "../utils.js";
+import { type TestFileAccessor, runVitestInlineTest, vitestTestEnvironments } from "../utils.js";
 
 describe("data tables", () => {
-  for (const env of ["node", "browser"]) {
-    describe(`for "${env}"`, () => {
-      let configFileAccessor: TestFileAccessor;
+  describe.each(vitestTestEnvironments)('for "%s"', (_env, createConfig) => {
+    let configFileAccessor: TestFileAccessor;
 
-      beforeAll(() => {
-        configFileAccessor = ({ allureResultsPath }) =>
-          env === "node" ? createVitestConfig(allureResultsPath) : createVitestBrowserConfig(allureResultsPath);
-      });
+    beforeAll(() => {
+      configFileAccessor = ({ allureResultsPath }) => createConfig(allureResultsPath);
+    });
 
-      it("should support tests with data table", async () => {
-        const { tests } = await runVitestInlineTest({
-          "vitest.config.ts": configFileAccessor,
-          "sample.test.ts": `
+    it("should support tests with data table", async () => {
+      const { tests } = await runVitestInlineTest({
+        "vitest.config.ts": configFileAccessor,
+        "sample.test.ts": `
     import { test, expect } from "vitest";
     import { label } from "allure-js-commons";
 
@@ -27,13 +25,12 @@ describe("data tables", () => {
       await label("foo", "bar");
     })
   `,
-        });
-
-        expect(tests).toHaveLength(3);
-        expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
-        expect(tests[1].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
-        expect(tests[2].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
       });
+
+      expect(tests).toHaveLength(3);
+      expect(tests[0].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
+      expect(tests[1].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
+      expect(tests[2].labels).toContainEqual(expect.objectContaining({ name: "foo", value: "bar" }));
     });
-  }
+  });
 });

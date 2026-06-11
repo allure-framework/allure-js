@@ -1,10 +1,9 @@
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { runBunInlineTest } from "../../utils.js";
-import { bunIt } from "../helpers.js";
 
 describe("testCaseId", () => {
-  bunIt("sets test case id", async () => {
+  it("sets test case id", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";

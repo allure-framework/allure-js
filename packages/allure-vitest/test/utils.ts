@@ -92,6 +92,11 @@ ${createReporterOptions(allureResultsPath, options)}
   });
 `;
 
+export const vitestTestEnvironments = [
+  ["node", createVitestConfig],
+  ["browser", createVitestBrowserConfig],
+] as const;
+
 export const runVitestInlineTest = async (
   testFiles: TestFiles,
   { env = () => ({}), cwd }: Opts = {},
