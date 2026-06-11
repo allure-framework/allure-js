@@ -1,11 +1,10 @@
 import { Stage, Status } from "allure-js-commons";
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { runBunInlineTest } from "../../utils.js";
-import { bunIt } from "../helpers.js";
 
 describe("steps", () => {
-  bunIt("handles single lambda steps", async () => {
+  it("handles single lambda steps", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";
@@ -28,7 +27,7 @@ describe("steps", () => {
     );
   });
 
-  bunIt("preserves nested lambda steps", async () => {
+  it("preserves nested lambda steps", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";
@@ -62,7 +61,7 @@ describe("steps", () => {
     });
   });
 
-  bunIt("supports step display names and parameters", async () => {
+  it("supports step display names and parameters", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";
@@ -96,7 +95,7 @@ describe("steps", () => {
     );
   });
 
-  bunIt("returns step callback values", async () => {
+  it("returns step callback values", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { expect, test } from "bun:test";
@@ -115,7 +114,7 @@ describe("steps", () => {
     expect(tests[0].steps).toContainEqual(expect.objectContaining({ name: "get value", status: Status.PASSED }));
   });
 
-  bunIt("records failed lambda steps and rethrows errors", async () => {
+  it("records failed lambda steps and rethrows errors", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";
@@ -141,7 +140,7 @@ describe("steps", () => {
     );
   });
 
-  bunIt("adds instant log steps", async () => {
+  it("adds instant log steps", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";

@@ -61,7 +61,8 @@ it("should support runtime API in helper _beforeStep & _afterStep hooks", async 
   );
 });
 
-// it's doesn't reported in time, don't know why
+// Runtime messages from helper _passed are not reported before the test result
+// is finalized in this harness; keep the gap visible until lifecycle handling is fixed.
 it.skip("should support runtime API in helper _passed", async () => {
   const { tests } = await runCodeceptJsInlineTest({
     "nested/login.test.js": `

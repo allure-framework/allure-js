@@ -1,10 +1,10 @@
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { runBunInlineTest } from "../../utils.js";
-import { bunIt, hasFixtureStep } from "../helpers.js";
+import { hasFixtureStep } from "../helpers.js";
 
 describe("displayName", () => {
-  bunIt("sets test display name", async () => {
+  it("sets test display name", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";
@@ -22,7 +22,7 @@ describe("displayName", () => {
     expect(tests[0].fullName).toBe("sample.test.ts#display name");
   });
 
-  bunIt("renames fixtures without renaming tests", async () => {
+  it("renames fixtures without renaming tests", async () => {
     const { tests, groups, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { beforeAll, test } from "bun:test";

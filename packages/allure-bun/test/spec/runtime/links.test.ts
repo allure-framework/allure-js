@@ -1,11 +1,10 @@
 import { LinkType } from "allure-js-commons";
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { runBunInlineTest } from "../../utils.js";
-import { bunIt } from "../helpers.js";
 
 describe("links", () => {
-  bunIt("adds generic links", async () => {
+  it("adds generic links", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";
@@ -26,7 +25,7 @@ describe("links", () => {
     });
   });
 
-  bunIt("adds multiple links", async () => {
+  it("adds multiple links", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";
@@ -51,7 +50,7 @@ describe("links", () => {
     );
   });
 
-  bunIt("adds issue and tms links with templates", async () => {
+  it("adds issue and tms links with templates", async () => {
     const { tests, exitCode } = await runBunInlineTest(
       {
         "sample.test.ts": `
@@ -90,7 +89,7 @@ describe("links", () => {
     );
   });
 
-  bunIt("adds links from before fixtures to linked tests", async () => {
+  it("adds links from before fixtures to linked tests", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { beforeAll, test } from "bun:test";

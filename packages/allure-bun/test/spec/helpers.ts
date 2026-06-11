@@ -1,9 +1,5 @@
 import type { TestResult, TestResultContainer } from "allure-js-commons";
-import { expect, it } from "vitest";
-
-import { isBunAvailable } from "../utils.js";
-
-export const bunIt = isBunAvailable ? it : it.skip;
+import { expect } from "vitest";
 
 export const getTestByName = (tests: TestResult[], name: string) => {
   const test = tests.find((entry) => entry.name === name);

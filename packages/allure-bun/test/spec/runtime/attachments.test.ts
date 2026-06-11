@@ -1,10 +1,10 @@
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { runBunInlineTest } from "../../utils.js";
-import { bunIt, readAttachment } from "../helpers.js";
+import { readAttachment } from "../helpers.js";
 
 describe("attachments", () => {
-  bunIt("adds inline attachments", async () => {
+  it("adds inline attachments", async () => {
     const { tests, attachments, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";
@@ -33,7 +33,7 @@ describe("attachments", () => {
     expect(readAttachment(attachments, attachment.source)).toBe("bar");
   });
 
-  bunIt("adds attachments from paths", async () => {
+  it("adds attachments from paths", async () => {
     const { tests, attachments, exitCode } = await runBunInlineTest({
       "payload.txt": "payload from path",
       "sample.test.ts": `
@@ -62,7 +62,7 @@ describe("attachments", () => {
     expect(readAttachment(attachments, attachment.source)).toBe("payload from path");
   });
 
-  bunIt("adds trace attachments from paths", async () => {
+  it("adds trace attachments from paths", async () => {
     const { tests, attachments, exitCode } = await runBunInlineTest({
       "trace.zip": "trace payload",
       "sample.test.ts": `
@@ -91,7 +91,7 @@ describe("attachments", () => {
     expect(readAttachment(attachments, attachment.source)).toBe("trace payload");
   });
 
-  bunIt("adds attachments inside steps", async () => {
+  it("adds attachments inside steps", async () => {
     const { tests, attachments, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";
