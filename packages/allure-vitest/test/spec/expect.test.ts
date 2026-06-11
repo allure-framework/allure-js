@@ -222,6 +222,36 @@ describe("expect", () => {
         expect(tests[0].steps.map((s) => s.name)).toEqual(["manual step"]);
       });
 
+      if (env === "node") {
+        it("should allow multiple toMatchInlineSnapshot calls in one file with setup enabled", async () => {
+          const { tests } = await runVitestInlineTest({
+            "vitest.config.ts": configFileAccessor,
+            "sample.test.ts": `
+    import { describe, test, expect } from "vitest";
+
+    describe("inline snapshots", () => {
+      test("first", () => {
+        expect("hello").toMatchInlineSnapshot('"hello"');
+      });
+
+      test("second", () => {
+        expect("hello").toMatchInlineSnapshot('"hello"');
+      });
+
+      test("third", () => {
+        expect("hello").toMatchInlineSnapshot('"hello"');
+      });
+    });
+
+  `,
+          });
+
+          expect(tests).toHaveLength(3);
+          expect(tests.every((t) => t.status === "passed")).toBe(true);
+          expect(tests.every((t) => t.steps.length === 0)).toBe(true);
+        });
+      }
+
       it("should not report raw chai assertions as vitest matcher steps", async () => {
         const { tests } = await runVitestInlineTest({
           "vitest.config.ts": configFileAccessor,
