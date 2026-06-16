@@ -21,6 +21,9 @@
     "vitest"
   ],
   "homepage": "https://allurereport.org/",
+  "bugs": {
+    "url": "https://github.com/allure-framework/allure-js/issues"
+  },
   "license": "Apache-2.0",
   "author": {
     "name": "Qameta Software",
