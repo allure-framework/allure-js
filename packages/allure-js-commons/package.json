@@ -32,6 +32,9 @@
     "url": "https://github.com/allure-framework/allure-js.git",
     "directory": "packages/allure-js-commons"
   },
+  "bugs": {
+    "url": "https://github.com/allure-framework/allure-js/issues"
+  },
   "files": [
     "dist"
   ],
