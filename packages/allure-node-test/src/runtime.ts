@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from "node:async_hooks";
 import { appendFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import * as nodeTest from "node:test";
@@ -13,6 +14,7 @@ type NodeTestModule = {
 };
 
 let getTracingStore: (() => NodeTestTracingStore | undefined) | undefined;
+const hookContextStorage = new AsyncLocalStorage<{ context: NodeTestContext; type: "suite" | "test" }>();
 
 const nodeTestModule = nodeTest as unknown as NodeTestModule;
 
@@ -21,6 +23,9 @@ export const hasNodeTestContextApi = () => typeof nodeTestModule.getTestContext 
 export const setNodeTestTracingStoreProvider = (provider: () => NodeTestTracingStore | undefined) => {
   getTracingStore = provider;
 };
+
+export const runWithNodeTestHookContext = <T>(context: NodeTestContext, type: "suite" | "test", callback: () => T) =>
+  hookContextStorage.run({ context, type }, callback);
 
 export class NodeTestRuntime extends MessageTestRuntime {
   constructor(private readonly runDir = ensureRunDir()) {
@@ -39,7 +44,8 @@ export class NodeTestRuntime extends MessageTestRuntime {
 }
 
 export const createRuntimeMessageRecord = (message: RuntimeMessage): RuntimeMessageRecord => {
-  const context = nodeTestModule.getTestContext?.();
+  const hookContext = hookContextStorage.getStore();
+  const context = hookContext?.context ?? getNodeTestContext();
   const tracingStore = getTracingStore?.();
   const file = normalizeFilePath(context?.filePath ?? tracingStore?.file);
   const nodeFullName = context?.fullName ?? tracingStore?.fullName ?? tracingStore?.name;
@@ -55,10 +61,18 @@ export const createRuntimeMessageRecord = (message: RuntimeMessage): RuntimeMess
     name: context?.name ?? tracingStore?.name,
     nodeFullName,
     allureFullName: getAllureFullName(file, nodeFullName),
-    type: context?.type ?? tracingStore?.type,
+    type: hookContext?.type ?? context?.type ?? tracingStore?.type,
     timestamp: Date.now(),
     message,
   };
+};
+
+const getNodeTestContext = () => {
+  try {
+    return nodeTestModule.getTestContext?.();
+  } catch {
+    return undefined;
+  }
 };
 
 export const writeRuntimeMessage = (runDir: string, record: RuntimeMessageRecord) => {

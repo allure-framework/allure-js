@@ -5,6 +5,7 @@ import type { ReporterConfig, Writer } from "allure-js-commons/sdk/reporter";
 export const ALLURE_NODE_TEST_CONFIG_ENV = "ALLURE_NODE_TEST_CONFIG";
 export const ALLURE_NODE_TEST_RUN_DIR_ENV = "ALLURE_NODE_TEST_RUN_DIR";
 export const ALLURE_NODE_TEST_TESTPLAN_FILTER_ENV = "ALLURE_NODE_TEST_TESTPLAN_FILTER";
+export const ROOT_SUITE_FULL_NAME = "<root>";
 
 export type NodeTestReporterConfig = ReporterConfig & {
   readonly writer?: Writer;

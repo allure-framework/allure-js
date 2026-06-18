@@ -7,7 +7,7 @@ import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 
 import type { NodeTestTracingStore } from "./model.js";
 import { NodeTestRuntime, hasNodeTestContextApi, setNodeTestTracingStoreProvider } from "./runtime.js";
-import { hasExecutableTestPlan, installCommonJsTestPlanFilter } from "./testplan.js";
+import { hasExecutableTestPlan, installCommonJsNodeTestWrappers } from "./testplan.js";
 import { ensureRunDir, normalizeFilePath } from "./utils.js";
 
 const SETUP_KEY = "__allure_node_test_setup__";
@@ -33,23 +33,19 @@ const installTracingStore = () => {
   setNodeTestTracingStoreProvider(() => storage.getStore());
 };
 
-const installTestPlanFilter = () => {
-  if (!hasExecutableTestPlan()) {
-    return false;
-  }
-
-  installCommonJsTestPlanFilter();
+const installNodeTestWrappers = () => {
+  installCommonJsNodeTestWrappers();
   register("allure-node-test/loader", pathToFileURL(`${process.cwd()}/`));
-
-  return true;
 };
 
 if (!(globalThis as any)[SETUP_KEY]) {
   (globalThis as any)[SETUP_KEY] = true;
 
-  const testPlanFilterInstalled = installTestPlanFilter();
+  const testPlanAvailable = hasExecutableTestPlan();
 
-  if (!testPlanFilterInstalled) {
+  installNodeTestWrappers();
+
+  if (!testPlanAvailable) {
     assertSupportedNodeVersion();
   }
 

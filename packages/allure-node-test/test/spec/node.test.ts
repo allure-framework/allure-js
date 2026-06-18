@@ -400,4 +400,87 @@ describe("node --test integration", () => {
       expect(readAttachment(attachments, runtimeAttachment!.source)).toBe("hello node");
     },
   );
+
+  it.skipIf(!supportsNodeTestRuntimeApi)("writes runtime API data from native hooks", async () => {
+    const { attachments, exitCode, tests } = await runNodeInlineTest(
+      {
+        "hook-runtime.test.mjs": `
+          import { describe, it, before, beforeEach, afterEach, after } from "node:test";
+          import assert from "node:assert/strict";
+          import { attachment, label, step } from "allure-js-commons";
+
+          describe("hook runtime suite", () => {
+            before(async () => {
+              await label("owner", "before-hook");
+            });
+
+            beforeEach(async () => {
+              await label("feature", "before-each-hook");
+              await step("beforeEach runtime step", async () => {});
+            });
+
+            afterEach(async () => {
+              await attachment("afterEach runtime attachment", "after each body", "text/plain");
+            });
+
+            after(async () => {
+              await label("story", "after-hook");
+            });
+
+            it("uses hook runtime API", () => {
+              assert.equal(1 + 1, 2);
+            });
+
+            it("also uses hook runtime API", () => {
+              assert.equal(3 + 3, 6);
+            });
+          });
+        `,
+        "hook-runtime-cjs.test.cjs": `
+          const assert = require("node:assert/strict");
+          const { test, beforeEach } = require("node:test");
+          const { label } = require("allure-js-commons");
+
+          beforeEach(async () => {
+            await label("tag", "cjs-before-each-hook");
+          });
+
+          test("uses cjs hook runtime API", () => {
+            assert.equal(2 + 2, 4);
+          });
+        `,
+      },
+      { setup: true },
+    );
+
+    expect(exitCode).toBe(0);
+
+    for (const result of [
+      getTestByName(tests, "uses hook runtime API"),
+      getTestByName(tests, "also uses hook runtime API"),
+    ]) {
+      expect(result.labels).toEqual(
+        expect.arrayContaining([
+          { name: LabelName.OWNER, value: "before-hook" },
+          { name: LabelName.FEATURE, value: "before-each-hook" },
+          { name: LabelName.STORY, value: "after-hook" },
+        ]),
+      );
+      expect(result.steps).toEqual(
+        expect.arrayContaining([expect.objectContaining({ name: "beforeEach runtime step" })]),
+      );
+
+      const runtimeAttachment = result.steps
+        .flatMap((entry) => entry.attachments)
+        .concat(result.attachments)
+        .find((entry) => entry.name === "afterEach runtime attachment");
+
+      expect(runtimeAttachment).toBeDefined();
+      expect(readAttachment(attachments, runtimeAttachment!.source)).toBe("after each body");
+    }
+
+    expect(getTestByName(tests, "uses cjs hook runtime API").labels).toEqual(
+      expect.arrayContaining([{ name: LabelName.TAG, value: "cjs-before-each-hook" }]),
+    );
+  });
 });
