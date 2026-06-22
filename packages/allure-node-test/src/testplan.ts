@@ -4,7 +4,8 @@ import { LabelName } from "allure-js-commons";
 import { extractMetadataFromString, type TestPlanV1 } from "allure-js-commons/sdk";
 import { addSkipLabelAsMeta, includedInTestPlan, parseTestPlan } from "allure-js-commons/sdk/reporter";
 
-import { ALLURE_NODE_TEST_TESTPLAN_FILTER_ENV } from "./model.js";
+import { ALLURE_NODE_TEST_TESTPLAN_FILTER_ENV, type NodeTestContext } from "./model.js";
+import { runWithNodeTestHookContext } from "./runtime.js";
 import { getAllureFullNameFromParts, getFallbackNodeFullName, normalizeFilePath } from "./utils.js";
 
 type NodeTestFunction = ((...args: any[]) => unknown) & Record<string, any>;
@@ -45,14 +46,10 @@ const testPlan = parseTestPlan();
 
 export const hasExecutableTestPlan = () => !!testPlan;
 
-export const installCommonJsTestPlanFilter = () => {
-  if (!testPlan) {
-    return;
-  }
-
+export const installCommonJsNodeTestWrappers = () => {
   const require = createRequire(`${process.cwd()}/`);
   const nodeTest = require("node:test") as NodeTestModule;
-  const wrappers = applyNodeTestPlanFilter(nodeTest);
+  const wrappers = applyNodeTestWrappers(nodeTest);
 
   installCommonJsLoadFilter(require("node:module") as CommonJsModule, wrappers);
 };
@@ -80,33 +77,45 @@ const installCommonJsLoadFilter = (commonJsModule: CommonJsModule, wrappers: Nod
   };
 };
 
-export const applyNodeTestPlanFilter = (nodeTest: NodeTestModule): NodeTestWrappers => {
-  process.env[ALLURE_NODE_TEST_TESTPLAN_FILTER_ENV] = "1";
+export const applyNodeTestWrappers = (nodeTest: NodeTestModule): NodeTestWrappers => {
+  if (testPlan) {
+    process.env[ALLURE_NODE_TEST_TESTPLAN_FILTER_ENV] = "1";
+  }
 
   const originalTest = nodeTest.test ?? nodeTest.it;
   const originalDescribe = nodeTest.describe;
   const originalSuite = nodeTest.suite;
+  const before = wrapHook(nodeTest.before, "suite");
+  const beforeEach = wrapHook(nodeTest.beforeEach, "test");
+  const after = wrapHook(nodeTest.after, "suite");
+  const afterEach = wrapHook(nodeTest.afterEach, "test");
 
   if (!originalTest || !originalDescribe || !originalSuite) {
-    return nodeTest as NodeTestWrappers;
+    return {
+      ...(nodeTest as NodeTestWrappers),
+      after,
+      afterEach,
+      before,
+      beforeEach,
+    };
   }
 
-  const test = wrapTest(originalTest);
-  const describe = wrapSuite(originalDescribe);
-  const suite = wrapSuite(originalSuite);
+  const test = testPlan ? wrapTest(originalTest) : originalTest;
+  const describe = testPlan ? wrapSuite(originalDescribe) : originalDescribe;
+  const suite = testPlan ? wrapSuite(originalSuite) : originalSuite;
 
   test.it = test;
   test.test = test;
   test.describe = describe;
   test.suite = suite;
-  test.before = nodeTest.before;
-  test.beforeEach = nodeTest.beforeEach;
-  test.after = nodeTest.after;
-  test.afterEach = nodeTest.afterEach;
+  test.before = before;
+  test.beforeEach = beforeEach;
+  test.after = after;
+  test.afterEach = afterEach;
   test.run = nodeTest.run;
-  test.skip = wrapTestModifier(originalTest, "skip");
-  test.todo = wrapTestModifier(originalTest, "todo");
-  test.only = wrapTestModifier(originalTest, "only");
+  test.skip = testPlan ? wrapTestModifier(originalTest, "skip") : originalTest.skip;
+  test.todo = testPlan ? wrapTestModifier(originalTest, "todo") : originalTest.todo;
+  test.only = testPlan ? wrapTestModifier(originalTest, "only") : originalTest.only;
 
   describe.skip = originalDescribe.skip;
   describe.todo = originalDescribe.todo;
@@ -119,12 +128,16 @@ export const applyNodeTestPlanFilter = (nodeTest: NodeTestModule): NodeTestWrapp
   setIfWritable(nodeTest, "it", test);
   setIfWritable(nodeTest, "describe", describe);
   setIfWritable(nodeTest, "suite", suite);
+  setIfWritable(nodeTest, "before", before);
+  setIfWritable(nodeTest, "beforeEach", beforeEach);
+  setIfWritable(nodeTest, "after", after);
+  setIfWritable(nodeTest, "afterEach", afterEach);
 
   return {
-    after: nodeTest.after,
-    afterEach: nodeTest.afterEach,
-    before: nodeTest.before,
-    beforeEach: nodeTest.beforeEach,
+    after,
+    afterEach,
+    before,
+    beforeEach,
     describe,
     it: test,
     suite,
@@ -202,6 +215,51 @@ const wrapSuite = (originalSuite: NodeTestFunction): NodeTestFunction => {
   Object.assign(wrapped, originalSuite);
 
   return wrapped;
+};
+
+const wrapHook = (originalHook: NodeTestFunction | undefined, contextType: "suite" | "test"): NodeTestFunction => {
+  if (!originalHook) {
+    return originalHook as unknown as NodeTestFunction;
+  }
+
+  const wrapped = function allureNodeTestHookWithContext(this: unknown, ...args: any[]) {
+    const callbackIndex = args.findIndex((arg) => typeof arg === "function");
+
+    if (callbackIndex === -1) {
+      return originalHook.call(this, ...args);
+    }
+
+    const nextArgs = [...args];
+    const originalCallback = nextArgs[callbackIndex];
+
+    nextArgs[callbackIndex] = function allureNodeTestHookCallback(this: unknown, ...callbackArgs: any[]) {
+      const context = callbackArgs[0];
+
+      if (!isNodeTestContext(context)) {
+        return originalCallback.apply(this, callbackArgs);
+      }
+
+      return runWithNodeTestHookContext(context, contextType, () => originalCallback.apply(this, callbackArgs));
+    };
+
+    return originalHook.call(this, ...nextArgs);
+  } as NodeTestFunction;
+
+  Object.assign(wrapped, originalHook);
+
+  return wrapped;
+};
+
+const isNodeTestContext = (value: unknown): value is NodeTestContext => {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const context = value as NodeTestContext;
+
+  return (
+    typeof context.filePath === "string" || typeof context.fullName === "string" || typeof context.name === "string"
+  );
 };
 
 const shouldRunTest = (args: readonly unknown[]) => {

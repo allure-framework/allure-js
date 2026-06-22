@@ -26,9 +26,9 @@ export const load = async (url: string, context: unknown, nextLoad: Function) =>
       shortCircuit: true,
       source: `
         import * as actual from ${JSON.stringify(NODE_TEST_ACTUAL_SPECIFIER)};
-        import { applyNodeTestPlanFilter } from ${JSON.stringify(new URL("./testplan.js", import.meta.url).href)};
+        import { applyNodeTestWrappers } from ${JSON.stringify(new URL("./testplan.js", import.meta.url).href)};
 
-        const wrappers = applyNodeTestPlanFilter(actual);
+        const wrappers = applyNodeTestWrappers(actual);
 
         export default wrappers.test;
         export const test = wrappers.test;
