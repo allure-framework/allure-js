@@ -59,7 +59,7 @@
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^20.19.0",
+    "@types/node": "^26.0.0",
     "allure-commandline": "^2.29.0",
     "allure-vitest": "workspace:*",
     "ava": "^8.0.1",
