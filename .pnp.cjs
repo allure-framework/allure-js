@@ -12774,7 +12774,7 @@ const RAW_RUNTIME_STATE =
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
           ["ava", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:8.0.1"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -12799,7 +12799,7 @@ const RAW_RUNTIME_STATE =
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
           ["axios", "npm:1.16.1"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -12823,7 +12823,7 @@ const RAW_RUNTIME_STATE =
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -12855,7 +12855,7 @@ const RAW_RUNTIME_STATE =
             "npm:4.5.0"\
           ]],\
           ["mocha", "npm:11.7.5"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -12886,7 +12886,7 @@ const RAW_RUNTIME_STATE =
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
           ["codeceptjs", "npm:3.7.7"],\
           ["codeceptjs-expect", "npm:1.0.3"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -12922,7 +12922,7 @@ const RAW_RUNTIME_STATE =
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -12949,7 +12949,7 @@ const RAW_RUNTIME_STATE =
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
           ["cypress", "npm:15.16.0"],\
           ["esbuild", "npm:0.27.0"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -12973,7 +12973,7 @@ const RAW_RUNTIME_STATE =
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -13000,7 +13000,7 @@ const RAW_RUNTIME_STATE =
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
           ["babel-plugin-transform-import-meta", "virtual:d10e825d76338dedaee6647c8486ff1b2de1919ee4a2fdffe7a975104693ccf29afd00c4e48ffcb4f47ef8d1f4877527ac7198a342ce42052f0432baff921fd1#npm:2.3.3"],\
           ["jasmine", "npm:6.2.0"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -13030,7 +13030,7 @@ const RAW_RUNTIME_STATE =
           ["jest-cli", "virtual:f22a73b9c1f4f0e2e1c95f149ccb41c96491085e4b2ecd3061e554432306c4df6c2976f3c6ce3a6d62abead3ccc6cf04e88b4aebf1de7356583819351e2346e2#npm:30.0.0"],\
           ["jest-environment-jsdom", "virtual:f22a73b9c1f4f0e2e1c95f149ccb41c96491085e4b2ecd3061e554432306c4df6c2976f3c6ce3a6d62abead3ccc6cf04e88b4aebf1de7356583819351e2346e2#npm:30.0.0"],\
           ["jest-environment-node", "npm:30.0.0"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -13071,7 +13071,7 @@ const RAW_RUNTIME_STATE =
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-playwright", null],\
           ["md5", "npm:2.3.0"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -13098,7 +13098,7 @@ const RAW_RUNTIME_STATE =
           ["allure-js-commons", "virtual:3b04c8c38dde7165df844f9cd74e94cc47d78164564600cf56ba5f8c6011d25ef0d3afc13d610f3da970f6807c830914053ff96a43c86ba17f3ec650dfd687d3#workspace:packages/allure-js-commons"],\
           ["allure-playwright", "workspace:packages/allure-playwright"],\
           ["md5", "npm:2.3.0"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -13123,7 +13123,7 @@ const RAW_RUNTIME_STATE =
           ["@types/node", "npm:20.19.37"],\
           ["allure-js-commons", "workspace:packages/allure-js-commons"],\
           ["md5", "npm:2.3.0"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -13151,7 +13151,7 @@ const RAW_RUNTIME_STATE =
           ["babel-plugin-transform-import-meta", "virtual:d10e825d76338dedaee6647c8486ff1b2de1919ee4a2fdffe7a975104693ccf29afd00c4e48ffcb4f47ef8d1f4877527ac7198a342ce42052f0432baff921fd1#npm:2.3.3"],\
           ["glob", "npm:11.1.0"],\
           ["mocha", "npm:11.7.5"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -13177,7 +13177,7 @@ const RAW_RUNTIME_STATE =
           ["babel-plugin-transform-import-meta", "virtual:d10e825d76338dedaee6647c8486ff1b2de1919ee4a2fdffe7a975104693ccf29afd00c4e48ffcb4f47ef8d1f4877527ac7198a342ce42052f0432baff921fd1#npm:2.3.3"],\
           ["glob", "npm:11.1.0"],\
           ["mocha", "npm:11.7.5"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -13201,7 +13201,7 @@ const RAW_RUNTIME_STATE =
           ["allure-node-test", "workspace:packages/allure-node-test"],\
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -13228,7 +13228,7 @@ const RAW_RUNTIME_STATE =
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
           ["babel-plugin-transform-import-meta", "virtual:d10e825d76338dedaee6647c8486ff1b2de1919ee4a2fdffe7a975104693ccf29afd00c4e48ffcb4f47ef8d1f4877527ac7198a342ce42052f0432baff921fd1#npm:2.3.3"],\
           ["glob", "npm:11.1.0"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.8"]\
@@ -13253,7 +13253,7 @@ const RAW_RUNTIME_STATE =
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["playwright", "npm:1.60.0"],\
           ["react", "npm:19.2.4"],\
           ["react-dom", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:19.2.4"],\
@@ -13282,7 +13282,7 @@ const RAW_RUNTIME_STATE =
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "workspace:packages/allure-vitest"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["playwright", "npm:1.60.0"],\
           ["react", "npm:19.2.4"],\
           ["react-dom", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:19.2.4"],\
@@ -19978,6 +19978,13 @@ const RAW_RUNTIME_STATE =
           ["isexe", "npm:3.1.1"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:4.0.0", {\
+        "packageLocation": "./.yarn/cache/isexe-npm-4.0.0-588229ad74-2ead327ef5.zip/node_modules/isexe/",\
+        "packageDependencies": [\
+          ["isexe", "npm:4.0.0"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["isobject", [\
@@ -21236,10 +21243,10 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["npm:4.0.0", {\
-        "packageLocation": "./.yarn/cache/json-parse-even-better-errors-npm-4.0.0-04142095b2-da1ae7ef0c.zip/node_modules/json-parse-even-better-errors/",\
+      ["npm:6.0.0", {\
+        "packageLocation": "./.yarn/cache/json-parse-even-better-errors-npm-6.0.0-7bff3c652c-52f10c3c99.zip/node_modules/json-parse-even-better-errors/",\
         "packageDependencies": [\
-          ["json-parse-even-better-errors", "npm:4.0.0"]\
+          ["json-parse-even-better-errors", "npm:6.0.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -23280,7 +23287,7 @@ const RAW_RUNTIME_STATE =
           ["msw", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:1.3.3"],\
           ["newman", "virtual:4218b6600acb0c8954cf8466c426bad46f922b530cc59d6a89bb99bced31fcbe6a5d15569d569781ed3b73521fe5248efe67b2809fc9b4d1dcf8adddcf65f3df#npm:6.2.1"],\
           ["newman-reporter-allure", "workspace:packages/newman-reporter-allure"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["postman-collection", "npm:5.3.0"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
@@ -23490,27 +23497,27 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["npm-normalize-package-bin", [\
-      ["npm:4.0.0", {\
-        "packageLocation": "./.yarn/cache/npm-normalize-package-bin-npm-4.0.0-d2d7e5e821-e1a0971e56.zip/node_modules/npm-normalize-package-bin/",\
+      ["npm:6.0.0", {\
+        "packageLocation": "./.yarn/cache/npm-normalize-package-bin-npm-6.0.0-97f59f5b3d-0d9b2a629b.zip/node_modules/npm-normalize-package-bin/",\
         "packageDependencies": [\
-          ["npm-normalize-package-bin", "npm:4.0.0"]\
+          ["npm-normalize-package-bin", "npm:6.0.0"]\
         ],\
         "linkType": "HARD"\
       }]\
     ]],\
     ["npm-run-all2", [\
-      ["npm:8.0.1", {\
-        "packageLocation": "./.yarn/cache/npm-run-all2-npm-8.0.1-3bc0f42a97-afa8edf143.zip/node_modules/npm-run-all2/",\
+      ["npm:9.0.2", {\
+        "packageLocation": "./.yarn/cache/npm-run-all2-npm-9.0.2-51a971c880-5b723ff5dc.zip/node_modules/npm-run-all2/",\
         "packageDependencies": [\
           ["ansi-styles", "npm:6.2.1"],\
           ["cross-spawn", "npm:7.0.6"],\
           ["memorystream", "npm:0.3.1"],\
-          ["minimatch", "npm:10.2.4"],\
-          ["npm-run-all2", "npm:8.0.1"],\
-          ["pidtree", "npm:0.6.0"],\
-          ["read-package-json-fast", "npm:4.0.0"],\
+          ["npm-run-all2", "npm:9.0.2"],\
+          ["picomatch", "npm:4.0.4"],\
+          ["pidtree", "npm:1.0.0"],\
+          ["read-package-json-fast", "npm:6.0.0"],\
           ["shell-quote", "npm:1.8.4"],\
-          ["which", "npm:5.0.0"]\
+          ["which", "npm:7.0.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -24332,10 +24339,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["pidtree", [\
-      ["npm:0.6.0", {\
-        "packageLocation": "./.yarn/cache/pidtree-npm-0.6.0-3d92e16117-ea67fb3159.zip/node_modules/pidtree/",\
+      ["npm:1.0.0", {\
+        "packageLocation": "./.yarn/cache/pidtree-npm-1.0.0-214171f2aa-f9195d62aa.zip/node_modules/pidtree/",\
         "packageDependencies": [\
-          ["pidtree", "npm:0.6.0"]\
+          ["pidtree", "npm:1.0.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -25262,12 +25269,12 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["read-package-json-fast", [\
-      ["npm:4.0.0", {\
-        "packageLocation": "./.yarn/cache/read-package-json-fast-npm-4.0.0-59ef005465-bf0becd7d0.zip/node_modules/read-package-json-fast/",\
+      ["npm:6.0.0", {\
+        "packageLocation": "./.yarn/cache/read-package-json-fast-npm-6.0.0-9cc0c0b4a1-22fc66c316.zip/node_modules/read-package-json-fast/",\
         "packageDependencies": [\
-          ["json-parse-even-better-errors", "npm:4.0.0"],\
-          ["npm-normalize-package-bin", "npm:4.0.0"],\
-          ["read-package-json-fast", "npm:4.0.0"]\
+          ["json-parse-even-better-errors", "npm:6.0.0"],\
+          ["npm-normalize-package-bin", "npm:6.0.0"],\
+          ["read-package-json-fast", "npm:6.0.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -27284,7 +27291,7 @@ const RAW_RUNTIME_STATE =
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
-          ["npm-run-all2", "npm:8.0.1"],\
+          ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["testcafe", "npm:3.7.4"],\
           ["testcafe-reporter-allure-official", "workspace:packages/testcafe-reporter-allure-official"],\
@@ -28738,11 +28745,11 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["npm:5.0.0", {\
-        "packageLocation": "./.yarn/cache/which-npm-5.0.0-15aa39eb60-6ec99e89ba.zip/node_modules/which/",\
+      ["npm:7.0.0", {\
+        "packageLocation": "./.yarn/cache/which-npm-7.0.0-638dd00e77-913a43ac10.zip/node_modules/which/",\
         "packageDependencies": [\
-          ["isexe", "npm:3.1.1"],\
-          ["which", "npm:5.0.0"]\
+          ["isexe", "npm:4.0.0"],\
+          ["which", "npm:7.0.0"]\
         ],\
         "linkType": "HARD"\
       }]\
