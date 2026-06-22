@@ -7665,34 +7665,12 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@codeceptjs/configure", [\
-      ["npm:1.0.1", {\
-        "packageLocation": "./.yarn/cache/@codeceptjs-configure-npm-1.0.1-d9352a52f7-f570ddc1db.zip/node_modules/@codeceptjs/configure/",\
-        "packageDependencies": [\
-          ["@codeceptjs/configure", "npm:1.0.1"]\
-        ],\
-        "linkType": "SOFT"\
-      }],\
       ["npm:1.0.6", {\
         "packageLocation": "./.yarn/cache/@codeceptjs-configure-npm-1.0.6-1497b1f8dc-43a95fb85f.zip/node_modules/@codeceptjs/configure/",\
         "packageDependencies": [\
           ["@codeceptjs/configure", "npm:1.0.6"]\
         ],\
         "linkType": "SOFT"\
-      }],\
-      ["virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:1.0.1", {\
-        "packageLocation": "./.yarn/__virtual__/@codeceptjs-configure-virtual-b1595d0ff2/0/cache/@codeceptjs-configure-npm-1.0.1-d9352a52f7-f570ddc1db.zip/node_modules/@codeceptjs/configure/",\
-        "packageDependencies": [\
-          ["@codeceptjs/configure", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:1.0.1"],\
-          ["@types/codeceptjs", null],\
-          ["codeceptjs", "npm:3.7.7"],\
-          ["lodash.merge", "npm:4.6.2"],\
-          ["lodash.mergewith", "npm:4.6.2"]\
-        ],\
-        "packagePeers": [\
-          "@types/codeceptjs",\
-          "codeceptjs"\
-        ],\
-        "linkType": "HARD"\
       }],\
       ["virtual:675b01bef518887f4957c0cb2e225b8da73b588b2dc3e5dadf97f16c23cc805880d3f33e8bd1dde98a079d42f35a86e308272df36893f0486cac95fa1a50e1b6#npm:1.0.6", {\
         "packageLocation": "./.yarn/__virtual__/@codeceptjs-configure-virtual-eea6ef70cb/0/cache/@codeceptjs-configure-npm-1.0.6-1497b1f8dc-43a95fb85f.zip/node_modules/@codeceptjs/configure/",\
@@ -12872,7 +12850,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/plugin-transform-modules-commonjs", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.27.1"],\
           ["@babel/preset-env", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.27.1"],\
-          ["@codeceptjs/configure", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#npm:1.0.1"],\
+          ["@codeceptjs/configure", "virtual:675b01bef518887f4957c0cb2e225b8da73b588b2dc3e5dadf97f16c23cc805880d3f33e8bd1dde98a079d42f35a86e308272df36893f0486cac95fa1a50e1b6#npm:1.0.6"],\
           ["@codeceptjs/helper", "npm:2.0.4"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
