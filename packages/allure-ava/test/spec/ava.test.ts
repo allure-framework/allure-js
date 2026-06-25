@@ -682,4 +682,46 @@ describe("allure-ava", () => {
     expect(second!.steps).toEqual(expect.arrayContaining([expect.objectContaining({ name: "second worker step" })]));
     expect(second!.steps).not.toEqual(expect.arrayContaining([expect.objectContaining({ name: "first worker step" })]));
   });
+
+  it("does not mark pending tests from other AVA workers as broken when a peer calls process.exit()", async () => {
+    const { tests, exitCode } = await runAvaInlineTest(
+      {
+        "workers/exiting.test.js": ({ avaModulePath }) => `
+          import test from "${avaModulePath}";
+
+          const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+          test("exits process", async () => {
+            await wait(50);
+            process.exit(1);
+          });
+        `,
+        "workers/survivor.test.js": ({ avaModulePath }) => `
+          import test from "${avaModulePath}";
+
+          const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+          test("survives peer process exit", async (t) => {
+            await wait(150);
+            t.pass();
+          });
+        `,
+      },
+      ["--concurrency=2"],
+    );
+    const exiting = getTestByName(tests, "exits process");
+    const survivor = getTestByName(tests, "survives peer process exit");
+
+    expect(exitCode).toBe(1);
+    expect(exiting).toEqual(
+      expect.objectContaining({
+        status: Status.BROKEN,
+        statusDetails: expect.objectContaining({
+          message: "Unexpected process.exit() call",
+        }),
+      }),
+    );
+    expect(survivor).toEqual(expect.objectContaining({ status: Status.PASSED, stage: Stage.FINISHED }));
+    expect(survivor.statusDetails).not.toEqual(expect.objectContaining({ message: "Unexpected process.exit() call" }));
+  });
 });
