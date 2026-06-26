@@ -12,6 +12,14 @@ import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 export interface AllurePlaywrightReporterConfig extends ReporterConfig {
   detail?: boolean;
   suiteTitle?: boolean;
+  /**
+   * When true, attachments added via `testInfo.attach()` inside fixtures or hooks are
+   * placed at the test root level rather than nested inside the After Hooks step. This
+   * mirrors the Allure 2 report layout where attachments appear below all steps.
+   *
+   * @default false
+   */
+  flattenReport?: boolean;
 }
 
 export type HookScope = "before" | "after";
