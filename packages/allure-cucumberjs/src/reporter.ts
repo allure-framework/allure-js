@@ -216,6 +216,8 @@ export default class AllureCucumberReporter extends Formatter {
         this.onRule(c.rule);
       } else if (c.scenario) {
         this.onScenario(c.scenario);
+      } else if (c.background) {
+        c.background.steps.forEach((step) => this.stepMap.set(step.id, step));
       }
     });
   }
