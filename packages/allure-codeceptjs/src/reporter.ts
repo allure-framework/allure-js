@@ -45,6 +45,8 @@ const getCodeceptStatusFromError = (error: Partial<Error>, hookName?: string): S
   return isKnownCodeceptVerificationError(error) ? Status.FAILED : Status.BROKEN;
 };
 
+const isBeforeHook = (hookName?: string) => hookName === "Before" || hookName === "BeforeSuite";
+
 const isErrorInstance = (value: unknown): value is Error =>
   value instanceof Error ||
   (typeof value === "object" &&
@@ -102,8 +104,14 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     });
   }
 
-  testFailed(_: {}, error: Error, hookName?: string) {
+  testFailed(test: Mocha.Test, error: Error, hookName?: string) {
     this.currentTestHookName = hookName;
+    const shouldFinishTest = isBeforeHook(hookName);
+
+    if (!this.currentTest && shouldFinishTest) {
+      this.onTest(test);
+    }
+
     const status = getCodeceptStatusFromError(error, hookName);
     const statusDetails = getMessageAndTraceFromError(error);
 
@@ -141,6 +149,23 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
       this.runtime.stopStep(id);
     }
     this.metaStepStack = [];
+
+    if (shouldFinishTest) {
+      if (this.currentHook) {
+        this.runtime.updateFixture(this.currentHook, (result) => {
+          result.status = status;
+          result.statusDetails = {
+            ...result.statusDetails,
+            ...statusDetails,
+          };
+        });
+        this.runtime.stopFixture(this.currentHook);
+        this.currentHook = undefined;
+      }
+
+      this.onTestEnd(test);
+      this.currentTestHookName = undefined;
+    }
   }
 
   testFinished() {

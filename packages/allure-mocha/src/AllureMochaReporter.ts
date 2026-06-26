@@ -178,7 +178,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     }
   };
 
-  private onTest = (test: Mocha.Test) => {
+  protected onTest = (test: Mocha.Test) => {
     if (this.currentTest) {
       const retriedTest = this.testsMap.get(this.currentTest);
       if (retriedTest) {
@@ -270,7 +270,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     }
   };
 
-  private onTestEnd = (test: Mocha.Test) => {
+  protected onTestEnd = (test: Mocha.Test) => {
     if (!this.currentTest) {
       return;
     }

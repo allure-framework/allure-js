@@ -257,3 +257,91 @@ it("reports failing after hooks as broken fixtures", async () => {
     ]),
   );
 });
+
+it("reports scenarios failed by before hooks", async () => {
+  const { tests, groups } = await runCodeceptJsInlineTest({
+    "sample.test.js": `
+      Feature("sample-feature");
+
+      Before(() => {
+        throw new Error("before boom");
+      });
+
+      Scenario("sample-scenario", async ({ I }) => {
+        I.pass();
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0]).toMatchObject({
+    name: "sample-scenario",
+    status: Status.BROKEN,
+    statusDetails: expect.objectContaining({
+      message: "before boom",
+    }),
+    steps: [],
+  });
+
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: String.raw`"before each" hook: Before`,
+        befores: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.BROKEN,
+            stage: Stage.FINISHED,
+            name: String.raw`"before each" hook: Before`,
+            statusDetails: expect.objectContaining({
+              message: "before boom",
+            }),
+          }),
+        ]),
+      }),
+    ]),
+  );
+});
+
+it("reports scenarios failed by before suite hooks", async () => {
+  const { tests, groups } = await runCodeceptJsInlineTest({
+    "sample.test.js": `
+      Feature("sample-feature");
+
+      BeforeSuite(() => {
+        throw new Error("before suite boom");
+      });
+
+      Scenario("sample-scenario", async ({ I }) => {
+        I.pass();
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0]).toMatchObject({
+    name: "sample-scenario",
+    status: Status.BROKEN,
+    statusDetails: expect.objectContaining({
+      message: "before suite boom",
+    }),
+    steps: [],
+  });
+
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: String.raw`"before all" hook: BeforeSuite`,
+        befores: expect.arrayContaining([
+          expect.objectContaining({
+            status: Status.BROKEN,
+            stage: Stage.FINISHED,
+            name: String.raw`"before all" hook: BeforeSuite`,
+            statusDetails: expect.objectContaining({
+              message: "before suite boom",
+            }),
+          }),
+        ]),
+      }),
+    ]),
+  );
+});
