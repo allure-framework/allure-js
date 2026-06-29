@@ -214,6 +214,7 @@ export class ReporterRuntime {
   linkConfig?: LinkConfig;
   globalLabels: Label[] = [];
   #processExitHandlerRegistered = false;
+  #runComplete = false;
   #lastError?: { message: string; trace?: string };
 
   constructor({
@@ -866,8 +867,11 @@ export class ReporterRuntime {
     });
   };
 
-  registerProcessExitHandler = (opts?: { onlyOnCrash?: boolean }) => {
-    const onlyOnCrash = opts?.onlyOnCrash ?? false;
+  notifyRunComplete = () => {
+    this.#runComplete = true;
+  };
+
+  registerProcessExitHandler = () => {
     if (this.#processExitHandlerRegistered) {
       return;
     }
@@ -886,8 +890,8 @@ export class ReporterRuntime {
       }
     });
 
-    process.once("exit", (code) => {
-      if (onlyOnCrash && code === 0) {
+    process.once("exit", () => {
+      if (this.#runComplete) {
         return;
       }
       this.flushUnfinishedTests({
