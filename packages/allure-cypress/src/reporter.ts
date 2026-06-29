@@ -141,9 +141,6 @@ export class AllureCypress {
 
   endRun = () => {
     this.#endAllSpecs();
-    this.allureRuntime.flushUnfinishedTests({
-      message: "Cypress finished before reporting a test result",
-    });
     this.allureRuntime.writeEnvironmentInfo();
     this.allureRuntime.writeCategoriesDefinitions();
   };
