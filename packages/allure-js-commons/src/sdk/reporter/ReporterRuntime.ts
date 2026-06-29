@@ -214,7 +214,6 @@ export class ReporterRuntime {
   linkConfig?: LinkConfig;
   globalLabels: Label[] = [];
   #processExitHandlerRegistered = false;
-  #lastError?: { message: string; trace?: string };
 
   constructor({
     writer,
@@ -872,35 +871,14 @@ export class ReporterRuntime {
     }
     this.#processExitHandlerRegistered = true;
 
-    const captureError = (error: unknown) => {
-      if (this.#lastError) {
-        return;
-      }
-      if (error instanceof Error) {
-        this.#lastError = {
-          message: error.message,
-          trace: error.stack,
-        };
-      } else {
-        this.#lastError = {
-          message: String(error),
-        };
-      }
-    };
-
-    process.on("unhandledRejection", captureError);
-
     process.once("exit", () => {
-      this.flushUnfinishedTests({
-        message: this.#lastError?.message ?? "Process exited before the test runner reported results",
-        trace: this.#lastError?.trace,
-      });
+      this.flushUnfinishedTests();
     });
   };
 
   flushUnfinishedTests = (opts?: { message?: string; trace?: string }) => {
-    const message = opts?.message ?? this.#lastError?.message ?? "Test runner crashed or exited unexpectedly";
-    const trace = opts?.trace ?? this.#lastError?.trace;
+    const message = opts?.message ?? "Test runner crashed or exited unexpectedly";
+    const trace = opts?.trace;
     const now = Date.now();
 
     for (const [uuid, wrapped] of this.state.allTestResults()) {
