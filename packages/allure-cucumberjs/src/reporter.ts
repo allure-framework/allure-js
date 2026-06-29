@@ -66,6 +66,7 @@ export default class AllureCucumberReporter extends Formatter {
       links,
       ...rest,
     });
+    this.allureRuntime.registerProcessExitHandler();
     this.linksConfigs = links || {};
     this.labelsConfigs = labels || [];
 
@@ -577,6 +578,9 @@ export default class AllureCucumberReporter extends Formatter {
   }
 
   private onTestRunFinished() {
+    this.allureRuntime.flushUnfinishedTests({
+      message: "Cucumber finished before reporting a test result",
+    });
     this.allureRuntime.writeCategoriesDefinitions();
     this.allureRuntime.writeEnvironmentInfo();
   }

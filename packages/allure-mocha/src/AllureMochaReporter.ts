@@ -79,6 +79,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       writer: createDefaultWriter({ resultsDir }),
       ...restOptions,
     });
+    this.runtime.registerProcessExitHandler();
     this.testplan = createTestPlanIndices();
 
     const testRuntime = new MochaTestRuntime(this.applyRuntimeMessages);
@@ -143,6 +144,9 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   };
 
   override done(failures: number, fn?: ((failures: number) => void) | undefined) {
+    this.runtime.flushUnfinishedTests({
+      message: "Mocha finished before reporting a test result",
+    });
     this.runtime.writeEnvironmentInfo();
     this.runtime.writeCategoriesDefinitions();
     doneAll(this.#extraReporters, failures, fn);

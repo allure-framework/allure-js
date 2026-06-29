@@ -54,6 +54,7 @@ export class AllureCypress {
       writer: createDefaultWriter({ resultsDir }),
       ...rest,
     });
+    this.allureRuntime.registerProcessExitHandler();
   }
 
   attachToCypress = (on: Cypress.PluginEvents) => {
@@ -140,6 +141,9 @@ export class AllureCypress {
 
   endRun = () => {
     this.#endAllSpecs();
+    this.allureRuntime.flushUnfinishedTests({
+      message: "Cypress finished before reporting a test result",
+    });
     this.allureRuntime.writeEnvironmentInfo();
     this.allureRuntime.writeCategoriesDefinitions();
   };

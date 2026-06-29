@@ -692,5 +692,8 @@ export const finishFileContext = (deps: BunLifecycleDeps, fileContext: BunFileCo
 };
 
 export const finishRunState = (runState: BunRunState) => {
+  runState.allureRuntime.flushUnfinishedTests({
+    message: "Bun test runner finished before reporting a test result",
+  });
   writeRunMetadata(runState, runState.allureRuntime);
 };

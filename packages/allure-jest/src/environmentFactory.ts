@@ -86,6 +86,7 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
         ...restConfig,
         writer: createDefaultWriter({ resultsDir }),
       });
+      this.runtime.registerProcessExitHandler();
       this.testPath = relative(projectConfig.rootDir, context.testPath);
       this.testPlan = parseTestPlan();
 
@@ -400,6 +401,9 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
     }
 
     #handleRunFinish() {
+      this.runtime.flushUnfinishedTests({
+        message: "Jest finished before reporting a test result",
+      });
       this.runtime.writeEnvironmentInfo();
       this.runtime.writeCategoriesDefinitions();
     }

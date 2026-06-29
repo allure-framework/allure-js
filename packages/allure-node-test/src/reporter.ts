@@ -159,6 +159,7 @@ export class AllureNodeTestReporter {
       listeners,
       writer: this.#writer,
     });
+    this.#allureRuntime.registerProcessExitHandler();
   }
 
   handleEvent = (event: NodeTestEvent) => {
@@ -207,6 +208,9 @@ export class AllureNodeTestReporter {
 
     this.#allureRuntime.writeCategoriesDefinitions();
     this.#allureRuntime.writeEnvironmentInfo();
+    this.#allureRuntime.flushUnfinishedTests({
+      message: "Node test runner finished before reporting a test result",
+    });
 
     for (const resultEvent of this.#resultEvents) {
       this.#writeTestResult(resultEvent, runtimeRecords, matchedRecordIndexes);

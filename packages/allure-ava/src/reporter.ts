@@ -119,6 +119,7 @@ export class AllureAvaReporter {
       writer: createDefaultWriter({ resultsDir }),
     });
 
+    this.#runtime.registerProcessExitHandler();
     this.#runtime.writeCategoriesDefinitions();
     this.#runtime.writeEnvironmentInfo();
   }

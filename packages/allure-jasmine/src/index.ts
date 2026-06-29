@@ -58,6 +58,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
       ...restConfig,
       writer: createDefaultWriter({ resultsDir }),
     });
+    this.allureRuntime.registerProcessExitHandler();
 
     const testRuntime = new AllureJasmineTestRuntime(this);
 
@@ -223,6 +224,9 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   }
 
   jasmineDone(): void {
+    this.allureRuntime.flushUnfinishedTests({
+      message: "Jasmine finished before reporting a test result",
+    });
     this.allureRuntime.writeEnvironmentInfo();
     this.allureRuntime.writeCategoriesDefinitions();
     // write global container (or any remaining scopes)

@@ -1394,6 +1394,24 @@ describe("ReporterRuntime", () => {
       expect(writer.writeResult).not.toHaveBeenCalled();
     });
 
+    it("should include trace when provided", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      runtime.startTest({ name: "crashed test" });
+
+      runtime.flushUnfinishedTests({
+        message: "TypeError: Cannot read properties of undefined",
+        trace: "TypeError: Cannot read properties of undefined\n    at Object.<anonymous> (test.js:5:10)",
+      });
+
+      const [result] = writer.writeResult.mock.calls[0];
+      expect(result.statusDetails.message).toBe("TypeError: Cannot read properties of undefined");
+      expect(result.statusDetails.trace).toBe(
+        "TypeError: Cannot read properties of undefined\n    at Object.<anonymous> (test.js:5:10)",
+      );
+    });
+
     it("should write stopped but not yet written tests as-is", () => {
       const writer = mockWriter();
       const runtime = new ReporterRuntime({ writer });
