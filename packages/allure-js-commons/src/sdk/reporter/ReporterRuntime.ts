@@ -888,7 +888,6 @@ export class ReporterRuntime {
       }
     };
 
-    process.on("uncaughtException", captureError);
     process.on("unhandledRejection", captureError);
 
     process.once("exit", () => {
