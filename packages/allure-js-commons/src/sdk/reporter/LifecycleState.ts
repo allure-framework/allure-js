@@ -77,4 +77,12 @@ export class LifecycleState {
   deleteScope = (uuid: string) => {
     this.#scopes.delete(uuid);
   };
+
+  allTestResults = (): IterableIterator<[string, TestResultWrapper]> => {
+    return this.#testResults.entries();
+  };
+
+  allScopes = (): IterableIterator<[string, TestScope]> => {
+    return this.#scopes.entries();
+  };
 }

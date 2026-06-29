@@ -9,6 +9,7 @@ import {
   type Globals,
   type Label,
   Stage,
+  Status,
   type StepResult,
   type TestResult,
 } from "../../model.js";
@@ -212,6 +213,7 @@ export class ReporterRuntime {
   environmentInfo?: EnvironmentInfo;
   linkConfig?: LinkConfig;
   globalLabels: Label[] = [];
+  #processExitHandlerRegistered = false;
 
   constructor({
     writer,
@@ -861,6 +863,53 @@ export class ReporterRuntime {
       befores,
       afters,
     });
+  };
+
+  registerProcessExitHandler = () => {
+    if (this.#processExitHandlerRegistered) {
+      return;
+    }
+    this.#processExitHandlerRegistered = true;
+
+    const handler = () => {
+      this.flushUnfinishedTests({
+        message: "Process exited before the test runner reported results",
+      });
+    };
+
+    process.once("exit", handler);
+  };
+
+  flushUnfinishedTests = (opts?: { message?: string }) => {
+    const message = opts?.message ?? "Test runner crashed or exited unexpectedly";
+    const now = Date.now();
+
+    for (const [uuid, wrapped] of this.state.allTestResults()) {
+      const testResult = wrapped.value;
+
+      if (testResult.stage !== Stage.FINISHED) {
+        testResult.status ??= Status.BROKEN;
+        testResult.stage = Stage.FINISHED;
+        testResult.statusDetails ??= {};
+        testResult.statusDetails.message ??= message;
+        testResult.stop ??= now;
+        testResult.start ??= now;
+      }
+
+      if (hasSkipLabel(testResult.labels)) {
+        this.state.deleteTestResult(uuid);
+        continue;
+      }
+
+      this.notifier.beforeTestResultWrite(testResult);
+      this.writer.writeResult(testResult);
+      this.state.deleteTestResult(uuid);
+      this.notifier.afterTestResultWrite(testResult);
+    }
+
+    for (const [uuid] of this.state.allScopes()) {
+      this.writeScope(uuid);
+    }
   };
 
   #calculateTimings = (

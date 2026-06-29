@@ -6,7 +6,7 @@ import process from "node:process";
 
 /* eslint max-lines: off */
 import type { FullConfig } from "@playwright/test";
-import type { TestResult as PlaywrightTestResult, Suite, TestCase, TestStep } from "@playwright/test/reporter";
+import type { FullResult, TestResult as PlaywrightTestResult, Suite, TestCase, TestStep } from "@playwright/test/reporter";
 import {
   ContentType,
   type ImageDiffAttachment,
@@ -187,6 +187,8 @@ export class AllureReporter implements ReporterV2 {
       ...this.options,
       writer: createDefaultWriter({ resultsDir: this.options.resultsDir }),
     });
+
+    this.allureRuntime.registerProcessExitHandler();
   }
 
   onTestBegin(test: TestCase) {
@@ -960,8 +962,14 @@ export class AllureReporter implements ReporterV2 {
     }
   }
 
-  async onEnd() {
+  async onEnd(result: FullResult) {
     await this.addSkippedResults();
+
+    if (result.status !== "passed") {
+      this.allureRuntime!.flushUnfinishedTests({
+        message: `Playwright finished with status "${result.status}" before reporting all test results`,
+      });
+    }
 
     this.allureRuntime!.writeEnvironmentInfo();
     this.allureRuntime!.writeCategoriesDefinitions();
