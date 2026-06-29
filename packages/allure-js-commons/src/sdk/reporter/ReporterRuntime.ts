@@ -866,7 +866,8 @@ export class ReporterRuntime {
     });
   };
 
-  registerProcessExitHandler = () => {
+  registerProcessExitHandler = (opts?: { onlyOnCrash?: boolean }) => {
+    const onlyOnCrash = opts?.onlyOnCrash ?? false;
     if (this.#processExitHandlerRegistered) {
       return;
     }
@@ -885,7 +886,10 @@ export class ReporterRuntime {
       }
     });
 
-    process.once("exit", () => {
+    process.once("exit", (code) => {
+      if (onlyOnCrash && code === 0) {
+        return;
+      }
       this.flushUnfinishedTests({
         message: this.#lastError?.message,
         trace: this.#lastError?.trace,

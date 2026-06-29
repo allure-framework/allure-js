@@ -54,6 +54,7 @@ export class AllureCypress {
       writer: createDefaultWriter({ resultsDir }),
       ...rest,
     });
+    this.allureRuntime.registerProcessExitHandler({ onlyOnCrash: true });
   }
 
   attachToCypress = (on: Cypress.PluginEvents) => {
