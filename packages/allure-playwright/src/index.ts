@@ -6,7 +6,13 @@ import process from "node:process";
 
 /* eslint max-lines: off */
 import type { FullConfig } from "@playwright/test";
-import type { FullResult, TestResult as PlaywrightTestResult, Suite, TestCase, TestStep } from "@playwright/test/reporter";
+import type {
+  FullResult,
+  TestResult as PlaywrightTestResult,
+  Suite,
+  TestCase,
+  TestStep,
+} from "@playwright/test/reporter";
 import {
   ContentType,
   type ImageDiffAttachment,
