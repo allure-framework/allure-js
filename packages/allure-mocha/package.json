@@ -70,7 +70,7 @@
     "@types/babel__core": "^7.20.5",
     "@types/babel__preset-env": "^7.10.0",
     "@types/mocha": "^10.0.1",
-    "@types/node": "^20.19.0",
+    "@types/node": "^26.0.1",
     "allure-commandline": "^2.29.0",
     "allure-vitest": "workspace:*",
     "babel-plugin-add-module-exports": "^1.0.4",
