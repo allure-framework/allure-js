@@ -479,30 +479,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/cli@npm:^7.28.0":
-  version: 7.28.6
-  resolution: "@babel/cli@npm:7.28.6"
+"@babel/cli@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "@babel/cli@npm:8.0.1"
   dependencies:
     "@jridgewell/trace-mapping": "npm:^0.3.28"
-    "@nicolo-ribaudo/chokidar-2": "npm:2.1.8-no-fsevents.3"
     chokidar: "npm:^3.6.0"
-    commander: "npm:^6.2.0"
+    commander: "npm:^14.0.2"
     convert-source-map: "npm:^2.0.0"
-    fs-readdir-recursive: "npm:^1.1.0"
-    glob: "npm:^7.2.0"
-    make-dir: "npm:^2.1.0"
-    slash: "npm:^2.0.0"
+    glob: "npm:^13.0.0"
+    slash: "npm:^5.1.0"
   peerDependencies:
-    "@babel/core": ^7.0.0-0
+    "@babel/core": ^8.0.0
   dependenciesMeta:
-    "@nicolo-ribaudo/chokidar-2":
-      optional: true
     chokidar:
       optional: true
   bin:
     babel: ./bin/babel.js
-    babel-external-helpers: ./bin/babel-external-helpers.js
-  checksum: 10/49279aa65d4d9729795955dd17f4fe48c363639d42ec7b8a69069bb7b283f83dd8f10b7989212d87165164678e3e6d8d9184d76c8f041370d62ab93f7fd37962
+  checksum: 10/455d6e2507b46286a7482afed35d5cb36e7cd79e8bcf5204ac9804df149196500e9a2afb0a00ea9c4fd9e633be194554eabf864b764806babdb7633d070484ad
   languageName: node
   linkType: hard
 
@@ -5553,13 +5547,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nicolo-ribaudo/chokidar-2@npm:2.1.8-no-fsevents.3":
-  version: 2.1.8-no-fsevents.3
-  resolution: "@nicolo-ribaudo/chokidar-2@npm:2.1.8-no-fsevents.3"
-  checksum: 10/c6e83af3b5051a3f6562649ff8fe37de9934a4cc02138678ed1badbd13ed3334f7ae5f63f2bbc3432210f6b245f082ac97e9b2afe0c13730c9838b295658c185
-  languageName: node
-  linkType: hard
-
 "@nivo/annotations@npm:0.99.0":
   version: 0.99.0
   resolution: "@nivo/annotations@npm:0.99.0"
@@ -8015,7 +8002,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-axios@workspace:packages/allure-axios"
   dependencies:
-    "@babel/cli": "npm:^7.28.0"
+    "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
     "@babel/preset-env": "npm:^7.28.0"
     "@babel/preset-typescript": "npm:^7.27.1"
@@ -8040,7 +8027,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-bun@workspace:packages/allure-bun"
   dependencies:
-    "@babel/cli": "npm:^7.28.0"
+    "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
     "@babel/preset-env": "npm:^7.28.0"
     "@babel/preset-typescript": "npm:^7.27.1"
@@ -8062,7 +8049,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-chai@workspace:packages/allure-chai"
   dependencies:
-    "@babel/cli": "npm:^7.28.0"
+    "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
     "@babel/preset-env": "npm:^7.28.0"
     "@babel/preset-typescript": "npm:^7.27.1"
@@ -8091,7 +8078,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-codeceptjs@workspace:packages/allure-codeceptjs"
   dependencies:
-    "@babel/cli": "npm:^7.28.0"
+    "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
     "@babel/plugin-transform-modules-commonjs": "npm:^7.27.1"
     "@babel/preset-env": "npm:^7.28.0"
@@ -8131,7 +8118,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-cucumberjs@workspace:packages/allure-cucumberjs"
   dependencies:
-    "@babel/cli": "npm:^7.28.0"
+    "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
     "@babel/plugin-transform-modules-commonjs": "npm:^7.27.1"
     "@babel/preset-env": "npm:^7.28.0"
@@ -8159,7 +8146,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-cypress@workspace:packages/allure-cypress"
   dependencies:
-    "@babel/cli": "npm:^7.28.0"
+    "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
     "@babel/plugin-transform-modules-commonjs": "npm:^7.27.1"
     "@babel/preset-env": "npm:^7.28.0"
@@ -8189,7 +8176,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-fetch@workspace:packages/allure-fetch"
   dependencies:
-    "@babel/cli": "npm:^7.28.0"
+    "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
     "@babel/preset-env": "npm:^7.28.0"
     "@babel/preset-typescript": "npm:^7.27.1"
@@ -8211,7 +8198,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-jasmine@workspace:packages/allure-jasmine"
   dependencies:
-    "@babel/cli": "npm:^7.28.0"
+    "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
     "@babel/preset-env": "npm:^7.28.0"
     "@babel/preset-typescript": "npm:^7.27.1"
@@ -8241,7 +8228,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-jest@workspace:packages/allure-jest"
   dependencies:
-    "@babel/cli": "npm:^7.28.0"
+    "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
     "@babel/preset-env": "npm:^7.28.0"
     "@babel/preset-typescript": "npm:^7.27.1"
@@ -8286,7 +8273,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-js-commons@workspace:packages/allure-js-commons"
   dependencies:
-    "@babel/cli": "npm:^7.28.0"
+    "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
     "@babel/plugin-transform-modules-commonjs": "npm:^7.27.1"
     "@babel/preset-env": "npm:^7.28.0"
@@ -8326,7 +8313,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-mocha@workspace:packages/allure-mocha"
   dependencies:
-    "@babel/cli": "npm:^7.28.0"
+    "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
     "@babel/preset-env": "npm:^7.28.0"
     "@babel/preset-typescript": "npm:^7.27.1"
@@ -8354,7 +8341,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-node-test@workspace:packages/allure-node-test"
   dependencies:
-    "@babel/cli": "npm:^7.28.0"
+    "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
     "@babel/preset-env": "npm:^7.28.0"
     "@babel/preset-typescript": "npm:^7.27.1"
@@ -8376,7 +8363,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-playwright@workspace:packages/allure-playwright"
   dependencies:
-    "@babel/cli": "npm:^7.28.0"
+    "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
     "@babel/plugin-transform-modules-commonjs": "npm:^7.27.1"
     "@babel/preset-env": "npm:^7.28.0"
@@ -10525,6 +10512,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"commander@npm:^14.0.2":
+  version: 14.0.3
+  resolution: "commander@npm:14.0.3"
+  checksum: 10/dfa9ebe2a433d277de5cb0252d23b10a543d245d892db858d23b516336a835c50fd4f52bee4cd13c705cc8acb6f03dc632c73dd806f7d06d3353eb09953dd17a
+  languageName: node
+  linkType: hard
+
 "commander@npm:^2.20.0":
   version: 2.20.3
   resolution: "commander@npm:2.20.3"
@@ -10539,7 +10533,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^6.2.0, commander@npm:^6.2.1":
+"commander@npm:^6.2.1":
   version: 6.2.1
   resolution: "commander@npm:6.2.1"
   checksum: 10/25b88c2efd0380c84f7844b39cf18510da7bfc5013692d68cdc65f764a1c34e6c8a36ea6d72b6620e3710a930cf8fab2695bdec2bf7107a0f4fa30a3ef3b7d0e
@@ -12745,13 +12739,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-readdir-recursive@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "fs-readdir-recursive@npm:1.1.0"
-  checksum: 10/d5e3fd8456b8e5d57a43f169a9eaf65c70fa82c4a22f1d4361cdba4ea5e61c60c5c2b4ac481ea137a4d43b2b99b3ea2fae95ac2730255c4206d61af645866c3a
-  languageName: node
-  linkType: hard
-
 "fs.realpath@npm:^1.0.0":
   version: 1.0.0
   resolution: "fs.realpath@npm:1.0.0"
@@ -13012,7 +12999,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^7.0.3, glob@npm:^7.1.1, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6, glob@npm:^7.2.0":
+"glob@npm:^7.0.3, glob@npm:^7.1.1, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6":
   version: 7.2.3
   resolution: "glob@npm:7.2.3"
   dependencies:
@@ -17277,7 +17264,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "newman-reporter-allure@workspace:packages/newman-reporter-allure"
   dependencies:
-    "@babel/cli": "npm:^7.28.0"
+    "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
     "@babel/preset-env": "npm:^7.28.0"
     "@babel/preset-typescript": "npm:^7.27.1"
@@ -20320,13 +20307,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slash@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "slash@npm:2.0.0"
-  checksum: 10/512d4350735375bd11647233cb0e2f93beca6f53441015eea241fe784d8068281c3987fbaa93e7ef1c38df68d9c60013045c92837423c69115297d6169aa85e6
-  languageName: node
-  linkType: hard
-
 "slash@npm:^3.0.0":
   version: 3.0.0
   resolution: "slash@npm:3.0.0"
@@ -21021,7 +21001,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "testcafe-reporter-allure-official@workspace:packages/testcafe-reporter-allure-official"
   dependencies:
-    "@babel/cli": "npm:^7.28.0"
+    "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
     "@babel/preset-env": "npm:^7.28.0"
     "@babel/preset-typescript": "npm:^7.27.1"
