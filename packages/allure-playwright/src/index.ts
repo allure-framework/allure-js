@@ -787,6 +787,13 @@ export class AllureReporter implements ReporterV2 {
       }
 
       testResult.status = statusToAllureStats(result.status, test.expectedStatus);
+      if (result.retry > 0) {
+        testResult.parameters.push({ name: "Retry", value: String(result.retry), excluded: true });
+
+        if (result.status === "passed" && test.expectedStatus === "passed") {
+          testResult.flaky = true;
+        }
+      }
       testResult.stage = Stage.FINISHED;
     });
 
