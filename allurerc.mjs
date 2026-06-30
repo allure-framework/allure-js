@@ -15,6 +15,11 @@ export default {
         publish: true,
       },
     },
+    testops: {
+      options: {
+        launchName: `Allure JS GitHub actions run (${new Date().toISOString()})`,
+      },
+    },
   },
   ...(allureService ? { allureService } : {}),
 };
