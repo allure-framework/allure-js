@@ -11335,7 +11335,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/@types-newman-npm-5.3.6-a01b06de08-d5bbd275e6.zip/node_modules/@types/newman/",\
         "packageDependencies": [\
           ["@types/newman", "npm:5.3.6"],\
-          ["@types/postman-collection", "npm:3.5.10"],\
+          ["@types/postman-collection", "npm:3.5.11"],\
           ["@types/tough-cookie", "npm:4.0.5"]\
         ],\
         "linkType": "HARD"\
@@ -11387,11 +11387,11 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@types/postman-collection", [\
-      ["npm:3.5.10", {\
-        "packageLocation": "./.yarn/cache/@types-postman-collection-npm-3.5.10-f983d93ca7-c11d5b8be2.zip/node_modules/@types/postman-collection/",\
+      ["npm:3.5.11", {\
+        "packageLocation": "./.yarn/cache/@types-postman-collection-npm-3.5.11-31a04b7436-27928a63f8.zip/node_modules/@types/postman-collection/",\
         "packageDependencies": [\
           ["@types/node", "npm:20.11.20"],\
-          ["@types/postman-collection", "npm:3.5.10"]\
+          ["@types/postman-collection", "npm:3.5.11"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -22734,7 +22734,7 @@ const RAW_RUNTIME_STATE =
           ["@types/babel__preset-env", "npm:7.10.0"],\
           ["@types/newman", "npm:5.3.6"],\
           ["@types/node", "npm:20.19.37"],\
-          ["@types/postman-collection", "npm:3.5.10"],\
+          ["@types/postman-collection", "npm:3.5.11"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
