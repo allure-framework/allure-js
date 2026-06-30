@@ -908,7 +908,7 @@ export class ReporterRuntime {
 
     const hadPendingTests = [...this.state.allTestResults()].length > 0;
 
-    if (!hadPendingTests && (opts?.message || this.#lastError)) {
+    if (!hadPendingTests && this.#lastError) {
       this.#writeGlobals({
         attachments: [],
         errors: [{ message, trace, timestamp: now }],
