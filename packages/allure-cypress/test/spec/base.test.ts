@@ -61,6 +61,7 @@ it("skipped tests", async () => {
   `,
   });
 
+  expect(tests).toHaveLength(3);
   expect(tests).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
