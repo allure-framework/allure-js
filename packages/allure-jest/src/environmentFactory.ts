@@ -406,6 +406,7 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
       });
       this.runtime.writeEnvironmentInfo();
       this.runtime.writeCategoriesDefinitions();
+      this.runtime.notifyRunComplete();
     }
 
     #currentExecutable() {

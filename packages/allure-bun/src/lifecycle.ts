@@ -687,6 +687,7 @@ export const finishFileContext = (deps: BunLifecycleDeps, fileContext: BunFileCo
   }
 
   writeRunMetadata(fileContext.runState, fileContext.allureRuntime);
+  fileContext.allureRuntime.notifyRunComplete();
 
   fileContext.runFinished = true;
 };
@@ -696,4 +697,5 @@ export const finishRunState = (runState: BunRunState) => {
     message: "Bun test runner finished before reporting a test result",
   });
   writeRunMetadata(runState, runState.allureRuntime);
+  runState.allureRuntime.notifyRunComplete();
 };

@@ -149,6 +149,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     });
     this.runtime.writeEnvironmentInfo();
     this.runtime.writeCategoriesDefinitions();
+    this.runtime.notifyRunComplete();
     doneAll(this.#extraReporters, failures, fn);
   }
 

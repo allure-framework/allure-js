@@ -219,6 +219,7 @@ export class AllureNodeTestReporter {
     this.#writeHookFailureContainers();
     this.#writeGlobalMessages(runtimeRecords, matchedRecordIndexes);
     this.#cleanupRunDir();
+    this.#allureRuntime.notifyRunComplete();
   };
 
   get writer() {

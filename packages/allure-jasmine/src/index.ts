@@ -234,6 +234,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
       this.allureRuntime.writeScope(scopeUuid);
     });
     this.scopesStack = [];
+    this.allureRuntime.notifyRunComplete();
   }
 
   #startScope = () => {

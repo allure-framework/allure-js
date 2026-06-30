@@ -212,6 +212,8 @@ export class AllureAvaReporter {
     for (const scopeUuid of this.#fileScopes.values()) {
       this.#runtime.writeScope(scopeUuid);
     }
+
+    this.#runtime.notifyRunComplete();
   };
 
   #ensureFileScope = (testFile: string) => {

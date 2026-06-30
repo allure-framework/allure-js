@@ -121,6 +121,7 @@ export default class AllureVitestReporter implements Reporter {
     this.allureReporterRuntime!.flushUnfinishedTests({
       message: "Vitest finished before reporting a test result",
     });
+    this.allureReporterRuntime!.notifyRunComplete();
   }
 
   handleTask(task: Task) {

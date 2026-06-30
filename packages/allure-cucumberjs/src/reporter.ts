@@ -583,6 +583,7 @@ export default class AllureCucumberReporter extends Formatter {
     });
     this.allureRuntime.writeCategoriesDefinitions();
     this.allureRuntime.writeEnvironmentInfo();
+    this.allureRuntime.notifyRunComplete();
   }
 
   private exceptionToError(message?: string, exception?: messages.Exception): Error | undefined {
