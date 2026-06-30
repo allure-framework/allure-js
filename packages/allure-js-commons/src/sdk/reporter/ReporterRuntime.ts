@@ -906,6 +906,15 @@ export class ReporterRuntime {
     const trace = opts?.trace ?? this.#lastError?.trace;
     const now = Date.now();
 
+    const hadPendingTests = [...this.state.allTestResults()].length > 0;
+
+    if (!hadPendingTests && (opts?.message || this.#lastError)) {
+      this.#writeGlobals({
+        attachments: [],
+        errors: [{ message, trace, timestamp: now }],
+      });
+    }
+
     for (const [uuid, wrapped] of this.state.allTestResults()) {
       const testResult = wrapped.value;
 
