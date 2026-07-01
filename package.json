@@ -21,7 +21,7 @@
     "test": "yarn workspaces foreach -Avvt run test"
   },
   "devDependencies": {
-    "allure": "^3.10.0",
+    "allure": "^3.14.0",
     "lefthook": "^2.1.4",
     "oxfmt": "0.54.0",
     "oxlint": "1.64.0",
