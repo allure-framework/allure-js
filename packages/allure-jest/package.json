@@ -1,6 +1,6 @@
 {
   "name": "allure-jest",
-  "version": "3.9.0",
+  "version": "3.10.2",
   "description": "Allure Jest integration",
   "keywords": [
     "allure",
@@ -79,10 +79,10 @@
     "jest-cli": "^30.0.0",
     "jest-environment-jsdom": "^30.0.0",
     "jest-environment-node": "^30.0.0",
-    "npm-run-all2": "^8.0.0",
+    "npm-run-all2": "^9.0.2",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   },
   "peerDependencies": {
     "jest": ">=24.8.0",

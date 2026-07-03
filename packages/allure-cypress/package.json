@@ -1,6 +1,6 @@
 {
   "name": "allure-cypress",
-  "version": "3.9.0",
+  "version": "3.10.2",
   "description": "Allure Cypress integration",
   "keywords": [
     "allure",
@@ -76,10 +76,10 @@
     "babel-plugin-add-module-exports": "^1.0.4",
     "cypress": "^15.0.0",
     "esbuild": "^0.27.0",
-    "npm-run-all2": "^8.0.0",
+    "npm-run-all2": "^9.0.2",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   },
   "peerDependencies": {
     "cypress": ">=12.17.4"

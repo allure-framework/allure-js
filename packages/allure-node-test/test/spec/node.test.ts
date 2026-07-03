@@ -8,8 +8,6 @@ import { describe, expect, it } from "vitest";
 import { runNodeInlineTest, supportsNodeTestRuntimeApi } from "../utils.js";
 import { getTestByName, readAttachment } from "./helpers.js";
 
-const runtimeIt = supportsNodeTestRuntimeApi ? it : it.skip;
-
 describe("node --test integration", () => {
   it("writes reporter-only results with unchanged node:test imports", async () => {
     const { exitCode, tests } = await runNodeInlineTest({
@@ -210,8 +208,11 @@ describe("node --test integration", () => {
     );
   });
 
-  if (!supportsNodeTestRuntimeApi) {
-    it("fails fast when setup is used on a Node version without getTestContext", async () => {
+  // The setup failure is only meaningful before node:test exposes getTestContext;
+  // keep the unsupported-runtime case visible on Node versions where it cannot fail.
+  it.skipIf(supportsNodeTestRuntimeApi)(
+    "fails fast when setup is used on a Node version without getTestContext",
+    async () => {
       const { exitCode } = await runNodeInlineTest(
         {
           "unsupported-runtime.test.mjs": `
@@ -224,8 +225,8 @@ describe("node --test integration", () => {
       );
 
       expect(exitCode).not.toBe(0);
-    });
-  }
+    },
+  );
 
   it("does not execute tests outside ALLURE_TESTPLAN_PATH when setup is preloaded", async () => {
     const executionDir = mkdtempSync(join(tmpdir(), "allure-node-testplan-execution-"));
@@ -360,10 +361,13 @@ describe("node --test integration", () => {
     }
   });
 
-  runtimeIt("writes runtime API data with unchanged node:test imports on Node >= 26.1", async () => {
-    const { attachments, exitCode, tests } = await runNodeInlineTest(
-      {
-        "runtime.test.mjs": `
+  // Runtime API calls require node:test getTestContext, which is available in Node >= 26.1.
+  it.skipIf(!supportsNodeTestRuntimeApi)(
+    "writes runtime API data with unchanged node:test imports on Node >= 26.1",
+    async () => {
+      const { attachments, exitCode, tests } = await runNodeInlineTest(
+        {
+          "runtime.test.mjs": `
           import test from "node:test";
           import assert from "node:assert/strict";
           import { attachment, label, step } from "allure-js-commons";
@@ -376,23 +380,107 @@ describe("node --test integration", () => {
             assert.equal(1 + 1, 2);
           });
         `,
+        },
+        { setup: true },
+      );
+
+      expect(exitCode).toBe(0);
+
+      const result = getTestByName(tests, "uses runtime API");
+
+      expect(result.labels).toEqual(expect.arrayContaining([{ name: LabelName.FEATURE, value: "native-runtime" }]));
+      expect(result.steps).toEqual(expect.arrayContaining([expect.objectContaining({ name: "runtime step" })]));
+
+      const runtimeStep = result.steps.find((entry) => entry.name === "runtime step");
+      const runtimeAttachment = runtimeStep?.steps
+        .flatMap((entry) => entry.attachments)
+        .find((entry) => entry.name === "runtime attachment");
+
+      expect(runtimeAttachment).toBeDefined();
+      expect(readAttachment(attachments, runtimeAttachment!.source)).toBe("hello node");
+    },
+  );
+
+  it.skipIf(!supportsNodeTestRuntimeApi)("writes runtime API data from native hooks", async () => {
+    const { attachments, exitCode, tests } = await runNodeInlineTest(
+      {
+        "hook-runtime.test.mjs": `
+          import { describe, it, before, beforeEach, afterEach, after } from "node:test";
+          import assert from "node:assert/strict";
+          import { attachment, label, step } from "allure-js-commons";
+
+          describe("hook runtime suite", () => {
+            before(async () => {
+              await label("owner", "before-hook");
+            });
+
+            beforeEach(async () => {
+              await label("feature", "before-each-hook");
+              await step("beforeEach runtime step", async () => {});
+            });
+
+            afterEach(async () => {
+              await attachment("afterEach runtime attachment", "after each body", "text/plain");
+            });
+
+            after(async () => {
+              await label("story", "after-hook");
+            });
+
+            it("uses hook runtime API", () => {
+              assert.equal(1 + 1, 2);
+            });
+
+            it("also uses hook runtime API", () => {
+              assert.equal(3 + 3, 6);
+            });
+          });
+        `,
+        "hook-runtime-cjs.test.cjs": `
+          const assert = require("node:assert/strict");
+          const { test, beforeEach } = require("node:test");
+          const { label } = require("allure-js-commons");
+
+          beforeEach(async () => {
+            await label("tag", "cjs-before-each-hook");
+          });
+
+          test("uses cjs hook runtime API", () => {
+            assert.equal(2 + 2, 4);
+          });
+        `,
       },
       { setup: true },
     );
 
     expect(exitCode).toBe(0);
 
-    const result = getTestByName(tests, "uses runtime API");
+    for (const result of [
+      getTestByName(tests, "uses hook runtime API"),
+      getTestByName(tests, "also uses hook runtime API"),
+    ]) {
+      expect(result.labels).toEqual(
+        expect.arrayContaining([
+          { name: LabelName.OWNER, value: "before-hook" },
+          { name: LabelName.FEATURE, value: "before-each-hook" },
+          { name: LabelName.STORY, value: "after-hook" },
+        ]),
+      );
+      expect(result.steps).toEqual(
+        expect.arrayContaining([expect.objectContaining({ name: "beforeEach runtime step" })]),
+      );
 
-    expect(result.labels).toEqual(expect.arrayContaining([{ name: LabelName.FEATURE, value: "native-runtime" }]));
-    expect(result.steps).toEqual(expect.arrayContaining([expect.objectContaining({ name: "runtime step" })]));
+      const runtimeAttachment = result.steps
+        .flatMap((entry) => entry.attachments)
+        .concat(result.attachments)
+        .find((entry) => entry.name === "afterEach runtime attachment");
 
-    const runtimeStep = result.steps.find((entry) => entry.name === "runtime step");
-    const runtimeAttachment = runtimeStep?.steps
-      .flatMap((entry) => entry.attachments)
-      .find((entry) => entry.name === "runtime attachment");
+      expect(runtimeAttachment).toBeDefined();
+      expect(readAttachment(attachments, runtimeAttachment!.source)).toBe("after each body");
+    }
 
-    expect(runtimeAttachment).toBeDefined();
-    expect(readAttachment(attachments, runtimeAttachment!.source)).toBe("hello node");
+    expect(getTestByName(tests, "uses cjs hook runtime API").labels).toEqual(
+      expect.arrayContaining([{ name: LabelName.TAG, value: "cjs-before-each-hook" }]),
+    );
   });
 });

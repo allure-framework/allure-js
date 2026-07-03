@@ -1,6 +1,6 @@
 {
   "name": "allure-codeceptjs",
-  "version": "3.9.0",
+  "version": "3.10.2",
   "description": "Allure codeceptjs integration",
   "keywords": [
     "allure",
@@ -66,10 +66,10 @@
     "babel-plugin-add-module-exports": "^1.0.4",
     "codeceptjs": "^3.7.6-beta.1",
     "codeceptjs-expect": "^1.0.3",
-    "npm-run-all2": "^8.0.0",
+    "npm-run-all2": "^9.0.2",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   },
   "peerDependencies": {
     "codeceptjs": ">=2.3.6"

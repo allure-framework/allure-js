@@ -88,6 +88,9 @@ const SKIPPED_ASSERTION_METHODS = new Set([
   "withTest",
   "toMatchInlineSnapshot",
   "toMatchSnapshot",
+  "toMatchFileSnapshot",
+  "toThrowErrorMatchingInlineSnapshot",
+  "toThrowErrorMatchingSnapshot",
 ]);
 const SKIPPED_ASSERTION_PROPERTIES = new Set(["_obj", "__flags", "__methods", "callable", "iterable", "numeric"]);
 const ASYMMETRIC_MATCHER_FACTORIES = new Map([

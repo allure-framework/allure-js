@@ -1,10 +1,10 @@
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { runBunInlineTest } from "../../../utils.js";
-import { bunIt, getTestByName, readAttachment } from "../../helpers.js";
+import { getTestByName, readAttachment } from "../../helpers.js";
 
 describe("sync globals", () => {
-  bunIt("writes globals from rootless sync runtime API calls", async () => {
+  it("writes globals from rootless sync runtime API calls", async () => {
     const { globals, attachments, exitCode } = await runBunInlineTest({
       "payload.txt": "from path",
       "sample.test.ts": `
@@ -50,7 +50,7 @@ describe("sync globals", () => {
     expect(readAttachment(attachments, pathAttachment!.source)).toBe("from path");
   });
 
-  bunIt("adds sync metadata from before fixtures to linked tests", async () => {
+  it("adds sync metadata from before fixtures to linked tests", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { beforeAll, test } from "bun:test";

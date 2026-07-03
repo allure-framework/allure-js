@@ -340,13 +340,28 @@ it("should support steps with names longer then 50 chars", async () => {
 it("should ignore route.continue() steps", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "a.test.js": `
+      import { createServer } from 'node:http';
       import { test, expect } from '@playwright/test';
 
       test('a test', async ({ page }) => {
+        const server = createServer((_, response) => {
+          response.writeHead(200, { "content-type": "text/html" });
+          response.end("<html><body>ok</body></html>");
+        });
+        const port = await new Promise((resolve) => {
+          server.listen(0, "127.0.0.1", () => {
+            resolve(server.address().port);
+          });
+        });
+
         await page.route('**/*', (route) => {
           route.continue();
         });
-        await page.goto("https://allurereport.org");
+        try {
+          await page.goto(\`http://127.0.0.1:\${port}/\`);
+        } finally {
+          await new Promise((resolve) => server.close(resolve));
+        }
       });
     `,
   });

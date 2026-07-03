@@ -32,15 +32,16 @@ import {
 } from "allure-js-commons/sdk/reporter";
 
 import { getNodeTestReporterConfig } from "./config.js";
-import type {
-  NodeTestEvent,
-  NodeTestEventData,
-  NodeTestError,
-  NodeTestReporterConfig,
-  NodeTestResultEvent,
-  RuntimeMessageRecord,
-  StatusResolution,
-  TestMetadata,
+import {
+  ROOT_SUITE_FULL_NAME,
+  type NodeTestEvent,
+  type NodeTestEventData,
+  type NodeTestError,
+  type NodeTestReporterConfig,
+  type NodeTestResultEvent,
+  type RuntimeMessageRecord,
+  type StatusResolution,
+  type TestMetadata,
 } from "./model.js";
 import {
   ensureRunDir,
@@ -48,6 +49,7 @@ import {
   getFallbackNodeFullName,
   getRelativeFilePath,
   normalizeFilePath,
+  splitNodeFullName,
 } from "./utils.js";
 
 const getEventType = (data: NodeTestEventData) => data.details?.type ?? data.type;
@@ -333,7 +335,10 @@ export class AllureNodeTestReporter {
     });
 
     for (const [index, record] of runtimeRecords.entries()) {
-      if (matchedRecordIndexes.has(index) || !matchesRuntimeRecord(record, resultEvent.data, metadata)) {
+      if (
+        (!isReusableRuntimeRecord(record) && matchedRecordIndexes.has(index)) ||
+        !matchesRuntimeRecord(record, resultEvent.data, metadata)
+      ) {
         continue;
       }
 
@@ -827,6 +832,10 @@ const matchesRuntimeRecord = (record: RuntimeMessageRecord, data: NodeTestEventD
     return record.testId === data.testId && normalizeFilePath(record.file) === normalizeFilePath(data.file);
   }
 
+  if (record.type === "suite" && matchesRuntimeSuiteRecord(record, data, metadata)) {
+    return true;
+  }
+
   if (record.allureFullName && record.allureFullName === metadata.fullName) {
     return true;
   }
@@ -836,6 +845,20 @@ const matchesRuntimeRecord = (record: RuntimeMessageRecord, data: NodeTestEventD
     !!record.nodeFullName &&
     record.nodeFullName === metadata.nodeFullName
   );
+};
+
+const isReusableRuntimeRecord = (record: RuntimeMessageRecord) => record.type === "suite";
+
+const matchesRuntimeSuiteRecord = (record: RuntimeMessageRecord, data: NodeTestEventData, metadata: TestMetadata) => {
+  if (normalizeFilePath(record.file) !== normalizeFilePath(data.file) || !record.nodeFullName) {
+    return false;
+  }
+
+  if (record.nodeFullName === ROOT_SUITE_FULL_NAME) {
+    return true;
+  }
+
+  return isSuitePathPrefix(splitNodeFullName(record.nodeFullName), metadata.suitePath);
 };
 
 export default async function* allureNodeTestReporter(source: AsyncIterable<NodeTestEvent>) {

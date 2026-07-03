@@ -69,7 +69,6 @@ const suites = new Map([
         "allure-cucumberjs",
         "allure-codeceptjs",
         "newman-reporter-allure",
-        "testcafe-reporter-allure-official",
       ],
       testCommands: [
         createWorkspaceScriptCommand("allure-js-commons", "test"),
@@ -84,8 +83,14 @@ const suites = new Map([
         createWorkspaceScriptCommand("allure-node-test", "test", { minNodeMajor: 26 }),
         createWorkspaceScriptCommand("allure-codeceptjs", "test"),
         createWorkspaceScriptCommand("newman-reporter-allure", "test"),
-        createWorkspaceScriptCommand("testcafe-reporter-allure-official", "test"),
       ],
+    },
+  ],
+  [
+    "testcafe",
+    {
+      compileFrom: ["testcafe-reporter-allure-official"],
+      testCommands: [createVitestCommand("testcafe-reporter-allure-official", { browserHeavy: true })],
     },
   ],
 ]);

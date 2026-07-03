@@ -1,6 +1,6 @@
 {
   "name": "allure-playwright",
-  "version": "3.9.0",
+  "version": "3.10.2",
   "description": "Allure Playwright integration",
   "keywords": [
     "allure",
@@ -57,7 +57,7 @@
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "yarn run -T oxlint --import-plugin src test",
     "lint:fix": "yarn run -T oxlint --import-plugin --fix src test",
-    "pretest": "run-p clean compile",
+    "pretest": "run-p compile",
     "test": "vitest run"
   },
   "dependencies": {
@@ -77,10 +77,10 @@
     "allure-vitest": "workspace:*",
     "babel-plugin-transform-import-meta": "^2.3.3",
     "glob": "^11.1.0",
-    "npm-run-all2": "^8.0.0",
+    "npm-run-all2": "^9.0.2",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   },
   "peerDependencies": {
     "@playwright/test": ">=1.53.0"

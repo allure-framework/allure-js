@@ -6,7 +6,7 @@ import { expect, it } from "vitest";
 import { finishFileContext } from "../../src/lifecycle.js";
 import { createFileContext, createRunState } from "../../src/state.js";
 import { runBunInlineTest } from "../utils.js";
-import { bunIt, getTestByName, getTestsByName, hasFixtureStep } from "./helpers.js";
+import { getTestByName, getTestsByName, hasFixtureStep } from "./helpers.js";
 
 it("writes Bun global metadata once across multiple file contexts", () => {
   const runState = createRunState();
@@ -45,7 +45,7 @@ it("writes Bun global metadata once across multiple file contexts", () => {
   expect(categoriesWrites).toBe(1);
 });
 
-bunIt("writes configured environment info and categories", async () => {
+it("writes configured environment info and categories", async () => {
   const { envInfo, categories, exitCode } = await runBunInlineTest(
     {
       "sample.test.ts": `
@@ -69,7 +69,7 @@ bunIt("writes configured environment info and categories", async () => {
   expect(categories).toEqual([expect.objectContaining({ name: "known", messageRegex: "known problem" })]);
 });
 
-bunIt("reports Bun tests, hooks, serial tests, skips and todos", async () => {
+it("reports Bun tests, hooks, serial tests, skips and todos", async () => {
   const { tests, groups, exitCode } = await runBunInlineTest({
     "sample.test.ts": `
       import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, test } from "bun:test";
@@ -211,7 +211,7 @@ bunIt("reports Bun tests, hooks, serial tests, skips and todos", async () => {
   expect(hasFixtureStep(groups, "afters", "root after all")).toBe(true);
 });
 
-bunIt("reports afterAll registered after top-level await", async () => {
+it("reports afterAll registered after top-level await", async () => {
   const { tests, groups, exitCode } = await runBunInlineTest({
     "sample.test.ts": `
       import { afterAll, expect, test } from "bun:test";
@@ -239,7 +239,7 @@ bunIt("reports afterAll registered after top-level await", async () => {
   expect(hasFixtureStep(groups, "afters", "late after all")).toBe(true);
 });
 
-bunIt("reports Bun retry attempts as separate Allure results", async () => {
+it("reports Bun retry attempts as separate Allure results", async () => {
   const { tests, exitCode } = await runBunInlineTest({
     "sample.test.ts": `
       import { expect, test } from "bun:test";
@@ -277,7 +277,7 @@ bunIt("reports Bun retry attempts as separate Allure results", async () => {
   expect(passedAttempt?.historyId).toBe(failedAttempt?.historyId);
 });
 
-bunIt("keeps hook context isolated across multiple Bun files", async () => {
+it("keeps hook context isolated across multiple Bun files", async () => {
   const { tests, exitCode } = await runBunInlineTest({
     "hook-context-a.test.ts": `
       import { beforeAll, expect, it } from "bun:test";
@@ -320,7 +320,7 @@ bunIt("keeps hook context isolated across multiple Bun files", async () => {
   );
 });
 
-bunIt("reports tests from sibling top-level suites", async () => {
+it("reports tests from sibling top-level suites", async () => {
   const { tests, exitCode } = await runBunInlineTest({
     "sample.test.ts": `
       import { describe, expect, it } from "bun:test";
@@ -345,7 +345,7 @@ bunIt("reports tests from sibling top-level suites", async () => {
   expect(getTestByName(tests, "test B").fullName).toBe("sample.test.ts#suite B test B");
 });
 
-bunIt("keeps Bun file paths with parentheses in the reported package name", async () => {
+it("keeps Bun file paths with parentheses in the reported package name", async () => {
   const { tests, exitCode } = await runBunInlineTest({
     "paren(dir)/file(name).test.ts": `
       import { expect, test } from "bun:test";
@@ -370,7 +370,7 @@ bunIt("keeps Bun file paths with parentheses in the reported package name", asyn
   );
 });
 
-bunIt("reports Bun hook failures consistently", async () => {
+it("reports Bun hook failures consistently", async () => {
   const { tests, groups, exitCode } = await runBunInlineTest({
     "sample.test.ts": `
       import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "bun:test";
@@ -488,7 +488,7 @@ bunIt("reports Bun hook failures consistently", async () => {
   );
 });
 
-bunIt("respects the Allure test plan at registration time", async () => {
+it("respects the Allure test plan at registration time", async () => {
   const testPlanFilename = "testplan.json";
   const { tests, groups, exitCode } = await runBunInlineTest(
     {
@@ -537,7 +537,7 @@ bunIt("respects the Allure test plan at registration time", async () => {
   expect(groups).toHaveLength(0);
 });
 
-bunIt("respects Allure test plan ids from title metadata", async () => {
+it("respects Allure test plan ids from title metadata", async () => {
   const testPlanFilename = "testplan.json";
   const { tests, exitCode } = await runBunInlineTest(
     {
@@ -581,7 +581,7 @@ bunIt("respects Allure test plan ids from title metadata", async () => {
   );
 });
 
-bunIt("matches Bun --todo mode for expected todo failures", async () => {
+it("matches Bun --todo mode for expected todo failures", async () => {
   const { tests, exitCode } = await runBunInlineTest(
     {
       "sample.test.ts": `
@@ -612,7 +612,7 @@ bunIt("matches Bun --todo mode for expected todo failures", async () => {
   );
 });
 
-bunIt("matches Bun --todo mode for unexpected todo passes", async () => {
+it("matches Bun --todo mode for unexpected todo passes", async () => {
   const { tests, exitCode, stdout, stderr } = await runBunInlineTest(
     {
       "sample.test.ts": `

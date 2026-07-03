@@ -1,6 +1,6 @@
 {
   "name": "allure-node-test",
-  "version": "3.9.0",
+  "version": "3.10.2",
   "description": "Allure Node.js test runner integration",
   "keywords": [
     "allure",
@@ -72,9 +72,9 @@
     "allure-commandline": "^2.29.0",
     "allure-vitest": "workspace:*",
     "babel-plugin-add-module-exports": "^1.0.4",
-    "npm-run-all2": "^8.0.0",
+    "npm-run-all2": "^9.0.2",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   }
 }

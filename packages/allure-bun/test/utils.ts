@@ -26,13 +26,17 @@ export type BunInlineTestResult = AllureResults & {
 
 const bunBinary = process.env.BUN_BINARY ?? "bun";
 
-export const isBunAvailable = (() => {
+const assertBunBinaryAvailable = () => {
   const result = spawnSync(bunBinary, ["--version"], {
     stdio: "ignore",
   });
 
-  return !result.error && result.status === 0;
-})();
+  if (result.error || result.status !== 0) {
+    throw new Error(
+      `Bun binary "${bunBinary}" is not available. Install Bun or set BUN_BINARY to run Bun integration tests.`,
+    );
+  }
+};
 
 const attachProcessOutput = async (stdout: string[], stderr: string[]) => {
   if (stdout.length) {
@@ -114,9 +118,7 @@ export const runBunInlineTest = async (
   testFiles: BunTestFiles,
   { env, args = [], cwd }: BunRunOptions = {},
 ): Promise<BunInlineTestResult> => {
-  if (!isBunAvailable) {
-    throw new Error("Bun is not available in PATH. Install Bun or set BUN_BINARY to run Bun integration tests.");
-  }
+  assertBunBinaryAvailable();
 
   const testDir = join(__dirname, "fixtures", randomUUID());
   const resultsDir = join(testDir, "allure-results");

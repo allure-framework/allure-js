@@ -1,6 +1,6 @@
 {
   "name": "testcafe-reporter-allure-official",
-  "version": "3.7.1",
+  "version": "3.10.2",
   "description": "Allure TestCafe integration",
   "keywords": [
     "allure",
@@ -54,7 +54,7 @@
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "oxlint --import-plugin src test",
     "lint:fix": "oxlint --import-plugin --fix src test",
-    "pretest": "run-s clean compile",
+    "pretest": "run-s compile",
     "test": "vitest run"
   },
   "dependencies": {
@@ -71,11 +71,11 @@
     "allure-commandline": "^2.29.0",
     "allure-vitest": "workspace:*",
     "babel-plugin-add-module-exports": "^1.0.4",
-    "npm-run-all2": "^8.0.0",
+    "npm-run-all2": "^9.0.2",
     "rimraf": "^6.0.0",
-    "testcafe": "^3.7.2",
+    "testcafe": "^3.7.5",
     "typescript": "^6.0.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   },
   "peerDependencies": {
     "testcafe": ">=2.5.0"

@@ -5,7 +5,7 @@ import { createFileContext, createRunState } from "../../src/state.js";
 import type { BunWrappedFn } from "../../src/types.js";
 import { createWrappedTest } from "../../src/wrappers.js";
 import { runBunInlineTest } from "../utils.js";
-import { bunIt, getTestByName, getTestsByName } from "./helpers.js";
+import { getTestByName, getTestsByName } from "./helpers.js";
 
 it("resolves native test modifiers lazily from aliases", () => {
   const registered: string[] = [];
@@ -35,7 +35,7 @@ it("resolves native test modifiers lazily from aliases", () => {
   expect(registered).toEqual(["only alpha", "only beta"]);
 });
 
-bunIt("supports conditional and failing Bun modifier factories", async () => {
+it("supports conditional and failing Bun modifier factories", async () => {
   const { tests, exitCode } = await runBunInlineTest({
     "sample.test.ts": `
       import { describe, expect, test } from "bun:test";
@@ -163,7 +163,7 @@ bunIt("supports conditional and failing Bun modifier factories", async () => {
   );
 });
 
-bunIt("fails fast for Bun concurrent mode before tests execute", async () => {
+it("fails fast for Bun concurrent mode before tests execute", async () => {
   const { tests, exitCode, stdout, stderr } = await runBunInlineTest(
     {
       "sample.test.ts": `
@@ -191,7 +191,7 @@ bunIt("fails fast for Bun concurrent mode before tests execute", async () => {
   expect(`${stdout.join("\n")}\n${stderr.join("\n")}`).not.toContain("(pass)");
 });
 
-bunIt("fails fast for randomized Bun order before tests execute", async () => {
+it("fails fast for randomized Bun order before tests execute", async () => {
   const { tests, exitCode, stdout, stderr } = await runBunInlineTest(
     {
       "sample.test.ts": `
@@ -217,7 +217,7 @@ bunIt("fails fast for randomized Bun order before tests execute", async () => {
   expect(`${stdout.join("\n")}\n${stderr.join("\n")}`).not.toContain("(pass)");
 });
 
-bunIt("does not report static skipped tests excluded by Bun name pattern", async () => {
+it("does not report static skipped tests excluded by Bun name pattern", async () => {
   const { tests, exitCode } = await runBunInlineTest(
     {
       "sample.test.ts": `
@@ -247,7 +247,7 @@ bunIt("does not report static skipped tests excluded by Bun name pattern", async
   );
 });
 
-bunIt("supports parameterized Bun test factories", async () => {
+it("supports parameterized Bun test factories", async () => {
   const { tests, exitCode } = await runBunInlineTest({
     "sample.test.ts": `
       import { expect, test } from "bun:test";
@@ -355,7 +355,7 @@ bunIt("supports parameterized Bun test factories", async () => {
   );
 });
 
-bunIt("supports parameterized Bun describe factories", async () => {
+it("supports parameterized Bun describe factories", async () => {
   const { tests, exitCode } = await runBunInlineTest({
     "sample.test.ts": `
       import { describe, expect, test } from "bun:test";
@@ -429,7 +429,7 @@ bunIt("supports parameterized Bun describe factories", async () => {
 });
 
 // FIXME: pass locally, but fails every time on CI
-bunIt.skip("supports Bun only.each variants", async () => {
+it.skip("supports Bun only.each variants", async () => {
   const testOnly = await runBunInlineTest(
     {
       "sample.test.ts": `
@@ -482,7 +482,7 @@ bunIt.skip("supports Bun only.each variants", async () => {
   );
 });
 
-bunIt("matches Bun's current each title formatting", async () => {
+it("matches Bun's current each title formatting", async () => {
   const { tests, exitCode } = await runBunInlineTest({
     "sample.test.ts": `
       import { expect, test } from "bun:test";

@@ -1,10 +1,10 @@
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { runBunInlineTest } from "../../utils.js";
-import { bunIt, getTestByName } from "../helpers.js";
+import { getTestByName } from "../helpers.js";
 
 describe("parameters", () => {
-  bunIt("sets test parameters", async () => {
+  it("sets test parameters", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { test } from "bun:test";
@@ -31,7 +31,7 @@ describe("parameters", () => {
     );
   });
 
-  bunIt("adds parameters from hooks to the current test", async () => {
+  it("adds parameters from hooks to the current test", async () => {
     const { tests, exitCode } = await runBunInlineTest({
       "sample.test.ts": `
         import { beforeEach, test } from "bun:test";

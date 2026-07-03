@@ -1,6 +1,6 @@
 {
   "name": "allure-jasmine",
-  "version": "3.9.0",
+  "version": "3.10.2",
   "description": "Allure Jasmine integration",
   "keywords": [
     "allure",
@@ -67,10 +67,10 @@
     "babel-plugin-add-module-exports": "^1.0.4",
     "babel-plugin-transform-import-meta": "^2.3.3",
     "jasmine": "^6.2.0",
-    "npm-run-all2": "^8.0.0",
+    "npm-run-all2": "^9.0.2",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   },
   "peerDependencies": {
     "jasmine": ">=2.7.0"

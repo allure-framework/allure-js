@@ -158,7 +158,7 @@ export class AllureAvaReporter {
         this.#handlePendingTests(event, `Timed out after ${event.period ?? "configured"}ms`);
         return;
       case "process-exit":
-        this.#handlePendingTests(event, "Unexpected process.exit() call");
+        this.#handlePendingTests(event, "Unexpected process.exit() call", event.testFile);
         return;
       case "internal-error":
       case "uncaught-exception":
@@ -450,10 +450,12 @@ export class AllureAvaReporter {
     });
   };
 
-  #handlePendingTests = (event: AvaStateChangeEvent, message: string) => {
-    for (const [testFile, titles] of event.pendingTests ?? []) {
-      for (const title of titles) {
-        const testState = this.#tests.get(getTestKey(testFile, title));
+  #handlePendingTests = (event: AvaStateChangeEvent, message: string, onlyFile?: string) => {
+    const pendingFiles = onlyFile === undefined ? [...(event.pendingTests?.keys() ?? [])] : [onlyFile];
+
+    for (const pendingFile of pendingFiles) {
+      for (const title of event.pendingTests?.get(pendingFile) ?? []) {
+        const testState = this.#tests.get(getTestKey(pendingFile, title));
         if (!testState || testState.stopped) {
           continue;
         }
