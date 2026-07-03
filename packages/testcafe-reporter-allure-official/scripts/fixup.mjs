@@ -38,4 +38,8 @@ writeFileSync(
 );
 
 const cjsIndexPath = join(cjsBuildPath, "index.js");
-appendFileSync(cjsIndexPath, '\nmodule.exports = exports["default"];\nObject.assign(module.exports, exports);\n', "utf8");
+appendFileSync(
+  cjsIndexPath,
+  '\nmodule.exports = exports["default"];\nObject.assign(module.exports, exports);\n',
+  "utf8",
+);
