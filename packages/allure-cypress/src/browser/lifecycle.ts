@@ -139,6 +139,11 @@ export const completeHookErrorReporting = (hook: CypressHook, err: Error) => {
 
 export const reportTestSkip = (test: CypressTest) => {
   if (isTestReported(test)) {
+    // Ignore pending events for retry attempts that already ended.
+    if (getCurrentTest() !== test) {
+      return;
+    }
+
     stopAllSteps(Status.SKIPPED, {
       message: "The test was skipped before the command was completed",
     });

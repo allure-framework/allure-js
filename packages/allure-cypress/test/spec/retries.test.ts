@@ -52,3 +52,53 @@ it("handles tests retries", async () => {
     }),
   );
 });
+
+it("doesn't report pending retry attempts for tests that eventually pass", async () => {
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": () => `
+      it("passes after retry", () => {
+        cy.wrap(Cypress.currentRetry).should("eq", 1);
+      });
+    `,
+    "cypress.config.js": ({ allureCypressReporterModulePath, allureDirPath }) => `
+      const { allureCypress } = require("${allureCypressReporterModulePath}");
+
+      module.exports = {
+        e2e: {
+          retries: {
+            runMode: 1,
+            openMode: 1,
+          },
+          testTimeout: 500,
+          baseUrl: "https://allurereport.org",
+          viewportWidth: 1240,
+          setupNodeEvents: (on, config) => {
+            allureCypress(on, {
+              resultsDir: "${allureDirPath}",
+              links: {
+                issue: {
+                  urlTemplate: "https://allurereport.org/issues/%s"
+                },
+                tms: {
+                  urlTemplate: "https://allurereport.org/tasks/%s"
+                },
+              },
+            });
+
+            return config;
+          },
+        },
+      };
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].status).toBe(Status.PASSED);
+  expect(tests[0].stage).toBe(Stage.FINISHED);
+  expect(tests[0].parameters).toContainEqual(
+    expect.objectContaining({
+      name: "Retry",
+      value: "1",
+    }),
+  );
+});
