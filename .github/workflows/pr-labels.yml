@@ -28,16 +28,7 @@ jobs:
         shell: bash
         run: |
           labels="$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels" --jq '.[].name')"
-          pr_label_options="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/labels?per_page=100" --jq '.[].name | select(startswith("pr:"))')"
-
-          if [ -n "${pr_label_options}" ]; then
-            label_prefix="pr:"
-            release_note_labels="$(printf '%s\n' "${labels}" | grep '^pr:' || true)"
-          else
-            label_prefix="type:"
-            release_note_labels="$(printf '%s\n' "${labels}" | grep '^type:' || true)"
-            echo "::warning title=Using legacy release-note labels::No pr: labels exist in this repository yet. Accepting type: labels for this bootstrap run."
-          fi
+          release_note_labels="$(printf '%s\n' "${labels}" | grep '^pr:' || true)"
 
           if [ -z "${release_note_labels}" ]; then
             count=0
@@ -51,13 +42,8 @@ jobs:
           fi
 
           {
-            echo "Pull requests must have exactly one release-note label with the ${label_prefix} prefix."
-            echo "Found ${count} ${label_prefix} labels."
-            if [ "${label_prefix}" = "type:" ]; then
-              echo
-              echo "This repository does not have pr: labels yet, so this bootstrap run accepts legacy type: labels."
-              echo "Create the pr: labels in the repository to make this workflow enforce the new label taxonomy."
-            fi
+            echo "Pull requests must have exactly one release-note label with the pr: prefix."
+            echo "Found ${count} pr: labels."
             if [ "${count}" -gt 0 ]; then
               printf 'Matching labels:\n'
               printf '%s\n' "${release_note_labels}" | sed 's/^/- /'
@@ -71,5 +57,5 @@ jobs:
             fi
           } >> "${GITHUB_STEP_SUMMARY}"
 
-          echo "::error title=Invalid release-note label count::Pull requests must have exactly one release-note label with the ${label_prefix} prefix. Found ${count}."
+          echo "::error title=Invalid release-note label count::Pull requests must have exactly one release-note label with the pr: prefix. Found ${count}."
           exit 1
