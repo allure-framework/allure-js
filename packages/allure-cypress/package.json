@@ -63,7 +63,7 @@
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
-    "@babel/cli": "^7.28.0",
+    "@babel/cli": "^8.0.1",
     "@babel/core": "^7.28.0",
     "@babel/plugin-transform-modules-commonjs": "^7.27.1",
     "@babel/preset-env": "^7.28.0",
