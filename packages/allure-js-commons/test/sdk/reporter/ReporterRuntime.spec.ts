@@ -1303,4 +1303,131 @@ describe("ReporterRuntime", () => {
       ]);
     });
   });
+
+  describe("flushUnfinishedTests", () => {
+    it("should write running tests as broken", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const uuid = runtime.startTest({ name: "running test", start: 1000 });
+
+      runtime.flushUnfinishedTests();
+
+      expect(writer.writeResult).toHaveBeenCalledOnce();
+      const [result] = writer.writeResult.mock.calls[0];
+      expect(result.name).toBe("running test");
+      expect(result.status).toBe(Status.BROKEN);
+      expect(result.stage).toBe(Stage.FINISHED);
+      expect(result.statusDetails.message).toBe("Test runner crashed or exited unexpectedly");
+    });
+
+    it("should use custom message", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      runtime.startTest({ name: "test" });
+
+      runtime.flushUnfinishedTests({ message: "Process killed by OOM" });
+
+      const [result] = writer.writeResult.mock.calls[0];
+      expect(result.statusDetails.message).toBe("Process killed by OOM");
+    });
+
+    it("should not overwrite status if already set", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const uuid = runtime.startTest({ name: "test" });
+      runtime.updateTest(uuid, (r) => {
+        r.status = Status.FAILED;
+        r.statusDetails = { message: "assertion error" };
+      });
+
+      runtime.flushUnfinishedTests();
+
+      const [result] = writer.writeResult.mock.calls[0];
+      expect(result.status).toBe(Status.FAILED);
+      expect(result.statusDetails.message).toBe("assertion error");
+    });
+
+    it("should not write already finished and written tests", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const uuid = runtime.startTest({ name: "finished test" });
+      runtime.stopTest(uuid);
+      runtime.writeTest(uuid);
+
+      writer.writeResult.mockClear();
+
+      runtime.flushUnfinishedTests();
+
+      expect(writer.writeResult).not.toHaveBeenCalled();
+    });
+
+    it("should flush multiple pending tests", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      runtime.startTest({ name: "test 1" });
+      runtime.startTest({ name: "test 2" });
+      runtime.startTest({ name: "test 3" });
+
+      runtime.flushUnfinishedTests();
+
+      expect(writer.writeResult).toHaveBeenCalledTimes(3);
+      const names = writer.writeResult.mock.calls.map(([r]) => r.name);
+      expect(names).toEqual(expect.arrayContaining(["test 1", "test 2", "test 3"]));
+    });
+
+    it("should skip tests with ALLURE_TESTPLAN_SKIP label", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const uuid = runtime.startTest({ name: "skipped by testplan" });
+      runtime.updateTest(uuid, (r) => {
+        r.labels.push({ name: "ALLURE_TESTPLAN_SKIP", value: "true" });
+      });
+
+      runtime.flushUnfinishedTests();
+
+      expect(writer.writeResult).not.toHaveBeenCalled();
+    });
+
+    it("should include trace when provided", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      runtime.startTest({ name: "crashed test" });
+
+      runtime.flushUnfinishedTests({
+        message: "TypeError: Cannot read properties of undefined",
+        trace: "TypeError: Cannot read properties of undefined\n    at Object.<anonymous> (test.js:5:10)",
+      });
+
+      const [result] = writer.writeResult.mock.calls[0];
+      expect(result.statusDetails.message).toBe("TypeError: Cannot read properties of undefined");
+      expect(result.statusDetails.trace).toBe(
+        "TypeError: Cannot read properties of undefined\n    at Object.<anonymous> (test.js:5:10)",
+      );
+    });
+
+    it("should write stopped but not yet written tests as-is", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const uuid = runtime.startTest({ name: "stopped test", start: 1000 });
+      runtime.updateTest(uuid, (r) => {
+        r.status = Status.PASSED;
+      });
+      runtime.stopTest(uuid, { stop: 2000 });
+
+      runtime.flushUnfinishedTests();
+
+      expect(writer.writeResult).toHaveBeenCalledOnce();
+      const [result] = writer.writeResult.mock.calls[0];
+      expect(result.status).toBe(Status.PASSED);
+      expect(result.stage).toBe(Stage.FINISHED);
+    });
+  });
 });

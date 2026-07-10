@@ -9,6 +9,7 @@ import {
   type Globals,
   type Label,
   Stage,
+  Status,
   type StepResult,
   type TestResult,
 } from "../../model.js";
@@ -212,6 +213,9 @@ export class ReporterRuntime {
   environmentInfo?: EnvironmentInfo;
   linkConfig?: LinkConfig;
   globalLabels: Label[] = [];
+  #processExitHandlerRegistered = false;
+  #runComplete = false;
+  #lastError?: { message: string; trace?: string };
 
   constructor({
     writer,
@@ -861,6 +865,85 @@ export class ReporterRuntime {
       befores,
       afters,
     });
+  };
+
+  notifyRunComplete = () => {
+    this.#runComplete = true;
+  };
+
+  registerProcessExitHandler = () => {
+    if (this.#processExitHandlerRegistered) {
+      return;
+    }
+    this.#processExitHandlerRegistered = true;
+
+    // uncaughtExceptionMonitor fires BEFORE the default handler — it observes
+    // the error without suppressing the crash or changing the exit code.
+    process.on("uncaughtExceptionMonitor", (error: unknown) => {
+      if (this.#lastError) {
+        return;
+      }
+      if (error instanceof Error) {
+        this.#lastError = { message: error.message, trace: error.stack };
+      } else {
+        this.#lastError = { message: String(error) };
+      }
+    });
+
+    process.once("exit", () => {
+      if (this.#runComplete) {
+        return;
+      }
+      this.flushUnfinishedTests({
+        message: this.#lastError?.message,
+        trace: this.#lastError?.trace,
+      });
+    });
+  };
+
+  flushUnfinishedTests = (opts?: { message?: string; trace?: string }) => {
+    const message = opts?.message ?? this.#lastError?.message ?? "Test runner crashed or exited unexpectedly";
+    const trace = opts?.trace ?? this.#lastError?.trace;
+    const now = Date.now();
+
+    const hadPendingTests = [...this.state.allTestResults()].length > 0;
+
+    if (!hadPendingTests && this.#lastError) {
+      this.#writeGlobals({
+        attachments: [],
+        errors: [{ message, trace, timestamp: now }],
+      });
+    }
+
+    for (const [uuid, wrapped] of this.state.allTestResults()) {
+      const testResult = wrapped.value;
+
+      if (testResult.stage !== Stage.FINISHED) {
+        testResult.status ??= Status.BROKEN;
+        testResult.stage = Stage.FINISHED;
+        testResult.statusDetails ??= {};
+        testResult.statusDetails.message ??= message;
+        if (trace) {
+          testResult.statusDetails.trace ??= trace;
+        }
+        testResult.stop ??= now;
+        testResult.start ??= now;
+      }
+
+      if (hasSkipLabel(testResult.labels)) {
+        this.state.deleteTestResult(uuid);
+        continue;
+      }
+
+      this.notifier.beforeTestResultWrite(testResult);
+      this.writer.writeResult(testResult);
+      this.state.deleteTestResult(uuid);
+      this.notifier.afterTestResultWrite(testResult);
+    }
+
+    for (const [uuid] of this.state.allScopes()) {
+      this.writeScope(uuid);
+    }
   };
 
   #calculateTimings = (

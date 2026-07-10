@@ -119,6 +119,7 @@ export class AllureAvaReporter {
       writer: createDefaultWriter({ resultsDir }),
     });
 
+    this.#runtime.registerProcessExitHandler();
     this.#runtime.writeCategoriesDefinitions();
     this.#runtime.writeEnvironmentInfo();
   }
@@ -211,6 +212,8 @@ export class AllureAvaReporter {
     for (const scopeUuid of this.#fileScopes.values()) {
       this.#runtime.writeScope(scopeUuid);
     }
+
+    this.#runtime.notifyRunComplete();
   };
 
   #ensureFileScope = (testFile: string) => {

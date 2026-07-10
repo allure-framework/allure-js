@@ -54,6 +54,7 @@ export class AllureCypress {
       writer: createDefaultWriter({ resultsDir }),
       ...rest,
     });
+    this.allureRuntime.registerProcessExitHandler();
   }
 
   attachToCypress = (on: Cypress.PluginEvents) => {
@@ -142,6 +143,7 @@ export class AllureCypress {
     this.#endAllSpecs();
     this.allureRuntime.writeEnvironmentInfo();
     this.allureRuntime.writeCategoriesDefinitions();
+    this.allureRuntime.notifyRunComplete();
   };
 
   endSpec = (specAbsolutePath: string, cypressVideoPath?: string) => {

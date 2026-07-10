@@ -79,6 +79,13 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       writer: createDefaultWriter({ resultsDir }),
       ...restOptions,
     });
+    // In parallel mode the leader process never runs tests itself (only workers do, via the
+    // require hook below with isInWorker=true) — registering the exit handler there would only
+    // pick up unrelated uncaught exceptions from mocha's own worker-pool orchestration code and
+    // misattribute them as a crash, since the leader's LifecycleState is always empty.
+    if (!opts.parallel || isInWorker) {
+      this.runtime.registerProcessExitHandler();
+    }
     this.testplan = createTestPlanIndices();
 
     const testRuntime = new MochaTestRuntime(this.applyRuntimeMessages);
@@ -143,8 +150,12 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   };
 
   override done(failures: number, fn?: ((failures: number) => void) | undefined) {
+    this.runtime.flushUnfinishedTests({
+      message: "Mocha finished before reporting a test result",
+    });
     this.runtime.writeEnvironmentInfo();
     this.runtime.writeCategoriesDefinitions();
+    this.runtime.notifyRunComplete();
     doneAll(this.#extraReporters, failures, fn);
   }
 
