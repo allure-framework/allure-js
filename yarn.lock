@@ -4391,7 +4391,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cucumber/messages@npm:32.2.0, @cucumber/messages@npm:>=31.0.0 <33, @cucumber/messages@npm:^32.0.0":
+"@cucumber/messages@npm:32.2.0, @cucumber/messages@npm:>=31.0.0 <33":
   version: 32.2.0
   resolution: "@cucumber/messages@npm:32.2.0"
   dependencies:
@@ -4410,6 +4410,13 @@ __metadata:
     reflect-metadata: "npm:0.2.1"
     uuid: "npm:9.0.1"
   checksum: 10/fdaeb71eaa996b4cb45943b42b50d1060b4d7a65a2a698b96796a5fc355799969f16a2ff472f88913740ea8c0983e7485be71a3f11ddd1e4f414cf529a4134f8
+  languageName: node
+  linkType: hard
+
+"@cucumber/messages@npm:^34.0.1":
+  version: 34.0.1
+  resolution: "@cucumber/messages@npm:34.0.1"
+  checksum: 10/e4162bb6a58770170d5a6aff9864042c13c67eee25f472e98a35970816780061923d69aa28223675b531581cc19e624addb19ed49ebe07bbec49f4f503010c31
   languageName: node
   linkType: hard
 
@@ -8124,7 +8131,7 @@ __metadata:
     "@babel/preset-env": "npm:^7.28.0"
     "@babel/preset-typescript": "npm:^7.27.1"
     "@cucumber/cucumber": "npm:^10.8.0"
-    "@cucumber/messages": "npm:^32.0.0"
+    "@cucumber/messages": "npm:^34.0.1"
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"
     "@types/node": "npm:^26.0.1"

@@ -7582,6 +7582,13 @@ const RAW_RUNTIME_STATE =
           ["reflect-metadata", "npm:0.2.2"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:34.0.1", {\
+        "packageLocation": "./.yarn/cache/@cucumber-messages-npm-34.0.1-ddd0e60d7f-e4162bb6a5.zip/node_modules/@cucumber/messages/",\
+        "packageDependencies": [\
+          ["@cucumber/messages", "npm:34.0.1"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["@cucumber/tag-expressions", [\
@@ -12413,7 +12420,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/preset-env", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.27.1"],\
           ["@cucumber/cucumber", "npm:10.8.0"],\
-          ["@cucumber/messages", "npm:32.2.0"],\
+          ["@cucumber/messages", "npm:34.0.1"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
           ["@types/node", "npm:26.0.1"],\
