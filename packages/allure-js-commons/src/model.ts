@@ -82,7 +82,6 @@ export interface TestResult extends Executable {
   fullName?: string;
   testCaseId?: string;
   titlePath?: string[];
-  flaky?: boolean;
   labels: Label[];
   links: Link[];
 }

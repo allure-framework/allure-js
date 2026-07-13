@@ -59,7 +59,7 @@ it("reports test status", async () => {
   );
 });
 
-it("marks real passed retry attempts as flaky", async () => {
+it("reports retry attempts with an excluded Retry parameter", async () => {
   const { tests } = await runPlaywrightInlineTest(
     {
       "sample.test.js": `
@@ -94,10 +94,10 @@ it("marks real passed retry attempts as flaky", async () => {
   expect(passedAttempt).toEqual(
     expect.objectContaining({
       stage: Stage.FINISHED,
-      flaky: true,
       parameters: expect.arrayContaining([expect.objectContaining({ name: "Retry", value: "1", excluded: true })]),
     }),
   );
+  expect(passedAttempt).not.toHaveProperty("flaky");
   expect(passedAttempt).not.toHaveProperty("retriesCount");
   expect(stableResults[0]).not.toHaveProperty("flaky");
   expect(stableResults[0]).not.toHaveProperty("retriesCount");
