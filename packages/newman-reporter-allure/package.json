@@ -68,7 +68,7 @@
     "allure-commandline": "^2.29.0",
     "allure-vitest": "workspace:*",
     "babel-plugin-add-module-exports": "^1.0.4",
-    "msw": "1",
+    "msw": "2",
     "newman": "^6.2.1",
     "npm-run-all2": "^9.0.2",
     "postman-collection": "^5.0.0",
