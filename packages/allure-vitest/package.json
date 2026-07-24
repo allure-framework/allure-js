@@ -71,7 +71,7 @@
     "@types/node": "^26.0.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@vitest/browser-playwright": "^4.1.0",
+    "@vitest/browser-playwright": "^4.1.10",
     "@vitest/runner": "^4.1.0",
     "allure-commandline": "^2.29.0",
     "npm-run-all2": "^9.0.2",
