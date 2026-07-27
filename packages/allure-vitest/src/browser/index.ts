@@ -1,7 +1,7 @@
-import type { Task } from "@vitest/runner";
 import { LabelName } from "allure-js-commons";
 import type { TestPlanV1 } from "allure-js-commons/sdk";
 import { includedInTestPlan, parseTestPlan } from "allure-js-commons/sdk/reporter";
+import type { RunnerTask as Task } from "vitest";
 
 import { getTestMetadata } from "../utils.js";
 

@@ -11903,14 +11903,6 @@ const RAW_RUNTIME_STATE =
           ["tinyrainbow", "npm:3.1.0"]\
         ],\
         "linkType": "HARD"\
-      }],\
-      ["npm:4.1.8", {\
-        "packageLocation": "./.yarn/cache/@vitest-pretty-format-npm-4.1.8-0f20614bb1-56a4b685cd.zip/node_modules/@vitest/pretty-format/",\
-        "packageDependencies": [\
-          ["@vitest/pretty-format", "npm:4.1.8"],\
-          ["tinyrainbow", "npm:3.1.0"]\
-        ],\
-        "linkType": "HARD"\
       }]\
     ]],\
     ["@vitest/runner", [\
@@ -11919,15 +11911,6 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@vitest/runner", "npm:4.1.10"],\
           ["@vitest/utils", "npm:4.1.10"],\
-          ["pathe", "npm:2.0.3"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
-      ["npm:4.1.8", {\
-        "packageLocation": "./.yarn/cache/@vitest-runner-npm-4.1.8-38f4df6de4-278d148212.zip/node_modules/@vitest/runner/",\
-        "packageDependencies": [\
-          ["@vitest/runner", "npm:4.1.8"],\
-          ["@vitest/utils", "npm:4.1.8"],\
           ["pathe", "npm:2.0.3"]\
         ],\
         "linkType": "HARD"\
@@ -11961,16 +11944,6 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@vitest/pretty-format", "npm:4.1.10"],\
           ["@vitest/utils", "npm:4.1.10"],\
-          ["convert-source-map", "npm:2.0.0"],\
-          ["tinyrainbow", "npm:3.1.0"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
-      ["npm:4.1.8", {\
-        "packageLocation": "./.yarn/cache/@vitest-utils-npm-4.1.8-06f3c23726-13250b9e78.zip/node_modules/@vitest/utils/",\
-        "packageDependencies": [\
-          ["@vitest/pretty-format", "npm:4.1.8"],\
-          ["@vitest/utils", "npm:4.1.8"],\
           ["convert-source-map", "npm:2.0.0"],\
           ["tinyrainbow", "npm:3.1.0"]\
         ],\
@@ -12776,7 +12749,7 @@ const RAW_RUNTIME_STATE =
           ["@types/vitest", null],\
           ["@types/vitest__runner", null],\
           ["@vitest/browser-playwright", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:4.1.10"],\
-          ["@vitest/runner", "npm:4.1.8"],\
+          ["@vitest/runner", "npm:4.1.10"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
@@ -12805,7 +12778,7 @@ const RAW_RUNTIME_STATE =
           ["@types/react", "npm:19.2.14"],\
           ["@types/react-dom", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:19.2.3"],\
           ["@vitest/browser-playwright", "virtual:f37ad3099f3665d5bbc9ee71081416c8874087a5d9739472f56367e210ca9246356f462b31407a28e510bc022801edd4632f86364db715287d62bd50b42e2c00#npm:4.1.10"],\
-          ["@vitest/runner", "npm:4.1.8"],\
+          ["@vitest/runner", "npm:4.1.10"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "workspace:packages/allure-vitest"],\

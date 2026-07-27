@@ -1,6 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 
-import { type Test, getCurrentTest as getCurrentTestGlobal } from "@vitest/runner";
+import type { Test } from "@vitest/runner";
+import { getCurrentTest as getCurrentTestGlobal } from "@vitest/runner";
 
 type AllureAwareGlobalThis = { __allureVitestAsyncContext?: AllureVitestAsyncContext };
 
@@ -18,7 +19,7 @@ export const getAsyncContext = () => {
   });
 };
 
-export const getCurrentTest = () => {
+export const getCurrentTest = (): Test | undefined => {
   const holder = globalThis as unknown as AllureAwareGlobalThis;
   const asyncContext = holder.__allureVitestAsyncContext;
   const task = asyncContext?.currentTaskStorage.getStore();
@@ -27,5 +28,7 @@ export const getCurrentTest = () => {
     return (asyncContext?.activeTasks?.has(task) ?? true) ? task : undefined;
   }
 
-  return getCurrentTestGlobal();
+  const currentTest = getCurrentTestGlobal();
+
+  return currentTest?.type === "test" ? currentTest : undefined;
 };
