@@ -1,45 +1,59 @@
 "theme:workflow":
-  - ".github/**"
+  - changed-files:
+      - any-glob-to-any-file: ".github/**"
 
 "theme:build":
-  - ".editorconfig"
-  - ".eslintrc.js"
-  - ".gitignore"
-  - ".prettierrc"
-  - "lerna.json"
-  - "package.json"
-  - "tsconfig.json"
-  - ".husky/**"
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".editorconfig"
+          - ".eslintrc.js"
+          - ".gitignore"
+          - ".prettierrc"
+          - "lerna.json"
+          - "package.json"
+          - "tsconfig.json"
+          - ".husky/**"
 
 "theme:codeceptjs":
-  - "packages/allure-codeceptjs/**"
+  - changed-files:
+      - any-glob-to-any-file: "packages/allure-codeceptjs/**"
 
 "theme:cucumberjs":
-  - "packages/allure-cucumberjs/**"
+  - changed-files:
+      - any-glob-to-any-file: "packages/allure-cucumberjs/**"
 
 "theme:decorators":
-  - "packages/allure-decorators/**"
+  - changed-files:
+      - any-glob-to-any-file: "packages/allure-decorators/**"
 
 "theme:jasmine":
-  - "packages/allure-jasmine/**"
+  - changed-files:
+      - any-glob-to-any-file: "packages/allure-jasmine/**"
 
 "theme:jest":
-  - "packages/allure-jest/**"
+  - changed-files:
+      - any-glob-to-any-file: "packages/allure-jest/**"
 
 "theme:api":
-  - "packages/allure-js-commons/**"
+  - changed-files:
+      - any-glob-to-any-file: "packages/allure-js-commons/**"
 
 "theme:mocha":
-  - "packages/allure-mocha/**"
+  - changed-files:
+      - any-glob-to-any-file: "packages/allure-mocha/**"
 
 "theme:playwright":
-  - "packages/allure-playwright/**"
+  - changed-files:
+      - any-glob-to-any-file: "packages/allure-playwright/**"
 
 "theme:testcafe":
-  - "packages/testcafe-reporter-allure-official/**"
+  - changed-files:
+      - any-glob-to-any-file: "packages/testcafe-reporter-allure-official/**"
 
 "theme:vitest":
-  - "packages/allure-vitest/**"
+  - changed-files:
+      - any-glob-to-any-file: "packages/allure-vitest/**"
 
 "theme:newman":
-  - "packages/newman-reporter-allure/**"
+  - changed-files:
+      - any-glob-to-any-file: "packages/newman-reporter-allure/**"
