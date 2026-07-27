@@ -12,332 +12,332 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@allurereport/aql@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/aql@npm:3.14.0"
-  checksum: 10/33683519ca6d1fc86c35f76e5db5c05c58ff8a37228ae7fbd27fde1f2e8ab9738ff03e25751ed20db0ef886f859721fce5ba904b0a972c6cac689e19e94fc3b3
+"@allurereport/aql@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/aql@npm:3.14.3"
+  checksum: 10/cd3e492e050845fae75a2819bcec9eede6902e5e9d47d3b2a7805ace4b6600c64996d545b2f8b6d8f9db63eeb545a37a3356df65745512300c880e97033b2014
   languageName: node
   linkType: hard
 
-"@allurereport/charts-api@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/charts-api@npm:3.14.0"
+"@allurereport/charts-api@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/charts-api@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
     d3-shape: "npm:^3.2.0"
-  checksum: 10/63d66fe697e4d09298bbb3866ab8fdbb4ce35d465ddf01d58b94955f56a18edd976312037f00c18bdf0dab1c50350abcaff0d54d09c54e0ee49efe167b4178c7
+  checksum: 10/e2bb6e14c32c3e54001f94c1ce5647ab656e88ccdcd32d1786774c048add83d934018ceca1803d5b8a4376e253aeb41abfae60fac280eb98135252cad7e5d721
   languageName: node
   linkType: hard
 
-"@allurereport/ci@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/ci@npm:3.14.0"
+"@allurereport/ci@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/ci@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-  checksum: 10/3fc472e48a986afb8d5a1835c91bc362bf0d3845ad57c1328d3016d96c5fb32363b0539854f8d2e08de973196479051a7d773192e2cb7b3eccbd1c642c614853
+    "@allurereport/core-api": "npm:3.14.3"
+  checksum: 10/b8b15b56617980dd2f7e1201d81629186d73bbadcdf1a74c8d5de0fd1505e5896ae177abb53b0e50dbdcca3f8471aab28757e97ab9ed6b6e6dc79de68cc60ab8
   languageName: node
   linkType: hard
 
-"@allurereport/core-api@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/core-api@npm:3.14.0"
+"@allurereport/core-api@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/core-api@npm:3.14.3"
   dependencies:
     d3-shape: "npm:^3.2.0"
-  checksum: 10/a78c490110fcfa72ff512469f17939374d38310a467bd394513d6fda209717b1b5d20519f1af84a743777206e684472e631cf054a1333455c77d9b0fdfb7f68a
+  checksum: 10/ec5c5931a199588754158340b8470b63c3262a33df8c12dc898099ca3da43b00e3d72d34e753526439a3538aef6821a502e9d897eba045bf36df009024765458
   languageName: node
   linkType: hard
 
-"@allurereport/core@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/core@npm:3.14.0"
+"@allurereport/core@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/core@npm:3.14.3"
   dependencies:
-    "@allurereport/ci": "npm:3.14.0"
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-agent": "npm:3.14.0"
-    "@allurereport/plugin-allure2": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
-    "@allurereport/plugin-awesome": "npm:3.14.0"
-    "@allurereport/plugin-classic": "npm:3.14.0"
-    "@allurereport/plugin-csv": "npm:3.14.0"
-    "@allurereport/plugin-dashboard": "npm:3.14.0"
-    "@allurereport/plugin-jira": "npm:3.14.0"
-    "@allurereport/plugin-log": "npm:3.14.0"
-    "@allurereport/plugin-progress": "npm:3.14.0"
-    "@allurereport/plugin-slack": "npm:3.14.0"
-    "@allurereport/plugin-testops": "npm:3.14.0"
-    "@allurereport/plugin-testplan": "npm:3.14.0"
-    "@allurereport/reader": "npm:3.14.0"
-    "@allurereport/reader-api": "npm:3.14.0"
-    "@allurereport/service": "npm:3.14.0"
-    "@allurereport/summary": "npm:3.14.0"
+    "@allurereport/ci": "npm:3.14.3"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-agent": "npm:3.14.3"
+    "@allurereport/plugin-allure2": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
+    "@allurereport/plugin-awesome": "npm:3.14.3"
+    "@allurereport/plugin-classic": "npm:3.14.3"
+    "@allurereport/plugin-csv": "npm:3.14.3"
+    "@allurereport/plugin-dashboard": "npm:3.14.3"
+    "@allurereport/plugin-jira": "npm:3.14.3"
+    "@allurereport/plugin-log": "npm:3.14.3"
+    "@allurereport/plugin-progress": "npm:3.14.3"
+    "@allurereport/plugin-slack": "npm:3.14.3"
+    "@allurereport/plugin-testops": "npm:3.14.3"
+    "@allurereport/plugin-testplan": "npm:3.14.3"
+    "@allurereport/reader": "npm:3.14.3"
+    "@allurereport/reader-api": "npm:3.14.3"
+    "@allurereport/service": "npm:3.14.3"
+    "@allurereport/summary": "npm:3.14.3"
     glob: "npm:^13.0.6"
     handlebars: "npm:^4.7.9"
     node-stream-zip: "npm:^1.15.0"
     p-limit: "npm:^7.3.0"
     yaml: "npm:^2.8.3"
-    yoctocolors: "npm:^2.1.1"
-    zip-stream: "npm:^7.0.2"
-  checksum: 10/b84c9262cca09b431a6bc1f0a1d7623aa6f26e5e7be2ea28ad01545824483ad72942a00883aa996499786b02b4427c76e4ccdf8a173d3cfd59403ebbacf865e1
+    yoctocolors: "npm:^2.1.2"
+    zip-stream: "npm:^7.0.5"
+  checksum: 10/5d9ac3571618416d2660db497d07f333893d0495548a66e60cf6b05c4f7e9a210efb17ea3f3612fff1af634e5ccb8f908cf4449fd5d2969ebc97efb14ee486b6
   languageName: node
   linkType: hard
 
-"@allurereport/directory-watcher@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/directory-watcher@npm:3.14.0"
+"@allurereport/directory-watcher@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/directory-watcher@npm:3.14.3"
   dependencies:
     chokidar: "npm:^5.0.0"
-  checksum: 10/dff576d9a93e4d152f504d4923b37d15c6c67d4892ea46eec46c03bbc954e27ecd73e58689246a2d60090b40ca8652390b4325048f5ceba97f7b1e246859ede0
+  checksum: 10/12d9da41ae5a89fcd838a9211f413f3bfa8945fb92c240ca60a8e306be2a4e6bfd20efc180a05e40dd0aae4a9d0895307c24beef3027d4662b8f79f7d5454028
   languageName: node
   linkType: hard
 
-"@allurereport/git@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/git@npm:3.14.0"
+"@allurereport/git@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/git@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-  checksum: 10/80d1c28d052cfcb1e7ba4ec0febcb2a47bb0a3542d964acf7c7216dc54494113f1aa69469c55040e87df8679777fd62fd52629e8840b248765afa1cc6f1844fe
+    "@allurereport/core-api": "npm:3.14.3"
+  checksum: 10/56687f834864e96076db039dee6abec09c80462b050e45c7110bd27536e9b5f056dfa10f3a1b277e37cf9dfaee30b47d33caa6a255c02d46bf4b3c2cb3962c14
   languageName: node
   linkType: hard
 
-"@allurereport/plugin-agent@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/plugin-agent@npm:3.14.0"
+"@allurereport/plugin-agent@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/plugin-agent@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
     yaml: "npm:^2.8.1"
-  checksum: 10/07159ed7fe9519c3104b3f983fa457109379e1cbdfdf18919e0c16d5337bb977ccdc992f9ab54dfde187c7807a1a0660d5b8748776b7609470cd1b0cb9b3ac92
+  checksum: 10/2f5861f40786b27d428b6e2a9f5709ff1c735ee1e79a2d6b1acaf8f5744875daaf66cb2b489065397ce018ffcef27abe4c5dbe026abda56a5edac33b6eedb14d
   languageName: node
   linkType: hard
 
-"@allurereport/plugin-allure2@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/plugin-allure2@npm:3.14.0"
+"@allurereport/plugin-allure2@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/plugin-allure2@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
     find-up: "npm:^8.0.0"
     handlebars: "npm:^4.7.9"
-  checksum: 10/15c663afc9169f3c6d00b3b34e4fdb64fd181c0c12fb5a29915739310df1ec76755110d3398ab49d5dbb8200535ccc85073ace8e16ec28f147a8afaecf069f85
+  checksum: 10/821c6aea5ef303b284809070643f95a464c64e5aac7845ead40e2121feab4b8c2bee3e3dd2ad4de8f9ca10f405f4bb45d4491b2f63f8c9f168259e6451579d82
   languageName: node
   linkType: hard
 
-"@allurereport/plugin-api@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/plugin-api@npm:3.14.0"
+"@allurereport/plugin-api@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/plugin-api@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-  checksum: 10/3be4655c919e8dd5780d10d22baa7fe2099724b4e4b6f0a7f5728b0b5664c69251d31e90929c23e08cf7f40f94ebdf669b4cb562ec9d1ecae8e41bfa0dd1ca1b
+    "@allurereport/core-api": "npm:3.14.3"
+  checksum: 10/44d2b432d6de8bb5a368160d0f936a9b45edfd0ba1067c53dfe2bcd15a35151d637def305fc26966d974dc02c8b1d1fac2b8c4d5145be6be337a966fd729c549
   languageName: node
   linkType: hard
 
-"@allurereport/plugin-awesome@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/plugin-awesome@npm:3.14.0"
+"@allurereport/plugin-awesome@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/plugin-awesome@npm:3.14.3"
   dependencies:
-    "@allurereport/charts-api": "npm:3.14.0"
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
-    "@allurereport/web-awesome": "npm:3.14.0"
-    "@allurereport/web-commons": "npm:3.14.0"
+    "@allurereport/charts-api": "npm:3.14.3"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
+    "@allurereport/web-awesome": "npm:3.14.3"
+    "@allurereport/web-commons": "npm:3.14.3"
     d3-shape: "npm:^3.2.0"
     handlebars: "npm:^4.7.9"
     markdown-it: "npm:^14.2.0"
-  checksum: 10/e17b6c0f619f71b07c7c41bd014310446c625a6329c3d33b6591eeaf4677b19a693b9dbe704d98bcd0e67d826583e812fa8cb4bfd87ede301465cad5d9457718
+  checksum: 10/94ec3089e465328ef4d864f29dbee9d01ce4719291bd66bfe40c62fc84efb79f76e46f3a112c404fc5e814f54b1d1b946540ded0ceff2e7977b013841e74e80b
   languageName: node
   linkType: hard
 
-"@allurereport/plugin-classic@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/plugin-classic@npm:3.14.0"
+"@allurereport/plugin-classic@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/plugin-classic@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
-    "@allurereport/web-awesome": "npm:3.14.0"
-    "@allurereport/web-classic": "npm:3.14.0"
-    "@allurereport/web-commons": "npm:3.14.0"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
+    "@allurereport/web-awesome": "npm:3.14.3"
+    "@allurereport/web-classic": "npm:3.14.3"
+    "@allurereport/web-commons": "npm:3.14.3"
     d3-shape: "npm:^3.2.0"
     handlebars: "npm:^4.7.9"
     markdown-it: "npm:^14.2.0"
-  checksum: 10/f189df45c40f02a4d29a15e6a63174593963a46a1f789eca48768a836c0ac4a3c13440d767f50e818be494868d7b97b9c174dc2e887986a907a408349b45c27a
+  checksum: 10/372a313852b17ac0b32dd20480d03627a97ffcf5f7387418d6630f3251346ead7efd076d73e4f04d87f3abbea3984c33493a9e67cd22787d22d7f45ac8373ef7
   languageName: node
   linkType: hard
 
-"@allurereport/plugin-csv@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/plugin-csv@npm:3.14.0"
+"@allurereport/plugin-csv@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/plugin-csv@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
-  checksum: 10/f01e40598526c7b0a423d760f016cd5afbcb3b82849cbe2f57b091b8439e06075acd3198be4248072b7a92f295c59f885b28a5eeea5b50221f4fc5bc18503241
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
+  checksum: 10/2d1177b09c8d2fc118c31313c120c31c43f6ac21e19adc393e0c6bfcb1fabf993a51ae4db2b0ebf0fa37cfe98e3b3895b78d445e169fd492129178159213de7f
   languageName: node
   linkType: hard
 
-"@allurereport/plugin-dashboard@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/plugin-dashboard@npm:3.14.0"
+"@allurereport/plugin-dashboard@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/plugin-dashboard@npm:3.14.3"
   dependencies:
-    "@allurereport/charts-api": "npm:3.14.0"
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
-    "@allurereport/web-commons": "npm:3.14.0"
-    "@allurereport/web-dashboard": "npm:3.14.0"
+    "@allurereport/charts-api": "npm:3.14.3"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
+    "@allurereport/web-commons": "npm:3.14.3"
+    "@allurereport/web-dashboard": "npm:3.14.3"
     d3-shape: "npm:^3.2.0"
     handlebars: "npm:^4.7.9"
-  checksum: 10/599966a10ca32e4867fcf1b3fe6eeecec3366b367b3db04b6873d210e96dcb2b1989b658376b7d8fb138d6f4d173cb8b4307a9876178faff40ac83b002b230cf
+  checksum: 10/24fedecca0a12b2c1c9d7b5a28ea1e0eb115170bca72b46b924d705e9bbbd189e90dd58fdf4ef330b187b9bfd150e5a77de2f90150dc77c3f55ac24743fc7a47
   languageName: node
   linkType: hard
 
-"@allurereport/plugin-jira@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/plugin-jira@npm:3.14.0"
+"@allurereport/plugin-jira@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/plugin-jira@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
     axios: "npm:^1.18.1"
-  checksum: 10/1de3d3ce5cc8e2e312a937100c42c6d3de9495c346916b4d6bc3b2fd45e212ea0d1dfdd1adfe8ab0044c5a79212c2962c7997d4cf57129ba012bf248ccc28dcd
+  checksum: 10/1d13cb8ea8f749ea3d73790669b01ec969caabe1a00831a302b115a3c9a9206d43fcf424af62f57fbe60908efc802396672143332fac748dd29cbdf345c1c312
   languageName: node
   linkType: hard
 
-"@allurereport/plugin-log@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/plugin-log@npm:3.14.0"
+"@allurereport/plugin-log@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/plugin-log@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
-    yoctocolors: "npm:^2.1.1"
-  checksum: 10/c241227900e8d90e9b6347f79a1fadca7722dda896c801dd3d9149a2c58a46f19aeae8c475691cdd1478a98362ce5827d580b4267e54496b3b4980a85acd01ce
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
+    yoctocolors: "npm:^2.1.2"
+  checksum: 10/0bb0fa7b6611341266ace55c22837c35927bbbde8e84586e5961a8ebec116debe0e27932e0efab01d58a1220207ff014ed4ee077bdb343833b2dfb5b21b8aea8
   languageName: node
   linkType: hard
 
-"@allurereport/plugin-progress@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/plugin-progress@npm:3.14.0"
+"@allurereport/plugin-progress@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/plugin-progress@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
-    yoctocolors: "npm:^2.1.1"
-  checksum: 10/8efe667b2a19f8bbeeaae4273fb1e6596e11188fdac0df8c6b7b7d89d0408ae5e19312a8b3374b9611097c4fa4dbb987a3c7e6d74c34f08803efcf059df568bd
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
+    yoctocolors: "npm:^2.1.2"
+  checksum: 10/cc67d9f85b3809fa500eaa6a2d6eeb9eb3a0157661a8e64dc5ee2f1cc877d347df9a8cb302768184d07bb546551d1010b05854bb83f8b5cd31b7ba149a118657
   languageName: node
   linkType: hard
 
-"@allurereport/plugin-server-reload@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/plugin-server-reload@npm:3.14.0"
+"@allurereport/plugin-server-reload@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/plugin-server-reload@npm:3.14.3"
   dependencies:
-    "@allurereport/plugin-api": "npm:3.14.0"
-    "@allurereport/static-server": "npm:3.14.0"
-  checksum: 10/196b527a012abd621bf216e4ababa1c3e2ec777491473dbfd1fcb01f0cbe4969dd9565563ea6ccb8ae1f73d4e2864223f7437d45425c2413d0f5bb42e8a1e95f
+    "@allurereport/plugin-api": "npm:3.14.3"
+    "@allurereport/static-server": "npm:3.14.3"
+  checksum: 10/e18c06426fea0484796560a9805b7d38731a64422638d7c7dd1e43a19e4bf910b26ee9e0bc43070079d7d2e6dce4b806b0a616048eff7de2ffbd161d809bc2c6
   languageName: node
   linkType: hard
 
-"@allurereport/plugin-slack@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/plugin-slack@npm:3.14.0"
+"@allurereport/plugin-slack@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/plugin-slack@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
-  checksum: 10/5bc08e73dce3ea83863d6348e1e1cd2c6ff2408beceb9dbc99cbf24ea6045e31385a3cc07d110003f2f0fe88f7ecf343b2e42483783b05c8e38737531c2567dd
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
+  checksum: 10/0d15cda4083288a837c87f129412db605a080e3cb5c21d39eeb107b015cc9386e83a0bdb17fa051539841c99dadbf4e5ed571ad8ad4794694edc719abbfed1ff
   languageName: node
   linkType: hard
 
-"@allurereport/plugin-testops@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/plugin-testops@npm:3.14.0"
+"@allurereport/plugin-testops@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/plugin-testops@npm:3.14.3"
   dependencies:
-    "@allurereport/ci": "npm:3.14.0"
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/git": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
-    "@allurereport/reader-api": "npm:3.14.0"
-    "@allurereport/service": "npm:3.14.0"
+    "@allurereport/ci": "npm:3.14.3"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/git": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
+    "@allurereport/reader-api": "npm:3.14.3"
+    "@allurereport/service": "npm:3.14.3"
     axios: "npm:^1.18.1"
     form-data: "npm:^4.0.6"
     lodash-es: "npm:^4.18.1"
     p-limit: "npm:^7.3.0"
     progress: "npm:^2.0.3"
     yoctocolors: "npm:^2"
-  checksum: 10/5cbe657ac94f6f72c81db84b4c2de13eedff29004984d46592adc76e8f0d92abc8bea0e2264f54ad953305a7f7fcd4d27901690e572fe7eabb81701cb4db29a9
+  checksum: 10/74d00a9227f9a476159cb264778f3e8d4c90f2ac12111b95bfd6ed0b0ee5e5a6822195b80fce2decc81d5536fc1ffcc339cac795d8ca5b21c346e4fab3c72519
   languageName: node
   linkType: hard
 
-"@allurereport/plugin-testplan@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/plugin-testplan@npm:3.14.0"
+"@allurereport/plugin-testplan@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/plugin-testplan@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
-  checksum: 10/d1ec59bdd02406db9bbf4d706997546d2c41c53af305981ee5878a3ec991bf501bfa7809491882f91cbcc829ddfb4588e1e0f4e69f968caa10eda629e230cf31
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
+  checksum: 10/299e0e79a580436e6de7f29ccf2612aba0ac36f4a97dadf59afd8ef305e3c9208f966b1b88fed1cb14958801cb7d5194279db7d8c7952129a054cf6946bb8a61
   languageName: node
   linkType: hard
 
-"@allurereport/reader-api@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/reader-api@npm:3.14.0"
+"@allurereport/reader-api@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/reader-api@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
     mime-types: "npm:^2.1.35"
-  checksum: 10/8be4b9a768648a3e4a03ddde7a258d79242585b0fad065e01d5ee3dbed4c9e8c899f145de6d796b9449149efd8093d2951edcda8a40c5004f4c639d829de3e61
+  checksum: 10/d52c24953080adabf951a5c2bd053675ab1680b65b3a1073d557d3a4bb0a0c3a11bf23fc883ef1bf014d211f1664c70c36140300d8f824ee89dc8f893cf72127
   languageName: node
   linkType: hard
 
-"@allurereport/reader@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/reader@npm:3.14.0"
+"@allurereport/reader@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/reader@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
-    "@allurereport/reader-api": "npm:3.14.0"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
+    "@allurereport/reader-api": "npm:3.14.3"
     fast-xml-parser: "npm:^5.7.0"
-  checksum: 10/0827deae8270d33a87f720f68e838d811f02621b4f38afee62d5b5bbf07fe8394b879d4abc9ced2c38ac4a67012d3a23e2440fe10ef083bc5ff670014ad320b4
+  checksum: 10/2ee034d84ea9dddbeb4b6eb5bf83004213c6c95c86e586af4fa4f5fc88e21c6e801ab3a3a39ee2e2397453849203d7ec3b6d8169c67a04eba551db38271361b6
   languageName: node
   linkType: hard
 
-"@allurereport/service@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/service@npm:3.14.0"
+"@allurereport/service@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/service@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
     axios: "npm:^1.18.1"
     open: "npm:^11.0.0"
-  checksum: 10/b64cd0f224d654ea597555fae7f39351b071cb14a898ad5e68b4c7449349e60159542722e2d0e48d70098b7cc5b18b8f310583699cd8d91a710282523f6eee92
+  checksum: 10/93ec5f7120046903cdcaf48b0d174475bf6ab3bdb176a5d0749f0dc32410a574bafe3a1b363eb36a16d66f3fc681503efe03f73f31d1995c1b9962b74719e336
   languageName: node
   linkType: hard
 
-"@allurereport/static-server@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/static-server@npm:3.14.0"
+"@allurereport/static-server@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/static-server@npm:3.14.3"
   dependencies:
-    "@allurereport/directory-watcher": "npm:3.14.0"
+    "@allurereport/directory-watcher": "npm:3.14.3"
     open: "npm:^11.0.0"
-  checksum: 10/1d1b3a6ff5a3d749f23b1a72cf74759db13005a54bd00ec7e503cab7a6bb5944640e79ce3967d76604bf54cc099bbe5b25cdacf863f98cb9273d429f24a5c820
+  checksum: 10/fdb64a3645f82542063fb4e465cb2a7fc84b3268d4dadccccf9f9addc5bf5ffa9c4b943aa71e9d35b000f00f581638204ff75a32a6ad2c7fc402f97a2fbf30ca
   languageName: node
   linkType: hard
 
-"@allurereport/summary@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/summary@npm:3.14.0"
+"@allurereport/summary@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/summary@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
-    "@allurereport/web-summary": "npm:3.14.0"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
+    "@allurereport/web-summary": "npm:3.14.3"
     handlebars: "npm:^4.7.9"
-  checksum: 10/240088f8a9692bdc9b70234693d904630c3c1312465e61315ec785ec078d47946526a82be7d65649aa1d0af26a2ce262e79bd0b83c96c3d9a7424d92da48cfa3
+  checksum: 10/e3cdabd23383c800b2b5136af8a0c6f697ee251d7fee60debe063d7236fb9a67f9a1e85475fb6c1b97ad95d12ac046f46f7fbd199d8ca869ebfe5dc3c60f5355
   languageName: node
   linkType: hard
 
-"@allurereport/web-awesome@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/web-awesome@npm:3.14.0"
+"@allurereport/web-awesome@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/web-awesome@npm:3.14.3"
   dependencies:
-    "@allurereport/charts-api": "npm:3.14.0"
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
-    "@allurereport/web-commons": "npm:3.14.0"
-    "@allurereport/web-components": "npm:3.14.0"
+    "@allurereport/charts-api": "npm:3.14.3"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
+    "@allurereport/web-commons": "npm:3.14.3"
+    "@allurereport/web-components": "npm:3.14.3"
     "@preact/signals": "npm:^2.6.1"
     clsx: "npm:^2.1.1"
     d3-shape: "npm:^3.2.0"
@@ -346,18 +346,18 @@ __metadata:
     minisearch: "npm:^7.2.0"
     preact: "npm:^10.28.2"
     prismjs: "npm:^1.30.0"
-  checksum: 10/d60fed03e0c5c6fd617451231286a40914df42ea80af41fd9665371f33442f9ea0e0cba857375d27accae62fdc652d21f6760a032cbad535589af25898c30af9
+  checksum: 10/9d4b2b1289d87902cdeca9e98a499d6bb8196cbe8009b8604fff87c254190ad6c2bc321c046099c409c6a1c5c730eecd00b69f5732e024c15a1cf890429ce020
   languageName: node
   linkType: hard
 
-"@allurereport/web-classic@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/web-classic@npm:3.14.0"
+"@allurereport/web-classic@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/web-classic@npm:3.14.3"
   dependencies:
-    "@allurereport/charts-api": "npm:3.14.0"
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/web-commons": "npm:3.14.0"
-    "@allurereport/web-components": "npm:3.14.0"
+    "@allurereport/charts-api": "npm:3.14.3"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/web-commons": "npm:3.14.3"
+    "@allurereport/web-components": "npm:3.14.3"
     "@preact/signals": "npm:^2.6.1"
     clsx: "npm:^2.1.1"
     d3-shape: "npm:^3.2.0"
@@ -366,18 +366,18 @@ __metadata:
     preact: "npm:^10.28.2"
     prismjs: "npm:^1.30.0"
     split.js: "npm:^1.6.5"
-  checksum: 10/fe0cca4a43a078c71ab4917261ffd66e50a00bf76623f317425805768ad76727468b52901e5c345c3e2f796011647d009255173fb7786b469550cb862cf11fb0
+  checksum: 10/85738dec32dedd7630de3bb3ed4ea946497bf45506016fe7acaa792358e45930433636bc5bbcd3e5baec87cfe64b9d11d6fba1656e5d9e72e1f8b3131b5c5fe6
   languageName: node
   linkType: hard
 
-"@allurereport/web-commons@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/web-commons@npm:3.14.0"
+"@allurereport/web-commons@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/web-commons@npm:3.14.3"
   dependencies:
-    "@allurereport/aql": "npm:3.14.0"
-    "@allurereport/charts-api": "npm:3.14.0"
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
+    "@allurereport/aql": "npm:3.14.3"
+    "@allurereport/charts-api": "npm:3.14.3"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
     "@preact/signals": "npm:^2.6.1"
     "@preact/signals-core": "npm:^1.12.2"
     ansi-to-html: "npm:^0.7.2"
@@ -386,17 +386,17 @@ __metadata:
     d3-shape: "npm:^3.2.0"
     dompurify: "npm:^3.4.0"
     nanoid: "npm:^5.1.6"
-  checksum: 10/1e23ffd4331a45018ffb539f0be006d7d3748416a6fdb74948dd12a7cd5dcfcd33db561ef2c5b0c8a1f914314268c5e1c9477786a05f138b73c2d2ccc833cd9b
+  checksum: 10/83175012be96a1e47fc10279c77c549e60120739c068ae616b3ea908e11fd8a3a7cf9afb4805dbb6a5a76132ba524411a762b2c1ab7fb71999349bf73d377071
   languageName: node
   linkType: hard
 
-"@allurereport/web-components@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/web-components@npm:3.14.0"
+"@allurereport/web-components@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/web-components@npm:3.14.3"
   dependencies:
-    "@allurereport/charts-api": "npm:3.14.0"
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/web-commons": "npm:3.14.0"
+    "@allurereport/charts-api": "npm:3.14.3"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/web-commons": "npm:3.14.3"
     "@floating-ui/dom": "npm:^1.7.4"
     "@nivo/bar": "npm:^0.99.0"
     "@nivo/core": "npm:^0.99.0"
@@ -431,38 +431,38 @@ __metadata:
     react-dom: "npm:@preact/compat@*"
     sortablejs: "npm:^1.15.7"
     use-debounce: "npm:^10.0.6"
-  checksum: 10/2eaf4d4ecaecc1340855bef806c2b93ad97eb32f9701421d37d9d1a4cada481a35e351f5527b602dcd7849aa5bf6e8250c1b42b49aada4addd097017a4dd8aa5
+  checksum: 10/8b184e54b0c5c2ecd7048000453593847c02d7037a36ce963be5d21e7e43039f9abab6e0f026cf219da69a45681baa24f9cecf37251042b8ecee448edc772957
   languageName: node
   linkType: hard
 
-"@allurereport/web-dashboard@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/web-dashboard@npm:3.14.0"
+"@allurereport/web-dashboard@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/web-dashboard@npm:3.14.3"
   dependencies:
-    "@allurereport/charts-api": "npm:3.14.0"
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/web-commons": "npm:3.14.0"
-    "@allurereport/web-components": "npm:3.14.0"
+    "@allurereport/charts-api": "npm:3.14.3"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/web-commons": "npm:3.14.3"
+    "@allurereport/web-components": "npm:3.14.3"
     "@preact/signals": "npm:^2.6.1"
     clsx: "npm:^2.1.1"
     i18next: "npm:^24.0.2"
     preact: "npm:^10.28.2"
-  checksum: 10/29e1df2680b7b0236dce83bda5c1aa89687c58d866f76740743130dcb117a52de9618c94b15b5f7363c1bf867764c75f9ff691dee3417351b60f528d12d33b4f
+  checksum: 10/78cdafa7067f72aa5d4c9687f6b672793071c8306edbace42d239f6b6a5a0c80c582e5af84aa7f79c2d2dc0f3504b2ed199999deb3b0c0a8188ea904053f5fb7
   languageName: node
   linkType: hard
 
-"@allurereport/web-summary@npm:3.14.0":
-  version: 3.14.0
-  resolution: "@allurereport/web-summary@npm:3.14.0"
+"@allurereport/web-summary@npm:3.14.3":
+  version: 3.14.3
+  resolution: "@allurereport/web-summary@npm:3.14.3"
   dependencies:
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/web-commons": "npm:3.14.0"
-    "@allurereport/web-components": "npm:3.14.0"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/web-commons": "npm:3.14.3"
+    "@allurereport/web-components": "npm:3.14.3"
     "@preact/signals": "npm:^2.6.1"
     clsx: "npm:^2.1.1"
     i18next: "npm:^24.0.2"
     preact: "npm:^10.28.2"
-  checksum: 10/24db87acc5797c88cc49e138a1f33b2bfdd69a4e71aae1dfd58f84508de7fa7463c59c0a3c6499c4accab30206d1c31b8c4c61a85ef7c034452871d567dc3731
+  checksum: 10/2012fdaaca368ed0921c01c17fc4a9bf5b8bbc80b978c9d1f91d19caed8a8327f60081be49d7b91d9644d23f572877e376d0d6c488fdb419cef2792a7ee327b5
   languageName: node
   linkType: hard
 
@@ -7471,10 +7471,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ungap/structured-clone@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "@ungap/structured-clone@npm:1.3.0"
-  checksum: 10/80d6910946f2b1552a2406650051c91bbd1f24a6bf854354203d84fe2714b3e8ce4618f49cc3410494173a1c1e8e9777372fe68dce74bd45faf0a7a1a6ccf448
+"@ungap/structured-clone@npm:1.3.3":
+  version: 1.3.3
+  resolution: "@ungap/structured-clone@npm:1.3.3"
+  checksum: 10/ccdb7fc0a7055e361f57ded33030b9c1a06398e48db35ab1cdae7a03f82e5a1f5342bcf66781dde6364584b44c7739f8f320dff992d318051b69805aaee10d9f
   languageName: node
   linkType: hard
 
@@ -7635,7 +7635,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/browser-playwright@npm:^4.1.10":
+"@vitest/browser-playwright@npm:4.1.10":
   version: 4.1.10
   resolution: "@vitest/browser-playwright@npm:4.1.10"
   dependencies:
@@ -7670,17 +7670,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/expect@npm:4.1.8":
-  version: 4.1.8
-  resolution: "@vitest/expect@npm:4.1.8"
+"@vitest/expect@npm:4.1.10":
+  version: 4.1.10
+  resolution: "@vitest/expect@npm:4.1.10"
   dependencies:
     "@standard-schema/spec": "npm:^1.1.0"
     "@types/chai": "npm:^5.2.2"
-    "@vitest/spy": "npm:4.1.8"
-    "@vitest/utils": "npm:4.1.8"
+    "@vitest/spy": "npm:4.1.10"
+    "@vitest/utils": "npm:4.1.10"
     chai: "npm:^6.2.2"
     tinyrainbow: "npm:^3.1.0"
-  checksum: 10/cb7d78e250ec77b7e180ac3e5f543501488c69b237d7ed97ffe9196c5e946b0e4a37be05a2ec38af7ce7750c1a98286480acdd247286a29c239b08a13b085d4b
+  checksum: 10/487fcad404a68968a54ae5fb9d099f12170cd793420a04b34a5606516317090c50a8303ab687c70166ee181864e3e138941d4a96d0405434dcd37696b3105350
   languageName: node
   linkType: hard
 
@@ -7703,25 +7703,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/mocker@npm:4.1.8":
-  version: 4.1.8
-  resolution: "@vitest/mocker@npm:4.1.8"
-  dependencies:
-    "@vitest/spy": "npm:4.1.8"
-    estree-walker: "npm:^3.0.3"
-    magic-string: "npm:^0.30.21"
-  peerDependencies:
-    msw: ^2.4.9
-    vite: ^6.0.0 || ^7.0.0 || ^8.0.0
-  peerDependenciesMeta:
-    msw:
-      optional: true
-    vite:
-      optional: true
-  checksum: 10/fc977703b07d950aa170bafdef988bc7ba88f0a80159d1563ce95696763729ec1f6d015012aad36cf4e1b522d327b205292c56d76692d2a9f72285d694ed3cba
-  languageName: node
-  linkType: hard
-
 "@vitest/pretty-format@npm:4.1.10":
   version: 4.1.10
   resolution: "@vitest/pretty-format@npm:4.1.10"
@@ -7731,34 +7712,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/pretty-format@npm:4.1.8":
-  version: 4.1.8
-  resolution: "@vitest/pretty-format@npm:4.1.8"
+"@vitest/runner@npm:4.1.10":
+  version: 4.1.10
+  resolution: "@vitest/runner@npm:4.1.10"
   dependencies:
-    tinyrainbow: "npm:^3.1.0"
-  checksum: 10/56a4b685cdf9f2e9708025f17dab8c0fa990ab06e5b38606a1ddde52a09830a099843da6a1b127ee48217ab023bad7bd23c49eb4969d77dff07df363fad0bb0e
-  languageName: node
-  linkType: hard
-
-"@vitest/runner@npm:4.1.8, @vitest/runner@npm:^4.1.0":
-  version: 4.1.8
-  resolution: "@vitest/runner@npm:4.1.8"
-  dependencies:
-    "@vitest/utils": "npm:4.1.8"
+    "@vitest/utils": "npm:4.1.10"
     pathe: "npm:^2.0.3"
-  checksum: 10/278d1482123877343731b3bb822d0280af928252ee263aab73ca189c39de3bb767ce715581870b2e1eb408f7cba01106a6989406cb2ada1332f181912558a3c1
+  checksum: 10/2c962cb13af0880990036808a35679b7ac6657c8f542490234c2faa6ffd2ab080ac6bf21b487c64d84aa635cfb37b49eb679098c2003a100dfc6c4d5e87bf055
   languageName: node
   linkType: hard
 
-"@vitest/snapshot@npm:4.1.8":
-  version: 4.1.8
-  resolution: "@vitest/snapshot@npm:4.1.8"
+"@vitest/snapshot@npm:4.1.10":
+  version: 4.1.10
+  resolution: "@vitest/snapshot@npm:4.1.10"
   dependencies:
-    "@vitest/pretty-format": "npm:4.1.8"
-    "@vitest/utils": "npm:4.1.8"
+    "@vitest/pretty-format": "npm:4.1.10"
+    "@vitest/utils": "npm:4.1.10"
     magic-string: "npm:^0.30.21"
     pathe: "npm:^2.0.3"
-  checksum: 10/162ca0eccb72db02081b04307d21ac8d14c8fcd4a840872459274f589b1665f108bd4119dff19d5a2150a0e26b90531791ebec7ee74f0c2c5285b491cebbcfcb
+  checksum: 10/7940d83ffd2fbebf9a04ea31e196b7e8bf981093ec739950959fe8dd29caa33c80823780fb4b1063d9459c44a0a8d8b2748c00dfb6941becd7404e6d687eea01
   languageName: node
   linkType: hard
 
@@ -7766,13 +7738,6 @@ __metadata:
   version: 4.1.10
   resolution: "@vitest/spy@npm:4.1.10"
   checksum: 10/7c1b79a95474338e0659f0f2e43be4df1ef7939ff5b37b044954e0287582947803bd417508f44a7f244809672309d9b3dd67660b704ec3fe7f323cc958ae47a3
-  languageName: node
-  linkType: hard
-
-"@vitest/spy@npm:4.1.8":
-  version: 4.1.8
-  resolution: "@vitest/spy@npm:4.1.8"
-  checksum: 10/53e948d8f5e229e969e704dc8a54fd42ad715b2b18f401592f4bba97dcf33bd4cf01d11af577d4efe42dc2d90c9e6574ec991531fd8f1bdfee916a1dd0828547
   languageName: node
   linkType: hard
 
@@ -7784,17 +7749,6 @@ __metadata:
     convert-source-map: "npm:^2.0.0"
     tinyrainbow: "npm:^3.1.0"
   checksum: 10/95484aad55c7b00bbcd4963e27cbb86fe207620a6093973d68da9d0a06bad37c388d84c9ab43d5f35d88e46c8f376a5592d9c54c025c958361160f4802bb25ee
-  languageName: node
-  linkType: hard
-
-"@vitest/utils@npm:4.1.8":
-  version: 4.1.8
-  resolution: "@vitest/utils@npm:4.1.8"
-  dependencies:
-    "@vitest/pretty-format": "npm:4.1.8"
-    convert-source-map: "npm:^2.0.0"
-    tinyrainbow: "npm:^3.1.0"
-  checksum: 10/13250b9e7825d425cc9a3d22aeb2e8d117c93e96a192138e93d76bfe7d5a391ab3888c5aa9e0394b0314bdff41e441ad7a32b0c0caa00cd202223b88087dcc78
   languageName: node
   linkType: hard
 
@@ -7960,10 +7914,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"adm-zip@npm:^0.5.16":
-  version: 0.5.17
-  resolution: "adm-zip@npm:0.5.17"
-  checksum: 10/035ea96d04376c290bed3401b67d1a2a2654996450ec9056dccc0fb194cb6a956bf7ad388d2648b0e1775338a377805601deca4bcd689658dc1d39247a1e9bdd
+"adm-zip@npm:0.6.0":
+  version: 0.6.0
+  resolution: "adm-zip@npm:0.6.0"
+  checksum: 10/6a49ab39055d8f716958d3a2055491ab86fe3359c4afeed9b14bbce78fb847bcd3cbaa0ff4921aaa19824aaa29d06691def1f53263db5224d06c068f922c5ba2
   languageName: node
   linkType: hard
 
@@ -8058,14 +8012,14 @@ __metadata:
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
     allure-vitest: "workspace:*"
-    axios: "npm:1.16.1"
+    axios: "npm:1.18.0"
     babel-plugin-add-module-exports: "npm:^1.0.4"
     npm-run-all2: "npm:^9.0.2"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^6.0.3"
     vitest: "npm:^4.1.0"
   peerDependencies:
-    axios: ">=1.16.0 <2"
+    axios: ">=1.18.0 <2"
   languageName: unknown
   linkType: soft
 
@@ -8345,7 +8299,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-js@workspace:."
   dependencies:
-    allure: "npm:^3.14.0"
+    allure: "npm:^3.14.3"
     lefthook: "npm:^2.1.4"
     oxfmt: "npm:0.54.0"
     oxlint: "npm:1.64.0"
@@ -8443,7 +8397,7 @@ __metadata:
     "@types/react": "npm:^19"
     "@types/react-dom": "npm:^19"
     "@vitest/browser-playwright": "npm:^4.1.10"
-    "@vitest/runner": "npm:^4.1.0"
+    "@vitest/runner": "npm:^4.1.10"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
     npm-run-all2: "npm:^9.0.2"
@@ -8452,47 +8406,47 @@ __metadata:
     react-dom: "npm:^19.2.4"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^6.0.3"
-    vitest: "npm:^4.1.0"
+    vitest: "npm:^4.1.10"
   peerDependencies:
     "@vitest/runner": ">=1.3.0"
     vitest: ">=1.3.0"
   languageName: unknown
   linkType: soft
 
-"allure@npm:^3.14.0":
-  version: 3.14.0
-  resolution: "allure@npm:3.14.0"
+"allure@npm:^3.14.3":
+  version: 3.14.3
+  resolution: "allure@npm:3.14.3"
   dependencies:
-    "@allurereport/charts-api": "npm:3.14.0"
-    "@allurereport/ci": "npm:3.14.0"
-    "@allurereport/core": "npm:3.14.0"
-    "@allurereport/core-api": "npm:3.14.0"
-    "@allurereport/directory-watcher": "npm:3.14.0"
-    "@allurereport/plugin-agent": "npm:3.14.0"
-    "@allurereport/plugin-allure2": "npm:3.14.0"
-    "@allurereport/plugin-api": "npm:3.14.0"
-    "@allurereport/plugin-awesome": "npm:3.14.0"
-    "@allurereport/plugin-classic": "npm:3.14.0"
-    "@allurereport/plugin-csv": "npm:3.14.0"
-    "@allurereport/plugin-dashboard": "npm:3.14.0"
-    "@allurereport/plugin-jira": "npm:3.14.0"
-    "@allurereport/plugin-log": "npm:3.14.0"
-    "@allurereport/plugin-progress": "npm:3.14.0"
-    "@allurereport/plugin-server-reload": "npm:3.14.0"
-    "@allurereport/plugin-slack": "npm:3.14.0"
-    "@allurereport/reader-api": "npm:3.14.0"
-    "@allurereport/service": "npm:3.14.0"
-    "@allurereport/static-server": "npm:3.14.0"
+    "@allurereport/charts-api": "npm:3.14.3"
+    "@allurereport/ci": "npm:3.14.3"
+    "@allurereport/core": "npm:3.14.3"
+    "@allurereport/core-api": "npm:3.14.3"
+    "@allurereport/directory-watcher": "npm:3.14.3"
+    "@allurereport/plugin-agent": "npm:3.14.3"
+    "@allurereport/plugin-allure2": "npm:3.14.3"
+    "@allurereport/plugin-api": "npm:3.14.3"
+    "@allurereport/plugin-awesome": "npm:3.14.3"
+    "@allurereport/plugin-classic": "npm:3.14.3"
+    "@allurereport/plugin-csv": "npm:3.14.3"
+    "@allurereport/plugin-dashboard": "npm:3.14.3"
+    "@allurereport/plugin-jira": "npm:3.14.3"
+    "@allurereport/plugin-log": "npm:3.14.3"
+    "@allurereport/plugin-progress": "npm:3.14.3"
+    "@allurereport/plugin-server-reload": "npm:3.14.3"
+    "@allurereport/plugin-slack": "npm:3.14.3"
+    "@allurereport/reader-api": "npm:3.14.3"
+    "@allurereport/service": "npm:3.14.3"
+    "@allurereport/static-server": "npm:3.14.3"
     adm-zip: "npm:^0.5.16"
     clipanion: "npm:^4.0.0-rc.4"
     glob: "npm:^13.0.6"
     lodash.omit: "npm:^4.18.0"
     prompts: "npm:^2.4.2"
     typanion: "npm:^3.14.0"
-    yoctocolors: "npm:^2.1.1"
+    yoctocolors: "npm:^2.1.2"
   bin:
     allure: ./cli.js
-  checksum: 10/e884547303686104465bb60e33fcebe21b461903da40b276f5910c5c77f3718f89a3bfb6e1b0bc687d2d46527c33a1f908a4496d171b172d5bc8fb2823fd853b
+  checksum: 10/970ef81f3adb73f101f3f0bf1b286a2cf69ddfafc0bdfb61bd458d1ca700d5d248dba3622805f1ae1ebd41b1eeeee939fd2662416718f16de59d940ba23729e6
   languageName: node
   linkType: hard
 
@@ -8895,38 +8849,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.16.0":
-  version: 1.16.0
-  resolution: "axios@npm:1.16.0"
-  dependencies:
-    follow-redirects: "npm:^1.16.0"
-    form-data: "npm:^4.0.5"
-    proxy-from-env: "npm:^2.1.0"
-  checksum: 10/cf8b521ff732c21550b38c8739aef556ea5e14b268468bb89e4307416ab262b462e582474e810963a3d61c2392ab47ad35c11d05eff027de7c97113bc7411623
-  languageName: node
-  linkType: hard
-
-"axios@npm:1.16.1":
-  version: 1.16.1
-  resolution: "axios@npm:1.16.1"
+"axios@npm:1.18.0":
+  version: 1.18.0
+  resolution: "axios@npm:1.18.0"
   dependencies:
     follow-redirects: "npm:^1.16.0"
     form-data: "npm:^4.0.5"
     https-proxy-agent: "npm:^5.0.1"
     proxy-from-env: "npm:^2.1.0"
-  checksum: 10/9b6218cf96321cfbbf8f160658d695367114bcf4fb62492bdc1ccd647f184b5c71ae400e5ecaaf41079bc561de2ecbaf1fec63f398b3ec53389beff7694df64c
-  languageName: node
-  linkType: hard
-
-"axios@npm:^1.18.1":
-  version: 1.18.1
-  resolution: "axios@npm:1.18.1"
-  dependencies:
-    follow-redirects: "npm:^1.16.0"
-    form-data: "npm:^4.0.5"
-    https-proxy-agent: "npm:^5.0.1"
-    proxy-from-env: "npm:^2.1.0"
-  checksum: 10/c4cdced3ee0a9bf7dcae189fbc74a124aa079d4f04dbd995e602d39c1419476e8d021f87ee39ac8d8398e5a55e6d0b986238b3645f0d9177ac80de87c2a73f18
+  checksum: 10/586a1a9534531c6ec4ee8fbab07a536ecaa8d29bd16b40ab0f9fce361fcd24da1538a54aadde0562f08f30b55bf80f9b7ededf1987e6506f722e1fb338b09d5d
   languageName: node
   linkType: hard
 
@@ -9414,12 +9345,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"brace-expansion@npm:5.0.6":
-  version: 5.0.6
-  resolution: "brace-expansion@npm:5.0.6"
+"brace-expansion@npm:5.0.8":
+  version: 5.0.8
+  resolution: "brace-expansion@npm:5.0.8"
   dependencies:
     balanced-match: "npm:^4.0.2"
-  checksum: 10/a7acf120fefa79e9d7c9c92898114f57c07596a3920197f3c5917e6a628b04220a5f7f9618c30bdd973a6576a32113b99f9c3f1c8245ccc399dd2a9a718d81d8
+  checksum: 10/75d2d2ebc8f5f65156d16706216d23e48f499a1164e4b045e0ca4045d3ce6b16ced11ea2e4c76e3670b6c38454123213f43d23127df8fc6840980aea9a35e061
   languageName: node
   linkType: hard
 
@@ -11637,15 +11568,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:3.4.11":
-  version: 3.4.11
-  resolution: "dompurify@npm:3.4.11"
+"dompurify@npm:3.4.12":
+  version: 3.4.12
+  resolution: "dompurify@npm:3.4.12"
   dependencies:
     "@types/trusted-types": "npm:^2.0.7"
   dependenciesMeta:
     "@types/trusted-types":
       optional: true
-  checksum: 10/d0473e1a22ed9cc23d86ef426717bce866913d1a725512a9478985bd917b272e0faba5f1d6ad8b2e37f3f4219206c4385162d7c984cfedcd23396e1e6ae0bc5e
+  checksum: 10/f826b68920887eb75115a162facb42380d1c3fac441548217b30068c9fadeed14f63fa1f7a1d2ab6f63613e5a0f897aa245c9224d4abf7939cd8ae58c04646af
   languageName: node
   linkType: hard
 
@@ -11892,7 +11823,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"entities@npm:^4.2.0, entities@npm:^4.4.0":
+"entities@npm:^4.2.0, entities@npm:^4.4.0, entities@npm:^4.5.0":
   version: 4.5.0
   resolution: "entities@npm:4.5.0"
   checksum: 10/ede2a35c9bce1aeccd055a1b445d41c75a14a2bb1cd22e242f20cf04d236cdcd7f9c859eb83f76885327bfae0c25bf03303665ee1ce3d47c5927b98b0e3e3d48
@@ -12423,10 +12354,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-uri@npm:3.1.2":
-  version: 3.1.2
-  resolution: "fast-uri@npm:3.1.2"
-  checksum: 10/1dff04865b2a38d3e0659deadfbf72efdf83a776bfbf9667e4aa9e5a3ec31bc341cda9622136b32b7652a857c8ba11896794186e8f876f8b2b72731fce8622f6
+"fast-uri@npm:3.1.4":
+  version: 3.1.4
+  resolution: "fast-uri@npm:3.1.4"
+  checksum: 10/1c1ff8e7b6f7b38e997b1528aa2c97e290e0173d51250bfe4e11a303e454fc297a287555b5cb2ded59dbfce7876855fb15994a1a6b439f2497a2b8926513e397
   languageName: node
   linkType: hard
 
@@ -15284,14 +15215,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:4.2.0":
-  version: 4.2.0
-  resolution: "js-yaml@npm:4.2.0"
+"js-yaml@npm:4.3.0":
+  version: 4.3.0
+  resolution: "js-yaml@npm:4.3.0"
   dependencies:
     argparse: "npm:^2.0.1"
   bin:
     js-yaml: bin/js-yaml.js
-  checksum: 10/51de2067a2b44b07ba5206132e56005f8b568ff279bb4d2f645068958c56fa4827d40a6841c983234671fa0a134bf094d0b0717873c2a3d319185297af145a6d
+  checksum: 10/2bcec3a8118d7f744badeb04e14366578d234a736f353d41fe35d2305e4ce2409a8e041d277f07cd6bbc8aaa12128d650a68ce43247072519bede20962d2126f
   languageName: node
   linkType: hard
 
@@ -15782,12 +15713,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkify-it@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "linkify-it@npm:5.0.1"
+"linkify-it@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "linkify-it@npm:5.0.2"
   dependencies:
     uc.micro: "npm:^2.0.0"
-  checksum: 10/47933d11cda495fd31e3bb3c086358305362f4413ffa289500d1e48164acb221b3be6bde6404b86dba93b7fe701c95f318bee285f7613092cd7f28a9e97261e7
+  checksum: 10/1d23387319c15f2c3d41cdada0fc2edac73afb6083e967ee051afc826f7d8d9f920e287fb7c32679b4516f60e6450853dee2b4339d7d2f313222e4b9e5be1476
   languageName: node
   linkType: hard
 
@@ -16147,19 +16078,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"markdown-it@npm:14.2.0":
-  version: 14.2.0
-  resolution: "markdown-it@npm:14.2.0"
+"markdown-it@npm:14.3.0":
+  version: 14.3.0
+  resolution: "markdown-it@npm:14.3.0"
   dependencies:
     argparse: "npm:^2.0.1"
-    entities: "npm:^4.4.0"
-    linkify-it: "npm:^5.0.1"
+    entities: "npm:^4.5.0"
+    linkify-it: "npm:^5.0.2"
     mdurl: "npm:^2.0.0"
     punycode.js: "npm:^2.3.1"
     uc.micro: "npm:^2.1.0"
   bin:
     markdown-it: bin/markdown-it.mjs
-  checksum: 10/f5cdb7ca9c8115114137201590b2697ee6ca69d2d4701a0313696629d5de4022525eedcad31800263c70f04dfba0a8eae835b6aa84b65e94ae32d63d04e66211
+  checksum: 10/16afbae804e7ea10474389918e31036c438d00bacabb340e57769a84d8a3068f37814736483a645b6ad69e138aa491c3cac83d261b630bd6d2f6af6139c5d18b
   languageName: node
   linkType: hard
 
@@ -20250,10 +20181,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shell-quote@npm:^1.6.1, shell-quote@npm:^1.7.2, shell-quote@npm:^1.8.4":
-  version: 1.8.4
-  resolution: "shell-quote@npm:1.8.4"
-  checksum: 10/a3e3796385f2cd5cf0b78207a4439f0c7395c0833fc75b2473084b5d298c109c5c0fa687fcd1c04e4b4484866e5bb8eaae7efae443b80fff71ea7e29baf11f0c
+"shell-quote@npm:1.10.0":
+  version: 1.10.0
+  resolution: "shell-quote@npm:1.10.0"
+  checksum: 10/d4a22aeefe64919290af753ac6098239d7ffee52a5db62c20edef69794bd10b5f86e298f68be26af9606ac435e890dd391994a5405a90bb8aebef1ff1dde839b
   languageName: node
   linkType: hard
 
@@ -20870,26 +20801,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"systeminformation@npm:^5.31.1":
-  version: 5.31.6
-  resolution: "systeminformation@npm:5.31.6"
+"systeminformation@npm:5.33.1":
+  version: 5.33.1
+  resolution: "systeminformation@npm:5.33.1"
   bin:
     systeminformation: lib/cli.js
-  checksum: 10/42c986adc6af3dc296458177a5bb79922d7892a684b8271bce6dfaf9d40285330606a36dbb0b41f3b76fd745b6658a92bf5c62d6d56d4a746d64bb45be81b394
+  checksum: 10/54e8749be385a91b32cd5de0a7dbd16478e60c7b679b173a58f9f447b1785d2f4820f4c642b25de1bc0e71611a38fad9905a75477fcb60cd36e7a389e6b56162
   conditions: (os=darwin | os=linux | os=win32 | os=freebsd | os=openbsd | os=netbsd | os=sunos | os=android)
   languageName: node
   linkType: hard
 
-"tar@npm:7.5.17":
-  version: 7.5.17
-  resolution: "tar@npm:7.5.17"
+"tar@npm:7.5.22":
+  version: 7.5.22
+  resolution: "tar@npm:7.5.22"
   dependencies:
     "@isaacs/fs-minipass": "npm:^4.0.0"
     chownr: "npm:^3.0.0"
     minipass: "npm:^7.1.2"
     minizlib: "npm:^3.1.0"
     yallist: "npm:^5.0.0"
-  checksum: 10/89c289e29c5e81d7a166daf0856f6a9f6e28abb9d1053d047b227be2ce2eeee776664d20a62be53efdcabd6cb373517f12b9a960f23116fc13cbc490261b2d7e
+  checksum: 10/129606384b3c895f422aaca48bf316357be6dc7aa35c1066c3f06c28acfff0be5b356e1b0a0be7c53a7a8945534ac06cec6d8e296d170d8a09c8bff67b29300e
   languageName: node
   linkType: hard
 
@@ -22113,17 +22044,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:^4.1.0":
-  version: 4.1.8
-  resolution: "vitest@npm:4.1.8"
+"vitest@npm:4.1.10":
+  version: 4.1.10
+  resolution: "vitest@npm:4.1.10"
   dependencies:
-    "@vitest/expect": "npm:4.1.8"
-    "@vitest/mocker": "npm:4.1.8"
-    "@vitest/pretty-format": "npm:4.1.8"
-    "@vitest/runner": "npm:4.1.8"
-    "@vitest/snapshot": "npm:4.1.8"
-    "@vitest/spy": "npm:4.1.8"
-    "@vitest/utils": "npm:4.1.8"
+    "@vitest/expect": "npm:4.1.10"
+    "@vitest/mocker": "npm:4.1.10"
+    "@vitest/pretty-format": "npm:4.1.10"
+    "@vitest/runner": "npm:4.1.10"
+    "@vitest/snapshot": "npm:4.1.10"
+    "@vitest/spy": "npm:4.1.10"
+    "@vitest/utils": "npm:4.1.10"
     es-module-lexer: "npm:^2.0.0"
     expect-type: "npm:^1.3.0"
     magic-string: "npm:^0.30.21"
@@ -22141,12 +22072,12 @@ __metadata:
     "@edge-runtime/vm": "*"
     "@opentelemetry/api": ^1.9.0
     "@types/node": ^20.0.0 || ^22.0.0 || >=24.0.0
-    "@vitest/browser-playwright": 4.1.8
-    "@vitest/browser-preview": 4.1.8
-    "@vitest/browser-webdriverio": 4.1.8
-    "@vitest/coverage-istanbul": 4.1.8
-    "@vitest/coverage-v8": 4.1.8
-    "@vitest/ui": 4.1.8
+    "@vitest/browser-playwright": 4.1.10
+    "@vitest/browser-preview": 4.1.10
+    "@vitest/browser-webdriverio": 4.1.10
+    "@vitest/coverage-istanbul": 4.1.10
+    "@vitest/coverage-v8": 4.1.10
+    "@vitest/ui": 4.1.10
     happy-dom: "*"
     jsdom: "*"
     vite: ^6.0.0 || ^7.0.0 || ^8.0.0
@@ -22176,8 +22107,8 @@ __metadata:
     vite:
       optional: false
   bin:
-    vitest: vitest.mjs
-  checksum: 10/b9f1308436717da9558b36e149cac6bab8e3730aa7e90b49f9d7a84ba853e353d8afba7d406dc0abec731fb2a9ea9e92b89aba06b94b1a2802203048b43468af
+    vitest: ./vitest.mjs
+  checksum: 10/020843460fe696c23be2a363634dde4daf54625f1c443c24066ba3f87c478b0ccfdd5124343ba30eb092f54902ffea09f4bed0af4a16a9ee805e494ee2dce34e
   languageName: node
   linkType: hard
 
@@ -22730,7 +22661,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yoctocolors@npm:^2, yoctocolors@npm:^2.1.1":
+"yoctocolors@npm:^2, yoctocolors@npm:^2.1.2":
   version: 2.1.2
   resolution: "yoctocolors@npm:2.1.2"
   checksum: 10/6ee42d665a4cc161c7de3f015b2a65d6c65d2808bfe3b99e228bd2b1b784ef1e54d1907415c025fc12b400f26f372bfc1b71966c6c738d998325ca422eb39363
@@ -22749,13 +22680,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zip-stream@npm:^7.0.2":
-  version: 7.0.2
-  resolution: "zip-stream@npm:7.0.2"
+"zip-stream@npm:^7.0.5":
+  version: 7.0.5
+  resolution: "zip-stream@npm:7.0.5"
   dependencies:
     compress-commons: "npm:^7.0.0"
     normalize-path: "npm:^3.0.0"
     readable-stream: "npm:^4.0.0"
-  checksum: 10/058493b1bb0b972f035d57a1964b2557740dcb2839ee29eaffd190d9660479ad4ed330e33e788ebdec89d40a49feb82d903340b11f30a26a34a26b8f4a4f10f0
+  checksum: 10/6c9d870fca394fb17e2f4197569757e940c2c03c01922abf496024f11e0b9c1c3dd08ce75dc33f56fd3a12c071e78a6128d4d674cde680d2daf55a1a01b018ac
   languageName: node
   linkType: hard
