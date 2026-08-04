@@ -80,7 +80,7 @@
     "npm-run-all2": "^9.0.2",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.10"
   },
   "peerDependencies": {
     "@playwright/test": ">=1.53.0"
