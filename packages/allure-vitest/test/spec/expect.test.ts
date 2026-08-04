@@ -147,6 +147,46 @@ describe("expect", () => {
       ]);
     });
 
+    it("should report multiple soft assertion failures as matcher steps", async () => {
+      const { tests } = await runVitestInlineTest({
+        "vitest.config.ts": configFileAccessor,
+        "sample.test.ts": `
+    import { test, expect } from "vitest";
+
+    test("multiple soft failures", () => {
+      expect.soft(1 + 1).toBe(3);
+      expect.soft("a").toBe("b");
+    });
+
+  `,
+      });
+
+      expect(tests).toHaveLength(1);
+      expect(tests[0].steps).toHaveLength(2);
+      expect(tests).toMatchObject([
+        {
+          name: "multiple soft failures",
+          status: "failed",
+          steps: [
+            {
+              name: "expect(2).toBe(3)",
+              status: "failed",
+              statusDetails: {
+                message: expect.stringContaining("expected 2 to be 3"),
+              },
+            },
+            {
+              name: 'expect("a").toBe("b")',
+              status: "failed",
+              statusDetails: {
+                message: expect.stringContaining("expected 'a' to be 'b'"),
+              },
+            },
+          ],
+        },
+      ]);
+    });
+
     it("should add actual and expected values when using expect with match object", async () => {
       const { tests } = await runVitestInlineTest({
         "vitest.config.ts": configFileAccessor,
