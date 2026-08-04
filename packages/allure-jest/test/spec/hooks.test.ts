@@ -148,6 +148,45 @@ it("should report one beforeEach/afterEach per test", async () => {
   );
 });
 
+it("reports failed hooks as global errors", async () => {
+  const { groups, globals } = await runJestInlineTest({
+    "sample.test.js": `
+      beforeAll(() => {
+        throw new Error("beforeAll boom");
+      });
+
+      it("skipped 1", () => {});
+      it("skipped 2", () => {});
+    `,
+  });
+  const allErrors = Object.values(globals ?? {}).flatMap((info) => info.errors);
+
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "beforeAll",
+        befores: [
+          expect.objectContaining({
+            status: Status.BROKEN,
+            statusDetails: expect.objectContaining({
+              message: "beforeAll boom",
+            }),
+          }),
+        ],
+      }),
+    ]),
+  );
+  expect(allErrors).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: "beforeAll failed: beforeAll boom",
+        timestamp: expect.any(Number),
+      }),
+    ]),
+  );
+  expect(allErrors.filter((error) => error.message === "beforeAll failed: beforeAll boom")).toHaveLength(1);
+});
+
 it("should report beforeAll/afterAll for tests in sub-suites", async () => {
   const { tests, groups } = await runJestInlineTest({
     "sample.test.js": `

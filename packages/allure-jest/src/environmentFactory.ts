@@ -214,15 +214,17 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
 
       const fixtureUuid = this.runContext.executables.pop()!;
       const status = typeof error === "string" ? Status.BROKEN : getStatusFromError(error as Error);
+      const statusDetails = {
+        message: typeof error === "string" ? error : error.message,
+        trace: typeof error === "string" ? undefined : error.stack,
+      };
 
       this.runtime.updateFixture(fixtureUuid, (r) => {
         r.status = status;
-        r.statusDetails = {
-          message: typeof error === "string" ? error : error.message,
-          trace: typeof error === "string" ? undefined : error.stack,
-        };
+        r.statusDetails = statusDetails;
         r.stage = Stage.FINISHED;
       });
+      this.runtime.applyGlobalRuntimeMessages([toGlobalErrorMessage(hook.type, statusDetails)]);
       this.runtime.stopFixture(fixtureUuid);
     }
 
@@ -466,5 +468,13 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
     }
   };
 };
+
+const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
+  type: "global_error",
+  data: {
+    ...details,
+    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
+  },
+});
 
 export { createJestEnvironment };

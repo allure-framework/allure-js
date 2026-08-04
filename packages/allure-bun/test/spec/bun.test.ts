@@ -371,7 +371,7 @@ it("keeps Bun file paths with parentheses in the reported package name", async (
 });
 
 it("reports Bun hook failures consistently", async () => {
-  const { tests, groups, exitCode } = await runBunInlineTest({
+  const { tests, groups, globals, exitCode } = await runBunInlineTest({
     "sample.test.ts": `
       import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "bun:test";
 
@@ -413,6 +413,7 @@ it("reports Bun hook failures consistently", async () => {
       });
     `,
   });
+  const allErrors = Object.values(globals ?? {}).flatMap((info) => info.errors);
 
   expect(exitCode).toBe(1);
 
@@ -486,6 +487,30 @@ it("reports Bun hook failures consistently", async () => {
       }),
     ]),
   );
+  expect(allErrors).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: "beforeAll failed: beforeAll boom",
+        timestamp: expect.any(Number),
+      }),
+      expect.objectContaining({
+        message: "beforeEach failed: beforeEach boom",
+        timestamp: expect.any(Number),
+      }),
+      expect.objectContaining({
+        message: "afterEach failed: afterEach boom",
+        timestamp: expect.any(Number),
+      }),
+      expect.objectContaining({
+        message: "afterAll failed: afterAll boom",
+        timestamp: expect.any(Number),
+      }),
+    ]),
+  );
+  expect(allErrors.filter((error) => error.message === "beforeAll failed: beforeAll boom")).toHaveLength(1);
+  expect(allErrors.filter((error) => error.message === "beforeEach failed: beforeEach boom")).toHaveLength(1);
+  expect(allErrors.filter((error) => error.message === "afterEach failed: afterEach boom")).toHaveLength(1);
+  expect(allErrors.filter((error) => error.message === "afterAll failed: afterAll boom")).toHaveLength(1);
 });
 
 it("respects the Allure test plan at registration time", async () => {
