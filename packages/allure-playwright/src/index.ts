@@ -15,6 +15,7 @@ import {
   LinkType,
   Stage,
   Status,
+  type StatusDetails,
   type StepResult,
   type TestResult,
 } from "allure-js-commons";
@@ -93,6 +94,7 @@ export class AllureReporter implements ReporterV2 {
   private pendingAttachmentTasks: Map<string, Promise<void>[]> = new Map();
   private readonly attachmentTargetByStep = new WeakMap<TestStep, AttachmentTarget>();
   private readonly pwStepUuid = new WeakMap<TestStep, string>();
+  private readonly emittedHookGlobalErrorKeys = new Set<string>();
   private readonly testPlan = parseTestPlan();
 
   constructor(config: AllurePlaywrightReporterConfig) {
@@ -183,6 +185,7 @@ export class AllureReporter implements ReporterV2 {
 
   onBegin(suite: Suite): void {
     this.suite = suite;
+    this.emittedHookGlobalErrorKeys.clear();
     this.allureRuntime = new ReporterRuntime({
       ...this.options,
       writer: createDefaultWriter({ resultsDir: this.options.resultsDir }),
@@ -686,6 +689,10 @@ export class AllureReporter implements ReporterV2 {
 
       // If stack exists (was lazily created), finalize the root hook step
       if (stack) {
+        const rootStep = stack.currentStep();
+        if (step.error && rootStep && !rootStep.steps.length) {
+          this.emitGlobalErrorFromHookStep(step);
+        }
         stack.updateStep((stepResult) => finalizeStepResult(stepResult, step));
         stack.stopStep({
           duration: step.duration,
@@ -715,6 +722,7 @@ export class AllureReporter implements ReporterV2 {
         return;
       }
 
+      this.emitGlobalErrorFromHookStep(step);
       stack.updateStep((stepResult) => finalizeStepResult(stepResult, step));
       stack.stopStep({
         duration: step.duration,
@@ -931,6 +939,22 @@ export class AllureReporter implements ReporterV2 {
     this.allureRuntime!.writeTest(testUuid);
     this.attachmentTargets.delete(test.id);
     this.pendingAttachmentTasks.delete(test.id);
+  }
+
+  private emitGlobalErrorFromHookStep(step: TestStep) {
+    if (!step.error || !isGlobalErrorHookStep(step)) {
+      return;
+    }
+
+    const details = getMessageAndTraceFromError(step.error);
+    const key = [step.title, step.startTime.getTime(), details.message ?? "", details.trace ?? ""].join("\u0000");
+
+    if (this.emittedHookGlobalErrorKeys.has(key)) {
+      return;
+    }
+
+    this.emittedHookGlobalErrorKeys.add(key);
+    this.allureRuntime!.applyGlobalRuntimeMessages([toGlobalErrorMessage(normalizeHookTitle(step.title), details)]);
   }
 
   async addSkippedResults() {
@@ -1292,5 +1316,22 @@ export const allure = allurePlaywrightLegacyApi;
  * @deprecated for removal, import functions directly from "@playwright/test".
  */
 export { test, expect } from "@playwright/test";
+
+const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
+  type: "global_error",
+  data: {
+    ...details,
+    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
+  },
+});
+
+const isDirectHookStep = (step: TestStep) =>
+  (step.parent?.title === BEFORE_HOOKS_ROOT_STEP_TITLE || step.parent?.title === AFTER_HOOKS_ROOT_STEP_TITLE) &&
+  /\bhook$/i.test(step.title);
+
+const isRootHookStep = (step: TestStep) =>
+  step.title === BEFORE_HOOKS_ROOT_STEP_TITLE || step.title === AFTER_HOOKS_ROOT_STEP_TITLE;
+
+const isGlobalErrorHookStep = (step: TestStep) => isRootHookStep(step) || isDirectHookStep(step);
 
 export default AllureReporter;

@@ -209,6 +209,157 @@ it("keeps correct hooks structure when something failed", async () => {
   });
 });
 
+it("reports failed hook steps as global errors", async () => {
+  const { tests, globals } = await runPlaywrightInlineTest({
+    "sample.test.js": `
+       import test from "@playwright/test";
+
+       test.describe("before all failure", () => {
+         test.beforeAll(async () => {
+           throw new Error("beforeAll boom");
+         });
+
+         test("skipped by beforeAll 1", async () => {});
+         test("skipped by beforeAll 2", async () => {});
+       });
+
+       test.describe("before each failure", () => {
+         test.beforeEach(async () => {
+           throw new Error("beforeEach boom");
+         });
+
+         test("blocked by beforeEach", async () => {});
+       });
+     `,
+  });
+  const allErrors = Object.values(globals ?? {}).flatMap((info) => info.errors);
+  const allHookSteps = tests.flatMap((testResult) =>
+    testResult.steps.flatMap((step) => (step.name === "Before Hooks" ? step.steps : [])),
+  );
+
+  expect(allHookSteps).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "beforeAll hook",
+        status: Status.FAILED,
+        statusDetails: expect.objectContaining({
+          message: expect.stringContaining("beforeAll boom"),
+        }),
+      }),
+      expect.objectContaining({
+        name: "beforeEach hook",
+        status: Status.FAILED,
+        statusDetails: expect.objectContaining({
+          message: expect.stringContaining("beforeEach boom"),
+        }),
+      }),
+    ]),
+  );
+  expect(allErrors).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: "beforeAll hook failed: Error: beforeAll boom",
+        timestamp: expect.any(Number),
+      }),
+      expect.objectContaining({
+        message: "beforeEach hook failed: Error: beforeEach boom",
+        timestamp: expect.any(Number),
+      }),
+    ]),
+  );
+  expect(allErrors.filter((error) => error.message === "beforeAll hook failed: Error: beforeAll boom")).toHaveLength(1);
+  expect(allErrors.filter((error) => error.message === "beforeEach hook failed: Error: beforeEach boom")).toHaveLength(
+    1,
+  );
+});
+
+it("does not report failed inner hook steps as separate global errors", async () => {
+  const { tests, globals } = await runPlaywrightInlineTest({
+    "sample.test.js": `
+       import test from "@playwright/test";
+
+       test.beforeEach(async () => {
+         await test.step("inner setup step", async () => {
+           throw new Error("inner setup boom");
+         });
+       });
+
+       test("blocked by inner setup step", async () => {});
+     `,
+  });
+  const allErrors = Object.values(globals ?? {}).flatMap((info) => info.errors);
+  const allHookSteps = tests.flatMap((testResult) =>
+    testResult.steps.flatMap((step) => (step.name === "Before Hooks" ? step.steps : [])),
+  );
+
+  expect(allHookSteps).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "beforeEach hook",
+        status: Status.FAILED,
+        steps: [
+          expect.objectContaining({
+            name: "inner setup step",
+            status: Status.FAILED,
+          }),
+        ],
+      }),
+    ]),
+  );
+  expect(
+    allErrors.filter((error) => error.message === "inner setup step failed: Error: inner setup boom"),
+  ).toHaveLength(0);
+  expect(allErrors.filter((error) => error.message === "beforeEach hook failed: Error: inner setup boom")).toHaveLength(
+    1,
+  );
+});
+
+it("does not report caught inner hook step failures as global errors", async () => {
+  const { tests, globals } = await runPlaywrightInlineTest({
+    "sample.test.js": `
+       import test from "@playwright/test";
+
+       test.beforeEach(async () => {
+         await test.step("caught setup step", async () => {
+           try {
+             throw new Error("caught setup boom");
+           } catch {}
+         });
+       });
+
+       test("passes after caught setup step", async () => {});
+     `,
+  });
+  const allErrors = Object.values(globals ?? {}).flatMap((info) => info.errors);
+  const allHookSteps = tests.flatMap((testResult) =>
+    testResult.steps.flatMap((step) => (step.name === "Before Hooks" ? step.steps : [])),
+  );
+
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "passes after caught setup step",
+        status: Status.PASSED,
+      }),
+    ]),
+  );
+  expect(allHookSteps).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "beforeEach hook",
+        status: Status.PASSED,
+        steps: [
+          expect.objectContaining({
+            name: "caught setup step",
+            status: Status.PASSED,
+          }),
+        ],
+      }),
+    ]),
+  );
+  expect(allErrors).toHaveLength(0);
+});
+
 it("should keep buffered log steps ordered with lambda steps in before hooks", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.ts": `

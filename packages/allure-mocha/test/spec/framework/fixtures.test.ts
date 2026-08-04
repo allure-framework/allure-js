@@ -1,4 +1,4 @@
-import type { TestResult, TestResultContainer } from "allure-js-commons";
+import { Status, type TestResult, type TestResultContainer } from "allure-js-commons";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { Assertion } from "vitest";
 
@@ -107,4 +107,44 @@ describe("fixtures", () => {
       assertNoAfterFixture('"after each" hook: afterEach at level 2', "a test affected by four fixtures");
     });
   });
+});
+
+it("reports failed hooks as global errors", async () => {
+  const { groups, globals } = await runMochaInlineTest(["fixtures", "failingHooks"]);
+  const allErrors = Object.values(globals ?? {}).flatMap((info) => info.errors);
+
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: String.raw`"before each" hook: bad before each`,
+        befores: [
+          expect.objectContaining({
+            status: Status.BROKEN,
+          }),
+        ],
+      }),
+      expect.objectContaining({
+        name: String.raw`"after all" hook: bad after`,
+        afters: [
+          expect.objectContaining({
+            status: Status.BROKEN,
+          }),
+        ],
+      }),
+    ]),
+  );
+  expect(allErrors).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: String.raw`"before each" hook: bad before each failed: beforeEach hook boom`,
+        timestamp: expect.any(Number),
+      }),
+      expect.objectContaining({
+        message: String.raw`"after all" hook: bad after failed: after hook boom`,
+        timestamp: expect.any(Number),
+      }),
+    ]),
+  );
+  expect(allErrors.filter((error) => error.message?.includes("beforeEach hook boom"))).toHaveLength(1);
+  expect(allErrors.filter((error) => error.message?.includes("after hook boom"))).toHaveLength(1);
 });
