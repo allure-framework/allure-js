@@ -11,7 +11,7 @@ import {
   type TestStepResult,
   TestStepResultStatus,
 } from "@cucumber/messages";
-import type { Label, Link, TestResult } from "allure-js-commons";
+import type { Label, Link, StatusDetails, TestResult } from "allure-js-commons";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import { type RuntimeMessage, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import {
@@ -91,6 +91,10 @@ export default class AllureCucumberReporter extends Formatter {
     const { labelsConfigs, linksConfigs } = this;
     const linkConfigEntries = Object.entries(linksConfigs).map(([, v]) => v);
     return [...labelsConfigs, ...linkConfigEntries].flatMap(({ pattern }) => pattern);
+  }
+
+  private getHookName(hookId: string) {
+    return this.beforeHooks[hookId]?.name ?? this.afterHooks[hookId]?.name ?? "hook";
   }
 
   private parseEnvelope(envelope: messages.Envelope) {
@@ -472,6 +476,11 @@ export default class AllureCucumberReporter extends Formatter {
           };
         }
       });
+      if (error) {
+        this.allureRuntime.applyGlobalRuntimeMessages([
+          toGlobalErrorMessage(this.getHookName(step.hookId), getMessageAndTraceFromError(error)),
+        ]);
+      }
       this.allureRuntime.stopFixture(fixtureUuid, {
         stop: TimeConversion.timestampToMillisecondsSinceEpoch(data.timestamp),
       });
@@ -592,3 +601,11 @@ export default class AllureCucumberReporter extends Formatter {
     } as Error;
   }
 }
+
+const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
+  type: "global_error",
+  data: {
+    ...details,
+    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
+  },
+});

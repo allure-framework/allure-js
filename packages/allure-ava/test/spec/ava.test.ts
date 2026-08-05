@@ -517,7 +517,7 @@ describe("allure-ava", () => {
   });
 
   it("reports failing hooks as broken fixtures", async () => {
-    const { tests, groups, exitCode } = await runAvaInlineTest({
+    const { tests, groups, globals, exitCode } = await runAvaInlineTest({
       "failing-hook.test.js": ({ avaModulePath }) => `
         import test from "${avaModulePath}";
 
@@ -534,6 +534,7 @@ describe("allure-ava", () => {
     const beforeFixture = groups
       .flatMap((group) => group.befores)
       .find((fixture) => fixture.name?.includes("beforeEach hook"));
+    const allErrors = Object.values(globals ?? {}).flatMap((info) => info.errors);
 
     expect(exitCode).toBe(1);
     expect(test).toEqual(expect.objectContaining({ status: Status.BROKEN }));
@@ -545,6 +546,16 @@ describe("allure-ava", () => {
         }),
       }),
     );
+    expect(allErrors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message: "beforeEach hook for blocked by hook failed: Error thrown in test",
+          timestamp: expect.any(Number),
+          trace: expect.stringContaining("setup exploded"),
+        }),
+      ]),
+    );
+    expect(allErrors.filter((error) => error.trace?.includes("setup exploded"))).toHaveLength(1);
   });
 
   it("writes run-level artifacts and global runtime messages", async () => {
