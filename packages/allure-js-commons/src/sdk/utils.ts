@@ -9,7 +9,17 @@ import type {
   SerializerReplacerFunc,
 } from "./types.js";
 
-export const getStatusFromError = (error: Partial<Error>): Status => {
+export const getStatusFromError = (error: unknown): Status => {
+  if (!error || (typeof error !== "object" && typeof error !== "function")) {
+    return Status.BROKEN;
+  }
+
+  const errorObject = error as Partial<Error> & Record<PropertyKey, unknown>;
+  const constructorName = String(errorObject?.constructor?.name ?? "");
+  const name = String(errorObject.name ?? "");
+  const message = String(errorObject.message ?? "");
+  const stack = String(errorObject.stack ?? "");
+
   switch (true) {
     /**
      * Native `node:assert` and `chai` (`vitest` uses it under the hood) throw `AssertionError`
@@ -18,17 +28,17 @@ export const getStatusFromError = (error: Partial<Error>): Status => {
      * `vitest` throws `Error` for extended assertions, so we look into stack
      * `codeceptjs-expect` errors have actual/expected properties or inspect method
      */
-    case /assert/gi.test(error.constructor.name):
-    case /expectation/gi.test(error.constructor.name):
-    case error.name && /assert/gi.test(error.name):
-    case error.message && /assert/gi.test(error.message):
-    case error.stack && /@vitest\/expect/gi.test(error.stack):
-    case error.stack && /playwright\/lib\/matchers\/expect\.js/gi.test(error.stack):
-    case error.stack && /codeceptjs-expect/gi.test(error.stack):
-    case "matcherResult" in error:
-    case "inspect" in error && typeof error.inspect === "function":
-    case "actual" in error:
-    case "expected" in error:
+    case /assert/gi.test(constructorName):
+    case /expectation/gi.test(constructorName):
+    case /assert/gi.test(name):
+    case /assert/gi.test(message):
+    case /@vitest\/expect/gi.test(stack):
+    case /playwright\/lib\/matchers\/expect\.js/gi.test(stack):
+    case /codeceptjs-expect/gi.test(stack):
+    case "matcherResult" in errorObject:
+    case "inspect" in errorObject && typeof errorObject.inspect === "function":
+    case "actual" in errorObject:
+    case "expected" in errorObject:
       return Status.FAILED;
     default:
       return Status.BROKEN;
