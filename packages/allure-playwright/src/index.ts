@@ -201,7 +201,7 @@ export class AllureReporter implements ReporterV2 {
       parameters: [],
       steps: [],
       testCaseId: md5(metadata.testCaseIdBase),
-      fullName: this.options.useLegacyFullName ? metadata.legacyFullName : metadata.fullName,
+      fullName: this.resolveFullName(test, metadata),
       titlePath,
     };
 
@@ -1065,10 +1065,26 @@ export class AllureReporter implements ReporterV2 {
       testCaseIdBase: projectName ? `${projectName}:${testCaseIdBase}` : testCaseIdBase,
       legacyTestCaseIdBase: testCaseIdBase,
       titleMetadata,
+      relativeFile,
       fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
       legacyFullName,
       staticAllureId,
     };
+  }
+
+  private resolveFullName(test: TestCase, metadata: ReturnType<AllureReporter["getStaticTestMetadata"]>): string {
+    const { fullName } = this.options;
+
+    if (typeof fullName === "function") {
+      return fullName(test, {
+        relativeFile: metadata.relativeFile,
+        suiteTitles: metadata.suiteTitles,
+        title: test.title,
+        projectName: metadata.projectName,
+      });
+    }
+
+    return fullName === "legacy" ? metadata.legacyFullName : metadata.fullName;
   }
 
   private isInTestPlan(test: TestCase, parentSuite?: Suite) {

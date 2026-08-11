@@ -26,12 +26,12 @@ it("should preserve fullName format and include fallback testCaseId", async () =
   );
 });
 
-it("should use legacy fullName format when enabled", async () => {
+it("should use legacy fullName format when the legacy preset is selected", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "package.json": JSON.stringify({ name: "dummy" }),
     "playwright.config.js": `
       module.exports = {
-        reporter: [["allure-playwright", { useLegacyFullName: true }]],
+        reporter: [["allure-playwright", { fullName: "legacy" }]],
         projects: [{ name: "project" }],
       };
     `,
@@ -47,4 +47,26 @@ it("should use legacy fullName format when enabled", async () => {
   expect(tests).toHaveLength(1);
   expect(tests[0].fullName).toBe("sample.test.js#nested test 1");
   expect(tests[0].testCaseId).toBe(md5("dummy:sample.test.js#nested test 1"));
+});
+
+it("should use a custom fullName resolver function when provided", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "package.json": JSON.stringify({ name: "dummy" }),
+    "playwright.config.js": `
+      module.exports = {
+        reporter: [["allure-playwright", { fullName: (test, meta) => \`custom::\${meta.relativeFile}::\${meta.title}\` }]],
+        projects: [{ name: "project" }],
+      };
+    `,
+    "sample.test.js": `
+      import { test } from '@playwright/test';
+
+      test.describe('nested', () => {
+        test('test 1', async () => {});
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].fullName).toBe("custom::sample.test.js::test 1");
 });

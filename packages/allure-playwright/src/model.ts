@@ -9,10 +9,19 @@ import type {
 } from "@playwright/test/reporter";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 
+export interface FullNameMeta {
+  relativeFile: string;
+  suiteTitles: string[];
+  title: string;
+  projectName?: string;
+}
+
+export type FullNamePreset = "location" | "legacy";
+
 export interface AllurePlaywrightReporterConfig extends ReporterConfig {
   detail?: boolean;
   suiteTitle?: boolean;
-  useLegacyFullName?: boolean;
+  fullName?: FullNamePreset | ((test: TestCase, meta: FullNameMeta) => string);
 }
 
 export type HookScope = "before" | "after";
