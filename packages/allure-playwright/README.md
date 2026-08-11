@@ -76,6 +76,19 @@ directory.
 
 You may select another location, or further customize the reporter's behavior with [the configuration options](https://allurereport.org/docs/playwright-configuration/).
 
+To use name-based test selectors instead of source locations, enable the legacy full name format:
+
+```js
+import { defineConfig } from "@playwright/test";
+
+export default defineConfig({
+  reporter: [["allure-playwright", { useLegacyFullName: true }]],
+});
+```
+
+This produces full names in the `file#suite test` format instead of `file:line:column`. Test names must be unique
+within the same suite when this option is enabled.
+
 ### View the report
 
 Use Allure Report 2:

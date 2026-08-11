@@ -25,3 +25,26 @@ it("should preserve fullName format and include fallback testCaseId", async () =
     ]),
   );
 });
+
+it("should use legacy fullName format when enabled", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "package.json": JSON.stringify({ name: "dummy" }),
+    "playwright.config.js": `
+      module.exports = {
+        reporter: [["allure-playwright", { useLegacyFullName: true }]],
+        projects: [{ name: "project" }],
+      };
+    `,
+    "sample.test.js": `
+      import { test } from '@playwright/test';
+
+      test.describe('nested', () => {
+        test('test 1', async () => {});
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].fullName).toBe("sample.test.js#nested test 1");
+  expect(tests[0].testCaseId).toBe(md5("dummy:sample.test.js#nested test 1"));
+});
