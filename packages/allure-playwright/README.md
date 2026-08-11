@@ -99,7 +99,8 @@ export default defineConfig({
     [
       "allure-playwright",
       {
-        fullName: (test, { relativeFile, suiteTitles, title }) => `${relativeFile}::${[...suiteTitles, title].join(" > ")}`,
+        fullName: (test, { relativeFile, suiteTitles, title }) =>
+          `${relativeFile}::${[...suiteTitles, title].join(" > ")}`,
       },
     ],
   ],
