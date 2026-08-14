@@ -74,7 +74,6 @@ type TestPlanExecutionFilter = (test: TestCase, parentSuite?: Suite) => boolean;
 const localRequire = typeof require === "function" ? require : createRequire(import.meta.url);
 const testPlanFilterSymbol = Symbol.for("allure-playwright.testPlanFilter");
 const testPlanFilterPatchSymbol = Symbol.for("allure-playwright.testPlanFilterPatch");
-// Playwright's own --test-list format: `file › suite › ... › title`, ignoring source location.
 const NATIVE_SELECTOR_SEPARATOR = " › ";
 
 export class AllureReporter implements ReporterV2 {
@@ -127,9 +126,6 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    // Only safe when every test plan entry is one of our own playwrightTestListSelector values: --test-list
-    // is an allowlist, so a test plan mixing in an id-only or differently-formatted selector entry would
-    // have those tests silently excluded before isInTestPlan (the always-on, authoritative filter) sees them.
     const nativeSelectors = testPlan.tests
       .map((test) => test.selector)
       .filter((selector): selector is string => !!selector?.includes(NATIVE_SELECTOR_SEPARATOR));
@@ -181,9 +177,7 @@ export class AllureReporter implements ReporterV2 {
     result.labels!.push(getPackageLabel(metadata.testFilePath, metadata.projectRootSearchFrom));
     result.labels!.push(getFallbackTestCaseIdLabel(md5(metadata.legacyTestCaseIdBase)));
     result.labels!.push({ name: "titlePath", value: test.parent.titlePath().join(" > ") });
-    // Stable across source-location changes, unlike the default fullName; see Playwright's TestCase.id docs.
     result.labels!.push({ name: "playwrightTestId", value: test.id });
-    // Usable verbatim as a line in a Playwright --test-list file; see the "Test list" section of the Playwright CLI docs.
     result.labels!.push({ name: "playwrightTestListSelector", value: metadata.nativeSelector });
 
     // support for earlier playwright versions
