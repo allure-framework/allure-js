@@ -26,47 +26,31 @@ it("should preserve fullName format and include fallback testCaseId", async () =
   );
 });
 
-it("should use legacy fullName format when the legacy preset is selected", async () => {
-  const { tests } = await runPlaywrightInlineTest({
-    "package.json": JSON.stringify({ name: "dummy" }),
-    "playwright.config.js": `
-      module.exports = {
-        reporter: [["allure-playwright", { fullName: "legacy" }]],
-        projects: [{ name: "project" }],
-      };
-    `,
-    "sample.test.js": `
+it("should report a playwrightTestId label stable across source-location changes", async () => {
+  const specSource = (leadingBlankLines: string) => `${leadingBlankLines}
       import { test } from '@playwright/test';
 
       test.describe('nested', () => {
         test('test 1', async () => {});
       });
-    `,
-  });
-
-  expect(tests).toHaveLength(1);
-  expect(tests[0].fullName).toBe("sample.test.js#nested test 1");
-  expect(tests[0].testCaseId).toBe(md5("dummy:sample.test.js#nested test 1"));
-});
-
-it("should use a custom fullName resolver function when provided", async () => {
-  const { tests } = await runPlaywrightInlineTest({
+    `;
+  const projectFiles = {
     "package.json": JSON.stringify({ name: "dummy" }),
     "playwright.config.js": `
       module.exports = {
-        reporter: [["allure-playwright", { fullName: (test, meta) => \`custom::\${meta.relativeFile}::\${meta.title}\` }]],
+        reporter: [["allure-playwright"]],
         projects: [{ name: "project" }],
       };
     `,
-    "sample.test.js": `
-      import { test } from '@playwright/test';
+  };
 
-      test.describe('nested', () => {
-        test('test 1', async () => {});
-      });
-    `,
-  });
+  const before = await runPlaywrightInlineTest({ ...projectFiles, "sample.test.js": specSource("") });
+  const after = await runPlaywrightInlineTest({ ...projectFiles, "sample.test.js": specSource("\n\n\n") });
 
-  expect(tests).toHaveLength(1);
-  expect(tests[0].fullName).toBe("custom::sample.test.js::test 1");
+  const playwrightTestIdOf = (tests: (typeof before)["tests"]) =>
+    tests[0].labels.find((label) => label.name === "playwrightTestId")?.value;
+
+  expect(before.tests[0].fullName).not.toBe(after.tests[0].fullName);
+  expect(playwrightTestIdOf(before.tests)).toBeTruthy();
+  expect(playwrightTestIdOf(before.tests)).toBe(playwrightTestIdOf(after.tests));
 });

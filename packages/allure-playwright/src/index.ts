@@ -201,7 +201,7 @@ export class AllureReporter implements ReporterV2 {
       parameters: [],
       steps: [],
       testCaseId: md5(metadata.testCaseIdBase),
-      fullName: this.resolveFullName(test, metadata),
+      fullName: metadata.fullName,
       titlePath,
     };
 
@@ -210,6 +210,8 @@ export class AllureReporter implements ReporterV2 {
     result.labels!.push(getPackageLabel(metadata.testFilePath, metadata.projectRootSearchFrom));
     result.labels!.push(getFallbackTestCaseIdLabel(md5(metadata.legacyTestCaseIdBase)));
     result.labels!.push({ name: "titlePath", value: test.parent.titlePath().join(" > ") });
+    // Stable across source-location changes, unlike the default fullName; see Playwright's TestCase.id docs.
+    result.labels!.push({ name: "playwrightTestId", value: test.id });
 
     // support for earlier playwright versions
     if ("tags" in test) {
@@ -1065,26 +1067,10 @@ export class AllureReporter implements ReporterV2 {
       testCaseIdBase: projectName ? `${projectName}:${testCaseIdBase}` : testCaseIdBase,
       legacyTestCaseIdBase: testCaseIdBase,
       titleMetadata,
-      relativeFile,
       fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
       legacyFullName,
       staticAllureId,
     };
-  }
-
-  private resolveFullName(test: TestCase, metadata: ReturnType<AllureReporter["getStaticTestMetadata"]>): string {
-    const { fullName } = this.options;
-
-    if (typeof fullName === "function") {
-      return fullName(test, {
-        relativeFile: metadata.relativeFile,
-        suiteTitles: metadata.suiteTitles,
-        title: test.title,
-        projectName: metadata.projectName,
-      });
-    }
-
-    return fullName === "legacy" ? metadata.legacyFullName : metadata.fullName;
   }
 
   private isInTestPlan(test: TestCase, parentSuite?: Suite) {
