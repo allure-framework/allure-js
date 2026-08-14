@@ -81,6 +81,12 @@ changes. For a stable identifier instead, use the `playwrightTestId` label carri
 own [`TestCase.id`](https://playwright.dev/docs/api/class-testcase#test-case-id), a hash of the project, file, and
 suite/test titles that doesn't depend on source location.
 
+Each result also carries a `playwrightTestListSelector` label (`file › suite › ... › title`) usable verbatim as a
+line in a Playwright [`--test-list`](https://playwright.dev/docs/test-cli#test-list) file. When every entry in an
+`ALLURE_TESTPLAN_PATH` test plan's `selector` field is one of these values, the reporter passes that file to
+Playwright's own `--test-list`, so reruns skip loading non-matching test files entirely instead of relying only on
+per-test filtering.
+
 ### View the report
 
 Use Allure Report 2:
