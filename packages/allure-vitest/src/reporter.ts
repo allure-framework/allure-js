@@ -61,6 +61,7 @@ export default class AllureVitestReporter implements Reporter {
       listeners,
     });
 
+    this.allureReporterRuntime.registerProcessExitHandler();
     this.allureReporterRuntime.writeCategoriesDefinitions();
     this.allureReporterRuntime.writeEnvironmentInfo();
     this.globalRuntimeMessages = [];
@@ -116,6 +117,11 @@ export default class AllureVitestReporter implements Reporter {
       this.allureReporterRuntime!.applyGlobalRuntimeMessages(globalMessages);
     }
     this.globalRuntimeMessages = [];
+
+    this.allureReporterRuntime!.flushUnfinishedTests({
+      message: "Vitest finished before reporting a test result",
+    });
+    this.allureReporterRuntime!.notifyRunComplete();
   }
 
   handleTask(task: Task) {

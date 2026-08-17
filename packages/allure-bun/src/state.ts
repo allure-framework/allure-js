@@ -262,10 +262,12 @@ export const getBunReporterConfig = (): ReporterConfig => {
 const createReporterRuntime = (allureConfig: ReporterConfig) => {
   const { resultsDir, ...runtimeConfig } = allureConfig;
 
-  return new ReporterRuntime({
+  const runtime = new ReporterRuntime({
     ...runtimeConfig,
     writer: createDefaultWriter({ resultsDir: resultsDir ?? process.env.ALLURE_RESULTS_DIR }),
   });
+  runtime.registerProcessExitHandler();
+  return runtime;
 };
 
 export const getCallerFilePath = (stack: string | undefined) => {
