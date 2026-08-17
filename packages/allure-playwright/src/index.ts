@@ -209,7 +209,7 @@ export class AllureReporter implements ReporterV2 {
       parameters: [],
       steps: [],
       testCaseId: md5(metadata.testCaseIdBase),
-      fullName: metadata.fullName,
+      fullName: this.options.useLegacyFullName ? metadata.legacyFullName : metadata.fullName,
       titlePath,
     };
 

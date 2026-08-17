@@ -59,14 +59,14 @@
     "allure-js-commons": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^20.19.0",
+    "@types/node": "^26.0.1",
     "allure-commandline": "^2.29.0",
     "allure-vitest": "workspace:*",
     "ava": "^8.0.1",
     "npm-run-all2": "^9.0.2",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.10"
   },
   "peerDependencies": {
     "ava": ">=8.0.0"

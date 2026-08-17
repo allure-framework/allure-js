@@ -208,15 +208,21 @@ describe("parameter serialization", () => {
           cy.wrap("A".repeat(1000)); // should truncate string values
           cy.wrap(Array(1000).fill("A")); // should truncate objects
           cy.wrap({ foo: { bar: { baz: {}, qux: "qut" } } }) // should remove 'baz' because it creates nesting level 4
+
+          let sharedGraph = { value: "leaf" };
+          for (let i = 0; i < 24; i++) {
+            sharedGraph = { left: sharedGraph, right: sharedGraph };
+          }
+          cy.wrap(sharedGraph); // should not traverse shared references beyond maxArgumentDepth
         });
       `,
     });
 
     expect(tests).toHaveLength(1);
     const steps = tests[0].steps;
-    expect(steps).toHaveLength(6);
+    expect(steps).toHaveLength(7);
 
-    const [step1, step2, step3, step4, step5, step6] = steps;
+    const [step1, step2, step3, step4, step5, step6, step7] = steps;
 
     expect(step1).toMatchObject({
       parameters: [{ name: "Yielded", value: JSON.stringify({}) }],
@@ -252,6 +258,19 @@ describe("parameter serialization", () => {
       parameters: [{ name: "Yielded", value: JSON.stringify({ foo: { bar: { qux: "qut" } } }) }],
     });
     expect(step6.parameters).toHaveLength(1);
+
+    expect(step7).toMatchObject({
+      parameters: [
+        {
+          name: "Yielded",
+          value: JSON.stringify({
+            left: { left: {}, right: {} },
+            right: { left: {}, right: {} },
+          }),
+        },
+      ],
+    });
+    expect(step7.parameters).toHaveLength(1);
   });
 
   it("should take the limits from the config", async () => {

@@ -1,8 +1,10 @@
-import type { VitestRunner, Test } from "@vitest/runner";
+import type { Test } from "@vitest/runner";
 import type { SerializedConfig } from "vitest";
 import * as vitest from "vitest";
 
 import { getAsyncContext } from "./concurrentState.js";
+
+type VitestRunner = InstanceType<typeof vitest.TestRunner>;
 
 type VitestRunnerCtor = new (config: SerializedConfig) => VitestRunner;
 
@@ -48,9 +50,9 @@ export default class ConcurrencyAwareAllureVitestRunner
       this.#releaseNonRunnableTask(test);
     };
 
-    this.onAfterRetryTask = (test: Test, options: { retry: number; repeats: number }) => {
+    this.onAfterTryTask = (test: Test) => {
       try {
-        return super.onAfterRetryTask?.(test, options);
+        return super.onAfterTryTask?.(test);
       } finally {
         this.#releaseDynamicallySkippedTask(test);
       }
