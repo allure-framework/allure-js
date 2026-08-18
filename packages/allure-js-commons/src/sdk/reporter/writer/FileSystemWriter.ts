@@ -1,5 +1,16 @@
-import { copyFileSync, mkdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { randomUUID } from "node:crypto";
+import {
+  closeSync,
+  fsyncSync,
+  mkdirSync,
+  openSync,
+  readSync,
+  renameSync,
+  rmSync,
+  writeFileSync,
+  writeSync,
+} from "node:fs";
+import { dirname, join } from "node:path";
 
 import type { Globals, TestResult, TestResultContainer } from "../../../model.js";
 import type { Category, EnvironmentInfo } from "../../types.js";
@@ -7,7 +18,81 @@ import type { Writer } from "../types.js";
 import { stringifyEnvInfo } from "../utils/envInfo.js";
 
 const writeJson = (path: string, data: unknown): void => {
-  writeFileSync(path, JSON.stringify(data), "utf-8");
+  writeFile(path, JSON.stringify(data), "utf-8");
+};
+
+const buildTempPath = (path: string): string => {
+  return join(dirname(path), `.allure-write-${randomUUID()}.tmp`);
+};
+
+const removeTempFile = (path: string): void => {
+  rmSync(path, {
+    force: true,
+  });
+};
+
+const tryRemoveTempFile = (path: string): void => {
+  try {
+    removeTempFile(path);
+  } catch (ignored) {
+    void ignored;
+  }
+};
+
+const writeAndFlushFile = (path: string, write: (fd: number) => void): void => {
+  const fd = openSync(path, "w");
+
+  try {
+    write(fd);
+    fsyncSync(fd);
+  } finally {
+    closeSync(fd);
+  }
+};
+
+const publishFile = (path: string, writeTempFile: (path: string) => void): void => {
+  const tempPath = buildTempPath(path);
+
+  try {
+    writeTempFile(tempPath);
+    renameSync(tempPath, path);
+  } catch (error) {
+    tryRemoveTempFile(tempPath);
+    throw error;
+  }
+
+  removeTempFile(tempPath);
+};
+
+const writeFile = (path: string, data: string | Buffer, encoding?: BufferEncoding): void => {
+  publishFile(path, (tempPath) => {
+    writeAndFlushFile(tempPath, (fd) => {
+      writeFileSync(fd, data, encoding);
+    });
+  });
+};
+
+const copyFile = (from: string, to: string): void => {
+  publishFile(to, (tempPath) => {
+    const fromFd = openSync(from, "r");
+
+    try {
+      writeAndFlushFile(tempPath, (toFd) => {
+        const buffer = Buffer.allocUnsafe(64 * 1024);
+        let bytesRead = 0;
+
+        while ((bytesRead = readSync(fromFd, buffer, 0, buffer.length, null)) > 0) {
+          let bytesWritten = 0;
+
+          while (bytesWritten < bytesRead) {
+            bytesWritten += writeSync(toFd, buffer, bytesWritten, bytesRead - bytesWritten);
+          }
+        }
+      });
+    } finally {
+      closeSync(fromFd);
+    }
+  });
 };
 
 export class FileSystemWriter implements Writer {
@@ -16,20 +101,20 @@ export class FileSystemWriter implements Writer {
   writeAttachment(distFileName: string, content: Buffer): void {
     const path = this.buildPath(distFileName);
 
-    writeFileSync(path, content, "utf-8");
+    writeFile(path, content);
   }
 
   writeAttachmentFromPath(distFileName: string, from: string): void {
     const to = this.buildPath(distFileName);
 
-    copyFileSync(from, to);
+    copyFile(from, to);
   }
 
   writeEnvironmentInfo(info: EnvironmentInfo): void {
     const text = stringifyEnvInfo(info);
     const path = this.buildPath("environment.properties");
 
-    writeFileSync(path, text);
+    writeFile(path, text);
   }
 
   writeCategoriesDefinitions(categories: Category[]): void {

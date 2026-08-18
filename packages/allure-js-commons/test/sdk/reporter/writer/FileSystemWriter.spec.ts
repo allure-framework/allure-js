@@ -1,16 +1,71 @@
 import { randomUUID } from "node:crypto";
-import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  existsSync,
+  fsyncSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  renameSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import * as os from "node:os";
 import path from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ContentType } from "../../../../src/model.js";
+import { ContentType, Stage, Status, type TestResult, type TestResultContainer } from "../../../../src/model.js";
 import { ReporterRuntime } from "../../../../src/sdk/reporter/ReporterRuntime.js";
 import type { ReporterRuntimeConfig } from "../../../../src/sdk/reporter/types.js";
 import { FileSystemWriter } from "../../../../src/sdk/reporter/writer/FileSystemWriter.js";
 
+vi.mock("node:fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:fs")>();
+
+  return {
+    ...actual,
+    fsyncSync: vi.fn(actual.fsyncSync),
+    renameSync: vi.fn(actual.renameSync),
+    rmSync: vi.fn(actual.rmSync),
+  };
+});
+
+const listTmpFiles = (dir: string) => {
+  return existsSync(dir) ? readdirSync(dir).filter((file) => file.endsWith(".tmp")) : [];
+};
+
+const expectNoTmpFiles = (dir: string) => {
+  expect(listTmpFiles(dir)).toEqual([]);
+};
+
+const createTestResult = (uuid = "test-uuid"): TestResult => ({
+  uuid,
+  name: "test",
+  status: Status.PASSED,
+  statusDetails: {},
+  stage: Stage.FINISHED,
+  steps: [],
+  attachments: [],
+  parameters: [],
+  labels: [],
+  links: [],
+});
+
+const createTestContainer = (uuid = "container-uuid"): TestResultContainer => ({
+  uuid,
+  children: [],
+  befores: [],
+  afters: [],
+});
+
 describe("FileSystemWriter", () => {
+  beforeEach(() => {
+    vi.mocked(fsyncSync).mockClear();
+    vi.mocked(renameSync).mockClear();
+    vi.mocked(rmSync).mockClear();
+  });
+
   it("should save attachment from path", () => {
     const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
     const allureResults = path.join(tmp, "allure-results");
@@ -34,11 +89,175 @@ describe("FileSystemWriter", () => {
     const resultFiles = readdirSync(allureResults);
 
     expect(resultFiles).toHaveLength(2);
+    expectNoTmpFiles(allureResults);
 
     const attachmentResultPath = resultFiles.find((file) => file.includes("attachment"))!;
     const actualContent = readFileSync(path.join(allureResults, attachmentResultPath));
 
     expect(actualContent.toString("utf8")).toBe(data);
+    expect(fsyncSync).toHaveBeenCalledTimes(2);
+  });
+
+  it("publishes buffer attachments via a temporary file", () => {
+    const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
+    const allureResults = path.join(tmp, "allure-results");
+    const writer = new FileSystemWriter({
+      resultsDir: allureResults,
+    });
+
+    writer.writeAttachment("source-attachment.txt", Buffer.from("attachment body", "utf8"));
+
+    expect(readFileSync(path.join(allureResults, "source-attachment.txt"), "utf-8")).toBe("attachment body");
+    expectNoTmpFiles(allureResults);
+    expect(fsyncSync).toHaveBeenCalledTimes(1);
+  });
+
+  it("publishes read-only path attachments", () => {
+    const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
+    const allureResults = path.join(tmp, "allure-results");
+    const writer = new FileSystemWriter({
+      resultsDir: allureResults,
+    });
+    const from = path.join(tmp, "read-only-attachment.txt");
+
+    writeFileSync(from, "read-only content", "utf8");
+    chmodSync(from, 0o444);
+
+    writer.writeAttachmentFromPath("read-only-attachment.txt", from);
+
+    expect(readFileSync(path.join(allureResults, "read-only-attachment.txt"), "utf-8")).toBe("read-only content");
+    expectNoTmpFiles(allureResults);
+    expect(fsyncSync).toHaveBeenCalledTimes(1);
+  });
+
+  it("writes json and metadata files via the same atomic publish path", () => {
+    const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
+    const allureResults = path.join(tmp, "allure-results");
+    const writer = new FileSystemWriter({
+      resultsDir: allureResults,
+    });
+    const result = createTestResult("result-uuid");
+    const container = createTestContainer("container-uuid");
+    const globals = {
+      attachments: [],
+      errors: [],
+    };
+
+    writer.writeResult(result);
+    writer.writeGroup(container);
+    writer.writeGlobals("global-uuid-globals.json", globals);
+    writer.writeCategoriesDefinitions([{ name: "Product defects", matchedStatuses: [Status.FAILED] }]);
+    writer.writeEnvironmentInfo({ browser: "chrome", empty: undefined });
+
+    expect(JSON.parse(readFileSync(path.join(allureResults, "result-uuid-result.json"), "utf-8"))).toEqual(result);
+    expect(JSON.parse(readFileSync(path.join(allureResults, "container-uuid-container.json"), "utf-8"))).toEqual(
+      container,
+    );
+    expect(JSON.parse(readFileSync(path.join(allureResults, "global-uuid-globals.json"), "utf-8"))).toEqual(globals);
+    expect(JSON.parse(readFileSync(path.join(allureResults, "categories.json"), "utf-8"))).toEqual([
+      { name: "Product defects", matchedStatuses: [Status.FAILED] },
+    ]);
+    expect(readFileSync(path.join(allureResults, "environment.properties"), "utf-8")).toBe("browser=chrome");
+    expectNoTmpFiles(allureResults);
+    expect(fsyncSync).toHaveBeenCalledTimes(5);
+  });
+
+  it("replaces fixed-name metadata files without leaving temporary files", () => {
+    const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
+    const allureResults = path.join(tmp, "allure-results");
+    const writer = new FileSystemWriter({
+      resultsDir: allureResults,
+    });
+
+    writer.writeCategoriesDefinitions([{ name: "first category" }]);
+    writer.writeCategoriesDefinitions([{ name: "second category" }]);
+    writer.writeEnvironmentInfo({ browser: "chrome" });
+    writer.writeEnvironmentInfo({ browser: "firefox" });
+
+    expect(JSON.parse(readFileSync(path.join(allureResults, "categories.json"), "utf-8"))).toEqual([
+      { name: "second category" },
+    ]);
+    expect(readFileSync(path.join(allureResults, "environment.properties"), "utf-8")).toBe("browser=firefox");
+    expectNoTmpFiles(allureResults);
+    expect(fsyncSync).toHaveBeenCalledTimes(4);
+  });
+
+  it("flushes the temporary file before publishing the final name", () => {
+    const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
+    const allureResults = path.join(tmp, "allure-results");
+    const writer = new FileSystemWriter({
+      resultsDir: allureResults,
+    });
+    let tmpFilesDuringFlush: string[] = [];
+
+    vi.mocked(fsyncSync).mockImplementationOnce(() => {
+      tmpFilesDuringFlush = listTmpFiles(allureResults);
+      expect(existsSync(path.join(allureResults, "result-uuid-result.json"))).toBe(false);
+    });
+
+    writer.writeResult(createTestResult("result-uuid"));
+
+    expect(tmpFilesDuringFlush).toHaveLength(1);
+    expect(tmpFilesDuringFlush[0]).toMatch(/^\.allure-write-.+\.tmp$/);
+    expect(tmpFilesDuringFlush[0]).not.toContain("result");
+    expect(existsSync(path.join(allureResults, "result-uuid-result.json"))).toBe(true);
+    expectNoTmpFiles(allureResults);
+  });
+
+  it("removes temporary files when publishing fails before rename", () => {
+    const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
+    const allureResults = path.join(tmp, "allure-results");
+    const writer = new FileSystemWriter({
+      resultsDir: allureResults,
+    });
+
+    vi.mocked(fsyncSync).mockImplementationOnce(() => {
+      throw new Error("fsync failed");
+    });
+
+    expect(() => writer.writeAttachment("failed-attachment.txt", Buffer.from("partial", "utf8"))).toThrow(
+      "fsync failed",
+    );
+    expect(existsSync(path.join(allureResults, "failed-attachment.txt"))).toBe(false);
+    expectNoTmpFiles(allureResults);
+  });
+
+  it("keeps the original publishing error when temporary cleanup fails", () => {
+    const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
+    const allureResults = path.join(tmp, "allure-results");
+    const writer = new FileSystemWriter({
+      resultsDir: allureResults,
+    });
+
+    vi.mocked(fsyncSync).mockImplementationOnce(() => {
+      throw new Error("fsync failed");
+    });
+    vi.mocked(rmSync).mockImplementationOnce(() => {
+      throw new Error("cleanup failed");
+    });
+
+    expect(() => writer.writeAttachment("failed-cleanup-attachment.txt", Buffer.from("partial", "utf8"))).toThrow(
+      "fsync failed",
+    );
+    expect(existsSync(path.join(allureResults, "failed-cleanup-attachment.txt"))).toBe(false);
+  });
+
+  it("removes temporary files when publishing fails during rename", () => {
+    const tmp = mkdtempSync(path.join(os.tmpdir(), "foo-"));
+    const allureResults = path.join(tmp, "allure-results");
+    const writer = new FileSystemWriter({
+      resultsDir: allureResults,
+    });
+
+    vi.mocked(renameSync).mockImplementationOnce(() => {
+      throw new Error("rename failed");
+    });
+
+    expect(() => writer.writeAttachment("failed-rename-attachment.txt", Buffer.from("content", "utf8"))).toThrow(
+      "rename failed",
+    );
+    expect(existsSync(path.join(allureResults, "failed-rename-attachment.txt"))).toBe(false);
+    expectNoTmpFiles(allureResults);
   });
 
   it("creates allure-report nested path every time writer write something", () => {
