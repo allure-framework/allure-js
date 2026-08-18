@@ -10,7 +10,7 @@ import {
   writeFileSync,
   writeSync,
 } from "node:fs";
-import { basename, dirname, join } from "node:path";
+import { dirname, join } from "node:path";
 
 import type { Globals, TestResult, TestResultContainer } from "../../../model.js";
 import type { Category, EnvironmentInfo } from "../../types.js";
@@ -22,7 +22,21 @@ const writeJson = (path: string, data: unknown): void => {
 };
 
 const buildTempPath = (path: string): string => {
-  return join(dirname(path), `${basename(path)}.${process.pid}.${randomUUID()}.tmp`);
+  return join(dirname(path), `.allure-write-${randomUUID()}.tmp`);
+};
+
+const removeTempFile = (path: string): void => {
+  rmSync(path, {
+    force: true,
+  });
+};
+
+const tryRemoveTempFile = (path: string): void => {
+  try {
+    removeTempFile(path);
+  } catch (ignored) {
+    void ignored;
+  }
 };
 
 const writeAndFlushFile = (path: string, write: (fd: number) => void): void => {
@@ -42,11 +56,12 @@ const publishFile = (path: string, writeTempFile: (path: string) => void): void 
   try {
     writeTempFile(tempPath);
     renameSync(tempPath, path);
-  } finally {
-    rmSync(tempPath, {
-      force: true,
-    });
+  } catch (error) {
+    tryRemoveTempFile(tempPath);
+    throw error;
   }
+
+  removeTempFile(tempPath);
 };
 
 const writeFile = (path: string, data: string | Buffer, encoding?: BufferEncoding): void => {
