@@ -1,5 +1,5 @@
 import * as allure from "allure-js-commons";
-import { Stage, Status } from "allure-js-commons";
+import { Stage, Status, type StatusDetails } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError, isPromise } from "allure-js-commons/sdk";
 import type { FixtureType, ReporterConfig } from "allure-js-commons/sdk/reporter";
@@ -48,6 +48,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   private readonly allureRuntime: ReporterRuntime;
   private currentAllureTestUuid?: string;
   private currentAllureFixtureUuid?: string;
+  private currentAllureFixtureNames = new Map<string, string>();
   private jasmineSuitesStack: jasmine.SuiteResult[] = [];
   private scopesStack: string[] = [];
 
@@ -240,18 +241,29 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   #startFixture = (name: string, type: FixtureType) => {
     const scopeUuid = last(this.scopesStack);
     if (scopeUuid) {
-      this.currentAllureFixtureUuid = this.allureRuntime.startFixture(scopeUuid, type, {
+      const fixtureUuid = this.allureRuntime.startFixture(scopeUuid, type, {
         name,
         stage: Stage.RUNNING,
       });
-      return this.currentAllureFixtureUuid;
+      if (fixtureUuid) {
+        this.currentAllureFixtureUuid = fixtureUuid;
+        this.currentAllureFixtureNames.set(fixtureUuid, name);
+        return fixtureUuid;
+      }
     }
   };
 
   #stopFixture = (uuid: string, error?: Error | string) => {
     const statusAndDetails = this.#resolveStatusWithDetails(error);
     this.allureRuntime.updateFixture(uuid, (f) => Object.assign(f, statusAndDetails));
+    if (error !== undefined) {
+      const fixtureName = this.currentAllureFixtureNames.get(uuid) ?? "hook";
+      this.allureRuntime.applyGlobalRuntimeMessages([
+        toGlobalErrorMessage(fixtureName, statusAndDetails.statusDetails ?? {}),
+      ]);
+    }
     this.allureRuntime.stopFixture(uuid);
+    this.currentAllureFixtureNames.delete(uuid);
     this.currentAllureFixtureUuid = undefined;
   };
 
@@ -396,3 +408,11 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     }
   };
 }
+
+const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
+  type: "global_error",
+  data: {
+    ...details,
+    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
+  },
+});

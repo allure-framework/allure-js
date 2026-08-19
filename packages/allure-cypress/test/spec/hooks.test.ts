@@ -198,6 +198,45 @@ it("reports suite-level hooks", async () => {
   );
 });
 
+it("reports failed hooks as global errors", async () => {
+  const { groups, globals } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": () => `
+      before("bad before", () => {
+        throw new Error("before hook boom");
+      });
+
+      it("skipped by before hook 1", () => {});
+      it("skipped by before hook 2", () => {});
+    `,
+  });
+  const allErrors = Object.values(globals ?? {}).flatMap((info) => info.errors);
+
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: String.raw`"before all" hook: bad before`,
+        befores: [
+          expect.objectContaining({
+            status: Status.BROKEN,
+            statusDetails: expect.objectContaining({
+              message: "before hook boom",
+            }),
+          }),
+        ],
+      }),
+    ]),
+  );
+  expect(allErrors).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: String.raw`"before all" hook: bad before failed: before hook boom`,
+        timestamp: expect.any(Number),
+      }),
+    ]),
+  );
+  expect(allErrors.filter((error) => error.message?.includes("before hook boom"))).toHaveLength(1);
+});
+
 it("should keep hooks from different specs separated", async () => {
   const { tests, groups } = await runCypressInlineTest({
     "cypress/e2e/sample1.cy.js": () => `

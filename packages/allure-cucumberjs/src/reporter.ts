@@ -11,7 +11,7 @@ import {
   type TestStepResult,
   TestStepResultStatus,
 } from "@cucumber/messages";
-import type { Label, Link, TestResult } from "allure-js-commons";
+import type { Label, Link, StatusDetails, TestResult } from "allure-js-commons";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
 import { type RuntimeMessage, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import {
@@ -35,6 +35,14 @@ import {
 import { AllureCucumberWorld } from "./legacy.js";
 import type { AllureCucumberLinkConfig, AllureCucumberReporterConfig, LabelConfig } from "./model.js";
 import { getPathRelativeToProjectRoot, getPosixPathRelativeToProjectRoot } from "./utils.js";
+
+type TestRunHookDefinition = {
+  readonly code: Function;
+};
+
+type MutableTestRunHookDefinition = Omit<TestRunHookDefinition, "code"> & {
+  code: Function;
+};
 
 export default class AllureCucumberReporter extends Formatter {
   private readonly afterHooks: Record<string, TestCaseHookDefinition> = {};
@@ -79,6 +87,8 @@ export default class AllureCucumberReporter extends Formatter {
       (acc, hook) => Object.assign(acc, { [hook.id]: hook }),
       {},
     );
+    this.installTestRunHookGlobalErrorSupport(options.supportCodeLibrary.beforeTestRunHookDefinitions, "before");
+    this.installTestRunHookGlobalErrorSupport(options.supportCodeLibrary.afterTestRunHookDefinitions, "after");
     // set AllureCucumberWorld for single thread mode
     if (options.supportCodeLibrary.World === World) {
       // @ts-ignore
@@ -91,6 +101,99 @@ export default class AllureCucumberReporter extends Formatter {
     const { labelsConfigs, linksConfigs } = this;
     const linkConfigEntries = Object.entries(linksConfigs).map(([, v]) => v);
     return [...labelsConfigs, ...linkConfigEntries].flatMap(({ pattern }) => pattern);
+  }
+
+  private getHookName(hookId: string) {
+    return this.beforeHooks[hookId]?.name ?? this.afterHooks[hookId]?.name ?? "hook";
+  }
+
+  private installTestRunHookGlobalErrorSupport(hooks: readonly TestRunHookDefinition[], type: "before" | "after") {
+    hooks.forEach((hook) => {
+      const originalCode = hook.code;
+      const hookName = type === "before" ? "BeforeAll hook" : "AfterAll hook";
+      const runTestRunHook = this.runTestRunHook.bind(this);
+      const runCallbackTestRunHook = this.runCallbackTestRunHook.bind(this);
+
+      (hook as MutableTestRunHookDefinition).code =
+        originalCode.length > 0
+          ? function (this: unknown, callback: (error?: unknown, result?: unknown) => void) {
+              return runCallbackTestRunHook(hookName, originalCode, this, callback);
+            }
+          : function (this: unknown) {
+              return runTestRunHook(hookName, () => originalCode.call(this));
+            };
+    });
+  }
+
+  private runTestRunHook<T>(name: string, runHook: () => T): T {
+    try {
+      const result = runHook();
+
+      if (isPromiseLike(result)) {
+        return result.then(
+          (value) => value,
+          (error) => {
+            this.emitTestRunHookGlobalError(name, error);
+            return deferReject(error);
+          },
+        ) as T;
+      }
+
+      return result;
+    } catch (error) {
+      this.emitTestRunHookGlobalError(name, error);
+      return deferReject(error) as T;
+    }
+  }
+
+  private runCallbackTestRunHook(
+    name: string,
+    originalCode: Function,
+    thisArg: unknown,
+    callback: (error?: unknown, result?: unknown) => void,
+  ) {
+    let finished = false;
+    const finish = (error?: unknown, result?: unknown) => {
+      if (!finished) {
+        finished = true;
+        if (error) {
+          this.emitTestRunHookGlobalError(name, error);
+        }
+      }
+      if (error) {
+        setImmediate(() => callback(error, result));
+        return;
+      }
+
+      callback(error, result);
+    };
+
+    try {
+      const result = originalCode.call(thisArg, finish);
+
+      if (isPromiseLike(result)) {
+        result.catch((error) => finish(error));
+      }
+
+      return result;
+    } catch (error) {
+      finish(error);
+      throw error;
+    }
+  }
+
+  private emitTestRunHookGlobalError(name: string, error: unknown): void {
+    this.allureRuntime.applyGlobalRuntimeMessages([
+      toGlobalErrorMessage(name, getMessageAndTraceFromError(this.toError(error))),
+    ]);
+  }
+
+  private toError(error: unknown): Error {
+    if (error instanceof Error) {
+      return error;
+    }
+
+    return new Error(String(error));
   }
 
   private parseEnvelope(envelope: messages.Envelope) {
@@ -472,6 +575,11 @@ export default class AllureCucumberReporter extends Formatter {
           };
         }
       });
+      if (error) {
+        this.allureRuntime.applyGlobalRuntimeMessages([
+          toGlobalErrorMessage(this.getHookName(step.hookId), getMessageAndTraceFromError(error)),
+        ]);
+      }
       this.allureRuntime.stopFixture(fixtureUuid, {
         stop: TimeConversion.timestampToMillisecondsSinceEpoch(data.timestamp),
       });
@@ -592,3 +700,16 @@ export default class AllureCucumberReporter extends Formatter {
     } as Error;
   }
 }
+
+const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
+  type: "global_error",
+  data: {
+    ...details,
+    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
+  },
+});
+
+const isPromiseLike = (value: unknown): value is Promise<unknown> =>
+  Boolean(value) && typeof (value as Promise<unknown>).then === "function";
+
+const deferReject = (error: unknown) => new Promise<never>((_resolve, reject) => setImmediate(() => reject(error)));
