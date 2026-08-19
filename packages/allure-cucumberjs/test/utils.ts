@@ -178,7 +178,7 @@ export const runCucumberInlineTest = async (
   });
 
   return new Promise((resolve) => {
-    testProcess.on("exit", async (code, signal) => {
+    testProcess.on("close", async (code, signal) => {
       if (signal) {
         await logStep(`Interrupted with ${signal}`);
       }

@@ -109,6 +109,41 @@ it("handles failed hooks", async () => {
   expect(allErrors.filter((error) => error.message?.includes("after error"))).toHaveLength(1);
 });
 
+it("handles failed global hooks", async () => {
+  const beforeAllResults = await runCucumberInlineTest(["hooks"], ["failedBeforeAll"], { parallel: false });
+  const beforeAllErrors = Object.values(beforeAllResults.globals ?? {}).flatMap((info) => info.errors);
+
+  expect(beforeAllErrors).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: "BeforeAll hook failed",
+        timestamp: expect.any(Number),
+      }),
+    ]),
+  );
+  expect(beforeAllErrors.filter((error) => error.message === "BeforeAll hook failed")).toHaveLength(1);
+
+  const afterAllResults = await runCucumberInlineTest(["hooks"], ["failedAfterAll"], { parallel: false });
+  const afterAllErrors = Object.values(afterAllResults.globals ?? {}).flatMap((info) => info.errors);
+
+  expect(afterAllResults.tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        status: Status.PASSED,
+      }),
+    ]),
+  );
+  expect(afterAllErrors).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: "AfterAll hook failed: afterAll error",
+        timestamp: expect.any(Number),
+      }),
+    ]),
+  );
+  expect(afterAllErrors.filter((error) => error.message === "AfterAll hook failed: afterAll error")).toHaveLength(1);
+});
+
 it("handles hooks with steps", async () => {
   const { tests, groups } = await runCucumberInlineTest(["hooks"], ["hooksSteps"]);
 

@@ -273,6 +273,62 @@ it("reports failed hook steps as global errors", async () => {
   );
 });
 
+it("reports named and paired hook step failures as global errors", async () => {
+  const { tests, globals } = await runPlaywrightInlineTest({
+    "sample.test.js": `
+       import test from "@playwright/test";
+
+       test.describe("nested suite", () => {
+         test.beforeEach("Open start URL", async () => {
+           throw new Error("named setup boom");
+         });
+
+         test.afterEach(async () => {
+           throw new Error("cleanup boom");
+         });
+
+         test("blocked by setup and cleanup", async () => {});
+       });
+     `,
+  });
+  const allErrors = Object.values(globals ?? {}).flatMap((info) => info.errors);
+  const allHookSteps = tests.flatMap((testResult) =>
+    testResult.steps.flatMap((step) => (step.name === "Before Hooks" || step.name === "After Hooks" ? step.steps : [])),
+  );
+
+  expect(allHookSteps).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "Open start URL",
+        status: Status.FAILED,
+      }),
+      expect.objectContaining({
+        name: "afterEach hook",
+        status: Status.FAILED,
+        statusDetails: expect.objectContaining({
+          message: expect.stringContaining("cleanup boom"),
+        }),
+      }),
+    ]),
+  );
+  expect(allErrors).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: "Open start URL failed: Error: named setup boom",
+        timestamp: expect.any(Number),
+      }),
+      expect.objectContaining({
+        message: "afterEach hook failed: Error: cleanup boom",
+        timestamp: expect.any(Number),
+      }),
+    ]),
+  );
+  expect(allErrors.filter((error) => error.message === "Open start URL failed: Error: named setup boom")).toHaveLength(
+    1,
+  );
+  expect(allErrors.filter((error) => error.message === "afterEach hook failed: Error: cleanup boom")).toHaveLength(1);
+});
+
 it("does not report failed inner hook steps as separate global errors", async () => {
   const { tests, globals } = await runPlaywrightInlineTest({
     "sample.test.js": `

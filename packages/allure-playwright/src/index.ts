@@ -1327,7 +1327,7 @@ const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMess
 
 const isDirectHookStep = (step: TestStep) =>
   (step.parent?.title === BEFORE_HOOKS_ROOT_STEP_TITLE || step.parent?.title === AFTER_HOOKS_ROOT_STEP_TITLE) &&
-  /\bhook$/i.test(step.title);
+  step.category === "hook";
 
 const isRootHookStep = (step: TestStep) =>
   step.title === BEFORE_HOOKS_ROOT_STEP_TITLE || step.title === AFTER_HOOKS_ROOT_STEP_TITLE;
