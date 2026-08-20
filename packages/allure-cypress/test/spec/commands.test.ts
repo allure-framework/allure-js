@@ -1108,3 +1108,120 @@ it("should not hang when using cy.origin with allure steps", async () => {
     }),
   ]);
 });
+
+describe("the enabled option", () => {
+  const specFile = ({ allureCommonsModulePath }: { allureCommonsModulePath: string }) => `
+    import { step } from "${allureCommonsModulePath}";
+
+    it("foo", () => {
+      step("bar", () => {
+        cy.wrap(1);
+      });
+      cy.log("baz");
+    });
+  `;
+
+  const configFile =
+    (stepsFromCommands: string) =>
+    ({
+      allureCypressReporterModulePath,
+      allureDirPath,
+    }: {
+      allureCypressReporterModulePath: string;
+      allureDirPath: string;
+    }) =>
+      `
+      const { allureCypress } = require("${allureCypressReporterModulePath}");
+
+      module.exports = {
+        e2e: {
+          baseUrl: "https://allurereport.org",
+          viewportWidth: 1240,
+          setupNodeEvents: (on, config) => {
+            allureCypress(on, config, {
+              resultsDir: "${allureDirPath}",
+              ${stepsFromCommands}
+            });
+
+            return config;
+          },
+        },
+      };
+    `;
+
+  const expectedStepsWhenOn = [
+    expect.objectContaining({
+      name: "bar",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      steps: [
+        expect.objectContaining({
+          name: "wrap 1",
+          status: Status.PASSED,
+        }),
+      ],
+    }),
+    expect.objectContaining({
+      name: "log baz",
+      status: Status.PASSED,
+      stage: Stage.FINISHED,
+      steps: [],
+    }),
+  ];
+
+  it("should create steps from commands if the option is missing", async () => {
+    issue("1129");
+    const { tests } = await runCypressInlineTest({
+      "cypress/e2e/sample.cy.js": specFile,
+      "cypress.config.js": configFile(`stepsFromCommands: { maxArgumentLength: 25 },`),
+    });
+
+    expect(tests).toEqual([
+      expect.objectContaining({
+        name: "foo",
+        status: Status.PASSED,
+        steps: expectedStepsWhenOn,
+      }),
+    ]);
+  });
+
+  it("should create steps from commands if the option is true", async () => {
+    issue("1129");
+    const { tests } = await runCypressInlineTest({
+      "cypress/e2e/sample.cy.js": specFile,
+      "cypress.config.js": configFile(`stepsFromCommands: { enabled: true },`),
+    });
+
+    expect(tests).toEqual([
+      expect.objectContaining({
+        name: "foo",
+        status: Status.PASSED,
+        steps: expectedStepsWhenOn,
+      }),
+    ]);
+  });
+
+  it("should keep the steps of the Allure API only if the option is false", async () => {
+    issue("1129");
+    const { tests } = await runCypressInlineTest({
+      "cypress/e2e/sample.cy.js": specFile,
+      "cypress.config.js": configFile(`stepsFromCommands: { enabled: false },`),
+    });
+
+    expect(tests).toEqual([
+      expect.objectContaining({
+        name: "foo",
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+        steps: [
+          expect.objectContaining({
+            name: "bar",
+            status: Status.PASSED,
+            stage: Stage.FINISHED,
+            steps: [],
+          }),
+        ],
+      }),
+    ]);
+  });
+});

@@ -235,6 +235,11 @@ export type StepFinalizer = (message: CypressStepFinalizeMessage["data"]) => voi
 export type AllureSpecState = {
   config: {
     stepsFromCommands: {
+      /**
+       * If `false`, Cypress commands are no longer converted into Allure steps. Only the steps created with the
+       * Allure API, e.g., `allure.step`, are reported. Defaults to `true`.
+       */
+      enabled: boolean;
       maxArgumentLength: number;
       maxArgumentDepth: number;
     };
