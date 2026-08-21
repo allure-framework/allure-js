@@ -1,5 +1,6 @@
 export const DEFAULT_RUNTIME_CONFIG = {
   stepsFromCommands: {
+    enabled: true,
     maxArgumentLength: 128,
     maxArgumentDepth: 3,
   },

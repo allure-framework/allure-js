@@ -553,11 +553,13 @@ const createRuntimeState = (allureConfig?: AllureCypressConfig): AllureSpecState
 
 const getRuntimeConfigDefaults = ({
   stepsFromCommands: {
+    enabled = DEFAULT_RUNTIME_CONFIG.stepsFromCommands.enabled,
     maxArgumentLength = DEFAULT_RUNTIME_CONFIG.stepsFromCommands.maxArgumentLength,
     maxArgumentDepth = DEFAULT_RUNTIME_CONFIG.stepsFromCommands.maxArgumentDepth,
   } = DEFAULT_RUNTIME_CONFIG.stepsFromCommands,
 }: AllureCypressConfig = DEFAULT_RUNTIME_CONFIG): AllureSpecState["config"] => ({
   stepsFromCommands: {
+    enabled,
     maxArgumentDepth,
     maxArgumentLength,
   },
