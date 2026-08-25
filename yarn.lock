@@ -4890,10 +4890,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jasminejs/reporters@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@jasminejs/reporters@npm:1.0.0"
-  checksum: 10/1a9c502dee39c5cbec18d60ee9b350c2d602a4d15cad5a19fff6902ac2217c2bddfb777e47526d13bd57f018bcd670c1c0aeda55210224250cf0a1c2c754e1be
+"@jasminejs/reporters@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@jasminejs/reporters@npm:1.1.0"
+  checksum: 10/e246da204adaaa2a801c0b65fcd39587a310ae18ee62933fd4ed25b305aef6452a353b86fca0c70fb633107105e1a1a4b79c5897e93511411bbc912c39349eed
   languageName: node
   linkType: hard
 
@@ -8211,7 +8211,7 @@ __metadata:
     allure-vitest: "workspace:*"
     babel-plugin-add-module-exports: "npm:^1.0.4"
     babel-plugin-transform-import-meta: "npm:^2.3.3"
-    jasmine: "npm:^6.2.0"
+    jasmine: "npm:^7.0.0"
     npm-run-all2: "npm:^9.0.2"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^6.0.3"
@@ -14390,23 +14390,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jasmine-core@npm:~6.2.0":
-  version: 6.2.0
-  resolution: "jasmine-core@npm:6.2.0"
-  checksum: 10/00a02cdc961f5e3502e2b458e86b7806bdb4951455e9bb40e8b73b91824a55caac73d3031fad8a41f8499757e30a7ef1864cc9b24910ba63da0f51c61990d010
+"jasmine-core@npm:~7.0.0":
+  version: 7.0.2
+  resolution: "jasmine-core@npm:7.0.2"
+  checksum: 10/5dd6ea610884ba297c07c6d7f92fadcc923d7f53c037e5d45aad04ec5e8489d88748789d5ddfb610022d9d8aa94647308946bd0e1de2e287fb944185b5bff96a
   languageName: node
   linkType: hard
 
-"jasmine@npm:^6.2.0":
-  version: 6.2.0
-  resolution: "jasmine@npm:6.2.0"
+"jasmine@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "jasmine@npm:7.0.0"
   dependencies:
-    "@jasminejs/reporters": "npm:^1.0.0"
+    "@jasminejs/reporters": "npm:^1.1.0"
     glob: "npm:^10.2.2 || ^11.0.3 || ^12.0.0 || ^13.0.0"
-    jasmine-core: "npm:~6.2.0"
+    jasmine-core: "npm:~7.0.0"
   bin:
     jasmine: bin/jasmine.js
-  checksum: 10/d85cf576bfb8670349f76620725d85c84e4a9d1d0305962d6136df86fbef468b11d593179923a3156e7a7cdf78e908c5b0039146c5e14cc2fbd6aff70fa9b8e0
+  checksum: 10/34ac16c03c66be63835307b399303281c542c5d47c16405828817e9af4dfcabf925663b04a79d1410689b1dec9dd352b4ef3cee249f42a1242aa89718bbfd45f
   languageName: node
   linkType: hard
 

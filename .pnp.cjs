@@ -8162,10 +8162,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@jasminejs/reporters", [\
-      ["npm:1.0.0", {\
-        "packageLocation": "./.yarn/cache/@jasminejs-reporters-npm-1.0.0-f460ff52dc-1a9c502dee.zip/node_modules/@jasminejs/reporters/",\
+      ["npm:1.1.0", {\
+        "packageLocation": "./.yarn/cache/@jasminejs-reporters-npm-1.1.0-d9c0da1b34-e246da204a.zip/node_modules/@jasminejs/reporters/",\
         "packageDependencies": [\
-          ["@jasminejs/reporters", "npm:1.0.0"]\
+          ["@jasminejs/reporters", "npm:1.1.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -12499,7 +12499,7 @@ const RAW_RUNTIME_STATE =
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
           ["babel-plugin-transform-import-meta", "virtual:d10e825d76338dedaee6647c8486ff1b2de1919ee4a2fdffe7a975104693ccf29afd00c4e48ffcb4f47ef8d1f4877527ac7198a342ce42052f0432baff921fd1#npm:2.3.3"],\
-          ["jasmine", "npm:6.2.0"],\
+          ["jasmine", "npm:7.0.0"],\
           ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
@@ -19566,22 +19566,22 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["jasmine", [\
-      ["npm:6.2.0", {\
-        "packageLocation": "./.yarn/cache/jasmine-npm-6.2.0-10b513387f-d85cf576bf.zip/node_modules/jasmine/",\
+      ["npm:7.0.0", {\
+        "packageLocation": "./.yarn/cache/jasmine-npm-7.0.0-5bc41a5676-34ac16c03c.zip/node_modules/jasmine/",\
         "packageDependencies": [\
-          ["@jasminejs/reporters", "npm:1.0.0"],\
+          ["@jasminejs/reporters", "npm:1.1.0"],\
           ["glob", "npm:13.0.6"],\
-          ["jasmine", "npm:6.2.0"],\
-          ["jasmine-core", "npm:6.2.0"]\
+          ["jasmine", "npm:7.0.0"],\
+          ["jasmine-core", "npm:7.0.2"]\
         ],\
         "linkType": "HARD"\
       }]\
     ]],\
     ["jasmine-core", [\
-      ["npm:6.2.0", {\
-        "packageLocation": "./.yarn/cache/jasmine-core-npm-6.2.0-fdc5df0ac5-00a02cdc96.zip/node_modules/jasmine-core/",\
+      ["npm:7.0.2", {\
+        "packageLocation": "./.yarn/cache/jasmine-core-npm-7.0.2-faedf1f452-5dd6ea6108.zip/node_modules/jasmine-core/",\
         "packageDependencies": [\
-          ["jasmine-core", "npm:6.2.0"]\
+          ["jasmine-core", "npm:7.0.2"]\
         ],\
         "linkType": "HARD"\
       }]\
