@@ -121,6 +121,12 @@ describe("allureLabelRegexp", () => {
 });
 
 describe("getStatusFromError", () => {
+  describe.each([null, undefined, "assertion error"])("with non error-like value %s", (err) => {
+    it("returns broken", () => {
+      expect(getStatusFromError(err)).toBe(Status.BROKEN);
+    });
+  });
+
   describe("with node assert error", () => {
     it("returns failed", () => {
       try {
@@ -186,6 +192,28 @@ describe("getStatusFromError", () => {
       } catch (err) {
         expect(getStatusFromError(err as Error)).toBe(Status.FAILED);
       }
+    });
+  });
+
+  describe("with a null-prototype error with matcherResult field", () => {
+    it("returns failed", () => {
+      const err = Object.assign(Object.create(null), {
+        matcherResult: {},
+        message: "expected 2 to be 3",
+      });
+
+      expect(getStatusFromError(err)).toBe(Status.FAILED);
+    });
+  });
+
+  describe("with a null-prototype error with actual and expected fields", () => {
+    it("returns failed", () => {
+      const err = Object.assign(Object.create(null), {
+        actual: 2,
+        expected: 3,
+      });
+
+      expect(getStatusFromError(err)).toBe(Status.FAILED);
     });
   });
 
