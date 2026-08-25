@@ -5,7 +5,7 @@ import { extname, join } from "node:path";
 import { dirname, resolve as resolvePath } from "node:path";
 
 import { attachment, step } from "allure-js-commons";
-import type { AllureResults } from "allure-js-commons/sdk";
+import { stripAnsi, type AllureResults } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
 type RunOptions = {
@@ -51,10 +51,14 @@ export const runCodeceptJsInlineTest = async (
     return resolvePath(require.resolve("codeceptjs"), "../../bin/codecept.js");
   });
   const args = ["run", "-c", testDir, ...extraCliArgs];
+  const childEnv = { ...process.env };
+  delete childEnv.ALLURE_TESTPLAN_PATH;
+  delete childEnv.ALLURE_RERUN;
+
   const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
     return fork(modulePath, args, {
       env: {
-        ...process.env,
+        ...childEnv,
         ...env,
         ALLURE_TEST_MODE: "1",
       },
@@ -69,12 +73,12 @@ export const runCodeceptJsInlineTest = async (
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
     // eslint-disable-next-line no-console
     console.log(chunk.toString());
-    stdout.push(String(chunk));
+    stdout.push(stripAnsi(String(chunk)));
   });
   testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
     // eslint-disable-next-line no-console
     console.error(chunk.toString());
-    stderr.push(String(chunk));
+    stderr.push(stripAnsi(String(chunk)));
   });
   const messageReader = new MessageReader();
 
@@ -83,7 +87,7 @@ export const runCodeceptJsInlineTest = async (
   return new Promise((resolve) => {
     const killTimeout = setTimeout(() => testProcess.kill(), 30_000);
 
-    testProcess.on("exit", async () => {
+    testProcess.on("close", async () => {
       clearTimeout(killTimeout);
       await new Promise<void>((r) => setImmediate(r));
 
