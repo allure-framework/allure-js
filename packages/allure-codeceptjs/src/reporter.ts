@@ -1,4 +1,6 @@
-import { LabelName, Stage, Status, type StepResult } from "allure-js-commons";
+import { basename } from "node:path";
+
+import { ContentType, LabelName, Stage, Status, type StepResult } from "allure-js-commons";
 import { getMessageAndTraceFromError, getStatusFromError, isMetadataTag, stripAnsi } from "allure-js-commons/sdk";
 import AllureMochaReporter from "allure-mocha";
 import { event, recorder } from "codeceptjs";
@@ -9,6 +11,12 @@ import type { CodeceptBddStep, CodeceptError, CodeceptStep } from "./model.js";
 interface MetaStep {
   name: string;
   id: string;
+}
+
+interface CodeceptTestWithArtifacts {
+  artifacts?: {
+    screenshot?: string;
+  };
 }
 
 const MAX_META_STEP_NESTING = 10;
@@ -168,7 +176,7 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     }
   }
 
-  testFinished() {
+  testFinished(test?: CodeceptTestWithArtifacts) {
     this.currentTestHookName = undefined;
     if (this.currentBddStep) {
       this.runtime.updateStep(this.currentBddStep, (result) => {
@@ -189,6 +197,25 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
 
     this.metaStepStack = [];
     this.currentLeafStep = undefined;
+
+    const currentTest = this.currentTest;
+    if (currentTest) {
+      recorder.add(
+        "allure screenshot attachment",
+        () => {
+          if (!test?.artifacts?.screenshot) {
+            return;
+          }
+          const screenshotPath = test.artifacts.screenshot;
+
+          this.runtime.writeAttachment(currentTest, null, basename(screenshotPath), screenshotPath, {
+            contentType: ContentType.PNG,
+            wrapInStep: true,
+          });
+        },
+        true,
+      );
+    }
   }
 
   stepStarted(step: CodeceptStep) {
