@@ -207,6 +207,44 @@ it("should report one beforeEach/afterEach fixture per test", async () => {
   );
 });
 
+it("reports failed hooks as global errors", async () => {
+  const { groups, globals } = await runJasmineInlineTest({
+    "spec/test/sample.spec.js": `
+      beforeEach(() => {
+        throw new Error("beforeEach boom");
+      });
+
+      it("blocked by hook", () => {});
+    `,
+  });
+  const allErrors = Object.values(globals ?? {}).flatMap((info) => info.errors);
+
+  expect(groups).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "beforeEach",
+        befores: [
+          expect.objectContaining({
+            status: Status.BROKEN,
+            statusDetails: expect.objectContaining({
+              message: "beforeEach boom",
+            }),
+          }),
+        ],
+      }),
+    ]),
+  );
+  expect(allErrors).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        message: "beforeEach failed: beforeEach boom",
+        timestamp: expect.any(Number),
+      }),
+    ]),
+  );
+  expect(allErrors.filter((error) => error.message === "beforeEach failed: beforeEach boom")).toHaveLength(1);
+});
+
 it("should report hooks for a test in a sub-suite", async () => {
   const { tests, groups } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `

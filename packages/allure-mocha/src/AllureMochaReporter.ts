@@ -1,7 +1,13 @@
 import { sep } from "node:path";
 import { env } from "node:process";
 
-import { type AttachmentOptions, type ContentType, type Label, type Parameter } from "allure-js-commons";
+import {
+  type AttachmentOptions,
+  type ContentType,
+  type Label,
+  type Parameter,
+  type StatusDetails,
+} from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
@@ -65,6 +71,8 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   protected scopesStack: string[] = [];
   protected currentTest?: string;
   protected currentHook?: string;
+  protected currentHookName?: string;
+  protected currentHookError?: Error;
   private readonly isInWorker: boolean;
   readonly #extraReporters: Mocha.reporters.Base[] = [];
 
@@ -244,6 +252,20 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   };
 
   private onFailed = (_: Mocha.Test, error: Error) => {
+    if (this.currentHook && !this.currentHookError) {
+      const details = getMessageAndTraceFromError(error);
+
+      this.currentHookError = error;
+      this.runtime.updateFixture(this.currentHook, (r) => {
+        r.status = getStatusFromError(error);
+        r.statusDetails = {
+          ...r.statusDetails,
+          ...details,
+        };
+      });
+      this.runtime.applyGlobalRuntimeMessages([toGlobalErrorMessage(this.currentHookName ?? "hook", details)]);
+    }
+
     if (!this.currentTest) {
       return;
     }
@@ -307,7 +329,9 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
 
     const name = hook.originalTitle ?? hook.title ?? "";
     if (hookCategory) {
+      this.currentHookError = undefined;
       this.currentHook = this.runtime.startFixture(scopeUuid, hookCategory, { name });
+      this.currentHookName = name;
     }
   };
 
@@ -315,8 +339,9 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     if (!this.currentHook) {
       return;
     }
+    const name = this.currentHookName ?? hook.originalTitle ?? hook.title ?? "";
+    const error: Error | undefined = this.currentHookError ?? hook.error();
     this.runtime.updateFixture(this.currentHook, (r) => {
-      const error: Error | undefined = hook.error();
       if (error) {
         r.status = getStatusFromError(error);
         r.statusDetails = {
@@ -327,8 +352,13 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
         r.status = Status.PASSED;
       }
     });
+    if (error && !this.currentHookError) {
+      this.runtime.applyGlobalRuntimeMessages([toGlobalErrorMessage(name, getMessageAndTraceFromError(error))]);
+    }
     this.runtime.stopFixture(this.currentHook);
     this.currentHook = undefined;
+    this.currentHookName = undefined;
+    this.currentHookError = undefined;
   };
 
   private writeTestScopes = (suite: Mocha.Suite) => {
@@ -347,3 +377,11 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
 
   protected getWorkerId = (): string | undefined => env.MOCHA_WORKER_ID;
 }
+
+const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
+  type: "global_error",
+  data: {
+    ...details,
+    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
+  },
+});

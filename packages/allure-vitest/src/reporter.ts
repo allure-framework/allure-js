@@ -1,7 +1,7 @@
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
-import { Stage, Status } from "allure-js-commons";
+import { Stage, Status, type StatusDetails } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
@@ -32,6 +32,10 @@ const localRequire = createRequire(import.meta.url);
 export type AllureVitestReporterConfig = ReporterConfig & {
   reportMatchers?: boolean;
 };
+
+type HookName = "beforeAll" | "beforeEach" | "afterEach" | "afterAll";
+
+const hookNames: HookName[] = ["beforeAll", "beforeEach", "afterEach", "afterAll"];
 
 const setupModulePath = fileURLToPath(new URL("./setup.js", import.meta.url));
 
@@ -122,6 +126,12 @@ export default class AllureVitestReporter implements Reporter {
     // do not report skipped tests
     if (task.mode === "skip" && !task.result) {
       return;
+    }
+
+    const hookGlobalMessages = getHookGlobalErrorMessages(task);
+
+    if (hookGlobalMessages.length) {
+      this.globalRuntimeMessages.push(...hookGlobalMessages);
     }
 
     if (task.type === "suite") {
@@ -230,3 +240,41 @@ export default class AllureVitestReporter implements Reporter {
     this.allureReporterRuntime!.writeTest(testUuid);
   }
 }
+
+const getHookGlobalErrorMessages = (task: Task): RuntimeMessage[] => {
+  const { hooks, errors } = task.result ?? {};
+
+  if (!hooks || !errors?.length) {
+    return [];
+  }
+
+  const failedHookNames = hookNames.filter((name) => {
+    const state = hooks[name];
+
+    return state && state !== "pass" && state !== "skip";
+  });
+
+  if (!failedHookNames.length) {
+    return [];
+  }
+
+  const hookErrors = errors.slice(-failedHookNames.length);
+
+  return failedHookNames.flatMap((name, index) => {
+    const error = hookErrors[index];
+
+    if (!error) {
+      return [];
+    }
+
+    return [toGlobalErrorMessage(`${name} hook`, getMessageAndTraceFromError(error))];
+  });
+};
+
+const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
+  type: "global_error",
+  data: {
+    ...details,
+    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
+  },
+});
