@@ -4,11 +4,16 @@ import type { CypressLogEntry, LogStepDescriptor } from "../types.js";
 import { isDefined } from "../utils.js";
 import { reportStepStart } from "./lifecycle.js";
 import serializePropValue from "./serialize.js";
-import { getCurrentStep, getStepStack, pushStep, setupStepFinalization } from "./state.js";
+import { getConfig, getCurrentStep, getStepStack, pushStep, setupStepFinalization } from "./state.js";
 import { ALLURE_STEP_CMD_SUBJECT, findAndStopStepWithSubsteps, isLogStep } from "./steps.js";
 import { resolveConsoleProps, resolveRenderProps } from "./utils.js";
 
 export const shouldCreateStepFromCommandLogEntry = (entry: CypressLogEntry) => {
+  if (!getConfig().stepsFromCommands.enabled) {
+    // The user has turned the automatic steps off. Only the steps created via the Allure API are reported.
+    return false;
+  }
+
   const { event, instrument } = entry.attributes;
   if (instrument !== "command") {
     // We are interested in the "TEST BODY" panel only for now.
