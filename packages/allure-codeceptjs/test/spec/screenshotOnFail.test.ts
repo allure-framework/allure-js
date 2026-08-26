@@ -19,7 +19,7 @@ it("should support screenshot plugin", async () => {
       `,
     "codecept.conf.js": `
         const path = require("node:path");
-        const { setCommonPlugins } = require("@codeceptjs/configure");
+        const { setCommonPlugins } = require("./codeceptjs-configure.js");
 
         setCommonPlugins();
 

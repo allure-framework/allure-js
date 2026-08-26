@@ -7071,7 +7071,6 @@ __metadata:
     "@babel/plugin-transform-modules-commonjs": "npm:^7.27.1"
     "@babel/preset-env": "npm:^7.28.0"
     "@babel/preset-typescript": "npm:^7.27.1"
-    "@codeceptjs/configure": "npm:^4.0.0-beta.4"
     "@codeceptjs/helper": "npm:^2.0.4"
     "@types/babel__core": "npm:^7.20.5"
     "@types/babel__preset-env": "npm:^7.10.0"

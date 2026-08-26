@@ -1,5 +1,5 @@
 const path = require("node:path");
-const { setCommonPlugins } = require("@codeceptjs/configure");
+const { setCommonPlugins } = require("./codeceptjs-configure.js");
 
 setCommonPlugins();
 

@@ -16,7 +16,7 @@ it("should support steps in page objects", async () => {
       `,
     "codecept.conf.js": `
         const path = require("node:path");
-        const { setCommonPlugins } = require("@codeceptjs/configure");
+        const { setCommonPlugins } = require("./codeceptjs-configure.js");
 
         setCommonPlugins();
 
@@ -104,7 +104,7 @@ it("should report broken steps in page objects for raw errors", async () => {
       `,
     "codecept.conf.js": `
         const path = require("node:path");
-        const { setCommonPlugins } = require("@codeceptjs/configure");
+        const { setCommonPlugins } = require("./codeceptjs-configure.js");
 
         setCommonPlugins();
 
@@ -210,7 +210,7 @@ it("should support actor steps", async () => {
       `,
     "codecept.conf.js": `
         const path = require("node:path");
-        const { setCommonPlugins } = require("@codeceptjs/configure");
+        const { setCommonPlugins } = require("./codeceptjs-configure.js");
 
         setCommonPlugins();
 
@@ -299,7 +299,7 @@ it("should report broken actor steps for raw errors", async () => {
       `,
     "codecept.conf.js": `
         const path = require("node:path");
-        const { setCommonPlugins } = require("@codeceptjs/configure");
+        const { setCommonPlugins } = require("./codeceptjs-configure.js");
 
         setCommonPlugins();
 
@@ -407,7 +407,7 @@ it("should support nested page object steps", async () => {
       `,
     "codecept.conf.js": `
         const path = require("node:path");
-        const { setCommonPlugins } = require("@codeceptjs/configure");
+        const { setCommonPlugins } = require("./codeceptjs-configure.js");
 
         setCommonPlugins();
 
@@ -530,7 +530,7 @@ it("should close page object steps before unrelated sibling steps", async () => 
       `,
     "codecept.conf.js": `
         const path = require("node:path");
-        const { setCommonPlugins } = require("@codeceptjs/configure");
+        const { setCommonPlugins } = require("./codeceptjs-configure.js");
 
         setCommonPlugins();
 

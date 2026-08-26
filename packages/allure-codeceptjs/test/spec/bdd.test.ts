@@ -11,7 +11,7 @@ it("should add bdd steps", async () => {
     "step_definitions/steps.js": ` Given("a passed step", () => { });`,
     "codecept.conf.js": `
         const path = require("node:path");
-        const { setCommonPlugins } = require("@codeceptjs/configure");
+        const { setCommonPlugins } = require("./codeceptjs-configure.js");
 
         setCommonPlugins();
 
@@ -54,7 +54,7 @@ it("should support helper steps in bdd steps", async () => {
     Then("all good", async () => { await I.next(); await I.pass(); await I.next(); await I.pass(); });`,
     "codecept.conf.js": `
         const path = require("node:path");
-        const { setCommonPlugins } = require("@codeceptjs/configure");
+        const { setCommonPlugins } = require("./codeceptjs-configure.js");
 
         setCommonPlugins();
 
@@ -146,7 +146,7 @@ it("should support broken bdd steps for raw errors", async () => {
     Then(" this one is ignored", async () => { });`,
     "codecept.conf.js": `
         const path = require("node:path");
-        const { setCommonPlugins } = require("@codeceptjs/configure");
+        const { setCommonPlugins } = require("./codeceptjs-configure.js");
 
         setCommonPlugins();
 

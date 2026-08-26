@@ -27,6 +27,7 @@ export const runCodeceptJsInlineTest = async (
     // package.json is used to find project root in case of absolute file paths are used
     "package.json": JSON.stringify({ name: "dummy" }),
     "codecept.conf.js": await readFile(resolvePath(__dirname, "./samples/codecept.conf.js"), "utf-8"),
+    "codeceptjs-configure.js": await readFile(resolvePath(__dirname, "./samples/codeceptjs-configure.js"), "utf-8"),
     "helper.js": await readFile(resolvePath(__dirname, "./samples/helper.js"), "utf-8"),
     ...files,
   };
