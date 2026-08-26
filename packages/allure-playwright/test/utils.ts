@@ -60,10 +60,14 @@ export const runPlaywrightInlineTest = async (
 
   const modulePath = require.resolve("@playwright/test/cli");
   const args = ["test", "-c", "./playwright.config.js", ...cliArgs];
+  const childEnv = { ...process.env };
+  delete childEnv.ALLURE_TESTPLAN_PATH;
+  delete childEnv.ALLURE_RERUN;
+
   const testProcess = await step(`${modulePath} ${args.join(" ")}`, () => {
     return fork(modulePath, args, {
       env: {
-        ...process.env,
+        ...childEnv,
         ...env,
         ALLURE_TEST_MODE: "1",
         PW_DISABLE_TS_ESM: "1",
@@ -88,7 +92,7 @@ export const runPlaywrightInlineTest = async (
   });
 
   return new Promise((resolve) => {
-    testProcess.on("exit", async (code, signal) => {
+    testProcess.on("close", async (code, signal) => {
       const resultsFiles = (
         await glob(join(testDir, "**/*"), {
           nodir: true,
@@ -105,6 +109,7 @@ export const runPlaywrightInlineTest = async (
         await logStep(`Exit code: ${code}`);
       }
 
+      await new Promise<void>((r) => setImmediate(r));
       await attachment("stdout", stdout.join("\n"), "text/plain");
       await attachment("stderr", stderr.join("\n"), "text/plain");
       await messageReader.attachResults();

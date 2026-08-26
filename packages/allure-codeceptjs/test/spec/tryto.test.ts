@@ -3,10 +3,10 @@ import { expect, it } from "vitest";
 
 import { runCodeceptJsInlineTest } from "../utils.js";
 
-it("should support tryTo plugin", async () => {
+it("should support tryTo effect", async () => {
   const { tests } = await runCodeceptJsInlineTest({
     "nested/login.test.js": `
-        const { container } = require('codeceptjs')
+        const { tryTo } = require("codeceptjs/effects");
 
         Feature("login-feature");
         Scenario("login-scenario1", async ({ I }) => {
@@ -19,7 +19,7 @@ it("should support tryTo plugin", async () => {
       `,
     "codecept.conf.js": `
         const path = require("node:path");
-        const { setCommonPlugins } = require("@codeceptjs/configure");
+        const { setCommonPlugins } = require("./codeceptjs-configure.js");
 
         setCommonPlugins();
 
@@ -30,9 +30,6 @@ it("should support tryTo plugin", async () => {
             allure: {
               require: require.resolve("allure-codeceptjs"),
               enabled: true,
-            },
-            tryTo: {
-              enabled: true
             }
           },
           helpers: {

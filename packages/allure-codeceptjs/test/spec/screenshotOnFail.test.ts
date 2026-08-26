@@ -3,7 +3,7 @@ import { expect, it } from "vitest";
 
 import { runCodeceptJsInlineTest } from "../utils.js";
 
-it("should support screenshotOnFail plugin", async () => {
+it("should support screenshot plugin", async () => {
   const { tests, attachments } = await runCodeceptJsInlineTest({
     "nested/login.test.js": `
         const { container } = require('codeceptjs')
@@ -19,7 +19,7 @@ it("should support screenshotOnFail plugin", async () => {
       `,
     "codecept.conf.js": `
         const path = require("node:path");
-        const { setCommonPlugins } = require("@codeceptjs/configure");
+        const { setCommonPlugins } = require("./codeceptjs-configure.js");
 
         setCommonPlugins();
 
@@ -31,8 +31,9 @@ it("should support screenshotOnFail plugin", async () => {
               require: require.resolve("allure-codeceptjs"),
               enabled: true,
             },
-            screenshotOnFail: {
-              enabled: true
+            screenshot: {
+              enabled: true,
+              on: "fail",
             }
           },
           helpers: {
@@ -97,10 +98,10 @@ it("should support screenshotOnFail plugin", async () => {
             status: Status.BROKEN,
           }),
           expect.objectContaining({
-            name: "Main session - Last Seen Screenshot",
+            name: "login-scenario2.failed.png",
             attachments: [
               expect.objectContaining({
-                name: "Main session - Last Seen Screenshot",
+                name: "login-scenario2.failed.png",
                 type: "image/png",
                 source: attachmentSources[0],
               }),
@@ -110,4 +111,4 @@ it("should support screenshotOnFail plugin", async () => {
       }),
     ]),
   );
-});
+}, 10_000);
