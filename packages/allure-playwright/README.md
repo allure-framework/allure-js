@@ -76,18 +76,16 @@ directory.
 
 You may select another location, or further customize the reporter's behavior with [the configuration options](https://allurereport.org/docs/playwright-configuration/).
 
-To use name-based test selectors instead of source locations, enable the legacy full name format:
+`fullName` is built from the test's source location (`file:line:column`), which shifts whenever the surrounding code
+changes. For a stable identifier instead, use the `playwrightTestId` label carried on each result — it's Playwright's
+own [`TestCase.id`](https://playwright.dev/docs/api/class-testcase#test-case-id), a hash of the project, file, and
+suite/test titles that doesn't depend on source location.
 
-```js
-import { defineConfig } from "@playwright/test";
-
-export default defineConfig({
-  reporter: [["allure-playwright", { useLegacyFullName: true }]],
-});
-```
-
-This produces full names in the `file#suite test` format instead of `file:line:column`. Test names must be unique
-within the same suite when this option is enabled.
+Each result also carries a `playwrightTestListSelector` label (`file › suite › ... › title`) usable verbatim as a
+line in a Playwright [`--test-list`](https://playwright.dev/docs/test-cli#test-list) file. When every entry in an
+`ALLURE_TESTPLAN_PATH` test plan's `selector` field is one of these values, the reporter passes that file to
+Playwright's own `--test-list`, so reruns skip loading non-matching test files entirely instead of relying only on
+per-test filtering.
 
 ### View the report
 

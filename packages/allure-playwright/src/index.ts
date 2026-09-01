@@ -1,6 +1,7 @@
-import { existsSync } from "node:fs";
+import { existsSync, writeFileSync } from "node:fs";
 import { access } from "node:fs/promises";
 import { createRequire } from "node:module";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
 
@@ -19,7 +20,7 @@ import {
   type StepResult,
   type TestResult,
 } from "allure-js-commons";
-import type { RuntimeMessage, RuntimeStepMetadataMessage, TestPlanV1Test } from "allure-js-commons/sdk";
+import type { RuntimeMessage, RuntimeStepMetadataMessage } from "allure-js-commons/sdk";
 import {
   extractMetadataFromString,
   getMessageAndTraceFromError,
@@ -33,7 +34,6 @@ import {
   ShallowStepsStack,
   createDefaultWriter,
   createStepResult,
-  escapeRegExp,
   formatLink,
   getEnvironmentLabels,
   getFallbackTestCaseIdLabel,
@@ -83,6 +83,7 @@ type TestPlanExecutionFilter = (test: TestCase, parentSuite?: Suite) => boolean;
 const localRequire = typeof require === "function" ? require : createRequire(import.meta.url);
 const testPlanFilterSymbol = Symbol.for("allure-playwright.testPlanFilter");
 const testPlanFilterPatchSymbol = Symbol.for("allure-playwright.testPlanFilterPatch");
+const NATIVE_SELECTOR_SEPARATOR = " › ";
 
 export class AllureReporter implements ReporterV2 {
   config!: FullConfig;
@@ -131,56 +132,22 @@ export class AllureReporter implements ReporterV2 {
 
     configElement?.preOnlyTestFilters?.push((test: TestCase) => this.isInTestPlan(test));
 
-    if (testPlan.tests.some((test) => test.id !== undefined)) {
+    if (!configElement) {
       return;
     }
 
-    const testsWithSelectors = testPlan.tests.filter((test) => test.selector);
+    const nativeSelectors = testPlan.tests
+      .map((test) => test.selector)
+      .filter((selector): selector is string => !!selector?.includes(NATIVE_SELECTOR_SEPARATOR));
 
-    const v1ReporterTests: TestPlanV1Test[] = [];
-    const v2ReporterTests: TestPlanV1Test[] = [];
-    const cliArgs: string[] = [];
-
-    testsWithSelectors.forEach((test) => {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      if (!/#/.test(test.selector!)) {
-        v2ReporterTests.push(test);
-        return;
-      }
-
-      v1ReporterTests.push(test);
-    });
-
-    // The path needs to be specific to the current OS. Otherwise, it may not match against the test file.
-    const selectorToGrepPattern = (selector: string) => escapeRegExp(path.normalize(`/${selector}`));
-
-    if (v2ReporterTests.length) {
-      // we need to cut off column because playwright works only with line number
-      const v2SelectorsArgs = v2ReporterTests
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-        .map((test) => test.selector!.replace(/:\d+$/, ""))
-        .map(selectorToGrepPattern);
-
-      cliArgs.push(...v2SelectorsArgs);
-    }
-
-    if (v1ReporterTests.length) {
-      const v1SelectorsArgs = v1ReporterTests
-        // we can filter tests only by absolute path, so we need to cut off test name
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-        .map((test) => test.selector!.split("#")[0])
-        .map(selectorToGrepPattern);
-
-      cliArgs.push(...v1SelectorsArgs);
-    }
-
-    if (!cliArgs.length) {
+    if (nativeSelectors.length !== testPlan.tests.length) {
       return;
     }
 
-    if (configElement) {
-      configElement.cliArgs = cliArgs;
-    }
+    const testListPath = path.join(tmpdir(), `allure-playwright-testlist-${process.pid}-${randomUuid()}.txt`);
+    writeFileSync(testListPath, nativeSelectors.join("\n"), "utf8");
+
+    configElement.cliArgs = ["--test-list", testListPath];
   }
 
   onError(): void {}
@@ -212,7 +179,7 @@ export class AllureReporter implements ReporterV2 {
       parameters: [],
       steps: [],
       testCaseId: md5(metadata.testCaseIdBase),
-      fullName: this.options.useLegacyFullName ? metadata.legacyFullName : metadata.fullName,
+      fullName: metadata.fullName,
       titlePath,
     };
 
@@ -221,6 +188,8 @@ export class AllureReporter implements ReporterV2 {
     result.labels!.push(getPackageLabel(metadata.testFilePath, metadata.projectRootSearchFrom));
     result.labels!.push(getFallbackTestCaseIdLabel(md5(metadata.legacyTestCaseIdBase)));
     result.labels!.push({ name: "titlePath", value: test.parent.titlePath().join(" > ") });
+    result.labels!.push({ name: "playwrightTestId", value: test.id });
+    result.labels!.push({ name: "playwrightTestListSelector", value: metadata.nativeSelector });
 
     // support for earlier playwright versions
     if ("tags" in test) {
@@ -1102,6 +1071,7 @@ export class AllureReporter implements ReporterV2 {
       titleMetadata,
       fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
       legacyFullName,
+      nativeSelector: [relativeFile, ...suiteTitles, titleMetadata.cleanTitle].join(NATIVE_SELECTOR_SEPARATOR),
       staticAllureId,
     };
   }
@@ -1111,10 +1081,10 @@ export class AllureReporter implements ReporterV2 {
       return true;
     }
 
-    const { fullName, legacyFullName, staticAllureId } = this.getStaticTestMetadata(test, parentSuite);
+    const { fullName, legacyFullName, nativeSelector, staticAllureId } = this.getStaticTestMetadata(test, parentSuite);
 
     return (
-      includedInTestPlan(this.testPlan, { fullName, id: staticAllureId }) ||
+      includedInTestPlan(this.testPlan, { fullName, id: staticAllureId, nativeSelector }) ||
       includedInTestPlan(this.testPlan, { fullName: legacyFullName, id: staticAllureId })
     );
   }

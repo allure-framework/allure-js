@@ -466,3 +466,77 @@ describe("testplan with id fallback", () => {
     expect(results.tests).toEqual([]);
   });
 });
+
+describe("testplan with the native --test-list selector", () => {
+  const spec = /* ts */ `
+    import { test } from '@playwright/test';
+    test.describe('nested', () => {
+      test('should not execute', async () => {
+        (await import('node:fs')).writeFileSync('native-not-selected-ran.txt', 'yes');
+      });
+      test('should execute', async () => {
+        (await import('node:fs')).writeFileSync('native-selected-ran.txt', 'yes');
+      });
+    });
+  `;
+
+  it("matches by playwrightTestListSelector and survives a source-location shift", async () => {
+    const discovery = await runPlaywrightInlineTest({ "a.test.ts": spec });
+    const target = discovery.tests.find((test) => test.name === "should execute")!;
+    const nativeSelector = target.labels.find((label) => label.name === "playwrightTestListSelector")!.value;
+
+    const exampleTestPlan: TestPlanV1 = {
+      version: "1.0",
+      tests: [{ id: 1, selector: nativeSelector }],
+    };
+    const testPlanFilename = "example-testplan.json";
+    const results = await runPlaywrightInlineTest(
+      {
+        // Extra leading lines shift every test's file:line:column, which a --test-list selector ignores.
+        "a.test.ts": `\n\n\n\n\n${spec}`,
+        [testPlanFilename]: JSON.stringify(exampleTestPlan),
+      },
+      [],
+      { ALLURE_TESTPLAN_PATH: testPlanFilename },
+    );
+
+    expect(results.tests).toHaveLength(1);
+    expect(results.tests[0].name).toBe("should execute");
+    expect(results.restFiles["native-selected-ran.txt"]).toBe("yes");
+    expect(results.restFiles["native-not-selected-ran.txt"]).toBeUndefined();
+  });
+
+  it("falls back to per-test matching when a test plan mixes a native selector with an id-only entry", async () => {
+    const exampleTestPlan: TestPlanV1 = {
+      version: "1.0",
+      tests: [{ id: 1, selector: "a.test.ts › nested › should execute" }, { id: 5 }],
+    };
+    const testPlanFilename = "example-testplan.json";
+    const results = await runPlaywrightInlineTest(
+      {
+        "a.test.ts": /* ts */ `
+        import { test } from '@playwright/test';
+        test.describe('nested', () => {
+          test('should execute', async () => {
+            (await import('node:fs')).writeFileSync('by-selector-ran.txt', 'yes');
+          });
+          test('should also execute @allure.id=5', async () => {
+            (await import('node:fs')).writeFileSync('by-id-ran.txt', 'yes');
+          });
+          test('should not execute', async () => {
+            (await import('node:fs')).writeFileSync('not-selected-ran.txt', 'yes');
+          });
+        });
+      `,
+        [testPlanFilename]: JSON.stringify(exampleTestPlan),
+      },
+      [],
+      { ALLURE_TESTPLAN_PATH: testPlanFilename },
+    );
+
+    expect(results.tests).toHaveLength(2);
+    expect(results.restFiles["by-selector-ran.txt"]).toBe("yes");
+    expect(results.restFiles["by-id-ran.txt"]).toBe("yes");
+    expect(results.restFiles["not-selected-ran.txt"]).toBeUndefined();
+  });
+});
