@@ -1,7 +1,41 @@
-import type { TestPlanV1 } from "allure-js-commons/sdk";
-import { describe, expect, it } from "vitest";
+import { join } from "node:path";
 
+import type { TestPlanV1 } from "allure-js-commons/sdk";
+import { describe, expect, it, vi } from "vitest";
+
+import { AllureReporter } from "../../src/index.js";
 import { runPlaywrightInlineTest } from "../utils.js";
+
+describe("Playwright internals", () => {
+  it("resolves Suite from legacy Playwright common test module", () => {
+    const suitePrototype = { _addTest: vi.fn() };
+    const playwrightPackagePath = join("playwright-root", "package.json");
+    const playwrightCommonTestPath = join("playwright-root", "lib/common/test.js");
+    const fakeRequire = Object.assign(
+      vi.fn((id: string) => {
+        if (id === "playwright/lib/common") {
+          throw Object.assign(new Error("not exported"), { code: "ERR_PACKAGE_PATH_NOT_EXPORTED" });
+        }
+
+        if (id === playwrightCommonTestPath) {
+          return { Suite: { prototype: suitePrototype } };
+        }
+
+        throw new Error(`Unexpected require: ${id}`);
+      }),
+      {
+        resolve: vi.fn((id: string) => {
+          expect(id).toBe("playwright/package.json");
+          return playwrightPackagePath;
+        }),
+      },
+    ) as unknown as NodeRequire;
+
+    const reporter = new AllureReporter({});
+
+    expect(reporter["getPlaywrightSuitePrototype"](fakeRequire)).toBe(suitePrototype);
+  });
+});
 
 describe("testplan with v1 reporter full names", () => {
   it("respects testplan", async () => {
