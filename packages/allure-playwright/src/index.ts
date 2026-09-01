@@ -69,6 +69,14 @@ type PlaywrightSuitePrototype = {
   _addTest?: (test: TestCase) => void;
 };
 
+type PlaywrightCommonModule = {
+  test?: { Suite?: { prototype?: PlaywrightSuitePrototype } };
+};
+
+type PlaywrightCommonTestModule = {
+  Suite?: { prototype?: PlaywrightSuitePrototype };
+};
+
 type PatchedPlaywrightSuitePrototype = PlaywrightSuitePrototype & Record<symbol, unknown>;
 type TestPlanExecutionFilter = (test: TestCase, parentSuite?: Suite) => boolean;
 
@@ -1148,14 +1156,28 @@ export class AllureReporter implements ReporterV2 {
     patchedSuitePrototype[testPlanFilterPatchSymbol] = true;
   }
 
-  private getPlaywrightSuitePrototype(): PlaywrightSuitePrototype | undefined {
+  private getPlaywrightSuitePrototype(
+    playwrightTestRequire = createRequire(localRequire.resolve("@playwright/test")),
+  ): PlaywrightSuitePrototype | undefined {
     try {
-      const playwrightTestRequire = createRequire(localRequire.resolve("@playwright/test"));
-      const playwrightCommon = playwrightTestRequire("playwright/lib/common") as {
-        test?: { Suite?: { prototype?: PlaywrightSuitePrototype } };
-      };
+      const playwrightCommon = playwrightTestRequire("playwright/lib/common") as PlaywrightCommonModule;
 
-      return playwrightCommon.test?.Suite?.prototype;
+      const suitePrototype = playwrightCommon.test?.Suite?.prototype;
+
+      if (suitePrototype) {
+        return suitePrototype;
+      }
+    } catch {
+      // Playwright 1.53-1.59 didn't export playwright/lib/common, but the Suite lived in lib/common/test.js.
+    }
+
+    try {
+      const playwrightPackagePath = playwrightTestRequire.resolve("playwright/package.json");
+      const playwrightCommonTest = playwrightTestRequire(
+        path.join(path.dirname(playwrightPackagePath), "lib/common/test.js"),
+      ) as PlaywrightCommonTestModule;
+
+      return playwrightCommonTest.Suite?.prototype;
     } catch {
       return undefined;
     }
