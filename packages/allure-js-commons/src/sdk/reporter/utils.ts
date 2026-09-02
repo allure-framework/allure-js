@@ -63,7 +63,15 @@ export const getWorstTestStepResult = (steps: StepResult[]): StepResult | undefi
     return;
   }
 
-  return [...steps].sort((a, b) => statusToPriority(a.status) - statusToPriority(b.status))[0];
+  // A step with no status (e.g. an attachment wrapper) is not an executed step
+  // and must not outrank a real outcome.
+  const evaluableSteps = steps.filter((step) => step.status !== undefined);
+
+  if (evaluableSteps.length === 0) {
+    return steps[0];
+  }
+
+  return evaluableSteps.sort((a, b) => statusToPriority(a.status) - statusToPriority(b.status))[0];
 };
 
 export const readImageAsBase64 = async (filePath: string): Promise<string | undefined> => {
