@@ -8693,11 +8693,11 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@playwright/test", [\
-      ["npm:1.60.0", {\
-        "packageLocation": "./.yarn/cache/@playwright-test-npm-1.60.0-b1772ab412-a13d369014.zip/node_modules/@playwright/test/",\
+      ["npm:1.62.1", {\
+        "packageLocation": "./.yarn/cache/@playwright-test-npm-1.62.1-b677fab058-a84fdc2b0c.zip/node_modules/@playwright/test/",\
         "packageDependencies": [\
-          ["@playwright/test", "npm:1.60.0"],\
-          ["playwright", "npm:1.60.0"]\
+          ["@playwright/test", "npm:1.62.1"],\
+          ["playwright", "npm:1.62.1"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -11005,7 +11005,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/plugin-transform-modules-commonjs", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.27.1"],\
           ["@babel/preset-env", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.27.1"],\
-          ["@playwright/test", "npm:1.60.0"],\
+          ["@playwright/test", "npm:1.62.1"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
           ["@types/node", "npm:26.0.1"],\
@@ -20503,6 +20503,15 @@ const RAW_RUNTIME_STATE =
           ["playwright-core", "npm:1.60.0"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:1.62.1", {\
+        "packageLocation": "./.yarn/cache/playwright-npm-1.62.1-e8ce910651-f99546873a.zip/node_modules/playwright/",\
+        "packageDependencies": [\
+          ["fsevents", "patch:fsevents@npm%3A2.3.2#optional!builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"],\
+          ["playwright", "npm:1.62.1"],\
+          ["playwright-core", "npm:1.62.1"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["playwright-core", [\
@@ -20510,6 +20519,13 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/playwright-core-npm-1.60.0-3d53a7d2d6-66c0f83d62.zip/node_modules/playwright-core/",\
         "packageDependencies": [\
           ["playwright-core", "npm:1.60.0"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:1.62.1", {\
+        "packageLocation": "./.yarn/cache/playwright-core-npm-1.62.1-eeafaf21b5-2dab88793a.zip/node_modules/playwright-core/",\
+        "packageDependencies": [\
+          ["playwright-core", "npm:1.62.1"]\
         ],\
         "linkType": "HARD"\
       }]\

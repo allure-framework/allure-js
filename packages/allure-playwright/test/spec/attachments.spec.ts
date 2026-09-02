@@ -76,9 +76,7 @@ it("adds trace to the report as an attachment", async () => {
       });
     `,
     "playwright.config.js": `
-       import { defineConfig } from "@playwright/test";
-
-       export default {
+       module.exports = {
          outputDir: "./test-results",
          reporter: [
            [
@@ -138,9 +136,7 @@ it("adds trace from stopChunk to the report as an attachment", async () => {
       });
     `,
     "playwright.config.js": `
-       import { defineConfig } from "@playwright/test";
-
-       export default {
+       module.exports = {
          outputDir: "./test-results",
          reporter: [
            [
@@ -378,7 +374,7 @@ it("should support allure attachments with same names in hooks and test steps wi
   const { tests, attachments } = await runPlaywrightInlineTest({
     "sample.test.js": `
       import { test, expect } from '@playwright/test';
-      const allure = require('allure-js-commons');
+      import * as allure from 'allure-js-commons';
 
       test.beforeEach(async ({}, testInfo) => {
         await allure.attachment('attachment', 'Data before test', 'text/plain');

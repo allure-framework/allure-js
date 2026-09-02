@@ -1,6 +1,7 @@
 import type { FullConfig } from "@playwright/test";
 import type {
   FullResult,
+  Reporter,
   TestResult as PlaywrightTestResult,
   Suite,
   TestCase,
@@ -29,8 +30,12 @@ export type AttachmentTarget = {
   processedAtStepEnd?: boolean;
 };
 
+export type ReporterPreprocessParams = Parameters<NonNullable<Reporter["preprocess"]>>[0];
+
 export interface ReporterV2 {
   onConfigure(config: FullConfig): void;
+
+  preprocess(params: ReporterPreprocessParams): Promise<void> | void;
 
   onBegin(suite: Suite): void;
 
