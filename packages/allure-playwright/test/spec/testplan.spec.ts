@@ -1,41 +1,7 @@
-import { join } from "node:path";
-
 import type { TestPlanV1 } from "allure-js-commons/sdk";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
-import { AllureReporter } from "../../src/index.js";
 import { runPlaywrightInlineTest } from "../utils.js";
-
-describe("Playwright internals", () => {
-  it("resolves Suite from legacy Playwright common test module", () => {
-    const suitePrototype = { _addTest: vi.fn() };
-    const playwrightPackagePath = join("playwright-root", "package.json");
-    const playwrightCommonTestPath = join("playwright-root", "lib/common/test.js");
-    const fakeRequire = Object.assign(
-      vi.fn((id: string) => {
-        if (id === "playwright/lib/common") {
-          throw Object.assign(new Error("not exported"), { code: "ERR_PACKAGE_PATH_NOT_EXPORTED" });
-        }
-
-        if (id === playwrightCommonTestPath) {
-          return { Suite: { prototype: suitePrototype } };
-        }
-
-        throw new Error(`Unexpected require: ${id}`);
-      }),
-      {
-        resolve: vi.fn((id: string) => {
-          expect(id).toBe("playwright/package.json");
-          return playwrightPackagePath;
-        }),
-      },
-    ) as unknown as NodeRequire;
-
-    const reporter = new AllureReporter({});
-
-    expect(reporter["getPlaywrightSuitePrototype"](fakeRequire)).toBe(suitePrototype);
-  });
-});
 
 describe("testplan with v1 reporter full names", () => {
   it("respects testplan", async () => {
@@ -52,7 +18,7 @@ describe("testplan with v1 reporter full names", () => {
         },
         {
           id: 3,
-          // Wierd Regexp selector that should be escaped and match only one test
+          // A selector with special regexp characters should match exactly one test.
           selector: ".+.test.ts#+.",
         },
         {
@@ -117,37 +83,36 @@ describe("testplan with v1 reporter full names", () => {
 
     expect(results.tests.map((value) => value.fullName)).toEqual(
       expect.arrayContaining([
-        "b.test.ts:3:13",
-        "nested/super strange nested/super strange name.test.ts:4:14",
-        ".+.test.ts:3:13",
-        "notaga.test.ts:3:13",
+        "b.test.ts › should execute",
+        "nested/super strange nested/super strange name.test.ts › also nested › should execute",
+        ".+.test.ts › +.",
+        "notaga.test.ts › a",
       ]),
     );
     expect(results.restFiles["v1-not-selected-ran.txt"]).toBeUndefined();
   });
 });
 
-describe("testplan with v2 reporter full names", () => {
+describe("testplan with stable Playwright selectors", () => {
   it("respects testplan", async () => {
     const exampleTestPlan: TestPlanV1 = {
       version: "1.0",
       tests: [
         {
           id: 1,
-          selector: "nested/super strange nested/super strange name.test.ts:4:14",
+          selector: "nested/super strange nested/super strange name.test.ts › also nested › should execute",
         },
         {
           id: 2,
-          selector: "b.test.ts:3:13",
+          selector: "b.test.ts › should execute",
         },
         {
           id: 3,
-          // Wierd Regexp selector that should be escaped and match only one test
-          selector: ".+.test.ts:3:13",
+          selector: ".+.test.ts › +.",
         },
         {
           id: 4,
-          selector: "aga.test.ts:3:13",
+          selector: "aga.test.ts › a",
         },
       ],
     };
@@ -207,10 +172,10 @@ describe("testplan with v2 reporter full names", () => {
 
     expect(results.tests.map((value) => value.fullName)).toEqual(
       expect.arrayContaining([
-        "b.test.ts:3:13",
-        "nested/super strange nested/super strange name.test.ts:4:14",
-        ".+.test.ts:3:13",
-        "aga.test.ts:3:13",
+        "b.test.ts › should execute",
+        "nested/super strange nested/super strange name.test.ts › also nested › should execute",
+        ".+.test.ts › +.",
+        "aga.test.ts › a",
       ]),
     );
     expect(results.restFiles["v2-not-selected-ran.txt"]).toBeUndefined();
@@ -246,7 +211,7 @@ describe("testplan with id fallback", () => {
     expect(results.tests).toEqual([
       expect.objectContaining({
         name: "selected name",
-        fullName: "a.test.ts:6:13",
+        fullName: "a.test.ts › selected name @allure.id=5",
       }),
     ]);
     expect(results.restFiles["selected-ran.txt"]).toBe("yes");
@@ -284,7 +249,7 @@ describe("testplan with id fallback", () => {
     expect(results.tests).toEqual([
       expect.objectContaining({
         name: "selected name",
-        fullName: "a.test.ts:6:13",
+        fullName: "a.test.ts › selected name",
       }),
     ]);
     expect(results.restFiles["annotation-selected-ran.txt"]).toBe("yes");
@@ -320,12 +285,12 @@ describe("testplan with id fallback", () => {
     expect(results.tests).toEqual([
       expect.objectContaining({
         name: "selected name",
-        fullName: "a.test.ts:6:13",
+        fullName: "a.test.ts › selected name @allure.id=5",
       }),
     ]);
   });
 
-  it("still matches by selector when id does not match", async () => {
+  it("still matches by the old location selector when id does not match", async () => {
     const exampleTestPlan: TestPlanV1 = {
       version: "1.0",
       tests: [{ id: 99, selector: "a.test.ts:3:13" }],
@@ -354,7 +319,7 @@ describe("testplan with id fallback", () => {
     expect(results.tests).toEqual([
       expect.objectContaining({
         name: "selected name",
-        fullName: "a.test.ts:3:13",
+        fullName: "a.test.ts › selected name @allure.id=5",
       }),
     ]);
   });
@@ -362,7 +327,7 @@ describe("testplan with id fallback", () => {
   it("supports mixed selector and id entries", async () => {
     const exampleTestPlan: TestPlanV1 = {
       version: "1.0",
-      tests: [{ selector: "a.test.ts:3:13" }, { id: 6 }],
+      tests: [{ selector: "a.test.ts › selected by selector" }, { id: 6 }],
     };
     const testPlanFilename = "example-testplan.json";
     const results = await runPlaywrightInlineTest(
@@ -392,11 +357,11 @@ describe("testplan with id fallback", () => {
       expect.arrayContaining([
         expect.objectContaining({
           name: "selected by selector",
-          fullName: "a.test.ts:3:13",
+          fullName: "a.test.ts › selected by selector",
         }),
         expect.objectContaining({
           name: "selected by id",
-          fullName: "a.test.ts:6:13",
+          fullName: "a.test.ts › selected by id @allure.id=6",
         }),
       ]),
     );
@@ -464,5 +429,49 @@ describe("testplan with id fallback", () => {
     );
 
     expect(results.tests).toEqual([]);
+  });
+});
+
+describe("testplan with project dependencies", () => {
+  it("does not filter readonly setup and teardown projects", async () => {
+    const testPlanFilename = "example-testplan.json";
+    const results = await runPlaywrightInlineTest(
+      {
+        [testPlanFilename]: JSON.stringify({
+          version: "1.0",
+          tests: [{ selector: "main.test.ts › selected" }],
+        } satisfies TestPlanV1),
+        "playwright.config.js": /* js */ `
+          module.exports = {
+            reporter: [["allure-playwright", { resultsDir: "./allure-results" }]],
+            projects: [
+              { name: "setup", testMatch: /setup\\.test\\.ts/, teardown: "teardown" },
+              { name: "teardown", testMatch: /teardown\\.test\\.ts/ },
+              { name: "main", testMatch: /main\\.test\\.ts/, dependencies: ["setup"] },
+            ],
+          };
+        `,
+        "setup.test.ts": /* ts */ `
+          import { test } from '@playwright/test';
+          test('setup', async () => {});
+        `,
+        "teardown.test.ts": /* ts */ `
+          import { test } from '@playwright/test';
+          test('teardown', async () => {});
+        `,
+        "main.test.ts": /* ts */ `
+          import { test } from '@playwright/test';
+          test('selected', async () => {});
+          test('not selected', async () => {});
+        `,
+      },
+      [],
+      {
+        ALLURE_TESTPLAN_PATH: testPlanFilename,
+      },
+    );
+
+    expect(results.tests.map(({ name }) => name)).toEqual(expect.arrayContaining(["setup", "selected", "teardown"]));
+    expect(results.tests.find(({ name }) => name === "not selected")).toBeUndefined();
   });
 });

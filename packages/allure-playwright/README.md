@@ -39,7 +39,8 @@ Install Allure Report separately when you want to render the generated `allure-r
 
 ## Supported versions and platforms
 
-- `@playwright/test >= 1.53.0`
+- `"allure-playwright": ">=3.12.0"` requires `"@playwright/test": ">=1.62.0"`.
+- To use `"@playwright/test": ">=1.53.0 <1.62.0"`, use `"allure-playwright": "<=3.11.1"`.
 - Linux, macOS, and Windows wherever Playwright Test supports Node.js
 - this repository is validated in CI on Node.js 20 and 22
 

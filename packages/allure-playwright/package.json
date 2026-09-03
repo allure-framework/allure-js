@@ -69,7 +69,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.27.1",
     "@babel/preset-env": "^7.28.0",
     "@babel/preset-typescript": "^7.27.1",
-    "@playwright/test": "^1.60.0",
+    "@playwright/test": "^1.62.0",
     "@types/babel__core": "^7.20.5",
     "@types/babel__preset-env": "^7.10.0",
     "@types/node": "^26.0.1",
@@ -83,6 +83,6 @@
     "vitest": "^4.1.10"
   },
   "peerDependencies": {
-    "@playwright/test": ">=1.53.0"
+    "@playwright/test": ">=1.62.0"
   }
 }

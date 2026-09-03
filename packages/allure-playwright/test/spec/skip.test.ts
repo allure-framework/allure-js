@@ -29,20 +29,21 @@ it("reports programmatically skipped results", async () => {
 
   expect(skipped1).toEqual(
     expect.objectContaining({
-      fullName: "sample.test.js:4:12",
+      fullName: "sample.test.js › should be skipped 1",
       status: Status.SKIPPED,
       testCaseId: skipped1TestCaseId,
     }),
   );
   expect(notSkipped).toEqual(
     expect.objectContaining({
-      fullName: "sample.test.js:6:11",
+      fullName: "sample.test.js › should not be skipped",
       status: Status.PASSED,
       testCaseId: notSkippedTestCaseId,
     }),
   );
   expect(skipped2).toEqual(
     expect.objectContaining({
+      fullName: "sample.test.js › should be skipped 2",
       status: Status.SKIPPED,
       testCaseId: skipped2TestCaseId,
       statusDetails: expect.objectContaining({

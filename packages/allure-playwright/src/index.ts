@@ -1,6 +1,5 @@
 import { existsSync } from "node:fs";
 import { access } from "node:fs/promises";
-import { createRequire } from "node:module";
 import path from "node:path";
 import process from "node:process";
 
@@ -19,7 +18,7 @@ import {
   type StepResult,
   type TestResult,
 } from "allure-js-commons";
-import type { RuntimeMessage, RuntimeStepMetadataMessage, TestPlanV1Test } from "allure-js-commons/sdk";
+import type { RuntimeMessage, RuntimeStepMetadataMessage } from "allure-js-commons/sdk";
 import {
   extractMetadataFromString,
   getMessageAndTraceFromError,
@@ -33,7 +32,6 @@ import {
   ShallowStepsStack,
   createDefaultWriter,
   createStepResult,
-  escapeRegExp,
   formatLink,
   getEnvironmentLabels,
   getFallbackTestCaseIdLabel,
@@ -51,7 +49,13 @@ import {
 } from "allure-js-commons/sdk/reporter";
 
 import { allurePlaywrightLegacyApi } from "./legacy.js";
-import type { AllurePlaywrightReporterConfig, AttachStack, AttachmentTarget, ReporterV2 } from "./model.js";
+import type {
+  AllurePlaywrightReporterConfig,
+  AttachStack,
+  AttachmentTarget,
+  ReporterPreprocessParams,
+  ReporterV2,
+} from "./model.js";
 import {
   AFTER_HOOKS_ROOT_STEP_TITLE,
   BEFORE_HOOKS_ROOT_STEP_TITLE,
@@ -64,25 +68,6 @@ import {
   normalizeHookTitle,
   statusToAllureStats,
 } from "./utils.js";
-
-type PlaywrightSuitePrototype = {
-  _addTest?: (test: TestCase) => void;
-};
-
-type PlaywrightCommonModule = {
-  test?: { Suite?: { prototype?: PlaywrightSuitePrototype } };
-};
-
-type PlaywrightCommonTestModule = {
-  Suite?: { prototype?: PlaywrightSuitePrototype };
-};
-
-type PatchedPlaywrightSuitePrototype = PlaywrightSuitePrototype & Record<symbol, unknown>;
-type TestPlanExecutionFilter = (test: TestCase, parentSuite?: Suite) => boolean;
-
-const localRequire = typeof require === "function" ? require : createRequire(import.meta.url);
-const testPlanFilterSymbol = Symbol.for("allure-playwright.testPlanFilter");
-const testPlanFilterPatchSymbol = Symbol.for("allure-playwright.testPlanFilterPatch");
 
 export class AllureReporter implements ReporterV2 {
   config!: FullConfig;
@@ -102,6 +87,7 @@ export class AllureReporter implements ReporterV2 {
   private pendingAttachmentTasks: Map<string, Promise<void>[]> = new Map();
   private readonly attachmentTargetByStep = new WeakMap<TestStep, AttachmentTarget>();
   private readonly pwStepUuid = new WeakMap<TestStep, string>();
+  private readonly testFullNames = new WeakMap<TestCase, string>();
   private readonly emittedHookGlobalErrorKeys = new Set<string>();
   private readonly testPlan = parseTestPlan();
 
@@ -109,78 +95,47 @@ export class AllureReporter implements ReporterV2 {
     this.options = { suiteTitle: true, detail: true, ...config };
   }
 
+  async preprocess({ suite, testRun }: ReporterPreprocessParams) {
+    if (!this.testPlan) {
+      return;
+    }
+
+    const readonlyProjectNames = new Set<string>();
+
+    for (const projectSuite of suite.suites) {
+      const project = projectSuite.project();
+
+      project?.dependencies.forEach((dependency) => readonlyProjectNames.add(dependency));
+
+      if (project?.teardown) {
+        readonlyProjectNames.add(project.teardown);
+      }
+    }
+
+    for (const projectSuite of suite.suites) {
+      const project = projectSuite.project();
+      const readonlyProject = project ? readonlyProjectNames.has(project.name) : false;
+
+      if (readonlyProject) {
+        continue;
+      }
+
+      for (const test of projectSuite.allTests()) {
+        const metadata = this.getStaticTestMetadata(test);
+
+        if (this.isInTestPlan(test, metadata)) {
+          continue;
+        }
+
+        testRun.exclude(test);
+      }
+    }
+  }
+
   onConfigure(config: FullConfig): void {
     this.config = config;
     this.outputDir = config.projects[0].outputDir;
     this.snapshotDir = config.projects[0].snapshotDir;
-
-    const testPlan = this.testPlan;
-
-    if (!testPlan) {
-      return;
-    }
-
-    this.installTestPlanExecutionFilter();
-
-    const configElement = Object.getOwnPropertySymbols(config)
-      .map((symbol) => (config as unknown as Record<symbol, unknown>)[symbol])
-      .find(
-        (value): value is { preOnlyTestFilters?: ((test: TestCase) => boolean)[]; cliArgs?: string[] } =>
-          typeof value === "object" && value !== null && ("preOnlyTestFilters" in value || "cliArgs" in value),
-      );
-
-    configElement?.preOnlyTestFilters?.push((test: TestCase) => this.isInTestPlan(test));
-
-    if (testPlan.tests.some((test) => test.id !== undefined)) {
-      return;
-    }
-
-    const testsWithSelectors = testPlan.tests.filter((test) => test.selector);
-
-    const v1ReporterTests: TestPlanV1Test[] = [];
-    const v2ReporterTests: TestPlanV1Test[] = [];
-    const cliArgs: string[] = [];
-
-    testsWithSelectors.forEach((test) => {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      if (!/#/.test(test.selector!)) {
-        v2ReporterTests.push(test);
-        return;
-      }
-
-      v1ReporterTests.push(test);
-    });
-
-    // The path needs to be specific to the current OS. Otherwise, it may not match against the test file.
-    const selectorToGrepPattern = (selector: string) => escapeRegExp(path.normalize(`/${selector}`));
-
-    if (v2ReporterTests.length) {
-      // we need to cut off column because playwright works only with line number
-      const v2SelectorsArgs = v2ReporterTests
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-        .map((test) => test.selector!.replace(/:\d+$/, ""))
-        .map(selectorToGrepPattern);
-
-      cliArgs.push(...v2SelectorsArgs);
-    }
-
-    if (v1ReporterTests.length) {
-      const v1SelectorsArgs = v1ReporterTests
-        // we can filter tests only by absolute path, so we need to cut off test name
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-        .map((test) => test.selector!.split("#")[0])
-        .map(selectorToGrepPattern);
-
-      cliArgs.push(...v1SelectorsArgs);
-    }
-
-    if (!cliArgs.length) {
-      return;
-    }
-
-    if (configElement) {
-      configElement.cliArgs = cliArgs;
-    }
   }
 
   onError(): void {}
@@ -1046,11 +1001,10 @@ export class AllureReporter implements ReporterV2 {
     stack.steps = removeRecursively(stack.steps);
   }
 
-  private getStaticTestMetadata(test: TestCase, parentSuite?: Suite) {
+  private getStaticTestMetadata(test: TestCase) {
     const titleMetadata = extractMetadataFromString(test.title);
-    const testParent = parentSuite ?? test.parent;
     const project =
-      testParent?.project() ??
+      test.parent.project() ??
       this.config.projects.find(
         (candidate) =>
           test.location.file === candidate.testDir || test.location.file.startsWith(`${candidate.testDir}${path.sep}`),
@@ -1059,25 +1013,23 @@ export class AllureReporter implements ReporterV2 {
     const testFilePath = path.relative(project.testDir, test.location.file);
     const relativeFileParts = testFilePath.split(path.sep);
     const relativeFile = relativeFileParts.join("/");
-    const normalizedAbsoluteFile = path.normalize(test.location.file);
-    const normalizedRelativeFile = path.normalize(testFilePath);
-    const fileTitleCandidates = new Set([normalizedAbsoluteFile, normalizedRelativeFile, relativeFile]);
-    let suiteTitles = testParent?.titlePath().filter(Boolean) ?? [];
-
-    if (project.name && suiteTitles[0] === project.name) {
-      suiteTitles = suiteTitles.slice(1);
-    }
-
-    if (suiteTitles.length > 0 && fileTitleCandidates.has(path.normalize(suiteTitles[0]))) {
-      suiteTitles = suiteTitles.slice(1);
-    }
-
+    const suiteTitles = test.titlePath().slice(3, -1);
     const suitePrefix = suiteTitles.length > 0 ? `${suiteTitles.join(" ")} ` : "";
     const projectRootSearchFrom = path.dirname(test.location.file);
     const projectName = getProjectName(projectRootSearchFrom);
     const testCaseIdBase = `${relativeFile}#${suitePrefix}${test.title}`;
     const legacyFullName = `${relativeFile}#${suitePrefix}${titleMetadata.cleanTitle}`;
+    const locationFullName = `${relativeFile}:${test.location.line}:${test.location.column}`;
+    let fullName = this.testFullNames.get(test);
     let staticAllureId = titleMetadata.labels.find((label) => label.name === LabelName.ALLURE_ID)?.value;
+
+    if (!fullName) {
+      const testFile = path.relative(this.config.rootDir, test.location.file).split(path.sep).join("/");
+
+      fullName = [testFile, ...test.titlePath().slice(3)].join(" › ");
+
+      this.testFullNames.set(test, fullName);
+    }
 
     // Test-plan matching happens during discovery, so runtime API labels are intentionally excluded here.
     if (!staticAllureId && "annotations" in test) {
@@ -1100,87 +1052,27 @@ export class AllureReporter implements ReporterV2 {
       testCaseIdBase: projectName ? `${projectName}:${testCaseIdBase}` : testCaseIdBase,
       legacyTestCaseIdBase: testCaseIdBase,
       titleMetadata,
-      fullName: `${relativeFile}:${test.location.line}:${test.location.column}`,
+      fullName,
+      locationFullName,
       legacyFullName,
       staticAllureId,
     };
   }
 
-  private isInTestPlan(test: TestCase, parentSuite?: Suite) {
+  private isInTestPlan(test: TestCase, metadata = this.getStaticTestMetadata(test)) {
     if (!this.testPlan) {
       return true;
     }
 
-    const { fullName, legacyFullName, staticAllureId } = this.getStaticTestMetadata(test, parentSuite);
+    const { fullName, locationFullName, legacyFullName, staticAllureId } = metadata;
 
     return (
-      includedInTestPlan(this.testPlan, { fullName, id: staticAllureId }) ||
-      includedInTestPlan(this.testPlan, { fullName: legacyFullName, id: staticAllureId })
+      includedInTestPlan(this.testPlan, {
+        fullName: locationFullName,
+        nativeSelector: fullName,
+        id: staticAllureId,
+      }) || includedInTestPlan(this.testPlan, { fullName: legacyFullName, id: staticAllureId })
     );
-  }
-
-  private installTestPlanExecutionFilter() {
-    const suitePrototype = this.getPlaywrightSuitePrototype();
-
-    if (!suitePrototype?._addTest) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        "[allure-playwright] Could not install the test plan execution filter because Playwright " +
-          "Suite.prototype._addTest was not found. Tests outside ALLURE_TESTPLAN_PATH may still run. " +
-          "Please report this compatibility issue to https://github.com/allure-framework/allure-js/issues.",
-      );
-      return;
-    }
-
-    const patchedSuitePrototype = suitePrototype as PatchedPlaywrightSuitePrototype;
-
-    patchedSuitePrototype[testPlanFilterSymbol] = (test: TestCase, parentSuite?: Suite) =>
-      this.isInTestPlan(test, parentSuite);
-
-    if (patchedSuitePrototype[testPlanFilterPatchSymbol]) {
-      return;
-    }
-
-    const addTest = suitePrototype._addTest;
-
-    // Dear Pavel: break us all day long you may; find the way back, my Codex and I always will.
-    suitePrototype._addTest = function (this: Suite, test: TestCase) {
-      const testPlanFilter = patchedSuitePrototype[testPlanFilterSymbol] as TestPlanExecutionFilter | undefined;
-
-      if (testPlanFilter && !testPlanFilter(test, this)) {
-        return;
-      }
-
-      return addTest.call(this, test);
-    };
-    patchedSuitePrototype[testPlanFilterPatchSymbol] = true;
-  }
-
-  private getPlaywrightSuitePrototype(
-    playwrightTestRequire = createRequire(localRequire.resolve("@playwright/test")),
-  ): PlaywrightSuitePrototype | undefined {
-    try {
-      const playwrightCommon = playwrightTestRequire("playwright/lib/common") as PlaywrightCommonModule;
-
-      const suitePrototype = playwrightCommon.test?.Suite?.prototype;
-
-      if (suitePrototype) {
-        return suitePrototype;
-      }
-    } catch {
-      // Playwright 1.53-1.59 didn't export playwright/lib/common, but the Suite lived in lib/common/test.js.
-    }
-
-    try {
-      const playwrightPackagePath = playwrightTestRequire.resolve("playwright/package.json");
-      const playwrightCommonTest = playwrightTestRequire(
-        path.join(path.dirname(playwrightPackagePath), "lib/common/test.js"),
-      ) as PlaywrightCommonTestModule;
-
-      return playwrightCommonTest.Suite?.prototype;
-    } catch {
-      return undefined;
-    }
   }
 
   private processStepMetadataMessage(attachmentStepUuid: string, message: RuntimeStepMetadataMessage) {

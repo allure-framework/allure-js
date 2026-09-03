@@ -14,7 +14,7 @@ it("historical data should be fine", async () => {
       });
       `,
   });
-  const fullName = "sample.test.js:5:13";
+  const fullName = "sample.test.js › nested › test";
   const testCaseId = md5("dummy:sample.test.js#nested test");
   const [testResult] = tests;
 
