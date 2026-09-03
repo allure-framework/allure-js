@@ -66,7 +66,7 @@
     "@babel/cli": "^8.0.1",
     "@babel/core": "^7.28.0",
     "@babel/preset-env": "^7.28.0",
-    "@babel/preset-typescript": "^7.27.1",
+    "@babel/preset-typescript": "^8.0.1",
     "@jest/environment": "^30.0.0",
     "@jest/expect": "^30.0.0",
     "@jest/types": "^30.0.0",
