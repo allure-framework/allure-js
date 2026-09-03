@@ -293,7 +293,7 @@ describe("testplan with id fallback", () => {
   it("still matches by the old location selector when id does not match", async () => {
     const exampleTestPlan: TestPlanV1 = {
       version: "1.0",
-      tests: [{ id: 99, selector: "a.test.ts:3:9" }],
+      tests: [{ id: 99, selector: "a.test.ts:3:13" }],
     };
     const testPlanFilename = "example-testplan.json";
     const results = await runPlaywrightInlineTest(

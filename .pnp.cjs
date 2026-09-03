@@ -10102,7 +10102,7 @@ const RAW_RUNTIME_STATE =
           ["@vitest/browser", "virtual:4cefcbda514a1146189c5136c6bbc7bac4aac5e25960316524af3f459303668622e5a1e51cd569d0b4b3ced536e4c4c11da371755de2b3508e49dca14a5b4ce8#npm:4.1.10"],\
           ["@vitest/browser-playwright", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:4.1.10"],\
           ["@vitest/mocker", "virtual:4cefcbda514a1146189c5136c6bbc7bac4aac5e25960316524af3f459303668622e5a1e51cd569d0b4b3ced536e4c4c11da371755de2b3508e49dca14a5b4ce8#npm:4.1.10"],\
-          ["playwright", "npm:1.60.0"],\
+          ["playwright", "npm:1.62.1"],\
           ["tinyrainbow", "npm:3.1.0"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.10"]\
         ],\
@@ -10122,7 +10122,7 @@ const RAW_RUNTIME_STATE =
           ["@vitest/browser", "virtual:8ffb93754d518ec61d7607752387fef022527d03e8bf9c1f6690b9c23629c921a14fda8d9c2f24ddbce33a977e1a5e153b798b56134ee2f7cb63b33870b16f21#npm:4.1.10"],\
           ["@vitest/browser-playwright", "virtual:f37ad3099f3665d5bbc9ee71081416c8874087a5d9739472f56367e210ca9246356f462b31407a28e510bc022801edd4632f86364db715287d62bd50b42e2c00#npm:4.1.10"],\
           ["@vitest/mocker", "virtual:4cefcbda514a1146189c5136c6bbc7bac4aac5e25960316524af3f459303668622e5a1e51cd569d0b4b3ced536e4c4c11da371755de2b3508e49dca14a5b4ce8#npm:4.1.10"],\
-          ["playwright", "npm:1.60.0"],\
+          ["playwright", "npm:1.62.1"],\
           ["tinyrainbow", "npm:3.1.0"],\
           ["vitest", "virtual:f37ad3099f3665d5bbc9ee71081416c8874087a5d9739472f56367e210ca9246356f462b31407a28e510bc022801edd4632f86364db715287d62bd50b42e2c00#npm:4.1.10"]\
         ],\
@@ -11041,7 +11041,7 @@ const RAW_RUNTIME_STATE =
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
           ["npm-run-all2", "npm:9.0.2"],\
-          ["playwright", "npm:1.60.0"],\
+          ["playwright", "npm:1.62.1"],\
           ["react", "npm:19.2.4"],\
           ["react-dom", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:19.2.4"],\
           ["rimraf", "npm:6.1.3"],\
@@ -11070,7 +11070,7 @@ const RAW_RUNTIME_STATE =
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "workspace:packages/allure-vitest"],\
           ["npm-run-all2", "npm:9.0.2"],\
-          ["playwright", "npm:1.60.0"],\
+          ["playwright", "npm:1.62.1"],\
           ["react", "npm:19.2.4"],\
           ["react-dom", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:19.2.4"],\
           ["rimraf", "npm:6.1.3"],\
@@ -20495,15 +20495,6 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["playwright", [\
-      ["npm:1.60.0", {\
-        "packageLocation": "./.yarn/cache/playwright-npm-1.60.0-f1d6ab02ce-8569770637.zip/node_modules/playwright/",\
-        "packageDependencies": [\
-          ["fsevents", "patch:fsevents@npm%3A2.3.2#optional!builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"],\
-          ["playwright", "npm:1.60.0"],\
-          ["playwright-core", "npm:1.60.0"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:1.62.1", {\
         "packageLocation": "./.yarn/cache/playwright-npm-1.62.1-e8ce910651-f99546873a.zip/node_modules/playwright/",\
         "packageDependencies": [\
@@ -20515,13 +20506,6 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["playwright-core", [\
-      ["npm:1.60.0", {\
-        "packageLocation": "./.yarn/cache/playwright-core-npm-1.60.0-3d53a7d2d6-66c0f83d62.zip/node_modules/playwright-core/",\
-        "packageDependencies": [\
-          ["playwright-core", "npm:1.60.0"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:1.62.1", {\
         "packageLocation": "./.yarn/cache/playwright-core-npm-1.62.1-eeafaf21b5-2dab88793a.zip/node_modules/playwright-core/",\
         "packageDependencies": [\
