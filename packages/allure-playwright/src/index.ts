@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import { access } from "node:fs/promises";
+import { createRequire } from "node:module";
 import path from "node:path";
 import process from "node:process";
 
@@ -1229,10 +1230,43 @@ export class AllureReporter implements ReporterV2 {
  */
 export const allure = allurePlaywrightLegacyApi;
 
+type PlaywrightTestModule = typeof import("@playwright/test");
+
+const localRequire = createRequire(import.meta.url);
+
+const getPlaywrightTestModule = () => localRequire("@playwright/test") as PlaywrightTestModule;
+
+const createLazyPlaywrightExport = <K extends keyof PlaywrightTestModule>(name: K): PlaywrightTestModule[K] => {
+  const lazyExport = function (this: unknown, ...args: unknown[]) {
+    const target = getPlaywrightTestModule()[name] as (...args: unknown[]) => unknown;
+
+    return target.apply(this, args);
+  };
+
+  return new Proxy(lazyExport, {
+    apply(_target, thisArg, args) {
+      const target = getPlaywrightTestModule()[name] as (...args: unknown[]) => unknown;
+
+      return Reflect.apply(target, thisArg, args);
+    },
+    get(_target, property, receiver) {
+      return Reflect.get(getPlaywrightTestModule()[name] as object, property, receiver);
+    },
+    set(_target, property, value, receiver) {
+      return Reflect.set(getPlaywrightTestModule()[name] as object, property, value, receiver);
+    },
+  }) as PlaywrightTestModule[K];
+};
+
 /**
  * @deprecated for removal, import functions directly from "@playwright/test".
  */
-export { test, expect } from "@playwright/test";
+export const test = createLazyPlaywrightExport("test");
+
+/**
+ * @deprecated for removal, import functions directly from "@playwright/test".
+ */
+export const expect = createLazyPlaywrightExport("expect");
 
 const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
   type: "global_error",
