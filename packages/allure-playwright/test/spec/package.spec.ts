@@ -36,6 +36,30 @@ it("should not load @playwright/test when the reporter is loaded", () => {
   }
 });
 
+it("should re-export the original Playwright functions", () => {
+  const legacy = require("../../dist/cjs/index.js") as typeof import("../../src/index.js");
+  const playwright = require("@playwright/test") as typeof import("@playwright/test");
+
+  expect(legacy.test).toBe(playwright.test);
+  expect(legacy.expect).toBe(playwright.expect);
+});
+
+it("should select a legacy test by its declaration file and line", async () => {
+  const { tests } = await runPlaywrightInlineTest(
+    {
+      "sample.test.js": [
+        'import { test, expect } from "allure-playwright";',
+        'test("selected", async () => { expect(1).toBe(1); });',
+        'test("not selected", async () => {});',
+      ].join("\n"),
+    },
+    ["sample.test.js:2"],
+  );
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0]).toMatchObject({ name: "selected", status: "passed" });
+});
+
 it("should set package label", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "some/path/to/sample.test.js": `
