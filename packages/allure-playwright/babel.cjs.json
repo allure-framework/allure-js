@@ -6,7 +6,10 @@
         "rewriteImportExtensions": true
       }
     ],
-    ["@babel/preset-env"]
+    ["@babel/preset-env", { "modules": false }]
   ],
-  "plugins": ["babel-plugin-transform-import-meta"]
+  "plugins": [
+    "babel-plugin-transform-import-meta",
+    ["@babel/plugin-transform-modules-commonjs", { "lazy": ["@playwright/test"] }]
+  ]
 }
