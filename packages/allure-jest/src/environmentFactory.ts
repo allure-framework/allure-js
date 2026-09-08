@@ -348,14 +348,16 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
         return;
       }
 
-      const { status, details } = this.#statusAndDetails(test.errors);
+      const statusAndDetails = this.#statusAndDetails(test.errors);
+      const status =
+        test.failing && statusAndDetails.status === Status.BROKEN ? Status.FAILED : statusAndDetails.status;
 
       this.runtime.updateTest(testUuid, (result) => {
         result.stage = Stage.FINISHED;
         result.status = status;
         result.statusDetails = {
           ...result.statusDetails,
-          ...details,
+          ...statusAndDetails.details,
         };
       });
       this.runtime.stopTest(testUuid, { duration: test.duration ?? 0 });
