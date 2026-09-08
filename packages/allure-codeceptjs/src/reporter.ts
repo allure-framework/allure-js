@@ -20,6 +20,7 @@ interface CodeceptTestWithArtifacts {
 interface PendingFailedBeforeEachHookTest {
   test: Mocha.Test;
   uuid: string;
+  hookName?: string;
 }
 
 const MAX_META_STEP_NESTING = 10;
@@ -134,7 +135,13 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
 
   beforeHookTestFailed(test: Mocha.Test, error: Error, hookName?: string) {
     if (isBeforeEachHook(hookName)) {
-      this.flushPendingFailedBeforeEachHookTest();
+      const pendingTest = this.flushPendingFailedBeforeEachHookTest();
+
+      if (pendingTest && pendingTest.test !== test && this.currentTest === pendingTest.uuid) {
+        this.currentTest = undefined;
+        this.currentTestHookName = undefined;
+      }
+
       this.testFailed(test, error, hookName);
     }
   }
@@ -207,7 +214,9 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
           this.pendingFailedBeforeEachHookTest = {
             test,
             uuid: this.currentTest,
+            hookName,
           };
+          this.queueFailedBeforeEachHookContext(this.pendingFailedBeforeEachHookTest);
         }
       } else {
         this.onTestEnd(test);
@@ -251,13 +260,10 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     const pendingTest = this.pendingFailedBeforeEachHookTest;
 
     if (!pendingTest) {
-      return;
+      return undefined;
     }
 
     this.pendingFailedBeforeEachHookTest = undefined;
-    if (this.currentTest === pendingTest.uuid) {
-      this.currentTest = undefined;
-    }
 
     recorder.add(
       "allure failed before hook result",
@@ -267,18 +273,39 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
       true,
       false,
     );
+
+    return pendingTest;
   }
 
-  protected writeFailedBeforeEachHookTest({ test, uuid }: PendingFailedBeforeEachHookTest) {
+  protected queueFailedBeforeEachHookContext({ uuid, hookName }: PendingFailedBeforeEachHookTest) {
+    // Helper _failed hooks can await I/O before calling the runtime API, so
+    // restore the failure context in the recorder before those hooks run.
+    recorder.add(
+      "allure failed before hook context",
+      () => {
+        this.currentTest = uuid;
+        this.currentTestHookName = hookName;
+      },
+      true,
+      false,
+    );
+  }
+
+  protected writeFailedBeforeEachHookTest({ test, uuid, hookName }: PendingFailedBeforeEachHookTest) {
     const currentTest = this.currentTest;
+    const currentTestHookName = this.currentTestHookName;
 
     this.currentTest = uuid;
+    this.currentTestHookName = hookName;
     this.writeScreenshotAttachment(uuid, test);
     this.onTestEnd(test);
 
     if (!this.currentTest && currentTest && currentTest !== uuid) {
       this.currentTest = currentTest;
+      this.currentTestHookName = currentTestHookName;
+      return;
     }
+
     this.currentTestHookName = undefined;
   }
 
