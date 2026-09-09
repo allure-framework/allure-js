@@ -394,7 +394,7 @@ const RAW_RUNTIME_STATE =
           ["@allurereport/core-api", "npm:3.14.3"],\
           ["@allurereport/plugin-api", "npm:3.14.3"],\
           ["@allurereport/plugin-jira", "npm:3.14.3"],\
-          ["axios", "npm:1.18.0"]\
+          ["axios", "npm:1.20.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -456,7 +456,7 @@ const RAW_RUNTIME_STATE =
           ["@allurereport/plugin-testops", "npm:3.14.3"],\
           ["@allurereport/reader-api", "npm:3.14.3"],\
           ["@allurereport/service", "npm:3.14.3"],\
-          ["axios", "npm:1.18.0"],\
+          ["axios", "npm:1.20.0"],\
           ["form-data", "npm:4.0.6"],\
           ["lodash-es", "npm:4.18.1"],\
           ["p-limit", "npm:7.3.0"],\
@@ -509,7 +509,7 @@ const RAW_RUNTIME_STATE =
           ["@allurereport/core-api", "npm:3.14.3"],\
           ["@allurereport/plugin-api", "npm:3.14.3"],\
           ["@allurereport/service", "npm:3.14.3"],\
-          ["axios", "npm:1.18.0"],\
+          ["axios", "npm:1.20.0"],\
           ["open", "npm:11.0.0"]\
         ],\
         "linkType": "HARD"\
@@ -10574,7 +10574,7 @@ const RAW_RUNTIME_STATE =
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
-          ["axios", "npm:1.18.0"],\
+          ["axios", "npm:1.20.0"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
           ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
@@ -11496,11 +11496,11 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["axios", [\
-      ["npm:1.18.0", {\
-        "packageLocation": "./.yarn/cache/axios-npm-1.18.0-063f207ba7-586a1a9534.zip/node_modules/axios/",\
+      ["npm:1.20.0", {\
+        "packageLocation": "./.yarn/cache/axios-npm-1.20.0-0de8ee0ccf-0376b6178b.zip/node_modules/axios/",\
         "packageDependencies": [\
-          ["axios", "npm:1.18.0"],\
-          ["follow-redirects", "virtual:063f207ba73aeb594b4cbb985624b766bdfff5fe9ec287dc83dec93d908f45cfc60a6db9f3d27e4af84015b1b37f649763b4c6b352728a09b7864711c4f33d97#npm:1.16.0"],\
+          ["axios", "npm:1.20.0"],\
+          ["follow-redirects", "virtual:0de8ee0ccf1cc6d6d0ba568f07319c0f67fa0587ed0ac4847469c623cd8d5cd1beffd54aecdb94df90e216359637d89e7519a1d553a93edace44300538549c89#npm:1.16.0"],\
           ["form-data", "npm:4.0.6"],\
           ["https-proxy-agent", "npm:5.0.1"],\
           ["proxy-from-env", "npm:2.1.0"]\
@@ -12821,7 +12821,7 @@ const RAW_RUNTIME_STATE =
           ["acorn", "npm:8.15.0"],\
           ["ai", "virtual:2c75f61f89a1f74bf6a7fd95d21663c4e4e43ac2628fc127237c83c8e646e19c2345afdcdd6cabb4dad098a9dc97fefadf4e8b409447a897f3ecadce6a76e06f#npm:6.0.266"],\
           ["arrify", "npm:3.0.0"],\
-          ["axios", "npm:1.18.0"],\
+          ["axios", "npm:1.20.0"],\
           ["chalk", "npm:4.1.2"],\
           ["cheerio", "npm:1.1.2"],\
           ["chokidar", "npm:5.0.0"],\
@@ -15257,12 +15257,12 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:063f207ba73aeb594b4cbb985624b766bdfff5fe9ec287dc83dec93d908f45cfc60a6db9f3d27e4af84015b1b37f649763b4c6b352728a09b7864711c4f33d97#npm:1.16.0", {\
-        "packageLocation": "./.yarn/__virtual__/follow-redirects-virtual-0ff188baf0/0/cache/follow-redirects-npm-1.16.0-816e4f62d9-3fbe3d80b3.zip/node_modules/follow-redirects/",\
+      ["virtual:0de8ee0ccf1cc6d6d0ba568f07319c0f67fa0587ed0ac4847469c623cd8d5cd1beffd54aecdb94df90e216359637d89e7519a1d553a93edace44300538549c89#npm:1.16.0", {\
+        "packageLocation": "./.yarn/__virtual__/follow-redirects-virtual-a0803d1185/0/cache/follow-redirects-npm-1.16.0-816e4f62d9-3fbe3d80b3.zip/node_modules/follow-redirects/",\
         "packageDependencies": [\
           ["@types/debug", null],\
           ["debug", null],\
-          ["follow-redirects", "virtual:063f207ba73aeb594b4cbb985624b766bdfff5fe9ec287dc83dec93d908f45cfc60a6db9f3d27e4af84015b1b37f649763b4c6b352728a09b7864711c4f33d97#npm:1.16.0"]\
+          ["follow-redirects", "virtual:0de8ee0ccf1cc6d6d0ba568f07319c0f67fa0587ed0ac4847469c623cd8d5cd1beffd54aecdb94df90e216359637d89e7519a1d553a93edace44300538549c89#npm:1.16.0"]\
         ],\
         "packagePeers": [\
           "@types/debug",\
