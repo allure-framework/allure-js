@@ -24,6 +24,30 @@ it("handles jest tests", async () => {
   );
 });
 
+it("marks unexpectedly passing jest failing tests as failed", async () => {
+  const { tests } = await runJestInlineTest({
+    "sample.spec.js": `
+      test.failing("unexpected pass", () => {
+        expect(1).toBe(1);
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "unexpected pass",
+        status: Status.FAILED,
+        stage: Stage.FINISHED,
+        statusDetails: expect.objectContaining({
+          message: expect.stringContaining("Failing test passed even though it was supposed to fail"),
+        }),
+      }),
+    ]),
+  );
+});
+
 it("should set full name", async () => {
   const { tests } = await runJestInlineTest({
     "a/path/to/test/sample.spec.js": `
