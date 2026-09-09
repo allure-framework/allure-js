@@ -64,7 +64,7 @@
     "@babel/core": "^7.28.0",
     "@babel/plugin-transform-modules-commonjs": "^7.27.1",
     "@babel/preset-env": "^7.28.0",
-    "@babel/preset-typescript": "^7.27.1",
+    "@babel/preset-typescript": "^8.0.1",
     "@cucumber/cucumber": "^10.8.0",
     "@cucumber/messages": "^32.0.0",
     "@types/babel__core": "^7.20.5",
