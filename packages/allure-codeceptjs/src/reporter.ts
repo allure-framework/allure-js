@@ -14,9 +14,13 @@ interface MetaStep {
 }
 
 interface CodeceptTestWithArtifacts {
-  artifacts?: {
-    screenshot?: string;
-  };
+  artifacts?: unknown;
+}
+
+interface PendingFailedBeforeEachHookTest {
+  test: Mocha.Test;
+  uuid: string;
+  hookName?: string;
 }
 
 const MAX_META_STEP_NESTING = 10;
@@ -53,7 +57,8 @@ const getCodeceptStatusFromError = (error: Partial<Error>, hookName?: string): S
   return isKnownCodeceptVerificationError(error) ? Status.FAILED : Status.BROKEN;
 };
 
-const isBeforeHook = (hookName?: string) => hookName === "Before" || hookName === "BeforeSuite";
+const isBeforeEachHook = (hookName?: string) => hookName === "Before";
+const isBeforeHook = (hookName?: string) => isBeforeEachHook(hookName) || hookName === "BeforeSuite";
 
 const isErrorInstance = (value: unknown): value is Error =>
   value instanceof Error ||
@@ -64,12 +69,22 @@ const isErrorInstance = (value: unknown): value is Error =>
 const isTryToSession = () => recorder.getCurrentSessionId?.() === TRY_TO_SESSION;
 const getRecorderPromise = (): Promise<unknown> | undefined =>
   (recorder.promise as (() => Promise<unknown> | undefined) | undefined)?.();
+const getScreenshotArtifactPath = (test?: CodeceptTestWithArtifacts) => {
+  const artifacts = test?.artifacts;
+
+  if (typeof artifacts !== "object" || artifacts === null || !("screenshot" in artifacts)) {
+    return undefined;
+  }
+
+  return typeof artifacts.screenshot === "string" ? artifacts.screenshot : undefined;
+};
 
 export class AllureCodeceptJsReporter extends AllureMochaReporter {
   protected currentBddStep?: string;
   protected metaStepStack: MetaStep[] = [];
   protected currentLeafStep?: string;
   protected currentTestHookName?: string;
+  protected pendingFailedBeforeEachHookTest?: PendingFailedBeforeEachHookTest;
 
   constructor(runner: Mocha.Runner, opts: Mocha.MochaOptions, isInWorker: boolean) {
     super(runner, opts, isInWorker);
@@ -80,8 +95,14 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
   registerEvents() {
     // Test
     event.dispatcher.on(event.test.before, this.testStarted.bind(this));
+    // A failed CodeceptJS Before hook emits test.failed before the scenario has
+    // started in Mocha. Start the Allure test before other failure listeners so
+    // their runtime attachments target the test, then defer writing the result
+    // until queued failure artifacts, such as screenshots, are available.
+    event.dispatcher.prependListener(event.test.failed, this.beforeHookTestFailed.bind(this));
     event.dispatcher.on(event.test.failed, this.testFailed.bind(this));
     event.dispatcher.on(event.test.finished, this.testFinished.bind(this));
+    event.dispatcher.on(event.hook.finished, this.hookFinished.bind(this));
     // Step
     event.dispatcher.on(event.step.started, this.stepStarted.bind(this));
     event.dispatcher.on(event.step.passed, this.stepPassed.bind(this));
@@ -112,7 +133,24 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     });
   }
 
+  beforeHookTestFailed(test: Mocha.Test, error: Error, hookName?: string) {
+    if (isBeforeEachHook(hookName)) {
+      const pendingTest = this.flushPendingFailedBeforeEachHookTest();
+
+      if (pendingTest && pendingTest.test !== test && this.currentTest === pendingTest.uuid) {
+        this.currentTest = undefined;
+        this.currentTestHookName = undefined;
+      }
+
+      this.testFailed(test, error, hookName);
+    }
+  }
+
   testFailed(test: Mocha.Test, error: Error, hookName?: string) {
+    if (isBeforeEachHook(hookName) && this.pendingFailedBeforeEachHookTest?.test === test) {
+      return;
+    }
+
     this.currentTestHookName = hookName;
     const shouldFinishTest = isBeforeHook(hookName);
 
@@ -171,8 +209,19 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
         this.currentHook = undefined;
       }
 
-      this.onTestEnd(test);
-      this.currentTestHookName = undefined;
+      if (isBeforeEachHook(hookName)) {
+        if (this.currentTest) {
+          this.pendingFailedBeforeEachHookTest = {
+            test,
+            uuid: this.currentTest,
+            hookName,
+          };
+          this.queueFailedBeforeEachHookContext(this.pendingFailedBeforeEachHookTest);
+        }
+      } else {
+        this.onTestEnd(test);
+        this.currentTestHookName = undefined;
+      }
     }
   }
 
@@ -198,24 +247,89 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     this.metaStepStack = [];
     this.currentLeafStep = undefined;
 
-    const currentTest = this.currentTest;
-    if (currentTest) {
-      recorder.add(
-        "allure screenshot attachment",
-        () => {
-          if (!test?.artifacts?.screenshot) {
-            return;
-          }
-          const screenshotPath = test.artifacts.screenshot;
-
-          this.runtime.writeAttachment(currentTest, null, basename(screenshotPath), screenshotPath, {
-            contentType: ContentType.PNG,
-            wrapInStep: true,
-          });
-        },
-        true,
-      );
+    if (this.currentTest) {
+      this.attachScreenshot(this.currentTest, test);
     }
+  }
+
+  hookFinished() {
+    this.flushPendingFailedBeforeEachHookTest();
+  }
+
+  protected flushPendingFailedBeforeEachHookTest() {
+    const pendingTest = this.pendingFailedBeforeEachHookTest;
+
+    if (!pendingTest) {
+      return undefined;
+    }
+
+    this.pendingFailedBeforeEachHookTest = undefined;
+
+    recorder.add(
+      "allure failed before hook result",
+      () => {
+        this.writeFailedBeforeEachHookTest(pendingTest);
+      },
+      true,
+      false,
+    );
+
+    return pendingTest;
+  }
+
+  protected queueFailedBeforeEachHookContext({ uuid, hookName }: PendingFailedBeforeEachHookTest) {
+    // Helper _failed hooks can await I/O before calling the runtime API, so
+    // restore the failure context in the recorder before those hooks run.
+    recorder.add(
+      "allure failed before hook context",
+      () => {
+        this.currentTest = uuid;
+        this.currentTestHookName = hookName;
+      },
+      true,
+      false,
+    );
+  }
+
+  protected writeFailedBeforeEachHookTest({ test, uuid, hookName }: PendingFailedBeforeEachHookTest) {
+    const currentTest = this.currentTest;
+    const currentTestHookName = this.currentTestHookName;
+
+    this.currentTest = uuid;
+    this.currentTestHookName = hookName;
+    this.writeScreenshotAttachment(uuid, test);
+    this.onTestEnd(test);
+
+    if (!this.currentTest && currentTest && currentTest !== uuid) {
+      this.currentTest = currentTest;
+      this.currentTestHookName = currentTestHookName;
+      return;
+    }
+
+    this.currentTestHookName = undefined;
+  }
+
+  protected attachScreenshot(currentTest: string, test?: CodeceptTestWithArtifacts) {
+    recorder.add(
+      "allure screenshot attachment",
+      () => {
+        this.writeScreenshotAttachment(currentTest, test);
+      },
+      true,
+    );
+  }
+
+  protected writeScreenshotAttachment(currentTest: string, test?: CodeceptTestWithArtifacts) {
+    const screenshotPath = getScreenshotArtifactPath(test);
+
+    if (!screenshotPath) {
+      return;
+    }
+
+    this.runtime.writeAttachment(currentTest, null, basename(screenshotPath), screenshotPath, {
+      contentType: ContentType.PNG,
+      wrapInStep: true,
+    });
   }
 
   stepStarted(step: CodeceptStep) {
