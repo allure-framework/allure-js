@@ -12,6 +12,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v6
@@ -24,4 +25,4 @@ jobs:
         run: |
           yarn install
           yarn build
-      - run: yarn workspaces foreach -Avv --no-private npm publish --tolerate-republish
+      - run: yarn workspaces foreach -Avv --no-private npm publish --provenance --tolerate-republish
