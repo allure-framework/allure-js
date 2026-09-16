@@ -574,7 +574,15 @@ const getRuntimeConfigDefaults = ({
 });
 
 const initializeRuntimeState = (cypressConfig: Cypress.PluginConfigOptions, allureConfig?: AllureCypressConfig) => {
-  cypressConfig.env.allure = createRuntimeState(allureConfig);
+  const allureState = createRuntimeState(allureConfig);
+  if (cypressConfig.expose) {
+    // Cypress 15.10+ uses `expose` instead of `env` to share data between the Node and browser contexts.
+    cypressConfig.expose.allure = allureState;
+  }
+  if (cypressConfig.env) {
+    // For legacy Cypress versions.
+    cypressConfig.env.allure = allureState;
+  }
   return cypressConfig;
 };
 
