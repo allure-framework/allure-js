@@ -77,6 +77,7 @@ export const runCypressInlineTest = async (
 
             return config;
           },
+          allowCypressEnv: false,
         },
       };
     `,

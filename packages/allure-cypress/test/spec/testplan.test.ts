@@ -156,7 +156,7 @@ it("should not trigger hooks", async () => {
           before(() => { hooks++; });
           beforeEach(() => { hooks++; });
           it('foo', () => {
-            attachment("testplan", JSON.stringify(Cypress.env("allure")), "application/json");
+            attachment("testplan", JSON.stringify(Cypress.expose("allure")), "application/json");
           });
         });
         it("bar", () => {});

@@ -1,8 +1,10 @@
 import type { AllureSpecState, CypressMessage, CypressTest, StepDescriptor, StepFinalizer } from "../types.js";
 import { DEFAULT_RUNTIME_CONFIG, last, toReversed } from "../utils.js";
 
+const CypressPublicData = Cypress.expose || Cypress.env;
+
 export const getAllureState = () => {
-  let state = Cypress.env("allure") as AllureSpecState;
+  let state = CypressPublicData("allure") as AllureSpecState;
 
   if (!state) {
     state = {
@@ -18,7 +20,7 @@ export const getAllureState = () => {
       nextApiStepId: 0,
     };
 
-    Cypress.env("allure", state);
+    CypressPublicData("allure", state);
   }
 
   return state;
