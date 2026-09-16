@@ -1,6 +1,7 @@
 import type { AllureSpecState, CypressMessage, CypressTest, StepDescriptor, StepFinalizer } from "../types.js";
 import { DEFAULT_RUNTIME_CONFIG, last, toReversed } from "../utils.js";
 
+// @ts-ignore
 const CypressPublicData = Cypress.expose || Cypress.env;
 
 export const getAllureState = () => {
