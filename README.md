@@ -63,7 +63,7 @@ Minimum supported framework versions by package:
 - `allure-mocha`: `mocha >= 6.2.0`
 - `allure-node-test`: native Node.js test runner, Node.js >= 26.1.0 for runtime API support
 - `allure-playwright`: `@playwright/test >= 1.53.0`
-- `testcafe-reporter-allure-official`: `testcafe >= 2.5.0`
+- `testcafe-reporter-allure`: `testcafe >= 2.5.0`
 - `allure-vitest`: `vitest >= 1.3.0`
 - `newman-reporter-allure`: `newman >= 3.5.0`
 - `allure-js-commons`: shared runtime and reporter SDK used to build integrations
@@ -152,9 +152,9 @@ npx allure open ./allure-report
 
 ### TestCafe
 
-Canonical package name: `testcafe-reporter-allure-official`
+Canonical package name: `testcafe-reporter-allure`
 
-[Read more](/packages/testcafe-reporter-allure-official/README.md)
+[Read more](/packages/testcafe-reporter-allure/README.md)
 
 ### Cypress
 

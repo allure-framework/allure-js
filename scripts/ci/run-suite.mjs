@@ -89,8 +89,8 @@ const suites = new Map([
   [
     "testcafe",
     {
-      compileFrom: ["testcafe-reporter-allure-official"],
-      testCommands: [createVitestCommand("testcafe-reporter-allure-official", { browserHeavy: true })],
+      compileFrom: ["testcafe-reporter-allure"],
+      testCommands: [createVitestCommand("testcafe-reporter-allure", { browserHeavy: true })],
     },
   ],
 ]);

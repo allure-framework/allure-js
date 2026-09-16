@@ -79,8 +79,8 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:packages/newman-reporter-allure"\
     },\
     {\
-      "name": "testcafe-reporter-allure-official",\
-      "reference": "workspace:packages/testcafe-reporter-allure-official"\
+      "name": "testcafe-reporter-allure",\
+      "reference": "workspace:packages/testcafe-reporter-allure"\
     }\
   ],\
   "enableTopLevelFallback": true,\
@@ -104,7 +104,7 @@ const RAW_RUNTIME_STATE =
     ["allure-playwright", ["workspace:packages/allure-playwright"]],\
     ["allure-vitest", ["virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest", "workspace:packages/allure-vitest"]],\
     ["newman-reporter-allure", ["workspace:packages/newman-reporter-allure"]],\
-    ["testcafe-reporter-allure-official", ["workspace:packages/testcafe-reporter-allure-official"]]\
+    ["testcafe-reporter-allure", ["workspace:packages/testcafe-reporter-allure"]]\
   ],\
   "fallbackPool": [\
   ],\
@@ -22722,9 +22722,9 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
-    ["testcafe-reporter-allure-official", [\
-      ["workspace:packages/testcafe-reporter-allure-official", {\
-        "packageLocation": "./packages/testcafe-reporter-allure-official/",\
+    ["testcafe-reporter-allure", [\
+      ["workspace:packages/testcafe-reporter-allure", {\
+        "packageLocation": "./packages/testcafe-reporter-allure/",\
         "packageDependencies": [\
           ["@babel/cli", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:8.0.1"],\
           ["@babel/core", "npm:7.29.7"],\
@@ -22740,7 +22740,7 @@ const RAW_RUNTIME_STATE =
           ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
           ["testcafe", "npm:3.7.5"],\
-          ["testcafe-reporter-allure-official", "workspace:packages/testcafe-reporter-allure-official"],\
+          ["testcafe-reporter-allure", "workspace:packages/testcafe-reporter-allure"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.10"]\
         ],\
