@@ -7,7 +7,7 @@ it("shouldn't break the flow when access storage after the page reload", async (
   const { tests } = await runCypressInlineTest({
     "cypress/e2e/sample.cy.js": () => `
     it("passed", () => {
-      cy.visit("https://allurereport.org");
+      cy.visit("https://allurereport.org", { failOnStatusCode: false });
       cy.clearLocalStorage();
       cy.wait(200);
       cy.reload();
