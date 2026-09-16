@@ -121,7 +121,7 @@ const CONTENT_TYPE_BY_EXTENSION: Record<string, string> = {
 };
 
 export const PACKAGE_ROOT = join(__dirname, "..");
-const TESTCAFE_TEMP_ROOT = join(tmpdir(), "allure-js-testcafe-reporter-allure-official");
+const TESTCAFE_TEMP_ROOT = join(tmpdir(), "allure-js-testcafe-reporter-allure");
 const TESTCAFE_SELECTOR_PLACEHOLDER = /__TESTCAFE_SELECTOR__\(([^|]+)\|([^|]+)\|([^)]*)\)/g;
 const TESTCAFE_PACKAGE_SELECTOR_PLACEHOLDER = /__TESTCAFE_PACKAGE_SELECTOR__\(([^|]+)\|([^|]+)\|([^)]*)\)/g;
 

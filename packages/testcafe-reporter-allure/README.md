@@ -11,7 +11,7 @@
 
 ---
 
-`testcafe-reporter-allure-official` adds [Allure Report](https://allurereport.org/) support to TestCafe. It writes `allure-results`, captures TestCafe actions as steps, and works with the standard `allure-js-commons` runtime API.
+`testcafe-reporter-allure` adds [Allure Report](https://allurereport.org/) support to TestCafe. It writes `allure-results`, captures TestCafe actions as steps, and works with the standard `allure-js-commons` runtime API.
 
 ## Features
 
@@ -28,7 +28,7 @@
 Install the reporter:
 
 ```shell
-npm install -D testcafe-reporter-allure-official
+npm install -D testcafe-reporter-allure
 ```
 
 Install an Allure CLI to build and open the report:
@@ -57,7 +57,7 @@ If `ALLURE_TESTPLAN_PATH` is not set, `createAllureTestPlanFilter()` returns `un
 Create a `.testcaferc.cjs` file:
 
 ```js
-const { createAllureTestPlanFilter } = require("testcafe-reporter-allure-official/testplan");
+const { createAllureTestPlanFilter } = require("testcafe-reporter-allure/testplan");
 
 module.exports = {
   src: ["tests/**/*.test.js"],
@@ -104,7 +104,7 @@ If you want test plan support, prefer running through a JS/CJS config file or th
 Use the reporter by name and keep test plan filtering configured:
 
 ```js
-const { createAllureTestPlanFilter } = require("testcafe-reporter-allure-official/testplan");
+const { createAllureTestPlanFilter } = require("testcafe-reporter-allure/testplan");
 
 module.exports = {
   src: ["tests/**/*.test.js"],
@@ -122,8 +122,8 @@ Use the runner API when you want to customize the output directory or reporter o
 
 ```js
 const createTestCafe = require("testcafe");
-const createAllureTestCafeReporter = require("testcafe-reporter-allure-official");
-const { createAllureTestPlanFilter } = require("testcafe-reporter-allure-official/testplan");
+const createAllureTestCafeReporter = require("testcafe-reporter-allure");
+const { createAllureTestPlanFilter } = require("testcafe-reporter-allure/testplan");
 
 (async () => {
   const testcafe = await createTestCafe();
@@ -264,7 +264,7 @@ Create an Allure test plan file:
 Set `ALLURE_TESTPLAN_PATH`, then use the helper in a JS/CJS config:
 
 ```js
-const { createAllureTestPlanFilter } = require("testcafe-reporter-allure-official/testplan");
+const { createAllureTestPlanFilter } = require("testcafe-reporter-allure/testplan");
 
 module.exports = {
   src: ["tests/**/*.test.js"],
@@ -277,7 +277,7 @@ module.exports = {
 Or with the runner API:
 
 ```js
-const { createAllureTestPlanFilter } = require("testcafe-reporter-allure-official/testplan");
+const { createAllureTestPlanFilter } = require("testcafe-reporter-allure/testplan");
 
 await runner.src(["tests/**/*.test.js"]).filter(createAllureTestPlanFilter()).reporter("allure-official").run();
 ```

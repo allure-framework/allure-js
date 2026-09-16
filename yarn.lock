@@ -17915,9 +17915,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"testcafe-reporter-allure-official@workspace:packages/testcafe-reporter-allure-official":
+"testcafe-reporter-allure@workspace:packages/testcafe-reporter-allure":
   version: 0.0.0-use.local
-  resolution: "testcafe-reporter-allure-official@workspace:packages/testcafe-reporter-allure-official"
+  resolution: "testcafe-reporter-allure@workspace:packages/testcafe-reporter-allure"
   dependencies:
     "@babel/cli": "npm:^8.0.1"
     "@babel/core": "npm:^7.28.0"
