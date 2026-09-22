@@ -66,7 +66,7 @@
     "allure-commandline": "^2.29.0",
     "allure-vitest": "workspace:*",
     "babel-plugin-add-module-exports": "^1.0.4",
-    "babel-plugin-transform-import-meta": "^2.3.3",
+    "babel-plugin-transform-import-meta": "^3.0.0",
     "chai": "^6.2.2",
     "chai4": "npm:chai@^4.5.0",
     "mocha": "^11.0.0",
