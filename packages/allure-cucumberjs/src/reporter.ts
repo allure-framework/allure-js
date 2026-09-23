@@ -294,8 +294,12 @@ export default class AllureCucumberReporter extends Formatter {
       case TestStepResultStatus.PASSED:
         return Status.PASSED;
       case TestStepResultStatus.SKIPPED:
-      case TestStepResultStatus.PENDING:
         return Status.SKIPPED;
+      case TestStepResultStatus.AMBIGUOUS:
+      case TestStepResultStatus.PENDING:
+      case TestStepResultStatus.UNDEFINED:
+      case TestStepResultStatus.UNKNOWN:
+        return Status.BROKEN;
       default:
         return undefined;
     }
@@ -598,7 +602,11 @@ export default class AllureCucumberReporter extends Formatter {
       r.status = status;
       r.stage = stage;
 
-      if (status === undefined) {
+      if (
+        status === undefined ||
+        data.testStepResult.status === TestStepResultStatus.PENDING ||
+        data.testStepResult.status === TestStepResultStatus.UNDEFINED
+      ) {
         r.statusDetails = {
           message: "The step doesn't have an implementation.",
         };

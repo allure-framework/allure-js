@@ -5,3 +5,7 @@ Feature: with undefined steps defs
   Scenario: b
     Given defined step
     Then another undefined step
+
+  Scenario: c
+    Given defined step
+    Then pending step
