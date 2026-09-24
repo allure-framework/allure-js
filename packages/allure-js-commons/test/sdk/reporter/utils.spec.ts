@@ -5,7 +5,7 @@ import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 
 import { LabelName } from "../../../src/model.js";
-import { getRelativePath, getSuiteLabels } from "../../../src/sdk/reporter/utils.js";
+import { getRelativePath, getSuiteLabels, readImageAsBase64 } from "../../../src/sdk/reporter/utils.js";
 
 describe("getSuiteLabels", () => {
   describe("with empty suites", () => {
@@ -93,5 +93,35 @@ describe("getRelativePath", () => {
     const absolutePath = path.join(process.cwd(), "test", "spec", "example.test.ts");
     const result = getRelativePath(absolutePath);
     expect(result).toBe(path.join("test", "spec", "example.test.ts"));
+  });
+});
+
+describe("readImageAsBase64", () => {
+  it("should return base64 encoded data URI with correct mime type for webp", async () => {
+    const tempDir = fs.mkdtempSync(path.join(tmpdir(), "allure-read-image-"));
+    const filePath = path.join(tempDir, "image.webp");
+
+    try {
+      fs.writeFileSync(filePath, Buffer.from("test webp content"));
+      const result = await readImageAsBase64(filePath);
+
+      expect(result).toBe(`data:image/webp;base64,${Buffer.from("test webp content").toString("base64")}`);
+    } finally {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it("should return base64 encoded data URI with correct mime type for png", async () => {
+    const tempDir = fs.mkdtempSync(path.join(tmpdir(), "allure-read-image-"));
+    const filePath = path.join(tempDir, "image.png");
+
+    try {
+      fs.writeFileSync(filePath, Buffer.from("test png content"));
+      const result = await readImageAsBase64(filePath);
+
+      expect(result).toBe(`data:image/png;base64,${Buffer.from("test png content").toString("base64")}`);
+    } finally {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
   });
 });
