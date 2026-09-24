@@ -44,6 +44,11 @@ type MutableTestRunHookDefinition = Omit<TestRunHookDefinition, "code"> & {
   code: Function;
 };
 
+const UNDEFINED_STEP_MESSAGE = "The step doesn't have an implementation.";
+const UNDEFINED_TEST_MESSAGE = "The test doesn't have an implementation.";
+const PENDING_STEP_MESSAGE = "The step is pending.";
+const AMBIGUOUS_STEP_MESSAGE = "The step is ambiguous.";
+
 export default class AllureCucumberReporter extends Formatter {
   private readonly afterHooks: Record<string, TestCaseHookDefinition> = {};
   private readonly beforeHooks: Record<string, TestCaseHookDefinition> = {};
@@ -294,8 +299,14 @@ export default class AllureCucumberReporter extends Formatter {
       case TestStepResultStatus.PASSED:
         return Status.PASSED;
       case TestStepResultStatus.SKIPPED:
-      case TestStepResultStatus.PENDING:
         return Status.SKIPPED;
+      // Cucumber's definition statuses fail strict runs. Since this reporter
+      // derives scenario status from steps, they must outrank passed steps.
+      case TestStepResultStatus.AMBIGUOUS:
+      case TestStepResultStatus.PENDING:
+      case TestStepResultStatus.UNDEFINED:
+      case TestStepResultStatus.UNKNOWN:
+        return Status.BROKEN;
       default:
         return undefined;
     }
@@ -456,9 +467,13 @@ export default class AllureCucumberReporter extends Formatter {
       result.stage = Stage.FINISHED;
 
       if (step) {
-        if (step.status === undefined) {
+        if (step.statusDetails?.message === UNDEFINED_STEP_MESSAGE) {
           result.statusDetails = {
-            message: "The test doesn't have an implementation.",
+            message: UNDEFINED_TEST_MESSAGE,
+          };
+        } else if (step.status === undefined) {
+          result.statusDetails = {
+            message: UNDEFINED_TEST_MESSAGE,
           };
         } else {
           result.statusDetails = {
@@ -598,9 +613,23 @@ export default class AllureCucumberReporter extends Formatter {
       r.status = status;
       r.stage = stage;
 
-      if (status === undefined) {
+      if (data.testStepResult.status === TestStepResultStatus.UNDEFINED || status === undefined) {
         r.statusDetails = {
-          message: "The step doesn't have an implementation.",
+          message: UNDEFINED_STEP_MESSAGE,
+        };
+        return;
+      }
+
+      if (data.testStepResult.status === TestStepResultStatus.PENDING) {
+        r.statusDetails = {
+          message: data.testStepResult.message ?? PENDING_STEP_MESSAGE,
+        };
+        return;
+      }
+
+      if (data.testStepResult.status === TestStepResultStatus.AMBIGUOUS) {
+        r.statusDetails = {
+          message: data.testStepResult.message ?? AMBIGUOUS_STEP_MESSAGE,
         };
         return;
       }
