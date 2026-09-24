@@ -9,3 +9,7 @@ Feature: with undefined steps defs
   Scenario: c
     Given defined step
     Then pending step
+
+  Scenario: d
+    Given defined step
+    Then ambiguous step

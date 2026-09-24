@@ -11,7 +11,7 @@ it("reports undefined and pending tests and steps", async () => {
       name: "a",
       status: Status.BROKEN,
       statusDetails: expect.objectContaining({
-        message: "The step doesn't have an implementation.",
+        message: "The test doesn't have an implementation.",
       }),
       steps: expect.arrayContaining([
         expect.objectContaining({
@@ -30,7 +30,7 @@ it("reports undefined and pending tests and steps", async () => {
       name: "b",
       status: Status.BROKEN,
       statusDetails: expect.objectContaining({
-        message: "The step doesn't have an implementation.",
+        message: "The test doesn't have an implementation.",
       }),
       steps: expect.arrayContaining([
         expect.objectContaining({
@@ -54,7 +54,7 @@ it("reports undefined and pending tests and steps", async () => {
       name: "c",
       status: Status.BROKEN,
       statusDetails: expect.objectContaining({
-        message: "The step doesn't have an implementation.",
+        message: "The step is pending.",
       }),
       steps: expect.arrayContaining([
         expect.objectContaining({
@@ -67,7 +67,31 @@ it("reports undefined and pending tests and steps", async () => {
           status: Status.BROKEN,
           stage: Stage.FINISHED,
           statusDetails: expect.objectContaining({
-            message: "The step doesn't have an implementation.",
+            message: "The step is pending.",
+          }),
+        }),
+      ]),
+    }),
+  );
+  expect(tests).toContainEqual(
+    expect.objectContaining({
+      name: "d",
+      status: Status.BROKEN,
+      statusDetails: expect.objectContaining({
+        message: expect.stringContaining("Multiple step definitions match"),
+      }),
+      steps: expect.arrayContaining([
+        expect.objectContaining({
+          name: "Given defined step",
+          status: Status.PASSED,
+          stage: Stage.FINISHED,
+        }),
+        expect.objectContaining({
+          name: "Then ambiguous step",
+          status: Status.BROKEN,
+          stage: Stage.FINISHED,
+          statusDetails: expect.objectContaining({
+            message: expect.stringContaining("Multiple step definitions match"),
           }),
         }),
       ]),
