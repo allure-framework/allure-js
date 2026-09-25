@@ -43,7 +43,7 @@ export const isAfterHookStep = (step: TestStep) => isDescendantOfStepWithTitle(s
 
 export const isBeforeHookStep = (step: TestStep) => isDescendantOfStepWithTitle(step, BEFORE_HOOKS_ROOT_STEP_TITLE);
 
-export const diffEndRegexp = /-((expected)|(diff)|(actual))\.png$/;
+export const diffEndRegexp = /-((expected)|(diff)|(actual))\.(png|webp)$/;
 
 export const normalizeHookTitle = (title: string) => {
   return title.replace(/^[aA]ttach\s"(.+)"$/, "$1");

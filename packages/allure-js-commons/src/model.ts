@@ -162,6 +162,7 @@ export enum ContentType {
   URI = "text/uri-list",
   SVG = "image/svg+xml",
   PNG = "image/png",
+  WEBP = "image/webp",
   JSON = "application/json",
   ZIP = "application/zip",
   WEBM = "video/webm",

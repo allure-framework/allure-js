@@ -1163,12 +1163,15 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
+    const extMatch = attachment.path?.match(/\.(png|webp)$/) ?? attachment.name.match(/\.(png|webp)$/);
+    const ext = extMatch ? extMatch[0] : ".png";
+
     const pathWithoutEndFromSnapshotDir = attachment
       .path!.replace(this.outputDir!, this.snapshotDir!)
       ?.replace(diffEndRegexp, "")
-      .replace(/\.png/, "");
+      .replace(/\.(png|webp)$/, "");
 
-    const pathWithoutEnd = attachment.path!.replace(diffEndRegexp, "").replace(/\.png/, "");
+    const pathWithoutEnd = attachment.path!.replace(diffEndRegexp, "").replace(/\.(png|webp)$/, "");
 
     if (this.processedDiffs.includes(pathWithoutEnd) || this.processedDiffs.includes(pathWithoutEndFromSnapshotDir)) {
       return;
@@ -1180,8 +1183,8 @@ export class AllureReporter implements ReporterV2 {
     };
 
     const readImageFromDirs = async (modifier: "actual" | "expected" | "diff") => {
-      const defaultPath = `${pathWithoutEnd}-${modifier}.png`;
-      const snapshotPath = `${pathWithoutEndFromSnapshotDir}-${modifier}.png`;
+      const defaultPath = `${pathWithoutEnd}-${modifier}${ext}`;
+      const snapshotPath = `${pathWithoutEndFromSnapshotDir}-${modifier}${ext}`;
       if (await fileExists(defaultPath)) {
         return await readImageAsBase64(defaultPath);
       }
