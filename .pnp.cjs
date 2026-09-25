@@ -9479,12 +9479,12 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@testing-library/dom", [\
-      ["npm:10.4.1", {\
-        "packageLocation": "./.yarn/cache/@testing-library-dom-npm-10.4.1-928d6cd2a7-7f93e09ea0.zip/node_modules/@testing-library/dom/",\
+      ["npm:10.4.2", {\
+        "packageLocation": "./.yarn/cache/@testing-library-dom-npm-10.4.2-3edc020ffc-3ac24b320a.zip/node_modules/@testing-library/dom/",\
         "packageDependencies": [\
           ["@babel/code-frame", "npm:7.29.0"],\
           ["@babel/runtime", "npm:7.29.2"],\
-          ["@testing-library/dom", "npm:10.4.1"],\
+          ["@testing-library/dom", "npm:10.4.2"],\
           ["@types/aria-query", "npm:5.0.4"],\
           ["aria-query", "npm:5.3.0"],\
           ["dom-accessibility-api", "npm:0.5.16"],\
@@ -9507,7 +9507,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/__virtual__/@testing-library-react-virtual-5ebed05ec1/0/cache/@testing-library-react-npm-16.3.2-67b0b894c8-0ca88c6f67.zip/node_modules/@testing-library/react/",\
         "packageDependencies": [\
           ["@babel/runtime", "npm:7.29.2"],\
-          ["@testing-library/dom", "npm:10.4.1"],\
+          ["@testing-library/dom", "npm:10.4.2"],\
           ["@testing-library/react", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:16.3.2"],\
           ["@types/react", "npm:19.2.14"],\
           ["@types/react-dom", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:19.2.3"],\
@@ -11278,7 +11278,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/__virtual__/allure-vitest-virtual-b5a8c84776/1/packages/allure-vitest/",\
         "packageDependencies": [\
           ["@opentelemetry/api", "npm:1.9.1"],\
-          ["@testing-library/dom", "npm:10.4.1"],\
+          ["@testing-library/dom", "npm:10.4.2"],\
           ["@testing-library/react", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:16.3.2"],\
           ["@types/node", "npm:26.0.1"],\
           ["@types/react", "npm:19.2.14"],\
@@ -11309,7 +11309,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./packages/allure-vitest/",\
         "packageDependencies": [\
           ["@opentelemetry/api", "npm:1.9.1"],\
-          ["@testing-library/dom", "npm:10.4.1"],\
+          ["@testing-library/dom", "npm:10.4.2"],\
           ["@testing-library/react", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:16.3.2"],\
           ["@types/node", "npm:26.0.1"],\
           ["@types/react", "npm:19.2.14"],\
