@@ -1,5 +1,5 @@
 import type { TestStatus } from "@playwright/test";
-import type { TestStep } from "@playwright/test/reporter";
+import type { TestError, TestStep } from "@playwright/test/reporter";
 import { Stage, Status, type StatusDetails, type StepResult } from "allure-js-commons";
 import { getMessageAndTraceFromError } from "allure-js-commons/sdk";
 
@@ -61,6 +61,27 @@ export const getSkipAnnotation = (step: Pick<TestStep, "annotations">) => {
   return step.annotations.find((annotation) => annotation.type === "skip");
 };
 
+// Playwright implements the test.skip() and test.fixme() modifiers by throwing an internal error with
+// this message. When a modifier is called from a hook or from inside a step, the error is attached to
+// the surrounding step, so a skipped test reaches the reporter with errored steps although nothing failed.
+const SKIP_MODIFIER_ERROR_REGEXP = /^(?:\S*Error:\s)?Test is skipped:\s?([\s\S]*)$/;
+
+/**
+ * Detects an error produced by a Playwright skip modifier and extracts the reason passed to it.
+ * Returns `undefined` for any other error, including a genuine failure.
+ */
+export const getSkipModifierError = (error: Pick<TestError, "message">): { reason?: string } | undefined => {
+  const match = error.message ? SKIP_MODIFIER_ERROR_REGEXP.exec(error.message) : null;
+
+  if (!match) {
+    return undefined;
+  }
+
+  const reason = match[1].trim();
+
+  return reason ? { reason } : {};
+};
+
 export const getStepStatusData = (
   step: Pick<TestStep, "annotations" | "error">,
 ): {
@@ -79,6 +100,15 @@ export const getStepStatusData = (
   }
 
   if (step.error) {
+    const skipModifierError = getSkipModifierError(step.error);
+
+    if (skipModifierError) {
+      return {
+        status: Status.SKIPPED,
+        statusDetails: skipModifierError.reason ? { message: skipModifierError.reason } : undefined,
+      };
+    }
+
     return {
       status: Status.FAILED,
       statusDetails: { ...getMessageAndTraceFromError(step.error) },
