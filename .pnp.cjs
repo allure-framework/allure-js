@@ -6940,7 +6940,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@jest/console", "npm:30.0.0"],\
           ["@jest/types", "npm:30.0.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["chalk", "npm:4.1.2"],\
           ["jest-message-util", "npm:30.0.0"],\
           ["jest-util", "npm:30.0.0"],\
@@ -6967,7 +6967,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/test-result", "npm:30.0.0"],\
           ["@jest/transform", "npm:30.0.0"],\
           ["@jest/types", "npm:30.0.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/node-notifier", null],\
           ["ansi-escapes", "npm:4.3.2"],\
           ["chalk", "npm:4.1.2"],\
@@ -7022,7 +7022,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/environment", "npm:30.0.0"],\
           ["@jest/fake-timers", "npm:30.0.0"],\
           ["@jest/types", "npm:30.0.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["jest-mock", "npm:30.0.0"]\
         ],\
         "linkType": "HARD"\
@@ -7033,7 +7033,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/environment", "npm:30.4.1"],\
           ["@jest/fake-timers", "npm:30.4.1"],\
           ["@jest/types", "npm:30.4.1"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["jest-mock", "npm:30.4.1"]\
         ],\
         "linkType": "HARD"\
@@ -7044,7 +7044,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/environment", "npm:30.5.2"],\
           ["@jest/fake-timers", "npm:30.5.2"],\
           ["@jest/types", "npm:30.5.1"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["jest-mock", "npm:30.5.2"]\
         ],\
         "linkType": "HARD"\
@@ -7067,7 +7067,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/types", "npm:30.0.0"],\
           ["@types/canvas", null],\
           ["@types/jsdom", "npm:21.1.7"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["canvas", null],\
           ["jest-mock", "npm:30.0.0"],\
           ["jest-util", "npm:30.0.0"],\
@@ -7134,7 +7134,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/fake-timers", "npm:30.0.0"],\
           ["@jest/types", "npm:30.0.0"],\
           ["@sinonjs/fake-timers", "npm:13.0.5"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["jest-message-util", "npm:30.0.0"],\
           ["jest-mock", "npm:30.0.0"],\
           ["jest-util", "npm:30.0.0"]\
@@ -7147,7 +7147,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/fake-timers", "npm:30.4.1"],\
           ["@jest/types", "npm:30.4.1"],\
           ["@sinonjs/fake-timers", "npm:15.4.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["jest-message-util", "npm:30.4.1"],\
           ["jest-mock", "npm:30.4.1"],\
           ["jest-util", "npm:30.4.1"]\
@@ -7160,7 +7160,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/fake-timers", "npm:30.5.2"],\
           ["@jest/types", "npm:30.5.1"],\
           ["@sinonjs/fake-timers", "npm:15.4.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["jest-message-util", "npm:30.5.1"],\
           ["jest-mock", "npm:30.5.2"],\
           ["jest-util", "npm:30.5.1"]\
@@ -7202,7 +7202,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/@jest-pattern-npm-30.0.0-8f812d915e-4c21a48b1d.zip/node_modules/@jest/pattern/",\
         "packageDependencies": [\
           ["@jest/pattern", "npm:30.0.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["jest-regex-util", "npm:30.0.0"]\
         ],\
         "linkType": "HARD"\
@@ -7211,7 +7211,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/@jest-pattern-npm-30.4.0-ae6720c39b-4fb1db0e58.zip/node_modules/@jest/pattern/",\
         "packageDependencies": [\
           ["@jest/pattern", "npm:30.4.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["jest-regex-util", "npm:30.4.0"]\
         ],\
         "linkType": "HARD"\
@@ -7220,7 +7220,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/@jest-pattern-npm-30.5.0-778e7dfd45-3a4afb5590.zip/node_modules/@jest/pattern/",\
         "packageDependencies": [\
           ["@jest/pattern", "npm:30.5.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["jest-regex-util", "npm:30.5.0"]\
         ],\
         "linkType": "HARD"\
@@ -7244,7 +7244,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/transform", "npm:30.0.0"],\
           ["@jest/types", "npm:30.0.0"],\
           ["@jridgewell/trace-mapping", "npm:0.3.25"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/node-notifier", null],\
           ["chalk", "npm:4.1.2"],\
           ["collect-v8-coverage", "npm:1.0.2"],\
@@ -7420,7 +7420,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/types", "npm:28.1.3"],\
           ["@types/istanbul-lib-coverage", "npm:2.0.6"],\
           ["@types/istanbul-reports", "npm:3.0.4"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/yargs", "npm:17.0.32"],\
           ["chalk", "npm:4.1.2"]\
         ],\
@@ -7434,7 +7434,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/types", "npm:30.0.0"],\
           ["@types/istanbul-lib-coverage", "npm:2.0.6"],\
           ["@types/istanbul-reports", "npm:3.0.4"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/yargs", "npm:17.0.33"],\
           ["chalk", "npm:4.1.2"]\
         ],\
@@ -7448,7 +7448,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/types", "npm:30.4.1"],\
           ["@types/istanbul-lib-coverage", "npm:2.0.6"],\
           ["@types/istanbul-reports", "npm:3.0.4"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/yargs", "npm:17.0.33"],\
           ["chalk", "npm:4.1.2"]\
         ],\
@@ -7462,7 +7462,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/types", "npm:30.5.1"],\
           ["@types/istanbul-lib-coverage", "npm:2.0.6"],\
           ["@types/istanbul-reports", "npm:3.0.4"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/yargs", "npm:17.0.33"],\
           ["chalk", "npm:4.1.2"]\
         ],\
@@ -9783,7 +9783,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@types/glob", "npm:7.2.0"],\
           ["@types/minimatch", "npm:5.1.2"],\
-          ["@types/node", "npm:20.11.20"]\
+          ["@types/node", "npm:26.6.3"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -9840,7 +9840,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/@types-jsdom-npm-21.1.7-b9d35cbe67-a5ee54aec8.zip/node_modules/@types/jsdom/",\
         "packageDependencies": [\
           ["@types/jsdom", "npm:21.1.7"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/tough-cookie", "npm:4.0.5"],\
           ["parse5", "npm:7.1.2"]\
         ],\
@@ -9904,14 +9904,6 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@types/node", [\
-      ["npm:20.11.20", {\
-        "packageLocation": "./.yarn/cache/@types-node-npm-20.11.20-0036cdf1c0-ff449bdc94.zip/node_modules/@types/node/",\
-        "packageDependencies": [\
-          ["@types/node", "npm:20.11.20"],\
-          ["undici-types", "npm:5.26.5"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:20.14.5", {\
         "packageLocation": "./.yarn/cache/@types-node-npm-20.14.5-07c835e492-74c7974a8c.zip/node_modules/@types/node/",\
         "packageDependencies": [\
@@ -9920,11 +9912,11 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["npm:26.0.1", {\
-        "packageLocation": "./.yarn/cache/@types-node-npm-26.0.1-5dbc91981f-c312909c89.zip/node_modules/@types/node/",\
+      ["npm:26.6.3", {\
+        "packageLocation": "./.yarn/cache/@types-node-npm-26.6.3-5e443ec360-278d524152.zip/node_modules/@types/node/",\
         "packageDependencies": [\
-          ["@types/node", "npm:26.0.1"],\
-          ["undici-types", "npm:8.3.0"]\
+          ["@types/node", "npm:26.6.3"],\
+          ["undici-types", "npm:8.9.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -9942,7 +9934,7 @@ const RAW_RUNTIME_STATE =
       ["npm:3.5.11", {\
         "packageLocation": "./.yarn/cache/@types-postman-collection-npm-3.5.11-31a04b7436-27928a63f8.zip/node_modules/@types/postman-collection/",\
         "packageDependencies": [\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/postman-collection", "npm:3.5.11"]\
         ],\
         "linkType": "HARD"\
@@ -9982,7 +9974,7 @@ const RAW_RUNTIME_STATE =
       ["npm:2.4.7", {\
         "packageLocation": "./.yarn/cache/@types-set-cookie-parser-npm-2.4.7-e9d6d979b1-01ef803e24.zip/node_modules/@types/set-cookie-parser/",\
         "packageDependencies": [\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/set-cookie-parser", "npm:2.4.7"]\
         ],\
         "linkType": "HARD"\
@@ -10806,7 +10798,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/allure-ava", {\
         "packageLocation": "./packages/allure-ava/",\
         "packageDependencies": [\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-ava", "workspace:packages/allure-ava"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
@@ -10830,7 +10822,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/preset-typescript", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.27.1"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-axios", "workspace:packages/allure-axios"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
@@ -10855,7 +10847,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/preset-typescript", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.27.1"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-bun", "workspace:packages/allure-bun"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
@@ -10880,7 +10872,7 @@ const RAW_RUNTIME_STATE =
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
           ["@types/chai", "npm:5.2.2"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-chai", "workspace:packages/allure-chai"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
@@ -10914,7 +10906,7 @@ const RAW_RUNTIME_STATE =
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
           ["@types/jasmine", "npm:6.0.0"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-codeceptjs", "workspace:packages/allure-codeceptjs"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
@@ -10953,7 +10945,7 @@ const RAW_RUNTIME_STATE =
           ["@cucumber/messages", "npm:32.2.0"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-cucumberjs", "workspace:packages/allure-cucumberjs"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
@@ -10978,7 +10970,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/preset-typescript", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.27.1"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-cypress", "workspace:packages/allure-cypress"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
@@ -11004,7 +10996,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/preset-typescript", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.27.1"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-fetch", "workspace:packages/allure-fetch"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
@@ -11029,7 +11021,7 @@ const RAW_RUNTIME_STATE =
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
           ["@types/jasmine", "npm:6.0.0"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-jasmine", "workspace:packages/allure-jasmine"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
@@ -11058,7 +11050,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/types", "npm:30.0.0"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-jest", "workspace:packages/allure-jest"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
@@ -11104,7 +11096,7 @@ const RAW_RUNTIME_STATE =
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
           ["@types/md5", "npm:2.3.6"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-playwright", null],\
           ["md5", "npm:2.3.0"],\
@@ -11131,7 +11123,7 @@ const RAW_RUNTIME_STATE =
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
           ["@types/md5", "npm:2.3.6"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-js-commons", "virtual:3b04c8c38dde7165df844f9cd74e94cc47d78164564600cf56ba5f8c6011d25ef0d3afc13d610f3da970f6807c830914053ff96a43c86ba17f3ec650dfd687d3#workspace:packages/allure-js-commons"],\
           ["allure-playwright", "workspace:packages/allure-playwright"],\
           ["md5", "npm:2.3.0"],\
@@ -11157,7 +11149,7 @@ const RAW_RUNTIME_STATE =
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
           ["@types/md5", "npm:2.3.6"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-js-commons", "workspace:packages/allure-js-commons"],\
           ["md5", "npm:2.3.0"],\
           ["npm-run-all2", "npm:9.0.2"],\
@@ -11179,7 +11171,7 @@ const RAW_RUNTIME_STATE =
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
           ["@types/mocha", "npm:10.0.6"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-mocha", "virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#workspace:packages/allure-mocha"],\
@@ -11205,7 +11197,7 @@ const RAW_RUNTIME_STATE =
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
           ["@types/mocha", "npm:10.0.6"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-mocha", "workspace:packages/allure-mocha"],\
@@ -11232,7 +11224,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/preset-typescript", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.27.1"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-node-test", "workspace:packages/allure-node-test"],\
@@ -11258,7 +11250,7 @@ const RAW_RUNTIME_STATE =
           ["@playwright/test", "npm:1.62.1"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:3b04c8c38dde7165df844f9cd74e94cc47d78164564600cf56ba5f8c6011d25ef0d3afc13d610f3da970f6807c830914053ff96a43c86ba17f3ec650dfd687d3#workspace:packages/allure-js-commons"],\
           ["allure-playwright", "workspace:packages/allure-playwright"],\
@@ -11280,7 +11272,7 @@ const RAW_RUNTIME_STATE =
           ["@opentelemetry/api", "npm:1.9.1"],\
           ["@testing-library/dom", "npm:10.4.2"],\
           ["@testing-library/react", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:16.3.2"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/react", "npm:19.2.14"],\
           ["@types/react-dom", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:19.2.3"],\
           ["@types/vitest", null],\
@@ -11311,7 +11303,7 @@ const RAW_RUNTIME_STATE =
           ["@opentelemetry/api", "npm:1.9.1"],\
           ["@testing-library/dom", "npm:10.4.2"],\
           ["@testing-library/react", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:16.3.2"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/react", "npm:19.2.14"],\
           ["@types/react-dom", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:19.2.3"],\
           ["@vitest/browser-playwright", "virtual:f37ad3099f3665d5bbc9ee71081416c8874087a5d9739472f56367e210ca9246356f462b31407a28e510bc022801edd4632f86364db715287d62bd50b42e2c00#npm:4.1.10"],\
@@ -17351,7 +17343,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/expect", "npm:30.0.0"],\
           ["@jest/test-result", "npm:30.0.0"],\
           ["@jest/types", "npm:30.0.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["chalk", "npm:4.1.2"],\
           ["co", "npm:4.6.0"],\
           ["dedent", "virtual:49e7b00b681e1ea6e290df0a7ba7ea819564f13919953440390470996711568b2f2bce91e248e0b2b4a450d9af728d3bc1a67bb39f0ae041bb4ef8540a7a7869#npm:1.6.0"],\
@@ -17421,7 +17413,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/test-sequencer", "npm:30.0.0"],\
           ["@jest/types", "npm:30.0.0"],\
           ["@types/esbuild-register", null],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/ts-node", null],\
           ["babel-jest", "virtual:3d1ff49f448ca86dce81fda1451c0d6d6d4048d56f3416f81937fae392776d8807f87dfb9fa2d147064d1cf886ac7b3d071fe32804de932505e779154e23324c#npm:30.0.0"],\
           ["chalk", "npm:4.1.2"],\
@@ -17573,7 +17565,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/environment-jsdom-abstract", "virtual:8405b05d14501aa83e888a339c24694b18c93ccef21fde146ec63686c652b151285c83d8fa1ebfd2443eb6021f680725e2b6b03d258fff448f22360ee1edc2ce#npm:30.0.0"],\
           ["@types/canvas", null],\
           ["@types/jsdom", "npm:21.1.7"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["canvas", null],\
           ["jest-environment-jsdom", "virtual:f22a73b9c1f4f0e2e1c95f149ccb41c96491085e4b2ecd3061e554432306c4df6c2976f3c6ce3a6d62abead3ccc6cf04e88b4aebf1de7356583819351e2346e2#npm:30.0.0"],\
           ["jsdom", "virtual:8405b05d14501aa83e888a339c24694b18c93ccef21fde146ec63686c652b151285c83d8fa1ebfd2443eb6021f680725e2b6b03d258fff448f22360ee1edc2ce#npm:26.1.0"]\
@@ -17592,7 +17584,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/environment", "npm:30.0.0"],\
           ["@jest/fake-timers", "npm:30.0.0"],\
           ["@jest/types", "npm:30.0.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["jest-environment-node", "npm:30.0.0"],\
           ["jest-mock", "npm:30.0.0"],\
           ["jest-util", "npm:30.0.0"],\
@@ -17606,7 +17598,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/environment", "npm:30.5.2"],\
           ["@jest/fake-timers", "npm:30.5.2"],\
           ["@jest/types", "npm:30.5.1"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["jest-environment-node", "npm:30.5.2"],\
           ["jest-mock", "npm:30.5.2"],\
           ["jest-util", "npm:30.5.1"],\
@@ -17629,7 +17621,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/jest-haste-map-npm-30.0.0-3606160998-5462964548.zip/node_modules/jest-haste-map/",\
         "packageDependencies": [\
           ["@jest/types", "npm:30.0.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["anymatch", "npm:3.1.3"],\
           ["fb-watchman", "npm:2.0.2"],\
           ["fsevents", "patch:fsevents@npm%3A2.3.3#optional!builtin<compat/fsevents>::version=2.3.3&hash=df0bf1"],\
@@ -17648,7 +17640,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@jest/types", "npm:30.5.1"],\
           ["@parcel/watcher", "npm:2.6.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["anymatch", "npm:3.1.3"],\
           ["fb-watchman", "npm:2.0.2"],\
           ["fdir", "virtual:f2c3ddb9177a69fd371e15c77b73bfaf3f96b278d9e45c2d22b493c8bc3e58f571555e32a44df0c8c1a132e08889c6c9fdf9f21791163f07c9a5aef76fddb09f#npm:6.5.0"],\
@@ -17781,7 +17773,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/jest-mock-npm-30.0.0-1cab834040-4896ba2504.zip/node_modules/jest-mock/",\
         "packageDependencies": [\
           ["@jest/types", "npm:30.0.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["jest-mock", "npm:30.0.0"],\
           ["jest-util", "npm:30.0.0"]\
         ],\
@@ -17791,7 +17783,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/jest-mock-npm-30.4.1-58759a0096-8d0c279413.zip/node_modules/jest-mock/",\
         "packageDependencies": [\
           ["@jest/types", "npm:30.4.1"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["jest-mock", "npm:30.4.1"],\
           ["jest-util", "npm:30.4.1"]\
         ],\
@@ -17802,7 +17794,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@jest/expect-utils", "npm:30.5.2"],\
           ["@jest/types", "npm:30.5.1"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["jest-mock", "npm:30.5.2"],\
           ["jest-util", "npm:30.5.1"]\
         ],\
@@ -17891,7 +17883,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/test-result", "npm:30.0.0"],\
           ["@jest/transform", "npm:30.0.0"],\
           ["@jest/types", "npm:30.0.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["chalk", "npm:4.1.2"],\
           ["emittery", "npm:0.13.1"],\
           ["exit-x", "npm:0.2.2"],\
@@ -17924,7 +17916,7 @@ const RAW_RUNTIME_STATE =
           ["@jest/test-result", "npm:30.0.0"],\
           ["@jest/transform", "npm:30.0.0"],\
           ["@jest/types", "npm:30.0.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["chalk", "npm:4.1.2"],\
           ["cjs-module-lexer", "npm:2.1.0"],\
           ["collect-v8-coverage", "npm:1.0.2"],\
@@ -18007,7 +17999,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/jest-util-npm-28.1.3-9ae2283a08-92895523d3.zip/node_modules/jest-util/",\
         "packageDependencies": [\
           ["@jest/types", "npm:28.1.3"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["chalk", "npm:4.1.2"],\
           ["ci-info", "npm:3.9.0"],\
           ["graceful-fs", "npm:4.2.11"],\
@@ -18020,7 +18012,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/jest-util-npm-30.0.0-de14658072-55171f9010.zip/node_modules/jest-util/",\
         "packageDependencies": [\
           ["@jest/types", "npm:30.0.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["chalk", "npm:4.1.2"],\
           ["ci-info", "npm:4.2.0"],\
           ["graceful-fs", "npm:4.2.11"],\
@@ -18033,7 +18025,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/jest-util-npm-30.4.1-9ea66abb21-603093e120.zip/node_modules/jest-util/",\
         "packageDependencies": [\
           ["@jest/types", "npm:30.4.1"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["chalk", "npm:4.1.2"],\
           ["ci-info", "npm:4.2.0"],\
           ["graceful-fs", "npm:4.2.11"],\
@@ -18046,7 +18038,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/jest-util-npm-30.5.1-dc5eab8cac-87e7fa2be0.zip/node_modules/jest-util/",\
         "packageDependencies": [\
           ["@jest/types", "npm:30.5.1"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["chalk", "npm:4.1.2"],\
           ["ci-info", "npm:4.2.0"],\
           ["graceful-fs", "npm:4.2.11"],\
@@ -18090,7 +18082,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@jest/test-result", "npm:30.0.0"],\
           ["@jest/types", "npm:30.0.0"],\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["ansi-escapes", "npm:4.3.2"],\
           ["chalk", "npm:4.1.2"],\
           ["emittery", "npm:0.13.1"],\
@@ -18105,7 +18097,7 @@ const RAW_RUNTIME_STATE =
       ["npm:30.0.0", {\
         "packageLocation": "./.yarn/cache/jest-worker-npm-30.0.0-0e18cd85f6-c124a964f7.zip/node_modules/jest-worker/",\
         "packageDependencies": [\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@ungap/structured-clone", "npm:1.3.3"],\
           ["jest-util", "npm:30.0.0"],\
           ["jest-worker", "npm:30.0.0"],\
@@ -18117,7 +18109,7 @@ const RAW_RUNTIME_STATE =
       ["npm:30.5.1", {\
         "packageLocation": "./.yarn/cache/jest-worker-npm-30.5.1-1d545cb3d5-cff8638859.zip/node_modules/jest-worker/",\
         "packageDependencies": [\
-          ["@types/node", "npm:20.11.20"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@ungap/structured-clone", "npm:1.3.3"],\
           ["jest-util", "npm:30.5.1"],\
           ["jest-worker", "npm:30.5.1"],\
@@ -19758,7 +19750,7 @@ const RAW_RUNTIME_STATE =
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
           ["@types/newman", "npm:5.3.6"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/postman-collection", "npm:3.5.11"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
@@ -23252,7 +23244,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/preset-typescript", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.27.1"],\
           ["@types/babel__core", "npm:7.20.5"],\
           ["@types/babel__preset-env", "npm:7.10.0"],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
@@ -23789,10 +23781,10 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["npm:8.3.0", {\
-        "packageLocation": "./.yarn/cache/undici-types-npm-8.3.0-d34470de3e-6681d2837a.zip/node_modules/undici-types/",\
+      ["npm:8.9.0", {\
+        "packageLocation": "./.yarn/cache/undici-types-npm-8.9.0-c5953f392d-8785591929.zip/node_modules/undici-types/",\
         "packageDependencies": [\
-          ["undici-types", "npm:8.3.0"]\
+          ["undici-types", "npm:8.9.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -24147,7 +24139,7 @@ const RAW_RUNTIME_STATE =
           ["@types/esbuild", null],\
           ["@types/jiti", null],\
           ["@types/less", null],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/sass", null],\
           ["@types/sass-embedded", null],\
           ["@types/stylus", null],\
@@ -24280,7 +24272,7 @@ const RAW_RUNTIME_STATE =
           ["@types/edge-runtime__vm", null],\
           ["@types/happy-dom", null],\
           ["@types/jsdom", null],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/opentelemetry__api", null],\
           ["@types/vite", null],\
           ["@types/vitest__browser-playwright", null],\
@@ -24353,7 +24345,7 @@ const RAW_RUNTIME_STATE =
           ["@types/edge-runtime__vm", null],\
           ["@types/happy-dom", null],\
           ["@types/jsdom", null],\
-          ["@types/node", "npm:26.0.1"],\
+          ["@types/node", "npm:26.6.3"],\
           ["@types/opentelemetry__api", null],\
           ["@types/vite", null],\
           ["@types/vitest__browser-playwright", null],\
