@@ -1,6 +1,8 @@
 import "vitest";
 import type { RuntimeMessage, TestPlanV1 } from "allure-js-commons/sdk";
 
+import type { AllureVitestAttempt } from "./vitest-artifacts.js";
+
 declare global {
   var allureTestPlan: TestPlanV1 | undefined;
 }
@@ -16,5 +18,8 @@ declare module "vitest" {
     allureSkip?: boolean;
     allureRuntimeMessages?: RuntimeMessage[];
     allureGlobalRuntimeMessages?: RuntimeMessage[];
+    allureFailedAttempts?: AllureVitestAttempt[];
+    allureAttemptStartTime?: number;
+    allureAttemptDuration?: number;
   }
 }

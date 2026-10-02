@@ -21,6 +21,11 @@ export type TestFiles = Record<string, string | TestFileAccessor>;
 
 type VitestConfigOptions = {
   reportMatchers?: boolean;
+  retry?: number;
+  browser?: {
+    screenshotFailures?: boolean;
+    trace?: string | Record<string, unknown>;
+  };
 };
 
 type Opts = {
@@ -55,6 +60,7 @@ export const createVitestConfig = (allureResultsPath: string, options: VitestCon
       openTelemetry: {
         enabled: false,
       },
+      ${options.retry === undefined ? "" : `retry: ${options.retry},`}
       reporters: [
         "verbose",
         ["${reporterModulePath}", {
@@ -74,6 +80,7 @@ export const createVitestBrowserConfig = (allureResultsPath: string, options: Vi
       openTelemetry: {
         enabled: false,
       },
+      ${options.retry === undefined ? "" : `retry: ${options.retry},`}
       reporters: [
         "verbose",
         ["${reporterModulePath}", {
@@ -84,6 +91,8 @@ ${createReporterOptions(allureResultsPath, options)}
         provider: playwright(),
         enabled: true,
         headless: true,
+        ${options.browser?.screenshotFailures === undefined ? "" : `screenshotFailures: ${options.browser.screenshotFailures},`}
+        ${options.browser?.trace === undefined ? "" : `trace: ${JSON.stringify(options.browser.trace)},`}
         instances: [
           { browser: "chromium" },
         ],
