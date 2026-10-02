@@ -1,7 +1,10 @@
+import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
+import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { Stage, Status } from "allure-js-commons";
+import { getTestName } from "@vitest/runner/utils";
+import { ContentType, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError, toGlobalErrorMessage } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
@@ -26,6 +29,7 @@ import { commands as allureBrowserCommands } from "./browser/index.js";
 import { isMatcherMessage } from "./matcherMessages.js";
 import { takeGlobalRuntimeMessages } from "./runtime.js";
 import { getTestMetadata } from "./utils.js";
+import type { AllureVitestAttempt, TaskResultLike, VitestArtifact } from "./vitest-artifacts.js";
 
 const localRequire = createRequire(import.meta.url);
 
@@ -43,6 +47,8 @@ const browserSetupModulePath = fileURLToPath(new URL("./browser/setup.js", impor
 
 const normalizeSetupFilePath = (setupFilePath: string) =>
   setupFilePath.startsWith("file://") ? fileURLToPath(setupFilePath) : setupFilePath;
+
+const sanitizeTracePart = (value: string): string => value.replaceAll(/[^a-z0-9]/gi, "-");
 
 export default class AllureVitestReporter implements Reporter {
   private allureReporterRuntime?: ReporterRuntime;
@@ -144,8 +150,7 @@ export default class AllureVitestReporter implements Reporter {
     const {
       allureRuntimeMessages = [],
       allureGlobalRuntimeMessages = [],
-      vitestWorker,
-      browser,
+      allureFailedAttempts = [],
       allureSkip = false,
     } = task.meta;
 
@@ -158,6 +163,33 @@ export default class AllureVitestReporter implements Reporter {
       this.globalRuntimeMessages.push(...allureGlobalRuntimeMessages);
     }
 
+    const finalAttemptResult = task.result
+      ? {
+          ...task.result,
+          startTime: task.meta.allureAttemptStartTime ?? task.result.startTime,
+          duration: task.meta.allureAttemptDuration ?? task.result.duration,
+        }
+      : undefined;
+
+    const attempts: AllureVitestAttempt[] = [
+      ...(allureFailedAttempts as AllureVitestAttempt[]),
+      ...(task.result?.state === "fail" && allureFailedAttempts.length ? [] : [{}]),
+    ];
+
+    for (const attempt of attempts) {
+      this.writeTaskAttempt(task, {
+        result: attempt.result ?? finalAttemptResult,
+        runtimeMessages: attempt.runtimeMessages ?? allureRuntimeMessages,
+        artifacts: attempt.artifacts ?? (task.artifacts as VitestArtifact[] | undefined),
+      });
+    }
+  }
+
+  private writeTaskAttempt(
+    task: Task,
+    { result: taskResult, runtimeMessages: allureRuntimeMessages = [], artifacts = [] }: AllureVitestAttempt,
+  ) {
+    const { vitestWorker, browser } = task.meta;
     const {
       projectName,
       specPath,
@@ -170,7 +202,7 @@ export default class AllureVitestReporter implements Reporter {
     } = getTestMetadata(task);
     const testUuid = this.allureReporterRuntime!.startTest({
       name,
-      start: task.result?.startTime,
+      start: taskResult?.startTime,
     });
 
     this.allureReporterRuntime!.updateTest(testUuid, (result) => {
@@ -211,9 +243,9 @@ export default class AllureVitestReporter implements Reporter {
         this.allureReporterRuntime!.applyRuntimeMessages(testUuid, runtimeMessages);
       }
 
-      switch (task.result?.state) {
+      switch (taskResult?.state) {
         case "fail": {
-          const [error] = task.result.errors || [];
+          const [error] = taskResult.errors || [];
           const status = getStatusFromError(error);
 
           result.statusDetails = {
@@ -234,10 +266,75 @@ export default class AllureVitestReporter implements Reporter {
           break;
         }
       }
+
+      if (browser && (taskResult?.retryCount ?? 0) > 0) {
+        result.parameters.push({ name: "Retry", value: String(taskResult?.retryCount), excluded: true });
+      }
     });
 
-    this.allureReporterRuntime!.stopTest(testUuid, { duration: task.result?.duration ?? 0 });
+    this.writeTaskArtifacts(testUuid, taskResult, artifacts);
+    this.writeTaskTrace(testUuid, task, taskResult, artifacts);
+
+    this.allureReporterRuntime!.stopTest(testUuid, { duration: taskResult?.duration ?? 0 });
     this.allureReporterRuntime!.writeTest(testUuid);
+  }
+
+  private writeTaskArtifacts(testUuid: string, taskResult: TaskResultLike | undefined, artifacts: VitestArtifact[]) {
+    if (taskResult?.state !== "fail") {
+      return;
+    }
+
+    for (const artifact of artifacts) {
+      if (artifact.type === "internal:failureScreenshot") {
+        this.writeArtifactAttachments(testUuid, artifact, "Failure screenshot");
+      }
+
+      if (artifact.type === "internal:toMatchScreenshot") {
+        this.writeArtifactAttachments(testUuid, artifact, artifact.message ?? "Screenshot diff");
+      }
+    }
+  }
+
+  private writeArtifactAttachments(testUuid: string, artifact: VitestArtifact, fallbackName: string) {
+    for (const attachment of artifact.attachments ?? []) {
+      const contentType = attachment.contentType ?? ContentType.PNG;
+      const name = attachment.name ?? (attachment.path ? basename(attachment.path) : fallbackName);
+
+      if (attachment.path) {
+        this.allureReporterRuntime!.writeAttachment(testUuid, undefined, name, attachment.path, {
+          contentType,
+        });
+        continue;
+      }
+
+      if (attachment.body) {
+        this.allureReporterRuntime!.writeAttachment(testUuid, undefined, name, Buffer.from(attachment.body), {
+          contentType,
+        });
+      }
+    }
+  }
+
+  private writeTaskTrace(
+    testUuid: string,
+    task: Task,
+    taskResult: TaskResultLike | undefined,
+    artifacts: VitestArtifact[],
+  ) {
+    if (taskResult?.state !== "fail") {
+      return;
+    }
+
+    const tracePath = getBrowserTracePath(task, taskResult, artifacts);
+
+    if (!tracePath || !existsSync(tracePath)) {
+      return;
+    }
+
+    this.allureReporterRuntime!.writeAttachment(testUuid, undefined, "Trace", tracePath, {
+      contentType: ContentType.PLAYWRIGHT_TRACE,
+      fileExtension: ".zip",
+    });
   }
 }
 
@@ -275,4 +372,60 @@ const getHookGlobalErrorMessages = (task: Task): RuntimeMessage[] => {
       }),
     ];
   });
+};
+
+const getBrowserTracePath = (task: Task, result: TaskResultLike, artifacts: VitestArtifact[]): string | undefined => {
+  if (!task.meta.browser) {
+    return undefined;
+  }
+
+  const artifactTracePath = getBrowserTraceArtifactPath(artifacts);
+
+  if (artifactTracePath) {
+    return artifactTracePath;
+  }
+
+  if (!task.file?.filepath) {
+    return undefined;
+  }
+
+  const testFilePath = task.file.filepath;
+  const projectName = task.file.projectName ?? task.meta.browser;
+  const repeatCount = result.repeatCount ?? 0;
+  const retryCount = result.retryCount ?? 0;
+  const traceDirectory = join(dirname(testFilePath), "__traces__", basename(testFilePath));
+  // Fallback for Vitest versions/providers that write traces but don't expose them as annotation artifacts.
+  const traceFileNames = [
+    [sanitizeTracePart(projectName), sanitizeTracePart(getTestName(task, "-")), repeatCount, retryCount].join("-"),
+  ];
+
+  for (const traceFileName of traceFileNames) {
+    const tracePath = join(traceDirectory, `${traceFileName}.trace.zip`);
+
+    if (existsSync(tracePath)) {
+      return tracePath;
+    }
+  }
+
+  return undefined;
+};
+
+const getBrowserTraceArtifactPath = (artifacts: VitestArtifact[]): string | undefined => {
+  for (const artifact of artifacts) {
+    if (artifact.type === "internal:annotation" && artifact.annotation?.type === "traces") {
+      const tracePath = artifact.annotation.attachment?.path;
+
+      if (tracePath) {
+        return tracePath;
+      }
+    }
+
+    const traceAttachment = artifact.attachments?.find(({ path }) => path?.endsWith(".trace.zip"));
+
+    if (traceAttachment?.path) {
+      return traceAttachment.path;
+    }
+  }
+
+  return undefined;
 };

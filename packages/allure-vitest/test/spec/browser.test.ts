@@ -1,8 +1,160 @@
 import { describe, expect, it } from "vitest";
 
-import { createVitestBrowserConfig, runVitestInlineTest } from "../utils.js";
+import { createVitestBrowserConfig, createVitestConfig, runVitestInlineTest } from "../utils.js";
 
 describe("browser", () => {
+  it("should report browser retries as separate test results", async () => {
+    const { tests, attachments } = await runVitestInlineTest({
+      "vitest.config.ts": ({ allureResultsPath }) =>
+        createVitestBrowserConfig(allureResultsPath, {
+          retry: 1,
+          browser: {
+            screenshotFailures: true,
+          },
+        }),
+      "sample.test.ts": `
+        import { test, expect } from "vitest";
+        import { label, step } from "allure-js-commons";
+
+        const wait = () => new Promise((resolve) => setTimeout(resolve, 15));
+
+        test("flaky browser test", async ({ task }) => {
+          await wait();
+          if ((task.result?.retryCount ?? 0) === 0) {
+            await label("attempt", "failed");
+            await step("failed attempt step", async () => {});
+          }
+
+          expect(task.result?.retryCount).toBe(1);
+        });
+
+        test("failed retried browser test", async ({ task }) => {
+          await wait();
+          expect(task.result?.retryCount).toBe(2);
+        });
+      `,
+    });
+
+    expect(tests).toHaveLength(4);
+    const withoutRetry = expect.not.arrayContaining([expect.objectContaining({ name: "Retry" })]);
+    const withFirstRetry = expect.arrayContaining([{ name: "Retry", value: "1", excluded: true }]);
+    const flakyFailedResult = tests.find(({ name, status }) => name === "flaky browser test" && status === "failed")!;
+    const flakyPassedResult = tests.find(({ name, status }) => name === "flaky browser test" && status === "passed")!;
+
+    expect(tests).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: "flaky browser test",
+          status: "failed",
+          statusDetails: expect.objectContaining({
+            message: expect.stringContaining("expected +0 to be 1"),
+          }),
+          parameters: withoutRetry,
+        }),
+        expect.objectContaining({
+          name: "flaky browser test",
+          status: "passed",
+          parameters: withFirstRetry,
+        }),
+        expect.objectContaining({
+          name: "failed retried browser test",
+          status: "failed",
+          statusDetails: expect.objectContaining({
+            message: expect.stringContaining("expected +0 to be 2"),
+          }),
+          parameters: withoutRetry,
+        }),
+        expect.objectContaining({
+          name: "failed retried browser test",
+          status: "failed",
+          statusDetails: expect.objectContaining({
+            message: expect.stringContaining("expected 1 to be 2"),
+          }),
+          parameters: withFirstRetry,
+        }),
+      ]),
+    );
+
+    for (const testResult of tests) {
+      expect(testResult.stop).toBeGreaterThan(testResult.start!);
+    }
+
+    expect(flakyFailedResult.labels).toContainEqual({ name: "attempt", value: "failed" });
+    expect(flakyFailedResult.steps.map(({ name }) => name)).toContain("failed attempt step");
+    expect(flakyPassedResult.labels).not.toContainEqual({ name: "attempt", value: "failed" });
+    expect(flakyPassedResult.steps.map(({ name }) => name)).not.toContain("failed attempt step");
+    expect(flakyPassedResult.attachments).toHaveLength(0);
+
+    for (const testResult of tests.filter(
+      ({ name, status }) => name === "failed retried browser test" && status === "failed",
+    )) {
+      expect(testResult.attachments).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            type: "image/png",
+          }),
+        ]),
+      );
+
+      for (const attachment of testResult.attachments) {
+        expect(attachments[attachment.source]).not.toBeUndefined();
+      }
+    }
+  });
+
+  it("should attach browser failure artifacts", async () => {
+    const { tests, attachments } = await runVitestInlineTest({
+      "vitest.config.ts": ({ allureResultsPath }) =>
+        createVitestBrowserConfig(allureResultsPath, {
+          browser: {
+            screenshotFailures: true,
+            trace: "on",
+          },
+        }),
+      "sample.test.ts": `
+        import { test, expect } from "vitest";
+
+        test("failed browser test", () => {
+          expect(1).toBe(2);
+        });
+      `,
+    });
+
+    expect(tests).toHaveLength(1);
+    expect(tests[0].attachments).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "image/png",
+        }),
+        expect.objectContaining({
+          name: "Trace",
+          type: "application/vnd.allure.playwright-trace",
+        }),
+      ]),
+    );
+
+    for (const attachment of tests[0].attachments) {
+      expect(attachments[attachment.source]).not.toBeUndefined();
+    }
+  });
+
+  it("should keep retry parameter scoped to browser mode", async () => {
+    const { tests } = await runVitestInlineTest({
+      "vitest.config.ts": ({ allureResultsPath }) => createVitestConfig(allureResultsPath, { retry: 1 }),
+      "sample.test.ts": `
+        import { test, expect } from "vitest";
+
+        test("flaky node test", async ({ task }) => {
+          expect(task.result?.retryCount).toBe(1);
+        });
+      `,
+    });
+
+    expect(tests).toHaveLength(1);
+    expect(tests[0].status).toBe("passed");
+    expect(tests[0].parameters).not.toEqual(expect.arrayContaining([expect.objectContaining({ name: "Retry" })]));
+  });
+
   it("should allow to attach screenshots", async () => {
     const { tests, attachments } = await runVitestInlineTest({
       "vitest.config.ts": ({ allureResultsPath }) => createVitestBrowserConfig(allureResultsPath),
