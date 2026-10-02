@@ -1,6 +1,6 @@
 {
   "name": "allure-fetch",
-  "version": "3.12.2",
+  "version": "3.13.0",
   "description": "Allure fetch HTTP client integration",
   "keywords": [
     "allure",
