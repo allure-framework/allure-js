@@ -6,7 +6,7 @@ import path from "node:path";
 import process from "node:process";
 
 import type { Label, Link, Status, StepResult, TestResult } from "../../model.js";
-import { LabelName, LinkType, StatusByPriority } from "../../model.js";
+import { ContentType, LabelName, LinkType, StatusByPriority } from "../../model.js";
 import type { LinkConfig, LinkTemplate } from "./types.js";
 import { FileSystemWriter } from "./writer/FileSystemWriter.js";
 import { MessageWriter } from "./writer/MessageWriter.js";
@@ -74,11 +74,28 @@ export const getWorstTestStepResult = (steps: StepResult[]): StepResult | undefi
   return evaluableSteps.sort((a, b) => statusToPriority(a.status) - statusToPriority(b.status))[0];
 };
 
+const getImageMimeType = (filePath: string): string => {
+  const ext = path.extname(filePath).toLowerCase();
+
+  switch (ext) {
+    case ".webp":
+      return ContentType.WEBP;
+    case ".svg":
+      return ContentType.SVG;
+    case ".jpg":
+    case ".jpeg":
+      return ContentType.JPEG;
+    default:
+      return ContentType.PNG;
+  }
+};
+
 export const readImageAsBase64 = async (filePath: string): Promise<string | undefined> => {
   try {
     const file = await readFile(filePath, { encoding: "base64" });
+    const mimeType = getImageMimeType(filePath);
 
-    return file ? `data:image/png;base64,${file}` : undefined;
+    return file ? `data:${mimeType};base64,${file}` : undefined;
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(`could not read file ${filePath}`, e);
