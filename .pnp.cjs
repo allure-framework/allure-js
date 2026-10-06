@@ -10459,14 +10459,22 @@ const RAW_RUNTIME_STATE =
           ["tinyrainbow", "npm:3.1.0"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:4.1.11", {\
+        "packageLocation": "./.yarn/cache/@vitest-pretty-format-npm-4.1.11-9c60436690-2dfc2f20db.zip/node_modules/@vitest/pretty-format/",\
+        "packageDependencies": [\
+          ["@vitest/pretty-format", "npm:4.1.11"],\
+          ["tinyrainbow", "npm:3.1.0"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["@vitest/runner", [\
-      ["npm:4.1.10", {\
-        "packageLocation": "./.yarn/cache/@vitest-runner-npm-4.1.10-d7436101c9-2c962cb13a.zip/node_modules/@vitest/runner/",\
+      ["npm:4.1.11", {\
+        "packageLocation": "./.yarn/cache/@vitest-runner-npm-4.1.11-6a1cf1635e-5247df824f.zip/node_modules/@vitest/runner/",\
         "packageDependencies": [\
-          ["@vitest/runner", "npm:4.1.10"],\
-          ["@vitest/utils", "npm:4.1.10"],\
+          ["@vitest/runner", "npm:4.1.11"],\
+          ["@vitest/utils", "npm:4.1.11"],\
           ["pathe", "npm:2.0.3"]\
         ],\
         "linkType": "HARD"\
@@ -10500,6 +10508,16 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@vitest/pretty-format", "npm:4.1.10"],\
           ["@vitest/utils", "npm:4.1.10"],\
+          ["convert-source-map", "npm:2.0.0"],\
+          ["tinyrainbow", "npm:3.1.0"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:4.1.11", {\
+        "packageLocation": "./.yarn/cache/@vitest-utils-npm-4.1.11-0ce2e5953b-f05381e12d.zip/node_modules/@vitest/utils/",\
+        "packageDependencies": [\
+          ["@vitest/pretty-format", "npm:4.1.11"],\
+          ["@vitest/utils", "npm:4.1.11"],\
           ["convert-source-map", "npm:2.0.0"],\
           ["tinyrainbow", "npm:3.1.0"]\
         ],\
@@ -11278,7 +11296,7 @@ const RAW_RUNTIME_STATE =
           ["@types/vitest", null],\
           ["@types/vitest__runner", null],\
           ["@vitest/browser-playwright", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:4.1.10"],\
-          ["@vitest/runner", "npm:4.1.10"],\
+          ["@vitest/runner", "npm:4.1.11"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
@@ -11307,7 +11325,7 @@ const RAW_RUNTIME_STATE =
           ["@types/react", "npm:19.2.14"],\
           ["@types/react-dom", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:19.2.3"],\
           ["@vitest/browser-playwright", "virtual:f37ad3099f3665d5bbc9ee71081416c8874087a5d9739472f56367e210ca9246356f462b31407a28e510bc022801edd4632f86364db715287d62bd50b42e2c00#npm:4.1.10"],\
-          ["@vitest/runner", "npm:4.1.10"],\
+          ["@vitest/runner", "npm:4.1.11"],\
           ["allure-commandline", "npm:2.29.0"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "workspace:packages/allure-vitest"],\
@@ -24290,7 +24308,7 @@ const RAW_RUNTIME_STATE =
           ["@vitest/expect", "npm:4.1.10"],\
           ["@vitest/mocker", "virtual:18314ec4bd5e65df14a9ff10ff71951a59acd72c584840692cf9d757edb78d126154e57a86ed43b29ed46028fe0391c6b5fb50923b71a168fb8b6a075c49c282#npm:4.1.10"],\
           ["@vitest/pretty-format", "npm:4.1.10"],\
-          ["@vitest/runner", "npm:4.1.10"],\
+          ["@vitest/runner", "npm:4.1.11"],\
           ["@vitest/snapshot", "npm:4.1.10"],\
           ["@vitest/spy", "npm:4.1.10"],\
           ["@vitest/ui", null],\
@@ -24363,7 +24381,7 @@ const RAW_RUNTIME_STATE =
           ["@vitest/expect", "npm:4.1.10"],\
           ["@vitest/mocker", "virtual:18314ec4bd5e65df14a9ff10ff71951a59acd72c584840692cf9d757edb78d126154e57a86ed43b29ed46028fe0391c6b5fb50923b71a168fb8b6a075c49c282#npm:4.1.10"],\
           ["@vitest/pretty-format", "npm:4.1.10"],\
-          ["@vitest/runner", "npm:4.1.10"],\
+          ["@vitest/runner", "npm:4.1.11"],\
           ["@vitest/snapshot", "npm:4.1.10"],\
           ["@vitest/spy", "npm:4.1.10"],\
           ["@vitest/ui", null],\
