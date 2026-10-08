@@ -2,6 +2,69 @@ import { expect, it } from "vitest";
 
 import { runCypressInlineTest } from "../../../utils.js";
 
+it("normalizes raw errors and explicit statuses", async () => {
+  const { globals } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsSyncModulePath }) => `
+      import { Status, globalError } from "${allureCommonsSyncModulePath}";
+
+      it("passes", () => {
+        const assertionError = new Error("comparison mismatch");
+        Object.assign(assertionError, {
+          name: "AssertionError",
+          actual: 0,
+          expected: false,
+        });
+        assertionError.stack = "comparison stack";
+        Object.freeze(assertionError);
+
+        const runtimeError = new Error("connection lost");
+        runtimeError.stack = "connection stack";
+        Object.freeze(runtimeError);
+
+        globalError(assertionError);
+        globalError(Status.BROKEN, assertionError);
+        globalError(runtimeError);
+        globalError(Status.FAILED, runtimeError);
+      });
+    `,
+  });
+
+  const errors = Object.values(globals ?? {}).flatMap((entry) => entry.errors);
+  expect(errors).toHaveLength(4);
+  expect(errors).toEqual(
+    expect.arrayContaining([
+      {
+        status: "failed",
+        message: "comparison mismatch",
+        trace: "comparison stack",
+        actual: "0",
+        expected: "false",
+        timestamp: expect.any(Number),
+      },
+      {
+        status: "broken",
+        message: "comparison mismatch",
+        trace: "comparison stack",
+        actual: "0",
+        expected: "false",
+        timestamp: expect.any(Number),
+      },
+      {
+        status: "broken",
+        message: "connection lost",
+        trace: "connection stack",
+        timestamp: expect.any(Number),
+      },
+      {
+        status: "failed",
+        message: "connection lost",
+        trace: "connection stack",
+        timestamp: expect.any(Number),
+      },
+    ]),
+  );
+});
+
 it("writes globals payload from sync runtime API calls", async () => {
   const { globals, attachments } = await runCypressInlineTest({
     "cypress/e2e/sample.cy.js": ({ allureCommonsSyncModulePath }) => `
@@ -27,6 +90,7 @@ it("writes globals payload from sync runtime API calls", async () => {
       expect.objectContaining({
         message: "global setup failed",
         trace: "stack",
+        status: "broken",
         timestamp: expect.any(Number),
       }),
     ]),

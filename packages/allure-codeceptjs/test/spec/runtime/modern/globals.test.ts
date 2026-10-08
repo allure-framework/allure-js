@@ -30,6 +30,7 @@ it("writes globals payload from scenario body", async () => {
       expect.objectContaining({
         message: "global setup failed",
         trace: "stack",
+        status: "broken",
         timestamp: expect.any(Number),
       }),
     ]),

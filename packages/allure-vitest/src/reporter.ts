@@ -1,9 +1,9 @@
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
-import { Stage, Status, type StatusDetails } from "allure-js-commons";
+import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, getStatusFromError, toGlobalErrorMessage } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
@@ -267,14 +267,12 @@ const getHookGlobalErrorMessages = (task: Task): RuntimeMessage[] => {
       return [];
     }
 
-    return [toGlobalErrorMessage(`${name} hook`, getMessageAndTraceFromError(error))];
+    return [
+      toGlobalErrorMessage({
+        name: `${name} hook`,
+        details: getMessageAndTraceFromError(error),
+        status: getStatusFromError(error),
+      }),
+    ];
   });
 };
-
-const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
-  type: "global_error",
-  data: {
-    ...details,
-    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
-  },
-});

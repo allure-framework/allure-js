@@ -19,6 +19,8 @@ export type {
 export {
   getStatusFromError,
   getMessageAndTraceFromError,
+  getGlobalErrorDetails,
+  toGlobalErrorMessage,
   isMetadataTag,
   getMetadataLabel,
   extractMetadataFromString,

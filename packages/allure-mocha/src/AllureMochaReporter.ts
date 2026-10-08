@@ -1,16 +1,10 @@
 import { sep } from "node:path";
 import { env } from "node:process";
 
-import {
-  type AttachmentOptions,
-  type ContentType,
-  type Label,
-  type Parameter,
-  type StatusDetails,
-} from "allure-js-commons";
+import { type AttachmentOptions, type ContentType, type Label, type Parameter } from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
-import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, getStatusFromError, toGlobalErrorMessage } from "allure-js-commons/sdk";
 import {
   getFallbackTestCaseIdLabel,
   getHostLabel,
@@ -263,7 +257,13 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
           ...details,
         };
       });
-      this.runtime.applyGlobalRuntimeMessages([toGlobalErrorMessage(this.currentHookName ?? "hook", details)]);
+      this.runtime.applyGlobalRuntimeMessages([
+        toGlobalErrorMessage({
+          name: this.currentHookName ?? "hook",
+          details,
+          status: getStatusFromError(error),
+        }),
+      ]);
     }
 
     if (!this.currentTest) {
@@ -353,7 +353,13 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       }
     });
     if (error && !this.currentHookError) {
-      this.runtime.applyGlobalRuntimeMessages([toGlobalErrorMessage(name, getMessageAndTraceFromError(error))]);
+      this.runtime.applyGlobalRuntimeMessages([
+        toGlobalErrorMessage({
+          name,
+          details: getMessageAndTraceFromError(error),
+          status: getStatusFromError(error),
+        }),
+      ]);
     }
     this.runtime.stopFixture(this.currentHook);
     this.currentHook = undefined;
@@ -377,11 +383,3 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
 
   protected getWorkerId = (): string | undefined => env.MOCHA_WORKER_ID;
 }
-
-const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
-  type: "global_error",
-  data: {
-    ...details,
-    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
-  },
-});

@@ -42,11 +42,16 @@ export interface StatusDetails {
   expected?: string;
 }
 
+export type ErrorDetails = StatusDetails | Error;
+export type GlobalErrorArgs = [details: ErrorDetails] | [status: ErrorStatus, details?: ErrorDetails];
+
 export interface GlobalAttachment extends Attachment {
   timestamp: number;
 }
 
 export interface GlobalError extends StatusDetails {
+  /** Older SDKs may emit global errors without a status. */
+  status?: ErrorStatus;
   timestamp: number;
 }
 
@@ -103,6 +108,8 @@ export enum Status {
   PASSED = "passed",
   SKIPPED = "skipped",
 }
+
+export type ErrorStatus = Status.FAILED | Status.BROKEN;
 
 export const StatusByPriority = [Status.FAILED, Status.BROKEN, Status.PASSED, Status.SKIPPED];
 

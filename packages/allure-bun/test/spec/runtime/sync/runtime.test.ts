@@ -20,6 +20,7 @@ describe("BunTestRuntime sync runtime", () => {
         data: {
           message: "rootless problem",
           trace: "rootless stack",
+          status: "broken",
         },
       },
     ]);

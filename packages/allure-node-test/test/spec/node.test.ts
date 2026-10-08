@@ -200,10 +200,22 @@ describe("node --test integration", () => {
     );
     expect(Object.values(globals ?? {}).flatMap((entry) => entry.errors)).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ message: "before hook in before suite failed: suite before failed" }),
-        expect.objectContaining({ message: "beforeEach hook in beforeEach suite failed: beforeEach assertion" }),
-        expect.objectContaining({ message: "afterEach hook in afterEach suite failed: afterEach failed" }),
-        expect.objectContaining({ message: "after hook in after suite failed: suite after failed" }),
+        expect.objectContaining({
+          status: Status.BROKEN,
+          message: "before hook in before suite failed: suite before failed",
+        }),
+        expect.objectContaining({
+          status: Status.FAILED,
+          message: "beforeEach hook in beforeEach suite failed: beforeEach assertion",
+        }),
+        expect.objectContaining({
+          status: Status.BROKEN,
+          message: "afterEach hook in afterEach suite failed: afterEach failed",
+        }),
+        expect.objectContaining({
+          status: Status.BROKEN,
+          message: "after hook in after suite failed: suite after failed",
+        }),
       ]),
     );
   });

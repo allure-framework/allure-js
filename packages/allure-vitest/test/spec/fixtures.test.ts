@@ -121,22 +121,27 @@ describe("fixtures", () => {
       expect(allErrors).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
+            status: Status.BROKEN,
             message: "beforeAll hook failed",
             timestamp: expect.any(Number),
           }),
           expect.objectContaining({
+            status: Status.BROKEN,
             message: "beforeEach hook failed: beforeEach boom",
             timestamp: expect.any(Number),
           }),
           expect.objectContaining({
+            status: Status.BROKEN,
             message: "afterEach hook failed: afterEach boom",
             timestamp: expect.any(Number),
           }),
           expect.objectContaining({
+            status: Status.BROKEN,
             message: "afterAll hook failed: afterAll boom",
             timestamp: expect.any(Number),
           }),
           expect.objectContaining({
+            status: Status.BROKEN,
             message: "afterEach hook failed: cleanup after body",
             timestamp: expect.any(Number),
           }),

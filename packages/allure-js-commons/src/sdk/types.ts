@@ -1,4 +1,5 @@
 import type {
+  ErrorStatus,
   Globals,
   Label,
   Link,
@@ -91,7 +92,7 @@ export type RuntimeGlobalAttachmentPathMessage = RuntimeMessageBase<"global_atta
 };
 
 export type RuntimeGlobalErrorMessage = RuntimeMessageBase<"global_error"> & {
-  data: StatusDetails;
+  data: StatusDetails & { status?: ErrorStatus };
 };
 
 export type RuntimeMessage =

@@ -36,7 +36,10 @@ export type { SyncStepContext } from "./sdk/runtime/types.js";
 export type {
   Attachment,
   AttachmentOptions,
+  ErrorDetails,
+  ErrorStatus,
   FixtureResult,
+  GlobalErrorArgs,
   Globals,
   ImageDiffAttachment,
   Label,

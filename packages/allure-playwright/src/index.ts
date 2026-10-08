@@ -14,7 +14,6 @@ import {
   LinkType,
   Stage,
   Status,
-  type StatusDetails,
   type StepResult,
   type TestResult,
 } from "allure-js-commons";
@@ -23,8 +22,10 @@ import {
   extractMetadataFromString,
   getMessageAndTraceFromError,
   getMetadataLabel,
+  getStatusFromError,
   hasLabel,
   stripAnsi,
+  toGlobalErrorMessage,
 } from "allure-js-commons/sdk";
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
@@ -920,7 +921,13 @@ export class AllureReporter implements ReporterV2 {
     }
 
     this.emittedHookGlobalErrorKeys.add(key);
-    this.allureRuntime!.applyGlobalRuntimeMessages([toGlobalErrorMessage(normalizeHookTitle(step.title), details)]);
+    this.allureRuntime!.applyGlobalRuntimeMessages([
+      toGlobalErrorMessage({
+        name: normalizeHookTitle(step.title),
+        details,
+        status: getStatusFromError(step.error),
+      }),
+    ]);
   }
 
   async addSkippedResults() {
@@ -1233,14 +1240,6 @@ export const allure = allurePlaywrightLegacyApi;
  * @deprecated for removal, import functions directly from "@playwright/test".
  */
 export { test, expect } from "@playwright/test";
-
-const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
-  type: "global_error",
-  data: {
-    ...details,
-    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
-  },
-});
 
 const isDirectHookStep = (step: TestStep) =>
   (step.parent?.title === BEFORE_HOOKS_ROOT_STEP_TITLE || step.parent?.title === AFTER_HOOKS_ROOT_STEP_TITLE) &&

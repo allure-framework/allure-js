@@ -1,7 +1,12 @@
 import * as allure from "allure-js-commons";
-import { Stage, Status, type StatusDetails } from "allure-js-commons";
+import { Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import { getMessageAndTraceFromError, getStatusFromError, isPromise } from "allure-js-commons/sdk";
+import {
+  getMessageAndTraceFromError,
+  getStatusFromError,
+  isPromise,
+  toGlobalErrorMessage,
+} from "allure-js-commons/sdk";
 import type { FixtureType, ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
@@ -259,7 +264,11 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     if (error !== undefined) {
       const fixtureName = this.currentAllureFixtureNames.get(uuid) ?? "hook";
       this.allureRuntime.applyGlobalRuntimeMessages([
-        toGlobalErrorMessage(fixtureName, statusAndDetails.statusDetails ?? {}),
+        toGlobalErrorMessage({
+          name: fixtureName,
+          details: statusAndDetails.statusDetails ?? {},
+          status: statusAndDetails.status,
+        }),
       ]);
     }
     this.allureRuntime.stopFixture(uuid);
@@ -408,11 +417,3 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     }
   };
 }
-
-const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
-  type: "global_error",
-  data: {
-    ...details,
-    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
-  },
-});

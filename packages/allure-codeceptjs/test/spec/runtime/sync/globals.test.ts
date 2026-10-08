@@ -28,6 +28,7 @@ it("writes globals payload from sync runtime API calls", async () => {
       expect.objectContaining({
         message: "global setup failed",
         trace: "stack",
+        status: "broken",
       }),
     ]),
   );
