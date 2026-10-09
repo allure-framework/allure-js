@@ -6905,30 +6905,31 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@jest/environment-jsdom-abstract", [\
-      ["npm:30.0.0", {\
-        "packageLocation": "./.yarn/cache/@jest-environment-jsdom-abstract-npm-30.0.0-e4d74b4d33-a1ae23d899.zip/node_modules/@jest/environment-jsdom-abstract/",\
+      ["npm:30.5.2", {\
+        "packageLocation": "./.yarn/cache/@jest-environment-jsdom-abstract-npm-30.5.2-36ab81fb51-fafe9b4ea6.zip/node_modules/@jest/environment-jsdom-abstract/",\
         "packageDependencies": [\
-          ["@jest/environment-jsdom-abstract", "npm:30.0.0"]\
+          ["@jest/environment-jsdom-abstract", "npm:30.5.2"]\
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:8405b05d14501aa83e888a339c24694b18c93ccef21fde146ec63686c652b151285c83d8fa1ebfd2443eb6021f680725e2b6b03d258fff448f22360ee1edc2ce#npm:30.0.0", {\
-        "packageLocation": "./.yarn/__virtual__/@jest-environment-jsdom-abstract-virtual-2e143c915a/0/cache/@jest-environment-jsdom-abstract-npm-30.0.0-e4d74b4d33-a1ae23d899.zip/node_modules/@jest/environment-jsdom-abstract/",\
+      ["virtual:3a25aea6d34caf9ee9b620374d79aad2115cc9e4a8569a9e8ad19bc2f3584a5c15c8b9a0f87f8e13df776b789c30b996d7c55804e6c8b995de79c6402089fdbf#npm:30.5.2", {\
+        "packageLocation": "./.yarn/__virtual__/@jest-environment-jsdom-abstract-virtual-e745497f1e/0/cache/@jest-environment-jsdom-abstract-npm-30.5.2-36ab81fb51-fafe9b4ea6.zip/node_modules/@jest/environment-jsdom-abstract/",\
         "packageDependencies": [\
-          ["@jest/environment", "npm:30.0.0"],\
-          ["@jest/environment-jsdom-abstract", "virtual:8405b05d14501aa83e888a339c24694b18c93ccef21fde146ec63686c652b151285c83d8fa1ebfd2443eb6021f680725e2b6b03d258fff448f22360ee1edc2ce#npm:30.0.0"],\
-          ["@jest/fake-timers", "npm:30.0.0"],\
-          ["@jest/types", "npm:30.0.0"],\
+          ["@jest/environment", "npm:30.5.2"],\
+          ["@jest/environment-jsdom-abstract", "virtual:3a25aea6d34caf9ee9b620374d79aad2115cc9e4a8569a9e8ad19bc2f3584a5c15c8b9a0f87f8e13df776b789c30b996d7c55804e6c8b995de79c6402089fdbf#npm:30.5.2"],\
+          ["@jest/fake-timers", "npm:30.5.2"],\
+          ["@jest/types", "npm:30.5.1"],\
           ["@types/canvas", null],\
           ["@types/jsdom", "npm:21.1.7"],\
           ["@types/node", "npm:26.6.3"],\
           ["canvas", null],\
-          ["jest-mock", "npm:30.0.0"],\
-          ["jest-util", "npm:30.0.0"],\
-          ["jsdom", "virtual:8405b05d14501aa83e888a339c24694b18c93ccef21fde146ec63686c652b151285c83d8fa1ebfd2443eb6021f680725e2b6b03d258fff448f22360ee1edc2ce#npm:26.1.0"]\
+          ["jest-mock", "npm:30.5.2"],\
+          ["jest-util", "npm:30.5.1"],\
+          ["jsdom", "virtual:3a25aea6d34caf9ee9b620374d79aad2115cc9e4a8569a9e8ad19bc2f3584a5c15c8b9a0f87f8e13df776b789c30b996d7c55804e6c8b995de79c6402089fdbf#npm:26.1.0"]\
         ],\
         "packagePeers": [\
           "@types/canvas",\
+          "@types/jsdom",\
           "canvas",\
           "jsdom"\
         ],\
@@ -10038,7 +10039,7 @@ const RAW_RUNTIME_STATE =
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
           ["jest-cli", "virtual:f22a73b9c1f4f0e2e1c95f149ccb41c96491085e4b2ecd3061e554432306c4df6c2976f3c6ce3a6d62abead3ccc6cf04e88b4aebf1de7356583819351e2346e2#npm:30.0.0"],\
-          ["jest-environment-jsdom", "virtual:f22a73b9c1f4f0e2e1c95f149ccb41c96491085e4b2ecd3061e554432306c4df6c2976f3c6ce3a6d62abead3ccc6cf04e88b4aebf1de7356583819351e2346e2#npm:30.0.0"],\
+          ["jest-environment-jsdom", "virtual:f22a73b9c1f4f0e2e1c95f149ccb41c96491085e4b2ecd3061e554432306c4df6c2976f3c6ce3a6d62abead3ccc6cf04e88b4aebf1de7356583819351e2346e2#npm:30.5.2"],\
           ["jest-environment-node", "npm:30.5.2"],\
           ["npm-run-all2", "npm:9.0.2"],\
           ["rimraf", "npm:6.1.3"],\
@@ -16356,24 +16357,23 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["jest-environment-jsdom", [\
-      ["npm:30.0.0", {\
-        "packageLocation": "./.yarn/cache/jest-environment-jsdom-npm-30.0.0-0f7c9fbb41-5cb1d4be4f.zip/node_modules/jest-environment-jsdom/",\
+      ["npm:30.5.2", {\
+        "packageLocation": "./.yarn/cache/jest-environment-jsdom-npm-30.5.2-f56cda547e-8f316ec57f.zip/node_modules/jest-environment-jsdom/",\
         "packageDependencies": [\
-          ["jest-environment-jsdom", "npm:30.0.0"]\
+          ["jest-environment-jsdom", "npm:30.5.2"]\
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:f22a73b9c1f4f0e2e1c95f149ccb41c96491085e4b2ecd3061e554432306c4df6c2976f3c6ce3a6d62abead3ccc6cf04e88b4aebf1de7356583819351e2346e2#npm:30.0.0", {\
-        "packageLocation": "./.yarn/__virtual__/jest-environment-jsdom-virtual-8405b05d14/0/cache/jest-environment-jsdom-npm-30.0.0-0f7c9fbb41-5cb1d4be4f.zip/node_modules/jest-environment-jsdom/",\
+      ["virtual:f22a73b9c1f4f0e2e1c95f149ccb41c96491085e4b2ecd3061e554432306c4df6c2976f3c6ce3a6d62abead3ccc6cf04e88b4aebf1de7356583819351e2346e2#npm:30.5.2", {\
+        "packageLocation": "./.yarn/__virtual__/jest-environment-jsdom-virtual-3a25aea6d3/0/cache/jest-environment-jsdom-npm-30.5.2-f56cda547e-8f316ec57f.zip/node_modules/jest-environment-jsdom/",\
         "packageDependencies": [\
-          ["@jest/environment", "npm:30.0.0"],\
-          ["@jest/environment-jsdom-abstract", "virtual:8405b05d14501aa83e888a339c24694b18c93ccef21fde146ec63686c652b151285c83d8fa1ebfd2443eb6021f680725e2b6b03d258fff448f22360ee1edc2ce#npm:30.0.0"],\
+          ["@jest/environment", "npm:30.5.2"],\
+          ["@jest/environment-jsdom-abstract", "virtual:3a25aea6d34caf9ee9b620374d79aad2115cc9e4a8569a9e8ad19bc2f3584a5c15c8b9a0f87f8e13df776b789c30b996d7c55804e6c8b995de79c6402089fdbf#npm:30.5.2"],\
           ["@types/canvas", null],\
           ["@types/jsdom", "npm:21.1.7"],\
-          ["@types/node", "npm:26.6.3"],\
           ["canvas", null],\
-          ["jest-environment-jsdom", "virtual:f22a73b9c1f4f0e2e1c95f149ccb41c96491085e4b2ecd3061e554432306c4df6c2976f3c6ce3a6d62abead3ccc6cf04e88b4aebf1de7356583819351e2346e2#npm:30.0.0"],\
-          ["jsdom", "virtual:8405b05d14501aa83e888a339c24694b18c93ccef21fde146ec63686c652b151285c83d8fa1ebfd2443eb6021f680725e2b6b03d258fff448f22360ee1edc2ce#npm:26.1.0"]\
+          ["jest-environment-jsdom", "virtual:f22a73b9c1f4f0e2e1c95f149ccb41c96491085e4b2ecd3061e554432306c4df6c2976f3c6ce3a6d62abead3ccc6cf04e88b4aebf1de7356583819351e2346e2#npm:30.5.2"],\
+          ["jsdom", "virtual:3a25aea6d34caf9ee9b620374d79aad2115cc9e4a8569a9e8ad19bc2f3584a5c15c8b9a0f87f8e13df776b789c30b996d7c55804e6c8b995de79c6402089fdbf#npm:26.1.0"]\
         ],\
         "packagePeers": [\
           "@types/canvas",\
@@ -17051,8 +17051,8 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:8405b05d14501aa83e888a339c24694b18c93ccef21fde146ec63686c652b151285c83d8fa1ebfd2443eb6021f680725e2b6b03d258fff448f22360ee1edc2ce#npm:26.1.0", {\
-        "packageLocation": "./.yarn/__virtual__/jsdom-virtual-b2c5e1b064/0/cache/jsdom-npm-26.1.0-3857255f02-39d78c4889.zip/node_modules/jsdom/",\
+      ["virtual:3a25aea6d34caf9ee9b620374d79aad2115cc9e4a8569a9e8ad19bc2f3584a5c15c8b9a0f87f8e13df776b789c30b996d7c55804e6c8b995de79c6402089fdbf#npm:26.1.0", {\
+        "packageLocation": "./.yarn/__virtual__/jsdom-virtual-d09d72cb93/0/cache/jsdom-npm-26.1.0-3857255f02-39d78c4889.zip/node_modules/jsdom/",\
         "packageDependencies": [\
           ["@types/canvas", null],\
           ["canvas", null],\
@@ -17063,7 +17063,7 @@ const RAW_RUNTIME_STATE =
           ["http-proxy-agent", "npm:7.0.2"],\
           ["https-proxy-agent", "npm:7.0.6"],\
           ["is-potential-custom-element-name", "npm:1.0.1"],\
-          ["jsdom", "virtual:8405b05d14501aa83e888a339c24694b18c93ccef21fde146ec63686c652b151285c83d8fa1ebfd2443eb6021f680725e2b6b03d258fff448f22360ee1edc2ce#npm:26.1.0"],\
+          ["jsdom", "virtual:3a25aea6d34caf9ee9b620374d79aad2115cc9e4a8569a9e8ad19bc2f3584a5c15c8b9a0f87f8e13df776b789c30b996d7c55804e6c8b995de79c6402089fdbf#npm:26.1.0"],\
           ["nwsapi", "npm:2.2.20"],\
           ["parse5", "npm:7.3.0"],\
           ["rrweb-cssom", "npm:0.8.0"],\
