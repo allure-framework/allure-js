@@ -63,6 +63,51 @@ it("adds snapshots correctly and provide a screenshot diff", async () => {
   });
 });
 
+it("adds webp snapshots correctly and provide a screenshot diff", async () => {
+  const { tests, attachments } = await runPlaywrightInlineTest({
+    "sample.test.js": `
+      import test from '@playwright/test';
+      import { writeFileSync, mkdirSync } from 'node:fs';
+      import { resolve, dirname } from 'node:path';
+
+      test('should add webp screenshot diff', async ({}, testInfo) => {
+        const actualPath = resolve(testInfo.outputDir, 'bar-actual.webp');
+        const expectedPath = resolve(testInfo.outputDir, 'bar-expected.webp');
+        const diffPath = resolve(testInfo.outputDir, 'bar-diff.webp');
+
+        mkdirSync(dirname(actualPath), { recursive: true });
+        writeFileSync(actualPath, Buffer.from("actual-webp-data"));
+        writeFileSync(expectedPath, Buffer.from("expected-webp-data"));
+        writeFileSync(diffPath, Buffer.from("diff-webp-data"));
+
+        testInfo.attachments.push(
+          { name: 'bar-expected.webp', path: expectedPath, contentType: 'image/webp' },
+          { name: 'bar-actual.webp', path: actualPath, contentType: 'image/webp' },
+          { name: 'bar-diff.webp', path: diffPath, contentType: 'image/webp' },
+        );
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].attachments).toContainEqual({
+    name: "bar",
+    type: "application/vnd.allure.image.diff",
+    source: expect.stringMatching(/.*\.imagediff/),
+  });
+
+  const diffAttachment = tests[0].attachments.find((a) => a.name === "bar");
+  const rawAttachment = attachments[diffAttachment!.source];
+  const jsonString = Buffer.from(rawAttachment.toString("utf-8"), "base64").toString("utf-8");
+  const diffContent = JSON.parse(jsonString);
+  expect(diffContent).toMatchObject({
+    name: "bar",
+    actual: `data:image/webp;base64,${Buffer.from("actual-webp-data").toString("base64")}`,
+    expected: `data:image/webp;base64,${Buffer.from("expected-webp-data").toString("base64")}`,
+    diff: `data:image/webp;base64,${Buffer.from("diff-webp-data").toString("base64")}`,
+  });
+});
+
 it("adds trace to the report as an attachment", async () => {
   const { tests } = await runPlaywrightInlineTest({
     "sample.test.js": `
