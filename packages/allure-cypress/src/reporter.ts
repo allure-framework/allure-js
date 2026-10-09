@@ -1,6 +1,7 @@
 import { ContentType, Stage, Status } from "allure-js-commons";
-import type { FixtureResult, StatusDetails, TestResult } from "allure-js-commons";
+import type { FixtureResult, TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
+import { toGlobalErrorMessage } from "allure-js-commons/sdk";
 import {
   ReporterRuntime,
   createDefaultWriter,
@@ -347,7 +348,11 @@ export class AllureCypress {
     if (fixtureUuid) {
       this.allureRuntime.updateFixture(fixtureUuid, setError);
       this.allureRuntime.applyGlobalRuntimeMessages([
-        toGlobalErrorMessage(this.#fixtureNames.get(fixtureUuid) ?? "hook", statusDetails),
+        toGlobalErrorMessage({
+          name: this.#fixtureNames.get(fixtureUuid) ?? "hook",
+          details: statusDetails,
+          status,
+        }),
       ]);
     }
 
@@ -628,11 +633,3 @@ export const allureCypress = (
 
   return allureCypressReporter;
 };
-
-const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
-  type: "global_error",
-  data: {
-    ...details,
-    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
-  },
-});

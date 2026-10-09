@@ -30,6 +30,7 @@ describe("sync globals", () => {
           expect.objectContaining({
             message: "global setup failed",
             trace: "stack",
+            status: "broken",
           }),
         ]),
       );

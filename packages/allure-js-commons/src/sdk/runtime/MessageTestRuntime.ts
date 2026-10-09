@@ -1,6 +1,7 @@
 /* eslint @typescript-eslint/require-await: off */
 import {
   type AttachmentOptions,
+  type GlobalErrorArgs,
   type Label,
   type LabelName,
   type Link,
@@ -8,10 +9,9 @@ import {
   type ParameterMode,
   type ParameterOptions,
   Status,
-  type StatusDetails,
 } from "../../model.js";
 import type { RuntimeMessage } from "../types.js";
-import { getMessageAndTraceFromError, getStatusFromError, isPromise } from "../utils.js";
+import { getGlobalErrorDetails, getMessageAndTraceFromError, getStatusFromError, isPromise } from "../utils.js";
 import { noopSyncRuntime, SYNC_STEP_PURE_FUNCTION_ERROR } from "./NoopTestRuntime.js";
 import type { SyncTestRuntime, TestRuntime } from "./types.js";
 
@@ -167,10 +167,10 @@ export abstract class BaseMessageTestRuntime implements TestRuntime {
     });
   }
 
-  async globalError(details: StatusDetails) {
+  async globalError(...args: GlobalErrorArgs) {
     await this.sendMessage({
       type: "global_error",
-      data: details,
+      data: getGlobalErrorDetails(...args),
     });
   }
 
@@ -334,10 +334,10 @@ export abstract class BaseMessageTestRuntime implements TestRuntime {
             fileExtension: options.fileExtension,
           },
         }),
-      globalError: (details) =>
+      globalError: (...args) =>
         sendMessageSync({
           type: "global_error",
-          data: details,
+          data: getGlobalErrorDetails(...args),
         }),
       attachmentFromPath: (name, path, options) =>
         sendMessageSync({

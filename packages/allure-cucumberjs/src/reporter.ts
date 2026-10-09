@@ -11,9 +11,14 @@ import {
   type TestStepResult,
   TestStepResultStatus,
 } from "@cucumber/messages";
-import type { Label, Link, StatusDetails, TestResult } from "allure-js-commons";
+import type { Label, Link, TestResult } from "allure-js-commons";
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
-import { type RuntimeMessage, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
+import {
+  type RuntimeMessage,
+  getMessageAndTraceFromError,
+  getStatusFromError,
+  toGlobalErrorMessage,
+} from "allure-js-commons/sdk";
 import {
   ALLURE_RUNTIME_MESSAGE_CONTENT_TYPE,
   ReporterRuntime,
@@ -189,7 +194,11 @@ export default class AllureCucumberReporter extends Formatter {
 
   private emitTestRunHookGlobalError(name: string, error: unknown): void {
     this.allureRuntime.applyGlobalRuntimeMessages([
-      toGlobalErrorMessage(name, getMessageAndTraceFromError(this.toError(error))),
+      toGlobalErrorMessage({
+        name,
+        details: getMessageAndTraceFromError(this.toError(error)),
+        status: getStatusFromError(error),
+      }),
     ]);
   }
 
@@ -592,7 +601,11 @@ export default class AllureCucumberReporter extends Formatter {
       });
       if (error) {
         this.allureRuntime.applyGlobalRuntimeMessages([
-          toGlobalErrorMessage(this.getHookName(step.hookId), getMessageAndTraceFromError(error)),
+          toGlobalErrorMessage({
+            name: this.getHookName(step.hookId),
+            details: getMessageAndTraceFromError(error),
+            status: status ?? getStatusFromError(error),
+          }),
         ]);
       }
       this.allureRuntime.stopFixture(fixtureUuid, {
@@ -729,14 +742,6 @@ export default class AllureCucumberReporter extends Formatter {
     } as Error;
   }
 }
-
-const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
-  type: "global_error",
-  data: {
-    ...details,
-    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
-  },
-});
 
 const isPromiseLike = (value: unknown): value is Promise<unknown> =>
   Boolean(value) && typeof (value as Promise<unknown>).then === "function";

@@ -118,8 +118,8 @@ it("keeps mixed sync and async global runtime api calls separate", async () => {
       it("mixed globals", () => {
         allure.globalAttachment("async-global.txt", "async-global", "text/plain");
         allureSync.globalAttachment("sync-global.txt", "sync-global", { contentType: "text/plain" });
-        allure.globalError({ message: "async global error", trace: "async trace" });
-        allureSync.globalError({ message: "sync global error", trace: "sync trace" });
+        allure.globalError(allure.Status.FAILED, { message: "async global error", trace: "async trace" });
+        allureSync.globalError(allureSync.Status.BROKEN, { message: "sync global error", trace: "sync trace" });
       });
     `,
   });
@@ -132,8 +132,8 @@ it("keeps mixed sync and async global runtime api calls separate", async () => {
 
   expect(allErrors).toEqual(
     expect.arrayContaining([
-      expect.objectContaining({ message: "async global error", trace: "async trace" }),
-      expect.objectContaining({ message: "sync global error", trace: "sync trace" }),
+      expect.objectContaining({ message: "async global error", trace: "async trace", status: "failed" }),
+      expect.objectContaining({ message: "sync global error", trace: "sync trace", status: "broken" }),
     ]),
   );
 

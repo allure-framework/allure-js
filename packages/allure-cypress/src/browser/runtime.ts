@@ -1,6 +1,18 @@
-import type { AttachmentOptions, Label, Link, ParameterMode, ParameterOptions, StatusDetails } from "allure-js-commons";
+import type {
+  AttachmentOptions,
+  GlobalErrorArgs,
+  Label,
+  Link,
+  ParameterMode,
+  ParameterOptions,
+} from "allure-js-commons";
 import { Status } from "allure-js-commons";
-import { getMessageAndTraceFromError, getStatusFromError, isPromise } from "allure-js-commons/sdk";
+import {
+  getGlobalErrorDetails,
+  getMessageAndTraceFromError,
+  getStatusFromError,
+  isPromise,
+} from "allure-js-commons/sdk";
 import type { SyncTestRuntime, TestRuntime } from "allure-js-commons/sdk/runtime";
 import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 
@@ -166,10 +178,10 @@ class AllureCypressTestRuntime implements TestRuntime {
     });
   }
 
-  globalError(details: StatusDetails) {
+  globalError(...args: GlobalErrorArgs) {
     return this.#enqueueMessageAsync({
       type: "global_error",
-      data: details,
+      data: getGlobalErrorDetails(...args),
     });
   }
 
@@ -441,10 +453,10 @@ class AllureCypressTestRuntime implements TestRuntime {
             fileExtension: options.fileExtension,
           },
         }),
-      globalError: (details) =>
+      globalError: (...args) =>
         enqueueRuntimeMessage({
           type: "global_error",
-          data: details,
+          data: getGlobalErrorDetails(...args),
         }),
       logStep: (name, status = Status.PASSED, error) => {
         startAllureApiStep(name);

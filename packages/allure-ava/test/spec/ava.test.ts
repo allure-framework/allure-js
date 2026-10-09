@@ -549,6 +549,7 @@ describe("allure-ava", () => {
     expect(allErrors).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
+          status: Status.BROKEN,
           message: "beforeEach hook for blocked by hook failed: Error thrown in test",
           timestamp: expect.any(Number),
           trace: expect.stringContaining("setup exploded"),

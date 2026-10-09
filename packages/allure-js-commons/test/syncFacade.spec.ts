@@ -159,6 +159,7 @@ describe("sync facade", () => {
           data: {
             message: "boom",
             trace: "stack",
+            status: Status.BROKEN,
           },
         },
       ]),

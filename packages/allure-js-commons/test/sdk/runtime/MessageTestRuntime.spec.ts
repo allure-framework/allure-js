@@ -105,6 +105,7 @@ describe("global methods", () => {
       data: {
         message: "global failed",
         trace: "stack",
+        status: Status.BROKEN,
       },
     });
   });

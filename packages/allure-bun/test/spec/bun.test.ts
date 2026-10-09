@@ -490,18 +490,22 @@ it("reports Bun hook failures consistently", async () => {
   expect(allErrors).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
+        status: Status.BROKEN,
         message: "beforeAll failed: beforeAll boom",
         timestamp: expect.any(Number),
       }),
       expect.objectContaining({
+        status: Status.BROKEN,
         message: "beforeEach failed: beforeEach boom",
         timestamp: expect.any(Number),
       }),
       expect.objectContaining({
+        status: Status.BROKEN,
         message: "afterEach failed: afterEach boom",
         timestamp: expect.any(Number),
       }),
       expect.objectContaining({
+        status: Status.BROKEN,
         message: "afterAll failed: afterAll boom",
         timestamp: expect.any(Number),
       }),

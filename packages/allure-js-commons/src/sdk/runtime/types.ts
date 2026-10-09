@@ -1,11 +1,11 @@
 import type {
   AttachmentOptions,
+  GlobalErrorArgs,
   Label,
   Link,
   ParameterMode,
   ParameterOptions,
   Status,
-  StatusDetails,
 } from "../../model.js";
 
 export interface StepContext {
@@ -43,7 +43,7 @@ export interface SyncTestRuntime {
 
   globalAttachmentFromPath: (name: string, path: string, options: Omit<AttachmentOptions, "encoding">) => void;
 
-  globalError: (details: StatusDetails) => void;
+  globalError: (...args: GlobalErrorArgs) => void;
 
   attachmentFromPath: (name: string, path: string, options: Omit<AttachmentOptions, "encoding">) => void;
 
@@ -87,7 +87,7 @@ export interface TestRuntime {
     options: Omit<AttachmentOptions, "encoding">,
   ) => PromiseLike<void>;
 
-  globalError: (details: StatusDetails) => PromiseLike<void>;
+  globalError: (...args: GlobalErrorArgs) => PromiseLike<void>;
 
   attachmentFromPath: (name: string, path: string, options: Omit<AttachmentOptions, "encoding">) => PromiseLike<void>;
 

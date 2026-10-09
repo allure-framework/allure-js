@@ -1,4 +1,13 @@
-import type { FixtureResult, Label, Link, StatusDetails, StepResult, TestResult } from "../model.js";
+import type {
+  ErrorStatus,
+  FixtureResult,
+  GlobalErrorArgs,
+  Label,
+  Link,
+  StatusDetails,
+  StepResult,
+  TestResult,
+} from "../model.js";
 import { LabelName, Status } from "../model.js";
 import type {
   RuntimeGlobalAttachmentContentMessage,
@@ -9,7 +18,7 @@ import type {
   SerializerReplacerFunc,
 } from "./types.js";
 
-export const getStatusFromError = (error: unknown): Status => {
+export const getStatusFromError = (error: unknown): ErrorStatus => {
   if (!error || (typeof error !== "object" && typeof error !== "function")) {
     return Status.BROKEN;
   }
@@ -71,15 +80,15 @@ const actualAndExpected = (value: unknown): { actual?: string; expected?: string
   }
 
   // support for jest asserts
-  if ("matcherResult" in value && value.matcherResult !== undefined && typeof value.matcherResult === "object") {
-    return {
-      actual: serialize((value.matcherResult as any).actual),
-      expected: serialize((value.matcherResult as any).expected),
-    };
-  }
+  const comparison =
+    "matcherResult" in value && value.matcherResult !== null && typeof value.matcherResult === "object"
+      ? value.matcherResult
+      : value;
 
-  const actual = "actual" in value && value.actual !== undefined ? { actual: serialize(value.actual) } : {};
-  const expected = "expected" in value && value.expected !== undefined ? { expected: serialize(value.expected) } : {};
+  const actual =
+    "actual" in comparison && comparison.actual !== undefined ? { actual: serialize(comparison.actual) } : {};
+  const expected =
+    "expected" in comparison && comparison.expected !== undefined ? { expected: serialize(comparison.expected) } : {};
   return {
     ...actual,
     ...expected,
@@ -101,6 +110,46 @@ export const getMessageAndTraceFromError = (
     ...actualAndExpected(error),
   };
 };
+
+/**
+ * Normalize global errors before transport, while non-enumerable error properties
+ * and assertion metadata are still available for extraction and classification.
+ *
+ * @param {GlobalErrorArgs} args - Error details, or an explicit status and optional details.
+ * @returns {StatusDetails & { status: ErrorStatus }} Serialized details with the explicit or inferred status.
+ */
+export const getGlobalErrorDetails = (
+  ...[status, details]: GlobalErrorArgs
+): StatusDetails & { status: ErrorStatus } => {
+  const error = typeof status === "string" ? (details ?? {}) : status;
+  const resolvedStatus = typeof status === "string" ? status : getStatusFromError(error);
+  const extracted = getMessageAndTraceFromError(error);
+  const trace = "trace" in error ? error.trace : undefined;
+
+  return {
+    ...extracted,
+    message: error.message === undefined ? undefined : stripAnsi(error.message),
+    trace: trace === undefined ? extracted.trace : stripAnsi(trace),
+    status: resolvedStatus,
+  };
+};
+
+export const toGlobalErrorMessage = ({
+  name,
+  details,
+  status,
+}: {
+  name: string;
+  details: StatusDetails;
+  status: Status;
+}): RuntimeGlobalErrorMessage => ({
+  type: "global_error",
+  data: {
+    ...details,
+    status: status === Status.FAILED ? Status.FAILED : Status.BROKEN,
+    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
+  },
+});
 
 type AllureTitleMetadataMatch = RegExpMatchArray & {
   groups: {

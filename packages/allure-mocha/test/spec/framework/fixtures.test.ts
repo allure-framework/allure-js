@@ -136,10 +136,12 @@ it("reports failed hooks as global errors", async () => {
   expect(allErrors).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
+        status: Status.BROKEN,
         message: String.raw`"before each" hook: bad before each failed: beforeEach hook boom`,
         timestamp: expect.any(Number),
       }),
       expect.objectContaining({
+        status: Status.BROKEN,
         message: String.raw`"after all" hook: bad after failed: after hook boom`,
         timestamp: expect.any(Number),
       }),

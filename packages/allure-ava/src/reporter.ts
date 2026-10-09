@@ -1,7 +1,7 @@
-import { Stage, Status, type StatusDetails } from "allure-js-commons";
+import { Stage, Status } from "allure-js-commons";
 import type { Link } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import { extractMetadataFromString } from "allure-js-commons/sdk";
+import { extractMetadataFromString, toGlobalErrorMessage } from "allure-js-commons/sdk";
 import type { FixtureType, ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
@@ -388,7 +388,9 @@ export class AllureAvaReporter {
       }
     });
     if (statusDetails) {
-      this.#runtime.applyGlobalRuntimeMessages([toGlobalErrorMessage(event.title, statusDetails)]);
+      this.#runtime.applyGlobalRuntimeMessages([
+        toGlobalErrorMessage({ name: event.title, details: statusDetails, status }),
+      ]);
     }
     this.#runtime.stopFixture(fixtureUuid, { duration: event.duration });
   };
@@ -515,11 +517,3 @@ export class AllureAvaReporter {
     this.#runtime.writeTest(uuid);
   };
 }
-
-const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
-  type: "global_error",
-  data: {
-    ...details,
-    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
-  },
-});

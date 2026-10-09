@@ -1,8 +1,13 @@
 import { sep } from "node:path";
 
-import { LabelName, Stage, Status, type StatusDetails, type TestResult } from "allure-js-commons";
-import { type RuntimeMessage, serialize } from "allure-js-commons/sdk";
-import { extractMetadataFromString, getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
+import { LabelName, Stage, Status, type TestResult } from "allure-js-commons";
+import { serialize } from "allure-js-commons/sdk";
+import {
+  extractMetadataFromString,
+  getMessageAndTraceFromError,
+  getStatusFromError,
+  toGlobalErrorMessage,
+} from "allure-js-commons/sdk";
 import {
   getEnvironmentLabels,
   getFrameworkLabel,
@@ -376,7 +381,7 @@ const onHookFailure = (fileContext: BunFileContext, type: BunHookType, error: un
     allureResult.statusDetails = details;
     allureResult.stage = Stage.FINISHED;
   });
-  fileContext.allureRuntime.applyGlobalRuntimeMessages([toGlobalErrorMessage(type, details)]);
+  fileContext.allureRuntime.applyGlobalRuntimeMessages([toGlobalErrorMessage({ name: type, details, status })]);
   fileContext.allureRuntime.stopFixture(fixtureUuid);
 };
 
@@ -568,14 +573,6 @@ export const emitStaticTest = (deps: BunLifecycleDeps, fileContext: BunFileConte
   test.completed = true;
   advancePendingIndex(fileContext);
 };
-
-const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
-  type: "global_error",
-  data: {
-    ...details,
-    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
-  },
-});
 
 export const skipPendingTestsInSuite = (
   deps: BunLifecycleDeps,

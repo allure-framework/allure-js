@@ -1,11 +1,11 @@
 import type {
   AttachmentOptions,
+  GlobalErrorArgs,
   Label,
   Link,
   ParameterMode,
   ParameterOptions,
   Status,
-  StatusDetails,
 } from "./model.js";
 import { type ContentType, LabelName, LinkType } from "./model.js";
 import { getGlobalSyncTestRuntimeWithAutoconfig } from "./sdk/runtime/runtime.js";
@@ -92,8 +92,8 @@ export const globalAttachmentPath = (
   return callRuntimeMethod("globalAttachmentFromPath", name, path, opts);
 };
 
-export const globalError = (details: StatusDetails) => {
-  return callRuntimeMethod("globalError", details);
+export const globalError = (...args: GlobalErrorArgs) => {
+  return callRuntimeMethod("globalError", ...args);
 };
 
 export const attachTrace = (name: string, path: string) => {

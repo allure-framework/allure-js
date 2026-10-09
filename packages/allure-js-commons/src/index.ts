@@ -54,7 +54,10 @@ export {
 export type {
   Attachment,
   AttachmentOptions,
+  ErrorDetails,
+  ErrorStatus,
   FixtureResult,
+  GlobalErrorArgs,
   ImageDiffAttachment,
   Label,
   Link,

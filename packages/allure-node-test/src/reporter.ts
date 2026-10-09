@@ -14,6 +14,7 @@ import {
   extractMetadataFromString,
   getMessageAndTraceFromError,
   getStatusFromError,
+  toGlobalErrorMessage,
   type RuntimeMessage,
 } from "allure-js-commons/sdk";
 import {
@@ -559,7 +560,7 @@ export class AllureNodeTestReporter {
 
     for (const hookFailure of this.#hookFailures) {
       if (this.#shouldWriteHookGlobalError(hookFailure)) {
-        globalMessages.push(toGlobalErrorMessage(hookFailure));
+        globalMessages.push(toHookGlobalErrorMessage(hookFailure));
       }
     }
 
@@ -716,20 +717,15 @@ const createHookFailureFixture = (hookFailure: HookFailureRecord): FixtureResult
   };
 };
 
-const toGlobalErrorMessage = (hookFailure: HookFailureRecord): RuntimeMessage => {
+const toHookGlobalErrorMessage = (hookFailure: HookFailureRecord): RuntimeMessage => {
   const fixtureName = `${hookFailure.hookType} hook`;
   const suiteName = hookFailure.suitePath.length ? ` in ${hookFailure.suitePath.join(" > ")}` : "";
-  const message = hookFailure.details.message
-    ? `${fixtureName}${suiteName} failed: ${hookFailure.details.message}`
-    : `${fixtureName}${suiteName} failed`;
 
-  return {
-    type: "global_error",
-    data: {
-      ...hookFailure.details,
-      message,
-    },
-  };
+  return toGlobalErrorMessage({
+    name: `${fixtureName}${suiteName}`,
+    details: hookFailure.details,
+    status: hookFailure.status,
+  });
 };
 
 const hookFailureAffectsTest = (hookFailure: HookFailureRecord, test: WrittenTestRecord) => {

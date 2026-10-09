@@ -96,10 +96,12 @@ it("handles failed hooks", async () => {
   expect(allErrors).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
+        status: Status.BROKEN,
         message: expect.stringContaining("hook failed: Error: before error"),
         timestamp: expect.any(Number),
       }),
       expect.objectContaining({
+        status: Status.BROKEN,
         message: expect.stringContaining("hook failed: Error: after error"),
         timestamp: expect.any(Number),
       }),
@@ -116,6 +118,7 @@ it("handles failed global hooks", async () => {
   expect(beforeAllErrors).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
+        status: Status.BROKEN,
         message: "BeforeAll hook failed",
         timestamp: expect.any(Number),
       }),
@@ -136,6 +139,7 @@ it("handles failed global hooks", async () => {
   expect(afterAllErrors).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
+        status: Status.BROKEN,
         message: "AfterAll hook failed: afterAll error",
         timestamp: expect.any(Number),
       }),

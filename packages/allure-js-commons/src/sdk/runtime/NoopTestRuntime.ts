@@ -1,3 +1,4 @@
+import type { GlobalErrorArgs } from "../../model.js";
 import { isPromise } from "../utils.js";
 import type { SyncTestRuntime, TestRuntime } from "./types.js";
 
@@ -24,7 +25,7 @@ export class NoopSyncTestRuntime implements SyncTestRuntime {
     this.warning();
   }
 
-  globalError(_: { message?: string; trace?: string }) {
+  globalError(..._: GlobalErrorArgs) {
     this.warning();
   }
 
@@ -117,7 +118,7 @@ export class NoopTestRuntime implements TestRuntime {
     await this.warning();
   }
 
-  async globalError() {
+  async globalError(..._: GlobalErrorArgs) {
     await this.warning();
   }
 

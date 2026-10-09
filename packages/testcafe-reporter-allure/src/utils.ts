@@ -552,11 +552,7 @@ export const getActionStatusFromError = (error: unknown, command?: TestCafeForma
   const isAssertion = command?.type === "assertion" || isAssertionLikeError(error);
 
   return {
-    status: isAssertion
-      ? Status.FAILED
-      : status === Status.PASSED || status === Status.SKIPPED
-        ? Status.BROKEN
-        : status,
+    status: isAssertion ? Status.FAILED : status,
     statusDetails: updateStatusDetailsFromFallback(
       {
         ...statusDetails,

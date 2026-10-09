@@ -179,6 +179,7 @@ it("reports failed hooks as global errors", async () => {
   expect(allErrors).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
+        status: Status.BROKEN,
         message: "beforeAll failed: beforeAll boom",
         timestamp: expect.any(Number),
       }),
@@ -323,7 +324,7 @@ it("should report failed beforeEach hooks", async () => {
 });
 
 it("should report tests as failed on failed assertions in before hooks", async () => {
-  const { tests } = await runJestInlineTest({
+  const { tests, globals } = await runJestInlineTest({
     "sample.test.js": `
       describe("beforeAll assertion", () => {
         beforeAll(() => {
@@ -364,6 +365,11 @@ it("should report tests as failed on failed assertions in before hooks", async (
       }),
     ]),
   );
+  const errors = Object.values(globals ?? {}).flatMap((entry) => entry.errors);
+  expect(errors).toHaveLength(2);
+  errors.forEach((error) => {
+    expect(error).toEqual(expect.objectContaining({ status: Status.FAILED, actual: "1", expected: "2" }));
+  });
 });
 
 it("should report failed afterEach hooks", async () => {

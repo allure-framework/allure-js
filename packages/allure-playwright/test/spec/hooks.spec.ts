@@ -258,10 +258,12 @@ it("reports failed hook steps as global errors", async () => {
   expect(allErrors).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
+        status: Status.BROKEN,
         message: "beforeAll hook failed: Error: beforeAll boom",
         timestamp: expect.any(Number),
       }),
       expect.objectContaining({
+        status: Status.BROKEN,
         message: "beforeEach hook failed: Error: beforeEach boom",
         timestamp: expect.any(Number),
       }),
@@ -314,10 +316,12 @@ it("reports named and paired hook step failures as global errors", async () => {
   expect(allErrors).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
+        status: Status.BROKEN,
         message: "Open start URL failed: Error: named setup boom",
         timestamp: expect.any(Number),
       }),
       expect.objectContaining({
+        status: Status.BROKEN,
         message: "afterEach hook failed: Error: cleanup boom",
         timestamp: expect.any(Number),
       }),

@@ -11,6 +11,7 @@ import {
   getMessageAndTraceFromError,
   getStatusFromError,
   isPromise,
+  toGlobalErrorMessage,
 } from "allure-js-commons/sdk";
 import {
   ReporterRuntime,
@@ -214,17 +215,16 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
 
       const fixtureUuid = this.runContext.executables.pop()!;
       const status = typeof error === "string" ? Status.BROKEN : getStatusFromError(error as Error);
-      const statusDetails = {
-        message: typeof error === "string" ? error : error.message,
-        trace: typeof error === "string" ? undefined : error.stack,
-      };
+      const statusDetails = typeof error === "string" ? { message: error } : getMessageAndTraceFromError(error);
 
       this.runtime.updateFixture(fixtureUuid, (r) => {
         r.status = status;
         r.statusDetails = statusDetails;
         r.stage = Stage.FINISHED;
       });
-      this.runtime.applyGlobalRuntimeMessages([toGlobalErrorMessage(hook.type, statusDetails)]);
+      this.runtime.applyGlobalRuntimeMessages([
+        toGlobalErrorMessage({ name: hook.type, details: statusDetails, status }),
+      ]);
       this.runtime.stopFixture(fixtureUuid);
     }
 
@@ -470,13 +470,5 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
     }
   };
 };
-
-const toGlobalErrorMessage = (name: string, details: StatusDetails): RuntimeMessage => ({
-  type: "global_error",
-  data: {
-    ...details,
-    message: details.message ? `${name} failed: ${details.message}` : `${name} failed`,
-  },
-});
 
 export { createJestEnvironment };
