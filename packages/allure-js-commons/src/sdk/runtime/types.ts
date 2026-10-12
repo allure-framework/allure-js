@@ -1,4 +1,5 @@
 import type {
+  AllurePerformanceResult,
   AttachmentOptions,
   GlobalErrorArgs,
   Label,
@@ -88,6 +89,8 @@ export interface TestRuntime {
   ) => PromiseLike<void>;
 
   globalError: (...args: GlobalErrorArgs) => PromiseLike<void>;
+
+  performanceMetrics: (...results: AllurePerformanceResult[]) => PromiseLike<void>;
 
   attachmentFromPath: (name: string, path: string, options: Omit<AttachmentOptions, "encoding">) => PromiseLike<void>;
 

@@ -22,6 +22,7 @@ import type {
   RuntimeGlobalErrorMessage,
   RuntimeMessage,
   RuntimeMetadataMessage,
+  RuntimePerformanceMetricsMessage,
   RuntimeStartStepMessage,
   RuntimeStepMetadataMessage,
   RuntimeStopStepMessage,
@@ -586,6 +587,9 @@ export class ReporterRuntime {
         case "global_error":
           this.#handleGlobalErrorMessage(message.data);
           return;
+        case "performance_metrics":
+          this.#handlePerformanceMetricsMessage(message.data);
+          return;
         default:
           // eslint-disable-next-line no-console
           console.error(`could not apply runtime messages: unknown message ${JSON.stringify(message)}`);
@@ -605,6 +609,9 @@ export class ReporterRuntime {
           break;
         case "global_error":
           this.#handleGlobalErrorMessage(message.data);
+          break;
+        case "performance_metrics":
+          this.#handlePerformanceMetricsMessage(message.data);
           break;
         default:
           break;
@@ -782,6 +789,10 @@ export class ReporterRuntime {
       attachments: [],
       errors: [{ ...message, timestamp: Date.now() }],
     });
+  };
+
+  #handlePerformanceMetricsMessage = (results: RuntimePerformanceMetricsMessage["data"]) => {
+    this.writer.writePerformance?.(`${randomUuid()}-perf.json`, results);
   };
 
   #findParent = (

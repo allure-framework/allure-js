@@ -1,6 +1,6 @@
 import { type Mocked, describe, expect, it, vi } from "vitest";
 
-import { globalAttachment, globalAttachmentPath, globalError, logStep } from "../src/facade.js";
+import { globalAttachment, globalAttachmentPath, globalError, logStep, performanceMetrics } from "../src/facade.js";
 import { Status } from "../src/model.js";
 import { type TestRuntime } from "../src/sdk/runtime/index.js";
 
@@ -19,6 +19,7 @@ const mockRuntime = (): Mocked<TestRuntime> => {
     links: vi.fn(),
     logStep: vi.fn(),
     parameter: vi.fn(),
+    performanceMetrics: vi.fn(),
     step: vi.fn(),
     stepDisplayName: vi.fn(),
     stepParameter: vi.fn(),
@@ -102,5 +103,15 @@ describe("global runtime methods", () => {
     expect(runtime.globalAttachmentFromPath).toHaveBeenCalledWith("setup.log", "/tmp/setup.log", {
       contentType: "text/plain",
     });
+  });
+
+  it("should add performance metrics", async () => {
+    const runtime = mockRuntime();
+    vi.stubGlobal("allureTestRuntime", () => runtime);
+    const result = { id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 };
+
+    await performanceMetrics(result);
+
+    expect(runtime.performanceMetrics).toHaveBeenCalledWith(result);
   });
 });

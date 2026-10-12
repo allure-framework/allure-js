@@ -186,6 +186,12 @@ Canonical package name: `testcafe-reporter-allure`
 
 [Read more](/packages/allure-codeceptjs/README.md)
 
+### Node.js performance
+
+![npm](https://img.shields.io/npm/dm/allure-node-performance.svg) ![npm](https://img.shields.io/npm/v/allure-node-performance.svg)
+
+[Read more](/packages/allure-node-performance/README.md)
+
 ## Development
 
 ### allure-js-commons

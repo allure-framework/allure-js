@@ -2,12 +2,12 @@ import { readFileSync } from "fs";
 import type { EventEmitter } from "node:events";
 import process from "process";
 
-import type { Globals, TestResult, TestResultContainer } from "../../../model.js";
+import type { AllurePerformanceResult, Globals, TestResult, TestResultContainer } from "../../../model.js";
 import type { Category, EnvironmentInfo } from "../../types.js";
 import type { Writer } from "../types.js";
 import { stringifyEnvInfo } from "../utils/envInfo.js";
 
-type EventType = "result" | "container" | "attachment" | "misc" | "globals";
+type EventType = "result" | "container" | "attachment" | "misc" | "globals" | "performance";
 
 export class MessageWriter implements Writer {
   constructor(private bus?: EventEmitter) {}
@@ -55,5 +55,9 @@ export class MessageWriter implements Writer {
 
   writeGlobals(distFileName: string, info: Globals): void {
     this.writeJson(distFileName, "globals", info);
+  }
+
+  writePerformance(distFileName: string, results: AllurePerformanceResult[]): void {
+    this.writeJson(distFileName, "performance", results);
   }
 }

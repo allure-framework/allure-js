@@ -1,4 +1,5 @@
 import type {
+  AllurePerformanceResult,
   AttachmentOptions,
   GlobalErrorArgs,
   Label,
@@ -182,6 +183,13 @@ class AllureCypressTestRuntime implements TestRuntime {
     return this.#enqueueMessageAsync({
       type: "global_error",
       data: getGlobalErrorDetails(...args),
+    });
+  }
+
+  performanceMetrics(...results: AllurePerformanceResult[]) {
+    return this.#enqueueMessageAsync({
+      type: "performance_metrics",
+      data: results,
     });
   }
 

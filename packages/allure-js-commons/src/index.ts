@@ -21,6 +21,7 @@ export {
   logStep,
   owner,
   parameter,
+  performanceMetrics,
   parentSuite,
   severity,
   step,
@@ -52,6 +53,7 @@ export {
   ALLURE_HTTP_REDACTED_VALUE,
 } from "./http.js";
 export type {
+  AllurePerformanceResult,
   Attachment,
   AttachmentOptions,
   ErrorDetails,

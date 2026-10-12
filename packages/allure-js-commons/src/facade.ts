@@ -1,4 +1,4 @@
-import type { GlobalErrorArgs, Status } from "./model.js";
+import type { AllurePerformanceResult, GlobalErrorArgs, Status } from "./model.js";
 import { ContentType } from "./model.js";
 import { type AttachmentOptions, type Label, type Link, type ParameterOptions } from "./model.js";
 import { LabelName, LinkType } from "./model.js";
@@ -100,6 +100,10 @@ export const globalAttachmentPath = (
 
 export const globalError = (...args: GlobalErrorArgs) => {
   return callRuntimeMethod("globalError", ...args);
+};
+
+export const performanceMetrics = (...results: AllurePerformanceResult[]) => {
+  return callRuntimeMethod("performanceMetrics", ...results);
 };
 
 export const attachTrace = (name: string, path: string) => {
