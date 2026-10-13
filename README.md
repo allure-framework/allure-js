@@ -192,6 +192,12 @@ Canonical package name: `testcafe-reporter-allure`
 
 [Read more](/packages/allure-node-performance/README.md)
 
+### Tinybench
+
+![npm](https://img.shields.io/npm/dm/allure-tinybench.svg) ![npm](https://img.shields.io/npm/v/allure-tinybench.svg)
+
+[Read more](/packages/allure-tinybench/README.md)
+
 ## Development
 
 ### allure-js-commons
