@@ -177,7 +177,7 @@ export abstract class BaseMessageTestRuntime implements TestRuntime {
 
   async performanceMetrics(...results: AllurePerformanceResult[]) {
     await this.sendMessage({
-      type: "performance_metrics",
+      type: "performance_result",
       data: results,
     });
   }

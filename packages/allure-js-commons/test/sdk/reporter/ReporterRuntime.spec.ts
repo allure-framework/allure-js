@@ -32,9 +32,9 @@ describe("ReporterRuntime", () => {
     const runtime = new ReporterRuntime({ writer });
     const results = [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }];
 
-    runtime.applyGlobalRuntimeMessages([{ type: "performance_metrics", data: results }]);
+    runtime.applyGlobalRuntimeMessages([{ type: "performance_result", data: results }]);
 
-    expect(writer.writePerformance).toHaveBeenCalledWith(expect.stringMatching(/^.+-perf\.json$/), results);
+    expect(writer.writePerformanceResult).toHaveBeenCalledWith(expect.stringMatching(/^.+-perf\.json$/), results);
   });
 
   it("should write performance metrics received with scoped runtime messages", () => {
@@ -42,20 +42,20 @@ describe("ReporterRuntime", () => {
     const runtime = new ReporterRuntime({ writer });
     const results = [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }];
 
-    runtime.applyRuntimeMessages("test-uuid", [{ type: "performance_metrics", data: results }]);
+    runtime.applyRuntimeMessages("test-uuid", [{ type: "performance_result", data: results }]);
 
-    expect(writer.writePerformance).toHaveBeenCalledWith(expect.stringMatching(/^.+-perf\.json$/), results);
+    expect(writer.writePerformanceResult).toHaveBeenCalledWith(expect.stringMatching(/^.+-perf\.json$/), results);
   });
 
   it("should tolerate writers without performance support", () => {
     const writer = mockWriter();
-    delete writer.writePerformance;
+    delete writer.writePerformanceResult;
     const runtime = new ReporterRuntime({ writer });
 
     expect(() =>
       runtime.applyGlobalRuntimeMessages([
         {
-          type: "performance_metrics",
+          type: "performance_result",
           data: [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }],
         },
       ]),

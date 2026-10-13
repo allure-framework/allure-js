@@ -1,7 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { performance, PerformanceObserver, type PerformanceEntry } from "node:perf_hooks";
 
-import { type AllurePerformanceResult, performanceMetrics } from "allure-js-commons";
+import type { AllurePerformanceResult } from "allure-js-commons";
+import { getGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 
 export type StopPerformanceInstrumentation = () => Promise<void>;
 
@@ -64,7 +65,7 @@ export const instrumentPerformance = (): StopPerformanceInstrumentation => {
     }, []);
 
     if (results.length > 0) {
-      await performanceMetrics(...results);
+      await getGlobalTestRuntime().performanceMetrics(...results);
     }
   };
 };

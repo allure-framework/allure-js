@@ -22,7 +22,7 @@ import type {
   RuntimeGlobalErrorMessage,
   RuntimeMessage,
   RuntimeMetadataMessage,
-  RuntimePerformanceMetricsMessage,
+  RuntimePerformanceResultMessage,
   RuntimeStartStepMessage,
   RuntimeStepMetadataMessage,
   RuntimeStopStepMessage,
@@ -587,8 +587,8 @@ export class ReporterRuntime {
         case "global_error":
           this.#handleGlobalErrorMessage(message.data);
           return;
-        case "performance_metrics":
-          this.#handlePerformanceMetricsMessage(message.data);
+        case "performance_result":
+          this.#handlePerformanceResultMessage(message.data);
           return;
         default:
           // eslint-disable-next-line no-console
@@ -610,8 +610,8 @@ export class ReporterRuntime {
         case "global_error":
           this.#handleGlobalErrorMessage(message.data);
           break;
-        case "performance_metrics":
-          this.#handlePerformanceMetricsMessage(message.data);
+        case "performance_result":
+          this.#handlePerformanceResultMessage(message.data);
           break;
         default:
           break;
@@ -791,8 +791,8 @@ export class ReporterRuntime {
     });
   };
 
-  #handlePerformanceMetricsMessage = (results: RuntimePerformanceMetricsMessage["data"]) => {
-    this.writer.writePerformance?.(`${randomUuid()}-perf.json`, results);
+  #handlePerformanceResultMessage = (results: RuntimePerformanceResultMessage["data"]) => {
+    this.writer.writePerformanceResult?.(`${randomUuid()}-perf.json`, results);
   };
 
   #findParent = (

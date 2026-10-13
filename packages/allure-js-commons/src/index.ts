@@ -21,7 +21,6 @@ export {
   logStep,
   owner,
   parameter,
-  performanceMetrics,
   parentSuite,
   severity,
   step,

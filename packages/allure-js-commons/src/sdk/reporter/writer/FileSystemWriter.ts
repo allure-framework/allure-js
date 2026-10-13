@@ -138,7 +138,7 @@ export class FileSystemWriter implements Writer {
     writeJson(path, info);
   }
 
-  writePerformance(distFileName: string, results: AllurePerformanceResult[]): void {
+  writePerformanceResult(distFileName: string, results: AllurePerformanceResult[]): void {
     const path = this.buildPath(distFileName);
     writeJson(path, results);
   }

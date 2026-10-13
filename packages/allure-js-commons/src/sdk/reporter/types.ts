@@ -80,7 +80,7 @@ export interface Writer {
 
   writeGlobals(distFileName: string, info: Globals): void;
 
-  writePerformance?(distFileName: string, results: AllurePerformanceResult[]): void;
+  writePerformanceResult?(distFileName: string, results: AllurePerformanceResult[]): void;
 }
 
 export type TestScope = {

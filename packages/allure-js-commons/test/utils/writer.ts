@@ -12,5 +12,5 @@ export const mockWriter = (): Mocked<Writer> => ({
   writeEnvironmentInfo: vi.fn<[EnvironmentInfo], void>(),
   writeCategoriesDefinitions: vi.fn<[Category[]], void>(),
   writeGlobals: vi.fn<[string, Globals], void>(),
-  writePerformance: vi.fn<[string, AllurePerformanceResult[]], void>(),
+  writePerformanceResult: vi.fn<[string, AllurePerformanceResult[]], void>(),
 });

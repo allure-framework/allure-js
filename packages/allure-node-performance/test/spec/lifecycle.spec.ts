@@ -24,8 +24,8 @@ vi.mock("node:perf_hooks", () => ({
   },
 }));
 
-vi.mock("allure-js-commons", () => ({
-  performanceMetrics: state.performanceMetrics,
+vi.mock("allure-js-commons/sdk/runtime", () => ({
+  getGlobalTestRuntime: () => ({ performanceMetrics: state.performanceMetrics }),
 }));
 
 import { instrumentPerformance } from "../../src/index.js";

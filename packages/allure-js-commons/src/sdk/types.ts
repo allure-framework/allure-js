@@ -96,7 +96,7 @@ export type RuntimeGlobalErrorMessage = RuntimeMessageBase<"global_error"> & {
   data: StatusDetails & { status?: ErrorStatus };
 };
 
-export type RuntimePerformanceMetricsMessage = RuntimeMessageBase<"performance_metrics"> & {
+export type RuntimePerformanceResultMessage = RuntimeMessageBase<"performance_result"> & {
   data: AllurePerformanceResult[];
 };
 
@@ -110,7 +110,7 @@ export type RuntimeMessage =
   | RuntimeGlobalAttachmentContentMessage
   | RuntimeGlobalAttachmentPathMessage
   | RuntimeGlobalErrorMessage
-  | RuntimePerformanceMetricsMessage;
+  | RuntimePerformanceResultMessage;
 
 export interface TestPlanV1Test {
   id?: string | number;

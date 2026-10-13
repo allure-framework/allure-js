@@ -6,8 +6,8 @@ const { performanceMetricsMock } = vi.hoisted(() => ({
   performanceMetricsMock: vi.fn(),
 }));
 
-vi.mock("allure-js-commons", () => ({
-  performanceMetrics: performanceMetricsMock,
+vi.mock("allure-js-commons/sdk/runtime", () => ({
+  getGlobalTestRuntime: () => ({ performanceMetrics: performanceMetricsMock }),
 }));
 
 import { instrumentPerformance } from "../../src/index.js";

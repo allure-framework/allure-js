@@ -31,7 +31,7 @@ describe("MessageWriter/MessageReader typed transport", () => {
 
     const results = [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }];
 
-    writer.writePerformance("123-perf.json", results);
+    writer.writePerformanceResult("123-perf.json", results);
 
     expect(reader.results.performance).toEqual({
       "123-perf.json": results,
@@ -49,7 +49,7 @@ describe("MessageWriter/MessageReader typed transport", () => {
 
     const results = [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }];
 
-    writer.writePerformance("123-perf.json", results);
+    writer.writePerformanceResult("123-perf.json", results);
     await reader.attachResults();
 
     expect(attachmentMock).toHaveBeenCalledTimes(1);
