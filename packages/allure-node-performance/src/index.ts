@@ -6,6 +6,8 @@ import { getGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 
 export type StopPerformanceInstrumentation = () => Promise<void>;
 
+let instrumentationActive = false;
+
 const toPerformanceResult = (entry: PerformanceEntry) => {
   if (
     entry.entryType !== "measure" ||
@@ -34,6 +36,12 @@ const toPerformanceResult = (entry: PerformanceEntry) => {
 };
 
 export const instrumentPerformance = (): StopPerformanceInstrumentation => {
+  if (instrumentationActive) {
+    throw new Error(
+      "Performance instrumentation is already active. Call the previous stop function before starting again.",
+    );
+  }
+
   const entries: PerformanceEntry[] = [];
   let stopped = false;
 
@@ -44,6 +52,7 @@ export const instrumentPerformance = (): StopPerformanceInstrumentation => {
   });
 
   observer.observe({ type: "measure" });
+  instrumentationActive = true;
 
   return async () => {
     if (stopped) {
@@ -53,6 +62,7 @@ export const instrumentPerformance = (): StopPerformanceInstrumentation => {
     stopped = true;
     entries.push(...observer.takeRecords());
     observer.disconnect();
+    instrumentationActive = false;
 
     const results = entries.reduce<AllurePerformanceResult[]>((acc, entry) => {
       const result = toPerformanceResult(entry);

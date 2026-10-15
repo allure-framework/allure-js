@@ -42,7 +42,7 @@ export class InMemoryWriter implements Writer, AllureResults {
     this.globals[distFileName] = info;
   }
 
-  public writePerformanceResult(distFileName: string, results: AllurePerformanceResult[]): void {
+  public writePerformanceResults(distFileName: string, results: AllurePerformanceResult[]): void {
     this.performance = this.performance ?? {};
     this.performance[distFileName] = results;
   }

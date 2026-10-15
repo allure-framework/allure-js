@@ -34,7 +34,7 @@ describe("ReporterRuntime", () => {
 
     runtime.applyGlobalRuntimeMessages([{ type: "performance_result", data: results }]);
 
-    expect(writer.writePerformanceResult).toHaveBeenCalledWith(expect.stringMatching(/^.+-perf\.json$/), results);
+    expect(writer.writePerformanceResults).toHaveBeenCalledWith(expect.stringMatching(/^.+-perf\.json$/), results);
   });
 
   it("should write performance metrics received with scoped runtime messages", () => {
@@ -44,12 +44,12 @@ describe("ReporterRuntime", () => {
 
     runtime.applyRuntimeMessages("test-uuid", [{ type: "performance_result", data: results }]);
 
-    expect(writer.writePerformanceResult).toHaveBeenCalledWith(expect.stringMatching(/^.+-perf\.json$/), results);
+    expect(writer.writePerformanceResults).toHaveBeenCalledWith(expect.stringMatching(/^.+-perf\.json$/), results);
   });
 
   it("should tolerate writers without performance support", () => {
     const writer = mockWriter();
-    delete writer.writePerformanceResult;
+    delete writer.writePerformanceResults;
     const runtime = new ReporterRuntime({ writer });
 
     expect(() =>

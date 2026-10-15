@@ -792,7 +792,7 @@ export class ReporterRuntime {
   };
 
   #handlePerformanceResultMessage = (results: RuntimePerformanceResultMessage["data"]) => {
-    this.writer.writePerformanceResult?.(`${randomUuid()}-perf.json`, results);
+    this.writer.writePerformanceResults?.(`${randomUuid()}-perf.json`, results);
   };
 
   #findParent = (

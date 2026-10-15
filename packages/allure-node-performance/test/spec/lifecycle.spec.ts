@@ -51,18 +51,65 @@ beforeEach(() => {
 });
 
 describe("observer lifecycle", () => {
-  it("performs no observation on import and creates an observer for each instrumentation", async () => {
+  it("performs no observation on import and creates an observer for each sequential instrumentation", async () => {
     expect(observersConstructedOnImport).toBe(0);
     expect(state.constructed).toBe(0);
 
     const stopFirst = instrumentPerformance();
+    await stopFirst();
     const stopSecond = instrumentPerformance();
 
     expect(state.constructed).toBe(2);
     expect(state.observe).toHaveBeenCalledTimes(2);
     expect(state.observe).toHaveBeenCalledWith({ type: "measure" });
 
-    await Promise.all([stopFirst(), stopSecond()]);
+    await stopFirst();
+    expect(() => instrumentPerformance()).toThrow("Performance instrumentation is already active");
+    await stopSecond();
+  });
+
+  it("rejects overlapping instrumentation without creating a second observer or duplicating results", async () => {
+    const stop = instrumentPerformance();
+
+    expect(() => instrumentPerformance()).toThrow(
+      "Performance instrumentation is already active. Call the previous stop function before starting again.",
+    );
+    expect(state.constructed).toBe(1);
+    state.records.push(entry());
+    await stop();
+
+    expect(state.performanceMetrics).toHaveBeenCalledTimes(1);
+    expect(state.performanceMetrics.mock.calls[0]).toHaveLength(1);
+  });
+
+  it("allows retrying when observation fails to start", async () => {
+    const error = new Error("observation failed");
+    state.observe.mockImplementationOnce(() => {
+      throw error;
+    });
+
+    expect(() => instrumentPerformance()).toThrow(error);
+    await instrumentPerformance()();
+  });
+
+  it("allows a new session while the previous publication is pending", async () => {
+    let resolvePublication!: () => void;
+    state.performanceMetrics.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          resolvePublication = resolve;
+        }),
+    );
+    const stopFirst = instrumentPerformance();
+    state.records.push(entry());
+    const publication = stopFirst();
+    const stopSecond = instrumentPerformance();
+
+    await stopFirst();
+    expect(() => instrumentPerformance()).toThrow("Performance instrumentation is already active");
+    await stopSecond();
+    resolvePublication();
+    await publication;
   });
 
   it("collects callback entries and drains pending records before disconnecting", async () => {
@@ -113,5 +160,6 @@ describe("observer lifecycle", () => {
     await expect(stop()).rejects.toBe(error);
 
     expect(state.disconnect).toHaveBeenCalledTimes(1);
+    await instrumentPerformance()();
   });
 });

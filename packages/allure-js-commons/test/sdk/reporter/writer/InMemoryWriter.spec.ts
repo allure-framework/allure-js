@@ -7,7 +7,7 @@ describe("InMemoryWriter", () => {
     const writer = new InMemoryWriter();
     const results = [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }];
 
-    writer.writePerformanceResult("123-perf.json", results);
+    writer.writePerformanceResults("123-perf.json", results);
 
     expect(writer.performance).toEqual({
       "123-perf.json": results,

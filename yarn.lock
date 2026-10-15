@@ -6981,7 +6981,7 @@ __metadata:
     npm-run-all2: "npm:^9.0.2"
     rimraf: "npm:^6.0.0"
     typescript: "npm:^6.0.3"
-    vitest: "npm:^4.1.10"
+    vitest: "npm:^4.1.11"
   languageName: unknown
   linkType: soft
 

@@ -72,7 +72,7 @@ describe("FileSystemWriter", () => {
     const writer = new FileSystemWriter({ resultsDir: allureResults });
     const results = [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }];
 
-    writer.writePerformanceResult("123-perf.json", results);
+    writer.writePerformanceResults("123-perf.json", results);
 
     expect(JSON.parse(readFileSync(path.join(allureResults, "123-perf.json"), "utf8"))).toEqual(results);
     expectNoTmpFiles(allureResults);

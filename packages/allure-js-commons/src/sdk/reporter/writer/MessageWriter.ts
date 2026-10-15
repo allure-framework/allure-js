@@ -57,7 +57,7 @@ export class MessageWriter implements Writer {
     this.writeJson(distFileName, "globals", info);
   }
 
-  writePerformanceResult(distFileName: string, results: AllurePerformanceResult[]): void {
+  writePerformanceResults(distFileName: string, results: AllurePerformanceResult[]): void {
     this.writeJson(distFileName, "performance", results);
   }
 }
