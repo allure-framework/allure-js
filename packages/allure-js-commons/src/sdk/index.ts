@@ -10,6 +10,7 @@ export type {
   RuntimeGlobalAttachmentContentMessage,
   RuntimeGlobalAttachmentPathMessage,
   RuntimeGlobalErrorMessage,
+  RuntimePerformanceResultMessage,
   RuntimeStartStepMessage,
   RuntimeStepMetadataMessage,
   RuntimeStopStepMessage,

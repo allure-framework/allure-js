@@ -6965,6 +6965,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"allure-node-performance@workspace:packages/allure-node-performance":
+  version: 0.0.0-use.local
+  resolution: "allure-node-performance@workspace:packages/allure-node-performance"
+  dependencies:
+    "@babel/cli": "npm:^8.0.1"
+    "@babel/core": "npm:^7.28.0"
+    "@babel/preset-env": "npm:^7.28.0"
+    "@babel/preset-typescript": "npm:^7.27.1"
+    "@types/babel__core": "npm:^7.20.5"
+    "@types/babel__preset-env": "npm:^7.10.0"
+    "@types/node": "npm:^26.0.1"
+    allure-js-commons: "workspace:*"
+    babel-plugin-add-module-exports: "npm:^1.0.4"
+    npm-run-all2: "npm:^9.0.2"
+    rimraf: "npm:^6.0.0"
+    typescript: "npm:^6.0.3"
+    vitest: "npm:^4.1.11"
+  languageName: unknown
+  linkType: soft
+
 "allure-node-test@workspace:packages/allure-node-test":
   version: 0.0.0-use.local
   resolution: "allure-node-test@workspace:packages/allure-node-test"

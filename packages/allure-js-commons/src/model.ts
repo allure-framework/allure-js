@@ -60,6 +60,14 @@ export interface Globals {
   errors: GlobalError[];
 }
 
+export interface AllurePerformanceResult {
+  id: string;
+  key: string;
+  value: number;
+  start: number;
+  stop: number;
+}
+
 // don't use the interface as is, use Results types instead
 interface Executable {
   name?: string;

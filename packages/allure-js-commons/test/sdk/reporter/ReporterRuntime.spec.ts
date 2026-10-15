@@ -27,6 +27,41 @@ const fixtures = {
 const randomInt = (max: number) => Math.floor(Math.random() * max);
 
 describe("ReporterRuntime", () => {
+  it("should write performance metrics as a global runtime message", () => {
+    const writer = mockWriter();
+    const runtime = new ReporterRuntime({ writer });
+    const results = [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }];
+
+    runtime.applyGlobalRuntimeMessages([{ type: "performance_result", data: results }]);
+
+    expect(writer.writePerformanceResults).toHaveBeenCalledWith(expect.stringMatching(/^.+-perf\.json$/), results);
+  });
+
+  it("should write performance metrics received with scoped runtime messages", () => {
+    const writer = mockWriter();
+    const runtime = new ReporterRuntime({ writer });
+    const results = [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }];
+
+    runtime.applyRuntimeMessages("test-uuid", [{ type: "performance_result", data: results }]);
+
+    expect(writer.writePerformanceResults).toHaveBeenCalledWith(expect.stringMatching(/^.+-perf\.json$/), results);
+  });
+
+  it("should tolerate writers without performance support", () => {
+    const writer = mockWriter();
+    delete writer.writePerformanceResults;
+    const runtime = new ReporterRuntime({ writer });
+
+    expect(() =>
+      runtime.applyGlobalRuntimeMessages([
+        {
+          type: "performance_result",
+          data: [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }],
+        },
+      ]),
+    ).not.toThrow();
+  });
+
   it("should set test stop from duration", () => {
     const writer = mockWriter();
     const runtime = new ReporterRuntime({ writer });

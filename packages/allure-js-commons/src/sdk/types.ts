@@ -1,4 +1,5 @@
 import type {
+  AllurePerformanceResult,
   ErrorStatus,
   Globals,
   Label,
@@ -95,6 +96,10 @@ export type RuntimeGlobalErrorMessage = RuntimeMessageBase<"global_error"> & {
   data: StatusDetails & { status?: ErrorStatus };
 };
 
+export type RuntimePerformanceResultMessage = RuntimeMessageBase<"performance_result"> & {
+  data: AllurePerformanceResult[];
+};
+
 export type RuntimeMessage =
   | RuntimeMetadataMessage
   | RuntimeStartStepMessage
@@ -104,7 +109,8 @@ export type RuntimeMessage =
   | RuntimeAttachmentPathMessage
   | RuntimeGlobalAttachmentContentMessage
   | RuntimeGlobalAttachmentPathMessage
-  | RuntimeGlobalErrorMessage;
+  | RuntimeGlobalErrorMessage
+  | RuntimePerformanceResultMessage;
 
 export interface TestPlanV1Test {
   id?: string | number;
@@ -144,6 +150,7 @@ export interface AllureResults {
   groups: TestResultContainer[];
   attachments: Record<string, Buffer | string>;
   globals?: Record<string, Globals>;
+  performance?: Record<string, AllurePerformanceResult[]>;
   envInfo?: EnvironmentInfo;
   categories?: Category[];
 }

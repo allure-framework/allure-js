@@ -19,6 +19,7 @@ const mockRuntime = (): Mocked<TestRuntime> => {
     links: vi.fn(),
     logStep: vi.fn(),
     parameter: vi.fn(),
+    performanceMetrics: vi.fn(),
     step: vi.fn(),
     stepDisplayName: vi.fn(),
     stepParameter: vi.fn(),

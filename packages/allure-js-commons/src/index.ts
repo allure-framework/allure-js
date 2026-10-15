@@ -52,6 +52,7 @@ export {
   ALLURE_HTTP_REDACTED_VALUE,
 } from "./http.js";
 export type {
+  AllurePerformanceResult,
   Attachment,
   AttachmentOptions,
   ErrorDetails,

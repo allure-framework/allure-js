@@ -63,6 +63,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:packages/allure-mocha"\
     },\
     {\
+      "name": "allure-node-performance",\
+      "reference": "workspace:packages/allure-node-performance"\
+    },\
+    {\
       "name": "allure-node-test",\
       "reference": "workspace:packages/allure-node-test"\
     },\
@@ -100,6 +104,7 @@ const RAW_RUNTIME_STATE =
     ["allure-js", ["workspace:."]],\
     ["allure-js-commons", ["virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons", "virtual:3b04c8c38dde7165df844f9cd74e94cc47d78164564600cf56ba5f8c6011d25ef0d3afc13d610f3da970f6807c830914053ff96a43c86ba17f3ec650dfd687d3#workspace:packages/allure-js-commons", "workspace:packages/allure-js-commons"]],\
     ["allure-mocha", ["virtual:4dfda025008308960858af02ce2de23e6fbf02744b9548c2fa0efde5067623eaf08fec37555d32d6a86a61adf128d2c2890eef9d442aef417f3e2d1f5492c52d#workspace:packages/allure-mocha", "workspace:packages/allure-mocha"]],\
+    ["allure-node-performance", ["workspace:packages/allure-node-performance"]],\
     ["allure-node-test", ["workspace:packages/allure-node-test"]],\
     ["allure-playwright", ["workspace:packages/allure-playwright"]],\
     ["allure-vitest", ["virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest", "workspace:packages/allure-vitest"]],\
@@ -10192,6 +10197,28 @@ const RAW_RUNTIME_STATE =
           ["rimraf", "npm:6.1.3"],\
           ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
           ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.11"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["allure-node-performance", [\
+      ["workspace:packages/allure-node-performance", {\
+        "packageLocation": "./packages/allure-node-performance/",\
+        "packageDependencies": [\
+          ["@babel/cli", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:8.0.1"],\
+          ["@babel/core", "npm:7.29.7"],\
+          ["@babel/preset-env", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.28.0"],\
+          ["@babel/preset-typescript", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.27.1"],\
+          ["@types/babel__core", "npm:7.20.5"],\
+          ["@types/babel__preset-env", "npm:7.10.0"],\
+          ["@types/node", "npm:26.6.3"],\
+          ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
+          ["allure-node-performance", "workspace:packages/allure-node-performance"],\
+          ["babel-plugin-add-module-exports", "npm:1.0.4"],\
+          ["npm-run-all2", "npm:9.0.2"],\
+          ["rimraf", "npm:6.1.3"],\
+          ["typescript", "patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"],\
+          ["vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#npm:4.1.10"]\
         ],\
         "linkType": "SOFT"\
       }]\

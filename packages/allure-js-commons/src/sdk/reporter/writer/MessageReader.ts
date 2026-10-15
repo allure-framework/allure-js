@@ -1,5 +1,5 @@
 import { attachment, step } from "../../../facade.js";
-import type { TestResult, TestResultContainer } from "../../../model.js";
+import type { AllurePerformanceResult, TestResult, TestResultContainer } from "../../../model.js";
 import type { AllureResults } from "../../types.js";
 import { parseEnvInfo, stringifyEnvInfo } from "../utils/envInfo.js";
 
@@ -31,6 +31,10 @@ export class MessageReader {
       case "globals":
         this.results.globals = this.results.globals ?? {};
         this.results.globals[path] = parseJsonResult(data);
+        return;
+      case "performance":
+        this.results.performance = this.results.performance ?? {};
+        this.results.performance[path] = parseJsonResult<AllurePerformanceResult[]>(data);
         return;
       case "misc":
         switch (path) {
@@ -89,6 +93,14 @@ export class MessageReader {
       if (this.results.globals) {
         for (const key of Object.keys(this.results.globals)) {
           await attachment(key, JSON.stringify(this.results.globals[key], null, 2), {
+            contentType: "application/json",
+            encoding: "utf-8",
+          });
+        }
+      }
+      if (this.results.performance) {
+        for (const key of Object.keys(this.results.performance)) {
+          await attachment(key, JSON.stringify(this.results.performance[key], null, 2), {
             contentType: "application/json",
             encoding: "utf-8",
           });
