@@ -5,7 +5,7 @@ import { commands } from "vitest/browser";
 
 import { allureVitestLegacyApi } from "../legacy.js";
 import { registerAllureVitestExpect } from "../matchers.js";
-import { toLightweightArtifacts, type VitestArtifact } from "../vitest-artifacts.js";
+import type { AllureVitestCurrentAttempt } from "../vitest-artifacts.js";
 import { VitestBrowserTestRuntime } from "../VitestBrowserTestRuntime.js";
 
 registerAllureVitestExpect();
@@ -14,18 +14,46 @@ beforeAll(() => {
   setGlobalTestRuntime(new VitestBrowserTestRuntime());
 });
 
-beforeEach(async ({ onTestFailed, onTestFinished, skip, task }) => {
+beforeEach(async ({ onTestFinished, skip, task }) => {
   const attemptStartTime = Date.now();
-  const attemptErrorOffset = task.result?.errors?.length ?? 0;
+  const artifacts = "artifacts" in task ? task.artifacts : undefined;
+  const previousAttempt = task.meta.allureCurrentAttempt;
 
-  (task as any).meta = {
-    ...task.meta,
+  // A retry starts only after all callbacks and teardown of the previous attempt have completed.
+  // Keep Vitest's artifacts intact: only store the range belonging to this attempt.
+  if (previousAttempt && task.result) {
+    task.meta.allureAttempts ??= [];
+    task.meta.allureAttempts.push({
+      result: {
+        ...task.result,
+        state: task.result.state === "run" ? "fail" : task.result.state,
+        startTime: previousAttempt.startTime,
+        duration: previousAttempt.duration ?? 0,
+        retryCount: previousAttempt.retryCount,
+        repeatCount: previousAttempt.repeatCount,
+        errors: task.result.errors?.slice(previousAttempt.errorOffset),
+      },
+      runtimeMessages: task.meta.allureRuntimeMessages ?? [],
+      artifactStart: previousAttempt.artifactStart,
+      artifactEnd: artifacts?.length ?? 0,
+    });
+    task.meta.allureRuntimeMessages = [];
+  }
+
+  const attempt: AllureVitestCurrentAttempt = {
+    startTime: attemptStartTime,
+    retryCount: task.result?.retryCount ?? 0,
+    repeatCount: task.result?.repeatCount ?? 0,
+    errorOffset: task.result?.errors?.length ?? 0,
+    artifactStart: artifacts?.length ?? 0,
+  };
+
+  Object.assign(task.meta, {
     // @ts-expect-error
     vitestWorker: globalThis?.__vitest_worker__?.ctx?.workerId,
     browser: task.file.projectName,
-    allureAttemptStartTime: attemptStartTime,
-    allureAttemptDuration: undefined,
-  };
+    allureCurrentAttempt: attempt,
+  });
 
   const inTestPlan = (await commands?.existsInTestPlan?.(task)) ?? true;
 
@@ -35,34 +63,9 @@ beforeEach(async ({ onTestFailed, onTestFinished, skip, task }) => {
     return;
   }
 
-  onTestFinished(({ task }) => {
-    task.meta.allureAttemptDuration = Date.now() - attemptStartTime;
-  });
-
-  onTestFailed(async ({ task }) => {
-    const errors = task.result?.errors?.slice(attemptErrorOffset);
-    const artifacts = "artifacts" in task ? (task.artifacts as VitestArtifact[] | undefined) : undefined;
-
-    task.meta.allureFailedAttempts ??= [];
-    task.meta.allureFailedAttempts.push({
-      result: task.result
-        ? {
-            ...task.result,
-            startTime: attemptStartTime,
-            // onTestFinished runs after onTestFailed, so failed attempts normally use this fallback.
-            duration: task.meta.allureAttemptDuration ?? Date.now() - attemptStartTime,
-            errors: errors?.length ? errors : undefined,
-          }
-        : undefined,
-      runtimeMessages: task.meta.allureRuntimeMessages ? [...task.meta.allureRuntimeMessages] : [],
-      artifacts: toLightweightArtifacts(artifacts),
-    });
-
-    task.meta.allureRuntimeMessages = [];
-    if (artifacts) {
-      // Vitest keeps browser artifacts on the task across retries, so clear them after snapshotting the attempt.
-      artifacts.length = 0;
-    }
+  onTestFinished(() => {
+    // Vitest calls onTestFinished after afterEach and before onTestFailed.
+    attempt.duration = Date.now() - attemptStartTime;
   });
 
   globalThis.allure = allureVitestLegacyApi;

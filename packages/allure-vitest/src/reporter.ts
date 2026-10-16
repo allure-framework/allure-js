@@ -1,9 +1,8 @@
 import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
-import { basename, dirname, join } from "node:path";
+import { basename } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { getTestName } from "@vitest/runner/utils";
 import { ContentType, Stage, Status } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError, toGlobalErrorMessage } from "allure-js-commons/sdk";
@@ -47,8 +46,6 @@ const browserSetupModulePath = fileURLToPath(new URL("./browser/setup.js", impor
 
 const normalizeSetupFilePath = (setupFilePath: string) =>
   setupFilePath.startsWith("file://") ? fileURLToPath(setupFilePath) : setupFilePath;
-
-const sanitizeTracePart = (value: string): string => value.replaceAll(/[^a-z0-9]/gi, "-");
 
 export default class AllureVitestReporter implements Reporter {
   private allureReporterRuntime?: ReporterRuntime;
@@ -150,7 +147,8 @@ export default class AllureVitestReporter implements Reporter {
     const {
       allureRuntimeMessages = [],
       allureGlobalRuntimeMessages = [],
-      allureFailedAttempts = [],
+      allureAttempts = [],
+      allureCurrentAttempt,
       allureSkip = false,
     } = task.meta;
 
@@ -163,31 +161,44 @@ export default class AllureVitestReporter implements Reporter {
       this.globalRuntimeMessages.push(...allureGlobalRuntimeMessages);
     }
 
-    const finalAttemptResult = task.result
-      ? {
-          ...task.result,
-          startTime: task.meta.allureAttemptStartTime ?? task.result.startTime,
-          duration: task.meta.allureAttemptDuration ?? task.result.duration,
-        }
-      : undefined;
+    const finalAttemptResult =
+      task.result && allureCurrentAttempt
+        ? {
+            ...task.result,
+            startTime: allureCurrentAttempt.startTime,
+            duration: allureCurrentAttempt.duration ?? 0,
+            retryCount: allureCurrentAttempt.retryCount,
+            repeatCount: allureCurrentAttempt.repeatCount,
+            // test.fails replaces the accumulated errors when it inverts the final outcome.
+            errors: task.fails ? task.result.errors : task.result.errors?.slice(allureCurrentAttempt.errorOffset),
+          }
+        : task.result;
+    const artifacts = task.artifacts ?? [];
 
+    // Earlier attempts were finalized at the next beforeEach; the final task is always authoritative.
     const attempts: AllureVitestAttempt[] = [
-      ...(allureFailedAttempts as AllureVitestAttempt[]),
-      ...(task.result?.state === "fail" && allureFailedAttempts.length ? [] : [{}]),
+      ...allureAttempts,
+      {
+        result: finalAttemptResult,
+        runtimeMessages: allureRuntimeMessages,
+        artifactStart: allureCurrentAttempt?.artifactStart,
+      },
     ];
 
     for (const attempt of attempts) {
-      this.writeTaskAttempt(task, {
-        result: attempt.result ?? finalAttemptResult,
-        runtimeMessages: attempt.runtimeMessages ?? allureRuntimeMessages,
-        artifacts: attempt.artifacts ?? (task.artifacts as VitestArtifact[] | undefined),
-      });
+      this.writeTaskAttempt(task, attempt, artifacts);
     }
   }
 
   private writeTaskAttempt(
     task: Task,
-    { result: taskResult, runtimeMessages: allureRuntimeMessages = [], artifacts = [] }: AllureVitestAttempt,
+    {
+      result: taskResult,
+      runtimeMessages: allureRuntimeMessages = [],
+      artifactStart = 0,
+      artifactEnd,
+    }: AllureVitestAttempt,
+    artifacts: VitestArtifact[],
   ) {
     const { vitestWorker, browser } = task.meta;
     const {
@@ -272,18 +283,14 @@ export default class AllureVitestReporter implements Reporter {
       }
     });
 
-    this.writeTaskArtifacts(testUuid, taskResult, artifacts);
-    this.writeTaskTrace(testUuid, task, taskResult, artifacts);
+    this.writeTaskArtifacts(testUuid, artifacts.slice(artifactStart, artifactEnd));
+    this.writeTaskTrace(testUuid, task, taskResult);
 
     this.allureReporterRuntime!.stopTest(testUuid, { duration: taskResult?.duration ?? 0 });
     this.allureReporterRuntime!.writeTest(testUuid);
   }
 
-  private writeTaskArtifacts(testUuid: string, taskResult: TaskResultLike | undefined, artifacts: VitestArtifact[]) {
-    if (taskResult?.state !== "fail") {
-      return;
-    }
-
+  private writeTaskArtifacts(testUuid: string, artifacts: VitestArtifact[]) {
     for (const artifact of artifacts) {
       if (artifact.type === "internal:failureScreenshot") {
         this.writeArtifactAttachments(testUuid, artifact, "Failure screenshot");
@@ -315,17 +322,8 @@ export default class AllureVitestReporter implements Reporter {
     }
   }
 
-  private writeTaskTrace(
-    testUuid: string,
-    task: Task,
-    taskResult: TaskResultLike | undefined,
-    artifacts: VitestArtifact[],
-  ) {
-    if (taskResult?.state !== "fail") {
-      return;
-    }
-
-    const tracePath = getBrowserTracePath(task, taskResult, artifacts);
+  private writeTaskTrace(testUuid: string, task: Task, taskResult: TaskResultLike | undefined) {
+    const tracePath = getBrowserTracePath(task, taskResult);
 
     if (!tracePath || !existsSync(tracePath)) {
       return;
@@ -374,58 +372,18 @@ const getHookGlobalErrorMessages = (task: Task): RuntimeMessage[] => {
   });
 };
 
-const getBrowserTracePath = (task: Task, result: TaskResultLike, artifacts: VitestArtifact[]): string | undefined => {
-  if (!task.meta.browser) {
+const getBrowserTracePath = (task: Task, result: TaskResultLike | undefined): string | undefined => {
+  if (task.type !== "test" || !task.meta.browser) {
     return undefined;
   }
 
-  const artifactTracePath = getBrowserTraceArtifactPath(artifacts);
+  // Vitest publishes trace annotations after all retries, so read them from the completed task.
+  // Paths come from Vitest (including custom tracesDir); the suffix identifies the attempt within this task.
+  const attemptSuffix = `-${result?.repeatCount ?? 0}-${result?.retryCount ?? 0}.trace.zip`;
+  const hasMultipleAttempts = (task.meta.allureAttempts?.length ?? 0) > 0;
 
-  if (artifactTracePath) {
-    return artifactTracePath;
-  }
-
-  if (!task.file?.filepath) {
-    return undefined;
-  }
-
-  const testFilePath = task.file.filepath;
-  const projectName = task.file.projectName ?? task.meta.browser;
-  const repeatCount = result.repeatCount ?? 0;
-  const retryCount = result.retryCount ?? 0;
-  const traceDirectory = join(dirname(testFilePath), "__traces__", basename(testFilePath));
-  // Fallback for Vitest versions/providers that write traces but don't expose them as annotation artifacts.
-  const traceFileNames = [
-    [sanitizeTracePart(projectName), sanitizeTracePart(getTestName(task, "-")), repeatCount, retryCount].join("-"),
-  ];
-
-  for (const traceFileName of traceFileNames) {
-    const tracePath = join(traceDirectory, `${traceFileName}.trace.zip`);
-
-    if (existsSync(tracePath)) {
-      return tracePath;
-    }
-  }
-
-  return undefined;
-};
-
-const getBrowserTraceArtifactPath = (artifacts: VitestArtifact[]): string | undefined => {
-  for (const artifact of artifacts) {
-    if (artifact.type === "internal:annotation" && artifact.annotation?.type === "traces") {
-      const tracePath = artifact.annotation.attachment?.path;
-
-      if (tracePath) {
-        return tracePath;
-      }
-    }
-
-    const traceAttachment = artifact.attachments?.find(({ path }) => path?.endsWith(".trace.zip"));
-
-    if (traceAttachment?.path) {
-      return traceAttachment.path;
-    }
-  }
-
-  return undefined;
+  return task.annotations?.find(
+    ({ type, attachment, message }) =>
+      type === "traces" && attachment?.path && (!hasMultipleAttempts || message.endsWith(attemptSuffix)),
+  )?.attachment?.path;
 };
