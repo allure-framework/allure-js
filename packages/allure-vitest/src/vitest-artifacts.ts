@@ -10,49 +10,24 @@ export type VitestArtifactAttachment = {
   contentType?: string;
 };
 
-export type VitestArtifactAnnotation = {
-  type?: string;
-  message?: string;
-  attachment?: VitestArtifactAttachment;
-};
-
 export type VitestArtifact = {
   type?: string;
   message?: string;
-  annotation?: VitestArtifactAnnotation;
   attachments?: VitestArtifactAttachment[];
 };
 
 export type AllureVitestAttempt = {
   result?: TaskResultLike;
   runtimeMessages?: RuntimeMessage[];
-  artifacts?: VitestArtifact[];
+  artifactStart?: number;
+  artifactEnd?: number;
 };
 
-export const toLightweightArtifacts = (artifacts: VitestArtifact[] = []): VitestArtifact[] =>
-  artifacts.map(({ attachments, annotation, ...artifact }) => ({
-    ...artifact,
-    ...(annotation
-      ? {
-          annotation: {
-            ...annotation,
-            ...(annotation.attachment
-              ? {
-                  attachment: toLightweightAttachment(annotation.attachment),
-                }
-              : {}),
-          },
-        }
-      : {}),
-    ...(attachments
-      ? {
-          attachments: attachments.map(toLightweightAttachment),
-        }
-      : {}),
-  }));
-
-const toLightweightAttachment = ({ name, path, contentType }: VitestArtifactAttachment): VitestArtifactAttachment => ({
-  name,
-  path,
-  contentType,
-});
+export type AllureVitestCurrentAttempt = {
+  startTime: number;
+  retryCount: number;
+  repeatCount: number;
+  errorOffset: number;
+  artifactStart: number;
+  duration?: number;
+};
