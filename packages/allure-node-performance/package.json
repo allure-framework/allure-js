@@ -1,6 +1,6 @@
 {
   "name": "allure-node-performance",
-  "version": "3.13.0",
+  "version": "3.14.0",
   "description": "Allure integration for Node.js performance measures",
   "keywords": [
     "allure",
