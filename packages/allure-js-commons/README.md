@@ -34,7 +34,7 @@ npm install -D allure-js-commons
 
 If you are building a custom integration, install your framework alongside it and add Allure Report separately when you want to render results:
 
-- follow the [Allure Report 2 installation guide](https://allurereport.org/docs/install/) to use the `allure` CLI
+- follow the [Allure Report 2 installation guide](https://allurereport.org/docs/v2/install/) to use the `allure` CLI
 - or install Allure Report 3 with `npm install -D allure` to use `npx allure`
 
 ## View the report
