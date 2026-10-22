@@ -25,6 +25,7 @@ export type AllureVitestAttempt = {
 
 export type AllureVitestCurrentAttempt = {
   startTime: number;
+  runnerRetryCount: number;
   retryCount: number;
   repeatCount: number;
   errorOffset: number;

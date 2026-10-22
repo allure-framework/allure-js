@@ -3,7 +3,7 @@ import { createRequire } from "node:module";
 import { basename } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { ContentType, Stage, Status } from "allure-js-commons";
+import { ContentType, Stage, Status, WellKnownParameters } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { getMessageAndTraceFromError, getStatusFromError, toGlobalErrorMessage } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
@@ -75,6 +75,15 @@ export default class AllureVitestReporter implements Reporter {
 
   private registerSetupFile(vitest: Vitest) {
     for (const project of vitest.projects) {
+      if (project.config.browser.enabled) {
+        const { version: vitestVersion } = localRequire("vitest/package.json") as { version: string };
+        const [major, minor] = vitestVersion.split(".").map(Number);
+        if (major < 4 || (major === 4 && minor < 1)) {
+          throw new Error(
+            "allure-vitest browser mode requires Vitest 4.1 or newer. Node mode supports Vitest >=1.3.0.",
+          );
+        }
+      }
       const setupFilePath = project.config.browser.enabled ? browserSetupModulePath : setupModulePath;
 
       const hasSetupFile = project.config.setupFiles.some(
@@ -175,7 +184,7 @@ export default class AllureVitestReporter implements Reporter {
         : task.result;
     const artifacts = task.artifacts ?? [];
 
-    // Earlier attempts were finalized at the next beforeEach; the final task is always authoritative.
+    // Earlier attempts were finalized at the next attempt boundary; the final task is always authoritative.
     const attempts: AllureVitestAttempt[] = [
       ...allureAttempts,
       {
@@ -278,8 +287,12 @@ export default class AllureVitestReporter implements Reporter {
         }
       }
 
-      if (browser && (taskResult?.retryCount ?? 0) > 0) {
-        result.parameters.push({ name: "Retry", value: String(taskResult?.retryCount), excluded: true });
+      if (browser) {
+        const maxRetries = typeof task.retry === "number" ? task.retry : (task.retry?.count ?? 0);
+        result.parameters.push(
+          { name: WellKnownParameters.Retry, value: String(taskResult?.retryCount ?? 0), excluded: true },
+          { name: WellKnownParameters.MaxRetries, value: String(maxRetries), excluded: true },
+        );
       }
     });
 
@@ -304,6 +317,7 @@ export default class AllureVitestReporter implements Reporter {
 
   private writeArtifactAttachments(testUuid: string, artifact: VitestArtifact, fallbackName: string) {
     for (const attachment of artifact.attachments ?? []) {
+      // Only Vitest's internal failure/comparison screenshots reach this method; both are PNGs.
       const contentType = attachment.contentType ?? ContentType.PNG;
       const name = attachment.name ?? (attachment.path ? basename(attachment.path) : fallbackName);
 
@@ -378,7 +392,8 @@ const getBrowserTracePath = (task: Task, result: TaskResultLike | undefined): st
   }
 
   // Vitest publishes trace annotations after all retries, so read them from the completed task.
-  // Paths come from Vitest (including custom tracesDir); the suffix identifies the attempt within this task.
+  // Vitest copies attachments to hashed paths; only the message retains the repeat/retry suffix.
+  // Annotation order cannot identify attempts when a trace mode records only selected retries.
   const attemptSuffix = `-${result?.repeatCount ?? 0}-${result?.retryCount ?? 0}.trace.zip`;
   const hasMultipleAttempts = (task.meta.allureAttempts?.length ?? 0) > 0;
 

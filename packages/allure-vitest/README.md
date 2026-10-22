@@ -47,8 +47,8 @@ Install Allure Report separately when you want to render the generated `allure-r
 
 ## Supported versions and platforms
 
-- `vitest >= 1.3.0`
-- `@vitest/runner >= 1.3.0`
+- Node mode: `vitest >= 1.3.0` and a matching `@vitest/runner`
+- Browser mode: `vitest >= 4.1.0` and matching Vitest browser/runner packages
 - Linux, macOS, and Windows wherever Vitest supports Node.js
 - this repository is validated in CI on Node.js 20 and 22
 
@@ -98,6 +98,21 @@ export default defineConfig({
 
 The reporter also registers `allure-vitest/browser/setup` and the Allure browser command automatically when browser
 mode is enabled. If your project already lists them in the config, you can keep them for compatibility or remove them.
+
+### Browser retries and artifacts
+
+Each browser attempt is written as a separate Allure result. `Retry` is the zero-based retry number within a repeat,
+and `Max retries` is the configured retry limit for that test. Every browser result includes both parameters, including
+`Retry: 0` and `Max retries: 0` when retries are disabled. Both parameters are excluded from history ID calculation.
+Repeats run the test again independently of success; retries run it again after failure. A retry condition or a skip can
+end execution before the configured limit, so these parameters alone do not identify the final attempt.
+Node-mode reporting continues to write only the final result.
+
+Browser mode requires Vitest 4.1+ so attempts include `aroundEach` setup and teardown.
+Available Vitest failure screenshots and screenshot-comparison artifacts are attached to their owning attempt, including
+comparison artifacts from passed tests. Playwright traces are attached according to Vitest's trace mode, using paths
+from its trace annotations, including a custom `tracesDir`. Artifacts that Vitest does not produce or retain cannot be
+attached. Automatic artifact attachment requires a Vitest version that exposes the corresponding artifacts/annotations.
 
 Browser mode does not have a stable async context primitive equivalent to Node.js `AsyncLocalStorage`, so Allure runtime
 API calls in `describe.concurrent` browser tests may still be attributed incorrectly after async boundaries. Prefer

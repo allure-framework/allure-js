@@ -3,6 +3,7 @@ import { readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
+import { WellKnownParameters } from "allure-js-commons";
 import { describe, expect, it } from "vitest";
 
 import { createVitestBrowserConfig, createVitestConfig, runVitestInlineTest } from "../utils.js";
@@ -41,7 +42,10 @@ describe("browser", () => {
     });
 
     expect(tests).toHaveLength(4);
-    const withoutRetry = expect.not.arrayContaining([expect.objectContaining({ name: "Retry" })]);
+    const initialAttempt = expect.arrayContaining([
+      { name: WellKnownParameters.Retry, value: "0", excluded: true },
+      { name: WellKnownParameters.MaxRetries, value: "1", excluded: true },
+    ]);
     const withFirstRetry = expect.arrayContaining([{ name: "Retry", value: "1", excluded: true }]);
     const flakyFailedResult = tests.find(({ name, status }) => name === "flaky browser test" && status === "failed")!;
     const flakyPassedResult = tests.find(({ name, status }) => name === "flaky browser test" && status === "passed")!;
@@ -54,7 +58,7 @@ describe("browser", () => {
           statusDetails: expect.objectContaining({
             message: expect.stringContaining("expected +0 to be 1"),
           }),
-          parameters: withoutRetry,
+          parameters: initialAttempt,
         }),
         expect.objectContaining({
           name: "flaky browser test",
@@ -67,7 +71,7 @@ describe("browser", () => {
           statusDetails: expect.objectContaining({
             message: expect.stringContaining("expected +0 to be 2"),
           }),
-          parameters: withoutRetry,
+          parameters: initialAttempt,
         }),
         expect.objectContaining({
           name: "failed retried browser test",
@@ -89,6 +93,7 @@ describe("browser", () => {
     expect(flakyPassedResult.labels).not.toContainEqual({ name: "attempt", value: "failed" });
     expect(flakyPassedResult.steps.map(({ name }) => name)).not.toContain("failed attempt step");
     expect(flakyPassedResult.attachments).toHaveLength(0);
+    expect(flakyFailedResult.historyId).toBe(flakyPassedResult.historyId);
 
     for (const testResult of tests.filter(
       ({ name, status }) => name === "failed retried browser test" && status === "failed",
@@ -159,10 +164,11 @@ describe("browser", () => {
     expect(tests).toHaveLength(1);
     expect(tests[0].status).toBe("passed");
     expect(tests[0].parameters).not.toEqual(expect.arrayContaining([expect.objectContaining({ name: "Retry" })]));
+    expect(tests[0].parameters).not.toEqual(expect.arrayContaining([expect.objectContaining({ name: "Max retries" })]));
   });
 
   it("should finalize retries after teardown and preserve their runtime messages", async () => {
-    const { tests } = await runVitestInlineTest({
+    const { tests, attachments } = await runVitestInlineTest({
       "vitest.config.ts": ({ allureResultsPath }) => createVitestBrowserConfig(allureResultsPath, { retry: 1 }),
       "sample.test.ts": `
         import { afterEach, aroundEach, expect, test } from "vitest";
@@ -175,6 +181,7 @@ describe("browser", () => {
 
         aroundEach(async (run, { task }) => {
           await run();
+          await new Promise((resolve) => setTimeout(resolve, 200));
           const attempt = String(task.result.retryCount);
           await label("teardown-attempt", attempt);
           await attachment("teardown " + attempt, attempt, "text/plain");
@@ -201,7 +208,9 @@ describe("browser", () => {
       expect(result.steps.map(({ name }) => name)).toContain("afterEach " + attempt);
       expect(result.steps.map(({ name }) => name)).toContain("teardown " + attempt);
       expect(result.steps.map(({ name }) => name)).not.toContain("teardown " + String(1 - index));
-      expect(result.stop! - result.start!).toBeGreaterThanOrEqual(60);
+      const attachment = result.steps.find(({ name }) => name === "teardown " + attempt)!.attachments[0];
+      expect(Buffer.from(attachments[attachment.source] as string, "base64").toString("utf8")).toBe(attempt);
+      expect(result.stop! - result.start!).toBeGreaterThanOrEqual(260);
     }
   });
 
@@ -294,6 +303,85 @@ describe("browser", () => {
     expect(attachments[tests[0].attachments[0].source]).not.toBeUndefined();
   });
 
+  it("should preserve attempts when aroundEach setup fails on retry", async () => {
+    const { tests } = await runVitestInlineTest({
+      "vitest.config.ts": ({ allureResultsPath }) => createVitestBrowserConfig(allureResultsPath, { retry: 1 }),
+      "sample.test.ts": `
+        import { aroundEach, expect, test } from "vitest";
+        aroundEach(async (run, { task }) => {
+          if (task.result.retryCount === 1) throw new Error("retry setup failed");
+          await run();
+        });
+        test("setup failure on retry", () => { expect(0).toBe(1); });
+      `,
+    });
+
+    expect(tests.map(({ status }) => status)).toEqual(["failed", "broken"]);
+    expect(tests[0].statusDetails.message).toContain("expected +0 to be 1");
+    expect(tests[1].statusDetails.message).toContain("retry setup failed");
+    expect(tests[1].parameters).toContainEqual({ name: "Retry", value: "1", excluded: true });
+    expect(tests[0].historyId).toBe(tests[1].historyId);
+  });
+
+  it.each(["on", "on-first-retry"])("should map %s traces across repeats and retries", async (trace) => {
+    const { tests, attachments } = await runVitestInlineTest({
+      "vitest.config.ts": ({ allureResultsPath }) =>
+        createVitestBrowserConfig(allureResultsPath, { retry: 1, browser: { trace } }),
+      "sample.test.ts": `
+        import { expect, test } from "vitest";
+        test("repeated flaky", { repeats: 1 }, ({ task }) => { expect(task.result.retryCount).toBe(1); });
+        test("repeated failure", { repeats: 1 }, ({ task }) => { expect(task.result.retryCount).toBe(-1); });
+      `,
+    });
+
+    const flaky = tests.filter(({ name }) => name === "repeated flaky");
+    const failed = tests.filter(({ name }) => name === "repeated failure");
+    expect(tests).toHaveLength(7);
+    expect(flaky.map(({ status }) => status)).toEqual(["failed", "passed", "passed"]);
+    expect(failed.map(({ status }) => status)).toEqual(["failed", "failed", "failed", "failed"]);
+    expect(flaky.map(({ parameters }) => parameters.find(({ name }) => name === "Retry")?.value)).toEqual([
+      "0",
+      "1",
+      "0",
+    ]);
+    expect(failed.map(({ parameters }) => parameters.find(({ name }) => name === "Retry")?.value)).toEqual([
+      "0",
+      "1",
+      "0",
+      "1",
+    ]);
+    const traces = [...flaky, ...failed].map(({ attachments: items }) => items.filter(({ name }) => name === "Trace"));
+    expect(traces.map((items) => items.length)).toEqual(trace === "on" ? [1, 1, 1, 1, 1, 1, 1] : [0, 1, 0, 0, 1, 0, 1]);
+    for (const item of traces.flat()) expect(attachments[item.source]).not.toBeUndefined();
+    expect(new Set(traces.flat().map((item) => attachments[item.source])).size).toBe(traces.flat().length);
+  });
+
+  it("should report effective retry limits even when a retry condition stops execution early", async () => {
+    const { tests } = await runVitestInlineTest({
+      "vitest.config.ts": ({ allureResultsPath }) => createVitestBrowserConfig(allureResultsPath, { retry: 2 }),
+      "sample.test.ts": `
+        import { expect, test } from "vitest";
+        test("default limit", () => {});
+        test("disabled retries", { retry: 0 }, () => {});
+        test("conditional retry", { retry: { count: 3, condition: () => false } }, () => { expect(0).toBe(1); });
+      `,
+    });
+
+    expect(tests).toHaveLength(3);
+    for (const [name, maxRetries] of [
+      ["default limit", "2"],
+      ["disabled retries", "0"],
+      ["conditional retry", "3"],
+    ]) {
+      expect(tests.find((result) => result.name === name)!.parameters).toEqual(
+        expect.arrayContaining([
+          { name: WellKnownParameters.Retry, value: "0", excluded: true },
+          { name: WellKnownParameters.MaxRetries, value: maxRetries, excluded: true },
+        ]),
+      );
+    }
+  });
+
   it("should preserve the final expected-failure outcome after retries", async () => {
     const { tests } = await runVitestInlineTest({
       "vitest.config.ts": ({ allureResultsPath }) => createVitestBrowserConfig(allureResultsPath, { retry: 1 }),
@@ -318,8 +406,9 @@ describe("browser", () => {
       "vitest.config.ts": ({ allureResultsPath }) => createVitestBrowserConfig(allureResultsPath, { retry: 1 }),
       "sample.test.ts": `
         import { test, expect } from "vitest";
-        test("skipped retry", ({ task, skip }) => {
+        test("skipped retry", async ({ task, skip }) => {
           expect(task.result.retryCount).toBe(1);
+          await new Promise((resolve) => setTimeout(resolve, 20));
           skip();
         });
       `,
@@ -328,6 +417,7 @@ describe("browser", () => {
     expect(tests.map(({ status }) => status)).toEqual(["failed", "skipped"]);
     expect(tests[1].parameters).toContainEqual({ name: "Retry", value: "1", excluded: true });
     expect(tests[0].historyId).toBe(tests[1].historyId);
+    expect(tests[1].stop! - tests[1].start!).toBeGreaterThanOrEqual(20);
   });
 
   it("should allow to attach screenshots", async () => {
