@@ -99,6 +99,20 @@ export default defineConfig({
 The reporter also registers `allure-vitest/browser/setup` and the Allure browser command automatically when browser
 mode is enabled. If your project already lists them in the config, you can keep them for compatibility or remove them.
 
+### Browser retries and artifacts
+
+Each browser attempt is written as a separate Allure result. `Retry` is the zero-based retry number within a repeat,
+and `Max retries` is the configured retry limit for that test. Both parameters are excluded from history ID calculation.
+Repeats run the test again independently of success; retries run it again after failure. A retry condition or a skip can
+end execution before the configured limit, so these parameters alone do not identify the final attempt.
+Node-mode reporting continues to write only the final result.
+
+On Vitest 4.1+, attempts include `aroundEach` setup and teardown. Older versions use `beforeEach` and `onTestFinished`.
+Available Vitest failure screenshots and screenshot-comparison artifacts are attached to their owning attempt, including
+comparison artifacts from passed tests. Playwright traces are attached according to Vitest's trace mode, using paths
+from its trace annotations, including a custom `tracesDir`. Artifacts that Vitest does not produce or retain cannot be
+attached. Automatic artifact attachment requires a Vitest version that exposes the corresponding artifacts/annotations.
+
 Browser mode does not have a stable async context primitive equivalent to Node.js `AsyncLocalStorage`, so Allure runtime
 API calls in `describe.concurrent` browser tests may still be attributed incorrectly after async boundaries. Prefer
 non-concurrent browser tests when using the context-free Allure runtime API.

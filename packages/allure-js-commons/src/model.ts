@@ -35,6 +35,11 @@ export interface Parameter {
 
 export type ParameterOptions = Pick<Parameter, "mode" | "excluded">;
 
+export enum WellKnownParameters {
+  Retry = "Retry",
+  MaxRetries = "Max retries",
+}
+
 export interface StatusDetails {
   message?: string;
   trace?: string;
