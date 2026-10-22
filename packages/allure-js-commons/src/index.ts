@@ -71,4 +71,13 @@ export type {
   TestResult,
   TestResultContainer,
 } from "./model.js";
-export { ContentType, LinkType, LabelName, Severity, Stage, Status, StatusByPriority } from "./model.js";
+export {
+  ContentType,
+  LinkType,
+  LabelName,
+  Severity,
+  Stage,
+  Status,
+  StatusByPriority,
+  WellKnownParameters,
+} from "./model.js";

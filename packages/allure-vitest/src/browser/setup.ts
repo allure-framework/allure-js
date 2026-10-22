@@ -1,6 +1,7 @@
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 /* eslint no-underscore-dangle: "off" */
-import { afterEach, beforeAll, beforeEach } from "vitest";
+import type { RunnerTestCase } from "vitest";
+import * as vitest from "vitest";
 import { commands } from "vitest/browser";
 
 import { allureVitestLegacyApi } from "../legacy.js";
@@ -10,16 +11,24 @@ import { VitestBrowserTestRuntime } from "../VitestBrowserTestRuntime.js";
 
 registerAllureVitestExpect();
 
-beforeAll(() => {
+vitest.beforeAll(() => {
   setGlobalTestRuntime(new VitestBrowserTestRuntime());
 });
 
-beforeEach(async ({ onTestFinished, skip, task }) => {
+const hasAroundEach = typeof vitest.aroundEach === "function";
+
+const startAttempt = (task: RunnerTestCase) => {
   const attemptStartTime = Date.now();
   const artifacts = "artifacts" in task ? task.artifacts : undefined;
   const previousAttempt = task.meta.allureCurrentAttempt;
+  const runnerRetryCount = task.result?.retryCount ?? 0;
+  // aroundEach starts before Vitest updates repeatCount. Its retryCount is cumulative across repeats.
+  const repeatCount =
+    hasAroundEach && previousAttempt
+      ? previousAttempt.repeatCount + Number(runnerRetryCount === previousAttempt.runnerRetryCount)
+      : (task.result?.repeatCount ?? 0);
 
-  // A retry starts only after all callbacks and teardown of the previous attempt have completed.
+  // The next attempt starts only after all callbacks and teardown of the previous attempt have completed.
   // Keep Vitest's artifacts intact: only store the range belonging to this attempt.
   if (previousAttempt && task.result) {
     task.meta.allureAttempts ??= [];
@@ -42,8 +51,9 @@ beforeEach(async ({ onTestFinished, skip, task }) => {
 
   const attempt: AllureVitestCurrentAttempt = {
     startTime: attemptStartTime,
-    retryCount: task.result?.retryCount ?? 0,
-    repeatCount: task.result?.repeatCount ?? 0,
+    runnerRetryCount,
+    retryCount: previousAttempt?.repeatCount === repeatCount ? previousAttempt.retryCount + 1 : 0,
+    repeatCount,
     errorOffset: task.result?.errors?.length ?? 0,
     artifactStart: artifacts?.length ?? 0,
   };
@@ -55,6 +65,29 @@ beforeEach(async ({ onTestFinished, skip, task }) => {
     allureCurrentAttempt: attempt,
   });
 
+  return attempt;
+};
+
+if (hasAroundEach) {
+  vitest.aroundEach(async (run, { task }) => {
+    const attempt = startAttempt(task);
+    try {
+      await run();
+    } finally {
+      attempt.duration = Date.now() - attempt.startTime;
+    }
+  });
+}
+
+vitest.beforeEach(async ({ onTestFinished, skip, task }) => {
+  // Vitest < 4.1 has no aroundEach; keep using its beforeEach/onTestFinished lifecycle.
+  if (!hasAroundEach) {
+    const attempt = startAttempt(task);
+    onTestFinished(() => {
+      attempt.duration = Date.now() - attempt.startTime;
+    });
+  }
+
   const inTestPlan = (await commands?.existsInTestPlan?.(task)) ?? true;
 
   if (!inTestPlan) {
@@ -63,15 +96,10 @@ beforeEach(async ({ onTestFinished, skip, task }) => {
     return;
   }
 
-  onTestFinished(() => {
-    // Vitest calls onTestFinished after afterEach and before onTestFailed.
-    attempt.duration = Date.now() - attemptStartTime;
-  });
-
   globalThis.allure = allureVitestLegacyApi;
 });
 
-afterEach(() => {
+vitest.afterEach(() => {
   // @ts-expect-error
   globalThis.allure = undefined;
 });
