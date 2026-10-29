@@ -2,8 +2,19 @@ import { serialize } from "allure-js-commons/sdk";
 
 import { getConfig } from "./state.js";
 
-export default (value: unknown) =>
-  isDomObject(value) ? stringifyAsDom(value) : serialize(value, getSerializeOptions());
+export default (value: unknown) => {
+  try {
+    // Storage can belong to another window, so instanceof Storage is not reliable here.
+    if (Object.prototype.toString.call(value) === "[object Storage]") {
+      return "[object Storage]";
+    }
+
+    return isDomObject(value) ? stringifyAsDom(value) : serialize(value, getSerializeOptions());
+  } catch {
+    // Unexpected serialization errors must not interrupt the test lifecycle.
+    return "[Unserializable value]";
+  }
+};
 
 const getSerializeOptions = () => {
   const {
