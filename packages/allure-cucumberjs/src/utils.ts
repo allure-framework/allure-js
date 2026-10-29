@@ -11,3 +11,6 @@ export const getPathRelativeToProjectRoot = ({ uri }: Pickle) =>
   );
 
 export const getPosixPathRelativeToProjectRoot = (pickle: Pickle) => getPosixPath(getPathRelativeToProjectRoot(pickle));
+
+export const serializeCsvRow = (values: readonly string[]) =>
+  values.map((value) => (/[",\r\n]/.test(value) ? `"${value.replaceAll('"', '""')}"` : value)).join(",");
