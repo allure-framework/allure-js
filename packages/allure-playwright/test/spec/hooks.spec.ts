@@ -275,6 +275,52 @@ it("reports failed hook steps as global errors", async () => {
   );
 });
 
+it("does not report skip or fixme modifiers as global hook errors", async () => {
+  const { tests, globals } = await runPlaywrightInlineTest({
+    "sample.test.js": `
+      import test from "@playwright/test";
+
+      for (const modifier of ["skip", "fixme"]) {
+        for (const hook of ["beforeAll", "beforeEach", "describe"]) {
+          for (const reason of ["", "conditional reason"]) {
+            const name = modifier + " " + hook + " " + (reason || "no reason");
+            test.describe(name, () => {
+              if (hook === "describe") {
+                test[modifier](async () => true, reason);
+              } else {
+                test[hook](() => test[modifier](true, reason));
+              }
+              test(name + " first", () => {});
+              test(name + " second", () => {});
+            });
+          }
+        }
+      }
+
+      test.describe("real failure", () => {
+        test.beforeEach(() => { throw new Error("real hook failure"); });
+        test("failed setup", () => {});
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(25);
+  const skippedTests = tests.filter((result) => result.name !== "failed setup");
+  expect(skippedTests).toHaveLength(24);
+  for (const result of skippedTests) {
+    expect(result.status).toBe(Status.SKIPPED);
+  }
+  expect(tests.find((result) => result.name === "failed setup")?.status).toBe(Status.FAILED);
+  expect(Object.values(globals ?? {}).flatMap((info) => info.errors)).toEqual([
+    expect.objectContaining({
+      status: Status.BROKEN,
+      message: "beforeEach hook failed: Error: real hook failure",
+      trace: expect.stringContaining("sample.test.js"),
+      timestamp: expect.any(Number),
+    }),
+  ]);
+});
+
 it("reports named and paired hook step failures as global errors", async () => {
   const { tests, globals } = await runPlaywrightInlineTest({
     "sample.test.js": `

@@ -62,6 +62,7 @@ import {
   BEFORE_HOOKS_ROOT_STEP_TITLE,
   diffEndRegexp,
   finalizeStepResult,
+  getSkipModifierError,
   isAfterHookStep,
   isBeforeHookStep,
   isDescendantOfStepWithTitle,
@@ -909,7 +910,7 @@ export class AllureReporter implements ReporterV2 {
   }
 
   private emitGlobalErrorFromHookStep(step: TestStep) {
-    if (!step.error || !isGlobalErrorHookStep(step)) {
+    if (!step.error || !isGlobalErrorHookStep(step) || getSkipModifierError(step.error)) {
       return;
     }
 
