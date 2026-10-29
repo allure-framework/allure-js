@@ -39,7 +39,7 @@ import {
 
 import { AllureCucumberWorld } from "./legacy.js";
 import type { AllureCucumberLinkConfig, AllureCucumberReporterConfig, LabelConfig } from "./model.js";
-import { getPathRelativeToProjectRoot, getPosixPathRelativeToProjectRoot } from "./utils.js";
+import { getPathRelativeToProjectRoot, getPosixPathRelativeToProjectRoot, serializeCsvRow } from "./utils.js";
 
 type TestRunHookDefinition = {
   readonly code: Function;
@@ -432,7 +432,7 @@ export default class AllureCucumberReporter extends Formatter {
     for (const example of scenario.examples) {
       const exampleName = example?.name ? `Examples: ${example.name}` : "Examples";
       const parameterNames = example?.tableHeader?.cells.map((cell) => cell.value);
-      const csvDataTableHeader = parameterNames?.join(",") || "";
+      const csvDataTableHeader = parameterNames ? serializeCsvRow(parameterNames) : "";
 
       const currentRow = example?.tableBody?.find((tb) => astIds.includes(tb.id));
       if (currentRow) {
@@ -449,7 +449,7 @@ export default class AllureCucumberReporter extends Formatter {
       }
 
       const csvDataTableBody =
-        example?.tableBody.map((row) => row.cells.map((cell) => cell.value).join(",")).join("\n") || "";
+        example?.tableBody.map((row) => serializeCsvRow(row.cells.map((cell) => cell.value))).join("\n") || "";
 
       if (!csvDataTableHeader && !csvDataTableBody) {
         continue;
@@ -562,7 +562,7 @@ export default class AllureCucumberReporter extends Formatter {
     }
 
     const csvDataTable = stepPickle.argument.dataTable.rows.reduce(
-      (acc, row) => `${acc + row.cells.map((cell) => cell.value).join(",")}\n`,
+      (acc, row) => `${acc + serializeCsvRow(row.cells.map((cell) => cell.value))}\n`,
       "",
     );
 
