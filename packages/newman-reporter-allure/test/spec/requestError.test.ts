@@ -7,7 +7,7 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-test("mark test as failed when a request error occurs", async () => {
+test("mark test as broken when a request error occurs", async () => {
   const { tests } = await runNewmanCollection({
     item: [
       {
@@ -37,6 +37,7 @@ test("mark test as failed when a request error occurs", async () => {
   expect(tests).toHaveLength(1);
   expect(tests[0]).toEqual(
     expect.objectContaining({
+      status: "broken",
       statusDetails: {
         message: "Timeout",
       },

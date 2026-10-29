@@ -83,7 +83,10 @@ class AllureReporter {
       return;
     }
 
-    currentPmItem.prerequest = args.executions[0]?.script?.exec?.join("\n");
+    currentPmItem.prerequest = args.executions
+      .map(({ script }) => script?.exec?.join("\n"))
+      .filter(Boolean)
+      .join("\n\n");
   }
 
   onBeforeItem(err: any, args: { item: Item; cursor: Cursor }) {
@@ -264,7 +267,7 @@ class AllureReporter {
     this.allureRuntime.writeTest(this.currentTest);
   }
 
-  onTest(err: any, args: { executions: Event[] }) {
+  onTest(err: any, args: { executions: (Event & { error?: Error })[] }) {
     if (!this.currentTest) {
       return;
     }
@@ -275,41 +278,34 @@ class AllureReporter {
       return;
     }
 
-    const execScript = args.executions[0]?.script?.exec?.join("\n");
+    currentPmItem.testScript = args.executions
+      .map(({ script }) => script?.exec?.join("\n"))
+      .filter(Boolean)
+      .join("\n\n");
 
-    if (!execScript) {
-      return;
+    for (const { error } of args.executions) {
+      if (!error) {
+        continue;
+      }
+
+      const stepUuid = this.allureRuntime.startStep(this.currentTest, undefined, {
+        name: error.name,
+        status: Status.FAILED,
+        stage: Stage.FINISHED,
+        statusDetails: {
+          message: error.message,
+        },
+      });
+
+      if (!stepUuid) {
+        // no such test running, ignore reporting
+        continue;
+      }
+
+      currentPmItem.failedAssertions.push(error.name);
+
+      this.allureRuntime.stopStep(stepUuid);
     }
-
-    currentPmItem.testScript = execScript;
-
-    // not typed postman-collection error property ?
-    const testArgs: any = args.executions[0];
-
-    if (!testArgs.error) {
-      return;
-    }
-
-    const errName: string = testArgs.error.name;
-    const errMsg: string = testArgs.error.message;
-
-    const stepUuid = this.allureRuntime.startStep(this.currentTest, undefined, {
-      name: errName,
-      status: Status.FAILED,
-      stage: Stage.FINISHED,
-      statusDetails: {
-        message: errMsg,
-      },
-    });
-
-    if (!stepUuid) {
-      // no such test running, ignore reporting
-      return;
-    }
-
-    currentPmItem.failedAssertions.push(errName);
-
-    this.allureRuntime.stopStep(stepUuid);
   }
 
   onConsole(err: any, args: ConsoleEvent) {
