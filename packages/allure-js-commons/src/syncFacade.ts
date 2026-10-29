@@ -53,6 +53,22 @@ export const descriptionHtml = (html: string) => {
   return callRuntimeMethod("descriptionHtml", html);
 };
 
+export const precondition = (markdown: string) => {
+  return callRuntimeMethod("precondition", markdown);
+};
+
+export const preconditionHtml = (html: string) => {
+  return callRuntimeMethod("preconditionHtml", html);
+};
+
+export const expectedResult = (markdown: string) => {
+  return callRuntimeMethod("expectedResult", markdown);
+};
+
+export const expectedResultHtml = (html: string) => {
+  return callRuntimeMethod("expectedResultHtml", html);
+};
+
 export const displayName = (name: string) => {
   return callRuntimeMethod("displayName", name);
 };

@@ -105,6 +105,42 @@ export abstract class BaseMessageTestRuntime implements TestRuntime {
     });
   }
 
+  async precondition(markdown: string) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        precondition: markdown,
+      },
+    });
+  }
+
+  async preconditionHtml(html: string) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        preconditionHtml: html,
+      },
+    });
+  }
+
+  async expectedResult(markdown: string) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        expectedResult: markdown,
+      },
+    });
+  }
+
+  async expectedResultHtml(html: string) {
+    await this.sendMessage({
+      type: "metadata",
+      data: {
+        expectedResultHtml: html,
+      },
+    });
+  }
+
   async displayName(name: string) {
     await this.sendMessage({
       type: "metadata",
@@ -307,6 +343,34 @@ export abstract class BaseMessageTestRuntime implements TestRuntime {
           type: "metadata",
           data: {
             descriptionHtml: html,
+          },
+        }),
+      precondition: (markdown) =>
+        sendMessageSync({
+          type: "metadata",
+          data: {
+            precondition: markdown,
+          },
+        }),
+      preconditionHtml: (html) =>
+        sendMessageSync({
+          type: "metadata",
+          data: {
+            preconditionHtml: html,
+          },
+        }),
+      expectedResult: (markdown) =>
+        sendMessageSync({
+          type: "metadata",
+          data: {
+            expectedResult: markdown,
+          },
+        }),
+      expectedResultHtml: (html) =>
+        sendMessageSync({
+          type: "metadata",
+          data: {
+            expectedResultHtml: html,
           },
         }),
       displayName: (name) =>

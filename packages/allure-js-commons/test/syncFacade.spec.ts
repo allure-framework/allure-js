@@ -19,6 +19,8 @@ const mockSyncRuntime = (): Mocked<SyncTestRuntime> => {
     description: vi.fn(),
     descriptionHtml: vi.fn(),
     displayName: vi.fn(),
+    expectedResult: vi.fn(),
+    expectedResultHtml: vi.fn(),
     globalAttachment: vi.fn(),
     globalAttachmentFromPath: vi.fn(),
     globalError: vi.fn(),
@@ -27,6 +29,8 @@ const mockSyncRuntime = (): Mocked<SyncTestRuntime> => {
     links: vi.fn(),
     logStep: vi.fn(),
     parameter: vi.fn(),
+    precondition: vi.fn(),
+    preconditionHtml: vi.fn(),
     step: vi.fn((_, body) => body()),
     stepDisplayName: vi.fn(),
     stepParameter: vi.fn(),
@@ -43,6 +47,8 @@ const mockRuntime = (): Mocked<TestRuntime> & { sync: Mocked<SyncTestRuntime> } 
     description: vi.fn().mockResolvedValue(undefined),
     descriptionHtml: vi.fn().mockResolvedValue(undefined),
     displayName: vi.fn().mockResolvedValue(undefined),
+    expectedResult: vi.fn().mockResolvedValue(undefined),
+    expectedResultHtml: vi.fn().mockResolvedValue(undefined),
     globalAttachment: vi.fn().mockResolvedValue(undefined),
     globalAttachmentFromPath: vi.fn().mockResolvedValue(undefined),
     globalError: vi.fn().mockResolvedValue(undefined),
@@ -52,6 +58,8 @@ const mockRuntime = (): Mocked<TestRuntime> & { sync: Mocked<SyncTestRuntime> } 
     logStep: vi.fn().mockResolvedValue(undefined),
     parameter: vi.fn().mockResolvedValue(undefined),
     performanceMetrics: vi.fn().mockResolvedValue(undefined),
+    precondition: vi.fn().mockResolvedValue(undefined),
+    preconditionHtml: vi.fn().mockResolvedValue(undefined),
     step: vi.fn(async (_, body) => await body()),
     stepDisplayName: vi.fn().mockResolvedValue(undefined),
     stepParameter: vi.fn().mockResolvedValue(undefined),
@@ -85,6 +93,10 @@ describe("sync facade", () => {
     allureSync.issue("https://example.test/ISSUE-1", "ISSUE-1");
     allureSync.parameter("browser", "chromium", { excluded: true });
     allureSync.description("markdown");
+    allureSync.precondition("precondition markdown");
+    allureSync.preconditionHtml("<p>precondition html</p>");
+    allureSync.expectedResult("expected result markdown");
+    allureSync.expectedResultHtml("<p>expected result html</p>");
     allureSync.displayName("custom name");
     allureSync.historyId("history-id");
     allureSync.testCaseId("test-case-id");
@@ -116,6 +128,30 @@ describe("sync facade", () => {
           type: "metadata",
           data: {
             description: "markdown",
+          },
+        },
+        {
+          type: "metadata",
+          data: {
+            precondition: "precondition markdown",
+          },
+        },
+        {
+          type: "metadata",
+          data: {
+            preconditionHtml: "<p>precondition html</p>",
+          },
+        },
+        {
+          type: "metadata",
+          data: {
+            expectedResult: "expected result markdown",
+          },
+        },
+        {
+          type: "metadata",
+          data: {
+            expectedResultHtml: "<p>expected result html</p>",
           },
         },
         {

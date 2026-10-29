@@ -37,6 +37,22 @@ export class NoopSyncTestRuntime implements SyncTestRuntime {
     this.warning();
   }
 
+  precondition(_: string) {
+    this.warning();
+  }
+
+  preconditionHtml(_: string) {
+    this.warning();
+  }
+
+  expectedResult(_: string) {
+    this.warning();
+  }
+
+  expectedResultHtml(_: string) {
+    this.warning();
+  }
+
   displayName(_: string) {
     this.warning();
   }
@@ -131,6 +147,22 @@ export class NoopTestRuntime implements TestRuntime {
   }
 
   async descriptionHtml() {
+    await this.warning();
+  }
+
+  async precondition() {
+    await this.warning();
+  }
+
+  async preconditionHtml() {
+    await this.warning();
+  }
+
+  async expectedResult() {
+    await this.warning();
+  }
+
+  async expectedResultHtml() {
     await this.warning();
   }
 

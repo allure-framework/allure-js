@@ -394,6 +394,22 @@ export class ReporterRuntime {
       if (scope?.descriptionHtml) {
         testResult.descriptionHtml = testResult.descriptionHtml ?? scope.descriptionHtml;
       }
+
+      if (scope?.precondition) {
+        testResult.precondition = testResult.precondition ?? scope.precondition;
+      }
+
+      if (scope?.preconditionHtml) {
+        testResult.preconditionHtml = testResult.preconditionHtml ?? scope.preconditionHtml;
+      }
+
+      if (scope?.expectedResult) {
+        testResult.expectedResult = testResult.expectedResult ?? scope.expectedResult;
+      }
+
+      if (scope?.expectedResultHtml) {
+        testResult.expectedResultHtml = testResult.expectedResultHtml ?? scope.expectedResultHtml;
+      }
     });
 
     testResult.labels = [...this.globalLabels, ...testResult.labels];
@@ -622,7 +638,20 @@ export class ReporterRuntime {
   #handleMetadataMessage = (rootUuid: string, message: RuntimeMetadataMessage["data"]) => {
     // only display name could be set to fixture.
     const fixtureResult = this.state.getWrappedFixtureResult(rootUuid);
-    const { links, labels, parameters, displayName, testCaseId, historyId, description, descriptionHtml } = message;
+    const {
+      links,
+      labels,
+      parameters,
+      displayName,
+      testCaseId,
+      historyId,
+      description,
+      descriptionHtml,
+      precondition,
+      preconditionHtml,
+      expectedResult,
+      expectedResultHtml,
+    } = message;
 
     if (fixtureResult) {
       if (displayName) {
@@ -640,7 +669,17 @@ export class ReporterRuntime {
         console.error("testCaseId can't be changed within test fixtures");
       }
 
-      if (links || labels || parameters || description || descriptionHtml) {
+      if (
+        links ||
+        labels ||
+        parameters ||
+        description ||
+        descriptionHtml ||
+        precondition ||
+        preconditionHtml ||
+        expectedResult ||
+        expectedResultHtml
+      ) {
         // in some frameworks, afterEach methods can be executed before test stop event, while
         // in others after. To remove the possible undetermined behaviour we only allow
         // using runtime metadata API in before hooks.
@@ -665,6 +704,18 @@ export class ReporterRuntime {
           }
           if (descriptionHtml) {
             scope.descriptionHtml = descriptionHtml;
+          }
+          if (precondition) {
+            scope.precondition = precondition;
+          }
+          if (preconditionHtml) {
+            scope.preconditionHtml = preconditionHtml;
+          }
+          if (expectedResult) {
+            scope.expectedResult = expectedResult;
+          }
+          if (expectedResultHtml) {
+            scope.expectedResultHtml = expectedResultHtml;
           }
         });
       }
@@ -696,6 +747,18 @@ export class ReporterRuntime {
       }
       if (descriptionHtml) {
         result.descriptionHtml = descriptionHtml;
+      }
+      if (precondition) {
+        result.precondition = precondition;
+      }
+      if (preconditionHtml) {
+        result.preconditionHtml = preconditionHtml;
+      }
+      if (expectedResult) {
+        result.expectedResult = expectedResult;
+      }
+      if (expectedResultHtml) {
+        result.expectedResultHtml = expectedResultHtml;
       }
     });
   };

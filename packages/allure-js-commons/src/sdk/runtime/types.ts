@@ -32,6 +32,14 @@ export interface SyncTestRuntime {
 
   descriptionHtml: (html: string) => void;
 
+  precondition: (markdown: string) => void;
+
+  preconditionHtml: (html: string) => void;
+
+  expectedResult: (markdown: string) => void;
+
+  expectedResultHtml: (html: string) => void;
+
   displayName: (name: string) => void;
 
   historyId: (value: string) => void;
@@ -67,6 +75,14 @@ export interface TestRuntime {
   description: (markdown: string) => PromiseLike<void>;
 
   descriptionHtml: (html: string) => PromiseLike<void>;
+
+  precondition: (markdown: string) => PromiseLike<void>;
+
+  preconditionHtml: (html: string) => PromiseLike<void>;
+
+  expectedResult: (markdown: string) => PromiseLike<void>;
+
+  expectedResultHtml: (html: string) => PromiseLike<void>;
 
   displayName: (name: string) => PromiseLike<void>;
 
