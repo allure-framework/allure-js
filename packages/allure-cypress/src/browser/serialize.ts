@@ -2,8 +2,15 @@ import { serialize } from "allure-js-commons/sdk";
 
 import { getConfig } from "./state.js";
 
-export default (value: unknown) =>
-  isDomObject(value) ? stringifyAsDom(value) : serialize(value, getSerializeOptions());
+export default (value: unknown) => {
+  try {
+    return isDomObject(value) ? stringifyAsDom(value) : serialize(value, getSerializeOptions());
+  } catch {
+    // Command parameters are finalized after navigation and can reference inaccessible Storage objects.
+    // Reporting such values must not interrupt the test lifecycle.
+    return "[Unserializable value]";
+  }
+};
 
 const getSerializeOptions = () => {
   const {
