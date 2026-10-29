@@ -42,12 +42,14 @@ test("verify postman assertion error", async () => {
   expect(tests).toHaveLength(1);
   expect(tests[0]).toEqual(
     expect.objectContaining({
+      status: "broken",
       statusDetails: {
-        message: "SyntaxError",
+        message: "SyntaxError: missing ) after argument list",
         trace: expect.any(String),
       },
       steps: expect.arrayContaining([
         expect.objectContaining({
+          status: "broken",
           statusDetails: {
             message: "missing ) after argument list",
           },

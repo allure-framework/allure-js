@@ -2,6 +2,14 @@ import type { Label, Link } from "allure-js-commons";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import type { EventList } from "postman-collection";
 
+import type { ScriptExecution } from "./model.js";
+
+export const getExecutedScripts = (executions: ScriptExecution[]) =>
+  executions
+    .map(({ script }) => script?.exec?.join("\n"))
+    .filter(Boolean)
+    .join("\n\n");
+
 export const extractMeta = (eventList: EventList) => {
   const labels: Label[] = [];
   const links: Link[] = [];

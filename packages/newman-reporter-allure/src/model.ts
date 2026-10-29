@@ -1,9 +1,17 @@
-import type { HeaderList, RequestBody } from "postman-collection";
+import type { Status } from "allure-js-commons";
+import type { Event, HeaderList, RequestBody, Script } from "postman-collection";
+
+export interface ScriptExecution {
+  event: Event;
+  script?: Script;
+  error?: { name: string; message: string; stack?: string };
+}
 
 export interface PmItem {
   name: string;
   passed: boolean;
   failedAssertions: string[];
+  scriptErrors: { status: Status; message: string }[];
   requestError?: string;
   consoleLogs: string[];
   requestData?: PmRequestData;

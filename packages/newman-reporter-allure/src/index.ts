@@ -2,6 +2,7 @@
 import type { EventEmitter } from "events";
 
 import { ContentType, Stage, Status } from "allure-js-commons";
+import { getStatusFromError } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
@@ -17,10 +18,10 @@ import {
   md5,
 } from "allure-js-commons/sdk/reporter";
 import type { ConsoleEvent, Cursor, NewmanRunExecutionAssertion } from "newman";
-import type { CollectionDefinition, Event, HeaderList, Item, Request, Response } from "postman-collection";
+import type { CollectionDefinition, HeaderList, Item, Request, Response } from "postman-collection";
 
-import type { PmItem, RunningItem } from "./model.js";
-import { extractMeta } from "./utils.js";
+import type { PmItem, RunningItem, ScriptExecution } from "./model.js";
+import { extractMeta, getExecutedScripts } from "./utils.js";
 
 class AllureReporter {
   allureRuntime: ReporterRuntime;
@@ -70,7 +71,7 @@ class AllureReporter {
   onPrerequest(
     err: any,
     args: {
-      executions: Event[];
+      executions: ScriptExecution[];
     },
   ) {
     if (!this.currentTest) {
@@ -83,10 +84,8 @@ class AllureReporter {
       return;
     }
 
-    currentPmItem.prerequest = args.executions
-      .map(({ script }) => script?.exec?.join("\n"))
-      .filter(Boolean)
-      .join("\n\n");
+    currentPmItem.prerequest = getExecutedScripts(args.executions);
+    this.#reportScriptErrors(args.executions, currentPmItem);
   }
 
   onBeforeItem(err: any, args: { item: Item; cursor: Cursor }) {
@@ -94,6 +93,7 @@ class AllureReporter {
       name: args.item.name,
       passed: true,
       failedAssertions: [],
+      scriptErrors: [],
       consoleLogs: [],
     };
     const itemGroup = args.item.parent();
@@ -157,6 +157,7 @@ class AllureReporter {
     const testDescription = (typeof rawDescription === "string" ? rawDescription : rawDescription?.content) || "";
     const response = currentPmItem.responseData;
     const failedAssertions = currentPmItem.failedAssertions;
+    const scriptErrors = currentPmItem.scriptErrors;
     const requestError = currentPmItem.requestError;
 
     if (currentPmItem.prerequest) {
@@ -235,14 +236,19 @@ class AllureReporter {
       }
     });
 
-    if (response && failedAssertions?.length) {
-      const details = this.#escape(`Response code: ${response.code}, status: ${response.status}`);
+    if ((response || !requestError) && (failedAssertions.length || scriptErrors.length)) {
+      const details = response
+        ? this.#escape(`Response code: ${response.code}, status: ${response.status}`)
+        : undefined;
 
       this.allureRuntime.updateTest(this.currentTest, (test) => {
-        test.status = Status.FAILED;
+        test.status =
+          failedAssertions.length || scriptErrors.some(({ status }) => status === Status.FAILED)
+            ? Status.FAILED
+            : Status.BROKEN;
         test.stage = Stage.FINISHED;
         test.statusDetails = {
-          message: this.#escape(failedAssertions.join(", ")),
+          message: this.#escape([...failedAssertions, ...scriptErrors.map(({ message }) => message)].join(", ")),
           trace: details,
         };
       });
@@ -267,7 +273,7 @@ class AllureReporter {
     this.allureRuntime.writeTest(this.currentTest);
   }
 
-  onTest(err: any, args: { executions: (Event & { error?: Error })[] }) {
+  onTest(err: any, args: { executions: ScriptExecution[] }) {
     if (!this.currentTest) {
       return;
     }
@@ -278,19 +284,20 @@ class AllureReporter {
       return;
     }
 
-    currentPmItem.testScript = args.executions
-      .map(({ script }) => script?.exec?.join("\n"))
-      .filter(Boolean)
-      .join("\n\n");
+    currentPmItem.testScript = getExecutedScripts(args.executions);
+    this.#reportScriptErrors(args.executions, currentPmItem);
+  }
 
-    for (const { error } of args.executions) {
+  #reportScriptErrors(executions: ScriptExecution[], pmItem: PmItem) {
+    for (const { error } of executions) {
       if (!error) {
         continue;
       }
 
-      const stepUuid = this.allureRuntime.startStep(this.currentTest, undefined, {
+      const status = getStatusFromError(error);
+      const stepUuid = this.allureRuntime.startStep(this.currentTest!, undefined, {
         name: error.name,
-        status: Status.FAILED,
+        status,
         stage: Stage.FINISHED,
         statusDetails: {
           message: error.message,
@@ -302,7 +309,7 @@ class AllureReporter {
         continue;
       }
 
-      currentPmItem.failedAssertions.push(error.name);
+      pmItem.scriptErrors.push({ status, message: `${error.name}: ${error.message}` });
 
       this.allureRuntime.stopStep(stepUuid);
     }

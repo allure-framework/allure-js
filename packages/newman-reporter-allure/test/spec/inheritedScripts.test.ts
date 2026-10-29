@@ -78,35 +78,120 @@ test.each([
   expect(Buffer.from(attachments[scripts[0].source].toString(), "base64").toString()).toBe(requestScript);
 });
 
-test("reports errors from both folder and request test scripts after a successful collection script", async () => {
+test.each(["test", "prerequest"])(
+  "reports errors from all %s scripts after a successful collection script",
+  async (listen) => {
+    const { tests } = await runNewmanCollection({
+      event: [{ listen, script: { exec: ['pm.test("collection", function () { pm.expect(true).to.be.true; });'] } }],
+      item: [
+        {
+          name: "folder",
+          event: [{ listen, script: { exec: ['throw new TypeError("folder error");'] } }],
+          item: [
+            {
+              name: "request",
+              request: { method: "GET", url: "http://example.com/test" },
+              event: [{ listen, script: { exec: ['throw new Error("request error");'] } }],
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(tests).toHaveLength(1);
+    expect(tests[0].status).toBe("broken");
+    expect(tests[0].statusDetails).toEqual({
+      message: "TypeError: folder error, Error: request error",
+      trace: "Response code: 200, status: OK",
+    });
+    expect(tests[0].steps).toEqual([
+      expect.objectContaining({ name: "collection", status: "passed" }),
+      expect.objectContaining({ name: "TypeError", status: "broken", statusDetails: { message: "folder error" } }),
+      expect.objectContaining({ name: "Error", status: "broken", statusDetails: { message: "request error" } }),
+    ]);
+  },
+);
+
+test.each(["test", "prerequest"])("classifies a top-level assertion in a %s script as failed", async (listen) => {
   const { tests } = await runNewmanCollection({
-    event: [
-      { listen: "test", script: { exec: ['pm.test("collection", function () { pm.expect(true).to.be.true; });'] } },
-    ],
     item: [
       {
-        name: "folder",
-        event: [{ listen: "test", script: { exec: ['throw new TypeError("folder error");'] } }],
-        item: [
-          {
-            name: "request",
-            request: { method: "GET", url: "http://example.com/test" },
-            event: [{ listen: "test", script: { exec: ['throw new Error("request error");'] } }],
-          },
+        name: "request",
+        request: { method: "GET", url: "http://example.com/test" },
+        event: [{ listen, script: { exec: ["pm.expect(1).to.eql(2);"] } }],
+      },
+    ],
+  });
+  expect(tests[0].status).toBe("failed");
+  expect(tests[0].statusDetails.message).toBe("AssertionError: expected 1 to deeply equal 2");
+  expect(tests[0].steps).toEqual([
+    expect.objectContaining({
+      name: "AssertionError",
+      status: "failed",
+      statusDetails: { message: "expected 1 to deeply equal 2" },
+    }),
+  ]);
+});
+
+test.each(["test", "prerequest"])("keeps failed assertions above broken %s scripts", async (listen) => {
+  const { tests } = await runNewmanCollection({
+    event: [{ listen, script: { exec: ['throw new TypeError("collection error");'] } }],
+    item: [
+      {
+        name: "request",
+        request: { method: "GET", url: "http://example.com/test" },
+        event: [
+          { listen: "test", script: { exec: ['pm.test("bad value", function () { pm.expect(1).to.eql(2); });'] } },
         ],
       },
     ],
   });
-
-  expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe("failed");
-  expect(tests[0].statusDetails).toEqual({
-    message: "TypeError, Error",
-    trace: "Response code: 200, status: OK",
+  expect(tests[0].statusDetails.message).toBe("bad value, TypeError: collection error");
+  expect(tests[0].steps).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ name: "bad value", status: "failed" }),
+      expect.objectContaining({ name: "TypeError", status: "broken", statusDetails: { message: "collection error" } }),
+    ]),
+  );
+});
+
+test("keeps network error details when pre-request and test scripts also throw", async () => {
+  const { tests } = await runNewmanCollection({
+    item: [
+      {
+        name: "request",
+        request: { method: "GET", url: "http://example.com/timeout" },
+        event: [
+          { listen: "prerequest", script: { exec: ['throw new Error("setup error");'] } },
+          { listen: "test", script: { exec: ['throw new Error("test error");'] } },
+        ],
+      },
+    ],
   });
+  expect(tests[0].status).toBe("broken");
+  expect(tests[0].statusDetails).toEqual({ message: "Timeout" });
   expect(tests[0].steps).toEqual([
-    expect.objectContaining({ name: "collection", status: "passed" }),
-    expect.objectContaining({ name: "TypeError", status: "failed", statusDetails: { message: "folder error" } }),
-    expect.objectContaining({ name: "Error", status: "failed", statusDetails: { message: "request error" } }),
+    expect.objectContaining({ status: "broken", statusDetails: { message: "setup error" } }),
+    expect.objectContaining({ status: "broken", statusDetails: { message: "test error" } }),
+  ]);
+});
+
+test("reports a pre-request error even when a later script skips the HTTP request", async () => {
+  const { tests } = await runNewmanCollection({
+    event: [{ listen: "prerequest", script: { exec: ['throw new Error("setup error");'] } }],
+    item: [
+      {
+        name: "request",
+        request: { method: "GET", url: "http://example.com/test" },
+        event: [{ listen: "prerequest", script: { exec: ["pm.execution.skipRequest();"] } }],
+      },
+    ],
+  });
+  expect(tests).toHaveLength(1);
+  expect(tests[0].status).toBe("broken");
+  expect(tests[0].statusDetails).toEqual({ message: "Error: setup error" });
+  expect(tests[0].steps).toEqual([
+    expect.objectContaining({ status: "broken", statusDetails: { message: "setup error" } }),
   ]);
 });
