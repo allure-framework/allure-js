@@ -4,10 +4,14 @@ import { getConfig } from "./state.js";
 
 export default (value: unknown) => {
   try {
+    // Storage can belong to another window, so instanceof Storage is not reliable here.
+    if (Object.prototype.toString.call(value) === "[object Storage]") {
+      return "[object Storage]";
+    }
+
     return isDomObject(value) ? stringifyAsDom(value) : serialize(value, getSerializeOptions());
   } catch {
-    // Command parameters are finalized after navigation and can reference inaccessible Storage objects.
-    // Reporting such values must not interrupt the test lifecycle.
+    // Unexpected serialization errors must not interrupt the test lifecycle.
     return "[Unserializable value]";
   }
 };

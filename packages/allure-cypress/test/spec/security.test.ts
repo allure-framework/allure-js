@@ -48,6 +48,14 @@ it.each(["localStorage", "sessionStorage"])("should report inaccessible %s after
       `,
       "cypress/e2e/sample.cy.js": () => `
         describe("session", () => {
+          it("reports accessible storage", () => {
+            cy.visit("${url}");
+            cy.window().then((win) => {
+              expect(win.${storage}).not.to.be.instanceOf(Storage);
+            });
+            cy.window().its("${storage}").invoke("setItem", "user", "test");
+          });
+
           const setup = () => {
             cy.visit("${url}");
             cy.window().its("${storage}").invoke("setItem", "user", "test");
@@ -66,33 +74,37 @@ it.each(["localStorage", "sessionStorage"])("should report inaccessible %s after
       `,
     });
 
-    expect(tests).toHaveLength(2);
+    expect(tests).toHaveLength(3);
     for (const test of tests) {
       expect(test.status).toBe(Status.PASSED);
       expect(test.stage).toBe(Stage.FINISHED);
-      expect(test.steps[0]).toMatchObject({ name: "session user", status: Status.PASSED });
     }
 
+    const storageSteps = expect.arrayContaining([
+      expect.objectContaining({
+        name: `its .${storage}`,
+        status: Status.PASSED,
+        parameters: expect.arrayContaining([{ name: "Yielded", value: "[object Storage]" }]),
+      }),
+      expect.objectContaining({
+        name: "invoke .setItem()",
+        status: Status.PASSED,
+        parameters: expect.arrayContaining([
+          { name: "Subject", value: "[object Storage]" },
+          { name: "With Arguments", value: '["user","test"]' },
+        ]),
+      }),
+    ]);
+    const accessible = tests.find((test) => test.name === "reports accessible storage")!;
+    expect(accessible.steps).toEqual(storageSteps);
     const creation = tests.find((test) => test.name === "creates session")!;
+    expect(creation.steps[0]).toMatchObject({ name: "session user", status: Status.PASSED });
     expect(creation.steps[0].steps[0]).toMatchObject({
       name: "Create new session",
-      steps: expect.arrayContaining([
-        expect.objectContaining({
-          name: `its .${storage}`,
-          status: Status.PASSED,
-          parameters: expect.arrayContaining([{ name: "Yielded", value: "[Unserializable value]" }]),
-        }),
-        expect.objectContaining({
-          name: "invoke .setItem()",
-          status: Status.PASSED,
-          parameters: expect.arrayContaining([
-            { name: "Subject", value: "[Unserializable value]" },
-            { name: "With Arguments", value: '["user","test"]' },
-          ]),
-        }),
-      ]),
+      steps: storageSteps,
     });
     const restoration = tests.find((test) => test.name === "restores session")!;
+    expect(restoration.steps[0]).toMatchObject({ name: "session user", status: Status.PASSED });
     expect(restoration.steps[0].steps[0]).toMatchObject({ name: "Restore saved session", status: Status.PASSED });
   } finally {
     server.closeAllConnections();

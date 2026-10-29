@@ -131,6 +131,40 @@ it("should create steps from cypress commands", async () => {
 });
 
 describe("parameter serialization", () => {
+  it("should preserve other parameters when a value cannot be serialized", async () => {
+    const { tests } = await runCypressInlineTest({
+      "cypress/e2e/sample.cy.js": () => `
+        it("passed", () => {
+          Cypress.log({
+            name: "custom",
+            message: "parameters",
+            consoleProps: () => ({
+              Unserializable: { toJSON() { throw new Error("Cannot serialize"); } },
+              Serializable: { foo: "bar" },
+            }),
+          }).end();
+        });
+      `,
+    });
+
+    expect(tests).toEqual([
+      expect.objectContaining({
+        status: Status.PASSED,
+        stage: Stage.FINISHED,
+        steps: [
+          expect.objectContaining({
+            name: "custom parameters",
+            status: Status.PASSED,
+            parameters: expect.arrayContaining([
+              { name: "Unserializable", value: "[Unserializable value]" },
+              { name: "Serializable", value: '{"foo":"bar"}' },
+            ]),
+          }),
+        ],
+      }),
+    ]);
+  });
+
   it("should convert parameter values to JSON strings", async () => {
     const { tests } = await runCypressInlineTest({
       "cypress/e2e/sample.cy.js": () => `
