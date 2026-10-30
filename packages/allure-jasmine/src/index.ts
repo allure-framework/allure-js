@@ -26,7 +26,13 @@ import { MessageTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/
 
 import type { JasmineBeforeAfterFn } from "./model.js";
 import { enableAllureJasmineTestPlan } from "./testplan.js";
-import { findAnyError, findMessageAboutThrow, getAllureNamesAndLabels, last } from "./utils.js";
+import {
+  findAnyError,
+  findMessageAboutThrow,
+  getAllureNamesAndLabels,
+  getSkipReasonFromError,
+  last,
+} from "./utils.js";
 
 type JasmineSpecConstructor = {
   prototype: {
@@ -309,9 +315,14 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   };
 
   #stopFixture = (uuid: string, error?: Error | string) => {
-    const statusAndDetails = this.#resolveStatusWithDetails(error);
+    const skipReason = getSkipReasonFromError(error);
+    // pending() and notApplicable() in hooks skip specs, they are not hook failures
+    const statusAndDetails =
+      skipReason === undefined
+        ? this.#resolveStatusWithDetails(error)
+        : { status: Status.SKIPPED, statusDetails: { message: skipReason } };
     this.allureRuntime.updateFixture(uuid, (f) => Object.assign(f, statusAndDetails));
-    if (error !== undefined) {
+    if (error !== undefined && skipReason === undefined) {
       const fixtureName = this.currentAllureFixtureNames.get(uuid) ?? "hook";
       this.allureRuntime.applyGlobalRuntimeMessages([
         toGlobalErrorMessage({

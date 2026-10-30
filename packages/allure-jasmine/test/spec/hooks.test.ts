@@ -246,6 +246,38 @@ it("reports failed hooks as global errors", async () => {
   expect(allErrors.filter((error) => error.message === "beforeEach failed: beforeEach boom")).toHaveLength(1);
 });
 
+describe("skipping specs from hooks", () => {
+  it.each(["pending", "notApplicable"])("should not report %s() in a hook as a global error", async (fn) => {
+    const { tests, groups, globals } = await runJasmineInlineTest({
+      "spec/test/sample.spec.js": `
+        beforeEach(() => {
+          ${fn}("skip reason");
+        });
+
+        it("skipped by hook", () => {});
+      `,
+    });
+    const allErrors = Object.values(globals ?? {}).flatMap((info) => info.errors);
+
+    expect(tests).toHaveLength(1);
+    expect(tests[0].status).toBe(Status.SKIPPED);
+    expect(groups).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: "beforeEach",
+          befores: [
+            expect.objectContaining({
+              status: Status.SKIPPED,
+              statusDetails: { message: "skip reason" },
+            }),
+          ],
+        }),
+      ]),
+    );
+    expect(allErrors).toEqual([]);
+  });
+});
+
 it("should report hooks for a test in a sub-suite", async () => {
   const { tests, groups } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `
