@@ -153,6 +153,41 @@ it("step with assertion error", async () => {
   );
 });
 
+it("steps with negated, contextual and async assertion errors", async () => {
+  const { tests } = await runJasmineInlineTest({
+    "spec/test/sample.spec.js": `
+    const { step } = require("allure-js-commons");;
+
+    it("step", async () => {
+      await step("not", async () => {
+        expect(1).not.toBe(1);
+      });
+
+      await step("withContext", async () => {
+        expect(1).withContext("ctx").toBe(2);
+      });
+
+      await step("expectAsync", async () => {
+        await expectAsync(Promise.resolve(1)).toBeResolvedTo(2);
+      });
+
+      await step("passed", async () => {
+        expect(1).not.toBe(2);
+      });
+    });
+  `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].status).toBe(Status.FAILED);
+  expect(tests[0].steps).toEqual([
+    expect.objectContaining({ name: "not", status: Status.FAILED }),
+    expect.objectContaining({ name: "withContext", status: Status.FAILED }),
+    expect.objectContaining({ name: "expectAsync", status: Status.FAILED }),
+    expect.objectContaining({ name: "passed", status: Status.PASSED }),
+  ]);
+});
+
 it("step with unexpected error", async () => {
   const { tests } = await runJasmineInlineTest({
     "spec/test/sample.spec.js": `

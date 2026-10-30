@@ -15,6 +15,27 @@ export const findMessageAboutThrow = (expectations?: FailedExpectation[]) => {
   return expectations?.find((e) => e.matcherName === "");
 };
 
+const legacyPendingSpecExceptionMessage = "=> marked Pending";
+
+/**
+ * Returns the skip reason if the error was thrown by `pending()` or `notApplicable()` (Jasmine 7+),
+ * otherwise returns `undefined`.
+ */
+export const getSkipReasonFromError = (error: Error | string | undefined): string | undefined => {
+  if (
+    error instanceof Error &&
+    (error.name === "PendingSpecException" || error.name === "NotApplicableSpecException")
+  ) {
+    return error.message;
+  }
+
+  // Jasmine < 7 throws an error (or a string) with a special message prefix
+  const message = error instanceof Error ? error.message : error;
+  if (typeof message === "string" && message.startsWith(legacyPendingSpecExceptionMessage)) {
+    return message.slice(legacyPendingSpecExceptionMessage.length).trim();
+  }
+};
+
 export const last = <T>(arr: readonly T[]) => (arr.length ? arr[arr.length - 1] : undefined);
 
 export const getAllureNamesAndLabels = (
