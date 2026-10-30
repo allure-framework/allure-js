@@ -55,6 +55,8 @@ jasmine.getEnv().addReporter(new AllureJasmineReporter());
 
 When the test run completes, the result files will be generated in the `./allure-results` directory.
 
+When a runner omits the spec filename, Allure uses the suite names and spec name as its `fullName` and identity, and builds `titlePath` from the known suites. No package label is added. Test plans can use this suite-based `fullName` as a selector. Specs with identical suite and spec names cannot be distinguished without filenames; keep these names unique when using such runners.
+
 You may select another location, or further customize the reporter's behavior with [the configuration options](https://allurereport.org/docs/jasmine-configuration/).
 
 ### View the report

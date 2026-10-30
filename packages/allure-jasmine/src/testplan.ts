@@ -109,7 +109,12 @@ export const enableAllureJasmineTestPlan = () => {
   global.it = (expectation: string, assertion?: jasmine.ImplementationCallback, timeout?: number) => {
     const filename = currentFile ?? getCallerFile(global.it);
     const { fullName, labels } = getAllureNamesAndLabels(filename, suites, expectation);
-    if (isInTestPlan(testplan, fullName, labels)) {
+    // Older runners may omit filenames in reporter events even when the callsite
+    // is available here. Accept the suite-based selector emitted by those runs too.
+    if (
+      isInTestPlan(testplan, fullName, labels) ||
+      isInTestPlan(testplan, getAllureNamesAndLabels(undefined, suites, expectation).fullName, labels)
+    ) {
       return hideAllureFramesFromFunc(jasmineIt, expectation, assertion, timeout);
     } else {
       return hideAllureFramesFromFunc(jasmineXit, addSkipLabelAsMeta(expectation), assertion, timeout);

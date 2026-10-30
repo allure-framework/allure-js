@@ -28,12 +28,12 @@ export const getAllureNamesAndLabels = (
   const specPart = [...suites, specName].join(" > ");
   const fullNameBase = filePart ? (projectName ? `${projectName}:${filePart}` : filePart) : undefined;
   const legacyFullNameBase = filePart || undefined;
-  const titlePath = filePart ? filePart.split("/").concat(suites) : undefined;
-  const titlePathWithProject = titlePath && projectName ? [projectName, ...titlePath] : titlePath;
+  const titlePath = filePart ? filePart.split("/").concat(suites) : [...suites];
+  const titlePathWithProject = projectName ? [projectName, ...titlePath] : titlePath;
 
   return {
     name: specName,
-    fullName: fullNameBase ? `${fullNameBase}#${specPart}` : undefined,
+    fullName: fullNameBase ? `${fullNameBase}#${specPart}` : specPart,
     legacyFullName: legacyFullNameBase ? `${legacyFullNameBase}#${specPart}` : undefined,
     titlePath: titlePathWithProject,
     labels,
