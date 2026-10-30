@@ -92,6 +92,10 @@ export type TestScope = {
   parameters: Parameter[];
   description?: string;
   descriptionHtml?: string;
+  precondition?: string;
+  preconditionHtml?: string;
+  expectedResult?: string;
+  expectedResultHtml?: string;
 };
 
 export type FixtureType = "before" | "after";

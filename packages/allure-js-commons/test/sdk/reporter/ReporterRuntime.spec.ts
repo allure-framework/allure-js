@@ -883,6 +883,183 @@ describe("ReporterRuntime", () => {
       expect(tr1.descriptionHtml).toEqual("from test");
       expect(tr2.descriptionHtml).toEqual("from hook");
     });
+
+    it("should support precondition metadata messages from before fixtures", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const scopeUuid = runtime.startScope();
+      const fixtureUuid = runtime.startFixture(scopeUuid, "before", {})!;
+      runtime.applyRuntimeMessages(fixtureUuid, [
+        {
+          type: "metadata",
+          data: {
+            precondition: "from hook",
+          },
+        },
+      ]);
+      runtime.stopFixture(fixtureUuid);
+      const test1Uuid = runtime.startTest({}, [scopeUuid]);
+      runtime.applyRuntimeMessages(test1Uuid, [
+        {
+          type: "metadata",
+          data: {
+            precondition: "from test",
+          },
+        },
+      ]);
+      runtime.stopTest(test1Uuid);
+      runtime.writeTest(test1Uuid);
+
+      const test2Uuid = runtime.startTest({}, [scopeUuid]);
+      runtime.stopTest(test2Uuid);
+      runtime.writeTest(test2Uuid);
+      runtime.writeScope(scopeUuid);
+
+      const [[tr1], [tr2]] = writer.writeResult.mock.calls;
+      expect(tr1.precondition).toEqual("from test");
+      expect(tr2.precondition).toEqual("from hook");
+    });
+
+    it("should support preconditionHtml metadata messages from before fixtures", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const scopeUuid = runtime.startScope();
+      const fixtureUuid = runtime.startFixture(scopeUuid, "before", {})!;
+      runtime.applyRuntimeMessages(fixtureUuid, [
+        {
+          type: "metadata",
+          data: {
+            preconditionHtml: "from hook",
+          },
+        },
+      ]);
+      runtime.stopFixture(fixtureUuid);
+      const test1Uuid = runtime.startTest({}, [scopeUuid]);
+      runtime.applyRuntimeMessages(test1Uuid, [
+        {
+          type: "metadata",
+          data: {
+            preconditionHtml: "from test",
+          },
+        },
+      ]);
+      runtime.stopTest(test1Uuid);
+      runtime.writeTest(test1Uuid);
+
+      const test2Uuid = runtime.startTest({}, [scopeUuid]);
+      runtime.stopTest(test2Uuid);
+      runtime.writeTest(test2Uuid);
+      runtime.writeScope(scopeUuid);
+
+      const [[tr1], [tr2]] = writer.writeResult.mock.calls;
+      expect(tr1.preconditionHtml).toEqual("from test");
+      expect(tr2.preconditionHtml).toEqual("from hook");
+    });
+
+    it("should support expectedResult metadata messages from before fixtures", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const scopeUuid = runtime.startScope();
+      const fixtureUuid = runtime.startFixture(scopeUuid, "before", {})!;
+      runtime.applyRuntimeMessages(fixtureUuid, [
+        {
+          type: "metadata",
+          data: {
+            expectedResult: "from hook",
+          },
+        },
+      ]);
+      runtime.stopFixture(fixtureUuid);
+      const test1Uuid = runtime.startTest({}, [scopeUuid]);
+      runtime.applyRuntimeMessages(test1Uuid, [
+        {
+          type: "metadata",
+          data: {
+            expectedResult: "from test",
+          },
+        },
+      ]);
+      runtime.stopTest(test1Uuid);
+      runtime.writeTest(test1Uuid);
+
+      const test2Uuid = runtime.startTest({}, [scopeUuid]);
+      runtime.stopTest(test2Uuid);
+      runtime.writeTest(test2Uuid);
+      runtime.writeScope(scopeUuid);
+
+      const [[tr1], [tr2]] = writer.writeResult.mock.calls;
+      expect(tr1.expectedResult).toEqual("from test");
+      expect(tr2.expectedResult).toEqual("from hook");
+    });
+
+    it("should support expectedResultHtml metadata messages from before fixtures", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const scopeUuid = runtime.startScope();
+      const fixtureUuid = runtime.startFixture(scopeUuid, "before", {})!;
+      runtime.applyRuntimeMessages(fixtureUuid, [
+        {
+          type: "metadata",
+          data: {
+            expectedResultHtml: "from hook",
+          },
+        },
+      ]);
+      runtime.stopFixture(fixtureUuid);
+      const test1Uuid = runtime.startTest({}, [scopeUuid]);
+      runtime.applyRuntimeMessages(test1Uuid, [
+        {
+          type: "metadata",
+          data: {
+            expectedResultHtml: "from test",
+          },
+        },
+      ]);
+      runtime.stopTest(test1Uuid);
+      runtime.writeTest(test1Uuid);
+
+      const test2Uuid = runtime.startTest({}, [scopeUuid]);
+      runtime.stopTest(test2Uuid);
+      runtime.writeTest(test2Uuid);
+      runtime.writeScope(scopeUuid);
+
+      const [[tr1], [tr2]] = writer.writeResult.mock.calls;
+      expect(tr1.expectedResultHtml).toEqual("from test");
+      expect(tr2.expectedResultHtml).toEqual("from hook");
+    });
+
+    it("should write only the precondition and expected result formats that were set", () => {
+      const writer = mockWriter();
+      const runtime = new ReporterRuntime({ writer });
+
+      const testUuid = runtime.startTest({});
+      runtime.applyRuntimeMessages(testUuid, [
+        {
+          type: "metadata",
+          data: {
+            precondition: "A registered user exists and is **signed out**.",
+          },
+        },
+        {
+          type: "metadata",
+          data: {
+            expectedResultHtml: "<p>The user is redirected to the <strong>dashboard</strong>.</p>",
+          },
+        },
+      ]);
+      runtime.stopTest(testUuid);
+      runtime.writeTest(testUuid);
+
+      const [[tr]] = writer.writeResult.mock.calls;
+      expect(tr.precondition).toEqual("A registered user exists and is **signed out**.");
+      expect(tr.expectedResultHtml).toEqual("<p>The user is redirected to the <strong>dashboard</strong>.</p>");
+      expect(tr).not.toHaveProperty("preconditionHtml");
+      expect(tr).not.toHaveProperty("expectedResult");
+    });
   });
 
   describe("load well-known writers", () => {

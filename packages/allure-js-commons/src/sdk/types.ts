@@ -22,6 +22,10 @@ export type RuntimeMetadataMessage = RuntimeMessageBase<"metadata"> & {
     parameters?: Parameter[];
     description?: string;
     descriptionHtml?: string;
+    precondition?: string;
+    preconditionHtml?: string;
+    expectedResult?: string;
+    expectedResultHtml?: string;
     testCaseId?: string;
     historyId?: string;
     displayName?: string;

@@ -94,6 +94,42 @@ class AllureCypressTestRuntime implements TestRuntime {
     });
   }
 
+  precondition(markdown: string) {
+    return this.#enqueueMessageAsync({
+      type: "metadata",
+      data: {
+        precondition: markdown,
+      },
+    });
+  }
+
+  preconditionHtml(html: string) {
+    return this.#enqueueMessageAsync({
+      type: "metadata",
+      data: {
+        preconditionHtml: html,
+      },
+    });
+  }
+
+  expectedResult(markdown: string) {
+    return this.#enqueueMessageAsync({
+      type: "metadata",
+      data: {
+        expectedResult: markdown,
+      },
+    });
+  }
+
+  expectedResultHtml(html: string) {
+    return this.#enqueueMessageAsync({
+      type: "metadata",
+      data: {
+        expectedResultHtml: html,
+      },
+    });
+  }
+
   displayName(name: string) {
     return this.#enqueueMessageAsync({
       type: "metadata",
@@ -386,6 +422,34 @@ class AllureCypressTestRuntime implements TestRuntime {
           type: "metadata",
           data: {
             descriptionHtml: html,
+          },
+        }),
+      precondition: (markdown) =>
+        enqueueRuntimeMessage({
+          type: "metadata",
+          data: {
+            precondition: markdown,
+          },
+        }),
+      preconditionHtml: (html) =>
+        enqueueRuntimeMessage({
+          type: "metadata",
+          data: {
+            preconditionHtml: html,
+          },
+        }),
+      expectedResult: (markdown) =>
+        enqueueRuntimeMessage({
+          type: "metadata",
+          data: {
+            expectedResult: markdown,
+          },
+        }),
+      expectedResultHtml: (html) =>
+        enqueueRuntimeMessage({
+          type: "metadata",
+          data: {
+            expectedResultHtml: html,
           },
         }),
       displayName: (name) =>

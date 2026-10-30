@@ -100,6 +100,10 @@ export interface TestResult extends Executable {
   fullName?: string;
   testCaseId?: string;
   titlePath?: string[];
+  precondition?: string;
+  preconditionHtml?: string;
+  expectedResult?: string;
+  expectedResultHtml?: string;
   labels: Label[];
   links: Link[];
 }
