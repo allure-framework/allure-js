@@ -66,8 +66,6 @@
   },
   "devDependencies": {
     "@opentelemetry/api": "^1.9.1",
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/react": "^16.3.2",
     "@types/node": "^26.0.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
