@@ -624,6 +624,23 @@ describe("serialize", () => {
 });
 
 describe("getMessageAndTraceFromError", () => {
+  it.each([false, true])("uses a custom value serializer (matcherResult: %s)", (matcherResult) => {
+    const comparison = { actual: { id: "actual" }, expected: { id: "expected" } };
+    const error = Object.assign(
+      new Error("original assertion"),
+      matcherResult ? { matcherResult: comparison } : comparison,
+    );
+
+    expect(
+      getMessageAndTraceFromError(error, (value) => (value === comparison.actual ? "actual" : "expected")),
+    ).toEqual({
+      message: "original assertion",
+      trace: error.stack,
+      actual: "actual",
+      expected: "expected",
+    });
+  });
+
   it("should return message from error", () => {
     const result = getMessageAndTraceFromError(new Error("some message"));
     expect(result).toMatchObject({
