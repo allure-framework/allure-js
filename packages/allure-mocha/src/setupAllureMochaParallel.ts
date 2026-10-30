@@ -7,14 +7,13 @@ const localRequire = typeof require === "function" ? require : createRequire(imp
 
 // mocha 12 ships its CommonJS internals as .cjs; older versions use .js
 const requireMochaInternal = (modulePath: string) => {
+  let resolvedPath: string;
   try {
-    return localRequire(`mocha/${modulePath}.cjs`);
-  } catch (e) {
-    if ((e as NodeJS.ErrnoException).code !== "MODULE_NOT_FOUND") {
-      throw e;
-    }
-    return localRequire(`mocha/${modulePath}.js`);
+    resolvedPath = localRequire.resolve(`mocha/${modulePath}.cjs`);
+  } catch {
+    resolvedPath = localRequire.resolve(`mocha/${modulePath}.js`);
   }
+  return localRequire(resolvedPath);
 };
 
 const ParallelBuffered = requireMochaInternal("lib/nodejs/reporters/parallel-buffered");

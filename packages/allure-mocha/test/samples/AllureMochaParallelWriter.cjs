@@ -1,14 +1,13 @@
 /* eslint no-underscore-dangle: 0 */
 const requireMochaInternal = (modulePath) => {
   // mocha 12 ships its CommonJS internals as .cjs; older versions use .js
+  let resolvedPath;
   try {
-    return require(`mocha/${modulePath}.cjs`);
-  } catch (e) {
-    if (e.code !== "MODULE_NOT_FOUND") {
-      throw e;
-    }
-    return require(`mocha/${modulePath}.js`);
+    resolvedPath = require.resolve(`mocha/${modulePath}.cjs`);
+  } catch {
+    resolvedPath = require.resolve(`mocha/${modulePath}.js`);
   }
+  return require(resolvedPath);
 };
 const ParallelBuffered = requireMochaInternal("lib/nodejs/reporters/parallel-buffered");
 const { MessageWriter } = require("allure-js-commons/sdk/reporter");
