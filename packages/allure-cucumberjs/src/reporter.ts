@@ -757,7 +757,8 @@ export default class AllureCucumberReporter extends Formatter {
   private onTestRunHookFinished(data: messages.TestRunHookFinished) {
     const hookId = this.testRunHookStartedMap.get(data.testRunHookStartedId);
 
-    if (!hookId || data.result.status === TestStepResultStatus.PASSED || this.reportedTestRunHookIds.has(hookId)) {
+    // dry runs report every test run hook as skipped
+    if (!hookId || data.result.status !== TestStepResultStatus.FAILED || this.reportedTestRunHookIds.has(hookId)) {
       return;
     }
 

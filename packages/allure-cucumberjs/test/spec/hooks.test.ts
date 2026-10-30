@@ -175,6 +175,25 @@ it.each([false, true])("reports failed global hooks once next to passed ones (pa
   ]);
 });
 
+it("doesn't report global hooks skipped by a dry run", async () => {
+  const { globals } = await runCucumberInlineTest(
+    ["hooks"],
+    ["mixedBeforeAll"],
+    undefined,
+    (reporterFilePath) => `
+      module.exports = {
+        default: {
+          paths: ["./**/*.feature"],
+          dryRun: true,
+          format: ['"${reporterFilePath}":"ignore.txt"'],
+        }
+      }
+    `,
+  );
+
+  expect(Object.values(globals ?? {}).flatMap((info) => info.errors)).toEqual([]);
+});
+
 it("handles hooks with steps", async () => {
   const { tests, groups } = await runCucumberInlineTest(["hooks"], ["hooksSteps"]);
 
