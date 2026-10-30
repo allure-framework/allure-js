@@ -1,6 +1,17 @@
 /* eslint no-underscore-dangle: 0 */
-const { BufferedWorkerPool } = require("mocha/lib/nodejs/buffered-worker-pool.js");
-const ParallelBuffered = require("mocha/lib/nodejs/reporters/parallel-buffered.js");
+const requireMochaInternal = (modulePath) => {
+  // mocha 12 ships its CommonJS internals as .cjs; older versions use .js
+  try {
+    return require(`mocha/${modulePath}.cjs`);
+  } catch (e) {
+    if (e.code !== "MODULE_NOT_FOUND") {
+      throw e;
+    }
+    return require(`mocha/${modulePath}.js`);
+  }
+};
+const { BufferedWorkerPool } = requireMochaInternal("lib/nodejs/buffered-worker-pool");
+const ParallelBuffered = requireMochaInternal("lib/nodejs/reporters/parallel-buffered");
 const process = require("process");
 const path = require("path");
 let poolClassPatched = false;
