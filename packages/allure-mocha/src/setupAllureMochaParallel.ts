@@ -1,5 +1,6 @@
-import type * as Mocha from "mocha";
 import { createRequire } from "node:module";
+
+import type * as Mocha from "mocha";
 
 import { AllureMochaReporter } from "./AllureMochaReporter.js";
 
