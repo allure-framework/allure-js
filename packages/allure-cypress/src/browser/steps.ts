@@ -11,6 +11,7 @@ import type {
 } from "../types.js";
 import { popUntilFindIncluded } from "../utils.js";
 import { reportStepStart, reportStepStop } from "./lifecycle.js";
+import serializeValue from "./serialize.js";
 import {
   clearStepsToFinalize,
   enqueueRuntimeMessage,
@@ -42,7 +43,7 @@ export const pushAllureStep = () => {
 
 export const reportStepError = (error: Error) => {
   const status = getStatusFromError(error);
-  const statusDetails = getMessageAndTraceFromError(error);
+  const statusDetails = getMessageAndTraceFromError(error, serializeValue);
 
   // Cypress will abort the test/hook execution soon. No subsequent commands will be run, including the ones that
   // have been scheduled by `allure.step` to stop the currently running steps.
@@ -96,7 +97,7 @@ const finalizeOneStep = ([step, finalizer]: [StepDescriptor, StepFinalizer | und
     // trace points inside the messy bundle, which is not helpful. There are circumstances when we can't be sure this
     // has happened when a step is about to stop. That's why we defer setting the status details until we are sure
     // Cypress does its job.
-    data.statusDetails = getMessageAndTraceFromError(error);
+    data.statusDetails = getMessageAndTraceFromError(error, serializeValue);
   }
 
   finalizer?.(data);

@@ -139,6 +139,14 @@ describe("signing in with a password", () => {
 
 More details about the API are available at [https://allurereport.org/docs/cypress-reference/](https://allurereport.org/docs/cypress-reference/).
 
+### Assertion comparison values
+
+Assertion and step errors use DOM-aware formatting for `actual` and `expected` values. These values share the `stepsFromCommands.maxArgumentDepth` and `maxArgumentLength` limits with command parameters.
+
+These limits affect reported comparison values, not assertion execution or the original error message and stack trace. Set a limit to `0` to disable it for both command parameters and comparison values.
+
+`globalError()` does not apply DOM formatting or the limits above. For global errors with DOM subjects, pass plain status details with `message`, `trace`, and already formatted string values for `actual` and `expected` instead of raw DOM values.
+
 ### Sync API
 
 When your test code uses synchronous helpers or matcher integrations, you can use the sync facade from `allure-js-commons/sync`.
