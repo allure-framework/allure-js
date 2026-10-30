@@ -239,6 +239,16 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
         return;
       }
 
+      // Jasmine 7+
+      if (spec.status === "notApplicable") {
+        result.status = Status.SKIPPED;
+        result.stage = Stage.PENDING;
+        result.statusDetails = {
+          message: (spec as { notApplicableReason?: string }).notApplicableReason || "Not applicable",
+        };
+        return;
+      }
+
       result.stage = Stage.FINISHED;
 
       if (spec.status === "passed") {
