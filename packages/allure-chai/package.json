@@ -69,7 +69,7 @@
     "babel-plugin-transform-import-meta": "^2.3.3",
     "chai": "^6.2.2",
     "chai4": "npm:chai@^4.5.0",
-    "mocha": "^11.0.0",
+    "mocha": "^12.0.3",
     "npm-run-all2": "^9.0.2",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
