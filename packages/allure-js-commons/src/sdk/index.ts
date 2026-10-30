@@ -14,6 +14,7 @@ export type {
   RuntimeStartStepMessage,
   RuntimeStepMetadataMessage,
   RuntimeStopStepMessage,
+  SerializeOptions,
   TestPlanV1Test,
   TestPlanV1,
 } from "./types.js";

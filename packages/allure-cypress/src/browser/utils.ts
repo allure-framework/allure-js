@@ -13,6 +13,7 @@ import type {
   StepDescriptor,
 } from "../types.js";
 import { ALLURE_REPORT_SYSTEM_HOOK } from "./events/mocha.js";
+import serializeValue from "./serialize.js";
 import { getAllureState, getProjectDir } from "./state.js";
 import { resolveStepStatus } from "./steps.js";
 
@@ -137,7 +138,7 @@ export const getStatusDataOfTestSkippedByHookError = (
   suite: CypressSuite,
 ) => {
   const status = isEachHook ? Status.SKIPPED : getStatusFromError(err);
-  const { message, trace } = getMessageAndTraceFromError(err);
+  const { message, trace } = getMessageAndTraceFromError(err, serializeValue);
   return {
     status,
     statusDetails: {
