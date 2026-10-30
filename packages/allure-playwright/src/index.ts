@@ -63,6 +63,8 @@ import {
   diffEndRegexp,
   finalizeStepResult,
   getSkipModifierError,
+  getStepName,
+  getStepParameters,
   isAfterHookStep,
   isBeforeHookStep,
   isDescendantOfStepWithTitle,
@@ -564,7 +566,8 @@ export class AllureReporter implements ReporterV2 {
 
     const baseStep: StepResult = {
       ...createStepResult(),
-      name: step.title,
+      name: getStepName(step),
+      parameters: getStepParameters(step),
       start: step.startTime.getTime(),
       stage: Stage.RUNNING,
       uuid: randomUuid(),
@@ -594,7 +597,7 @@ export class AllureReporter implements ReporterV2 {
             uuid: stepResult.uuid as string,
             hookScope: isBeforeHookDescendant ? "before" : "after",
           } as AttachStack;
-          stepResult.name = normalizeHookTitle(stepResult.name!);
+          stepResult.name = normalizeHookTitle(step.title);
           stepResult.stage = Stage.FINISHED;
         });
         stack.stopStep();
@@ -924,7 +927,7 @@ export class AllureReporter implements ReporterV2 {
     this.emittedHookGlobalErrorKeys.add(key);
     this.allureRuntime!.applyGlobalRuntimeMessages([
       toGlobalErrorMessage({
-        name: normalizeHookTitle(step.title),
+        name: normalizeHookTitle(getStepName(step)),
         details,
         status: getStatusFromError(step.error),
       }),

@@ -1,7 +1,7 @@
 import type { TestStatus } from "@playwright/test";
 import type { TestError, TestStep } from "@playwright/test/reporter";
-import { Stage, Status, type StatusDetails, type StepResult } from "allure-js-commons";
-import { getMessageAndTraceFromError } from "allure-js-commons/sdk";
+import { type Parameter, Stage, Status, type StatusDetails, type StepResult } from "allure-js-commons";
+import { getMessageAndTraceFromError, serialize } from "allure-js-commons/sdk";
 
 import { ALLURE_STEP_STATUS_ANNOTATION, isAllureStepStatus } from "./syncAnnotations.js";
 
@@ -38,6 +38,15 @@ export const isDescendantOfStepWithTitle = (step: TestStep, title: string): bool
 
   return false;
 };
+
+// since Playwright 1.63, the target of a built-in step (locator or url) is reported as a subtitle
+export const getStepName = (step: Pick<TestStep, "title" | "subtitle">) =>
+  step.subtitle ? `${step.title} ${step.subtitle}` : step.title;
+
+export const getStepParameters = (step: Pick<TestStep, "params">): Parameter[] =>
+  Object.entries(step.params ?? {})
+    .filter(([, value]) => value !== undefined)
+    .map(([name, value]) => ({ name, value: serialize(value) }));
 
 export const isAfterHookStep = (step: TestStep) => isDescendantOfStepWithTitle(step, AFTER_HOOKS_ROOT_STEP_TITLE);
 

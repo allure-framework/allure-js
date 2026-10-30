@@ -454,3 +454,88 @@ it("should attach attachments to correct steps in hooks and test steps", async (
   expect(afterHooksStep.name).toBe("After Hooks");
   expect(afterHooksStep.steps).toHaveLength(0);
 });
+
+it("should add the subtitle of built-in steps to step names", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.js": `
+      import { test, expect } from '@playwright/test';
+
+      test('a test', async ({ page }) => {
+        await page.setContent("<button>Submit</button>");
+        await page.getByRole("button", { name: "Submit" }).click();
+        await expect(page.getByRole("button")).toBeVisible();
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ name: "Click getByRole('button', { name: 'Submit' })" }),
+      expect.objectContaining({ name: "Expect \"toBeVisible\" getByRole('button')" }),
+    ]),
+  );
+});
+
+it("should report params of built-in steps as step parameters", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.js": `
+      import { test, expect } from '@playwright/test';
+
+      test('a test', async ({ page }) => {
+        await page.setContent("<button>Submit</button>");
+        await page.getByRole("button").click({ button: "right" });
+        await expect(page.getByRole("button")).toHaveText("Submit");
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "Click getByRole('button')",
+        parameters: expect.arrayContaining([{ name: "button", value: "right" }]),
+      }),
+      expect.objectContaining({
+        name: "Expect \"toHaveText\" getByRole('button')",
+        parameters: expect.arrayContaining([{ name: "expected", value: "Submit" }]),
+      }),
+    ]),
+  );
+});
+
+it("should report subtitle and params of custom steps", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.js": `
+      import { test, expect } from '@playwright/test';
+
+      test('a test', async () => {
+        await test.step("checkout", async () => {}, {
+          subtitle: "order page",
+          params: { orderId: 42, items: ["a", "b"], user: { name: "John" }, comment: null, skipped: undefined },
+        });
+        await test.step("plain step", async () => {});
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps.filter((s) => !s.name!.endsWith("Hooks"))).toEqual([
+    expect.objectContaining({
+      name: "checkout order page",
+      status: Status.PASSED,
+      parameters: [
+        { name: "orderId", value: "42" },
+        { name: "items", value: '["a","b"]' },
+        { name: "user", value: '{"name":"John"}' },
+        { name: "comment", value: "null" },
+      ],
+    }),
+    expect.objectContaining({
+      name: "plain step",
+      status: Status.PASSED,
+      parameters: [],
+    }),
+  ]);
+});
