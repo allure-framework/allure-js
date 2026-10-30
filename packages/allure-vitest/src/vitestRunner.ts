@@ -20,9 +20,16 @@ const resolveVitestRunnerApi = async (): Promise<VitestRunnerApi> => {
 
   // Vitest <4.1; the specifier is kept out of Vite's static analysis since @vitest/runner is an optional peer
   const runnerModulePath = "@vitest/runner";
-  const { getCurrentTest, getCurrentSuite } = (await import(/* @vite-ignore */ runnerModulePath)) as VitestRunnerApi;
 
-  return { getCurrentTest, getCurrentSuite };
+  try {
+    const { getCurrentTest, getCurrentSuite } = (await import(/* @vite-ignore */ runnerModulePath)) as VitestRunnerApi;
+
+    return { getCurrentTest, getCurrentSuite };
+  } catch (cause) {
+    throw new Error("allure-vitest requires @vitest/runner matching the vitest version with Vitest older than 4.1", {
+      cause,
+    });
+  }
 };
 
 export const { getCurrentTest, getCurrentSuite } = await resolveVitestRunnerApi();
