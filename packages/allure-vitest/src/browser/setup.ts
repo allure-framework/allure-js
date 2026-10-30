@@ -74,8 +74,18 @@ vitest.aroundEach(async (run, { task }) => {
   }
 });
 
+// Vitest 5 generates the commands object before the reporter registers its commands
+const existsInTestPlan = async (task: RunnerTestCase): Promise<boolean | undefined> => {
+  if (commands?.existsInTestPlan) {
+    return await commands.existsInTestPlan(task);
+  }
+
+  // @ts-expect-error
+  return await globalThis.__vitest_browser_runner__?.commands?.triggerCommand?.("existsInTestPlan", [task]);
+};
+
 vitest.beforeEach(async ({ skip, task }) => {
-  const inTestPlan = (await commands?.existsInTestPlan?.(task)) ?? true;
+  const inTestPlan = (await existsInTestPlan(task)) ?? true;
 
   if (!inTestPlan) {
     task.meta.allureSkip = true;

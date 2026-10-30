@@ -98,6 +98,8 @@ export default class AllureVitestReporter implements Reporter {
 
         for (const [name, command] of Object.entries(allureBrowserCommands)) {
           project.config.browser.commands[name] ??= command;
+          // Vitest 5 creates the browser server before reporters are initialized
+          project.browser?.registerCommand(name as keyof typeof allureBrowserCommands, command);
         }
       }
     }
