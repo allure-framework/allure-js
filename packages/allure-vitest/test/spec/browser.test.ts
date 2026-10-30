@@ -283,7 +283,7 @@ describe("browser", () => {
       "vitest.config.ts": ({ allureResultsPath }) => createVitestBrowserConfig(allureResultsPath),
       "sample.test.ts": `
         import { test } from "vitest";
-        import { recordArtifact } from "@vitest/runner";
+        import { recordArtifact } from "vitest";
         import { page } from "vitest/browser";
 
         test("passed comparison", async ({ task }) => {
