@@ -1,5 +1,4 @@
-import type { Test } from "@vitest/runner";
-import type { SerializedConfig } from "vitest";
+import type { SerializedConfig, RunnerTestCase as Test } from "vitest";
 import * as vitest from "vitest";
 
 import { getAsyncContext } from "./concurrentState.js";
@@ -27,8 +26,9 @@ const resolveRunnerBaseClass = async (): Promise<VitestRunnerCtor> => {
     return vitest.TestRunner as VitestRunnerCtor;
   }
 
-  // Vitest <=4.0
-  const { VitestTestRunner } = await import("vitest/runners");
+  // Vitest <=4.0; the specifier is kept out of Vite's static analysis since Vitest 5 has no "vitest/runners"
+  const legacyRunnersModulePath = "vitest/runners";
+  const { VitestTestRunner } = await import(/* @vite-ignore */ legacyRunnersModulePath);
   return VitestTestRunner;
 };
 

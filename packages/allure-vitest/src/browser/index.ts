@@ -12,7 +12,7 @@ declare module "vitest/browser" {
 }
 
 export const commands = {
-  existsInTestPlan: (ctx: any, task: Task) => {
+  existsInTestPlan: async (ctx: any, task: Task) => {
     if (!ctx.allureTestPlan) {
       ctx.allureTestPlan = parseTestPlan();
     }
