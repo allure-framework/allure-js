@@ -173,6 +173,12 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
   };
 
   private onSuiteEnd = (suite: Mocha.Suite) => {
+    const unfinishedTest = this.currentTest ? this.testsMap.get(this.currentTest) : undefined;
+    // A beforeEach failure skips Mocha's test end event. Finish the affected
+    // test after teardown, while its suite and fixture scopes still exist.
+    if (unfinishedTest?.parent === suite) {
+      this.onTestEnd(unfinishedTest);
+    }
     this.writeTestScopes(suite);
     const scopeUuid = this.scopesStack.pop();
     if (scopeUuid) {
