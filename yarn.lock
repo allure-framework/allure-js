@@ -410,23 +410,20 @@ __metadata:
   linkType: hard
 
 "@babel/cli@npm:^8.0.1":
-  version: 8.0.1
-  resolution: "@babel/cli@npm:8.0.1"
+  version: 8.0.6
+  resolution: "@babel/cli@npm:8.0.6"
   dependencies:
-    "@jridgewell/trace-mapping": "npm:^0.3.28"
-    chokidar: "npm:^3.6.0"
+    "@jridgewell/trace-mapping": "npm:^0.3.31"
+    chokidar: "npm:^5.0.0"
     commander: "npm:^14.0.2"
     convert-source-map: "npm:^2.0.0"
     glob: "npm:^13.0.0"
     slash: "npm:^5.1.0"
   peerDependencies:
     "@babel/core": ^8.0.0
-  dependenciesMeta:
-    chokidar:
-      optional: true
   bin:
     babel: ./bin/babel.js
-  checksum: 10/455d6e2507b46286a7482afed35d5cb36e7cd79e8bcf5204ac9804df149196500e9a2afb0a00ea9c4fd9e633be194554eabf864b764806babdb7633d070484ad
+  checksum: 10/06ce6aa47ef98dab02609ffe40eec4e0b90f362130ad8b3931b6656c56e3b5284ba38ea68674397ad11aac7587fb4b64e05ae2be5c197f35eaaf33f13e95adcf
   languageName: node
   linkType: hard
 
@@ -4653,6 +4650,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jridgewell/trace-mapping@npm:^0.3.31":
+  version: 0.3.31
+  resolution: "@jridgewell/trace-mapping@npm:0.3.31"
+  dependencies:
+    "@jridgewell/resolve-uri": "npm:^3.1.0"
+    "@jridgewell/sourcemap-codec": "npm:^1.4.14"
+  checksum: 10/da0283270e691bdb5543806077548532791608e52386cfbbf3b9e8fb00457859d1bd01d512851161c886eb3a2f3ce6fd9bcf25db8edf3bddedd275bd4a88d606
+  languageName: node
+  linkType: hard
+
 "@mapbox/node-pre-gyp@npm:^2.0.0":
   version: 2.0.3
   resolution: "@mapbox/node-pre-gyp@npm:2.0.3"
@@ -7904,7 +7911,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar@npm:^3.4.2, chokidar@npm:^3.6.0":
+"chokidar@npm:^3.4.2":
   version: 3.6.0
   resolution: "chokidar@npm:3.6.0"
   dependencies:
