@@ -34,6 +34,10 @@ type JasmineSpecConstructor = {
   };
 };
 
+type JasmineExpector = {
+  addExpectationResult: (this: unknown, passed: boolean, data: unknown, isError?: boolean) => unknown;
+};
+
 class AllureJasmineTestRuntime extends MessageTestRuntime {
   constructor(private readonly allureJasmineReporter: AllureJasmineReporter) {
     super();
@@ -114,14 +118,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
       this.currentAllureTestUuid ? this.allureRuntime.currentStep(this.currentAllureTestUuid) : undefined;
     const Spec = globalJasmine.Spec ?? globalJasmine.private?.Spec;
 
-    if (!Spec) {
-      return;
-    }
-
-    const originalExpectationHandler = Spec.prototype.addExpectationResult;
-
-    // soft-asserts support (when failed assertions don't throw errors)
-    Spec.prototype.addExpectationResult = function (passed, data, isError) {
+    const failCurrentStep = (passed: boolean, isError?: boolean) => {
       const isStepFailed = !passed && !isError;
 
       const stepUuid = currentAllureStepResultGetter();
@@ -131,9 +128,52 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
           result.stage = Stage.FINISHED;
         });
       }
+    };
+
+    if (!Spec) {
+      // Jasmine 7+ hides Spec, so we observe expectation results via the global expect functions instead
+      this.#enableSoftAssertsViaExpect(failCurrentStep);
+      return;
+    }
+
+    const originalExpectationHandler = Spec.prototype.addExpectationResult;
+
+    // soft-asserts support (when failed assertions don't throw errors)
+    Spec.prototype.addExpectationResult = function (passed, data, isError) {
+      failCurrentStep(passed, isError);
 
       originalExpectationHandler.call(this, passed, data, isError);
     };
+  }
+
+  #enableSoftAssertsViaExpect(onExpectationResult: (passed: boolean, isError?: boolean) => void): void {
+    const wrapExpectFn = <TFn extends (actual: any) => any>(expectFn: TFn | undefined) => {
+      if (typeof expectFn !== "function") {
+        return expectFn;
+      }
+
+      return function (this: unknown, actual: unknown) {
+        const expectation = expectFn.call(this, actual) as { expector?: JasmineExpector } | undefined;
+        const expector = expectation?.expector;
+
+        if (expector && typeof expector.addExpectationResult === "function") {
+          const originalExpectationHandler = expector.addExpectationResult;
+
+          // matchers, .not and withContext() derive from this expector via prototype chain,
+          // so the override applies to all of them
+          expector.addExpectationResult = function (passed, data, isError) {
+            onExpectationResult(passed, isError);
+
+            return originalExpectationHandler.call(this, passed, data, isError);
+          };
+        }
+
+        return expectation;
+      } as TFn;
+    };
+
+    global.expect = wrapExpectFn(global.expect)!;
+    global.expectAsync = wrapExpectFn(global.expectAsync)!;
   }
 
   suiteStarted(suite: jasmine.SuiteResult): void {
