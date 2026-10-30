@@ -4485,7 +4485,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/types@npm:30.0.0, @jest/types@npm:^30.0.0":
+"@jest/types@npm:30.0.0":
   version: 30.0.0
   resolution: "@jest/types@npm:30.0.0"
   dependencies:
@@ -4500,7 +4500,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/types@npm:30.5.1":
+"@jest/types@npm:30.5.1, @jest/types@npm:^30.0.0":
   version: 30.5.1
   resolution: "@jest/types@npm:30.5.1"
   dependencies:
