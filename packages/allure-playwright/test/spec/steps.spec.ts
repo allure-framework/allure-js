@@ -454,3 +454,80 @@ it("should attach attachments to correct steps in hooks and test steps", async (
   expect(afterHooksStep.name).toBe("After Hooks");
   expect(afterHooksStep.steps).toHaveLength(0);
 });
+
+it("includes the target of built-in action steps in their names", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.js": `
+      import { test, expect } from '@playwright/test';
+
+      test('a test', async ({ page }) => {
+        await page.setContent('<button>Submit</button>');
+        await page.getByRole('button', { name: 'Submit' }).click();
+        await expect(page.getByRole('button')).toBeVisible();
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ name: "Click getByRole('button', { name: 'Submit' })" }),
+      expect.objectContaining({ name: "Expect \"toBeVisible\" getByRole('button')" }),
+    ]),
+  );
+});
+
+it("includes the subtitle of custom steps in their names", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.js": `
+      import { test } from '@playwright/test';
+
+      test('a test', async () => {
+        await test.step('log in', async () => {}, { subtitle: 'as admin' });
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toEqual(expect.arrayContaining([expect.objectContaining({ name: "log in as admin" })]));
+});
+
+it("reports step params as step parameters", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.js": `
+      import { test, expect } from '@playwright/test';
+
+      test('a test', async ({ page }) => {
+        await test.step('log in', async () => {}, { params: { user: 'admin', attempts: 3 } });
+        await page.setContent('<button>Menu</button>');
+        await page.getByRole('button').click({ button: 'right' });
+        await expect(page.getByRole('button')).toHaveText('Menu');
+        await expect(page).toHaveURL(/blank/);
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "log in",
+        parameters: [
+          expect.objectContaining({ name: "user", value: "admin" }),
+          expect.objectContaining({ name: "attempts", value: "3" }),
+        ],
+      }),
+      // the locator is equal to the subtitle and is already a part of the name
+      expect.objectContaining({
+        name: "Click getByRole('button')",
+        parameters: [expect.objectContaining({ name: "button", value: "right" })],
+      }),
+      expect.objectContaining({
+        name: "Expect \"toHaveText\" getByRole('button')",
+        parameters: [expect.objectContaining({ name: "expected", value: "Menu" })],
+      }),
+      // a RegExp reaches reporters as {} and is skipped
+      expect.objectContaining({ name: 'Expect "toHaveURL"', parameters: [] }),
+    ]),
+  );
+});
