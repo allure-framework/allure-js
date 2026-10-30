@@ -7,6 +7,7 @@ import { TimeConversion } from "@cucumber/messages";
 import {
   AttachmentContentEncoding,
   type PickleTag,
+  StepDefinitionPatternType,
   type Tag,
   type TestStepResult,
   TestStepResultStatus,
@@ -67,6 +68,7 @@ export default class AllureCucumberReporter extends Formatter {
   private readonly scenarioMap: Map<string, messages.Scenario> = new Map();
   private readonly stepMap: Map<string, messages.Step> = new Map();
   private readonly testStepMap: Map<string, messages.TestStep> = new Map();
+  private readonly stepDefinitionMap: Map<string, messages.StepDefinition> = new Map();
   private readonly pickleStepMap: Map<string, messages.PickleStep> = new Map();
   private readonly pickleMap: Map<string, messages.Pickle> = new Map();
   private readonly testCaseMap: Map<string, messages.TestCase> = new Map();
@@ -213,6 +215,9 @@ export default class AllureCucumberReporter extends Formatter {
 
   private parseEnvelope(envelope: messages.Envelope) {
     switch (true) {
+      case !!envelope.stepDefinition:
+        this.stepDefinitionMap.set(envelope.stepDefinition.id, envelope.stepDefinition);
+        break;
       case !!envelope.gherkinDocument:
         this.onGherkinDocument(envelope.gherkinDocument);
         break;
@@ -648,7 +653,7 @@ export default class AllureCucumberReporter extends Formatter {
 
       if (data.testStepResult.status === TestStepResultStatus.AMBIGUOUS) {
         r.statusDetails = {
-          message: data.testStepResult.message ?? AMBIGUOUS_STEP_MESSAGE,
+          message: data.testStepResult.message ?? this.getAmbiguousStepMessage(step),
         };
         return;
       }
@@ -735,6 +740,28 @@ export default class AllureCucumberReporter extends Formatter {
   private onTestRunFinished() {
     this.allureRuntime.writeCategoriesDefinitions();
     this.allureRuntime.writeEnvironmentInfo();
+  }
+
+  // Cucumber 13+ no longer puts the matching step definitions into the ambiguous step result
+  private getAmbiguousStepMessage(step: messages.TestStep): string {
+    const stepDefinitions = (step.stepDefinitionIds ?? [])
+      .map((id) => this.stepDefinitionMap.get(id))
+      .filter((stepDefinition) => stepDefinition !== undefined);
+
+    if (stepDefinitions.length === 0) {
+      return AMBIGUOUS_STEP_MESSAGE;
+    }
+
+    const matches = stepDefinitions.map(({ pattern, sourceReference }) => {
+      const patternText =
+        pattern.type === StepDefinitionPatternType.REGULAR_EXPRESSION ? `/${pattern.source}/` : pattern.source;
+      const line = sourceReference.location?.line;
+      const location = sourceReference.uri ? `${sourceReference.uri}${line !== undefined ? `:${line}` : ""}` : "";
+
+      return location ? `  ${patternText} - ${location}` : `  ${patternText}`;
+    });
+
+    return ["Multiple step definitions match:", ...matches].join("\n");
   }
 
   private exceptionToError(message?: string, exception?: messages.Exception): Error | undefined {
