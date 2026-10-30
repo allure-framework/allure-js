@@ -1,5 +1,4 @@
-import type { Test } from "@vitest/runner";
-import type { SerializedConfig } from "vitest";
+import type { SerializedConfig, RunnerTestCase as Test } from "vitest";
 import * as vitest from "vitest";
 
 import { getAsyncContext } from "./concurrentState.js";

@@ -21,8 +21,7 @@ import {
   md5,
 } from "allure-js-commons/sdk/reporter";
 import type { RunnerTask as Task } from "vitest";
-import type { TestModule, Vitest } from "vitest/node";
-import type { Reporter } from "vitest/reporters";
+import type { Reporter, TestModule, Vitest } from "vitest/node";
 
 import { commands as allureBrowserCommands } from "./browser/index.js";
 import { isMatcherMessage } from "./matcherMessages.js";
