@@ -9562,7 +9562,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/preset-env", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.28.0"],\
           ["@babel/preset-typescript", "virtual:5d518c13746e920b5237df314c1802a3a66a2f74b45932e87ceed448cc0fc36200f8217f976b2beda18eede332a9dd3e89c86b76c50414b588d95ccd16064e7a#npm:7.27.1"],\
           ["@jest/environment", "npm:30.5.2"],\
-          ["@jest/types", "npm:30.0.0"],\
+          ["@jest/types", "npm:30.5.1"],\
           ["@types/node", "npm:26.6.3"],\
           ["allure-commandline", "npm:2.46.1"],\
           ["allure-jest", "workspace:packages/allure-jest"],\
