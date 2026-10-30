@@ -18,6 +18,7 @@ import type { SyncTestRuntime, TestRuntime } from "allure-js-commons/sdk/runtime
 import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 
 import type { AllureCypressTaskArgs, CypressMessage } from "../types.js";
+import serializeValue from "./serialize.js";
 import { enqueueRuntimeMessage, getRuntimeMessages, setRuntimeMessages } from "./state.js";
 import { ALLURE_STEP_CMD_SUBJECT, startAllureApiStep, stopCurrentAllureApiStep } from "./steps.js";
 import { uint8ArrayToBase64 } from "./utils.js";
@@ -232,7 +233,7 @@ class AllureCypressTestRuntime implements TestRuntime {
   logStep(name: string, status: Status = Status.PASSED, error?: Error): PromiseLike<void> {
     if (this.#isInOriginContext()) {
       startAllureApiStep(name);
-      stopCurrentAllureApiStep(status, error ? getMessageAndTraceFromError(error) : undefined);
+      stopCurrentAllureApiStep(status, error ? getMessageAndTraceFromError(error, serializeValue) : undefined);
       return Cypress.Promise.resolve();
     }
 
@@ -243,7 +244,7 @@ class AllureCypressTestRuntime implements TestRuntime {
         return Cypress.Promise.resolve();
       })
       .then(() => {
-        stopCurrentAllureApiStep(status, error ? getMessageAndTraceFromError(error) : undefined);
+        stopCurrentAllureApiStep(status, error ? getMessageAndTraceFromError(error, serializeValue) : undefined);
         return Cypress.Promise.resolve();
       });
   }
@@ -532,7 +533,7 @@ class AllureCypressTestRuntime implements TestRuntime {
         }),
       logStep: (name, status = Status.PASSED, error) => {
         startAllureApiStep(name);
-        stopCurrentAllureApiStep(status, error ? getMessageAndTraceFromError(error) : undefined);
+        stopCurrentAllureApiStep(status, error ? getMessageAndTraceFromError(error, serializeValue) : undefined);
       },
       step: (name, body) => {
         startAllureApiStep(name);
@@ -552,7 +553,7 @@ class AllureCypressTestRuntime implements TestRuntime {
         } catch (err) {
           const error = err as Error;
 
-          stopCurrentAllureApiStep(getStatusFromError(error), getMessageAndTraceFromError(error));
+          stopCurrentAllureApiStep(getStatusFromError(error), getMessageAndTraceFromError(error, serializeValue));
           throw err;
         }
       },

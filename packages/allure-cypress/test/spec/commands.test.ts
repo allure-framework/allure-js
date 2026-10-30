@@ -131,6 +131,43 @@ it("should create steps from cypress commands", async () => {
 });
 
 describe("parameter serialization", () => {
+  it("formats nested DOM parameters and limits root DOM values", async () => {
+    const { tests } = await runCypressInlineTest({
+      "cypress/e2e/sample.cy.js": () => `
+        it("passed", () => {
+          cy.document().then((doc) => {
+            const element = doc.createElement("a");
+            element.id = "subject";
+            element.textContent = "text";
+            Object.defineProperty(element, "__reactFiber$test", {
+              enumerable: true,
+              get() { throw new Error("Framework internals must not be serialized"); },
+            });
+            const longElement = doc.createElement("a");
+            longElement.setAttribute("data-value", "x".repeat(500));
+            Cypress.log({
+              name: "custom",
+              message: "DOM parameter",
+              consoleProps: () => ({ Subject: { element, nullable: null }, RootElement: longElement }),
+            }).end();
+          });
+        });
+      `,
+    });
+
+    expect(tests).toHaveLength(1);
+    expect(tests[0].status).toBe(Status.PASSED);
+    expect(tests[0].steps).toContainEqual(
+      expect.objectContaining({
+        name: "custom DOM parameter",
+        parameters: [
+          { name: "Subject", value: JSON.stringify({ element: '<a id="subject">text</a>', nullable: null }) },
+          { name: "RootElement", value: `${`<a data-value="${"x".repeat(500)}"></a>`.slice(0, 128)}...` },
+        ],
+      }),
+    );
+  });
+
   it("should preserve other parameters when a value cannot be serialized", async () => {
     const { tests } = await runCypressInlineTest({
       "cypress/e2e/sample.cy.js": () => `
