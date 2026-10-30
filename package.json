@@ -96,5 +96,10 @@
     "ws@npm:^8.18.0": "npm:8.21.0",
     "ws@npm:^8.19.0": "npm:8.21.0"
   },
-  "packageManager": "yarn@4.13.0"
+  "packageManager": "yarn@4.13.0",
+  "sherif": {
+    "ignoreDependency": [
+      "vitest"
+    ]
+  }
 }
