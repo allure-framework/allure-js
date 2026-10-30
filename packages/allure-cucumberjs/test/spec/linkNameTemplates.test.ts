@@ -12,7 +12,7 @@ it("applies templates to feature and scenario tag IDs and preserves absolute URL
       module.exports = {
         default: {
           paths: ["./**/*.feature"],
-          format: ["summary", "${reporterFilePath}"],
+          format: ["summary", '"${reporterFilePath}"'],
           formatOptions: {
             links: {
               issue: {

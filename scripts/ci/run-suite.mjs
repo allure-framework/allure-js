@@ -81,7 +81,8 @@ const suites = new Map([
         createWorkspaceScriptCommand("allure-tinybench", "test"),
         createWorkspaceScriptCommand("allure-bun", "test"),
         createWorkspaceScriptCommand("allure-chai", "test"),
-        createWorkspaceScriptCommand("allure-cucumberjs", "test"),
+        // CucumberJS 13 requires Node.js 22+
+        createWorkspaceScriptCommand("allure-cucumberjs", "test", { minNodeMajor: 22 }),
         createWorkspaceScriptCommand("allure-jasmine", "test"),
         createWorkspaceScriptCommand("allure-jest", "test"),
         createWorkspaceScriptCommand("allure-node-test", "test", { minNodeMajor: 26 }),
