@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { ContentType, Stage, Status } from "allure-js-commons";
 import type { FixtureResult, TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
@@ -46,6 +48,7 @@ export class AllureCypress {
   allureRuntime: ReporterRuntime;
   specContextByAbsolutePath = new Map<string, SpecContext>();
   #fixtureNames = new Map<string, string>();
+  #screenshotContentsByPath = new Map<string, string[]>();
   videoOnFailOnly: boolean = false;
 
   constructor(config: AllureCypressConfig = {}) {
@@ -75,6 +78,8 @@ export class AllureCypress {
       },
     });
 
+    on("after:screenshot", this.onAfterScreenshot);
+
     // Emits the remaining fixtures and writes the video of the spec.
     // In interactive mode it's invoked through the `reportFinalAllureCypressSpecMessages` task.
     on("after:spec", this.onAfterSpec);
@@ -82,6 +87,18 @@ export class AllureCypress {
     // Emits the categories and env info. Doesn't work in interactive mode unless
     // `experimentalInteractiveRunEvents` is set.
     on("after:run", this.onAfterRun);
+  };
+
+  /**
+   * Forward `after:screenshot` here if you define your own handler. Pass the
+   * final screenshot path after any changes made by your handler.
+   */
+  onAfterScreenshot = ({ path }: Cypress.ScreenshotDetails) => {
+    // Snapshot plugins can move or delete the file before the browser flushes
+    // its attachment message. Preserve each capture, including overwritten paths.
+    const contents = this.#screenshotContentsByPath.get(path) ?? [];
+    contents.push(readFileSync(path, "base64"));
+    this.#screenshotContentsByPath.set(path, contents);
   };
 
   /**
@@ -153,6 +170,7 @@ export class AllureCypress {
       this.#emitRemainingScopes(specContext);
       this.specContextByAbsolutePath.delete(specAbsolutePath);
     }
+    this.#screenshotContentsByPath.clear();
   };
 
   #endAllSpecs = () => {
@@ -478,6 +496,18 @@ export class AllureCypress {
   };
 
   #applyRuntimeApiMessages = (context: SpecContext, message: RuntimeMessage) => {
+    if (message.type === "attachment_path") {
+      const { path, ...data } = message.data;
+      const contents = this.#screenshotContentsByPath.get(path);
+      const content = contents?.shift();
+      if (content !== undefined) {
+        message = { type: "attachment_content", data: { ...data, content, encoding: "base64" } };
+        if (!contents?.length) {
+          this.#screenshotContentsByPath.delete(path);
+        }
+      }
+    }
+
     const rootUuid = this.#resolveRootUuid(context);
     if (rootUuid) {
       this.allureRuntime.applyRuntimeMessages(rootUuid, [message]);

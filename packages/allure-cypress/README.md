@@ -227,6 +227,7 @@ Cypress can't compose multiple Node events, which are set in `setupNodeEvents`.
 
 Allure Cypress requires access to the following events:
 
+- `after:screenshot`
 - `after:spec`
 - `after:run`
 
@@ -242,6 +243,11 @@ export default defineConfig({
   e2e: {
     setupNodeEvents: (on, config) => {
       const allurePlugin = allureCypress(on, config);
+
+      on("after:screenshot", (details) => {
+        // Apply any screenshot changes first, then pass the final path to Allure.
+        allurePlugin.onAfterScreenshot(details);
+      });
 
       on("after:spec", (spec, results) => {
         allurePlugin.onAfterSpec(spec, results);

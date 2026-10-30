@@ -110,3 +110,87 @@ it("attaches runtime screenshots", async () => {
   expect(attachments).toHaveProperty(source1);
   expect(attachments).toHaveProperty(source2);
 });
+
+it("preserves screenshots moved or deleted by a snapshot plugin before the messages are flushed", async () => {
+  const { tests } = await runCypressInlineTest({
+    "cypress.config.js": ({ allureCypressReporterModulePath, supportFilePath, specPattern, allureDirPath }) => `
+      const { createHash } = require("node:crypto");
+      const { readFileSync, readdirSync, renameSync, unlinkSync } = require("node:fs");
+      const { join } = require("node:path");
+      const { allureCypress } = require("${allureCypressReporterModulePath}");
+      const digest = (path) => createHash("sha256").update(readFileSync(path)).digest("hex");
+      const screenshotHashes = [];
+
+      module.exports = {
+        video: false,
+        e2e: {
+          supportFile: "${supportFilePath}",
+          specPattern: "${specPattern}",
+          setupNodeEvents(on, config) {
+            allureCypress(on, config, { resultsDir: "${allureDirPath}" });
+            on("task", {
+              processSnapshot(path) {
+                screenshotHashes.push(digest(path));
+                if (screenshotHashes.length === 1) {
+                  renameSync(path, path + ".actual.png");
+                } else {
+                  unlinkSync(path);
+                }
+                return null;
+              },
+              verifyScreenshots() {
+                const hashes = readdirSync("${allureDirPath}")
+                  .filter((file) => file.endsWith(".png"))
+                  .map((file) => digest(join("${allureDirPath}", file)));
+                return { expected: screenshotHashes, actual: hashes };
+              },
+            });
+            return config;
+          },
+        },
+      };
+    `,
+    "cypress/e2e/sample.cy.js": () => `
+      it("snapshot comparison fails", () => {
+        let path;
+        for (const color of ["red", "blue"]) {
+          cy.document().then((doc) => { doc.body.style.background = color; });
+          cy.screenshot("snapshot", {
+            overwrite: true,
+            onAfterScreenshot: (_, details) => { path = details.path; },
+          });
+          cy.then(() => cy.task("processSnapshot", path));
+        }
+        cy.then(() => { assert.fail("Snapshot comparison failed"); });
+      });
+
+      it("following test runs and both original images are attached", () => {
+        cy.task("verifyScreenshots").then(({ expected, actual }) => {
+          expect(expected).to.have.length(2);
+          expect(expected[0]).not.to.eq(expected[1]);
+          expect(actual).to.include.members(expected);
+        });
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(2);
+  expect(tests).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "snapshot comparison fails",
+        status: Status.FAILED,
+        statusDetails: expect.objectContaining({ message: expect.stringContaining("Snapshot comparison failed") }),
+      }),
+      expect.objectContaining({
+        name: "following test runs and both original images are attached",
+        status: Status.PASSED,
+      }),
+    ]),
+  );
+  const comparison = tests.find(({ name }) => name === "snapshot comparison fails");
+  expect(comparison?.steps.filter(({ name }) => name === "snapshot")).toEqual([
+    expect.objectContaining({ attachments: [expect.objectContaining({ name: "snapshot", type: ContentType.PNG })] }),
+    expect.objectContaining({ attachments: [expect.objectContaining({ name: "snapshot", type: ContentType.PNG })] }),
+  ]);
+});
