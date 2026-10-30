@@ -8931,7 +8931,7 @@ const RAW_RUNTIME_STATE =
           ["@vitest/expect", "npm:4.1.11"],\
           ["@vitest/spy", "npm:4.1.11"],\
           ["@vitest/utils", "npm:4.1.11"],\
-          ["chai", "npm:6.2.2"],\
+          ["chai", "npm:6.3.0"],\
           ["tinyrainbow", "npm:3.1.0"]\
         ],\
         "linkType": "HARD"\
@@ -9408,7 +9408,7 @@ const RAW_RUNTIME_STATE =
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
           ["babel-plugin-add-module-exports", "npm:1.0.4"],\
           ["babel-plugin-transform-import-meta", "virtual:d10e825d76338dedaee6647c8486ff1b2de1919ee4a2fdffe7a975104693ccf29afd00c4e48ffcb4f47ef8d1f4877527ac7198a342ce42052f0432baff921fd1#npm:2.3.3"],\
-          ["chai", "npm:6.2.2"],\
+          ["chai", "npm:6.3.0"],\
           ["chai4", [\
             "chai",\
             "npm:4.5.0"\
@@ -11176,10 +11176,10 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["npm:6.2.2", {\
-        "packageLocation": "./.yarn/cache/chai-npm-6.2.2-e1795cadaa-13cda42cc4.zip/node_modules/chai/",\
+      ["npm:6.3.0", {\
+        "packageLocation": "./.yarn/cache/chai-npm-6.3.0-96a034c691-8798b98c6d.zip/node_modules/chai/",\
         "packageDependencies": [\
-          ["chai", "npm:6.2.2"]\
+          ["chai", "npm:6.3.0"]\
         ],\
         "linkType": "HARD"\
       }]\
