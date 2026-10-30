@@ -7221,6 +7221,15 @@ const RAW_RUNTIME_STATE =
           ["@jridgewell/trace-mapping", "npm:0.3.29"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:0.3.31", {\
+        "packageLocation": "./.yarn/cache/@jridgewell-trace-mapping-npm-0.3.31-1ae81d75ac-da0283270e.zip/node_modules/@jridgewell/trace-mapping/",\
+        "packageDependencies": [\
+          ["@jridgewell/resolve-uri", "npm:3.1.2"],\
+          ["@jridgewell/sourcemap-codec", "npm:1.4.15"],\
+          ["@jridgewell/trace-mapping", "npm:0.3.31"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["@mapbox/node-pre-gyp", [\
