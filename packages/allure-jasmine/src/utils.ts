@@ -22,7 +22,10 @@ const legacyPendingSpecExceptionMessage = "=> marked Pending";
  * otherwise returns `undefined`.
  */
 export const getSkipReasonFromError = (error: Error | string | undefined): string | undefined => {
-  if (error instanceof Error && (error.name === "PendingSpecException" || error.name === "NotApplicableSpecException")) {
+  if (
+    error instanceof Error &&
+    (error.name === "PendingSpecException" || error.name === "NotApplicableSpecException")
+  ) {
     return error.message;
   }
 
@@ -33,7 +36,7 @@ export const getSkipReasonFromError = (error: Error | string | undefined): strin
   }
 };
 
-export const last =<T>(arr: readonly T[]) => (arr.length ? arr[arr.length - 1] : undefined);
+export const last = <T>(arr: readonly T[]) => (arr.length ? arr[arr.length - 1] : undefined);
 
 export const getAllureNamesAndLabels = (
   filename: string | undefined,

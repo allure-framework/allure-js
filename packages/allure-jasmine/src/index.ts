@@ -26,13 +26,7 @@ import { MessageTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/
 
 import type { JasmineBeforeAfterFn } from "./model.js";
 import { enableAllureJasmineTestPlan } from "./testplan.js";
-import {
-  findAnyError,
-  findMessageAboutThrow,
-  getAllureNamesAndLabels,
-  getSkipReasonFromError,
-  last,
-} from "./utils.js";
+import { findAnyError, findMessageAboutThrow, getAllureNamesAndLabels, getSkipReasonFromError, last } from "./utils.js";
 
 type JasmineSpecConstructor = {
   prototype: {
