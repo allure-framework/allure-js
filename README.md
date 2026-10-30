@@ -36,7 +36,7 @@ Run your tests so the integration can produce `./allure-results`.
 
 To view the report, choose one of the supported report generators:
 
-- Allure Report 2 CLI: install it by following the [official installation guide](https://allurereport.org/docs/install/), then run `allure generate` and `allure open`
+- Allure Report 2 CLI: install it by following the [official installation guide](https://allurereport.org/docs/v2/install/), then run `allure generate` and `allure open`
 - Allure Report 3: install the official npm package with `npm install -D allure`, then run `npx allure generate` and `npx allure open`
 
 ## Supported versions and platforms
