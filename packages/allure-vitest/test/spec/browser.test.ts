@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { WellKnownParameters } from "allure-js-commons";
 import { describe, expect, it } from "vitest";
 
-import { createVitestBrowserConfig, createVitestConfig, runVitestInlineTest } from "../utils.js";
+import { createVitestBrowserConfig, createVitestConfig, runVitestInlineTest, vitestMajorVersion } from "../utils.js";
 
 describe("browser", () => {
   it("should report browser retries as separate test results", async () => {
@@ -382,7 +382,8 @@ describe("browser", () => {
     }
   });
 
-  it("should preserve the final expected-failure outcome after retries", async () => {
+  // Vitest 5 applies test.fails to every attempt, earlier versions only to the final outcome
+  it.skipIf(vitestMajorVersion >= 5)("should preserve the final expected-failure outcome after retries", async () => {
     const { tests } = await runVitestInlineTest({
       "vitest.config.ts": ({ allureResultsPath }) => createVitestBrowserConfig(allureResultsPath, { retry: 1 }),
       "sample.test.ts": `
@@ -399,6 +400,23 @@ describe("browser", () => {
     const expectedFailure = tests.filter(({ name }) => name === "expected failure");
     expect(expectedFailure).toHaveLength(2);
     expect(expectedFailure[1].status).toBe("passed");
+  });
+
+  it.runIf(vitestMajorVersion >= 5)("should report expected-failure outcome of every retry", async () => {
+    const { tests } = await runVitestInlineTest({
+      "vitest.config.ts": ({ allureResultsPath }) => createVitestBrowserConfig(allureResultsPath, { retry: 1 }),
+      "sample.test.ts": `
+        import { test, expect } from "vitest";
+        test.fails("unexpected pass", ({ task }) => { expect(task.result.retryCount).toBe(0); });
+        test.fails("expected failure", () => { expect(1).toBe(2); });
+      `,
+    });
+
+    const unexpectedPass = tests.filter(({ name }) => name === "unexpected pass");
+    expect(unexpectedPass.map(({ status }) => status)).toEqual(["broken", "passed"]);
+    expect(unexpectedPass[0].statusDetails.message).toContain("Expect test to fail");
+    const expectedFailure = tests.filter(({ name }) => name === "expected failure");
+    expect(expectedFailure.map(({ status }) => status)).toEqual(["passed"]);
   });
 
   it("should preserve retry identity when the final attempt is dynamically skipped", async () => {
