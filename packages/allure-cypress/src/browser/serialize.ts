@@ -1,4 +1,4 @@
-import { serialize } from "allure-js-commons/sdk";
+import { type SerializeOptions, serialize } from "allure-js-commons/sdk";
 
 import { getConfig } from "./state.js";
 
@@ -9,19 +9,20 @@ export default (value: unknown) => {
       return "[object Storage]";
     }
 
-    return isDomObject(value) ? stringifyAsDom(value) : serialize(value, getSerializeOptions());
+    return serialize(isDomObject(value) ? stringifyAsDom(value) : value, getSerializeOptions());
   } catch {
     // Unexpected serialization errors must not interrupt the test lifecycle.
     return "[Unserializable value]";
   }
 };
 
-const getSerializeOptions = () => {
+const getSerializeOptions = (): SerializeOptions => {
+  // Use the same value limits for command parameters and assertion comparisons.
   const {
     stepsFromCommands: { maxArgumentDepth: maxDepth, maxArgumentLength: maxLength },
   } = getConfig();
 
-  return { maxDepth, maxLength, nonNullReplacerWithDomSupport };
+  return { maxDepth, maxLength, replacer: replacerWithDomSupport };
 };
 
 const isDomObject = (value: unknown): value is object =>
@@ -30,19 +31,4 @@ const isDomObject = (value: unknown): value is object =>
 // @ts-ignore
 const stringifyAsDom = (value: object) => Cypress.dom.stringify(value, "long");
 
-const nonNullReplacerWithDomSupport = (_: string, value: unknown) => {
-  if (typeof value === "object") {
-    // Exclude null properties to make the result more compact.
-    if (value === null) {
-      return undefined;
-    }
-
-    if (Cypress.dom.isDom(value)) {
-      // Window, document, and DOM element properties are serialized with Cypress.dom.stringify.
-      return stringifyAsDom(value);
-    }
-  }
-
-  // Use the implementation from allure-js-commons/sdk in all other cases.
-  return value;
-};
+const replacerWithDomSupport = (_: string, value: unknown) => (isDomObject(value) ? stringifyAsDom(value) : value);

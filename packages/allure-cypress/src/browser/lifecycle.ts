@@ -4,6 +4,7 @@ import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commo
 
 import type { CypressFailMessage, CypressHook, CypressSuite, CypressTest, StepDescriptor } from "../types.js";
 import { getTestRuntime } from "./runtime.js";
+import serializeValue from "./serialize.js";
 import { dropCurrentTest, enqueueRuntimeMessage, getCurrentTest, setCurrentTest } from "./state.js";
 import { finalizeSteps, stopAllSteps } from "./steps.js";
 import {
@@ -107,7 +108,7 @@ export const reportTestPass = () => {
 
 export const reportTestOrHookFail = (err: Error) => {
   const status = getStatusFromError(err);
-  const statusDetails = getMessageAndTraceFromError(err);
+  const statusDetails = getMessageAndTraceFromError(err, serializeValue);
 
   stopAllSteps(status, statusDetails);
 

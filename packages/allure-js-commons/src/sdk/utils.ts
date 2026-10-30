@@ -75,7 +75,10 @@ export const stripAnsi = (str: string): string => {
   return str.replace(regex, "");
 };
 
-const actualAndExpected = (value: unknown): { actual?: string; expected?: string } => {
+const actualAndExpected = (
+  value: unknown,
+  serializeValue: (value: unknown) => string,
+): { actual?: string; expected?: string } => {
   if (!value || typeof value !== "object") {
     return {};
   }
@@ -87,15 +90,18 @@ const actualAndExpected = (value: unknown): { actual?: string; expected?: string
       : value;
 
   const actual =
-    "actual" in comparison && comparison.actual !== undefined ? { actual: serialize(comparison.actual) } : {};
+    "actual" in comparison && comparison.actual !== undefined ? { actual: serializeValue(comparison.actual) } : {};
   const expected =
-    "expected" in comparison && comparison.expected !== undefined ? { expected: serialize(comparison.expected) } : {};
+    "expected" in comparison && comparison.expected !== undefined
+      ? { expected: serializeValue(comparison.expected) }
+      : {};
   return {
     ...actual,
     ...expected,
   };
 };
 
+/** Extract error details, optionally using an adapter-specific serializer for assertion values. */
 export const getMessageAndTraceFromError = (
   error:
     | Error
@@ -103,12 +109,13 @@ export const getMessageAndTraceFromError = (
         message?: string;
         stack?: string;
       },
+  serializeValue: (value: unknown) => string = serialize,
 ): StatusDetails => {
   const { message, stack } = error;
   return {
     message: message ? stripAnsi(message) : undefined,
     trace: stack ? stripAnsi(stack) : undefined,
-    ...actualAndExpected(error),
+    ...actualAndExpected(error, serializeValue),
   };
 };
 
