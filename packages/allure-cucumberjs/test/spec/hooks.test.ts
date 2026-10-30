@@ -148,6 +148,33 @@ it("handles failed global hooks", async () => {
   expect(afterAllErrors.filter((error) => error.message === "AfterAll hook failed: afterAll error")).toHaveLength(1);
 });
 
+it.each([false, true])("reports failed global hooks once next to passed ones (parallel: %s)", async (parallel) => {
+  const beforeAllResults = await runCucumberInlineTest(["hooks"], ["mixedBeforeAll"], { parallel });
+  const beforeAllErrors = Object.values(beforeAllResults.globals ?? {}).flatMap((info) => info.errors);
+
+  expect(beforeAllErrors).toEqual([
+    expect.objectContaining({
+      status: Status.BROKEN,
+      message: "BeforeAll hook failed: beforeAll error",
+    }),
+  ]);
+
+  const afterAllResults = await runCucumberInlineTest(["hooks"], ["mixedAfterAll"], { parallel });
+  const afterAllErrors = Object.values(afterAllResults.globals ?? {}).flatMap((info) => info.errors);
+
+  expect(afterAllResults.tests).toEqual([
+    expect.objectContaining({
+      status: Status.PASSED,
+    }),
+  ]);
+  expect(afterAllErrors).toEqual([
+    expect.objectContaining({
+      status: Status.BROKEN,
+      message: "AfterAll hook failed: afterAll error",
+    }),
+  ]);
+});
+
 it("handles hooks with steps", async () => {
   const { tests, groups } = await runCucumberInlineTest(["hooks"], ["hooksSteps"]);
 

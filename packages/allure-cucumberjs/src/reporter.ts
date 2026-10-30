@@ -44,6 +44,7 @@ import type { AllureCucumberLinkConfig, AllureCucumberReporterConfig, LabelConfi
 import { getPathRelativeToProjectRoot, getPosixPathRelativeToProjectRoot, serializeCsvRow } from "./utils.js";
 
 type TestRunHookDefinition = {
+  readonly id: string;
   readonly code: Function;
 };
 
@@ -76,6 +77,9 @@ export default class AllureCucumberReporter extends Formatter {
   private readonly testResultUuids: Map<string, string> = new Map();
   private readonly scopeUuids: Map<string, string> = new Map();
   private readonly fixtureUuids: Map<string, string> = new Map();
+  private readonly testRunHookTypes: Map<string, messages.HookType | undefined> = new Map();
+  private readonly testRunHookStartedMap: Map<string, string> = new Map();
+  private readonly reportedTestRunHookIds: Set<string> = new Set();
 
   constructor(options: IFormatterOptions) {
     super(options);
@@ -130,15 +134,15 @@ export default class AllureCucumberReporter extends Formatter {
       (hook as MutableTestRunHookDefinition).code =
         originalCode.length > 0
           ? function (this: unknown, callback: (error?: unknown, result?: unknown) => void) {
-              return runCallbackTestRunHook(hookName, originalCode, this, callback);
+              return runCallbackTestRunHook(hook.id, hookName, originalCode, this, callback);
             }
           : function (this: unknown) {
-              return runTestRunHook(hookName, () => originalCode.call(this));
+              return runTestRunHook(hook.id, hookName, () => originalCode.call(this));
             };
     });
   }
 
-  private runTestRunHook<T>(name: string, runHook: () => T): T {
+  private runTestRunHook<T>(hookId: string, name: string, runHook: () => T): T {
     try {
       const result = runHook();
 
@@ -146,7 +150,7 @@ export default class AllureCucumberReporter extends Formatter {
         return result.then(
           (value) => value,
           (error) => {
-            this.emitTestRunHookGlobalError(name, error);
+            this.emitTestRunHookGlobalError(hookId, name, error);
             return deferReject(error);
           },
         ) as T;
@@ -154,12 +158,13 @@ export default class AllureCucumberReporter extends Formatter {
 
       return result;
     } catch (error) {
-      this.emitTestRunHookGlobalError(name, error);
+      this.emitTestRunHookGlobalError(hookId, name, error);
       return deferReject(error) as T;
     }
   }
 
   private runCallbackTestRunHook(
+    hookId: string,
     name: string,
     originalCode: Function,
     thisArg: unknown,
@@ -170,7 +175,7 @@ export default class AllureCucumberReporter extends Formatter {
       if (!finished) {
         finished = true;
         if (error) {
-          this.emitTestRunHookGlobalError(name, error);
+          this.emitTestRunHookGlobalError(hookId, name, error);
         }
       }
       if (error) {
@@ -195,7 +200,8 @@ export default class AllureCucumberReporter extends Formatter {
     }
   }
 
-  private emitTestRunHookGlobalError(name: string, error: unknown): void {
+  private emitTestRunHookGlobalError(hookId: string, name: string, error: unknown): void {
+    this.reportedTestRunHookIds.add(hookId);
     this.allureRuntime.applyGlobalRuntimeMessages([
       toGlobalErrorMessage({
         name,
@@ -217,6 +223,15 @@ export default class AllureCucumberReporter extends Formatter {
     switch (true) {
       case !!envelope.stepDefinition:
         this.stepDefinitionMap.set(envelope.stepDefinition.id, envelope.stepDefinition);
+        break;
+      case !!envelope.hook:
+        this.testRunHookTypes.set(envelope.hook.id, envelope.hook.type);
+        break;
+      case !!envelope.testRunHookStarted:
+        this.testRunHookStartedMap.set(envelope.testRunHookStarted.id, envelope.testRunHookStarted.hookId);
+        break;
+      case !!envelope.testRunHookFinished:
+        this.onTestRunHookFinished(envelope.testRunHookFinished);
         break;
       case !!envelope.gherkinDocument:
         this.onGherkinDocument(envelope.gherkinDocument);
@@ -735,6 +750,32 @@ export default class AllureCucumberReporter extends Formatter {
     } else {
       this.allureRuntime.applyGlobalRuntimeMessages(runtimeMessages);
     }
+  }
+
+  // Cucumber 12.3+ reports test run hooks with messages. In parallel mode they run in workers,
+  // where the patched hook code isn't used, so the messages are the only source of their errors
+  private onTestRunHookFinished(data: messages.TestRunHookFinished) {
+    const hookId = this.testRunHookStartedMap.get(data.testRunHookStartedId);
+
+    if (!hookId || data.result.status === TestStepResultStatus.PASSED || this.reportedTestRunHookIds.has(hookId)) {
+      return;
+    }
+
+    this.reportedTestRunHookIds.add(hookId);
+
+    const name = this.testRunHookTypes.get(hookId) === "AFTER_TEST_RUN" ? "AfterAll hook" : "BeforeAll hook";
+    const error = this.exceptionToError(data.result.exception?.message, data.result.exception) ?? {
+      name: "Error",
+      message: data.result.message ?? "",
+    };
+
+    this.allureRuntime.applyGlobalRuntimeMessages([
+      toGlobalErrorMessage({
+        name,
+        details: getMessageAndTraceFromError(error),
+        status: getStatusFromError(error),
+      }),
+    ]);
   }
 
   private onTestRunFinished() {
