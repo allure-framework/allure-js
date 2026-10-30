@@ -10484,7 +10484,7 @@ const RAW_RUNTIME_STATE =
           ["@types/vitest", null],\
           ["@types/vitest__runner", null],\
           ["@vitest/browser-playwright", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:5.0.5"],\
-          ["@vitest/runner", "npm:4.1.11"],\
+          ["@vitest/runner", null],\
           ["allure-commandline", "npm:2.46.1"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-vitest"],\
@@ -10500,6 +10500,7 @@ const RAW_RUNTIME_STATE =
         "packagePeers": [\
           "@types/vitest",\
           "@types/vitest__runner",\
+          "@vitest/runner",\
           "vitest"\
         ],\
         "linkType": "SOFT"\
@@ -10514,7 +10515,6 @@ const RAW_RUNTIME_STATE =
           ["@types/react", "npm:19.2.14"],\
           ["@types/react-dom", "virtual:b5a8c847768f6dcb6d4a221511f29126053665bcd4619262465a170b6f981f7be7570390006fe782533413dba61913909d32d0f58ffc725cbacd414cbc1c6deb#npm:19.2.3"],\
           ["@vitest/browser-playwright", "virtual:f37ad3099f3665d5bbc9ee71081416c8874087a5d9739472f56367e210ca9246356f462b31407a28e510bc022801edd4632f86364db715287d62bd50b42e2c00#npm:5.0.5"],\
-          ["@vitest/runner", "npm:4.1.11"],\
           ["allure-commandline", "npm:2.46.1"],\
           ["allure-js-commons", "virtual:32ca8b0b9654827a9e92b8d0eb7f107a5117d450db8ee3ea975e823a382b761d32ce0ab3d896fe3b269266ceef8ff4430e96bed8a1c8c2d9dc2d35812f3f0987#workspace:packages/allure-js-commons"],\
           ["allure-vitest", "workspace:packages/allure-vitest"],\
