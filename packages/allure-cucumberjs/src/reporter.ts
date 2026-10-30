@@ -34,6 +34,7 @@ import {
   getProjectName,
   getThreadLabel,
   getWorstTestStepResult,
+  isUrl,
   md5,
 } from "allure-js-commons/sdk/reporter";
 
@@ -288,9 +289,14 @@ export default class AllureCucumberReporter extends Formatter {
       const matchedLinks = matchedTags.map((tag) => {
         const tagValue = tag.name.replace(tagKeyRe, "");
 
+        if (isUrl(tagValue)) {
+          return { url: tagValue, type };
+        }
+
         return {
           url: applyLinkTemplate(matcher.urlTemplate, tagValue) || tagValue,
           type,
+          name: matcher.nameTemplate !== undefined ? applyLinkTemplate(matcher.nameTemplate, tagValue) : undefined,
         };
       });
 

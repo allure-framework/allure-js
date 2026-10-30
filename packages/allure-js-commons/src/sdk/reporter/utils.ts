@@ -262,7 +262,7 @@ export const escapeRegExp = (value: string): string => {
 };
 
 // TODO: may also use URL.canParse instead (requires node.js v18.17, v19.9, or higher)
-const isUrl = (potentialUrl: string) => {
+export const isUrl = (potentialUrl: string) => {
   // Short-circuits the check for many short URL cases, bypassing the try-catch logic.
   if (potentialUrl.indexOf(":") === -1) {
     return false;
