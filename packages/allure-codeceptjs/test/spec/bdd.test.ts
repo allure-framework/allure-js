@@ -226,3 +226,115 @@ it("should support broken bdd steps for raw errors", async () => {
     ],
   });
 });
+
+it("keeps consecutive Gherkin steps as siblings when they call page-object methods", async () => {
+  const { tests, attachments } = await runCodeceptJsInlineTest({
+    "features/basic.feature": `Feature: nesting
+  Scenario: page-object steps
+    Given action 1
+    When action 2
+    Then action 3
+    And action 4
+  Scenario: failed page-object step
+    Given action 1
+    When action 2
+    Then failing action
+    And ignored action
+  Scenario: following scenario
+    Given action 1`,
+    "step_definitions/steps.js": `
+      const { actions } = inject();
+      Given("action 1", async () => { await actions.perform(); });
+      When("action 2", async () => { await actions.perform(); });
+      Then("action 3", async () => { await actions.perform(); });
+      Then("action 4", async () => { await actions.perform(); });
+      Then("failing action", async () => { await actions.fail(); });
+      Then("ignored action", () => { throw new Error("must not execute"); });
+    `,
+    "pages/actions.js": `
+      const { I } = inject();
+      module.exports = {
+        async perform() {
+          await I.pass();
+        },
+        async fail() {
+          await I.fail();
+        },
+      };
+    `,
+    "helper.js": `
+      const Helper = require("@codeceptjs/helper");
+      const { attachment } = require("allure-js-commons");
+      module.exports = class extends Helper {
+        async pass() { await attachment("passed artifact", "passed", "text/plain"); }
+        async fail() {
+          await attachment("failed artifact", "failed", "text/plain");
+          throw new Error("original failure");
+        }
+      };
+    `,
+    "codecept.conf.js": `
+      const { setCommonPlugins } = require("./codeceptjs-configure.js");
+      setCommonPlugins();
+      let stopOrder = 0;
+      exports.config = {
+        output: "./output",
+        plugins: {
+          allure: {
+            require: require.resolve("allure-codeceptjs"), enabled: true,
+            listeners: [{ afterStepStop(step) {
+              step.parameters.push({ name: "stop order", value: String(++stopOrder) });
+            } }],
+          },
+          retryFailedStep: { enabled: false },
+        },
+        gherkin: { features: "./features/*.feature", steps: ["./step_definitions/steps.js"] },
+        helpers: { CustomHelper: { require: "./helper.js" } },
+        include: { actions: "./pages/actions.js" },
+      };
+    `,
+  });
+
+  expect(tests).toHaveLength(3);
+  const passed = tests.find(({ name }) => name === "page-object steps")!;
+  expect(passed.status).toBe(Status.PASSED);
+  expect(passed.steps).toMatchObject(
+    ["Given action 1", "When action 2", "Then action 3", "And action 4"].map((name) => ({
+      name,
+      status: Status.PASSED,
+      steps: [
+        {
+          name: "On actions: perform",
+          status: Status.PASSED,
+          steps: [{ name: "I pass" }, { name: "passed artifact" }],
+        },
+      ],
+    })),
+  );
+  const failed = tests.find(({ name }) => name === "failed page-object step")!;
+  expect(failed).toMatchObject({ status: Status.BROKEN, statusDetails: { message: "original failure" } });
+  expect(failed.steps.map(({ name, status }) => ({ name, status }))).toEqual([
+    { name: "Given action 1", status: Status.PASSED },
+    { name: "When action 2", status: Status.PASSED },
+    { name: "Then failing action", status: Status.BROKEN },
+  ]);
+  const failingStep = failed.steps[2];
+  expect(failingStep.statusDetails.message).toBe("original failure");
+  expect(failingStep.steps[0]).toMatchObject({
+    name: "On actions: fail",
+    status: Status.BROKEN,
+    steps: [{ name: "I fail", status: Status.BROKEN }, { name: "failed artifact" }],
+  });
+  const stopOrder = (step: { parameters: { name: string; value: string }[] }) =>
+    Number(step.parameters.find(({ name }) => name === "stop order")!.value);
+  const failedPage = failingStep.steps[0];
+  expect(stopOrder(failedPage.steps[0])).toBeLessThan(stopOrder(failedPage));
+  expect(stopOrder(failedPage)).toBeLessThan(stopOrder(failingStep));
+  const artifact = failingStep.steps[0].steps.find(({ name }) => name === "failed artifact")!.attachments[0];
+  expect(Buffer.from(attachments[artifact.source] as string, "base64").toString()).toBe("failed");
+  const following = tests.find(({ name }) => name === "following scenario")!;
+  expect(following).toMatchObject({
+    status: Status.PASSED,
+    steps: [{ name: "Given action 1", status: Status.PASSED }],
+  });
+});
