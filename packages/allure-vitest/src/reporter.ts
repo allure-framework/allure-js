@@ -47,12 +47,20 @@ const normalizeSetupFilePath = (setupFilePath: string) =>
   setupFilePath.startsWith("file://") ? fileURLToPath(setupFilePath) : setupFilePath;
 
 export default class AllureVitestReporter implements Reporter {
+  onFinished?: (files: Task[]) => void;
+
   private allureReporterRuntime?: ReporterRuntime;
   private config: AllureVitestReporterConfig;
   private globalRuntimeMessages: RuntimeMessage[] = [];
 
   constructor(config: AllureVitestReporterConfig) {
     this.config = config;
+
+    const { version } = localRequire("vitest/package.json") as { version: string };
+    // Vitest 3 calls both hooks; register the legacy hook only on Vitest 1/2.
+    if (Number(version.split(".")[0]) < 3) {
+      this.onFinished = (files) => this.writeTasks(files);
+    }
   }
 
   onInit(vitest: Vitest) {
@@ -116,6 +124,7 @@ export default class AllureVitestReporter implements Reporter {
 
   // eslint-disable-next-line @typescript-eslint/array-type
   onTestRunEnd(tests: ReadonlyArray<TestModule>) {
+    const tasks: Task[] = [];
     for (const test of tests) {
       // actually there's the task property in the test object
       // @ts-ignore
@@ -124,7 +133,15 @@ export default class AllureVitestReporter implements Reporter {
       }
 
       // @ts-ignore
-      this.handleTask(test.task as unknown as Task);
+      tasks.push(test.task as unknown as Task);
+    }
+
+    this.writeTasks(tasks);
+  }
+
+  private writeTasks(tasks: readonly Task[]) {
+    for (const task of tasks) {
+      this.handleTask(task);
     }
 
     const globalMessages = [...this.globalRuntimeMessages, ...takeGlobalRuntimeMessages()];
