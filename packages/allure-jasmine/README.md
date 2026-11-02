@@ -19,6 +19,7 @@ The docs for Allure Jasmine are available at [https://allurereport.org/docs/jasm
 ## Features
 
 - writes Allure results from Jasmine reporter events
+- supports Jasmine's native parallel execution with a worker-local reporter
 - supports runtime metadata, nested steps, parameters, and attachments through `allure-js-commons`
 - works with Allure Report 2 and Allure Report 3
 
@@ -58,6 +59,53 @@ When the test run completes, the result files will be generated in the `./allure
 When a runner omits the spec filename, Allure uses the suite names and spec name as its `fullName` and identity, and builds `titlePath` from the known suites. No package label is added. Test plans can use this suite-based `fullName` as a selector. Specs with identical suite and spec names cannot be distinguished without filenames; keep these names unique when using such runners.
 
 You may select another location, or further customize the reporter's behavior with [the configuration options](https://allurereport.org/docs/jasmine-configuration/).
+
+### Parallel execution
+
+For Jasmine 5 or newer, register the reporter in each worker through `requires`.
+Create `spec/support/allure.mjs`:
+
+```js
+import AllureJasmineReporter from "allure-jasmine";
+
+jasmine.getEnv().addReporter(new AllureJasmineReporter({ resultsDir: "allure-results" }));
+```
+
+Add it to `spec/support/jasmine.json`:
+
+```json
+{
+  "spec_dir": "spec",
+  "spec_files": ["**/*[sS]pec.?(m)js"],
+  "requires": ["./spec/support/allure.mjs"]
+}
+```
+
+Then run, for example:
+
+```sh
+npx jasmine --parallel=2
+```
+
+Jasmine loads `requires` in every worker before loading helpers. This allows each
+worker to register its own reporter and runtime for metadata, steps, fixtures, and
+attachments. All workers write to the same results directory; their result files
+are combined when generating the report.
+
+Keep this setup file out of the `helpers` patterns and remove any other Allure
+reporter registration. Jasmine forbids adding reporters from helpers in parallel
+mode. Registering the Allure reporter on the main `ParallelRunner` is also
+unsupported: its events can interleave across workers. This worker-local setup
+does not require setting `reporterCapabilities.parallel` and also works with
+sequential execution.
+
+For CommonJS setup, use a `.cjs` file with
+`const AllureJasmineReporter = require("allure-jasmine")` and list that file in
+`requires` instead. Allure test plans continue to select tests by their IDs or
+file-based selectors in workers.
+
+Follow [Jasmine's parallel execution constraints](https://jasmine.github.io/tutorials/running_specs_in_parallel),
+including its requirements for randomization and hooks.
 
 ### View the report
 
