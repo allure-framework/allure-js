@@ -188,4 +188,9 @@ it("keeps native screenshot callback replacement, command callbacks and errors",
     statusDetails: { message: expect.stringContaining("original callback failure") },
   });
   expect(failed.attachments).toHaveLength(0);
+  const failedScreenshot = failed.steps.find(({ name }) => name === "callback throws")!;
+  expect(failedScreenshot.attachments).toEqual([
+    expect.objectContaining({ name: "callback throws", type: ContentType.PNG }),
+  ]);
+  expect(attachments).toHaveProperty(failedScreenshot.attachments[0].source);
 });

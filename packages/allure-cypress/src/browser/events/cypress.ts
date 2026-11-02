@@ -17,9 +17,11 @@ export const enableReportingOfCypressScreenshots = () => {
   };
   const original = screenshot.onAfterScreenshot;
   screenshot.onAfterScreenshot = function (...args) {
-    const result = original.apply(this, args);
-    onAfterScreenshot(...args);
-    return result;
+    try {
+      return original.apply(this, args);
+    } finally {
+      onAfterScreenshot(...args);
+    }
   };
 };
 
