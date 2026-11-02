@@ -42,6 +42,7 @@ export class AllureCucumberWorld extends World implements AllureCucumberLegacyAp
   /**
    * @deprecated please use import { link } from "allure-js-commons" instead.
    */
+  // @ts-ignore cucumber >= 10.9 declares World.link as (text: string) => void
   link = (type: string, url: string, name?: string) => Promise.resolve(allure.link(url, name, type));
   /**
    * @deprecated please use import { parameter } from "allure-js-commons" instead.

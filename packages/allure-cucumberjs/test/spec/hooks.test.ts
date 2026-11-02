@@ -148,6 +148,63 @@ it("handles failed global hooks", async () => {
   expect(afterAllErrors.filter((error) => error.message === "AfterAll hook failed: afterAll error")).toHaveLength(1);
 });
 
+// Cucumber 13 runs test run hooks in each of the 4 workers in parallel mode
+it.each([
+  [false, 1],
+  [true, 4],
+])(
+  "reports each failed global hook execution once next to passed ones (parallel: %s)",
+  async (parallel, executions) => {
+    const beforeAllResults = await runCucumberInlineTest(["hooks"], ["mixedBeforeAll"], { parallel });
+    const beforeAllErrors = Object.values(beforeAllResults.globals ?? {}).flatMap((info) => info.errors);
+
+    expect(beforeAllErrors).toEqual(
+      Array.from({ length: executions }, () =>
+        expect.objectContaining({
+          status: Status.BROKEN,
+          message: "BeforeAll hook failed: beforeAll error",
+        }),
+      ),
+    );
+
+    const afterAllResults = await runCucumberInlineTest(["hooks"], ["mixedAfterAll"], { parallel });
+    const afterAllErrors = Object.values(afterAllResults.globals ?? {}).flatMap((info) => info.errors);
+
+    expect(afterAllResults.tests).toEqual([
+      expect.objectContaining({
+        status: Status.PASSED,
+      }),
+    ]);
+    expect(afterAllErrors).toEqual(
+      Array.from({ length: executions }, () =>
+        expect.objectContaining({
+          status: Status.BROKEN,
+          message: "AfterAll hook failed: afterAll error",
+        }),
+      ),
+    );
+  },
+);
+
+it("doesn't report global hooks skipped by a dry run", async () => {
+  const { globals } = await runCucumberInlineTest(
+    ["hooks"],
+    ["mixedBeforeAll"],
+    undefined,
+    (reporterFilePath) => `
+      module.exports = {
+        default: {
+          paths: ["./**/*.feature"],
+          dryRun: true,
+          format: ['"${reporterFilePath}":"ignore.txt"'],
+        }
+      }
+    `,
+  );
+
+  expect(Object.values(globals ?? {}).flatMap((info) => info.errors)).toEqual([]);
+});
+
 it("handles hooks with steps", async () => {
   const { tests, groups } = await runCucumberInlineTest(["hooks"], ["hooksSteps"]);
 

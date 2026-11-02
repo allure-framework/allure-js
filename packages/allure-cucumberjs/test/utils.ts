@@ -35,6 +35,7 @@ export const runCucumberInlineTest = async (
       default: {
         paths: ["./**/*.feature"],
         ${parallel ? "parallel: 4," : ""}
+        ${cwd ? `import: [${JSON.stringify(`${supportTempPath.replaceAll("\\", "/")}/**/*.js`)}],` : ""}
         format: ["summary", '"${reporterFilePath}":"ignore.txt"'],
         formatOptions: {
           labels: [
