@@ -28,16 +28,18 @@ const startAttempt = (task: RunnerTestCase) => {
   // The next attempt starts only after all callbacks and teardown of the previous attempt have completed.
   // Keep Vitest's artifacts intact: only store the range belonging to this attempt.
   if (previousAttempt && task.result) {
+    const errors = task.result.errors?.slice(previousAttempt.errorOffset);
     task.meta.allureAttempts ??= [];
     task.meta.allureAttempts.push({
       result: {
         ...task.result,
-        state: task.result.state === "run" ? "fail" : task.result.state,
+        // Vitest 5 resets the state before the next repeat starts, so the attempt errors tell its outcome
+        state: task.result.state === "run" ? (errors?.length ? "fail" : "pass") : task.result.state,
         startTime: previousAttempt.startTime,
         duration: previousAttempt.duration ?? 0,
         retryCount: previousAttempt.retryCount,
         repeatCount: previousAttempt.repeatCount,
-        errors: task.result.errors?.slice(previousAttempt.errorOffset),
+        errors,
       },
       runtimeMessages: task.meta.allureRuntimeMessages ?? [],
       artifactStart: previousAttempt.artifactStart,
@@ -74,8 +76,18 @@ vitest.aroundEach(async (run, { task }) => {
   }
 });
 
+// Vitest 5 generates the commands object before the reporter registers its commands
+const existsInTestPlan = async (task: RunnerTestCase): Promise<boolean | undefined> => {
+  if (commands?.existsInTestPlan) {
+    return await commands.existsInTestPlan(task);
+  }
+
+  // @ts-expect-error
+  return await globalThis.__vitest_browser_runner__?.commands?.triggerCommand?.("existsInTestPlan", [task]);
+};
+
 vitest.beforeEach(async ({ skip, task }) => {
-  const inTestPlan = (await commands?.existsInTestPlan?.(task)) ?? true;
+  const inTestPlan = (await existsInTestPlan(task)) ?? true;
 
   if (!inTestPlan) {
     task.meta.allureSkip = true;

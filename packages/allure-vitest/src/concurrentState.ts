@@ -1,7 +1,8 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 
-import type { Test } from "@vitest/runner";
-import { getCurrentTest as getCurrentTestGlobal } from "@vitest/runner";
+import type { RunnerTestCase as Test } from "vitest";
+
+import { getCurrentTest as getCurrentTestGlobal } from "./vitestRunner.js";
 
 type AllureAwareGlobalThis = { __allureVitestAsyncContext?: AllureVitestAsyncContext };
 

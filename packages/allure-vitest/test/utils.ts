@@ -40,6 +40,8 @@ export const setupModulePath = getPosixPath(require.resolve("allure-vitest/setup
 
 export const reporterModulePath = getPosixPath(require.resolve("allure-vitest/reporter"));
 
+export const vitestMajorVersion = Number((require("vitest/package.json") as { version: string }).version.split(".")[0]);
+
 const createReporterOptions = (allureResultsPath: string, options: VitestConfigOptions = {}) => `
           links: {
             issue: {

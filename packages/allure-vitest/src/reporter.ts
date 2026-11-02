@@ -21,12 +21,11 @@ import {
   md5,
 } from "allure-js-commons/sdk/reporter";
 import type { RunnerTask as Task } from "vitest";
-import type { TestModule, Vitest } from "vitest/node";
-import type { Reporter } from "vitest/reporters";
+import type { Reporter, TestModule, Vitest } from "vitest/node";
 
 import { commands as allureBrowserCommands } from "./browser/index.js";
+import { takeGlobalRuntimeMessages } from "./globalMessages.js";
 import { isMatcherMessage } from "./matcherMessages.js";
-import { takeGlobalRuntimeMessages } from "./runtime.js";
 import { getTestMetadata } from "./utils.js";
 import type { AllureVitestAttempt, TaskResultLike, VitestArtifact } from "./vitest-artifacts.js";
 
@@ -99,6 +98,8 @@ export default class AllureVitestReporter implements Reporter {
 
         for (const [name, command] of Object.entries(allureBrowserCommands)) {
           project.config.browser.commands[name] ??= command;
+          // Vitest 5 creates the browser server before reporters are initialized
+          project.browser?.registerCommand(name as keyof typeof allureBrowserCommands, command);
         }
       }
     }

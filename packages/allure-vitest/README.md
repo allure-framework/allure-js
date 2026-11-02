@@ -32,10 +32,10 @@ Install `allure-vitest` using a package manager of your choice. For example:
 npm install -D allure-vitest
 ```
 
-> If you're a **Yarn PnP** user, you must also explicitly install `@vitest/runner` and `allure-js-commons`:
+> If you're a **Yarn PnP** user, you must also explicitly install `allure-js-commons` (and `@vitest/runner` with Vitest older than 4.1):
 >
 > ```shell
-> yarn add --dev @vitest/runner allure-js-commons
+> yarn add --dev allure-js-commons
 > ```
 >
 > Keep in mind, that `allure-js-commons` and `allure-vitest` must have the same version. The same goes for `vitest` and `@vitest/runner`. Use [`yarn info`](https://yarnpkg.com/cli/info) to check the versions.
@@ -47,8 +47,8 @@ Install Allure Report separately when you want to render the generated `allure-r
 
 ## Supported versions and platforms
 
-- Node mode: `vitest >= 1.3.0` and a matching `@vitest/runner`
-- Browser mode: `vitest >= 4.1.0` and matching Vitest browser/runner packages
+- Node mode: `vitest >= 1.3.0` (with a matching `@vitest/runner` for Vitest older than 4.1)
+- Browser mode: `vitest >= 4.1.0` and a matching Vitest browser provider package
 - Linux, macOS, and Windows wherever Vitest supports Node.js
 - this repository is validated in CI on Node.js 20 and 22
 

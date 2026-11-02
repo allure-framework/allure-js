@@ -1,21 +1,15 @@
-import {
-  type SuiteCollector,
-  type Task,
-  type Test,
-  getCurrentSuite,
-  getCurrentTest as getCurrentTestGlobal,
-} from "@vitest/runner";
 import { type RuntimeMessage, isGlobalRuntimeMessage } from "allure-js-commons/sdk";
 import { BaseMessageTestRuntime } from "allure-js-commons/sdk/runtime";
-import type { TaskMeta } from "vitest";
+import type { SuiteCollector, TaskMeta, RunnerTask as Task, RunnerTestCase as Test } from "vitest";
+
+import { addGlobalMessage } from "./globalMessages.js";
+import { getCurrentSuite, getCurrentTest as getCurrentTestGlobal } from "./vitestRunner.js";
 
 let getCurrentTest: () => Test | undefined = getCurrentTestGlobal;
 
 export const setGetCurrentTest = (fn: () => Test | undefined) => {
   getCurrentTest = fn;
 };
-
-export const ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_KEY = "__allureVitestGlobalRuntimeMessages";
 
 export const ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_META_KEY = "allureGlobalRuntimeMessages";
 
@@ -32,27 +26,11 @@ export type RuntimeMessageTaskMeta = TaskMeta & {
 
 export const getCurrentTask = (): Task | undefined => getCurrentTest();
 
-export const addGlobalMessage = (message: RuntimeMessage) => {
-  const holder = globalThis as unknown as Record<string, RuntimeMessage[] | undefined>;
-  const messages = (holder[ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_KEY] ??= []);
-
-  messages.push(message);
-};
-
 export const addMessageToMeta = (meta: TaskMeta, key: RuntimeMessageMetaKey, message: RuntimeMessage) => {
   const typedMeta = meta as RuntimeMessageTaskMeta;
   const messages = (typedMeta[key] ??= []);
 
   messages.push(message);
-};
-
-export const takeGlobalRuntimeMessages = (): RuntimeMessage[] => {
-  const holder = globalThis as unknown as Record<string, RuntimeMessage[] | undefined>;
-  const result = [...(holder[ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_KEY] ?? [])];
-
-  holder[ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_KEY] = [];
-
-  return result;
 };
 
 export const processTask = (task: Task | SuiteCollector, message: RuntimeMessage, isGlobal = false) => {

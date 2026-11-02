@@ -69,8 +69,7 @@
     "@types/node": "^26.0.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@vitest/browser-playwright": "^4.1.11",
-    "@vitest/runner": "^4.1.11",
+    "@vitest/browser-playwright": "^5.0.5",
     "allure-commandline": "^2.29.0",
     "npm-run-all2": "^9.0.2",
     "playwright": "^1.62.0",
@@ -78,10 +77,16 @@
     "react-dom": "^19.2.4",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.11"
+    "vite": "^8.0.16",
+    "vitest": "^5.0.5"
   },
   "peerDependencies": {
     "@vitest/runner": ">=1.3.0",
     "vitest": ">=1.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@vitest/runner": {
+      "optional": true
+    }
   }
 }
