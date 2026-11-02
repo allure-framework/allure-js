@@ -174,6 +174,16 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
     global.expect = wrapExpectFn(global.expect)!;
     global.expectAsync = wrapExpectFn(global.expectAsync)!;
+
+    // fail() adds a failed expectation to the current runnable directly, bypassing expect()
+    const originalFail = global.fail;
+    if (typeof originalFail === "function") {
+      global.fail = function (this: unknown, ...args: Parameters<typeof fail>) {
+        onExpectationResult(false);
+
+        return originalFail.apply(this, args);
+      };
+    }
   }
 
   suiteStarted(suite: jasmine.SuiteResult): void {
@@ -309,15 +319,17 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   };
 
   #stopFixture = (uuid: string, error?: Error | string) => {
-    const skipReason = getSkipReasonFromError(error);
-    // pending() and notApplicable() in hooks skip specs, they are not hook failures
+    const fixtureName = this.currentAllureFixtureNames.get(uuid) ?? "hook";
+    // pending() and notApplicable() skip the spec only in beforeEach/afterEach;
+    // in beforeAll/afterAll Jasmine reports them as suite failures
+    const skipReason =
+      fixtureName === "beforeEach" || fixtureName === "afterEach" ? getSkipReasonFromError(error) : undefined;
     const statusAndDetails =
       skipReason === undefined
         ? this.#resolveStatusWithDetails(error)
         : { status: Status.SKIPPED, statusDetails: { message: skipReason } };
     this.allureRuntime.updateFixture(uuid, (f) => Object.assign(f, statusAndDetails));
     if (error !== undefined && skipReason === undefined) {
-      const fixtureName = this.currentAllureFixtureNames.get(uuid) ?? "hook";
       this.allureRuntime.applyGlobalRuntimeMessages([
         toGlobalErrorMessage({
           name: fixtureName,

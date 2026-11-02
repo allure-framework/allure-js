@@ -276,6 +276,31 @@ describe("skipping specs from hooks", () => {
     );
     expect(allErrors).toEqual([]);
   });
+
+  it("should report pending() in afterAll as a hook failure", async () => {
+    const { tests, groups, globals } = await runJasmineInlineTest({
+      "spec/test/sample.spec.js": `
+        afterAll(() => {
+          pending("cleanup");
+        });
+
+        it("completed", () => {});
+      `,
+    });
+    const allErrors = Object.values(globals ?? {}).flatMap((info) => info.errors);
+
+    expect(tests).toHaveLength(1);
+    expect(tests[0].status).toBe(Status.PASSED);
+    expect(groups).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: "afterAll",
+          afters: [expect.objectContaining({ status: Status.BROKEN })],
+        }),
+      ]),
+    );
+    expect(allErrors).toEqual([expect.objectContaining({ status: Status.BROKEN })]);
+  });
 });
 
 it("should report hooks for a test in a sub-suite", async () => {
