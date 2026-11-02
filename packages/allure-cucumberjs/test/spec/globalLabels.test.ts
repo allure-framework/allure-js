@@ -11,7 +11,7 @@ it("should handle global labels", async () => {
     module.exports = {
       default: {
         paths: ["./**/*.feature"],
-        format: ["summary", "${reporterFilePath}"],
+        format: ["summary", '"${reporterFilePath}"'],
         formatOptions: {
           globalLabels: [
             {
@@ -45,7 +45,7 @@ it("should handle global labels as map", async () => {
     module.exports = {
       default: {
         paths: ["./**/*.feature"],
-        format: ["summary", "${reporterFilePath}"],
+        format: ["summary", '"${reporterFilePath}"'],
         formatOptions: {
           globalLabels: {
             foo: "bar",

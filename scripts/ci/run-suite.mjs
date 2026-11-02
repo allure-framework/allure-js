@@ -38,8 +38,9 @@ const suites = new Map([
     {
       compileFrom: ["allure-mocha"],
       testCommands: [
-        createWorkspaceScriptCommand("allure-mocha", "test:serial"),
-        createWorkspaceScriptCommand("allure-mocha", "test:runner"),
+        // Mocha 12 cannot be loaded under Yarn PnP on Node.js 20
+        createWorkspaceScriptCommand("allure-mocha", "test:serial", { minNodeMajor: 22 }),
+        createWorkspaceScriptCommand("allure-mocha", "test:runner", { minNodeMajor: 22 }),
       ],
     },
   ],
@@ -48,8 +49,9 @@ const suites = new Map([
     {
       compileFrom: ["allure-mocha"],
       testCommands: [
-        createWorkspaceScriptCommand("allure-mocha", "test:parallel"),
-        createWorkspaceScriptCommand("allure-mocha", "test:runner-parallel"),
+        // Mocha 12 cannot be loaded under Yarn PnP on Node.js 20
+        createWorkspaceScriptCommand("allure-mocha", "test:parallel", { minNodeMajor: 22 }),
+        createWorkspaceScriptCommand("allure-mocha", "test:runner-parallel", { minNodeMajor: 22 }),
       ],
     },
   ],
@@ -81,11 +83,13 @@ const suites = new Map([
         createWorkspaceScriptCommand("allure-tinybench", "test"),
         createWorkspaceScriptCommand("allure-bun", "test"),
         createWorkspaceScriptCommand("allure-chai", "test"),
-        createWorkspaceScriptCommand("allure-cucumberjs", "test"),
+        // CucumberJS 13 requires Node.js 22+
+        createWorkspaceScriptCommand("allure-cucumberjs", "test", { minNodeMajor: 22 }),
         createWorkspaceScriptCommand("allure-jasmine", "test"),
         createWorkspaceScriptCommand("allure-jest", "test"),
         createWorkspaceScriptCommand("allure-node-test", "test", { minNodeMajor: 26 }),
-        createWorkspaceScriptCommand("allure-codeceptjs", "test"),
+        // Mocha 12 cannot be loaded under Yarn PnP on Node.js 20
+        createWorkspaceScriptCommand("allure-codeceptjs", "test", { minNodeMajor: 22 }),
         createWorkspaceScriptCommand("newman-reporter-allure", "test"),
       ],
     },

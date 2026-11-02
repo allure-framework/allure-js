@@ -97,4 +97,10 @@ it("reports undefined and pending tests and steps", async () => {
       ]),
     }),
   );
+
+  const ambiguousStep = tests
+    .find((test) => test.name === "d")
+    ?.steps.find((step) => step.name === "Then ambiguous step");
+  expect(ambiguousStep?.statusDetails.message).toContain("ambiguous step");
+  expect(ambiguousStep?.statusDetails.message).toContain("/^ambiguous step$/");
 });
