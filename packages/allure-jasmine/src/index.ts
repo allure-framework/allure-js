@@ -146,7 +146,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     this.#stopScope();
   }
 
-  specStarted(spec: jasmine.SpecResult & { filename?: string }): void {
+  specStarted(spec: Omit<jasmine.SpecResult, "filename"> & { filename?: string }): void {
     const { fullName, legacyFullName, titlePath, labels, links, name } = getAllureNamesAndLabels(
       spec.filename,
       this.getCurrentSpecPath(),
@@ -172,7 +172,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     }
   }
 
-  specDone(spec: jasmine.SpecResult & { filename: string }): void {
+  specDone(spec: Omit<jasmine.SpecResult, "filename"> & { filename?: string }): void {
     if (!this.currentAllureTestUuid) {
       return;
     }
@@ -188,7 +188,9 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
       result.labels.push(getFrameworkLabel("jasmine"));
       result.labels.push(getHostLabel());
       result.labels.push(getThreadLabel());
-      result.labels.push(getPackageLabel(spec.filename));
+      if (spec.filename) {
+        result.labels.push(getPackageLabel(spec.filename));
+      }
 
       if (spec.status === "pending" || spec.status === "disabled" || spec.status === "excluded") {
         result.status = Status.SKIPPED;
