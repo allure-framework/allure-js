@@ -9,11 +9,45 @@ import { afterEach, expect, it } from "vitest";
 import type { RunnerTestSuite as Suite, RunnerTask as Task } from "vitest";
 import type { TestModule, Vitest } from "vitest/node";
 
+import { runVitestInlineTest } from "../utils.js";
+
 const vitestPackage = createRequire(import.meta.url)("vitest/package.json") as { version: string };
 const installedVersion = vitestPackage.version;
 
 afterEach(() => {
   vitestPackage.version = installedVersion;
+});
+
+it("writes concurrent tests once with their own descriptions and parameters", async () => {
+  const { tests } = await runVitestInlineTest({
+    "sample.test.ts": `
+      import { test } from "vitest";
+      import { description, parameter } from "allure-js-commons";
+
+      let started = 0;
+      let release;
+      const bothStarted = new Promise(resolve => { release = resolve; });
+
+      test.concurrent.each([1, 2])("case %i", async value => {
+        await description("description " + value);
+        if (++started === 2) release();
+        await bothStarted;
+        await parameter("case", String(value));
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(2);
+  for (const value of [1, 2]) {
+    expect(tests).toContainEqual(
+      expect.objectContaining({
+        name: `case ${value}`,
+        status: "passed",
+        description: `description ${value}`,
+        parameters: [{ name: "case", value: String(value) }],
+      }),
+    );
+  }
 });
 
 it.each(["1.3.0", "2.1.1", "3.2.4", "4.1.11"])("writes each run once with the Vitest %s lifecycle", async (version) => {

@@ -52,13 +52,15 @@ export default class AllureVitestReporter implements Reporter {
   private allureReporterRuntime?: ReporterRuntime;
   private config: AllureVitestReporterConfig;
   private globalRuntimeMessages: RuntimeMessage[] = [];
+  private readonly vitestVersion: number[];
 
   constructor(config: AllureVitestReporterConfig) {
     this.config = config;
 
     const { version } = localRequire("vitest/package.json") as { version: string };
+    this.vitestVersion = version.split(".").map(Number);
     // Vitest 3 calls both hooks; register the legacy hook only on Vitest 1/2.
-    if (Number(version.split(".")[0]) < 3) {
+    if (this.vitestVersion[0] < 3) {
       this.onFinished = (files) => this.writeTasks(files);
     }
   }
@@ -83,8 +85,7 @@ export default class AllureVitestReporter implements Reporter {
   private registerSetupFile(vitest: Vitest) {
     for (const project of vitest.projects) {
       if (project.config.browser.enabled) {
-        const { version: vitestVersion } = localRequire("vitest/package.json") as { version: string };
-        const [major, minor] = vitestVersion.split(".").map(Number);
+        const [major, minor] = this.vitestVersion;
         if (major < 4 || (major === 4 && minor < 1)) {
           throw new Error(
             "allure-vitest browser mode requires Vitest 4.1 or newer. Node mode supports Vitest >=1.3.0.",
