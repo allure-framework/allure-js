@@ -33,7 +33,8 @@ describe("instrumentPerformance", () => {
     expect(result).toEqual({
       id: expect.any(String),
       key: "report.generate",
-      value: 12.5,
+      // Node.js 20 derives the duration from start and end, which adds float rounding.
+      value: expect.closeTo(12.5, 6),
       start: performance.timeOrigin + startTime,
       stop: performance.timeOrigin + startTime + 12.5,
     });
