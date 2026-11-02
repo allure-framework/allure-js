@@ -2,7 +2,7 @@
 import type { EventEmitter } from "events";
 
 import { ContentType, Stage, Status } from "allure-js-commons";
-import { getStatusFromError } from "allure-js-commons/sdk";
+import { getStatusFromError, serialize } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
@@ -28,6 +28,7 @@ class AllureReporter {
   allureConfig: ReporterConfig;
   runningItems: RunningItem[] = [];
   currentCollection: CollectionDefinition;
+  iterationData: Record<string, unknown>[];
   pmItemsByAllureUuid: Map<string, PmItem> = new Map();
   currentTest?: string;
   currentScope?: string;
@@ -38,11 +39,13 @@ class AllureReporter {
     reporterConfig: ReporterConfig,
     options: {
       collection: CollectionDefinition;
+      iterationData?: Record<string, unknown>[];
     },
   ) {
     const { resultsDir, ...restConfig } = reporterConfig;
 
     this.currentCollection = options.collection;
+    this.iterationData = options.iterationData ?? [];
     this.rootCollectionName = options.collection.name;
     this.allureConfig = reporterConfig;
     this.allureRuntime = new ReporterRuntime({
@@ -106,12 +109,14 @@ class AllureReporter {
     const threadLabel = getThreadLabel();
     const { labels, links } = extractMeta(args.item.events);
     const legacyFullName = `${testPath.join("/")}#${item.name}`;
+    const iterationData = this.iterationData[Math.min(args.cursor.iteration, this.iterationData.length - 1)] ?? {};
 
     this.currentTest = this.allureRuntime.startTest({
       name: args.item.name,
       fullName,
       titlePath,
       stage: Stage.RUNNING,
+      parameters: Object.entries(iterationData).map(([name, value]) => ({ name, value: serialize(value) })),
       labels: [
         getLanguageLabel(),
         getFrameworkLabel("newman"),
