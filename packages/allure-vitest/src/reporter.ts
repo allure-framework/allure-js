@@ -24,8 +24,8 @@ import type { RunnerTask as Task } from "vitest";
 import type { Reporter, TestModule, Vitest } from "vitest/node";
 
 import { commands as allureBrowserCommands } from "./browser/index.js";
+import { takeGlobalRuntimeMessages } from "./globalMessages.js";
 import { isMatcherMessage } from "./matcherMessages.js";
-import { takeGlobalRuntimeMessages } from "./runtime.js";
 import { getTestMetadata } from "./utils.js";
 import type { AllureVitestAttempt, TaskResultLike, VitestArtifact } from "./vitest-artifacts.js";
 
