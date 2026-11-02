@@ -79,7 +79,9 @@ export default class AllureCucumberReporter extends Formatter {
   private readonly fixtureUuids: Map<string, string> = new Map();
   private readonly testRunHookTypes: Map<string, messages.HookType | undefined> = new Map();
   private readonly testRunHookStartedMap: Map<string, string> = new Map();
-  private readonly reportedTestRunHookIds: Set<string> = new Set();
+  // executions of test run hooks running in this process, by hook id
+  private readonly runningTestRunHooks: Map<string, string> = new Map();
+  private readonly reportedTestRunHookStartedIds: Set<string> = new Set();
 
   constructor(options: IFormatterOptions) {
     super(options);
@@ -201,7 +203,11 @@ export default class AllureCucumberReporter extends Formatter {
   }
 
   private emitTestRunHookGlobalError(hookId: string, name: string, error: unknown): void {
-    this.reportedTestRunHookIds.add(hookId);
+    // the same execution is reported again with the testRunHookFinished message (Cucumber 12.3+)
+    const testRunHookStartedId = this.runningTestRunHooks.get(hookId);
+    if (testRunHookStartedId) {
+      this.reportedTestRunHookStartedIds.add(testRunHookStartedId);
+    }
     this.allureRuntime.applyGlobalRuntimeMessages([
       toGlobalErrorMessage({
         name,
@@ -229,6 +235,7 @@ export default class AllureCucumberReporter extends Formatter {
         break;
       case !!envelope.testRunHookStarted:
         this.testRunHookStartedMap.set(envelope.testRunHookStarted.id, envelope.testRunHookStarted.hookId);
+        this.runningTestRunHooks.set(envelope.testRunHookStarted.hookId, envelope.testRunHookStarted.id);
         break;
       case !!envelope.testRunHookFinished:
         this.onTestRunHookFinished(envelope.testRunHookFinished);
@@ -757,12 +764,18 @@ export default class AllureCucumberReporter extends Formatter {
   private onTestRunHookFinished(data: messages.TestRunHookFinished) {
     const hookId = this.testRunHookStartedMap.get(data.testRunHookStartedId);
 
-    // dry runs report every test run hook as skipped
-    if (!hookId || data.result.status !== TestStepResultStatus.FAILED || this.reportedTestRunHookIds.has(hookId)) {
-      return;
+    if (hookId && this.runningTestRunHooks.get(hookId) === data.testRunHookStartedId) {
+      this.runningTestRunHooks.delete(hookId);
     }
 
-    this.reportedTestRunHookIds.add(hookId);
+    // dry runs report every test run hook as skipped
+    if (
+      !hookId ||
+      data.result.status !== TestStepResultStatus.FAILED ||
+      this.reportedTestRunHookStartedIds.has(data.testRunHookStartedId)
+    ) {
+      return;
+    }
 
     const name = this.testRunHookTypes.get(hookId) === "AFTER_TEST_RUN" ? "AfterAll hook" : "BeforeAll hook";
     const error = this.exceptionToError(data.result.exception?.message, data.result.exception) ?? {
