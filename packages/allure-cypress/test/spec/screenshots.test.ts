@@ -110,3 +110,87 @@ it("attaches runtime screenshots", async () => {
   expect(attachments).toHaveProperty(source1);
   expect(attachments).toHaveProperty(source2);
 });
+
+it.each(["before", "after"])("preserves screenshot callbacks registered %s Allure", async (order) => {
+  const { tests, attachments, globals } = await runCypressInlineTest({
+    "cypress/support/e2e.js": ({ allureCypressModulePath }) => `
+      const capturePaths = [];
+      const registerCallback = () => Cypress.Screenshot.defaults({
+        onAfterScreenshot(_el, details) { capturePaths.push(details.path); },
+      });
+      ${order === "before" ? "registerCallback();" : ""}
+      require("${allureCypressModulePath}");
+      ${order === "after" ? "registerCallback();" : ""}
+      after(() => {
+        expect(capturePaths.length, "external screenshot callback calls").to.eq(2);
+      });
+    `,
+    "cypress/e2e/sample.cy.js": () => `
+      it("manual", () => { cy.screenshot("shared"); });
+      it("failure", () => { expect(true).to.eq(false); });
+    `,
+  });
+
+  expect(Object.values(globals ?? {}).flatMap((info) => info.errors)).toEqual([]);
+  expect(tests).toHaveLength(2);
+  expect(tests.find(({ name }) => name === "manual")?.status).toBe(Status.PASSED);
+  const manual = tests.find(({ name }) => name === "manual")!;
+  expect(manual.steps[0]).toMatchObject({
+    name: "shared",
+    attachments: [expect.objectContaining({ type: ContentType.PNG })],
+  });
+  const failed = tests.find(({ name }) => name === "failure")!;
+  expect(failed).toMatchObject({
+    status: Status.FAILED,
+    statusDetails: { message: expect.stringContaining("expected true to equal false") },
+  });
+  expect(failed.attachments).toHaveLength(1);
+  for (const source of [manual.steps[0].attachments[0].source, failed.attachments[0].source]) {
+    expect(attachments).toHaveProperty(source);
+  }
+});
+
+it("keeps native screenshot callback replacement, command callbacks and errors", async () => {
+  const { tests, attachments, globals } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": () => `
+      it("replace defaults", () => {
+        const calls = [];
+        Cypress.Screenshot.defaults({ onAfterScreenshot() { calls.push("replaced"); } });
+        Cypress.Screenshot.defaults({
+          onAfterScreenshot(_el, details) { calls.push("current:" + details.name); },
+        });
+        cy.screenshot("configured", {
+          onAfterScreenshot(_el, details) { calls.push("command:" + details.name); },
+        }).then(() => {
+          expect(calls).to.deep.eq(["command:configured", "current:configured"]);
+        });
+      });
+      it("callback error", () => {
+        Cypress.Screenshot.defaults({
+          screenshotOnRunFailure: false,
+          onAfterScreenshot() { throw new Error("original callback failure"); },
+        });
+        cy.screenshot("callback throws");
+      });
+    `,
+  });
+
+  expect(Object.values(globals ?? {}).flatMap((info) => info.errors)).toEqual([]);
+  expect(tests).toHaveLength(2);
+  const passed = tests.find(({ name }) => name === "replace defaults")!;
+  expect(passed.status).toBe(Status.PASSED);
+  const screenshot = passed.steps.find(({ name }) => name === "configured")!;
+  expect(screenshot.attachments).toHaveLength(1);
+  expect(attachments).toHaveProperty(screenshot.attachments[0].source);
+  const failed = tests.find(({ name }) => name === "callback error")!;
+  expect(failed).toMatchObject({
+    status: Status.BROKEN,
+    statusDetails: { message: expect.stringContaining("original callback failure") },
+  });
+  expect(failed.attachments).toHaveLength(0);
+  const failedScreenshot = failed.steps.find(({ name }) => name === "callback throws")!;
+  expect(failedScreenshot.attachments).toEqual([
+    expect.objectContaining({ name: "callback throws", type: ContentType.PNG }),
+  ]);
+  expect(attachments).toHaveProperty(failedScreenshot.attachments[0].source);
+});

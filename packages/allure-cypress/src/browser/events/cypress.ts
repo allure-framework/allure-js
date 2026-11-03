@@ -10,7 +10,20 @@ import { getFileNameFromPath } from "../utils.js";
 
 export const registerCypressEventListeners = () => Cypress.on("fail", onFail).on("log:added", onLogAdded);
 
-export const enableReportingOfCypressScreenshots = () => Cypress.Screenshot.defaults({ onAfterScreenshot });
+export const enableReportingOfCypressScreenshots = () => {
+  // Observe the dispatcher, so later defaults() calls cannot replace Allure's reporting.
+  const screenshot = Cypress.Screenshot as unknown as {
+    onAfterScreenshot: Cypress.ScreenshotDefaultsOptions["onAfterScreenshot"];
+  };
+  const original = screenshot.onAfterScreenshot;
+  screenshot.onAfterScreenshot = function (...args) {
+    try {
+      return original.apply(this, args);
+    } finally {
+      onAfterScreenshot(...args);
+    }
+  };
+};
 
 const onAfterScreenshot = (
   ...[, { name: originalName, path }]: Parameters<Cypress.ScreenshotDefaultsOptions["onAfterScreenshot"]>
