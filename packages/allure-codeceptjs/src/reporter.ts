@@ -110,7 +110,7 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     event.dispatcher.on(event.step.comment, this.stepComment.bind(this));
 
     event.dispatcher.on(event.bddStep.before, this.bddStepStarted.bind(this));
-    event.dispatcher.on(event.bddStep.after, this.stepPassed.bind(this));
+    event.dispatcher.on(event.bddStep.after, this.bddStepFinished.bind(this));
   }
 
   testStarted(test: { tags?: string[] }) {
@@ -171,19 +171,7 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
       });
     }
 
-    if (this.currentBddStep) {
-      this.stopCurrentStep((result) => {
-        result.stage = Stage.FINISHED;
-        result.status = Status.BROKEN;
-        if (error) {
-          result.status = status;
-          result.statusDetails = { ...statusDetails };
-        }
-      });
-    }
-    this.currentBddStep = undefined;
-
-    for (const { id } of this.metaStepStack) {
+    for (const { id } of [...this.metaStepStack].reverse()) {
       this.runtime.updateStep(id, (result) => {
         result.stage = Stage.FINISHED;
         result.status = Status.BROKEN;
@@ -195,6 +183,18 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
       this.runtime.stopStep(id);
     }
     this.metaStepStack = [];
+
+    if (this.currentBddStep) {
+      this.stopStepById(this.currentBddStep, (result) => {
+        result.stage = Stage.FINISHED;
+        result.status = Status.BROKEN;
+        if (error) {
+          result.status = status;
+          result.statusDetails = { ...statusDetails };
+        }
+      });
+    }
+    this.currentBddStep = undefined;
 
     if (shouldFinishTest) {
       if (this.currentHook) {
@@ -227,14 +227,7 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
 
   testFinished(test?: CodeceptTestWithArtifacts) {
     this.currentTestHookName = undefined;
-    if (this.currentBddStep) {
-      this.runtime.updateStep(this.currentBddStep, (result) => {
-        result.status = Status.PASSED;
-        result.stage = Stage.FINISHED;
-      });
-      this.runtime.stopStep(this.currentBddStep);
-    }
-    this.currentBddStep = undefined;
+    this.bddStepFinished();
 
     for (const { id } of this.metaStepStack) {
       this.runtime.updateStep(id, (result) => {
@@ -385,16 +378,33 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
     if (!root) {
       return;
     }
-    if (this.currentBddStep) {
-      this.runtime.updateStep(this.currentBddStep, (result) => {
-        result.status = Status.PASSED;
-        result.stage = Stage.FINISHED;
-      });
-      this.runtime.stopStep(this.currentBddStep);
-    }
+    this.bddStepFinished();
     this.currentBddStep = this.runtime.startStep(root, undefined, {
       name: step.keyword + step.text,
     });
+  }
+
+  bddStepFinished() {
+    if (!this.currentBddStep) {
+      return;
+    }
+
+    // Page-object meta steps must finish before their owning Gherkin step.
+    for (const { id } of [...this.metaStepStack].reverse()) {
+      this.runtime.updateStep(id, (result) => {
+        result.status = Status.PASSED;
+        result.stage = Stage.FINISHED;
+      });
+      this.runtime.stopStep(id);
+    }
+    this.metaStepStack = [];
+
+    this.runtime.updateStep(this.currentBddStep, (result) => {
+      result.status = Status.PASSED;
+      result.stage = Stage.FINISHED;
+    });
+    this.runtime.stopStep(this.currentBddStep);
+    this.currentBddStep = undefined;
   }
 
   // Step errors are usually reported directly, but some paths still require
@@ -446,16 +456,6 @@ export class AllureCodeceptJsReporter extends AllureMochaReporter {
   }
 
   stepPassed() {
-    if (this.currentBddStep && !this.currentLeafStep) {
-      this.runtime.updateStep(this.currentBddStep, (result) => {
-        result.status = Status.PASSED;
-        result.stage = Stage.FINISHED;
-      });
-      this.runtime.stopStep(this.currentBddStep);
-      this.currentBddStep = undefined;
-      return;
-    }
-
     if (!this.currentLeafStep) {
       return;
     }
