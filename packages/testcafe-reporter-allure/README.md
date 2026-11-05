@@ -33,7 +33,7 @@ npm install -D testcafe-reporter-allure
 
 Install an Allure CLI to build and open the report:
 
-- Allure Report 2: [installation guide](https://allurereport.org/docs/install/)
+- Allure Report 2: [installation guide](https://allurereport.org/docs/v2/install/)
 - Allure Report 3:
 
 ```shell
