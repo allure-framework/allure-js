@@ -226,6 +226,10 @@ export class AllureReporter implements ReporterV2 {
           continue;
         }
 
+        if (this.options.reportAnnotations === false) {
+          continue;
+        }
+
         result.steps!.push({
           name: `${annotation.type}: ${annotation.description!}`,
           status: Status.PASSED,

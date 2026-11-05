@@ -12,6 +12,8 @@ import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 
 export interface AllurePlaywrightReporterConfig extends ReporterConfig {
   detail?: boolean;
+  /** Whether to report unmapped Playwright annotations as steps. Defaults to true. */
+  reportAnnotations?: boolean;
   suiteTitle?: boolean;
   useLegacyFullName?: boolean;
 }
