@@ -136,8 +136,6 @@ export class AllureReporter implements ReporterV2 {
 
   onConfigure(config: FullConfig): void {
     this.config = config;
-    this.outputDir = config.projects[0].outputDir;
-    this.snapshotDir = config.projects[0].snapshotDir;
   }
 
   onError(): void {}
@@ -150,6 +148,8 @@ export class AllureReporter implements ReporterV2 {
 
   onBegin(suite: Suite): void {
     this.suite = suite;
+    this.outputDir = this.config.projects[0]?.outputDir;
+    this.snapshotDir = this.config.projects[0]?.snapshotDir;
     this.emittedHookGlobalErrorKeys.clear();
     this.allureRuntime = new ReporterRuntime({
       ...this.options,
@@ -157,13 +157,14 @@ export class AllureReporter implements ReporterV2 {
     });
   }
 
-  onTestBegin(test: TestCase) {
+  onTestBegin(test: TestCase, testResult: PlaywrightTestResult) {
     const metadata = this.getStaticTestMetadata(test);
     const titlePath = metadata.projectName
       ? [metadata.projectName, ...metadata.relativeFileParts, ...metadata.suiteTitles]
       : metadata.relativeFileParts.concat(...metadata.suiteTitles);
     const result: Partial<TestResult> = {
       name: metadata.titleMetadata.cleanTitle,
+      start: testResult.startTime.getTime(),
       labels: [...metadata.titleMetadata.labels, ...getEnvironmentLabels()],
       links: [...metadata.titleMetadata.links],
       parameters: [],
@@ -907,7 +908,7 @@ export class AllureReporter implements ReporterV2 {
 
       testResult.labels = newLabels;
     });
-    this.allureRuntime!.stopTest(testUuid, { duration: result.duration });
+    this.allureRuntime!.stopTest(testUuid, { stop: result.startTime.getTime() + result.duration });
     this.allureRuntime!.writeTest(testUuid);
     this.attachmentTargets.delete(test.id);
     this.pendingAttachmentTasks.delete(test.id);
@@ -944,8 +945,7 @@ export class AllureReporter implements ReporterV2 {
     });
 
     for (const testCase of unprocessedCases) {
-      this.onTestBegin(testCase);
-      await this.onTestEnd(testCase, {
+      const result: PlaywrightTestResult = {
         status: Status.SKIPPED,
         attachments: [],
         duration: 0,
@@ -958,7 +958,9 @@ export class AllureReporter implements ReporterV2 {
         stdout: [],
         startTime: this.globalStartTime,
         annotations: [],
-      });
+      };
+      this.onTestBegin(testCase, result);
+      await this.onTestEnd(testCase, result);
     }
   }
 
