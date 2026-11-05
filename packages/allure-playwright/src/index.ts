@@ -258,7 +258,9 @@ export class AllureReporter implements ReporterV2 {
   }
 
   #shouldIgnoreStep(step: TestStep) {
-    if (!this.options.detail && !["test.step", "attach", "test.attach"].includes(step.category)) {
+    const detail =
+      step.category === "expect" ? (this.options.reportMatchers ?? this.options.detail) : this.options.detail;
+    if (!detail && !["test.step", "attach", "test.attach"].includes(step.category)) {
       return true;
     }
 
