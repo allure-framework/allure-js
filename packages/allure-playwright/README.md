@@ -77,6 +77,19 @@ directory.
 
 You may select another location, or further customize the reporter's behavior with [the configuration options](https://allurereport.org/docs/playwright-configuration/).
 
+To hide steps generated from Playwright annotations that are not mapped to Allure metadata, set
+`reportAnnotations: false`:
+
+```js
+export default defineConfig({
+  reporter: [["allure-playwright", { reportAnnotations: false }]],
+});
+```
+
+Annotation steps are enabled by default, independently of `detail`. This option only controls their
+presentation as steps: labels, links, descriptions, and skip/fixme handling are preserved. The original
+annotations remain available to Playwright and other reporters.
+
 To use name-based test selectors instead of source locations, enable the legacy full name format:
 
 ```js
