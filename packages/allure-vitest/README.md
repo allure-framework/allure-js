@@ -134,6 +134,18 @@ npx allure generate ./allure-results
 npx allure open ./allure-report
 ```
 
+## Suite hierarchy
+
+By default, the Suites view groups tests by the relative test file path, followed
+by their `describe` blocks. The file path becomes `parentSuite`, the first
+`describe` becomes `suite`, and further blocks are joined with ` > ` into
+`subSuite`. This also distinguishes files with the same name in different
+folders.
+
+Explicit `parentSuite`, `suite`, and `subSuite` labels supplied through the
+runtime API, test title metadata, or environment variables take precedence over
+the corresponding defaults. Missing levels keep their default values.
+
 ## Allure API
 
 Enhance the report by utilizing the runtime API:
