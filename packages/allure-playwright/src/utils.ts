@@ -1,13 +1,23 @@
 import type { TestStatus } from "@playwright/test";
 import type { TestError, TestStep } from "@playwright/test/reporter";
 import { Stage, Status, type StatusDetails, type StepResult } from "allure-js-commons";
-import { getMessageAndTraceFromError } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, stripAnsi } from "allure-js-commons/sdk";
 
 import { ALLURE_STEP_STATUS_ANNOTATION, isAllureStepStatus } from "./syncAnnotations.js";
 
 export const AFTER_HOOKS_ROOT_STEP_TITLE = "After Hooks";
 
 export const BEFORE_HOOKS_ROOT_STEP_TITLE = "Before Hooks";
+
+export const getStatusDetails = (error: TestError): StatusDetails => {
+  const details = getMessageAndTraceFromError(error);
+
+  if (error.snippet) {
+    details.trace = [stripAnsi(error.snippet), details.trace].filter(Boolean).join("\n\n");
+  }
+
+  return details;
+};
 
 export const statusToAllureStats = (status: TestStatus, expectedStatus: TestStatus): Status => {
   if (status === "skipped") {
@@ -95,7 +105,7 @@ export const getStepStatusData = (
   if (annotatedStatus !== undefined) {
     return {
       status: annotatedStatus as Status,
-      statusDetails: step.error ? { ...getMessageAndTraceFromError(step.error) } : undefined,
+      statusDetails: step.error ? { ...getStatusDetails(step.error) } : undefined,
     };
   }
 
@@ -111,7 +121,7 @@ export const getStepStatusData = (
 
     return {
       status: Status.FAILED,
-      statusDetails: { ...getMessageAndTraceFromError(step.error) },
+      statusDetails: { ...getStatusDetails(step.error) },
     };
   }
 
