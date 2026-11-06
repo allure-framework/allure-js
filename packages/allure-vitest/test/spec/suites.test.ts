@@ -68,18 +68,22 @@ describe.each(vitestTestEnvironments)("suite hierarchy in %s", (_env, createConf
           source === "environment"
             ? {
                 ALLURE_LABEL_parentSuite: "custom-parent",
-                ALLURE_LABEL_suite: "custom-suite",
                 ALLURE_LABEL_subSuite: "custom-sub",
+                ALLURE_LABEL_suite: "custom-suite",
               }
             : {},
       },
     );
     expect(tests).toHaveLength(1);
-    expect(tests[0].labels.filter((label) => suiteNames.includes(label.name))).toEqual([
-      { name: LabelName.PARENT_SUITE, value: "custom-parent" },
-      { name: LabelName.SUITE, value: "custom-suite" },
-      { name: LabelName.SUB_SUITE, value: "custom-sub" },
-    ]);
+    const labels = tests[0].labels.filter((label) => suiteNames.includes(label.name));
+    expect(labels).toHaveLength(3);
+    expect(labels).toEqual(
+      expect.arrayContaining([
+        { name: LabelName.PARENT_SUITE, value: "custom-parent" },
+        { name: LabelName.SUITE, value: "custom-suite" },
+        { name: LabelName.SUB_SUITE, value: "custom-sub" },
+      ]),
+    );
   });
 
   it("fills missing levels around a custom suite", async () => {

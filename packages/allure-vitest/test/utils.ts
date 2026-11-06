@@ -172,11 +172,12 @@ export const runVitestInlineTest = async (
     const subprocessEnv: Record<string, string> = {
       ...process.env,
       ALLURE_TEST_MODE: "1",
-      ...(env?.(testDir) ?? {}),
     };
+    delete subprocessEnv.ALLURE_TESTPLAN_PATH;
+    delete subprocessEnv.ALLURE_RERUN;
 
     return fork(modulePath, args, {
-      env: { ...subprocessEnv },
+      env: { ...subprocessEnv, ...env?.(testDir) },
       cwd: cwd ? join(testDir, cwd) : testDir,
       stdio: "inherit",
       // stdio: ["inherit", "pipe"],
