@@ -63,6 +63,8 @@ import {
   diffEndRegexp,
   finalizeStepResult,
   getSkipModifierError,
+  getStepName,
+  getStepParameters,
   isAfterHookStep,
   isBeforeHookStep,
   isDescendantOfStepWithTitle,
@@ -569,7 +571,8 @@ export class AllureReporter implements ReporterV2 {
 
     const baseStep: StepResult = {
       ...createStepResult(),
-      name: step.title,
+      name: getStepName(step),
+      parameters: getStepParameters(step),
       start: step.startTime.getTime(),
       stage: Stage.RUNNING,
       uuid: randomUuid(),
