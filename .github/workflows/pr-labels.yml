@@ -1,6 +1,8 @@
 name: Pull Request Labels
 
 on:
+  merge_group:
+    types: [checks_requested]
   pull_request:
     types:
       - opened
@@ -19,6 +21,8 @@ permissions:
 jobs:
   require-pr-label:
     name: Require exactly one pr label
+    # Labels are checked on each PR before it enters the queue.
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Validate release notes label
