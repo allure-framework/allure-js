@@ -2,6 +2,8 @@ name: Build
 
 on:
   workflow_dispatch:
+  merge_group:
+    types: [checks_requested]
   pull_request:
     branches:
       - "*"
@@ -57,9 +59,13 @@ jobs:
       - name: yarn dlx sherif
         run: |
           yarn dlx sherif
+      - name: Core unit tests
+        if: github.event_name == 'merge_group'
+        run: yarn workspace allure-js-commons test
 
   build-verify:
     name: "Build Verify (${{ matrix.node-version }}, ${{ matrix.os }})"
+    if: github.event_name != 'merge_group'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -88,6 +94,7 @@ jobs:
 
   test-suite:
     name: "Test ${{ matrix.suite.id }} (${{ matrix.node-version }}, ${{ matrix.os }})"
+    if: github.event_name != 'merge_group'
     runs-on: ${{ matrix.os }}
     env:
       ALLURE_MATRIX_ENV: ${{ matrix.os }}-node-${{ matrix.node-version }}
@@ -179,7 +186,7 @@ jobs:
     needs: [test-suite]
     name: Build report
     runs-on: ubuntu-latest
-    if: always()
+    if: always() && github.event_name != 'merge_group'
     permissions:
       contents: read
       pull-requests: write
@@ -229,3 +236,26 @@ jobs:
         with:
           report-directory: ./out/allure-report
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  ci:
+    name: CI
+    needs: [check-cache, lint, build-verify, test-suite, report]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check job results
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          JOB_RESULTS: ${{ toJSON(needs) }}
+        run: |
+          echo "$JOB_RESULTS" | jq -e --arg event "$EVENT_NAME" '
+            all(to_entries[];
+              .value.result == (
+                if $event == "merge_group" and
+                  (.key == "build-verify" or .key == "test-suite" or .key == "report")
+                then "skipped"
+                else "success"
+                end
+              )
+            )
+          '
