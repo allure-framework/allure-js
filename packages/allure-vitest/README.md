@@ -138,7 +138,7 @@ npx allure open ./allure-report
 
 By default, the Suites view groups tests by the relative test file path, followed
 by their `describe` blocks. The file path becomes `parentSuite`, the first
-`describe` becomes `suite`, and further blocks are joined with ` > ` into
+`describe` becomes `suite`, and further blocks are joined with `>` into
 `subSuite`. This also distinguishes files with the same name in different
 folders.
 
