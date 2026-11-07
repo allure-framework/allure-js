@@ -1,6 +1,8 @@
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { type TestFileAccessor, runVitestInlineTest, vitestTestEnvironments } from "../utils.js";
 
@@ -10,6 +12,24 @@ describe("test plan", () => {
 
     beforeAll(() => {
       configFileAccessor = ({ allureResultsPath }) => createConfig(allureResultsPath);
+    });
+
+    it("does not apply the outer run's test plan to inline fixtures", async () => {
+      const dir = await mkdtemp(join(tmpdir(), "allure-vitest-outer-plan-"));
+      const planPath = join(dir, "testplan.json");
+      await writeFile(planPath, JSON.stringify({ version: "1.0", tests: [{ selector: "outer:test.ts#selected" }] }));
+      vi.stubEnv("ALLURE_TESTPLAN_PATH", planPath);
+      try {
+        const { tests } = await runVitestInlineTest({
+          "vitest.config.ts": configFileAccessor,
+          "sample.test.ts": `import { test } from 'vitest'; test('inner', () => {});`,
+        });
+        expect(tests).toHaveLength(1);
+        expect(tests[0]).toMatchObject({ name: "inner", status: "passed" });
+      } finally {
+        vi.unstubAllEnvs();
+        await rm(dir, { recursive: true, force: true });
+      }
     });
 
     it("should support test plan", async () => {
