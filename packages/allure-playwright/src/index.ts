@@ -20,7 +20,6 @@ import {
 import type { RuntimeMessage, RuntimeStepMetadataMessage } from "allure-js-commons/sdk";
 import {
   extractMetadataFromString,
-  getMessageAndTraceFromError,
   getMetadataLabel,
   getStatusFromError,
   hasLabel,
@@ -63,6 +62,7 @@ import {
   diffEndRegexp,
   finalizeStepResult,
   getSkipModifierError,
+  getStatusDetails,
   isAfterHookStep,
   isBeforeHookStep,
   isDescendantOfStepWithTitle,
@@ -753,7 +753,7 @@ export class AllureReporter implements ReporterV2 {
       }
 
       if (error) {
-        testResult.statusDetails = { ...getMessageAndTraceFromError(error) };
+        testResult.statusDetails = { ...getStatusDetails(error) };
       } else {
         const skipReason = test.annotations?.find(
           (annotation) => annotation.type === "skip" || annotation.type === "fixme",
@@ -919,7 +919,7 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    const details = getMessageAndTraceFromError(step.error);
+    const details = getStatusDetails(step.error);
     const key = [step.title, step.startTime.getTime(), details.message ?? "", details.trace ?? ""].join("\u0000");
 
     if (this.emittedHookGlobalErrorKeys.has(key)) {
