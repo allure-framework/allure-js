@@ -90,6 +90,19 @@ Annotation steps are enabled by default, independently of `detail`. This option 
 presentation as steps: labels, links, descriptions, and skip/fixme handling are preserved. The original
 annotations remain available to Playwright and other reporters.
 
+To hide Playwright API calls while keeping `expect` assertions as steps, set `reportMatchers: true`
+with `detail: false`:
+
+```js
+export default defineConfig({
+  reporter: [["allure-playwright", { detail: false, reportMatchers: true }]],
+});
+```
+
+`reportMatchers` controls Playwright `expect` steps, including assertions in hooks. When omitted,
+it follows `detail` (`true` by default). Set `reportMatchers: false` to hide assertion steps while
+keeping other details enabled. User-created steps and attachments are reported independently.
+
 To use name-based test selectors instead of source locations, enable the legacy full name format:
 
 ```js
