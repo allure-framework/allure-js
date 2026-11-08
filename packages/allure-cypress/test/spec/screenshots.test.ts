@@ -204,6 +204,9 @@ it("preserves screenshots moved or deleted by a snapshot plugin before the messa
       const { allureCypress } = require("${allureCypressReporterModulePath}");
       const digest = (path) => createHash("sha256").update(readFileSync(path)).digest("hex");
       const screenshotHashes = [];
+      const attachmentHashes = () => readdirSync("${allureDirPath}")
+        .filter((file) => file.endsWith(".png"))
+        .map((file) => digest(join("${allureDirPath}", file)));
 
       module.exports = {
         video: false,
@@ -214,7 +217,11 @@ it("preserves screenshots moved or deleted by a snapshot plugin before the messa
             allureCypress(on, config, { resultsDir: "${allureDirPath}" });
             on("task", {
               processSnapshot(path) {
-                screenshotHashes.push(digest(path));
+                const hash = digest(path);
+                if (!attachmentHashes().includes(hash)) {
+                  throw new Error("Screenshot was not written before the snapshot plugin ran");
+                }
+                screenshotHashes.push(hash);
                 if (screenshotHashes.length === 1) {
                   renameSync(path, path + ".actual.png");
                 } else {
@@ -223,10 +230,7 @@ it("preserves screenshots moved or deleted by a snapshot plugin before the messa
                 return null;
               },
               verifyScreenshots() {
-                const hashes = readdirSync("${allureDirPath}")
-                  .filter((file) => file.endsWith(".png"))
-                  .map((file) => digest(join("${allureDirPath}", file)));
-                return { expected: screenshotHashes, actual: hashes };
+                return { expected: screenshotHashes, actual: attachmentHashes() };
               },
             });
             return config;

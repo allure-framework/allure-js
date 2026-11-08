@@ -1,10 +1,9 @@
-import { readFileSync } from "node:fs";
-
 import { ContentType, Stage, Status } from "allure-js-commons";
 import type { FixtureResult, TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { toGlobalErrorMessage } from "allure-js-commons/sdk";
 import {
+  type AttachmentReference,
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
@@ -48,7 +47,7 @@ export class AllureCypress {
   allureRuntime: ReporterRuntime;
   specContextByAbsolutePath = new Map<string, SpecContext>();
   #fixtureNames = new Map<string, string>();
-  #screenshotContentsByPath = new Map<string, string[]>();
+  #screenshotReferencesByPath = new Map<string, AttachmentReference[]>();
   videoOnFailOnly: boolean = false;
 
   constructor(config: AllureCypressConfig = {}) {
@@ -96,9 +95,10 @@ export class AllureCypress {
   onAfterScreenshot = ({ path }: Cypress.ScreenshotDetails) => {
     // Snapshot plugins can move or delete the file before the browser flushes
     // its attachment message. Preserve each capture, including overwritten paths.
-    const contents = this.#screenshotContentsByPath.get(path) ?? [];
-    contents.push(readFileSync(path, "base64"));
-    this.#screenshotContentsByPath.set(path, contents);
+    const reference = this.allureRuntime.emitAttachment(path, { contentType: ContentType.PNG });
+    const references = this.#screenshotReferencesByPath.get(path) ?? [];
+    references.push(reference);
+    this.#screenshotReferencesByPath.set(path, references);
   };
 
   /**
@@ -170,7 +170,7 @@ export class AllureCypress {
       this.#emitRemainingScopes(specContext);
       this.specContextByAbsolutePath.delete(specAbsolutePath);
     }
-    this.#screenshotContentsByPath.clear();
+    this.#screenshotReferencesByPath.clear();
   };
 
   #endAllSpecs = () => {
@@ -496,19 +496,22 @@ export class AllureCypress {
   };
 
   #applyRuntimeApiMessages = (context: SpecContext, message: RuntimeMessage) => {
+    const rootUuid = this.#resolveRootUuid(context);
     if (message.type === "attachment_path") {
-      const { path, ...data } = message.data;
-      const contents = this.#screenshotContentsByPath.get(path);
-      const content = contents?.shift();
-      if (content !== undefined) {
-        message = { type: "attachment_content", data: { ...data, content, encoding: "base64" } };
-        if (!contents?.length) {
-          this.#screenshotContentsByPath.delete(path);
+      const { path, name, ...options } = message.data;
+      const references = this.#screenshotReferencesByPath.get(path);
+      const reference = references?.shift();
+      if (reference) {
+        if (!references?.length) {
+          this.#screenshotReferencesByPath.delete(path);
         }
+        if (rootUuid) {
+          this.allureRuntime.writeAttachment(rootUuid, undefined, name, reference, options);
+        }
+        return;
       }
     }
 
-    const rootUuid = this.#resolveRootUuid(context);
     if (rootUuid) {
       this.allureRuntime.applyRuntimeMessages(rootUuid, [message]);
     } else {
