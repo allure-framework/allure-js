@@ -186,7 +186,7 @@ jobs:
     needs: [test-suite]
     name: Build report
     runs-on: ubuntu-latest
-    if: always() && github.event_name != 'merge_group'
+    if: ${{ !cancelled() && github.event_name != 'merge_group' }}
     permissions:
       contents: read
       pull-requests: write
@@ -240,7 +240,7 @@ jobs:
   ci:
     name: CI
     needs: [check-cache, lint, build-verify, test-suite, report]
-    if: always()
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - name: Check job results
