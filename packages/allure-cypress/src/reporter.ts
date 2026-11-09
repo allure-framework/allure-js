@@ -1,7 +1,7 @@
 import { ContentType, Stage, Status } from "allure-js-commons";
 import type { FixtureResult, TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import { toGlobalErrorMessage } from "allure-js-commons/sdk";
+import { hasLabel, toGlobalErrorMessage } from "allure-js-commons/sdk";
 import {
   type AttachmentReference,
   ReporterRuntime,
@@ -343,7 +343,6 @@ export class AllureCypress {
         labels: [
           getLanguageLabel(),
           getFrameworkLabel("cypress"),
-          ...getSuiteLabels(context.suiteNames),
           ...metadataLabels,
           ...getEnvironmentLabels(),
           getHostLabel(),
@@ -412,20 +411,24 @@ export class AllureCypress {
     const scopes = suites.map((s) => context.suiteIdToScope.get(s)).filter((s): s is string => Boolean(s));
 
     const testUuid = this.#addNewTestResult(context, fullNameSuffix, testResultData, [context.videoScope, ...scopes]);
-    this.#stopExistingTestResult(testUuid, { duration, retries });
+    this.#stopExistingTestResult(testUuid, { duration, retries }, context.suiteNames);
     this.allureRuntime.writeTest(testUuid);
   };
 
   #stopTest = (context: SpecContext, { data }: CypressTestEndMessage) => {
     const testUuid = context.test;
     if (testUuid) {
-      this.#stopExistingTestResult(testUuid, data);
+      this.#stopExistingTestResult(testUuid, data, context.suiteNames);
       this.allureRuntime.writeTest(testUuid);
       context.test = undefined;
     }
   };
 
-  #stopExistingTestResult = (testUuid: string, { retries, duration }: CypressTestEndMessage["data"]) => {
+  #stopExistingTestResult = (
+    testUuid: string,
+    { retries, duration }: CypressTestEndMessage["data"],
+    suiteNames: string[],
+  ) => {
     this.allureRuntime.updateTest(testUuid, (testResult) => {
       if (retries > 0) {
         testResult.parameters.push({
@@ -437,11 +440,11 @@ export class AllureCypress {
       testResult.stage = Stage.FINISHED;
     });
     this.allureRuntime.stopTest(testUuid, { duration });
-    this.#fixTestStepStops(testUuid);
-  };
-
-  #fixTestStepStops = (testUuid: string) => {
-    this.allureRuntime.updateTest(testUuid, this.#fixStepStops);
+    // Hook metadata is merged by stopTest, so apply defaults only after it.
+    this.allureRuntime.updateTest(testUuid, (testResult) => {
+      testResult.labels.push(...getSuiteLabels(suiteNames).filter(({ name }) => !hasLabel(testResult, name)));
+      this.#fixStepStops(testResult);
+    });
   };
 
   #fixFixtureStepStops = (fixtureUuid: string) => {
