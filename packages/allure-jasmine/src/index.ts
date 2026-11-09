@@ -4,6 +4,7 @@ import type { RuntimeMessage } from "allure-js-commons/sdk";
 import {
   getMessageAndTraceFromError,
   getStatusFromError,
+  hasLabel,
   isPromise,
   toGlobalErrorMessage,
 } from "allure-js-commons/sdk";
@@ -230,9 +231,6 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     const exceptionInfo = findMessageAboutThrow(spec.failedExpectations) || findAnyError(spec.failedExpectations);
 
     this.allureRuntime.updateTest(this.currentAllureTestUuid, (result) => {
-      const suitesLabels = getSuiteLabels(specPath);
-
-      result.labels.push(...suitesLabels);
       result.labels.push(...getEnvironmentLabels());
       result.labels.push(getLanguageLabel());
       result.labels.push(getFrameworkLabel("jasmine"));
@@ -284,6 +282,10 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
       }
     });
     this.allureRuntime.stopTest(this.currentAllureTestUuid);
+    // Hook metadata is merged by stopTest, so apply defaults only after it.
+    this.allureRuntime.updateTest(this.currentAllureTestUuid, (result) => {
+      result.labels.push(...getSuiteLabels(specPath).filter(({ name }) => !hasLabel(result, name)));
+    });
     this.allureRuntime.writeTest(this.currentAllureTestUuid);
     this.currentAllureTestUuid = undefined;
 
