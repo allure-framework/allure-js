@@ -32,6 +32,78 @@ describe("test plan", () => {
       }
     });
 
+    it.each([
+      { name: "muted-only ID", selection: undefined, muted: { id: 2 } },
+      {
+        name: "muted-only selector",
+        selection: undefined,
+        muted: { selector: "dummy:foo/sample.test.ts#suite muted" },
+      },
+      { name: "empty selection", selection: [], muted: { id: 2 } },
+      {
+        name: "selection and muting",
+        selection: [{ id: 2 }, { selector: "dummy:foo/sample.test.ts#suite survivor" }],
+        muted: { id: 2 },
+      },
+    ])("should skip bodies and omit results with $name", async ({ selection, muted }) => {
+      const { tests } = await runVitestInlineTest(
+        {
+          "vitest.config.ts": configFileAccessor,
+          "foo/sample.test.ts": `
+            import { describe, expect, test } from "vitest";
+
+            let mutedBodyRan = false;
+            let unselectedBodyRan = false;
+
+            describe("suite", () => {
+              test("muted @allure.id=2", () => {
+                mutedBodyRan = true;
+              });
+
+              ${selection?.length ? 'test("unselected", () => { unselectedBodyRan = true; });' : ""}
+
+              test("survivor", () => {
+                expect(mutedBodyRan).toBe(false);
+                expect(unselectedBodyRan).toBe(false);
+              });
+            });
+          `,
+          "testplan.json": JSON.stringify({
+            version: "1.0",
+            ...(selection === undefined ? {} : { tests: selection }),
+            mutedTests: [muted],
+          }),
+        },
+        { env: (testDir) => ({ ALLURE_TESTPLAN_PATH: join(testDir, "testplan.json") }) },
+      );
+
+      expect(tests).toHaveLength(1);
+      expect(tests).toContainEqual(expect.objectContaining({ name: "survivor", status: "passed" }));
+    });
+
+    it("should run all tests when both plan collections are empty", async () => {
+      const { tests } = await runVitestInlineTest(
+        {
+          "vitest.config.ts": configFileAccessor,
+          "sample.test.ts": `
+            import { test } from "vitest";
+            test("first", () => {});
+            test("second", () => {});
+          `,
+          "testplan.json": JSON.stringify({ version: "1.0", tests: [], mutedTests: [] }),
+        },
+        { env: (testDir) => ({ ALLURE_TESTPLAN_PATH: join(testDir, "testplan.json") }) },
+      );
+
+      expect(tests).toHaveLength(2);
+      expect(tests).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: "first", status: "passed" }),
+          expect.objectContaining({ name: "second", status: "passed" }),
+        ]),
+      );
+    });
+
     it("should support test plan", async () => {
       const { tests } = await runVitestInlineTest(
         {

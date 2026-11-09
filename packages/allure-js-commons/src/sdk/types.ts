@@ -124,6 +124,7 @@ export interface TestPlanV1Test {
 export interface TestPlanV1 {
   version: "1.0";
   tests: TestPlanV1Test[];
+  mutedTests?: TestPlanV1Test[];
 }
 
 export type EnvironmentInfo = Record<string, string | undefined>;
