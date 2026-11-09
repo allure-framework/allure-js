@@ -4,7 +4,13 @@ export * from "./utils.js";
 export * from "./testplan.js";
 export * from "./factory.js";
 export { LifecycleState } from "./LifecycleState.js";
-export { type StepStack, DefaultStepStack, ReporterRuntime, ShallowStepsStack } from "./ReporterRuntime.js";
+export {
+  type AttachmentReference,
+  type StepStack,
+  DefaultStepStack,
+  ReporterRuntime,
+  ShallowStepsStack,
+} from "./ReporterRuntime.js";
 export { InMemoryWriter } from "./writer/InMemoryWriter.js";
 export { FileSystemWriter } from "./writer/FileSystemWriter.js";
 export { MessageWriter } from "./writer/MessageWriter.js";

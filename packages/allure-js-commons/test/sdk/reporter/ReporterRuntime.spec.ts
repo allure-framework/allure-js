@@ -271,6 +271,74 @@ describe("ReporterRuntime", () => {
     ]);
   });
 
+  it("links a previously emitted attachment to the active step without writing it again", () => {
+    const writer = mockWriter();
+    const runtime = new ReporterRuntime({ writer });
+    const sourcePath = "screenshots/snapshot.png";
+    const reference = runtime.emitAttachment(sourcePath, { contentType: "image/png" });
+
+    expect(writer.writeAttachmentFromPath).toHaveBeenCalledExactlyOnceWith(
+      expect.stringMatching(/-attachment\.png$/),
+      sourcePath,
+    );
+    const [[source]] = writer.writeAttachmentFromPath.mock.calls;
+
+    const rootUuid = runtime.startTest({});
+    const stepUuid = runtime.startStep(rootUuid, undefined, { name: "screenshot" })!;
+    runtime.writeAttachment(rootUuid, undefined, "snapshot", reference, {
+      contentType: "image/png",
+      wrapInStep: true,
+      timestamp: 42,
+    });
+    runtime.stopStep(stepUuid);
+    runtime.stopTest(rootUuid);
+    runtime.writeTest(rootUuid);
+
+    const [[result]] = writer.writeResult.mock.calls;
+    expect(result.steps[0].steps[0]).toMatchObject({
+      name: "snapshot",
+      start: 42,
+      stop: 42,
+      attachments: [{ name: "snapshot", source, type: "image/png" }],
+    });
+    expect(writer.writeAttachmentFromPath).toHaveBeenCalledTimes(1);
+    expect(writer.writeAttachment).not.toHaveBeenCalled();
+  });
+
+  it("emits buffer content once and reuses the reference across results", () => {
+    const writer = mockWriter();
+    const runtime = new ReporterRuntime({ writer });
+    const content = Buffer.from("attachment bytes");
+    const reference = runtime.emitAttachment(content, { contentType: "text/plain", fileExtension: ".log" });
+    const [[source, writtenContent]] = writer.writeAttachment.mock.calls;
+    expect(source).toMatch(/-attachment\.log$/);
+    expect(writtenContent).toBe(content);
+
+    for (const name of ["first test", "second test"]) {
+      const rootUuid = runtime.startTest({ name });
+      runtime.writeAttachment(rootUuid, null, "log", reference, { contentType: "text/plain" });
+      runtime.stopTest(rootUuid);
+      runtime.writeTest(rootUuid);
+    }
+
+    expect(writer.writeResult).toHaveBeenCalledTimes(2);
+    for (const [result] of writer.writeResult.mock.calls) {
+      expect(result.attachments).toEqual([{ name: "log", source, type: "text/plain" }]);
+    }
+    expect(writer.writeAttachment).toHaveBeenCalledTimes(1);
+    expect(writer.writeAttachmentFromPath).not.toHaveBeenCalled();
+  });
+
+  it("rejects attachment references created by another runtime", () => {
+    const otherRuntime = new ReporterRuntime({ writer: mockWriter() });
+    const reference = otherRuntime.emitAttachment(Buffer.from("image"), { contentType: "image/png" });
+    const runtime = new ReporterRuntime({ writer: mockWriter() });
+
+    expect(() =>
+      runtime.writeAttachment(runtime.startTest({}), undefined, "snapshot", reference, { contentType: "image/png" }),
+    ).toThrow("Invalid attachment reference for this reporter runtime");
+  });
+
   describe("writeAttachmentFromPath", () => {
     it("should use extension from fileExtension option if specified", () => {
       const writer = mockWriter();

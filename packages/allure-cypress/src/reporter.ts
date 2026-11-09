@@ -3,6 +3,7 @@ import type { FixtureResult, TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { toGlobalErrorMessage } from "allure-js-commons/sdk";
 import {
+  type AttachmentReference,
   ReporterRuntime,
   createDefaultWriter,
   getEnvironmentLabels,
@@ -46,6 +47,7 @@ export class AllureCypress {
   allureRuntime: ReporterRuntime;
   specContextByAbsolutePath = new Map<string, SpecContext>();
   #fixtureNames = new Map<string, string>();
+  #screenshotReferencesByPath = new Map<string, AttachmentReference[]>();
   videoOnFailOnly: boolean = false;
 
   constructor(config: AllureCypressConfig = {}) {
@@ -75,6 +77,8 @@ export class AllureCypress {
       },
     });
 
+    on("after:screenshot", this.onAfterScreenshot);
+
     // Emits the remaining fixtures and writes the video of the spec.
     // In interactive mode it's invoked through the `reportFinalAllureCypressSpecMessages` task.
     on("after:spec", this.onAfterSpec);
@@ -82,6 +86,19 @@ export class AllureCypress {
     // Emits the categories and env info. Doesn't work in interactive mode unless
     // `experimentalInteractiveRunEvents` is set.
     on("after:run", this.onAfterRun);
+  };
+
+  /**
+   * Forward `after:screenshot` here if you define your own handler. Pass the
+   * final screenshot path after any changes made by your handler.
+   */
+  onAfterScreenshot = ({ path }: Cypress.ScreenshotDetails) => {
+    // Snapshot plugins can move or delete the file before the browser flushes
+    // its attachment message. Preserve each capture, including overwritten paths.
+    const reference = this.allureRuntime.emitAttachment(path, { contentType: ContentType.PNG });
+    const references = this.#screenshotReferencesByPath.get(path) ?? [];
+    references.push(reference);
+    this.#screenshotReferencesByPath.set(path, references);
   };
 
   /**
@@ -153,6 +170,7 @@ export class AllureCypress {
       this.#emitRemainingScopes(specContext);
       this.specContextByAbsolutePath.delete(specAbsolutePath);
     }
+    this.#screenshotReferencesByPath.clear();
   };
 
   #endAllSpecs = () => {
@@ -479,6 +497,21 @@ export class AllureCypress {
 
   #applyRuntimeApiMessages = (context: SpecContext, message: RuntimeMessage) => {
     const rootUuid = this.#resolveRootUuid(context);
+    if (message.type === "attachment_path") {
+      const { path, name, ...options } = message.data;
+      const references = this.#screenshotReferencesByPath.get(path);
+      const reference = references?.shift();
+      if (reference) {
+        if (!references?.length) {
+          this.#screenshotReferencesByPath.delete(path);
+        }
+        if (rootUuid) {
+          this.allureRuntime.writeAttachment(rootUuid, undefined, name, reference, options);
+        }
+        return;
+      }
+    }
+
     if (rootUuid) {
       this.allureRuntime.applyRuntimeMessages(rootUuid, [message]);
     } else {

@@ -43,6 +43,10 @@ import { deepClone, formatLinks, getTestResultHistoryId, getTestResultTestCaseId
 import { buildAttachmentFileName } from "./utils/attachments.js";
 import { resolveWriter } from "./writer/loader.js";
 
+const attachmentReferenceBrand = Symbol("AttachmentReference");
+
+export type AttachmentReference = { readonly [attachmentReferenceBrand]: true };
+
 export interface StepStack {
   clear(): void;
 
@@ -206,6 +210,7 @@ export class DefaultStepStack implements StepStack {
 
 export class ReporterRuntime {
   private readonly state = new LifecycleState();
+  readonly #emittedAttachments = new WeakMap<AttachmentReference, string>();
   private notifier: Notifier;
   private stepStack: StepStack = new DefaultStepStack();
   writer: Writer;
@@ -509,11 +514,25 @@ export class ReporterRuntime {
     this.notifier.afterStepStop(step);
   };
 
+  /**
+   * Writes attachment bytes or copies a source file without linking it to a result.
+   * Pass the returned reference to this runtime's writeAttachment to link it later.
+   */
+  emitAttachment = (
+    attachmentContentOrPath: Buffer | string,
+    options: Pick<AttachmentOptions, "contentType" | "fileExtension">,
+  ): AttachmentReference => {
+    const source = this.#writeAttachmentFile(attachmentContentOrPath, options);
+    const reference: AttachmentReference = { [attachmentReferenceBrand]: true };
+    this.#emittedAttachments.set(reference, source);
+    return reference;
+  };
+
   writeAttachment = (
     rootUuid: string,
     parentStepUuid: string | null | undefined,
     attachmentName: string,
-    attachmentContentOrPath: Buffer | string,
+    attachmentContentOrPath: Buffer | string | AttachmentReference,
     options: AttachmentOptions & { wrapInStep?: boolean; timestamp?: number },
   ) => {
     const parent = this.#findParent(rootUuid, parentStepUuid);
@@ -525,11 +544,13 @@ export class ReporterRuntime {
       return;
     }
 
-    const isPath = typeof attachmentContentOrPath === "string";
-    const attachmentFileName = this.#writeAttachmentFile(attachmentContentOrPath, {
-      ...options,
-      fileExtension: options.fileExtension ?? (isPath ? extname(attachmentContentOrPath) : undefined),
-    });
+    const attachmentFileName =
+      typeof attachmentContentOrPath === "string" || Buffer.isBuffer(attachmentContentOrPath)
+        ? this.#writeAttachmentFile(attachmentContentOrPath, options)
+        : this.#emittedAttachments.get(attachmentContentOrPath);
+    if (!attachmentFileName) {
+      throw new Error("Invalid attachment reference for this reporter runtime");
+    }
     const attachment = this.#createAttachment(attachmentName, options.contentType, attachmentFileName);
 
     if (options.wrapInStep) {
@@ -838,7 +859,7 @@ export class ReporterRuntime {
   #handleGlobalAttachmentPathMessage = (message: RuntimeGlobalAttachmentPathMessage["data"]) => {
     const attachmentSource = this.#writeAttachmentFile(message.path, {
       contentType: message.contentType,
-      fileExtension: message.fileExtension ?? extname(message.path),
+      fileExtension: message.fileExtension,
     });
 
     this.#writeGlobals({
@@ -884,7 +905,7 @@ export class ReporterRuntime {
     const isPath = typeof attachmentContentOrPath === "string";
     const attachmentFileName = buildAttachmentFileName({
       contentType: options.contentType,
-      fileExtension: options.fileExtension,
+      fileExtension: options.fileExtension ?? (isPath ? extname(attachmentContentOrPath) : undefined),
     });
 
     if (isPath) {
