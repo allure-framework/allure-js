@@ -1,5 +1,5 @@
 import { ContentType, LabelName, Stage, Status } from "allure-js-commons";
-import { getMessageAndTraceFromError } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, hasLabel } from "allure-js-commons/sdk";
 import {
   ReporterRuntime,
   createDefaultWriter,
@@ -144,7 +144,6 @@ class AllureTestCafeReporter {
       getThreadLabel(),
       ...getEnvironmentLabels(),
       ...staticMetadata.labels,
-      ...getSuiteLabels(staticMetadata.titlePath),
     ];
 
     this.sameNameIndexByQueueKey.set(queueKey, sameNameIndex);
@@ -335,6 +334,10 @@ class AllureTestCafeReporter {
       });
 
       this.runtime.stopTest(startedTest.testUuid, { duration: testRunInfo.durationMs });
+      // Global labels are merged by stopTest, so apply defaults only after it.
+      this.runtime.updateTest(startedTest.testUuid, (result) => {
+        result.labels.push(...getSuiteLabels(startedTest.titlePath).filter(({ name }) => !hasLabel(result, name)));
+      });
       this.runtime.writeTest(startedTest.testUuid);
       this.cleanupActionState(startedTest);
     });
@@ -651,7 +654,6 @@ class AllureTestCafeReporter {
       getThreadLabel(),
       ...getEnvironmentLabels(),
       ...staticMetadata.labels,
-      ...getSuiteLabels(staticMetadata.titlePath),
     ];
 
     if (this.currentFixture.relativePath) {
