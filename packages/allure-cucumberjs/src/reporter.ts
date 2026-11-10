@@ -18,6 +18,7 @@ import {
   type RuntimeMessage,
   getMessageAndTraceFromError,
   getStatusFromError,
+  hasLabel,
   toGlobalErrorMessage,
 } from "allure-js-commons/sdk";
 import {
@@ -73,7 +74,7 @@ export default class AllureCucumberReporter extends Formatter {
   private readonly pickleStepMap: Map<string, messages.PickleStep> = new Map();
   private readonly pickleMap: Map<string, messages.Pickle> = new Map();
   private readonly testCaseMap: Map<string, messages.TestCase> = new Map();
-  private readonly testCaseStartedMap: Map<string, messages.TestCaseStarted> = new Map();
+  private readonly featureNamesByTestCaseStartedId = new Map<string, string>();
   private readonly testResultUuids: Map<string, string> = new Map();
   private readonly scopeUuids: Map<string, string> = new Map();
   private readonly fixtureUuids: Map<string, string> = new Map();
@@ -426,13 +427,6 @@ export default class AllureCucumberReporter extends Formatter {
       getThreadLabel(data.workerId),
     );
 
-    if (doc?.feature) {
-      result.labels!.push({
-        name: LabelName.FEATURE,
-        value: doc.feature.name,
-      });
-    }
-
     const pickleLabels = this.parsePickleTags(pickle.tags || []);
     const featureLabels = this.parseTagsLabels(doc?.feature?.tags || []);
     const featureLinks = this.parseTagsLinks(doc?.feature?.tags || []);
@@ -456,7 +450,9 @@ export default class AllureCucumberReporter extends Formatter {
 
     this.testResultUuids.set(data.id, testUuid);
 
-    this.testCaseStartedMap.set(data.id, data);
+    if (doc?.feature) {
+      this.featureNamesByTestCaseStartedId.set(data.id, doc.feature.name);
+    }
 
     if (!scenario?.examples) {
       return;
@@ -526,6 +522,16 @@ export default class AllureCucumberReporter extends Formatter {
       }
     });
     this.allureRuntime.stopTest(testUuid, { stop: TimeConversion.timestampToMillisecondsSinceEpoch(data.timestamp) });
+    const featureName = this.featureNamesByTestCaseStartedId.get(data.testCaseStartedId);
+    if (featureName !== undefined) {
+      this.featureNamesByTestCaseStartedId.delete(data.testCaseStartedId);
+      // Runtime and global metadata can supply the feature before the result is written.
+      this.allureRuntime.updateTest(testUuid, (result) => {
+        if (!hasLabel(result, LabelName.FEATURE)) {
+          result.labels.push({ name: LabelName.FEATURE, value: featureName });
+        }
+      });
+    }
     this.allureRuntime.writeTest(testUuid);
     this.testResultUuids.delete(data.testCaseStartedId);
 
