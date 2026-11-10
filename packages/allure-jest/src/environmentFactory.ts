@@ -70,7 +70,13 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
 
       // Preserve any event handler defined by the base or custom environment.
       this.handleTestEvent = ((event: any, state: Circus.State) => {
-        const handleAllureEvent = () => this.#handleTestEvent(event as Circus.Event, state as Circus.State);
+        // Capture the hook owner before a custom handler can yield or change
+        // Circus's shared cursor. Runtime messages use the same native identity.
+        const hookTest =
+          event.name === "hook_start"
+            ? (this.global.expect?.getState().currentTestIdentity?.() ?? state.currentlyRunningTest)
+            : undefined;
+        const handleAllureEvent = () => this.#handleTestEvent(event as Circus.Event, hookTest);
 
         // Keep Allure's lifecycle in sync even if the custom environment fails,
         // then rethrow the original error so Jest keeps its native behavior.
@@ -132,10 +138,10 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
       }
     }
 
-    #handleTestEvent(event: Circus.Event, state: Circus.State) {
+    #handleTestEvent(event: Circus.Event, hookTest?: Circus.TestEntry | null) {
       switch (event.name) {
         case "hook_start":
-          this.#handleHookStart(event.hook, state.currentlyRunningTest);
+          this.#handleHookStart(event.hook, hookTest);
           break;
         case "hook_success":
           this.#handleHookPass(event.hook, event.test);
