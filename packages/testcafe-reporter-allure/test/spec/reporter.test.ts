@@ -21,7 +21,7 @@ type ManualReporterRunOptions = {
   fixtureMeta?: Record<string, unknown>;
   testName?: string;
   testMeta?: Record<string, unknown>;
-  testStartInfo?: Record<string, unknown>;
+  testStartInfo?: Record<string, unknown> | null;
   testRunInfo?: Record<string, unknown>;
   actionEvents?: Array<{
     type: "start" | "done";
@@ -88,7 +88,9 @@ const runReporterLifecycle = async ({
   try {
     reporter.init?.("3.7.2");
     await reporter.reportFixtureStart?.(fixtureName, fixturePath, fixtureMeta);
-    await reporter.reportTestStart?.(testName, testMeta, testStartInfo);
+    if (testStartInfo) {
+      await reporter.reportTestStart?.(testName, testMeta, testStartInfo);
+    }
     if (events.length > 0) {
       for (const event of events) {
         if (event.type === "action-start") {
@@ -135,6 +137,28 @@ const runReporterLifecycle = async ({
     await rm(runDir, { recursive: true, force: true });
   }
 };
+
+it("fills missing suite levels when reportTestDone has no matching start event", async () => {
+  const { tests } = await runReporterLifecycle({
+    testStartInfo: null,
+    testMeta: { "allure.label.subSuite": "From metadata" },
+    reporterConfig: { globalLabels: { suite: "From config" } },
+  });
+
+  expect(tests).toHaveLength(1);
+  const [result] = tests;
+  const suiteLabels = result.labels.filter(
+    ({ name }) => name === LabelName.PARENT_SUITE || name === LabelName.SUITE || name === LabelName.SUB_SUITE,
+  );
+  expect(suiteLabels).toHaveLength(3);
+  expect(suiteLabels).toEqual(
+    expect.arrayContaining([
+      { name: LabelName.PARENT_SUITE, value: expect.stringMatching(/test\/fixtures\/manual\.test\.js$/) },
+      { name: LabelName.SUITE, value: "From config" },
+      { name: LabelName.SUB_SUITE, value: "From metadata" },
+    ]),
+  );
+});
 
 it("writes warnings, quarantine details, browser parameters, categories, and environment info", async () => {
   const { tests, envInfo, categories, attachments } = await runReporterLifecycle({
@@ -385,6 +409,15 @@ it("creates separate browser-scoped results for multi-browser runtime messages",
       reportData: {
         "run-a": [
           createRuntimeAttachmentEnvelope({
+            type: "metadata",
+            data: {
+              labels: [
+                { name: LabelName.PARENT_SUITE, value: "First parent" },
+                { name: LabelName.PARENT_SUITE, value: "Second parent" },
+              ],
+            },
+          }),
+          createRuntimeAttachmentEnvelope({
             type: "step_start",
             data: { name: "chrome step", start: 1 },
           }),
@@ -414,6 +447,25 @@ it("creates separate browser-scoped results for multi-browser runtime messages",
   );
   const edgeResult = tests.find(({ parameters }) =>
     parameters.some((parameter) => parameter.name === "Browser" && parameter.value === "Edge 123 / Linux"),
+  );
+
+  const isSuiteLabel = ({ name }: { name: string }) => name === LabelName.PARENT_SUITE || name === LabelName.SUITE;
+  const chromeSuiteLabels = chromeResult?.labels.filter(isSuiteLabel);
+  expect(chromeSuiteLabels).toHaveLength(3);
+  expect(chromeSuiteLabels).toEqual(
+    expect.arrayContaining([
+      { name: LabelName.PARENT_SUITE, value: "First parent" },
+      { name: LabelName.PARENT_SUITE, value: "Second parent" },
+      { name: LabelName.SUITE, value: "Manual fixture" },
+    ]),
+  );
+  const edgeSuiteLabels = edgeResult?.labels.filter(isSuiteLabel);
+  expect(edgeSuiteLabels).toHaveLength(2);
+  expect(edgeSuiteLabels).toEqual(
+    expect.arrayContaining([
+      { name: LabelName.PARENT_SUITE, value: expect.stringMatching(/test\/fixtures\/manual\.test\.js$/) },
+      { name: LabelName.SUITE, value: "Manual fixture" },
+    ]),
   );
 
   expect(chromeResult?.attachments).not.toContainEqual(expect.objectContaining({ name: "Runtime messages" }));
