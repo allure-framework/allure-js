@@ -2,18 +2,18 @@
 import type { EventEmitter } from "events";
 
 import { ContentType, Stage, Status } from "allure-js-commons";
-import { getStatusFromError, hasLabel, serialize } from "allure-js-commons/sdk";
+import { getStatusFromError, serialize } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
   createDefaultWriter,
+  getDefaultSuiteLabels,
   getEnvironmentLabels,
   getFallbackTestCaseIdLabel,
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
   getProjectName,
-  getSuiteLabels,
   getThreadLabel,
   md5,
 } from "allure-js-commons/sdk/reporter";
@@ -273,7 +273,7 @@ class AllureReporter {
     this.allureRuntime.stopTest(this.currentTest);
     // Global labels are merged by stopTest, so apply defaults only after it.
     this.allureRuntime.updateTest(this.currentTest, (test) => {
-      test.labels.push(...getSuiteLabels(this.#pathToItem(args.item)).filter(({ name }) => !hasLabel(test, name)));
+      test.labels.push(...getDefaultSuiteLabels(test, this.#pathToItem(args.item)));
     });
     this.allureRuntime.writeTest(this.currentTest);
   }

@@ -7,6 +7,7 @@ import process from "node:process";
 
 import type { Label, Link, Status, StepResult, TestResult } from "../../model.js";
 import { ContentType, LabelName, LinkType, StatusByPriority } from "../../model.js";
+import { hasLabel } from "../utils.js";
 import type { LinkConfig, LinkTemplate } from "./types.js";
 import { FileSystemWriter } from "./writer/FileSystemWriter.js";
 import { MessageWriter } from "./writer/MessageWriter.js";
@@ -232,6 +233,10 @@ export const getSuiteLabels = (suites: readonly string[]): Label[] => {
 
   return labels;
 };
+
+/** Returns generated suite labels for levels not already present in the result. */
+export const getDefaultSuiteLabels = (test: TestResult, suites: readonly string[]): Label[] =>
+  getSuiteLabels(suites).filter(({ name }) => !hasLabel(test, name));
 
 const suiteLabelNames: readonly string[] = [LabelName.PARENT_SUITE, LabelName.SUITE, LabelName.SUB_SUITE];
 
