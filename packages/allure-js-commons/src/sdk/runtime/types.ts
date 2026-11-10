@@ -8,6 +8,7 @@ import type {
   ParameterOptions,
   Status,
 } from "../../model.js";
+import type { LabelHierarchy } from "../types.js";
 
 export interface StepContext {
   displayName: (name: string) => void | PromiseLike<void>;
@@ -23,6 +24,8 @@ export interface SyncStepContext {
 
 export interface SyncTestRuntime {
   labels: (...labels: Label[]) => void;
+
+  replaceLabelHierarchy?: (hierarchy: LabelHierarchy) => void;
 
   links: (...links: Link[]) => void;
 
@@ -67,6 +70,8 @@ export interface SyncTestRuntime {
 
 export interface TestRuntime {
   labels: (...labels: Label[]) => PromiseLike<void>;
+
+  replaceLabelHierarchy?: (hierarchy: LabelHierarchy) => PromiseLike<void>;
 
   links: (...links: Link[]) => PromiseLike<void>;
 

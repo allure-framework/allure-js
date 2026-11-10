@@ -3,6 +3,7 @@ export type {
   Category,
   EnvironmentInfo,
   ExecutorInfo,
+  LabelHierarchy,
   RuntimeMessage,
   RuntimeMetadataMessage,
   RuntimeAttachmentContentMessage,
