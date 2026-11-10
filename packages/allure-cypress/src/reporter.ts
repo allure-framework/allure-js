@@ -1,11 +1,12 @@
 import { ContentType, Stage, Status } from "allure-js-commons";
 import type { FixtureResult, TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import { hasLabel, toGlobalErrorMessage } from "allure-js-commons/sdk";
+import { toGlobalErrorMessage } from "allure-js-commons/sdk";
 import {
   type AttachmentReference,
   ReporterRuntime,
   createDefaultWriter,
+  getDefaultSuiteLabels,
   getEnvironmentLabels,
   getFallbackTestCaseIdLabel,
   getFrameworkLabel,
@@ -16,7 +17,6 @@ import {
   getProjectName,
   getProjectRoot,
   getRelativePath,
-  getSuiteLabels,
   getThreadLabel,
   md5,
   parseTestPlan,
@@ -442,7 +442,7 @@ export class AllureCypress {
     this.allureRuntime.stopTest(testUuid, { duration });
     // Hook metadata is merged by stopTest, so apply defaults only after it.
     this.allureRuntime.updateTest(testUuid, (testResult) => {
-      testResult.labels.push(...getSuiteLabels(suiteNames).filter(({ name }) => !hasLabel(testResult, name)));
+      testResult.labels.push(...getDefaultSuiteLabels(testResult, suiteNames));
       this.#fixStepStops(testResult);
     });
   };

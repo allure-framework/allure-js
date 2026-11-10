@@ -7,13 +7,13 @@ import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
   createDefaultWriter,
+  getDefaultSuiteLabels,
   getEnvironmentLabels,
   getFallbackTestCaseIdLabel,
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
   getProjectName,
-  getSuiteLabels,
   getThreadLabel,
   md5,
 } from "allure-js-commons/sdk/reporter";
@@ -127,10 +127,6 @@ class AllureReporter {
         ...getEnvironmentLabels(),
       ],
       links,
-    });
-
-    this.allureRuntime.updateTest(this.currentTest, (test) => {
-      test.labels.push(...getSuiteLabels(testPath));
     });
 
     this.pmItemsByAllureUuid.set(this.currentTest, pmItem);
@@ -275,6 +271,10 @@ class AllureReporter {
     }
 
     this.allureRuntime.stopTest(this.currentTest);
+    // Global labels are merged by stopTest, so apply defaults only after it.
+    this.allureRuntime.updateTest(this.currentTest, (test) => {
+      test.labels.push(...getDefaultSuiteLabels(test, this.#pathToItem(args.item)));
+    });
     this.allureRuntime.writeTest(this.currentTest);
   }
 
