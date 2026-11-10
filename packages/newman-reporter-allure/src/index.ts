@@ -2,7 +2,7 @@
 import type { EventEmitter } from "events";
 
 import { ContentType, Stage, Status } from "allure-js-commons";
-import { getStatusFromError, serialize } from "allure-js-commons/sdk";
+import { getStatusFromError, hasLabel, serialize } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
@@ -127,10 +127,6 @@ class AllureReporter {
         ...getEnvironmentLabels(),
       ],
       links,
-    });
-
-    this.allureRuntime.updateTest(this.currentTest, (test) => {
-      test.labels.push(...getSuiteLabels(testPath));
     });
 
     this.pmItemsByAllureUuid.set(this.currentTest, pmItem);
@@ -275,6 +271,10 @@ class AllureReporter {
     }
 
     this.allureRuntime.stopTest(this.currentTest);
+    // Global labels are merged by stopTest, so apply defaults only after it.
+    this.allureRuntime.updateTest(this.currentTest, (test) => {
+      test.labels.push(...getSuiteLabels(this.#pathToItem(args.item)).filter(({ name }) => !hasLabel(test, name)));
+    });
     this.allureRuntime.writeTest(this.currentTest);
   }
 
