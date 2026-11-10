@@ -730,7 +730,6 @@ export class AllureReporter implements ReporterV2 {
     // We need to check parallelIndex first because pw introduced this field only in v1.30.0
     const threadId = result.parallelIndex !== undefined ? result.parallelIndex : result.workerIndex;
     const thread = `pid-${process.pid}-worker-${threadId}`;
-    const error = result.error;
     // only apply default suites if not set by user
     const [, projectSuiteTitle, fileSuiteTitle, ...suiteTitles] = test.parent.titlePath();
     const beforeHooksStack = this.beforeHooksStepsStack.get(test.id);
@@ -752,8 +751,21 @@ export class AllureReporter implements ReporterV2 {
         testResult.labels.push({ name: LabelName.SUB_SUITE, value: suiteTitles.join(" > ") });
       }
 
-      if (error) {
-        testResult.statusDetails = { ...getStatusDetails(error) };
+      if (result.errors.length > 0) {
+        const details = result.errors.map((error) => getStatusDetails(error));
+        testResult.statusDetails = {
+          ...details[0],
+          message:
+            details
+              .map(({ message }) => message)
+              .filter(Boolean)
+              .join("\n\n") || undefined,
+          trace:
+            details
+              .map(({ trace }) => trace)
+              .filter(Boolean)
+              .join("\n\n") || undefined,
+        };
       } else {
         const skipReason = test.annotations?.find(
           (annotation) => annotation.type === "skip" || annotation.type === "fixme",

@@ -7,6 +7,22 @@ it("handles runtime labels", async () => {
   const { tests } = await runCucumberInlineTest(["labels"], ["runtime/modern/labels"]);
 
   expect(tests).toHaveLength(3);
+  expect(
+    Object.fromEntries(
+      tests.map(({ name, labels }) => [
+        name,
+        labels
+          .filter(({ name: labelName }) => labelName === LabelName.FEATURE)
+          .map(({ value }) => value)
+          .sort(),
+      ]),
+    ),
+  ).toEqual({
+    "without labels": ["with labels"],
+    "with labels": ["global"],
+    "with runtime labels": ["foo", "second feature"],
+  });
+
   expect(tests).toContainEqual(
     expect.objectContaining({
       name: "without labels",
@@ -26,10 +42,6 @@ it("handles runtime labels", async () => {
           name: LabelName.SEVERITY,
           value: "global",
         },
-        {
-          name: LabelName.FEATURE,
-          value: "global",
-        },
       ]),
     }),
   );
@@ -47,10 +59,6 @@ it("handles runtime labels", async () => {
         },
         {
           name: LabelName.EPIC,
-          value: "foo",
-        },
-        {
-          name: LabelName.FEATURE,
           value: "foo",
         },
         {

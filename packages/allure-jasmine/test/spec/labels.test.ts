@@ -1,7 +1,13 @@
-import { LabelName } from "allure-js-commons";
+import { LabelName, type Label } from "allure-js-commons";
 import { expect, it } from "vitest";
 
 import { runJasmineInlineTest } from "../utils.js";
+
+const suiteLabels = (labels: Label[]) =>
+  labels
+    .filter(({ name }) => name === LabelName.PARENT_SUITE || name === LabelName.SUITE || name === LabelName.SUB_SUITE)
+    .map(({ name, value }) => `${name}: ${value}`)
+    .sort();
 
 it("should add suite labels", async () => {
   const { tests } = await runJasmineInlineTest({
@@ -220,4 +226,50 @@ it("should add labels from env variables", async () => {
       { name: "B", value: "b" },
     ]),
   );
+});
+
+it("should replace only the suite levels supplied by runtime or title metadata", async () => {
+  const { tests } = await runJasmineInlineTest({
+    "spec/sample.spec.js": `
+      const { parentSuite } = require("allure-js-commons");
+      describe("default parent", () => {
+        describe("default suite", () => {
+          describe("default sub", () => {
+            it("explicit @allure.label.suite:custom-suite", async () => {
+              await parentSuite("first parent");
+              await parentSuite("second parent");
+            });
+          });
+        });
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(suiteLabels(tests[0].labels)).toEqual([
+    "parentSuite: first parent",
+    "parentSuite: second parent",
+    "subSuite: default sub",
+    "suite: custom-suite",
+  ]);
+});
+
+it("should respect suite levels from hooks and environment variables", async () => {
+  const { tests } = await runJasmineInlineTest(
+    {
+      "spec/sample.spec.js": `
+        const { suite } = require("allure-js-commons");
+        describe("default parent", () => {
+          describe("default suite", () => {
+            beforeEach(async () => { await suite("hook suite"); });
+            it("explicit", () => {});
+          });
+        });
+      `,
+    },
+    { ALLURE_LABEL_parentSuite: "env parent" },
+  );
+
+  expect(tests).toHaveLength(1);
+  expect(suiteLabels(tests[0].labels)).toEqual(["parentSuite: env parent", "suite: hook suite"]);
 });
