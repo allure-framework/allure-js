@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 
 import { ContentType, Stage, Status, WellKnownParameters } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import { getMessageAndTraceFromError, getStatusFromError, toGlobalErrorMessage } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, getStatusFromError, hasLabel, toGlobalErrorMessage } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
@@ -245,7 +245,6 @@ export default class AllureVitestReporter implements Reporter {
     });
 
     this.allureReporterRuntime!.updateTest(testUuid, (result) => {
-      const suiteLabels = getSuiteLabels(suitePath);
       const fsPath = specPath.split("/");
       const baseTitlePath = [...fsPath, ...suitePath];
       const titlePath = projectName ? [projectName, ...baseTitlePath] : baseTitlePath;
@@ -255,7 +254,6 @@ export default class AllureVitestReporter implements Reporter {
       result.labels.push(getFrameworkLabel("vitest"));
       result.labels.push(getLanguageLabel());
       result.labels.push(...metadataLabels);
-      result.labels.push(...suiteLabels);
       result.labels.push(...getEnvironmentLabels());
       result.labels.push(getHostLabel());
       result.labels.push(getThreadLabel(vitestWorker && `vitest-worker-${vitestWorker}`));
@@ -281,6 +279,8 @@ export default class AllureVitestReporter implements Reporter {
       if (runtimeMessages.length) {
         this.allureReporterRuntime!.applyRuntimeMessages(testUuid, runtimeMessages);
       }
+
+      result.labels.push(...getSuiteLabels([specPath, ...suitePath]).filter((label) => !hasLabel(result, label.name)));
 
       switch (taskResult?.state) {
         case "fail": {
