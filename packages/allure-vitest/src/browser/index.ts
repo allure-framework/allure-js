@@ -14,7 +14,7 @@ declare module "vitest/browser" {
 export const commands = {
   existsInTestPlan: async (ctx: any, task: Task) => {
     if (!ctx.allureTestPlan) {
-      ctx.allureTestPlan = parseTestPlan();
+      ctx.allureTestPlan = parseTestPlan({ includeMutedTests: true });
     }
 
     if (!ctx.allureTestPlan) {
@@ -24,6 +24,6 @@ export const commands = {
     const { fullName, labels } = getTestMetadata(task);
     const { value: id } = labels.find(({ name }) => name === LabelName.ALLURE_ID) ?? {};
 
-    return includedInTestPlan(ctx.allureTestPlan as TestPlanV1, { fullName, id });
+    return includedInTestPlan(ctx.allureTestPlan as TestPlanV1, { fullName, id }, { enableMutedTests: true });
   },
 };
