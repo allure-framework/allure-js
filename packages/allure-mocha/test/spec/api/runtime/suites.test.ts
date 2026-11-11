@@ -63,19 +63,20 @@ describe("suites", () => {
         });
       });
 
-      it("overrides the default suites", () => {
+      it("overrides only its own level", () => {
         const labels = testMap.get("a scoped test with a parent suite")!.labels;
         expect(labels).not.toContainEqual({
           name: "parentSuite",
           value: "foo",
         });
-        expect(labels).not.toContainEqual({
+        expect(labels).toContainEqual({ name: "parentSuite", value: "faa" });
+        expect(labels).toContainEqual({
           name: "suite",
-          value: expect.anything(),
+          value: "bar",
         });
-        expect(labels).not.toContainEqual({
+        expect(labels).toContainEqual({
           name: "subSuite",
-          value: expect.anything(),
+          value: "baz",
         });
       });
     });
@@ -119,19 +120,20 @@ describe("suites", () => {
         });
       });
 
-      it("overrides the default suites", () => {
+      it("overrides only its own level", () => {
         const labels = testMap.get("a scoped test with a suite")!.labels;
-        expect(labels).not.toContainEqual({
+        expect(labels).toContainEqual({
           name: "parentSuite",
-          value: expect.anything(),
+          value: "foo",
         });
         expect(labels).not.toContainEqual({
           name: "suite",
           value: "bar",
         });
-        expect(labels).not.toContainEqual({
+        expect(labels).toContainEqual({ name: "suite", value: "faa" });
+        expect(labels).toContainEqual({
           name: "subSuite",
-          value: expect.anything(),
+          value: "baz",
         });
       });
     });
@@ -186,20 +188,21 @@ describe("suites", () => {
         });
       });
 
-      it("overrides the default suites", () => {
+      it("overrides only its own level", () => {
         const labels = testMap.get("a scoped test with a sub-suite")!.labels;
-        expect(labels).not.toContainEqual({
+        expect(labels).toContainEqual({
           name: "parentSuite",
-          value: expect.anything(),
+          value: "foo",
         });
-        expect(labels).not.toContainEqual({
+        expect(labels).toContainEqual({
           name: "suite",
-          value: expect.anything(),
+          value: "bar",
         });
         expect(labels).not.toContainEqual({
           name: "subSuite",
           value: "baz",
         });
+        expect(labels).toContainEqual({ name: "subSuite", value: "qux" });
       });
     });
   });

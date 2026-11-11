@@ -191,3 +191,28 @@ it("should add labels from tags", async () => {
   expect(tests[0].labels.filter((l) => l.name === LabelName.FEATURE)).toHaveLength(1);
   expect(tests[0].labels.filter((l) => l.name === LabelName.STORY)).toHaveLength(1);
 });
+
+it("should retain the feature suite when a scenario supplies a different suite level", async () => {
+  const { tests } = await runCodeceptJsInlineTest(
+    {
+      "login.test.js": `
+        const { suite } = require("allure-js-commons");
+        Feature("login-feature");
+        Scenario("login-scenario", async () => {
+          await suite("custom-suite");
+        });
+      `,
+    },
+    {},
+  );
+
+  expect(tests).toHaveLength(1);
+  const suiteLabels = tests[0].labels.filter(({ name }) => name === LabelName.PARENT_SUITE || name === LabelName.SUITE);
+  expect(suiteLabels).toHaveLength(2);
+  expect(suiteLabels).toEqual(
+    expect.arrayContaining([
+      { name: LabelName.PARENT_SUITE, value: "login-feature" },
+      { name: LabelName.SUITE, value: "custom-suite" },
+    ]),
+  );
+});
