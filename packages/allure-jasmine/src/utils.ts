@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { getPosixPath, getProjectName, getRelativePath } from "allure-js-commons/sdk/reporter";
 
@@ -38,13 +40,16 @@ export const getSkipReasonFromError = (error: Error | string | undefined): strin
 
 export const last = <T>(arr: readonly T[]) => (arr.length ? arr[arr.length - 1] : undefined);
 
+export const getSpecFilePath = (filename: string) =>
+  filename.startsWith("file:") ? fileURLToPath(filename) : filename;
+
 export const getAllureNamesAndLabels = (
   filename: string | undefined,
   suites: readonly string[],
   rawSpecName: string,
 ) => {
   const projectName = getProjectName();
-  const filePart = filename ? getPosixPath(getRelativePath(filename)) : undefined;
+  const filePart = filename ? getPosixPath(getRelativePath(getSpecFilePath(filename))) : undefined;
   const { cleanTitle: specName, labels, links } = extractMetadataFromString(rawSpecName);
   const specPart = [...suites, specName].join(" > ");
   const fullNameBase = filePart ? (projectName ? `${projectName}:${filePart}` : filePart) : undefined;

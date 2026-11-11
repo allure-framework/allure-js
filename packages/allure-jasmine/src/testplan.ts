@@ -9,6 +9,7 @@ import type { JasmineSpecFn, JasmineSuiteFn, TestPlanIndex } from "./model.js";
 import { getAllureNamesAndLabels } from "./utils.js";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
+const directoryUrl = new URL(".", import.meta.url).href;
 
 const getCallerFileStackTraceFormatFn = (_: Error, stackTraces: NodeJS.CallSite[]): string | undefined => {
   return stackTraces[0]?.getFileName() ?? undefined;
@@ -33,7 +34,10 @@ const defaultPrepareStackTrace = (error: Error, stackTraces: NodeJS.CallSite[]):
     ? originalErrorToString(error)
     : [originalErrorToString(error), ...stackTraces].join("\n    at ");
 
-const isAllureJasmineFrame = (frame: NodeJS.CallSite) => frame.getFileName()?.startsWith(dirname + path.sep) ?? false;
+const isAllureJasmineFrame = (frame: NodeJS.CallSite) => {
+  const filename = frame.getFileName();
+  return filename?.startsWith(dirname + path.sep) || filename?.startsWith(directoryUrl) || false;
+};
 
 const createStackFilter =
   (prepareStackTrace: (error: Error, stackTraces: NodeJS.CallSite[]) => any) =>
@@ -67,10 +71,7 @@ const getIndexedTestPlan = (): TestPlanIndex | undefined => {
   }
 };
 
-const isInTestPlan = (testplan: TestPlanIndex | undefined, fullName: string | undefined, labels: readonly Label[]) => {
-  if (!testplan) {
-    return true;
-  }
+const isInTestPlan = (testplan: TestPlanIndex, fullName: string | undefined, labels: readonly Label[]) => {
   if (fullName && testplan.fullNames.has(fullName)) {
     return true;
   }
@@ -79,13 +80,17 @@ const isInTestPlan = (testplan: TestPlanIndex | undefined, fullName: string | un
 };
 
 export const enableAllureJasmineTestPlan = () => {
+  const testplan = getIndexedTestPlan();
+  if (!testplan) {
+    return;
+  }
+
   const jasmineDescribe: JasmineSuiteFn = global.describe;
   const jasmineIt: JasmineSpecFn = global.it;
   const jasmineXit: JasmineSpecFn = global.xit;
 
   const suites: string[] = [];
   let currentFile: string | undefined;
-  const testplan = getIndexedTestPlan();
 
   global.describe = (description: string, specDefinitions: () => void) => {
     const callerFile = getCallerFile(global.describe);
@@ -107,7 +112,7 @@ export const enableAllureJasmineTestPlan = () => {
   };
 
   global.it = (expectation: string, assertion?: jasmine.ImplementationCallback, timeout?: number) => {
-    const filename = currentFile ?? getCallerFile(global.it);
+    const filename = getCallerFile(global.it) ?? currentFile;
     const { fullName, labels } = getAllureNamesAndLabels(filename, suites, expectation);
     // Older runners may omit filenames in reporter events even when the callsite
     // is available here. Accept the suite-based selector emitted by those runs too.
