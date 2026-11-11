@@ -14,6 +14,8 @@ export interface AllurePlaywrightReporterConfig extends ReporterConfig {
   detail?: boolean;
   /** Whether to report unmapped Playwright annotations as steps. Defaults to true. */
   reportAnnotations?: boolean;
+  /** Whether to report Playwright expect steps. Defaults to the value of detail. */
+  reportMatchers?: boolean;
   suiteTitle?: boolean;
   useLegacyFullName?: boolean;
 }
