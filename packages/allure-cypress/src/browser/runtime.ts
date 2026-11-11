@@ -14,6 +14,7 @@ import {
   getStatusFromError,
   isPromise,
 } from "allure-js-commons/sdk";
+import type { LabelHierarchy } from "allure-js-commons/sdk";
 import type { SyncTestRuntime, TestRuntime } from "allure-js-commons/sdk/runtime";
 import { getGlobalTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 
@@ -42,6 +43,10 @@ class AllureCypressTestRuntime implements TestRuntime {
 
   get sync(): SyncTestRuntime {
     return this.#createSyncRuntime();
+  }
+
+  replaceLabelHierarchy(labelHierarchy: LabelHierarchy) {
+    return this.#enqueueMessageAsync({ type: "metadata", data: { labelHierarchy } });
   }
 
   labels(...labels: Label[]) {
@@ -384,6 +389,7 @@ class AllureCypressTestRuntime implements TestRuntime {
 
   #createSyncRuntime(): SyncTestRuntime {
     return {
+      replaceLabelHierarchy: (labelHierarchy) => enqueueRuntimeMessage({ type: "metadata", data: { labelHierarchy } }),
       labels: (...labels) =>
         enqueueRuntimeMessage({
           type: "metadata",

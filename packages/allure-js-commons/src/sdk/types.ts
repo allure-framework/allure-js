@@ -15,9 +15,15 @@ type RuntimeMessageBase<T extends string> = {
   type: T;
 };
 
+export type LabelHierarchy = {
+  kind: "suites" | "bdd";
+  names: [name: string] | [parent: string, name: string] | [parent: string, name: string, child: string];
+};
+
 export type RuntimeMetadataMessage = RuntimeMessageBase<"metadata"> & {
   data: {
     labels?: Label[];
+    labelHierarchy?: LabelHierarchy;
     links?: Link[];
     parameters?: Parameter[];
     description?: string;

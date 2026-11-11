@@ -99,6 +99,23 @@ await allure.step("Submit valid credentials", async () => {
 });
 ```
 
+## Replacing a hierarchy
+
+Use `suites()` for the Suites view and `bdd()` for the Behaviors view. Each function replaces its entire hierarchy for the current test.
+
+| Arguments | `suites()`                     | `bdd()`              |
+| --------- | ------------------------------ | -------------------- |
+| One       | Suite                          | Feature              |
+| Two       | Parent suite, suite            | Epic, feature        |
+| Three     | Parent suite, suite, sub-suite | Epic, feature, story |
+
+```ts
+await allure.suites("Checkout"); // Only the suite level is set.
+await allure.bdd("Storefront", "Checkout", "Apply discount");
+```
+
+The replacement defines the final hierarchy, including when individual labels are also added during the test. Omitted levels are left empty, even when the reporter normally supplies defaults. The two hierarchies are independent. If you replace the same hierarchy again in a test, the last call wins. A replacement in the test takes precedence over one inherited from a setup hook. The sync facade provides the same functions without `await` in integrations that support it.
+
 ## Sync facade
 
 When your test code runs synchronously, or when you want to integrate with synchronous helpers such as matcher libraries, you can use the sync facade:

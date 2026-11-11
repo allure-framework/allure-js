@@ -191,3 +191,23 @@ it("should add labels from tags", async () => {
   expect(tests[0].labels.filter((l) => l.name === LabelName.FEATURE)).toHaveLength(1);
   expect(tests[0].labels.filter((l) => l.name === LabelName.STORY)).toHaveLength(1);
 });
+
+it("can opt into replacing the entire suite hierarchy through the sync API", async () => {
+  const { tests } = await runCodeceptJsInlineTest(
+    {
+      "login.test.js": `
+        const { suites } = require("allure-js-commons/sync");
+        Feature("Default feature");
+        Scenario("custom hierarchy", () => {
+          suites("Custom suite");
+        });
+      `,
+    },
+    {},
+  );
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].labels.filter(({ name }) => name === LabelName.PARENT_SUITE || name === LabelName.SUITE)).toEqual([
+    { name: LabelName.SUITE, value: "Custom suite" },
+  ]);
+});

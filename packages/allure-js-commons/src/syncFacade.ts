@@ -10,9 +10,10 @@ import type {
 import { type ContentType, LabelName, LinkType } from "./model.js";
 import { getGlobalSyncTestRuntimeWithAutoconfig } from "./sdk/runtime/runtime.js";
 import type { SyncStepContext, SyncTestRuntime } from "./sdk/runtime/types.js";
+import type { LabelHierarchy } from "./sdk/types.js";
 
 const callRuntimeMethod = <
-  T extends keyof SyncTestRuntime,
+  T extends Exclude<keyof SyncTestRuntime, "replaceLabelHierarchy">,
   S extends Parameters<SyncTestRuntime[T]>,
   R extends ReturnType<SyncTestRuntime[T]>,
 >(
@@ -147,6 +148,15 @@ export const step = <T = void>(name: string, body: (context: SyncStepContext) =>
 export const issue = (url: string, name?: string) => link(url, name, LinkType.ISSUE);
 
 export const tms = (url: string, name?: string) => link(url, name, LinkType.TMS);
+
+const replaceLabelHierarchy = (hierarchy: LabelHierarchy) =>
+  getGlobalSyncTestRuntimeWithAutoconfig().replaceLabelHierarchy?.(hierarchy);
+
+/** Replaces the suite hierarchy. One name sets the suite, two add its parent, and three add a sub-suite. */
+export const suites = (...names: LabelHierarchy["names"]) => replaceLabelHierarchy({ kind: "suites", names });
+
+/** Replaces the behavior hierarchy. One name sets the feature, two add its epic, and three add a story. */
+export const bdd = (...names: LabelHierarchy["names"]) => replaceLabelHierarchy({ kind: "bdd", names });
 
 export const allureId = (value: string) => label(LabelName.ALLURE_ID, value);
 
