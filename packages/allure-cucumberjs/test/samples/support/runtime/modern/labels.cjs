@@ -21,6 +21,7 @@ Given("a step with all the possible labels", async () => {
   await allureId("foo");
   await epic("foo");
   await feature("foo");
+  await feature("second feature");
   await layer("foo");
   await owner("foo");
   await parentSuite("foo");

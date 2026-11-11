@@ -48,5 +48,5 @@ export const existsInTestPlan = (task: Task, testPlan?: TestPlanV1) => {
   const { fullName, labels } = getTestMetadata(task);
   const { value: id } = labels.find(({ name }) => name === LabelName.ALLURE_ID) ?? {};
 
-  return includedInTestPlan(testPlan, { fullName, id });
+  return includedInTestPlan(testPlan, { fullName, id }, { enableMutedTests: true });
 };

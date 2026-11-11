@@ -1,4 +1,4 @@
-import { Status, type TestResult, type TestResultContainer } from "allure-js-commons";
+import { Stage, Status, type TestResult, type TestResultContainer } from "allure-js-commons";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { Assertion } from "vitest";
 
@@ -149,4 +149,25 @@ it("reports failed hooks as global errors", async () => {
   );
   expect(allErrors.filter((error) => error.message?.includes("beforeEach hook boom"))).toHaveLength(1);
   expect(allErrors.filter((error) => error.message?.includes("after hook boom"))).toHaveLength(1);
+});
+
+it("writes each test interrupted by beforeEach before closing its suite scopes", async () => {
+  const { tests, groups, attachments } = await runMochaInlineTest(["fixtures", "unfinishedBeforeEach"]);
+
+  expect(tests).toHaveLength(2);
+  for (const name of ["first", "last"]) {
+    const test = tests.find((result) => result.name === name);
+    expect(test).toMatchObject({
+      status: Status.BROKEN,
+      stage: Stage.FINISHED,
+      statusDetails: expect.objectContaining({ message: `${name} setup failed` }),
+    });
+    const artifactGroups = groups.filter((group) =>
+      group.afters.some((fixture) => fixture.steps.some((step) => step.name === `${name}.txt`)),
+    );
+    expect(artifactGroups).toHaveLength(1);
+    expect(artifactGroups[0].children).toEqual([test?.uuid]);
+    const source = artifactGroups[0].afters[0].steps[0].attachments[0].source;
+    expect(Buffer.from(attachments[source] as string, "base64").toString("utf8")).toBe(`artifact for ${name}`);
+  }
 });

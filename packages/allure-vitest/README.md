@@ -42,7 +42,7 @@ npm install -D allure-vitest
 
 Install Allure Report separately when you want to render the generated `allure-results`:
 
-- follow the [Allure Report 2 installation guide](https://allurereport.org/docs/install/) to use the `allure` CLI
+- follow the [Allure Report 2 installation guide](https://allurereport.org/docs/v2/install/) to use the `allure` CLI
 - or install Allure Report 3 with `npm install -D allure` to use `npx allure`
 
 ## Supported versions and platforms
@@ -133,6 +133,18 @@ Or use Allure Report 3:
 npx allure generate ./allure-results
 npx allure open ./allure-report
 ```
+
+## Suite hierarchy
+
+By default, the Suites view groups tests by the relative test file path, followed
+by their `describe` blocks. The file path becomes `parentSuite`, the first
+`describe` becomes `suite`, and further blocks are joined with `>` into
+`subSuite`. This also distinguishes files with the same name in different
+folders.
+
+Explicit `parentSuite`, `suite`, and `subSuite` labels supplied through the
+runtime API, test title metadata, or environment variables take precedence over
+the corresponding defaults. Missing levels keep their default values.
 
 ## Allure API
 

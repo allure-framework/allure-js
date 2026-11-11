@@ -11,13 +11,13 @@ import type { FixtureType, ReporterConfig } from "allure-js-commons/sdk/reporter
 import {
   ReporterRuntime,
   createDefaultWriter,
+  getDefaultSuiteLabels,
   getEnvironmentLabels,
   getFallbackTestCaseIdLabel,
   getFrameworkLabel,
   getHostLabel,
   getLanguageLabel,
   getPackageLabel,
-  getSuiteLabels,
   getThreadLabel,
   hasSkipLabel,
   md5,
@@ -230,9 +230,6 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
     const exceptionInfo = findMessageAboutThrow(spec.failedExpectations) || findAnyError(spec.failedExpectations);
 
     this.allureRuntime.updateTest(this.currentAllureTestUuid, (result) => {
-      const suitesLabels = getSuiteLabels(specPath);
-
-      result.labels.push(...suitesLabels);
       result.labels.push(...getEnvironmentLabels());
       result.labels.push(getLanguageLabel());
       result.labels.push(getFrameworkLabel("jasmine"));
@@ -284,6 +281,10 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
       }
     });
     this.allureRuntime.stopTest(this.currentAllureTestUuid);
+    // Hook metadata is merged by stopTest, so apply defaults only after it.
+    this.allureRuntime.updateTest(this.currentAllureTestUuid, (result) => {
+      result.labels.push(...getDefaultSuiteLabels(result, specPath));
+    });
     this.allureRuntime.writeTest(this.currentAllureTestUuid);
     this.currentAllureTestUuid = undefined;
 

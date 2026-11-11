@@ -3,8 +3,10 @@ import type { FixtureResult, TestResult } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
 import { toGlobalErrorMessage } from "allure-js-commons/sdk";
 import {
+  type AttachmentReference,
   ReporterRuntime,
   createDefaultWriter,
+  getDefaultSuiteLabels,
   getEnvironmentLabels,
   getFallbackTestCaseIdLabel,
   getFrameworkLabel,
@@ -15,7 +17,6 @@ import {
   getProjectName,
   getProjectRoot,
   getRelativePath,
-  getSuiteLabels,
   getThreadLabel,
   md5,
   parseTestPlan,
@@ -46,6 +47,7 @@ export class AllureCypress {
   allureRuntime: ReporterRuntime;
   specContextByAbsolutePath = new Map<string, SpecContext>();
   #fixtureNames = new Map<string, string>();
+  #screenshotReferencesByPath = new Map<string, AttachmentReference[]>();
   videoOnFailOnly: boolean = false;
 
   constructor(config: AllureCypressConfig = {}) {
@@ -75,6 +77,8 @@ export class AllureCypress {
       },
     });
 
+    on("after:screenshot", this.onAfterScreenshot);
+
     // Emits the remaining fixtures and writes the video of the spec.
     // In interactive mode it's invoked through the `reportFinalAllureCypressSpecMessages` task.
     on("after:spec", this.onAfterSpec);
@@ -82,6 +86,19 @@ export class AllureCypress {
     // Emits the categories and env info. Doesn't work in interactive mode unless
     // `experimentalInteractiveRunEvents` is set.
     on("after:run", this.onAfterRun);
+  };
+
+  /**
+   * Forward `after:screenshot` here if you define your own handler. Pass the
+   * final screenshot path after any changes made by your handler.
+   */
+  onAfterScreenshot = ({ path }: Cypress.ScreenshotDetails) => {
+    // Snapshot plugins can move or delete the file before the browser flushes
+    // its attachment message. Preserve each capture, including overwritten paths.
+    const reference = this.allureRuntime.emitAttachment(path, { contentType: ContentType.PNG });
+    const references = this.#screenshotReferencesByPath.get(path) ?? [];
+    references.push(reference);
+    this.#screenshotReferencesByPath.set(path, references);
   };
 
   /**
@@ -153,6 +170,7 @@ export class AllureCypress {
       this.#emitRemainingScopes(specContext);
       this.specContextByAbsolutePath.delete(specAbsolutePath);
     }
+    this.#screenshotReferencesByPath.clear();
   };
 
   #endAllSpecs = () => {
@@ -325,7 +343,6 @@ export class AllureCypress {
         labels: [
           getLanguageLabel(),
           getFrameworkLabel("cypress"),
-          ...getSuiteLabels(context.suiteNames),
           ...metadataLabels,
           ...getEnvironmentLabels(),
           getHostLabel(),
@@ -394,20 +411,24 @@ export class AllureCypress {
     const scopes = suites.map((s) => context.suiteIdToScope.get(s)).filter((s): s is string => Boolean(s));
 
     const testUuid = this.#addNewTestResult(context, fullNameSuffix, testResultData, [context.videoScope, ...scopes]);
-    this.#stopExistingTestResult(testUuid, { duration, retries });
+    this.#stopExistingTestResult(testUuid, { duration, retries }, context.suiteNames);
     this.allureRuntime.writeTest(testUuid);
   };
 
   #stopTest = (context: SpecContext, { data }: CypressTestEndMessage) => {
     const testUuid = context.test;
     if (testUuid) {
-      this.#stopExistingTestResult(testUuid, data);
+      this.#stopExistingTestResult(testUuid, data, context.suiteNames);
       this.allureRuntime.writeTest(testUuid);
       context.test = undefined;
     }
   };
 
-  #stopExistingTestResult = (testUuid: string, { retries, duration }: CypressTestEndMessage["data"]) => {
+  #stopExistingTestResult = (
+    testUuid: string,
+    { retries, duration }: CypressTestEndMessage["data"],
+    suiteNames: string[],
+  ) => {
     this.allureRuntime.updateTest(testUuid, (testResult) => {
       if (retries > 0) {
         testResult.parameters.push({
@@ -419,11 +440,11 @@ export class AllureCypress {
       testResult.stage = Stage.FINISHED;
     });
     this.allureRuntime.stopTest(testUuid, { duration });
-    this.#fixTestStepStops(testUuid);
-  };
-
-  #fixTestStepStops = (testUuid: string) => {
-    this.allureRuntime.updateTest(testUuid, this.#fixStepStops);
+    // Hook metadata is merged by stopTest, so apply defaults only after it.
+    this.allureRuntime.updateTest(testUuid, (testResult) => {
+      testResult.labels.push(...getDefaultSuiteLabels(testResult, suiteNames));
+      this.#fixStepStops(testResult);
+    });
   };
 
   #fixFixtureStepStops = (fixtureUuid: string) => {
@@ -479,6 +500,21 @@ export class AllureCypress {
 
   #applyRuntimeApiMessages = (context: SpecContext, message: RuntimeMessage) => {
     const rootUuid = this.#resolveRootUuid(context);
+    if (message.type === "attachment_path") {
+      const { path, name, ...options } = message.data;
+      const references = this.#screenshotReferencesByPath.get(path);
+      const reference = references?.shift();
+      if (reference) {
+        if (!references?.length) {
+          this.#screenshotReferencesByPath.delete(path);
+        }
+        if (rootUuid) {
+          this.allureRuntime.writeAttachment(rootUuid, undefined, name, reference, options);
+        }
+        return;
+      }
+    }
+
     if (rootUuid) {
       this.allureRuntime.applyRuntimeMessages(rootUuid, [message]);
     } else {

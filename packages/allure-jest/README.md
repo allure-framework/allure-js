@@ -46,7 +46,7 @@ npm install -D allure-jest
 
 Install Allure Report separately when you want to render the generated `allure-results`:
 
-- follow the [Allure Report 2 installation guide](https://allurereport.org/docs/install/) to use the `allure` CLI
+- follow the [Allure Report 2 installation guide](https://allurereport.org/docs/v2/install/) to use the `allure` CLI
 - or install Allure Report 3 with `npm install -D allure` to use `npx allure`
 
 ## Supported versions and platforms

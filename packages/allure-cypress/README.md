@@ -32,7 +32,7 @@ npm install -D allure-cypress
 
 Install Allure Report separately when you want to render the generated `allure-results`:
 
-- follow the [Allure Report 2 installation guide](https://allurereport.org/docs/install/) to use the `allure` CLI
+- follow the [Allure Report 2 installation guide](https://allurereport.org/docs/v2/install/) to use the `allure` CLI
 - or install Allure Report 3 with `npm install -D allure` to use `npx allure`
 
 ## Supported versions and platforms
@@ -235,6 +235,7 @@ Cypress can't compose multiple Node events, which are set in `setupNodeEvents`.
 
 Allure Cypress requires access to the following events:
 
+- `after:screenshot`
 - `after:spec`
 - `after:run`
 
@@ -250,6 +251,11 @@ export default defineConfig({
   e2e: {
     setupNodeEvents: (on, config) => {
       const allurePlugin = allureCypress(on, config);
+
+      on("after:screenshot", (details) => {
+        // Apply any screenshot changes first, then pass the final path to Allure.
+        allurePlugin.onAfterScreenshot(details);
+      });
 
       on("after:spec", (spec, results) => {
         allurePlugin.onAfterSpec(spec, results);

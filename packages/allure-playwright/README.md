@@ -34,7 +34,7 @@ npm install -D allure-playwright
 
 Install Allure Report separately when you want to render the generated `allure-results`:
 
-- follow the [Allure Report 2 installation guide](https://allurereport.org/docs/install/) to use the `allure` CLI
+- follow the [Allure Report 2 installation guide](https://allurereport.org/docs/v2/install/) to use the `allure` CLI
 - or install Allure Report 3 with `npm install -D allure` to use `npx allure`
 
 ## Supported versions and platforms
@@ -76,6 +76,19 @@ When the test run completes, the result files will be generated in the `./allure
 directory.
 
 You may select another location, or further customize the reporter's behavior with [the configuration options](https://allurereport.org/docs/playwright-configuration/).
+
+To hide steps generated from Playwright annotations that are not mapped to Allure metadata, set
+`reportAnnotations: false`:
+
+```js
+export default defineConfig({
+  reporter: [["allure-playwright", { reportAnnotations: false }]],
+});
+```
+
+Annotation steps are enabled by default, independently of `detail`. This option only controls their
+presentation as steps: labels, links, descriptions, and skip/fixme handling are preserved. The original
+annotations remain available to Playwright and other reporters.
 
 To use name-based test selectors instead of source locations, enable the legacy full name format:
 

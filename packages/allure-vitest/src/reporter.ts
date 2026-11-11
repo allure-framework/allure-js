@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 
 import { ContentType, Stage, Status, WellKnownParameters } from "allure-js-commons";
 import type { RuntimeMessage } from "allure-js-commons/sdk";
-import { getMessageAndTraceFromError, getStatusFromError, toGlobalErrorMessage } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, getStatusFromError, hasLabel, toGlobalErrorMessage } from "allure-js-commons/sdk";
 import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 import {
   ReporterRuntime,
@@ -47,12 +47,22 @@ const normalizeSetupFilePath = (setupFilePath: string) =>
   setupFilePath.startsWith("file://") ? fileURLToPath(setupFilePath) : setupFilePath;
 
 export default class AllureVitestReporter implements Reporter {
+  onFinished?: (files: Task[]) => void;
+
   private allureReporterRuntime?: ReporterRuntime;
   private config: AllureVitestReporterConfig;
   private globalRuntimeMessages: RuntimeMessage[] = [];
+  private readonly vitestVersion: number[];
 
   constructor(config: AllureVitestReporterConfig) {
     this.config = config;
+
+    const { version } = localRequire("vitest/package.json") as { version: string };
+    this.vitestVersion = version.split(".").map(Number);
+    // Vitest 3 calls both hooks; register the legacy hook only on Vitest 1/2.
+    if (this.vitestVersion[0] < 3) {
+      this.onFinished = (files) => this.writeTasks(files);
+    }
   }
 
   onInit(vitest: Vitest) {
@@ -75,8 +85,7 @@ export default class AllureVitestReporter implements Reporter {
   private registerSetupFile(vitest: Vitest) {
     for (const project of vitest.projects) {
       if (project.config.browser.enabled) {
-        const { version: vitestVersion } = localRequire("vitest/package.json") as { version: string };
-        const [major, minor] = vitestVersion.split(".").map(Number);
+        const [major, minor] = this.vitestVersion;
         if (major < 4 || (major === 4 && minor < 1)) {
           throw new Error(
             "allure-vitest browser mode requires Vitest 4.1 or newer. Node mode supports Vitest >=1.3.0.",
@@ -116,6 +125,7 @@ export default class AllureVitestReporter implements Reporter {
 
   // eslint-disable-next-line @typescript-eslint/array-type
   onTestRunEnd(tests: ReadonlyArray<TestModule>) {
+    const tasks: Task[] = [];
     for (const test of tests) {
       // actually there's the task property in the test object
       // @ts-ignore
@@ -124,7 +134,15 @@ export default class AllureVitestReporter implements Reporter {
       }
 
       // @ts-ignore
-      this.handleTask(test.task as unknown as Task);
+      tasks.push(test.task as unknown as Task);
+    }
+
+    this.writeTasks(tasks);
+  }
+
+  private writeTasks(tasks: readonly Task[]) {
+    for (const task of tasks) {
+      this.handleTask(task);
     }
 
     const globalMessages = [...this.globalRuntimeMessages, ...takeGlobalRuntimeMessages()];
@@ -227,7 +245,6 @@ export default class AllureVitestReporter implements Reporter {
     });
 
     this.allureReporterRuntime!.updateTest(testUuid, (result) => {
-      const suiteLabels = getSuiteLabels(suitePath);
       const fsPath = specPath.split("/");
       const baseTitlePath = [...fsPath, ...suitePath];
       const titlePath = projectName ? [projectName, ...baseTitlePath] : baseTitlePath;
@@ -237,7 +254,6 @@ export default class AllureVitestReporter implements Reporter {
       result.labels.push(getFrameworkLabel("vitest"));
       result.labels.push(getLanguageLabel());
       result.labels.push(...metadataLabels);
-      result.labels.push(...suiteLabels);
       result.labels.push(...getEnvironmentLabels());
       result.labels.push(getHostLabel());
       result.labels.push(getThreadLabel(vitestWorker && `vitest-worker-${vitestWorker}`));
@@ -263,6 +279,8 @@ export default class AllureVitestReporter implements Reporter {
       if (runtimeMessages.length) {
         this.allureReporterRuntime!.applyRuntimeMessages(testUuid, runtimeMessages);
       }
+
+      result.labels.push(...getSuiteLabels([specPath, ...suitePath]).filter((label) => !hasLabel(result, label.name)));
 
       switch (taskResult?.state) {
         case "fail": {

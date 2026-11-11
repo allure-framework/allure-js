@@ -1,3 +1,4 @@
+import { LabelName } from "allure-js-commons";
 import { expect, it } from "vitest";
 
 import { runCucumberInlineTest } from "../utils.js";
@@ -49,6 +50,7 @@ it("should handle global labels as map", async () => {
         formatOptions: {
           globalLabels: {
             foo: "bar",
+            feature: "Configured feature",
             bar: ["beep", "boop"],
           }
         }
@@ -58,6 +60,11 @@ it("should handle global labels as map", async () => {
   );
 
   expect(tests).toHaveLength(2);
+  for (const { labels } of tests) {
+    expect(labels.filter(({ name }) => name === LabelName.FEATURE)).toEqual([
+      { name: LabelName.FEATURE, value: "Configured feature" },
+    ]);
+  }
   expect(tests[0].labels).toEqual(
     expect.arrayContaining([
       {
