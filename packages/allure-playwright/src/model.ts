@@ -37,6 +37,12 @@ export type ReporterPreprocessParams = Parameters<NonNullable<Reporter["preproce
 export interface ReporterV2 {
   onConfigure(config: FullConfig): void;
 
+  // Internal merge callbacks present in Playwright 1.62.0. Runners that omit
+  // them use the ordinary thread labels without a per-blob prefix.
+  onReportConfigure?(): void;
+
+  onReportEnd?(): void;
+
   preprocess(params: ReporterPreprocessParams): Promise<void> | void;
 
   onBegin(suite: Suite): void;

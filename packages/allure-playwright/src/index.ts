@@ -92,6 +92,8 @@ export class AllureReporter implements ReporterV2 {
   private readonly testFullNames = new WeakMap<TestCase, string>();
   private readonly emittedHookGlobalErrorKeys = new Set<string>();
   private readonly testPlan = parseTestPlan();
+  private replayedBlobCount = 0;
+  private activeBlobIndex?: number;
 
   constructor(config: AllurePlaywrightReporterConfig) {
     this.options = { suiteTitle: true, detail: true, ...config };
@@ -136,6 +138,17 @@ export class AllureReporter implements ReporterV2 {
 
   onConfigure(config: FullConfig): void {
     this.config = config;
+    this.replayedBlobCount = 0;
+    this.activeBlobIndex = undefined;
+  }
+
+  // Playwright's v2 merge dispatcher brackets each blob with these callbacks.
+  onReportConfigure(): void {
+    this.activeBlobIndex = ++this.replayedBlobCount;
+  }
+
+  onReportEnd(): void {
+    this.activeBlobIndex = undefined;
   }
 
   onError(): void {}
@@ -729,7 +742,8 @@ export class AllureReporter implements ReporterV2 {
 
     // We need to check parallelIndex first because pw introduced this field only in v1.30.0
     const threadId = result.parallelIndex !== undefined ? result.parallelIndex : result.workerIndex;
-    const thread = `pid-${process.pid}-worker-${threadId}`;
+    const blob = this.activeBlobIndex === undefined ? "" : `-blob-${this.activeBlobIndex}`;
+    const thread = `pid-${process.pid}${blob}-worker-${threadId}`;
     // only apply default suites if not set by user
     const [, projectSuiteTitle, fileSuiteTitle, ...suiteTitles] = test.parent.titlePath();
     const beforeHooksStack = this.beforeHooksStepsStack.get(test.id);
