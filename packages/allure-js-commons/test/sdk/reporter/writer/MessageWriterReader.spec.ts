@@ -20,7 +20,7 @@ describe("MessageWriter/MessageReader typed transport", () => {
     attachmentMock.mockReset();
   });
 
-  it("reads performance payload from a typed performance message", () => {
+  it("reads metric payload from a typed metrics message", () => {
     const bus = new EventEmitter();
     const writer = new MessageWriter(bus);
     const reader = new MessageReader();
@@ -31,14 +31,14 @@ describe("MessageWriter/MessageReader typed transport", () => {
 
     const results = [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }];
 
-    writer.writePerformanceResults("123-perf.json", results);
+    writer.writeMetricResults("123-metric.json", results);
 
-    expect(reader.results.performance).toEqual({
-      "123-perf.json": results,
+    expect(reader.results.metrics).toEqual({
+      "123-metric.json": results,
     });
   });
 
-  it("attaches performance payloads with the other collected results", async () => {
+  it("attaches metric payloads with the other collected results", async () => {
     const bus = new EventEmitter();
     const writer = new MessageWriter(bus);
     const reader = new MessageReader();
@@ -49,11 +49,11 @@ describe("MessageWriter/MessageReader typed transport", () => {
 
     const results = [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }];
 
-    writer.writePerformanceResults("123-perf.json", results);
+    writer.writeMetricResults("123-metric.json", results);
     await reader.attachResults();
 
     expect(attachmentMock).toHaveBeenCalledTimes(1);
-    expect(attachmentMock).toHaveBeenCalledWith("123-perf.json", JSON.stringify(results, null, 2), {
+    expect(attachmentMock).toHaveBeenCalledWith("123-metric.json", JSON.stringify(results, null, 2), {
       contentType: "application/json",
       encoding: "utf-8",
     });

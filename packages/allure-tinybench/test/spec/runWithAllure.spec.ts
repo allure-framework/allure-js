@@ -1,12 +1,12 @@
 import { Bench, type Task, type TaskResult } from "tinybench";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { performanceMetricsMock } = vi.hoisted(() => ({
-  performanceMetricsMock: vi.fn(),
+const { metricsMock } = vi.hoisted(() => ({
+  metricsMock: vi.fn(),
 }));
 
 vi.mock("allure-js-commons/sdk/runtime", () => ({
-  getGlobalTestRuntime: () => ({ performanceMetrics: performanceMetricsMock }),
+  getGlobalTestRuntime: () => ({ metrics: metricsMock }),
 }));
 
 import { runWithAllure } from "../../src/index.js";
@@ -26,7 +26,7 @@ const benchReturning = (tasks: Task[]) => {
 };
 
 beforeEach(() => {
-  performanceMetricsMock.mockReset();
+  metricsMock.mockReset();
   vi.restoreAllMocks();
 });
 
@@ -43,7 +43,7 @@ describe("runWithAllure", () => {
     expect(returned[1]).toBe(secondTasks);
     expect(first.run).toHaveBeenCalledOnce();
     expect(second.run).toHaveBeenCalledOnce();
-    expect(performanceMetricsMock.mock.calls).toEqual([
+    expect(metricsMock.mock.calls).toEqual([
       [expect.objectContaining({ key: "first", value: 1 })],
       [expect.objectContaining({ key: "second", value: 2 })],
     ]);
@@ -65,8 +65,8 @@ describe("runWithAllure", () => {
       throw new Error("Expected Tinybench to complete the task");
     }
 
-    expect(performanceMetricsMock).toHaveBeenCalledOnce();
-    expect(performanceMetricsMock.mock.calls[0]).toEqual([
+    expect(metricsMock).toHaveBeenCalledOnce();
+    expect(metricsMock.mock.calls[0]).toEqual([
       expect.objectContaining({
         id: expect.any(String),
         key: "aql.parse.simple",
@@ -84,12 +84,12 @@ describe("runWithAllure", () => {
 
     expect(run).toHaveBeenCalledOnce();
     expect(returned).toBe(tasks);
-    expect(performanceMetricsMock.mock.calls[0]).toEqual([
+    expect(metricsMock.mock.calls[0]).toEqual([
       expect.objectContaining({ key: "first", value: 1.25, start: 100, stop: 250 }),
       expect.objectContaining({ key: "second", value: 2.5, start: 100, stop: 250 }),
     ]);
 
-    const [first, second] = performanceMetricsMock.mock.calls[0];
+    const [first, second] = metricsMock.mock.calls[0];
     expect(first.id).not.toBe("");
     expect(second.id).not.toBe("");
     expect(first.id).not.toBe(second.id);
@@ -103,7 +103,7 @@ describe("runWithAllure", () => {
 
     await runWithAllure(bench);
 
-    expect(performanceMetricsMock.mock.calls[0]).toEqual([
+    expect(metricsMock.mock.calls[0]).toEqual([
       expect.objectContaining({ key: "duplicate", value: 1 }),
       expect.objectContaining({ key: "duplicate", value: 2 }),
     ]);
@@ -123,8 +123,8 @@ describe("runWithAllure", () => {
 
     await runWithAllure(bench);
 
-    expect(performanceMetricsMock).toHaveBeenCalledOnce();
-    expect(performanceMetricsMock.mock.calls[0]).toEqual([expect.objectContaining({ key: "valid", value: 3.5 })]);
+    expect(metricsMock).toHaveBeenCalledOnce();
+    expect(metricsMock.mock.calls[0]).toEqual([expect.objectContaining({ key: "valid", value: 3.5 })]);
   });
 
   it("does not publish an empty batch", async () => {
@@ -132,29 +132,29 @@ describe("runWithAllure", () => {
 
     await runWithAllure(bench);
 
-    expect(performanceMetricsMock).not.toHaveBeenCalled();
+    expect(metricsMock).not.toHaveBeenCalled();
   });
 
   it("preserves a benchmark error and does not publish partial results", async () => {
     const error = new Error("benchmark failed");
     const run = vi.fn<Bench["run"]>().mockRejectedValue(error);
     const bench = { run } as unknown as Bench;
-    performanceMetricsMock.mockRejectedValueOnce(new Error("publication failed"));
+    metricsMock.mockRejectedValueOnce(new Error("publication failed"));
 
     await expect(runWithAllure(bench)).rejects.toBe(error);
 
     expect(run).toHaveBeenCalledOnce();
-    expect(performanceMetricsMock).not.toHaveBeenCalled();
+    expect(metricsMock).not.toHaveBeenCalled();
   });
 
   it("propagates a publication error after a successful benchmark", async () => {
     const error = new Error("publication failed");
     const tasks = [task("completed", result("completed", 1))];
     const { bench } = benchReturning(tasks);
-    performanceMetricsMock.mockRejectedValueOnce(error);
+    metricsMock.mockRejectedValueOnce(error);
 
     await expect(runWithAllure(bench)).rejects.toBe(error);
 
-    expect(performanceMetricsMock).toHaveBeenCalledOnce();
+    expect(metricsMock).toHaveBeenCalledOnce();
   });
 });

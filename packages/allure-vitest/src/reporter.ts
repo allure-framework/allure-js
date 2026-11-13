@@ -154,6 +154,10 @@ export default class AllureVitestReporter implements Reporter {
   }
 
   handleTask(task: Task) {
+    if (task.type === "test" && task.meta.allureGlobalRuntimeMessages?.length) {
+      this.globalRuntimeMessages.push(...task.meta.allureGlobalRuntimeMessages);
+    }
+
     // do not report skipped tests
     if (task.mode === "skip" && !task.result) {
       return;
@@ -172,21 +176,11 @@ export default class AllureVitestReporter implements Reporter {
       return;
     }
 
-    const {
-      allureRuntimeMessages = [],
-      allureGlobalRuntimeMessages = [],
-      allureAttempts = [],
-      allureCurrentAttempt,
-      allureSkip = false,
-    } = task.meta;
+    const { allureRuntimeMessages = [], allureAttempts = [], allureCurrentAttempt, allureSkip = false } = task.meta;
 
     // do not report tests skipped by test plan
     if (allureSkip) {
       return;
-    }
-
-    if (allureGlobalRuntimeMessages.length) {
-      this.globalRuntimeMessages.push(...allureGlobalRuntimeMessages);
     }
 
     const finalAttemptResult =

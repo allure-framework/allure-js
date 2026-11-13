@@ -70,6 +70,7 @@ The package root exports the API used directly inside tests:
 - labels and links: `epic`, `feature`, `story`, `owner`, `severity`, `issue`, `tms`, `tag`
 - descriptions and identifiers: `description`, `descriptionHtml`, `displayName`, `historyId`, `testCaseId`
 - execution details: `parameter`, `step`, `logStep`
+- numeric measurements: `metric`
 - attachments: `attachment`, `attachmentPath`, `globalAttachment`, `globalAttachmentPath`
 
 These helpers delegate to the active test runtime, which integrations register with `setGlobalTestRuntime()`.
@@ -81,6 +82,18 @@ The `allure-js-commons/sdk` entry points expose the pieces used by official inte
 - `sdk/runtime`: runtime message transport and global runtime registration
 - `sdk/reporter`: `ReporterRuntime`, writers, result factories, categories, environment info, and helper utilities
 - `sdk`: shared types, runtime message definitions, serialization helpers, and metadata parsing helpers
+
+## Record a metric
+
+Use `metric(key, value)` inside a test to record a numeric measurement for Allure Report 3. Reuse the same key
+across runs to compare the values in report history. Each call records a separate sample with the key as its
+result ID and the same timestamp for start and stop. Use a non-empty string and a finite number.
+
+In Cypress, call `metric` inside a test or hook after the runner starts.
+
+```ts
+await allure.metric("application.build.size", bundleSizeInBytes);
+```
 
 ## Basic usage in tests
 

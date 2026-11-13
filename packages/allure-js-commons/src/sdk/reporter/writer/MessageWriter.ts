@@ -2,7 +2,7 @@ import { readFileSync } from "fs";
 import type { EventEmitter } from "node:events";
 import process from "process";
 
-import type { AllurePerformanceResult, Globals, TestResult, TestResultContainer } from "../../../model.js";
+import type { AllureMetricResult, Globals, TestResult, TestResultContainer } from "../../../model.js";
 import type { Category, EnvironmentInfo } from "../../types.js";
 import type { Writer } from "../types.js";
 import { stringifyEnvInfo } from "../utils/envInfo.js";
@@ -57,7 +57,7 @@ export class MessageWriter implements Writer {
     this.writeJson(distFileName, "globals", info);
   }
 
-  writePerformanceResults(distFileName: string, results: AllurePerformanceResult[]): void {
+  writeMetricResults(distFileName: string, results: AllureMetricResult[]): void {
     this.writeJson(distFileName, "performance", results);
   }
 }

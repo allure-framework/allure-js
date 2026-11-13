@@ -74,11 +74,11 @@ describe("logStep", () => {
 });
 
 describe("global methods", () => {
-  it("should create a performance metrics message", async () => {
+  it("sends the metric batch", async () => {
     const messageTestRuntime = implementMessageTestRuntime();
     const result = { id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 };
 
-    await messageTestRuntime.performanceMetrics(result);
+    await messageTestRuntime.metrics(result);
 
     expect(messageTestRuntime.sendMessage).toHaveBeenCalledWith({
       type: "performance_result",

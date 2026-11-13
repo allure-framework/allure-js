@@ -57,7 +57,7 @@ const mockRuntime = (): Mocked<TestRuntime> & { sync: Mocked<SyncTestRuntime> } 
     links: vi.fn().mockResolvedValue(undefined),
     logStep: vi.fn().mockResolvedValue(undefined),
     parameter: vi.fn().mockResolvedValue(undefined),
-    performanceMetrics: vi.fn().mockResolvedValue(undefined),
+    metrics: vi.fn().mockResolvedValue(undefined),
     precondition: vi.fn().mockResolvedValue(undefined),
     preconditionHtml: vi.fn().mockResolvedValue(undefined),
     step: vi.fn(async (_, body) => await body()),

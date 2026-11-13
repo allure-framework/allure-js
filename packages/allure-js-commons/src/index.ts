@@ -21,6 +21,7 @@ export {
   link,
   links,
   logStep,
+  metric,
   owner,
   parameter,
   parentSuite,
@@ -56,7 +57,7 @@ export {
   ALLURE_HTTP_REDACTED_VALUE,
 } from "./http.js";
 export type {
-  AllurePerformanceResult,
+  AllureMetricResult,
   Attachment,
   AttachmentOptions,
   ErrorDetails,

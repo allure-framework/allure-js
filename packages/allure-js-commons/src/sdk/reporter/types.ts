@@ -1,5 +1,5 @@
 import type {
-  AllurePerformanceResult,
+  AllureMetricResult,
   FixtureResult,
   Globals,
   Label,
@@ -80,7 +80,7 @@ export interface Writer {
 
   writeGlobals(distFileName: string, info: Globals): void;
 
-  writePerformanceResults?(distFileName: string, results: AllurePerformanceResult[]): void;
+  writeMetricResults?(distFileName: string, results: AllureMetricResult[]): void;
 }
 
 export type TestScope = {

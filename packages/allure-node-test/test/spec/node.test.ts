@@ -413,6 +413,51 @@ describe("node --test integration", () => {
     },
   );
 
+  it.skipIf(!supportsNodeTestRuntimeApi)("writes each metric once and rejects invalid measurements", async () => {
+    const { exitCode, metrics = {} } = await runNodeInlineTest(
+      {
+        "metrics.test.mjs": `
+          import { before, describe, it } from "node:test";
+          import { throws } from "node:assert/strict";
+          import { metric } from "allure-js-commons";
+
+          describe("measurements", () => {
+            before(() => metric("suite", 0));
+
+            it("rejects invalid measurements", () => {
+              for (const key of ["", undefined, 1]) {
+                throws(() => metric(key, 1), /Metric key/);
+              }
+              for (const value of [NaN, Infinity, -Infinity, "1", undefined]) {
+                throws(() => metric("invalid", value), /Metric value/);
+              }
+            });
+
+            it("keeps both measurements of the same key", async () => {
+              await metric("size", 10);
+              await metric("size", -1);
+            });
+          });
+        `,
+      },
+      { setup: true },
+    );
+
+    expect(exitCode).toBe(0);
+    expect(
+      Object.values(metrics)
+        .flat()
+        .map(({ key, value }) => ({ key, value })),
+    ).toEqual(
+      expect.arrayContaining([
+        { key: "suite", value: 0 },
+        { key: "size", value: 10 },
+        { key: "size", value: -1 },
+      ]),
+    );
+    expect(Object.values(metrics).flat()).toHaveLength(3);
+  });
+
   it.skipIf(!supportsNodeTestRuntimeApi)("writes runtime API data from native hooks", async () => {
     const { attachments, exitCode, tests } = await runNodeInlineTest(
       {

@@ -1,10 +1,10 @@
 import { randomUUID } from "node:crypto";
 
-import type { AllurePerformanceResult } from "allure-js-commons";
+import type { AllureMetricResult } from "allure-js-commons";
 import { getGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import type { Bench, Task } from "tinybench";
 
-const toPerformanceResult = (task: Task, start: number, stop: number) => {
+const toMetricResult = (task: Task, start: number, stop: number) => {
   const { result } = task;
 
   if (
@@ -28,8 +28,8 @@ export const runWithAllure = async (bench: Bench): Promise<Task[]> => {
   const start = Date.now();
   const tasks = await bench.run();
   const stop = Date.now();
-  const results = tasks.reduce<AllurePerformanceResult[]>((acc, task) => {
-    const result = toPerformanceResult(task, start, stop);
+  const results = tasks.reduce<AllureMetricResult[]>((acc, task) => {
+    const result = toMetricResult(task, start, stop);
 
     if (result) {
       acc.push(result);
@@ -39,7 +39,7 @@ export const runWithAllure = async (bench: Bench): Promise<Task[]> => {
   }, []);
 
   if (results.length > 0) {
-    await getGlobalTestRuntime().performanceMetrics(...results);
+    await getGlobalTestRuntime().metrics(...results);
   }
 
   return tasks;

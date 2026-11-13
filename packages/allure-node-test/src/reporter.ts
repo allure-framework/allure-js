@@ -14,6 +14,7 @@ import {
   extractMetadataFromString,
   getMessageAndTraceFromError,
   getStatusFromError,
+  isGlobalRuntimeMessage,
   toGlobalErrorMessage,
   type RuntimeMessage,
 } from "allure-js-commons/sdk";
@@ -102,12 +103,6 @@ const toTextAttachmentMessage = (name: string, content: string): RuntimeMessage 
     fileExtension: "txt",
   },
 });
-
-const isGlobalRuntimeMessage = (message: RuntimeMessage) =>
-  message.type === "global_attachment_content" ||
-  message.type === "global_attachment_path" ||
-  message.type === "global_error" ||
-  message.type === "performance_result";
 
 const hasTestPlanSkipLabel = (result: TestResult) => result.labels.some(({ name }) => name === "ALLURE_TESTPLAN_SKIP");
 
@@ -844,7 +839,8 @@ const matchesRuntimeRecord = (record: RuntimeMessageRecord, data: NodeTestEventD
   );
 };
 
-const isReusableRuntimeRecord = (record: RuntimeMessageRecord) => record.type === "suite";
+const isReusableRuntimeRecord = (record: RuntimeMessageRecord) =>
+  record.type === "suite" && record.message.type !== "performance_result";
 
 const matchesRuntimeSuiteRecord = (record: RuntimeMessageRecord, data: NodeTestEventData, metadata: TestMetadata) => {
   if (normalizeFilePath(record.file) !== normalizeFilePath(data.file) || !record.nodeFullName) {

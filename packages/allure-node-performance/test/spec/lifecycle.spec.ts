@@ -5,7 +5,7 @@ const state = vi.hoisted(() => ({
   constructed: 0,
   disconnect: vi.fn(),
   observe: vi.fn(),
-  performanceMetrics: vi.fn(),
+  metrics: vi.fn(),
   records: [] as unknown[],
   takeRecords: vi.fn(),
 }));
@@ -25,7 +25,7 @@ vi.mock("node:perf_hooks", () => ({
 }));
 
 vi.mock("allure-js-commons/sdk/runtime", () => ({
-  getGlobalTestRuntime: () => ({ performanceMetrics: state.performanceMetrics }),
+  getGlobalTestRuntime: () => ({ metrics: state.metrics }),
 }));
 
 import { instrumentPerformance } from "../../src/index.js";
@@ -45,7 +45,7 @@ beforeEach(() => {
   state.constructed = 0;
   state.disconnect.mockReset();
   state.observe.mockReset();
-  state.performanceMetrics.mockReset();
+  state.metrics.mockReset();
   state.records = [];
   state.takeRecords.mockReset().mockImplementation(() => state.records.splice(0));
 });
@@ -78,8 +78,8 @@ describe("observer lifecycle", () => {
     state.records.push(entry());
     await stop();
 
-    expect(state.performanceMetrics).toHaveBeenCalledTimes(1);
-    expect(state.performanceMetrics.mock.calls[0]).toHaveLength(1);
+    expect(state.metrics).toHaveBeenCalledTimes(1);
+    expect(state.metrics.mock.calls[0]).toHaveLength(1);
   });
 
   it("allows retrying when observation fails to start", async () => {
@@ -94,7 +94,7 @@ describe("observer lifecycle", () => {
 
   it("allows a new session while the previous publication is pending", async () => {
     let resolvePublication!: () => void;
-    state.performanceMetrics.mockImplementationOnce(
+    state.metrics.mockImplementationOnce(
       () =>
         new Promise<void>((resolve) => {
           resolvePublication = resolve;
@@ -122,10 +122,8 @@ describe("observer lifecycle", () => {
     expect(state.takeRecords).toHaveBeenCalledTimes(1);
     expect(state.disconnect).toHaveBeenCalledTimes(1);
     expect(state.takeRecords.mock.invocationCallOrder[0]).toBeLessThan(state.disconnect.mock.invocationCallOrder[0]);
-    expect(state.disconnect.mock.invocationCallOrder[0]).toBeLessThan(
-      state.performanceMetrics.mock.invocationCallOrder[0],
-    );
-    expect(state.performanceMetrics.mock.calls[0]).toEqual([
+    expect(state.disconnect.mock.invocationCallOrder[0]).toBeLessThan(state.metrics.mock.invocationCallOrder[0]);
+    expect(state.metrics.mock.calls[0]).toEqual([
       expect.objectContaining({ key: "callback" }),
       expect.objectContaining({ key: "pending" }),
     ]);
@@ -145,15 +143,15 @@ describe("observer lifecycle", () => {
 
     await stop();
 
-    expect(state.performanceMetrics).toHaveBeenCalledTimes(1);
-    expect(state.performanceMetrics.mock.calls[0]).toEqual([
+    expect(state.metrics).toHaveBeenCalledTimes(1);
+    expect(state.metrics.mock.calls[0]).toEqual([
       expect.objectContaining({ key: "valid", value: 2, start: 1_003, stop: 1_005 }),
     ]);
   });
 
   it("disconnects before a publication failure is surfaced", async () => {
     const error = new Error("publication failed");
-    state.performanceMetrics.mockRejectedValueOnce(error);
+    state.metrics.mockRejectedValueOnce(error);
     const stop = instrumentPerformance();
     state.records.push(entry());
 
