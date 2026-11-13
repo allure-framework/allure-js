@@ -13,7 +13,7 @@ import type {
   RuntimeGlobalAttachmentContentMessage,
   RuntimeGlobalAttachmentPathMessage,
   RuntimeGlobalErrorMessage,
-  RuntimePerformanceResultMessage,
+  RuntimeMetricResultMessage,
   RuntimeMessage,
   SerializeOptions,
   SerializerReplacerFunc,
@@ -294,7 +294,7 @@ export const isGlobalRuntimeMessage = (
   | RuntimeGlobalAttachmentContentMessage
   | RuntimeGlobalAttachmentPathMessage
   | RuntimeGlobalErrorMessage
-  | RuntimePerformanceResultMessage => {
+  | RuntimeMetricResultMessage => {
   return (
     message.type === "global_attachment_content" ||
     message.type === "global_attachment_path" ||

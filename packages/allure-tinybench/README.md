@@ -29,7 +29,7 @@ All emitted metrics share the Unix epoch `start` and `stop` timestamps of the co
 
 Different `Bench` instances can be run concurrently. Do not call `runWithAllure()` concurrently with another run of the same `Bench` instance: Tinybench tasks and their results are mutable and shared within that instance. Use Tinybench's concurrency options to run tasks within a single benchmark concurrently.
 
-The integration requires an active global Allure runtime, normally installed by a configured Allure reporter during a test run. In a standalone process without an Allure reporter, `allure-js-commons` uses its standard no-op runtime: it prints a warning and does not create a performance result file.
+The integration requires an active global Allure runtime, normally installed by a configured Allure reporter during a test run. In a standalone process without an Allure reporter, `allure-js-commons` uses its standard no-op runtime: it prints a warning and does not create a metric result file.
 
 Titles, units, groups, trends, and preferred value direction belong in the Allure Report performance configuration.
 

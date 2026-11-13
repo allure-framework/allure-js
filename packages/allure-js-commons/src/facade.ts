@@ -114,6 +114,19 @@ export const globalAttachmentPath = (
   return callRuntimeMethod("globalAttachmentFromPath", name, path, opts);
 };
 
+/** Record a numeric metric for the report. The key identifies the same metric across runs. */
+export const metric = (key: string, value: number): PromiseLike<void> => {
+  if (typeof key !== "string" || key.length === 0) {
+    throw new TypeError("Metric key must be a non-empty string");
+  }
+  if (!Number.isFinite(value)) {
+    throw new TypeError("Metric value must be a finite number");
+  }
+
+  const timestamp = Date.now();
+  return callRuntimeMethod("metrics", { id: key, key, value, start: timestamp, stop: timestamp });
+};
+
 export const globalError = (...args: GlobalErrorArgs) => {
   return callRuntimeMethod("globalError", ...args);
 };
