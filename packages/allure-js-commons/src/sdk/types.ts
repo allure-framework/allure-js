@@ -100,7 +100,7 @@ export type RuntimeGlobalErrorMessage = RuntimeMessageBase<"global_error"> & {
   data: StatusDetails & { status?: ErrorStatus };
 };
 
-export type RuntimeMetricResultMessage = RuntimeMessageBase<"performance_result"> & {
+export type RuntimeMetricResultMessage = RuntimeMessageBase<"metric_result"> & {
   data: AllureMetricResult[];
 };
 

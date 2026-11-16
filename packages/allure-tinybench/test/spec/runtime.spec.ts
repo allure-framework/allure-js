@@ -25,7 +25,7 @@ it("sends one batch through the real global runtime", async () => {
   expect(tasks).toHaveLength(2);
   expect(runtime.messages()).toEqual([
     {
-      type: "performance_result",
+      type: "metric_result",
       data: tasks.map((task) => {
         if (task.result.state !== "completed") {
           throw new Error("Expected Tinybench to complete the task");

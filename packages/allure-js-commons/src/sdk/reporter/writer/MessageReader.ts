@@ -32,7 +32,7 @@ export class MessageReader {
         this.results.globals = this.results.globals ?? {};
         this.results.globals[path] = parseJsonResult(data);
         return;
-      case "performance": {
+      case "metric": {
         (this.results.metrics ??= {})[path] = parseJsonResult<AllureMetricResult[]>(data);
         return;
       }

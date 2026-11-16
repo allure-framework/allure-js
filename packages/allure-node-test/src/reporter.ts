@@ -840,7 +840,7 @@ const matchesRuntimeRecord = (record: RuntimeMessageRecord, data: NodeTestEventD
 };
 
 const isReusableRuntimeRecord = (record: RuntimeMessageRecord) =>
-  record.type === "suite" && record.message.type !== "performance_result";
+  record.type === "suite" && record.message.type !== "metric_result";
 
 const matchesRuntimeSuiteRecord = (record: RuntimeMessageRecord, data: NodeTestEventData, metadata: TestMetadata) => {
   if (normalizeFilePath(record.file) !== normalizeFilePath(data.file) || !record.nodeFullName) {

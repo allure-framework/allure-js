@@ -32,7 +32,7 @@ describe("ReporterRuntime", () => {
     const runtime = new ReporterRuntime({ writer });
     const results = [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }];
 
-    runtime.applyGlobalRuntimeMessages([{ type: "performance_result", data: results }]);
+    runtime.applyGlobalRuntimeMessages([{ type: "metric_result", data: results }]);
 
     expect(writer.writeMetricResults).toHaveBeenCalledWith(expect.stringMatching(/^.+-metric\.json$/), results);
   });
@@ -42,7 +42,7 @@ describe("ReporterRuntime", () => {
     const runtime = new ReporterRuntime({ writer });
     const results = [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }];
 
-    runtime.applyRuntimeMessages("test-uuid", [{ type: "performance_result", data: results }]);
+    runtime.applyRuntimeMessages("test-uuid", [{ type: "metric_result", data: results }]);
 
     expect(writer.writeMetricResults).toHaveBeenCalledWith(expect.stringMatching(/^.+-metric\.json$/), results);
   });
@@ -55,7 +55,7 @@ describe("ReporterRuntime", () => {
     expect(() =>
       runtime.applyGlobalRuntimeMessages([
         {
-          type: "performance_result",
+          type: "metric_result",
           data: [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }],
         },
       ]),

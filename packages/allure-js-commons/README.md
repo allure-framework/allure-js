@@ -87,7 +87,7 @@ The `allure-js-commons/sdk` entry points expose the pieces used by official inte
 
 Use `metric(key, value)` inside a test to record a numeric measurement for Allure Report 3. Reuse the same key
 across runs to compare the values in report history. Each call records a separate sample with the key as its
-result ID and the same timestamp for start and stop. Use a non-empty string and a finite number.
+result ID and the same timestamp for start and stop. Use a non-empty key and a finite number. Numeric strings are converted to numbers before recording.
 
 In Cypress, call `metric` inside a test or hook after the runner starts.
 

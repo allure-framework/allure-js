@@ -624,7 +624,7 @@ export class ReporterRuntime {
         case "global_error":
           this.#handleGlobalErrorMessage(message.data);
           return;
-        case "performance_result":
+        case "metric_result":
           this.#handleMetricResultMessage(message.data);
           return;
         default:
@@ -647,7 +647,7 @@ export class ReporterRuntime {
         case "global_error":
           this.#handleGlobalErrorMessage(message.data);
           break;
-        case "performance_result":
+        case "metric_result":
           this.#handleMetricResultMessage(message.data);
           break;
         default:

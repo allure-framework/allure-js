@@ -703,7 +703,7 @@ describe("isGlobalRuntimeMessage", () => {
     ).toBe(true);
     expect(
       isGlobalRuntimeMessage({
-        type: "performance_result",
+        type: "metric_result",
         data: [{ id: "metric-id", key: "report.generate", value: 12.5, start: 100, stop: 112.5 }],
       }),
     ).toBe(true);

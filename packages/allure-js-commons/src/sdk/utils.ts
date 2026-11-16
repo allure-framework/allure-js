@@ -299,7 +299,7 @@ export const isGlobalRuntimeMessage = (
     message.type === "global_attachment_content" ||
     message.type === "global_attachment_path" ||
     message.type === "global_error" ||
-    message.type === "performance_result"
+    message.type === "metric_result"
   );
 };
 

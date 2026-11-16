@@ -225,7 +225,7 @@ class AllureCypressTestRuntime implements TestRuntime {
 
   metrics(...results: AllureMetricResult[]) {
     return this.#enqueueMessageAsync({
-      type: "performance_result",
+      type: "metric_result",
       data: results,
     });
   }

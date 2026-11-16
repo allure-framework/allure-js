@@ -81,7 +81,7 @@ describe("global methods", () => {
     await messageTestRuntime.metrics(result);
 
     expect(messageTestRuntime.sendMessage).toHaveBeenCalledWith({
-      type: "performance_result",
+      type: "metric_result",
       data: [result],
     });
   });

@@ -428,14 +428,14 @@ describe("node --test integration", () => {
               for (const key of ["", undefined, 1]) {
                 throws(() => metric(key, 1), /Metric key/);
               }
-              for (const value of [NaN, Infinity, -Infinity, "1", undefined]) {
+              for (const value of [NaN, Infinity, -Infinity, "", " ", "1 MB", "Infinity", "1e309", undefined, null, true]) {
                 throws(() => metric("invalid", value), /Metric value/);
               }
             });
 
             it("keeps both measurements of the same key", async () => {
-              await metric("size", 10);
-              await metric("size", -1);
+              await metric("size", " 1e1 ");
+              await metric("size", "-1");
             });
           });
         `,
