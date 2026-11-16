@@ -99,7 +99,7 @@ it("reports hook, polling and failed assertions without native API steps", async
   expect(Buffer.from(attachments[evidence.source] as string, "base64").toString()).toBe("evidence");
 });
 
-it.each([true, false])("preserves user steps inside matchers with reportMatchers=%s", async (reportMatchers) => {
+it.each([true, false])("preserves nested steps and attachments with reportMatchers=%s", async (reportMatchers) => {
   const { tests, attachments } = await runPlaywrightInlineTest({
     "playwright.config.js": `
       module.exports = { reporter: [['allure-playwright', { detail: false, reportMatchers: ${reportMatchers} }]] };
@@ -108,14 +108,15 @@ it.each([true, false])("preserves user steps inside matchers with reportMatchers
       const { test, expect } = require('@playwright/test');
       const customExpect = expect.extend({
         async toKeepEvidence() {
-          await test.step('User evidence', async () => {
-            await test.info().attach('Evidence', { body: 'evidence', contentType: 'text/plain' });
-          });
+          await test.step('Nested step', async () => {});
+          await test.info().attach('Evidence', { body: 'evidence', contentType: 'text/plain' });
           return { pass: true, message: () => 'Expected evidence' };
         },
       });
       test('sample', async () => {
-        await customExpect(null, 'Matcher assertion').toKeepEvidence();
+        await test.step('Outer step', async () => {
+          await customExpect(null, 'Matcher assertion').toKeepEvidence();
+        });
         await test.step('Sibling', async () => {});
       });
     `,
@@ -123,19 +124,23 @@ it.each([true, false])("preserves user steps inside matchers with reportMatchers
 
   expect(tests).toHaveLength(1);
   expect(tests[0].status).toBe("passed");
-  const evidenceStep = expect.objectContaining({
-    name: "User evidence",
-    status: "passed",
-    steps: [expect.objectContaining({ name: "Evidence" })],
-  });
+  const matcherChildren = [
+    expect.objectContaining({ name: "Nested step", status: "passed", steps: [] }),
+    expect.objectContaining({ name: "Evidence" }),
+  ];
   expect(tests[0].steps).toEqual([
-    reportMatchers
-      ? expect.objectContaining({ name: "Matcher assertion", status: "passed", steps: [evidenceStep] })
-      : evidenceStep,
+    expect.objectContaining({
+      name: "Outer step",
+      status: "passed",
+      steps: reportMatchers
+        ? [expect.objectContaining({ name: "Matcher assertion", status: "passed", steps: matcherChildren })]
+        : matcherChildren,
+    }),
     expect.objectContaining({ name: "Sibling", status: "passed", steps: [] }),
   ]);
-  const userStep = reportMatchers ? tests[0].steps[0].steps[0] : tests[0].steps[0];
-  const evidence = userStep.steps[0].attachments[0];
+  const outerStep = tests[0].steps[0];
+  const parentStep = reportMatchers ? outerStep.steps[0] : outerStep;
+  const evidence = parentStep.steps[1].attachments[0];
   expect(evidence).toMatchObject({ name: "Evidence", type: "text/plain" });
   expect(Buffer.from(attachments[evidence.source] as string, "base64").toString()).toBe("evidence");
 });
