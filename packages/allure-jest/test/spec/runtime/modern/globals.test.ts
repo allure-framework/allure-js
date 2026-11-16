@@ -43,11 +43,10 @@ it("writes globals payload from runtime API calls", async () => {
     expect(attachment.timestamp).toEqual(expect.any(Number));
   });
   expect(allErrors.filter((error) => error.message === "global setup failed")).toHaveLength(1);
-  expect(allAttachments.filter((attachment) => attachment.name === "global-log")).toHaveLength(1);
+  const globalAttachments = allAttachments.filter((attachment) => attachment.name === "global-log");
+  expect(globalAttachments).toHaveLength(1);
 
-  const globalAttachmentRef = allAttachments.find((a) => a.name === "global-log");
-  expect(globalAttachmentRef).toBeDefined();
-  expect(globalAttachmentRef.name).toBe("global-log");
+  const [globalAttachmentRef] = globalAttachments;
   expect(globalAttachmentRef.type).toBe("text/plain");
 
   const encodedAttachment = attachments[globalAttachmentRef.source] as string;
