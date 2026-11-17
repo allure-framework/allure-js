@@ -271,7 +271,9 @@ export class AllureReporter implements ReporterV2 {
   }
 
   #shouldIgnoreStep(step: TestStep) {
-    if (!this.options.detail && !["test.step", "attach", "test.attach"].includes(step.category)) {
+    const detail =
+      step.category === "expect" ? (this.options.reportMatchers ?? this.options.detail) : this.options.detail;
+    if (!detail && !["test.step", "attach", "test.attach"].includes(step.category)) {
       return true;
     }
 
@@ -286,6 +288,15 @@ export class AllureReporter implements ReporterV2 {
     }
 
     return false;
+  }
+
+  #getReportedParentUuid(step: TestStep): string | undefined {
+    for (let parent = step.parent; parent; parent = parent.parent) {
+      const uuid = this.pwStepUuid.get(parent);
+      if (uuid !== undefined) {
+        return uuid;
+      }
+    }
   }
 
   #getOrCreateHookStack(testId: string, isBeforeHook: boolean, startTime: Date): ShallowStepsStack {
@@ -589,10 +600,9 @@ export class AllureReporter implements ReporterV2 {
     };
 
     if (["test.attach", "attach"].includes(step.category) && !isHookStep) {
-      const parent = step.parent ? (this.pwStepUuid.get(step.parent) ?? null) : null;
       this.attachmentTargetByStep.set(step, {
         name: normalizeAttachStepTitle(step.title),
-        stepUuid: parent ?? undefined,
+        stepUuid: this.#getReportedParentUuid(step),
       });
       return;
     }
@@ -642,7 +652,7 @@ export class AllureReporter implements ReporterV2 {
       return;
     }
 
-    const parentUuid = step.parent ? (this.pwStepUuid.get(step.parent) ?? null) : null;
+    const parentUuid = this.#getReportedParentUuid(step) ?? null;
     const createdUuid = this.allureRuntime!.startStep(testUuid, parentUuid, baseStep);
 
     if (createdUuid) {
