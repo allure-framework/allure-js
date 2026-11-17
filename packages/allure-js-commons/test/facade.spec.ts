@@ -1,6 +1,6 @@
 import { type Mocked, describe, expect, it, vi } from "vitest";
 
-import { globalAttachment, globalAttachmentPath, globalError, logStep } from "../src/facade.js";
+import { globalAttachment, globalAttachmentPath, globalError, logStep, metric } from "../src/facade.js";
 import { Status } from "../src/model.js";
 import { type TestRuntime } from "../src/sdk/runtime/index.js";
 
@@ -21,7 +21,7 @@ const mockRuntime = (): Mocked<TestRuntime> => {
     links: vi.fn(),
     logStep: vi.fn(),
     parameter: vi.fn(),
-    performanceMetrics: vi.fn(),
+    metrics: vi.fn(),
     precondition: vi.fn(),
     preconditionHtml: vi.fn(),
     step: vi.fn(),
@@ -30,6 +30,22 @@ const mockRuntime = (): Mocked<TestRuntime> => {
     testCaseId: vi.fn(),
   } as Mocked<TestRuntime>;
 };
+
+it("records a numeric metric with a stable id and point-in-time timestamps", async () => {
+  const runtime = mockRuntime();
+  vi.stubGlobal("allureTestRuntime", () => runtime);
+
+  await metric("cli.bundle.size", 1024);
+
+  const [result] = runtime.metrics.mock.calls[0];
+  expect(result).toEqual({
+    id: "cli.bundle.size",
+    key: "cli.bundle.size",
+    value: 1024,
+    start: expect.any(Number),
+    stop: result.start,
+  });
+});
 
 describe("logStep", () => {
   it("should log step", async () => {

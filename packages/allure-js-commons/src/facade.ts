@@ -114,6 +114,20 @@ export const globalAttachmentPath = (
   return callRuntimeMethod("globalAttachmentFromPath", name, path, opts);
 };
 
+/** Record a numeric metric for the report. The key identifies the same metric across runs. */
+export const metric = (key: string, value: number | string): PromiseLike<void> => {
+  if (typeof key !== "string" || key.length === 0) {
+    throw new TypeError("Metric key must be a non-empty string");
+  }
+  const numericValue = typeof value === "string" && value.trim() !== "" ? Number(value) : value;
+  if (typeof numericValue !== "number" || !Number.isFinite(numericValue)) {
+    throw new TypeError("Metric value must be a finite number or a numeric string representing a finite number");
+  }
+
+  const timestamp = Date.now();
+  return callRuntimeMethod("metrics", { id: key, key, value: numericValue, start: timestamp, stop: timestamp });
+};
+
 export const globalError = (...args: GlobalErrorArgs) => {
   return callRuntimeMethod("globalError", ...args);
 };

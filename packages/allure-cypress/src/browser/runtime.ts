@@ -1,5 +1,5 @@
 import type {
-  AllurePerformanceResult,
+  AllureMetricResult,
   AttachmentOptions,
   GlobalErrorArgs,
   Label,
@@ -223,9 +223,9 @@ class AllureCypressTestRuntime implements TestRuntime {
     });
   }
 
-  performanceMetrics(...results: AllurePerformanceResult[]) {
+  metrics(...results: AllureMetricResult[]) {
     return this.#enqueueMessageAsync({
-      type: "performance_result",
+      type: "metric_result",
       data: results,
     });
   }

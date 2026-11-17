@@ -12,7 +12,7 @@ import {
 } from "node:fs";
 import { dirname, join } from "node:path";
 
-import type { AllurePerformanceResult, Globals, TestResult, TestResultContainer } from "../../../model.js";
+import type { AllureMetricResult, Globals, TestResult, TestResultContainer } from "../../../model.js";
 import type { Category, EnvironmentInfo } from "../../types.js";
 import type { Writer } from "../types.js";
 import { stringifyEnvInfo } from "../utils/envInfo.js";
@@ -138,7 +138,7 @@ export class FileSystemWriter implements Writer {
     writeJson(path, info);
   }
 
-  writePerformanceResults(distFileName: string, results: AllurePerformanceResult[]): void {
+  writeMetricResults(distFileName: string, results: AllureMetricResult[]): void {
     const path = this.buildPath(distFileName);
     writeJson(path, results);
   }

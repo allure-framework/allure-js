@@ -53,7 +53,7 @@ export const processTask = (task: Task | SuiteCollector, message: RuntimeMessage
 
 // beforeAll is suite-scoped in Vitest (no current test context):
 // https://main.vitest.dev/api/hooks#beforeall
-// Bind a global message to the first test task to avoid duplicating it across every
+// Bind a global message to the first runnable test task to avoid duplicating it across every
 // test in the suite when suite-level globals are later collected.
 export const attachGlobalMessageToFirstTest = (task: Task | SuiteCollector, message: RuntimeMessage): boolean => {
   switch (task.type) {
@@ -61,6 +61,9 @@ export const attachGlobalMessageToFirstTest = (task: Task | SuiteCollector, mess
     case "suite":
       return task.tasks.some((sub) => attachGlobalMessageToFirstTest(sub, message));
     case "test":
+      if ((task.mode !== "run" && task.mode !== "queued") || task.meta.allureSkip) {
+        return false;
+      }
       addMessageToMeta(task.meta, ALLURE_VITEST_GLOBAL_RUNTIME_MESSAGES_META_KEY, message);
       return true;
     default:

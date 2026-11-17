@@ -1,6 +1,6 @@
 /* eslint @typescript-eslint/require-await: off */
 import {
-  type AllurePerformanceResult,
+  type AllureMetricResult,
   type AttachmentOptions,
   type GlobalErrorArgs,
   type Label,
@@ -211,9 +211,9 @@ export abstract class BaseMessageTestRuntime implements TestRuntime {
     });
   }
 
-  async performanceMetrics(...results: AllurePerformanceResult[]) {
+  async metrics(...results: AllureMetricResult[]) {
     await this.sendMessage({
-      type: "performance_result",
+      type: "metric_result",
       data: results,
     });
   }

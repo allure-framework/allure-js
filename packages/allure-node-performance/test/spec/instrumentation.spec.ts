@@ -2,12 +2,12 @@ import { performance } from "node:perf_hooks";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-const { performanceMetricsMock } = vi.hoisted(() => ({
-  performanceMetricsMock: vi.fn(),
+const { metricsMock } = vi.hoisted(() => ({
+  metricsMock: vi.fn(),
 }));
 
 vi.mock("allure-js-commons/sdk/runtime", () => ({
-  getGlobalTestRuntime: () => ({ performanceMetrics: performanceMetricsMock }),
+  getGlobalTestRuntime: () => ({ metrics: metricsMock }),
 }));
 
 import { instrumentPerformance } from "../../src/index.js";
@@ -15,7 +15,7 @@ import { instrumentPerformance } from "../../src/index.js";
 afterEach(() => {
   performance.clearMarks();
   performance.clearMeasures();
-  performanceMetricsMock.mockReset();
+  metricsMock.mockReset();
 });
 
 describe("instrumentPerformance", () => {
@@ -28,8 +28,8 @@ describe("instrumentPerformance", () => {
     performance.measure("report.generate", { start: startTime, duration: 12.5 });
     await stop();
 
-    expect(performanceMetricsMock).toHaveBeenCalledTimes(1);
-    const [result] = performanceMetricsMock.mock.calls[0];
+    expect(metricsMock).toHaveBeenCalledTimes(1);
+    const [result] = metricsMock.mock.calls[0];
     expect(result).toEqual({
       id: expect.any(String),
       key: "report.generate",
@@ -48,8 +48,8 @@ describe("instrumentPerformance", () => {
     performance.measure("duplicate", { start: 3, duration: 4 });
     await stop();
 
-    expect(performanceMetricsMock).toHaveBeenCalledTimes(1);
-    expect(performanceMetricsMock.mock.calls[0]).toEqual([
+    expect(metricsMock).toHaveBeenCalledTimes(1);
+    expect(metricsMock.mock.calls[0]).toEqual([
       expect.objectContaining({ key: "duplicate", value: 2 }),
       expect.objectContaining({ key: "duplicate", value: 4 }),
     ]);
@@ -61,7 +61,7 @@ describe("instrumentPerformance", () => {
     performance.mark("mark-only");
     await stop();
 
-    expect(performanceMetricsMock).not.toHaveBeenCalled();
+    expect(metricsMock).not.toHaveBeenCalled();
   });
 
   it("stops and publishes only once", async () => {
@@ -72,19 +72,19 @@ describe("instrumentPerformance", () => {
     performance.measure("two", { start: 3, duration: 4 });
     await stop();
 
-    expect(performanceMetricsMock).toHaveBeenCalledTimes(1);
-    expect(performanceMetricsMock.mock.calls[0]).toEqual([expect.objectContaining({ key: "one" })]);
+    expect(metricsMock).toHaveBeenCalledTimes(1);
+    expect(metricsMock.mock.calls[0]).toEqual([expect.objectContaining({ key: "one" })]);
   });
 
   it("does not retry a failed publication", async () => {
     const publicationError = new Error("publication failed");
-    performanceMetricsMock.mockRejectedValueOnce(publicationError);
+    metricsMock.mockRejectedValueOnce(publicationError);
     const stop = instrumentPerformance();
 
     performance.measure("one", { start: 1, duration: 2 });
 
     await expect(stop()).rejects.toBe(publicationError);
     await expect(stop()).resolves.toBeUndefined();
-    expect(performanceMetricsMock).toHaveBeenCalledTimes(1);
+    expect(metricsMock).toHaveBeenCalledTimes(1);
   });
 });

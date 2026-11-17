@@ -138,7 +138,7 @@ export class NoopTestRuntime implements TestRuntime {
     await this.warning();
   }
 
-  async performanceMetrics() {
+  async metrics() {
     await this.warning();
   }
 

@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 
-import type { AllurePerformanceResult, Globals, TestResult, TestResultContainer } from "../../../model.js";
+import type { AllureMetricResult, Globals, TestResult, TestResultContainer } from "../../../model.js";
 import type { AllureResults, Category, EnvironmentInfo } from "../../types.js";
 import type { Writer } from "../types.js";
 
@@ -11,7 +11,7 @@ export class InMemoryWriter implements Writer, AllureResults {
   public categories?: Category[];
   public envInfo?: Record<string, string | undefined>;
   public globals?: Record<string, Globals>;
-  public performance?: Record<string, AllurePerformanceResult[]>;
+  public metrics?: Record<string, AllureMetricResult[]>;
 
   public writeGroup(result: TestResultContainer): void {
     this.groups.push(result);
@@ -42,8 +42,7 @@ export class InMemoryWriter implements Writer, AllureResults {
     this.globals[distFileName] = info;
   }
 
-  public writePerformanceResults(distFileName: string, results: AllurePerformanceResult[]): void {
-    this.performance = this.performance ?? {};
-    this.performance[distFileName] = results;
+  public writeMetricResults(distFileName: string, results: AllureMetricResult[]): void {
+    (this.metrics ??= {})[distFileName] = results;
   }
 }

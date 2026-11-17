@@ -65,7 +65,7 @@ export interface Globals {
   errors: GlobalError[];
 }
 
-export interface AllurePerformanceResult {
+export interface AllureMetricResult {
   id: string;
   key: string;
   value: number;

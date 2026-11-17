@@ -213,6 +213,13 @@ export const runCypressInlineTest = async (
                   continue;
                 }
 
+                if (resultFile.endsWith("-metric.json")) {
+                  const content = await readFile(fullPath, "utf8");
+                  (res.metrics ??= {})[resultFile] = JSON.parse(content);
+                  await attachment(resultFile, content, ContentType.JSON);
+                  continue;
+                }
+
                 if (/-globals\.json$/.test(resultFile)) {
                   const globalInfo = JSON.parse(await readFile(fullPath, "utf8"));
                   await attachment(resultFile, JSON.stringify(globalInfo, undefined, 2), ContentType.JSON);

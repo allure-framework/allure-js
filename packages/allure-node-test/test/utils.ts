@@ -75,6 +75,11 @@ const readAllureResults = async (resultsDir: string): Promise<AllureResults> => 
       continue;
     }
 
+    if (file.endsWith("-metric.json")) {
+      (results.metrics ??= {})[file] = JSON.parse(await readFile(filePath, "utf8"));
+      continue;
+    }
+
     if (file.endsWith("-globals.json")) {
       results.globals![file] = JSON.parse(await readFile(filePath, "utf8"));
       continue;
