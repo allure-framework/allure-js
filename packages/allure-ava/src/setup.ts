@@ -52,10 +52,14 @@ const shouldRunTask = (testPlan: TestPlanV1, testFile: string, task: AvaTask) =>
     return false;
   }
 
-  return includedInTestPlan(testPlan, {
-    fullName: getFullName(testFile, task.title),
-    tags: [task.title],
-  });
+  return includedInTestPlan(
+    testPlan,
+    {
+      fullName: getFullName(testFile, task.title),
+      tags: [task.title],
+    },
+    { enableMutedTests: true },
+  );
 };
 
 const filterTaskListByTestPlan = (testPlan: TestPlanV1, testFile: string, tasks: AvaTask[] | undefined) => {
@@ -100,7 +104,7 @@ const installRunnerPatch = async () => {
     prototype[RUN_SINGLE_PATCHED] = true;
   }
 
-  const testPlan = parseTestPlan();
+  const testPlan = parseTestPlan({ includeMutedTests: true });
 
   if (testPlan && !prototype[TEST_PLAN_PATCHED]) {
     const originalStart = prototype.start;

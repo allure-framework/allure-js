@@ -347,6 +347,29 @@ describe("allure-ava", () => {
     );
   });
 
+  it("applies a muted-only test plan", async () => {
+    const { tests, exitCode } = await runAvaInlineTest({
+      "ava.config.mjs": ({ allureAvaIndexPath, allureAvaSetupPath, allureResultsPath }) => `
+        import { installAllureAva } from "${allureAvaIndexPath}";
+        process.env.ALLURE_TESTPLAN_PATH = new URL("./testplan.json", import.meta.url).pathname;
+        await installAllureAva({
+          reporterConfig: { resultsDir: ${JSON.stringify(allureResultsPath)} },
+          setupModule: ${JSON.stringify(allureAvaSetupPath)},
+        });
+        export default {};
+      `,
+      "testplan.json": JSON.stringify({ version: "1.0", mutedTests: [{ id: 77 }] }),
+      "sample.test.js": ({ avaModulePath }) => `
+        import test from "${avaModulePath}";
+        test("muted test @allure.id=77", () => { throw new Error("muted body executed"); });
+        test("survivor @allure.id=78", (t) => { t.pass(); });
+      `,
+    });
+
+    expect(exitCode).toBe(0);
+    expect(tests).toEqual([expect.objectContaining({ name: "survivor", status: Status.PASSED })]);
+  });
+
   it("filters tests through ALLURE_TESTPLAN_PATH before execution", async () => {
     const { tests, exitCode } = await runAvaInlineTest({
       "ava.config.mjs": ({ allureAvaIndexPath, allureAvaSetupPath, allureResultsPath }) => `

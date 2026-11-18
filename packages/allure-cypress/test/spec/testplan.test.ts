@@ -5,6 +5,26 @@ import { expect, it } from "vitest";
 
 import { runCypressInlineTest } from "../utils.js";
 
+it.each([
+  { mutedTests: [{ id: 77 }] },
+  { mutedTests: [{ selector: "dummy:cypress/e2e/sample.cy.js#muted test" }] },
+  { tests: [], mutedTests: [{ id: 77 }] },
+  { tests: [{ id: 77 }, { id: 78 }], mutedTests: [{ id: 77 }] },
+])("excludes muted bodies: %j", async (plan) => {
+  const { tests } = await runCypressInlineTest(
+    {
+      "cypress/e2e/sample.cy.js": () => `
+        it("muted test @allure.id=77", () => { throw new Error("muted body executed"); });
+        it("survivor @allure.id=78", () => {});
+      `,
+      "testplan.json": () => JSON.stringify({ version: "1.0", ...plan }),
+    },
+    { env: (testDir) => ({ ALLURE_TESTPLAN_PATH: join(testDir, "testplan.json") }) },
+  );
+
+  expect(tests).toEqual([expect.objectContaining({ name: "survivor", status: "passed" })]);
+});
+
 it("respects testplan", async () => {
   const exampleTestPlan: TestPlanV1 = {
     version: "1.0",

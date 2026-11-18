@@ -166,7 +166,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
 
   private onSuite = (suite: Mocha.Suite) => {
     if (!suite.parent && this.testplan) {
-      applyTestPlan(this.testplan.idIndex, this.testplan.fullNameIndex, suite);
+      applyTestPlan(this.testplan, suite);
     }
     const scopeUuid = this.runtime.startScope();
     this.scopesStack.push(scopeUuid);

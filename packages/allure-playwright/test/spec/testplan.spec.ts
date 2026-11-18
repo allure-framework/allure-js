@@ -3,6 +3,42 @@ import { describe, expect, it } from "vitest";
 
 import { runPlaywrightInlineTest } from "../utils.js";
 
+describe("muted test plans", () => {
+  it.each([
+    { mutedTests: [{ id: 77 }] },
+    { mutedTests: [{ selector: "muted.test.ts#muted test" }] },
+    { tests: [], mutedTests: [{ selector: "muted.test.ts › muted test" }] },
+    { tests: [{ id: 77 }, { id: 78 }], mutedTests: [{ id: 77 }] },
+    {
+      tests: [{ selector: "muted.test.ts#muted test" }, { id: 78 }],
+      mutedTests: [{ selector: "muted.test.ts › muted test" }],
+    },
+    {
+      tests: [{ selector: "muted.test.ts › muted test" }, { id: 78 }],
+      mutedTests: [{ selector: "muted.test.ts#muted test" }],
+    },
+  ])("excludes muted bodies: %j", async (plan) => {
+    const results = await runPlaywrightInlineTest(
+      {
+        "testplan.json": JSON.stringify({ version: "1.0", ...plan }),
+        "muted.test.ts": `
+          import { test } from "@playwright/test";
+          test("muted test", { annotation: { type: "@allure.id", description: "77" } }, () => {
+            require("node:fs").writeFileSync("muted-body-ran.txt", "yes");
+            throw new Error("Muted body must not run");
+          });
+          test("survivor", { annotation: { type: "@allure.id", description: "78" } }, () => {});
+        `,
+      },
+      [],
+      { ALLURE_TESTPLAN_PATH: "testplan.json" },
+    );
+
+    expect(results.tests).toEqual([expect.objectContaining({ name: "survivor", status: "passed" })]);
+    expect(results.restFiles["muted-body-ran.txt"]).toBeUndefined();
+  });
+});
+
 describe("testplan with v1 reporter full names", () => {
   it("respects testplan", async () => {
     const exampleTestPlan: TestPlanV1 = {
