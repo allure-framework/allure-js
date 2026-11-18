@@ -11,7 +11,7 @@ BeforeAll(() => {
 });
 
 Before({ name: "ALLURE_FIXTURE_IGNORE" }, (scenario) => {
-  const testPlan = parseTestPlan();
+  const testPlan = parseTestPlan({ includeMutedTests: true });
   if (!testPlan) {
     return;
   }
@@ -21,7 +21,7 @@ Before({ name: "ALLURE_FIXTURE_IGNORE" }, (scenario) => {
   const fullName = `${projectName ? `${projectName}:${posixPath}` : posixPath}#${pickle.name}`;
   const tags = pickle.tags.map((tag) => tag.name);
 
-  if (!includedInTestPlan(testPlan, { fullName, tags })) {
+  if (!includedInTestPlan(testPlan, { fullName, tags }, { enableMutedTests: true })) {
     // we can't use regular message or Allure facade since we need label to be added
     // to test, not fixture
     world.attach(Buffer.from("allure-skip"), "application/vnd.allure.skipcucumber+json");

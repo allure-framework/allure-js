@@ -517,6 +517,23 @@ it("reports Bun hook failures consistently", async () => {
   expect(allErrors.filter((error) => error.message === "afterAll failed: afterAll boom")).toHaveLength(1);
 });
 
+it("applies a muted-only test plan", async () => {
+  const { tests, exitCode } = await runBunInlineTest(
+    {
+      "testplan.json": JSON.stringify({ version: "1.0", mutedTests: [{ id: 77 }] }),
+      "sample.test.ts": `
+        import { it } from "bun:test";
+        it("muted test @allure.id=77", () => { throw new Error("muted body executed"); });
+        it("survivor @allure.id=78", () => {});
+      `,
+    },
+    { env: (testDir) => ({ ALLURE_TESTPLAN_PATH: join(testDir, "testplan.json") }) },
+  );
+
+  expect(exitCode).toBe(0);
+  expect(tests).toEqual([expect.objectContaining({ name: "survivor", status: Status.PASSED })]);
+});
+
 it("respects the Allure test plan at registration time", async () => {
   const testPlanFilename = "testplan.json";
   const { tests, groups, exitCode } = await runBunInlineTest(

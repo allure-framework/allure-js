@@ -42,7 +42,7 @@ type TestPlanSubject = {
 };
 
 const suiteStack: string[] = [];
-const testPlan = parseTestPlan();
+const testPlan = parseTestPlan({ includeMutedTests: true });
 
 export const hasExecutableTestPlan = () => !!testPlan;
 
@@ -281,13 +281,19 @@ const shouldRunTest = (args: readonly unknown[]) => {
   const fullName = getAllureFullNameFromParts(getRegistrationFile(), suiteStack.concat(name));
   const cleanFullName = getAllureFullNameFromParts(getRegistrationFile(), suiteStack.concat(cleanName));
 
-  return [
+  const subjects = [
     { fullName, id: allureId, nativeSelector: nodeFullName, tags: [name] },
     { fullName: cleanFullName, id: allureId, nativeSelector: cleanNodeFullName, tags: [name] },
     { fullName: nodeFullName, id: allureId, tags: [name] },
     { fullName: cleanNodeFullName, id: allureId, tags: [name] },
     { fullName: cleanName, id: allureId, tags: [name] },
-  ].some((subject) => includedInTestPlanOrHasSelectedDescendant(testPlan, subject));
+  ];
+  const mutePlan = { ...testPlan, tests: [] };
+
+  return (
+    subjects.some((subject) => includedInTestPlanOrHasSelectedDescendant(testPlan, subject)) &&
+    subjects.every((subject) => includedInTestPlan(mutePlan, subject, { enableMutedTests: true }))
+  );
 };
 
 const includedInTestPlanOrHasSelectedDescendant = (plan: TestPlanV1, subject: TestPlanSubject) => {
