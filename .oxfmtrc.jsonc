@@ -9,7 +9,6 @@
   "ignorePatterns": [
     "packages/*/dist/**",
     "packages/*/out/**",
-    ".pnp.*",
     ".yarnrc.yml",
     "yarn.lock",
     "plugin-ci-version.cjs",

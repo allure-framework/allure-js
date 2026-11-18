@@ -30,7 +30,7 @@ npm install -D allure-chai allure-mocha chai
 
 - `chai >= 4 < 7`
 - Linux, macOS, and Windows wherever Chai and your test runner support Node.js
-- this repository is validated in CI on Node.js 20 and 22
+- this repository is validated in CI on Node.js 24 and 26
 
 ## Usage
 

@@ -24,24 +24,24 @@ Fork, then clone the repo:
 $ git clone git@github.com:your-username/allure-js.git
 ```
 
-Note that latest NodeJS LTS is required (the most recent is 14.17.4) to proceed.
+Use Node.js 24 or 26. Install [Corepack](https://github.com/nodejs/corepack) if it isn't bundled with your Node.js installation, then run `corepack enable` to use the repository's pinned Yarn version.
 
 Then install core dependencies:
 
 ```bash
-npm install
+yarn install --immutable
 ```
 
 Then build and link all packages:
 
 ```bash
-npm run build
+yarn build
 ```
 
 Make your change. Add tests for your change. Make sure all the tests pass:
 
 ```bash
-npm run test
+yarn test
 ```
 
 Push your fork and submit a pull request.

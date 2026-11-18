@@ -99,7 +99,7 @@
     "ws@npm:^8.19.0": "npm:8.21.0",
     "zod": "npm:4.6.6"
   },
-  "packageManager": "yarn@4.13.0",
+  "packageManager": "yarn@4.18.1",
   "sherif": {
     "ignoreDependency": [
       "vitest"

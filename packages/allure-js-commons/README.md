@@ -58,7 +58,7 @@ npx allure open ./allure-report
 ## Supported versions and platforms
 
 - works in Node.js environments on Linux, macOS, and Windows
-- used by the official integrations in this repository, which are validated in CI on Node.js 20 and 22
+- used by the official integrations in this repository, which are validated in CI on Node.js 24 and 26
 - intended for frameworks and tooling that can produce or consume Allure runtime messages and result files
 
 ## Overview

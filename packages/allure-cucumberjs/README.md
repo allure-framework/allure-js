@@ -45,7 +45,7 @@ Install Allure Report separately when you want to render the generated `allure-r
 - `@cucumber/cucumber >= 10.8.0`
 - `@cucumber/messages >= 24.1.0`
 - Linux, macOS, and Windows wherever Cucumber.js supports Node.js
-- this repository is validated in CI on Node.js 20 and 22
+- this repository is validated in CI on Node.js 24 and 26
 
 ## Usage
 

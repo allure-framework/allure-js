@@ -45,7 +45,7 @@ The packages in this repository are Node.js integrations and are intended to run
 
 This repository is currently validated in CI on:
 
-- Node.js 20 and 22
+- Node.js 24 and 26
 - Ubuntu and Windows runners
 
 Minimum supported framework versions by package:
