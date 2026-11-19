@@ -63,8 +63,8 @@ const getIndexedTestPlan = (): TestPlanIndex | undefined => {
     return {
       ids: new Set(testplan.tests.filter((e) => e.id).map((e) => e.id!.toString())),
       fullNames: new Set(testplan.tests.filter((e) => e.selector).map((e) => e.selector!)),
-      mutedIds: new Set((testplan.mutedTests ?? []).filter((e) => e.id).map((e) => e.id!.toString())),
-      mutedFullNames: new Set((testplan.mutedTests ?? []).filter((e) => e.selector).map((e) => e.selector!)),
+      mutedIds: new Set((testplan.excludedTests ?? []).filter((e) => e.id).map((e) => e.id!.toString())),
+      mutedFullNames: new Set((testplan.excludedTests ?? []).filter((e) => e.selector).map((e) => e.selector!)),
       hasSelection: testplan.tests.length > 0,
     };
   }

@@ -50,7 +50,7 @@ const isIncludedInPlan = (testPlan: TestPlanV1, selector: string, allureId?: str
     (typeof test.selector === "string" && selectorsMatch(test.selector, selector)) ||
     (allureId && test.id !== undefined && String(test.id) === allureId);
 
-  return (testPlan.tests.length === 0 || testPlan.tests.some(matches)) && !testPlan.mutedTests?.some(matches);
+  return (testPlan.tests.length === 0 || testPlan.tests.some(matches)) && !testPlan.excludedTests?.some(matches);
 };
 
 export const createAllureTestPlanFilter = ({ cwd }: CreateAllureTestPlanFilterOptions = {}) => {

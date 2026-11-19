@@ -27,12 +27,12 @@ const writePlan = (plan: object) => {
 
 describe("createAllureTestPlanFilter", () => {
   it.each([
-    { mutedTests: [{ id: 77 }] },
-    { tests: [], mutedTests: [{ id: "77" }] },
-    { mutedTests: [{ selector: "tests/foo.js#My fixture#muted" }] },
-    { mutedTests: [{ selector: "/workspace/tests/foo.js#My fixture#muted" }] },
-    { mutedTests: [{ selector: "foo.js#My fixture#muted" }] },
-    { tests: [{ id: 77 }, { id: 78 }], mutedTests: [{ id: 77 }] },
+    { excludedTests: [{ id: 77 }] },
+    { tests: [], excludedTests: [{ id: "77" }] },
+    { excludedTests: [{ selector: "tests/foo.js#My fixture#muted" }] },
+    { excludedTests: [{ selector: "/workspace/tests/foo.js#My fixture#muted" }] },
+    { excludedTests: [{ selector: "foo.js#My fixture#muted" }] },
+    { tests: [{ id: 77 }, { id: 78 }], excludedTests: [{ id: 77 }] },
   ])("excludes muted identities: %j", (plan) => {
     writePlan({ version: "1.0", ...plan });
     const filter = createAllureTestPlanFilter()!;
@@ -44,7 +44,7 @@ describe("createAllureTestPlanFilter", () => {
   });
 
   it("resolves muted-only plans relative to cwd", () => {
-    writePlan({ version: "1.0", mutedTests: [{ id: 77 }] });
+    writePlan({ version: "1.0", excludedTests: [{ id: 77 }] });
     process.env.ALLURE_TESTPLAN_PATH = "plan.json";
     const filter = createAllureTestPlanFilter({ cwd: tmpDir })!;
 

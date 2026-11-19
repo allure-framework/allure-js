@@ -5,7 +5,7 @@ import { runCucumberInlineTest } from "../utils.js";
 
 it("applies a muted-only test plan", async () => {
   const { tests } = await runCucumberInlineTest(["muted"], ["muted"], {
-    testPlan: { version: "1.0", mutedTests: [{ id: 77 }] } as TestPlanV1,
+    testPlan: { version: "1.0", excludedTests: [{ id: 77 }] } as TestPlanV1,
   });
 
   expect(tests).toEqual([expect.objectContaining({ name: "survivor", status: "passed" })]);

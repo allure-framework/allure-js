@@ -243,13 +243,13 @@ describe("node --test integration", () => {
   it.each([
     {
       name: "applies muted-only plans across test identities",
-      plan: { mutedTests: [{ id: 77 }, { selector: "muted by selector" }] },
+      plan: { excludedTests: [{ id: 77 }, { selector: "muted by selector" }] },
     },
     {
       name: "does not let selected descendants override a parent mute",
       plan: {
         tests: [{ selector: "muted by id child" }, { id: 78 }],
-        mutedTests: [{ id: 77 }],
+        excludedTests: [{ id: 77 }],
       },
     },
   ])("$name", async ({ plan }) => {

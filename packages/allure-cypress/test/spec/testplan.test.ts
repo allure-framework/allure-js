@@ -6,10 +6,10 @@ import { expect, it } from "vitest";
 import { runCypressInlineTest } from "../utils.js";
 
 it.each([
-  { mutedTests: [{ id: 77 }] },
-  { mutedTests: [{ selector: "dummy:cypress/e2e/sample.cy.js#muted test" }] },
-  { tests: [], mutedTests: [{ id: 77 }] },
-  { tests: [{ id: 77 }, { id: 78 }], mutedTests: [{ id: 77 }] },
+  { excludedTests: [{ id: 77 }] },
+  { excludedTests: [{ selector: "dummy:cypress/e2e/sample.cy.js#muted test" }] },
+  { tests: [], excludedTests: [{ id: 77 }] },
+  { tests: [{ id: 77 }, { id: 78 }], excludedTests: [{ id: 77 }] },
 ])("excludes muted bodies: %j", async (plan) => {
   const { tests } = await runCypressInlineTest(
     {

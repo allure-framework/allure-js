@@ -5,17 +5,17 @@ import { runPlaywrightInlineTest } from "../utils.js";
 
 describe("muted test plans", () => {
   it.each([
-    { mutedTests: [{ id: 77 }] },
-    { mutedTests: [{ selector: "muted.test.ts#muted test" }] },
-    { tests: [], mutedTests: [{ selector: "muted.test.ts › muted test" }] },
-    { tests: [{ id: 77 }, { id: 78 }], mutedTests: [{ id: 77 }] },
+    { excludedTests: [{ id: 77 }] },
+    { excludedTests: [{ selector: "muted.test.ts#muted test" }] },
+    { tests: [], excludedTests: [{ selector: "muted.test.ts › muted test" }] },
+    { tests: [{ id: 77 }, { id: 78 }], excludedTests: [{ id: 77 }] },
     {
       tests: [{ selector: "muted.test.ts#muted test" }, { id: 78 }],
-      mutedTests: [{ selector: "muted.test.ts › muted test" }],
+      excludedTests: [{ selector: "muted.test.ts › muted test" }],
     },
     {
       tests: [{ selector: "muted.test.ts › muted test" }, { id: 78 }],
-      mutedTests: [{ selector: "muted.test.ts#muted test" }],
+      excludedTests: [{ selector: "muted.test.ts#muted test" }],
     },
   ])("excludes muted bodies: %j", async (plan) => {
     const results = await runPlaywrightInlineTest(

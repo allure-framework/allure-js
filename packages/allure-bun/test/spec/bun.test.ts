@@ -520,7 +520,7 @@ it("reports Bun hook failures consistently", async () => {
 it("applies a muted-only test plan", async () => {
   const { tests, exitCode } = await runBunInlineTest(
     {
-      "testplan.json": JSON.stringify({ version: "1.0", mutedTests: [{ id: 77 }] }),
+      "testplan.json": JSON.stringify({ version: "1.0", excludedTests: [{ id: 77 }] }),
       "sample.test.ts": `
         import { it } from "bun:test";
         it("muted test @allure.id=77", () => { throw new Error("muted body executed"); });
