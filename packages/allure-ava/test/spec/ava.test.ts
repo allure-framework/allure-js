@@ -350,9 +350,11 @@ describe("allure-ava", () => {
   it("filters tests through ALLURE_TESTPLAN_PATH before execution", async () => {
     const { tests, exitCode } = await runAvaInlineTest({
       "ava.config.mjs": ({ allureAvaIndexPath, allureAvaSetupPath, allureResultsPath }) => `
+        import { fileURLToPath } from "node:url";
+
         import { installAllureAva } from "${allureAvaIndexPath}";
 
-        process.env.ALLURE_TESTPLAN_PATH = new URL("./testplan.json", import.meta.url).pathname;
+        process.env.ALLURE_TESTPLAN_PATH = fileURLToPath(new URL("./testplan.json", import.meta.url));
 
         await installAllureAva({
           reporterConfig: {
@@ -419,9 +421,11 @@ describe("allure-ava", () => {
   it("runs all tests when ALLURE_TESTPLAN_PATH is missing", async () => {
     const { tests, exitCode } = await runAvaInlineTest({
       "ava.config.mjs": ({ allureAvaIndexPath, allureAvaSetupPath, allureResultsPath }) => `
+        import { fileURLToPath } from "node:url";
+
         import { installAllureAva } from "${allureAvaIndexPath}";
 
-        process.env.ALLURE_TESTPLAN_PATH = new URL("./missing-testplan.json", import.meta.url).pathname;
+        process.env.ALLURE_TESTPLAN_PATH = fileURLToPath(new URL("./missing-testplan.json", import.meta.url));
 
         await installAllureAva({
           reporterConfig: {
