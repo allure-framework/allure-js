@@ -358,7 +358,7 @@ describe("allure-ava", () => {
         });
         export default {};
       `,
-      "testplan.json": JSON.stringify({ version: "1.0", mutedTests: [{ id: 77 }] }),
+      "testplan.json": JSON.stringify({ version: "1.0", excludedTests: [{ id: 77 }] }),
       "sample.test.js": ({ avaModulePath }) => `
         import test from "${avaModulePath}";
         test("muted test @allure.id=77", () => { throw new Error("muted body executed"); });

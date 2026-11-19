@@ -57,8 +57,8 @@ export const createTestPlanIndices = (): TestPlanIndices | undefined => {
     return {
       fullNameIndex: createTestPlanSelectorIndex(testplan.tests),
       idIndex: createTestPlanIdIndex(testplan.tests),
-      mutedFullNameIndex: createTestPlanSelectorIndex(testplan.mutedTests ?? []),
-      mutedIdIndex: createTestPlanIdIndex(testplan.mutedTests ?? []),
+      mutedFullNameIndex: createTestPlanSelectorIndex(testplan.excludedTests ?? []),
+      mutedIdIndex: createTestPlanIdIndex(testplan.excludedTests ?? []),
       hasSelection: testplan.tests.length > 0,
     };
   }

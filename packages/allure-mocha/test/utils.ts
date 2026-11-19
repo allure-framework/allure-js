@@ -12,7 +12,7 @@ import type { AllureMochaReporterConfig } from "../src/types.js";
 type MochaRunOptions = {
   env?: { [keys: string]: string };
   testplan?: readonly TestPlanEntryFixture[];
-  mutedTests?: readonly TestPlanEntryFixture[];
+  excludedTests?: readonly TestPlanEntryFixture[];
   environmentInfo?: { [keys: string]: string };
   categories?: readonly Category[];
   extraReporters?: AllureMochaReporterConfig["extraReporters"];
@@ -143,7 +143,7 @@ abstract class AllureMochaTestRunner {
       await writeFile(cmdPath, cmdContent, "utf-8");
     });
 
-    if (this.config.testplan || this.config.mutedTests) {
+    if (this.config.testplan || this.config.excludedTests) {
       const testplanPath = path.join(testDir, "testplan.json");
       this.config.env ??= {};
       this.config.env.ALLURE_TESTPLAN_PATH = testplanPath;
@@ -154,7 +154,7 @@ abstract class AllureMochaTestRunner {
           id: test.id,
           selector: test.selector ? this.#resolveTestplanSelector(selectorPrefix, test.selector) : undefined,
         })),
-        mutedTests: this.config.mutedTests?.map((test) => ({
+        excludedTests: this.config.excludedTests?.map((test) => ({
           id: test.id,
           selector: test.selector ? this.#resolveTestplanSelector(selectorPrefix, test.selector) : undefined,
         })),

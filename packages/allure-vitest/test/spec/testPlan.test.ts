@@ -71,7 +71,7 @@ describe("test plan", () => {
           "testplan.json": JSON.stringify({
             version: "1.0",
             ...(selection === undefined ? {} : { tests: selection }),
-            mutedTests: [muted],
+            excludedTests: [muted],
           }),
         },
         { env: (testDir) => ({ ALLURE_TESTPLAN_PATH: join(testDir, "testplan.json") }) },
@@ -90,7 +90,7 @@ describe("test plan", () => {
             test("first", () => {});
             test("second", () => {});
           `,
-          "testplan.json": JSON.stringify({ version: "1.0", tests: [], mutedTests: [] }),
+          "testplan.json": JSON.stringify({ version: "1.0", tests: [], excludedTests: [] }),
         },
         { env: (testDir) => ({ ALLURE_TESTPLAN_PATH: join(testDir, "testplan.json") }) },
       );

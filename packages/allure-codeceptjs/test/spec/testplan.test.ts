@@ -12,7 +12,7 @@ it("applies a muted-only test plan", async () => {
         Scenario("muted test", () => { throw new Error("muted body executed"); }).tag("@allure.id:77");
         Scenario("survivor", () => {}).tag("@allure.id:78");
       `,
-      "testplan.json": JSON.stringify({ version: "1.0", mutedTests: [{ id: 77 }] }),
+      "testplan.json": JSON.stringify({ version: "1.0", excludedTests: [{ id: 77 }] }),
     },
     { env: { ALLURE_TESTPLAN_PATH: "./testplan.json" } },
   );

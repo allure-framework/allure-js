@@ -5,10 +5,10 @@ import { runMochaInlineTest } from "../../utils.js";
 
 describe("testplan", () => {
   it.each([
-    { mutedTests: [{ id: 77 }] },
-    { mutedTests: [{ selector: [["plain-mocha", "muted"], "muted test @allure.id=77"] as [string[], string] }] },
-    { testplan: [], mutedTests: [{ id: 77 }] },
-    { testplan: [{ id: 77 }, { id: 78 }], mutedTests: [{ id: 77 }] },
+    { excludedTests: [{ id: 77 }] },
+    { excludedTests: [{ selector: [["plain-mocha", "muted"], "muted test @allure.id=77"] as [string[], string] }] },
+    { testplan: [], excludedTests: [{ id: 77 }] },
+    { testplan: [{ id: 77 }, { id: 78 }], excludedTests: [{ id: 77 }] },
   ])("excludes muted bodies: %j", async (config) => {
     const { tests, exitCode } = await runMochaInlineTest(config, ["plain-mocha", "muted"]);
 

@@ -8,7 +8,7 @@ import { runJestInlineTest } from "../utils.js";
 it("applies a muted-only test plan before execution", async () => {
   const { tests, exitCode } = await runJestInlineTest(
     {
-      "testplan.json": JSON.stringify({ version: "1.0", mutedTests: [{ id: 77 }] }),
+      "testplan.json": JSON.stringify({ version: "1.0", excludedTests: [{ id: 77 }] }),
       "sample.test.js": `
         it("muted test @allure.id=77", () => { throw new Error("muted body executed"); });
         it("survivor @allure.id=78", () => {});

@@ -10,7 +10,7 @@ it("resolves a nested muted-only plan before executing tests", async () => {
       "workspace/pages/testplan.html": "<html><body>Muted test plan</body></html>",
       "workspace/plans/plan.json": JSON.stringify({
         version: "1.0",
-        mutedTests: [{ selector: "tests/muted.test.js#Plan fixture#muted" }],
+        excludedTests: [{ selector: "tests/muted.test.js#Plan fixture#muted" }],
       }),
       "workspace/tests/muted.test.js": `
         fixture\`Plan fixture\`

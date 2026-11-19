@@ -4,17 +4,17 @@ import { expect, it } from "vitest";
 import { runJasmineInlineTest } from "../utils.js";
 
 it.each([
-  { mutedTests: [{ id: 77 }] },
-  { mutedTests: [{ selector: "dummy:spec/test/sample.spec.js#muted test" }] },
-  { tests: [], mutedTests: [{ id: 77 }] },
-  { tests: [{ id: 77 }, { id: 78 }], mutedTests: [{ id: 77 }] },
+  { excludedTests: [{ id: 77 }] },
+  { excludedTests: [{ selector: "dummy:spec/test/sample.spec.js#muted test" }] },
+  { tests: [], excludedTests: [{ id: 77 }] },
+  { tests: [{ id: 77 }, { id: 78 }], excludedTests: [{ id: 77 }] },
   {
     tests: [{ selector: "muted test" }, { id: 78 }],
-    mutedTests: [{ selector: "dummy:spec/test/sample.spec.js#muted test" }],
+    excludedTests: [{ selector: "dummy:spec/test/sample.spec.js#muted test" }],
   },
   {
     tests: [{ selector: "dummy:spec/test/sample.spec.js#muted test" }, { id: 78 }],
-    mutedTests: [{ selector: "muted test" }],
+    excludedTests: [{ selector: "muted test" }],
   },
 ])("excludes muted bodies: %j", async (plan) => {
   const { tests } = await runJasmineInlineTest(

@@ -28,7 +28,7 @@ export const parseTestPlan = (options: { includeMutedTests?: boolean } = {}): Te
     }
 
     const hasMutedTests =
-      options.includeMutedTests && Array.isArray(testPlan.mutedTests) && testPlan.mutedTests.length > 0;
+      options.includeMutedTests && Array.isArray(testPlan.excludedTests) && testPlan.excludedTests.length > 0;
 
     if (hasMutedTests) {
       testPlan.tests ??= [];
@@ -66,12 +66,12 @@ export const includedInTestPlan = (
     return idMatched || selectorMatched || nativeSelectorMatched;
   };
 
-  if (testPlan.tests.length === 0 && testPlan.mutedTests?.length === 0) return true;
+  if (testPlan.tests.length === 0 && testPlan.excludedTests?.length === 0) return true;
 
   const selected = testPlan.tests.length === 0 || testPlan.tests.some(matchesTest);
   if (!options.enableMutedTests) return selected;
 
-  return selected && !testPlan.mutedTests?.some(matchesTest);
+  return selected && !testPlan.excludedTests?.some(matchesTest);
 };
 
 export const addSkipLabel = (labels: Label[]) => {

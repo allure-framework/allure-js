@@ -60,5 +60,5 @@ const includedInTestPlan = (testPlan: TestPlanV1, fullName: string, allureId: st
   const matches = (test: TestPlanV1["tests"][number]) =>
     (allureId && test.id?.toString() === allureId) || test.selector === fullName;
   const selected = testPlan.tests.length === 0 || testPlan.tests.some(matches);
-  return selected && !testPlan.mutedTests?.some(matches);
+  return selected && !testPlan.excludedTests?.some(matches);
 };
