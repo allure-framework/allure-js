@@ -163,7 +163,7 @@ function createCompileCommand(workspaces) {
 }
 
 function createVitestCommand(workspace, { shard, browserHeavy = false } = {}) {
-  const args = ["workspace", workspace, "vitest", "run"];
+  const args = ["workspace", workspace, "vp", "test", "run"];
 
   if (shard) {
     args.push("--shard", shard);

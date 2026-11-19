@@ -7,5 +7,3 @@ import * as allure from "allure-js-commons";
 import { installBunModuleMock } from "./index.js";
 
 installBunModuleMock(bunTest, allure);
-
-export {};

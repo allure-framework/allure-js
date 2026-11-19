@@ -19,8 +19,8 @@ npm install -D allure-axios allure-js-commons axios
 ## Instrument An Axios Instance
 
 ```ts
-import axios from "axios";
 import { instrumentAxios } from "allure-axios";
+import axios from "axios";
 
 const client = axios.create({
   baseURL: "https://api.example.com",

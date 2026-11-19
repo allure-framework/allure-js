@@ -47,15 +47,15 @@
     "allure-report": "allure serve ./out/allure-results",
     "clean": "rimraf ./dist ./out",
     "compile": "run-s 'compile:*'",
-    "compile:esm": "babel --config-file ./babel.esm.json ./src --out-dir ./dist/esm --extensions '.ts' --source-maps",
-    "compile:cjs": "babel --config-file ./babel.cjs.json ./src --out-dir ./dist/cjs --extensions '.ts' --source-maps",
+    "compile:esm": "babel --config-file ./babel.esm.json ./src --out-dir ./dist/esm --extensions .ts --source-maps",
+    "compile:cjs": "babel --config-file ./babel.cjs.json ./src --out-dir ./dist/cjs --extensions .ts --source-maps",
     "compile:types": "tsc",
     "compile:fixup": "node ./scripts/fixup.mjs",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "lint": "oxlint --import-plugin src test",
-    "lint:fix": "oxlint --import-plugin --fix src test",
+    "lint": "vp lint src test",
+    "lint:fix": "vp lint --fix src test",
     "pretest": "run-s compile",
-    "test": "vitest run"
+    "test": "vp test run"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
@@ -73,7 +73,9 @@
     "rimraf": "^6.0.0",
     "testcafe": "^3.7.5",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.11"
+    "vite": "npm:@voidzero-dev/vite-plus-core@^8.3.8000",
+    "vite-plus": "^1.7.0",
+    "vitest": "^5.1.0"
   },
   "peerDependencies": {
     "testcafe": ">=2.5.0"

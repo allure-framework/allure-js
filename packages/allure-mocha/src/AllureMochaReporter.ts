@@ -144,7 +144,7 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
     this.runtime.writeAttachment(root, null, name, buffer, { ...opts, wrapInStep: false });
   };
 
-  override done(failures: number, fn?: ((failures: number) => void) | undefined) {
+  override done(failures: number, fn?: (failures: number) => void) {
     this.runtime.writeEnvironmentInfo();
     this.runtime.writeCategoriesDefinitions();
     doneAll(this.#extraReporters, failures, fn);

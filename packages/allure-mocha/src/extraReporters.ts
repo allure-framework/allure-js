@@ -25,7 +25,7 @@ export const enableExtraReporters = (
 export const doneAll = (
   reporters: readonly Mocha.reporters.Base[],
   failures: number,
-  fn?: ((failures: number) => void) | undefined,
+  fn?: (failures: number) => void,
 ) => {
   const doneCallbacks = collectDoneCallbacks(reporters);
   let callbacksToWait = doneCallbacks.length + 1;

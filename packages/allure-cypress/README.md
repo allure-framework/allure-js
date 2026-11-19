@@ -46,8 +46,8 @@ Install Allure Report separately when you want to render the generated `allure-r
 Call `allureCypress` to initialize the plugin from the `setupNodeEvents` function in `cypress.config.js`:
 
 ```javascript
-import { defineConfig } from "cypress";
 import { allureCypress } from "allure-cypress/reporter";
+import { defineConfig } from "cypress";
 
 export default defineConfig({
   e2e: {
@@ -244,8 +244,8 @@ Otherwise, it may not work as expected.
 If you need to define your own handlers of those events, make sure to call the corresponding functions of the `allureCypress`s' return value:
 
 ```javascript
-import { defineConfig } from "cypress";
 import { allureCypress } from "allure-cypress/reporter";
+import { defineConfig } from "cypress";
 
 export default defineConfig({
   e2e: {

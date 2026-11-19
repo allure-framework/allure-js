@@ -29,8 +29,11 @@ node_modules
 #Mac OS stuff
 .DS_Store
 
-#Junk
+# Build
+build
+!.github/actions/build
 
+#Junk
 out
 dist
 dist-tests
@@ -39,7 +42,6 @@ vitest.config.ts.timestamp-*
 *.log
 .gradle
 schema
-build
 **/allure-results
 **/.nyc_output
 **/test/fixtures/

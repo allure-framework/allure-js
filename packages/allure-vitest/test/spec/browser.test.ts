@@ -229,14 +229,16 @@ describe("browser", () => {
         export default class Observer {
           onTestRunEnd(modules) {
             const task = modules[0].task.tasks[0];
-            writeFileSync(${JSON.stringify(observationPath)}, JSON.stringify(task.artifacts));
+            const screenshots = task.artifacts.filter(({ type }) => type === "internal:failureScreenshot");
+            writeFileSync(${JSON.stringify(observationPath)}, JSON.stringify(screenshots));
           }
         }
       `,
         "sample.test.ts": `
         import { test, expect } from "vitest";
         test("retried failure", ({ task }) => {
-          expect(task.artifacts.length).toBe(task.result.retryCount);
+          const screenshots = task.artifacts.filter(({ type }) => type === "internal:failureScreenshot");
+          expect(screenshots).toHaveLength(task.result.retryCount);
           expect(task.result.retryCount).toBe(1);
         });
       `,

@@ -137,8 +137,8 @@ npx allure open ./allure-report
 Enhance the report by utilizing the runtime API:
 
 ```js
-import { describe, test } from "playwright";
 import * as allure from "allure-js-commons";
+import { describe, test } from "playwright";
 
 describe("signing in with a password", () => {
   test("sign in with a valid password", async () => {

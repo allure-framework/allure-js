@@ -131,10 +131,10 @@ describe("parseEnvInfo", () => {
 
   it("should be compatible with stringifyEnvInfo", () => {
     const envInfo: EnvironmentInfo = {
-      "foo": "bar",
+      foo: "bar",
       [" : = \t\f\\\n\r\0\x7f\x80"]: "baz",
-      "qux": " \t\f \\\t\n\f\r \0\x7f\x80",
-      "quux": "𝆔Ψ𝆔",
+      qux: " \t\f \\\t\n\f\r \0\x7f\x80",
+      quux: "𝆔Ψ𝆔",
       ["𝅘𝅥𝅲"]: "𝆔",
     };
 

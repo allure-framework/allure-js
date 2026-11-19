@@ -164,8 +164,8 @@ The sync facade is strict-sync only: `allure.step()` must finish synchronously a
 To use Allure-Jest with custom environments, you can use the `createJestEnvironment` helper function:
 
 ```js
-import CustomTestEnvironment from "jest-environment-custom";
 import { createJestEnvironment } from "allure-jest/factory";
+import CustomTestEnvironment from "jest-environment-custom";
 
 export default createJestEnvironment(CustomTestEnvironment);
 ```

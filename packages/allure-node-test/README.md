@@ -29,8 +29,9 @@ node --test --import allure-node-test/setup --test-reporter allure-node-test/rep
 Keep test imports unchanged:
 
 ```ts
-import test from "node:test";
 import assert from "node:assert/strict";
+import test from "node:test";
+
 import { label, step } from "allure-js-commons";
 
 test("signing in", async () => {
@@ -82,8 +83,9 @@ Add npm scripts:
 Create a test that keeps the native Node.js test imports and uses `allure-js-commons` only for reporting metadata:
 
 ```js
-import test from "node:test";
 import assert from "node:assert/strict";
+import test from "node:test";
+
 import { attachment, label, link, parameter, step } from "allure-js-commons";
 
 test("signs in @allure.id:AUTH-1", async () => {

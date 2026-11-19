@@ -32,4 +32,4 @@ export type ReporterOptions = Record<string, any>;
 
 export type ReporterEntry = ReporterModuleOrCtor | [ReporterModuleOrCtor] | [ReporterModuleOrCtor, ReporterOptions];
 
-export type ReporterDoneFn = (failures: number, fn?: ((failures: number) => void) | undefined) => void;
+export type ReporterDoneFn = (failures: number, fn?: (failures: number) => void) => void;
