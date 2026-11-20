@@ -4,7 +4,7 @@ description: Set up Node.js, install deps
 inputs:
   node-version:
     description: Node.js version
-    default: "24.14.x"
+    default: 26
   registry-url:
     description: Optional npm registry URL
     default: ""
