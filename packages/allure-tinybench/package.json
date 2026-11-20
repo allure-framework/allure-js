@@ -39,15 +39,15 @@
   "scripts": {
     "clean": "rimraf ./dist ./out",
     "compile": "run-s 'compile:*'",
-    "compile:esm": "babel --config-file ./babel.esm.json ./src --out-dir ./dist/esm --extensions '.ts' --source-maps",
-    "compile:cjs": "babel --config-file ./babel.cjs.json ./src --out-dir ./dist/cjs --extensions '.ts' --source-maps",
+    "compile:esm": "babel --config-file ./babel.esm.json ./src --out-dir ./dist/esm --extensions .ts --source-maps",
+    "compile:cjs": "babel --config-file ./babel.cjs.json ./src --out-dir ./dist/cjs --extensions .ts --source-maps",
     "compile:types": "tsc",
     "compile:fixup": "node ./scripts/fixup.mjs",
-    "lint": "yarn run -T oxlint --import-plugin src test",
-    "lint:fix": "yarn run -T oxlint --import-plugin --fix src test",
+    "lint": "vp lint src test",
+    "lint:fix": "vp lint --fix src test",
     "test": "run-s test:prepare test:run",
     "test:prepare": "yarn workspace allure-js-commons compile && yarn run compile",
-    "test:run": "vitest run"
+    "test:run": "vp test run"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
@@ -63,7 +63,9 @@
     "rimraf": "^6.0.0",
     "tinybench": "6.2.2",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.11"
+    "vite": "npm:@voidzero-dev/vite-plus-core@^8.3.8000",
+    "vite-plus": "^1.7.0",
+    "vitest": "^5.1.0"
   },
   "peerDependencies": {
     "tinybench": ">=6 <7"

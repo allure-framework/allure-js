@@ -48,16 +48,16 @@
     "allure-report": "allure serve ./out/allure-results",
     "clean": "rimraf ./dist ./out",
     "compile": "run-s 'compile:*'",
-    "compile:esm-node": "babel --config-file ./babel.esm.json ./src --ignore './src/index.ts' --out-dir ./dist/esm --extensions '.ts' --source-maps",
-    "compile:cjs-node": "babel --config-file ./babel.cjs.json ./src --ignore './src/index.ts' --out-dir ./dist/cjs --extensions '.ts' --source-maps",
+    "compile:esm-node": "babel --config-file ./babel.esm.json ./src --ignore ./src/index.ts --out-dir ./dist/esm --extensions .ts --source-maps",
+    "compile:cjs-node": "babel --config-file ./babel.cjs.json ./src --ignore ./src/index.ts --out-dir ./dist/cjs --extensions .ts --source-maps",
     "compile:esm-browser": "esbuild ./src/index.ts --bundle --minify --sourcemap --format=esm --outfile=./dist/esm/index.js --external:allure-playwright",
     "compile:cjs-browser": "esbuild ./src/index.ts --bundle --minify --sourcemap --format=cjs --outfile=./dist/cjs/index.js --external:allure-playwright",
     "compile:types": "tsc",
     "compile:fixup": "node ./scripts/fixup.mjs",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
-    "lint": "oxlint --import-plugin src test",
-    "lint:fix": "oxlint --import-plugin --fix src test",
-    "test": "vitest run"
+    "lint": "vp lint src test",
+    "lint:fix": "vp lint --fix src test",
+    "test": "vp test run"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
@@ -76,7 +76,9 @@
     "npm-run-all2": "^9.0.2",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.11"
+    "vite": "npm:@voidzero-dev/vite-plus-core@^8.3.8000",
+    "vite-plus": "^1.7.0",
+    "vitest": "^5.1.0"
   },
   "peerDependencies": {
     "cypress": ">=12.17.4"

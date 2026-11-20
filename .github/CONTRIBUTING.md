@@ -24,7 +24,7 @@ Fork, then clone the repo:
 $ git clone git@github.com:your-username/allure-js.git
 ```
 
-Use Node.js 24 or 26. Install [Corepack](https://github.com/nodejs/corepack) if it isn't bundled with your Node.js installation, then run `corepack enable` to use the repository's pinned Yarn version.
+Use Node.js 24.11 or newer in the 24.x line, or Node.js 26. Install [Corepack](https://github.com/nodejs/corepack) if it isn't bundled with your Node.js installation, then run `corepack enable` to use the repository's pinned Yarn version.
 
 Then install core dependencies:
 
@@ -37,6 +37,8 @@ Then build and link all packages:
 ```bash
 yarn build
 ```
+
+Yarn uses the repository-local Vite+ CLI for builds, formatting, and linting; no global `vp` install is needed. Run `yarn verify` for all checks. Full builds compile `allure-js-commons` first because Vite+ follows its optional Playwright runtime peer, which is not a compile dependency. CI shards still use Yarn to compile only the packages they need.
 
 Make your change. Add tests for your change. Make sure all the tests pass:
 

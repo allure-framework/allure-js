@@ -84,8 +84,8 @@ npx allure open ./allure-report
 Enhance the report by utilizing the runtime API:
 
 ```js
-import { describe, it } from "mocha";
 import * as allure from "allure-js-commons";
+import { describe, it } from "mocha";
 
 describe("signing in with a password", () => {
   it("should sign in with a valid password", async () => {

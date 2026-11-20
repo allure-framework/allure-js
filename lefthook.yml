@@ -1,15 +1,14 @@
 pre-commit:
   parallel: false
   jobs:
-    - name: Lint Code
-      glob: "packages/*/{src,test,features}/**/*.{mjs,cjs,js,ts,tsx}"
-      run: yarn oxlint --fix {staged_files}
-      stage_fixed: true
-    - name: Format Code
-      glob: "packages/*/{src,test,features}/**/*.{mjs,cjs,js,ts,tsx}"
-      run: yarn oxfmt --write {staged_files}
+    - name: Check code
+      run: "yarn verify --no-error-on-unmatched-pattern --fix --quiet {staged_files}"
       stage_fixed: true
     - name: Format Package JSON
       glob: "**/package.json"
-      run: yarn oxfmt --write {staged_files}
+      run: yarn vp fmt --write {staged_files}
       stage_fixed: true
+    - name: Check dependencies
+      run: "yarn check:dependencies --fix"
+      stage_fixed: true
+      glob: yarn.lock

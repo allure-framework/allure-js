@@ -37,8 +37,8 @@ npm install -D allure-chai allure-mocha chai
 Register `allureChai` with Chai before assertions run:
 
 ```js
-import * as chai from "chai";
 import { allureChai } from "allure-chai";
+import * as chai from "chai";
 
 chai.use(allureChai);
 

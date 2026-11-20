@@ -20,51 +20,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  check-cache:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: "yarn"
-      - name: yarn install & check-cache
-        run: |
-          yarn install --immutable --immutable-cache --check-cache
-
   lint:
+    name: Static checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+
+      # Build is required for type aware lint
+      - name: Build project
+        uses: ./.github/actions/build
         with:
-          node-version: 24
-          cache: "yarn"
-      - name: yarn install
-        run: |
-          yarn install --immutable --immutable-cache
-      # required to have types info for type-aware linting
-      - name: yarn compile
-        run: |
-          yarn compile
-      - name: yarn lint
-        run: |
-          yarn lint
-      - name: yarn format:check
-        run: |
-          yarn format:check
-      - name: yarn lint:type
-        run: |
-          yarn lint:type
-      - name: yarn dlx sherif
-        run: |
-          yarn dlx sherif
+          save-cache: "${{ github.event_name != 'merge_group' }}"
+
+      - name: Check dependencies
+        run: yarn check:dependencies
+
+      - name: Check formatting, typed lint and production types
+        run: yarn verify --quiet
+
       - name: Core unit tests
         if: github.event_name == 'merge_group'
         run: yarn workspace allure-js-commons test
 
   build-verify:
     name: "Build Verify (${{ matrix.node-version }}, ${{ matrix.os }})"
+    needs: [lint]
     if: github.event_name != 'merge_group'
     runs-on: ${{ matrix.os }}
     strategy:
@@ -72,28 +52,24 @@ jobs:
       matrix:
         node-version: [24, 26]
         os: [ubuntu-latest, windows-latest]
+        # ubuntu-latest + node 26 is already verified in lint job
         exclude:
-          - node-version: 24
-            os: windows-latest
+          - node-version: 26
+            os: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v6
+      - name: Build project
+        uses: ./.github/actions/build
+        id: build
         with:
+          yarn-hardened-mode: "0"
+          save-cache: "true"
           node-version: ${{ matrix.node-version }}
-          cache: "yarn"
-
-      - name: yarn install
-        run: |
-          yarn install --immutable --immutable-cache
-
-      - name: yarn build:ci
-        run: |
-          yarn run build:ci
 
   test-suite:
     name: "Test ${{ matrix.suite.id }} (${{ matrix.node-version }}, ${{ matrix.os }})"
+    needs: [build-verify]
     if: github.event_name != 'merge_group'
     runs-on: ${{ matrix.os }}
     env:
@@ -133,25 +109,18 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v6
+      - name: Build project
+        uses: ./.github/actions/build
+        id: build
         with:
+          yarn-hardened-mode: "0"
           node-version: ${{ matrix.node-version }}
-          cache: "yarn"
-
-      - name: yarn install
-        run: |
-          yarn install --immutable --immutable-cache
 
       - name: Setup Bun
         if: ${{ matrix.suite.id == 'midweight' }}
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.3.11
-
-      - name: Compile suite dependencies
-        run: |
-          node ./scripts/ci/run-suite.mjs compile ${{ matrix.suite.id }}
 
       - name: Install Playwright Chromium
         id: pw-chromium
@@ -178,7 +147,7 @@ jobs:
           path: ./${{ env.ALLURE_DUMP_NAME }}.zip
 
   report:
-    needs: [test-suite]
+    needs: [lint, build-verify, test-suite]
     name: Build report
     runs-on: ubuntu-latest
     if: ${{ !cancelled() && github.event_name != 'merge_group' }}
@@ -194,14 +163,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v6
+      - name: Setup node and install dependencies
+        uses: ./.github/actions/install
         with:
-          node-version: 24
-          cache: "yarn"
-
-      - name: yarn install
-        run: |
-          yarn install --immutable --immutable-cache
+          yarn-hardened-mode: 0
 
       - name: Download Allure dumps
         uses: actions/download-artifact@v8
@@ -234,7 +199,7 @@ jobs:
 
   ci:
     name: CI
-    needs: [check-cache, lint, build-verify, test-suite, report]
+    needs: [lint, test-suite, report]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:

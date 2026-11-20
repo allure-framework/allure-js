@@ -151,8 +151,8 @@ the corresponding defaults. Missing levels keep their default values.
 Enhance the report by utilizing the runtime API:
 
 ```js
-import { describe, it } from "vitest";
 import * as allure from "allure-js-commons";
+import { describe, it } from "vitest";
 
 describe("signing in with a password", () => {
   it("should sign in with a valid password", async () => {

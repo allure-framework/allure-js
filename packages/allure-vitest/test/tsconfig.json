@@ -3,6 +3,7 @@
   "include": ["./**/*"],
   "exclude": ["./fixtures/**/*"],
   "compilerOptions": {
+    "rootDir": "..",
     "noEmit": true
   }
 }

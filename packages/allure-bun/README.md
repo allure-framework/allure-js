@@ -31,6 +31,7 @@ Example:
 
 ```ts
 import { describe, expect, it } from "bun:test";
+
 import { label, step } from "allure-js-commons";
 
 describe("signing in", () => {

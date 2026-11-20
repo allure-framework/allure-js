@@ -101,8 +101,8 @@ export default {};
 Enhance the report by using the runtime API from `allure-js-commons`:
 
 ```js
-import test from "ava";
 import { attachment, label, step } from "allure-js-commons";
+import test from "ava";
 
 test("signs in with a password", async (t) => {
   await label("severity", "critical");

@@ -56,10 +56,10 @@
     "clean": "rimraf ./dist ./out",
     "compile": "tsc --project ./tsconfig.json",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean --single-file",
-    "lint": "oxlint --import-plugin src test",
-    "lint:fix": "oxlint --import-plugin --fix src test",
+    "lint": "vp lint src test",
+    "lint:fix": "vp lint --fix src test",
     "pretest": "run-p compile",
-    "test": "vitest run"
+    "test": "vp test run"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
@@ -69,7 +69,7 @@
     "@types/node": "^26.0.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@vitest/browser-playwright": "^5.0.5",
+    "@vitest/browser-playwright": "^5.1.0",
     "allure-commandline": "^2.29.0",
     "npm-run-all2": "^9.0.2",
     "playwright": "^1.62.0",
@@ -77,8 +77,9 @@
     "react-dom": "^19.2.4",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
-    "vite": "^8.0.16",
-    "vitest": "^5.0.5"
+    "vite": "npm:@voidzero-dev/vite-plus-core@^8.3.8000",
+    "vite-plus": "^1.7.0",
+    "vitest": "^5.1.0"
   },
   "peerDependencies": {
     "@vitest/runner": ">=1.3.0",

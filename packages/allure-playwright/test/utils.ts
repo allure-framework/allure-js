@@ -16,8 +16,22 @@ export const runPlaywrightInlineTest = async (
   cliArgs: string[] = [],
   env?: Record<string, string>,
 ): Promise<AllurePlaywrightTestResults> => {
+  const { "playwright.config.js": fixtureConfig, ...fixtureFiles } = files;
+  // disable git info capture so it doesn't affect test execution speed
+  // native playwright is collecting git metadata on every call
   const testFiles = {
+    ...fixtureFiles,
     "playwright.config.js": `
+      import { defineConfig } from "@playwright/test";
+      import fixtureConfig from "./playwright.fixture.config.js";
+
+      export default defineConfig(fixtureConfig, {
+        captureGitInfo: { commit: false, diff: false },
+      });
+    `,
+    "playwright.fixture.config.js":
+      fixtureConfig ??
+      `
        module.exports = {
          reporter: [
            [
@@ -35,7 +49,6 @@ export const runPlaywrightInlineTest = async (
          ],
        };
     `,
-    ...files,
   };
   const testFilesNames = Object.keys(testFiles);
   const testDir = join(__dirname, "fixtures", randomUUID());
@@ -81,7 +94,6 @@ export const runPlaywrightInlineTest = async (
   const stdout: string[] = [];
   const stderr: string[] = [];
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   testProcess.on("message", messageReader.handleMessage);
   testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
     stdout.push(String(chunk));

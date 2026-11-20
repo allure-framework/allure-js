@@ -8,6 +8,15 @@ updates:
       - "pr:dependencies"
     open-pull-requests-limit: 5
     versioning-strategy: "increase-if-necessary"
+    groups:
+      vite-stack:
+        patterns:
+          - "vite"
+          - "vite-*"
+          - "@vitejs/*"
+          - "@voidzero-dev/vite-plus*"
+          - "vitest"
+          - "@vitest/*"
 
   - package-ecosystem: "github-actions"
     directory: "/"

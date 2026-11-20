@@ -51,9 +51,9 @@
     "clean": "rimraf ./dist ./out",
     "compile": "tsc --project ./tsconfig.json",
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean --single-file",
-    "lint": "oxlint --import-plugin src test",
-    "lint:fix": "oxlint --import-plugin --fix src test",
-    "test": "yarn workspace allure-js-commons compile && yarn run compile && vitest run"
+    "lint": "vp lint src test",
+    "lint:fix": "vp lint --fix src test",
+    "test": "yarn workspace allure-js-commons compile && yarn run compile && vp test run"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"
@@ -66,7 +66,9 @@
     "npm-run-all2": "^9.0.2",
     "rimraf": "^6.0.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.11"
+    "vite": "npm:@voidzero-dev/vite-plus-core@^8.3.8000",
+    "vite-plus": "^1.7.0",
+    "vitest": "^5.1.0"
   },
   "peerDependencies": {
     "ava": ">=8.0.0"
