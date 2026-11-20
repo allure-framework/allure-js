@@ -1,16 +1,21 @@
 import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { attachment, step } from "allure-js-commons";
 import type { AllureResults } from "allure-js-commons/sdk";
 import { MessageReader } from "allure-js-commons/sdk/reporter";
 
+interface JasmineRunResults extends AllureResults {
+  exitCode: number | null;
+}
+
 export const runJasmineInlineTest = async (
   files: Record<string, string>,
   env?: Record<string, string>,
-): Promise<AllureResults> => {
+  { parallel }: { parallel?: number } = {},
+): Promise<JasmineRunResults> => {
   const testDir = path.join(__dirname, "fixtures", randomUUID());
   const testFiles = {
     // package.json is used to find project root in case of absolute file paths are used
@@ -41,7 +46,7 @@ export const runJasmineInlineTest = async (
   const modulePath = await step("resolve jasmine", () =>
     path.resolve(require.resolve("jasmine"), "../../bin/jasmine.js"),
   );
-  const args: string[] = [];
+  const args = parallel ? [`--parallel=${parallel}`] : [];
   const childEnv = { ...process.env };
   delete childEnv.ALLURE_TESTPLAN_PATH;
   delete childEnv.ALLURE_RERUN;
@@ -51,7 +56,8 @@ export const runJasmineInlineTest = async (
       env: {
         ...childEnv,
         ...env,
-        ALLURE_TEST_MODE: "1",
+        // Jasmine owns the workers' IPC channel. Parallel runs use the real writer.
+        ALLURE_TEST_MODE: parallel ? "" : "1",
       },
       cwd: testDir,
       silent: true,
@@ -74,17 +80,42 @@ export const runJasmineInlineTest = async (
     stderr.push(str);
   });
 
-  return new Promise((resolve) => {
-    testProcess.on("exit", async () => {
-      await rm(testDir, { recursive: true });
-      await messageReader.attachResults();
-      if (stdout.length) {
-        await attachment("stdout", stdout.join("\n"), { contentType: "text/plain" });
-      }
-      if (stderr.length) {
-        await attachment("stderr", stderr.join("\n"), { contentType: "text/plain" });
-      }
-      return resolve(messageReader.results);
-    });
+  const exitCode = await new Promise<number | null>((resolve, reject) => {
+    testProcess.on("error", reject);
+    testProcess.on("exit", resolve);
   });
+
+  if (parallel) {
+    const resultsDir = path.join(testDir, "allure-results");
+    // An early runner error may prevent the results directory from being created.
+    const resultFiles = await readdir(resultsDir).catch((error: NodeJS.ErrnoException) => {
+      if (error.code === "ENOENT") {
+        return [];
+      }
+      throw error;
+    });
+    for (const file of resultFiles) {
+      const type = file.endsWith("-result.json")
+        ? "result"
+        : file.endsWith("-container.json")
+          ? "container"
+          : file.endsWith("-globals.json")
+            ? "globals"
+            : file === "environment.properties" || file === "categories.json"
+              ? "misc"
+              : "attachment";
+      const data = await readFile(path.join(resultsDir, file));
+      messageReader.handleMessage(JSON.stringify({ path: file, type, data: data.toString("base64") }));
+    }
+  }
+
+  await rm(testDir, { recursive: true });
+  await messageReader.attachResults();
+  if (stdout.length) {
+    await attachment("stdout", stdout.join("\n"), { contentType: "text/plain" });
+  }
+  if (stderr.length) {
+    await attachment("stderr", stderr.join("\n"), { contentType: "text/plain" });
+  }
+  return { ...messageReader.results, exitCode };
 };

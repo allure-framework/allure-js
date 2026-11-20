@@ -26,7 +26,14 @@ import { MessageTestRuntime, setGlobalTestRuntime } from "allure-js-commons/sdk/
 
 import type { JasmineBeforeAfterFn } from "./model.js";
 import { enableAllureJasmineTestPlan } from "./testplan.js";
-import { findAnyError, findMessageAboutThrow, getAllureNamesAndLabels, getSkipReasonFromError, last } from "./utils.js";
+import {
+  findAnyError,
+  findMessageAboutThrow,
+  getAllureNamesAndLabels,
+  getSkipReasonFromError,
+  getSpecFilePath,
+  last,
+} from "./utils.js";
 
 type JasmineSpecConstructor = {
   prototype: {
@@ -60,6 +67,8 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
   private currentAllureFixtureNames = new Map<string, string>();
   private jasmineSuitesStack: jasmine.SuiteResult[] = [];
   private scopesStack: string[] = [];
+  private patchedSpec?: JasmineSpecConstructor;
+  private softAssertsViaExpectEnabled = false;
 
   constructor(config: ReporterConfig = {}) {
     const { resultsDir, ...restConfig } = config;
@@ -132,7 +141,13 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
     if (!Spec) {
       // Jasmine 7+ hides Spec, so we observe expectation results via the global expect functions instead
-      this.#enableSoftAssertsViaExpect(failCurrentStep);
+      if (!this.softAssertsViaExpectEnabled) {
+        this.#enableSoftAssertsViaExpect(failCurrentStep);
+        this.softAssertsViaExpectEnabled = true;
+      }
+      return;
+    }
+    if (this.patchedSpec === Spec) {
       return;
     }
 
@@ -144,6 +159,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
 
       originalExpectationHandler.call(this, passed, data, isError);
     };
+    this.patchedSpec = Spec;
   }
 
   #enableSoftAssertsViaExpect(onExpectationResult: (passed: boolean, isError?: boolean) => void): void {
@@ -236,7 +252,7 @@ export default class AllureJasmineReporter implements jasmine.CustomReporter {
       result.labels.push(getHostLabel());
       result.labels.push(getThreadLabel());
       if (spec.filename) {
-        result.labels.push(getPackageLabel(spec.filename));
+        result.labels.push(getPackageLabel(getSpecFilePath(spec.filename)));
       }
 
       if (spec.status === "pending" || spec.status === "disabled" || spec.status === "excluded") {
