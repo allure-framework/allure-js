@@ -7,4 +7,7 @@ export type JasmineSuiteFn = typeof global.describe;
 export type TestPlanIndex = {
   ids: ReadonlySet<string>;
   fullNames: ReadonlySet<string>;
+  mutedIds: ReadonlySet<string>;
+  mutedFullNames: ReadonlySet<string>;
+  hasSelection: boolean;
 };

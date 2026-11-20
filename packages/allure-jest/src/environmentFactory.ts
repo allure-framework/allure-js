@@ -102,7 +102,7 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
         writer: createDefaultWriter({ resultsDir }),
       });
       this.testPath = relative(projectConfig.rootDir, context.testPath);
-      this.testPlan = parseTestPlan();
+      this.testPlan = parseTestPlan({ includeMutedTests: true });
 
       // @ts-ignore
       const testRuntime = new AllureJestTestRuntime(this as AllureJestEnvironment, this.global);
@@ -156,6 +156,15 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
           this.#handleSuiteEnd();
           break;
         case "test_start":
+          if (this.testPlan) {
+            const { cleanTitle } = extractMetadataFromString(event.test.name);
+            const fullName = this.#getTestFullName(event.test, cleanTitle);
+            if (!includedInTestPlan(this.testPlan, { fullName, tags: [event.test.name] }, { enableMutedTests: true })) {
+              event.test.mode = "skip";
+              this.runContext.skippedTestsFullNamesByTestPlan.push(fullName);
+              break;
+            }
+          }
           this.#handleTestScopeStart(event.test);
           break;
         case "test_fn_start":
@@ -273,12 +282,6 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
       const legacyTestId = getTestId(newTestSuitePath.concat(cleanTitle));
       const legacyFullName = `${getPosixPath(this.testPath)}#${legacyTestId}`;
       const newTestFullName = this.#getTestFullName(test, cleanTitle);
-
-      if (this.testPlan && !includedInTestPlan(this.testPlan, { fullName: newTestFullName, tags: [test.name] })) {
-        test.mode = "skip";
-        this.runContext.skippedTestsFullNamesByTestPlan.push(newTestFullName);
-        return;
-      }
 
       const context = this.#handleTestScopeStart(test);
       const testUuid = this.runtime.startTest(
@@ -409,7 +412,8 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
     }
 
     #handleTestSkip(test: Circus.TestEntry) {
-      const newTestFullName = this.#getTestFullName(test);
+      const { cleanTitle } = extractMetadataFromString(test.name);
+      const newTestFullName = this.#getTestFullName(test, cleanTitle);
 
       if (this.runContext.skippedTestsFullNamesByTestPlan.includes(newTestFullName)) {
         this.#handleTestScopeStop(test);

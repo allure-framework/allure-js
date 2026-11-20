@@ -240,6 +240,46 @@ describe("node --test integration", () => {
     },
   );
 
+  it.each([
+    {
+      name: "applies muted-only plans across test identities",
+      plan: { excludedTests: [{ id: 77 }, { selector: "muted by selector" }] },
+    },
+    {
+      name: "does not let selected descendants override a parent mute",
+      plan: {
+        tests: [{ selector: "muted by id child" }, { id: 78 }],
+        excludedTests: [{ id: 77 }],
+      },
+    },
+  ])("$name", async ({ plan }) => {
+    const { exitCode, tests } = await runNodeInlineTest(
+      {
+        "muted.test.mjs": `
+          import test from "node:test";
+          test("muted by id @allure.id:77", () => {
+            throw new Error("Muted body must not run");
+          });
+          test("muted by selector @allure.id:79", () => {
+            throw new Error("Muted body must not run");
+          });
+          test("survivor @allure.id:78", () => {});
+        `,
+      },
+      {
+        env: (testDir) => {
+          const testPlanPath = join(testDir, "testplan.json");
+          writeFileSync(testPlanPath, JSON.stringify({ version: "1.0", ...plan }));
+          return { ALLURE_TESTPLAN_PATH: testPlanPath };
+        },
+        setup: true,
+      },
+    );
+
+    expect(exitCode).toBe(0);
+    expect(tests).toEqual([expect.objectContaining({ name: "survivor", status: "passed" })]);
+  });
+
   it("does not execute tests outside ALLURE_TESTPLAN_PATH when setup is preloaded", async () => {
     const executionDir = mkdtempSync(join(tmpdir(), "allure-node-testplan-execution-"));
     const executionLog = join(executionDir, "execution.log");
