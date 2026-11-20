@@ -11,7 +11,7 @@ import {
   type ParameterOptions,
   Status,
 } from "../../model.js";
-import type { RuntimeMessage } from "../types.js";
+import type { LabelHierarchy, RuntimeMessage } from "../types.js";
 import { getGlobalErrorDetails, getMessageAndTraceFromError, getStatusFromError, isPromise } from "../utils.js";
 import { noopSyncRuntime, SYNC_STEP_PURE_FUNCTION_ERROR } from "./NoopTestRuntime.js";
 import type { SyncTestRuntime, TestRuntime } from "./types.js";
@@ -43,6 +43,10 @@ export abstract class BaseMessageTestRuntime implements TestRuntime {
         labels: [{ name, value }],
       },
     });
+  }
+
+  async replaceLabelHierarchy(labelHierarchy: LabelHierarchy) {
+    await this.sendMessage({ type: "metadata", data: { labelHierarchy } });
   }
 
   async labels(...labels: Label[]) {
@@ -304,6 +308,7 @@ export abstract class BaseMessageTestRuntime implements TestRuntime {
 
   protected createSyncRuntime(sendMessageSync: (message: RuntimeMessage) => void): SyncTestRuntime {
     return {
+      replaceLabelHierarchy: (labelHierarchy) => sendMessageSync({ type: "metadata", data: { labelHierarchy } }),
       labels: (...labels) =>
         sendMessageSync({
           type: "metadata",

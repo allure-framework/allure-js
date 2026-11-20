@@ -1,5 +1,6 @@
 export {
   allureId,
+  bdd,
   attachment,
   attachmentPath,
   attachTrace,
@@ -32,6 +33,7 @@ export {
   story,
   subSuite,
   suite,
+  suites,
   tag,
   tags,
   testCaseId,

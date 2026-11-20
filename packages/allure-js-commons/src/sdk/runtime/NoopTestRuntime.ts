@@ -9,6 +9,10 @@ export const SYNC_STEP_PURE_FUNCTION_ERROR =
   "allure-js-commons/sync step body must be synchronous and must not return a Promise";
 
 export class NoopSyncTestRuntime implements SyncTestRuntime {
+  replaceLabelHierarchy() {
+    this.warning();
+  }
+
   attachment(_: string, __: Buffer | Uint8Array | string, ___: { contentType: string }) {
     this.warning();
   }
@@ -117,6 +121,10 @@ export const noopSyncRuntime = new NoopSyncTestRuntime();
 
 export class NoopTestRuntime implements TestRuntime {
   sync = noopSyncRuntime;
+
+  async replaceLabelHierarchy() {
+    await this.warning();
+  }
 
   async attachment() {
     await this.warning();
