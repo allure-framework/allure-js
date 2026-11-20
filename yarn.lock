@@ -3894,10 +3894,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jasmine@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@types/jasmine@npm:6.0.0"
-  checksum: 10/22a838ab8d3221da78629819744b7a0065ce6381d198d745258c3ec29974470240160d47fb06b629c1653f285ed23c15c101f0f6939d2817abc02f253ff491b7
+"@types/jasmine@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@types/jasmine@npm:7.0.0"
+  checksum: 10/11d32e95eee847cf3c7ba04c6ab1fbce61a745884c179b9d0d81cb2e567a979347a269eeb099890fc4bd1358dc827067bb856a92e54d1f05ecc192e245da26e9
   languageName: node
   linkType: hard
 
@@ -4811,7 +4811,7 @@ __metadata:
     "@babel/preset-env": "npm:^7.28.0"
     "@babel/preset-typescript": "npm:^7.27.1"
     "@codeceptjs/helper": "npm:^2.0.4"
-    "@types/jasmine": "npm:^6.0.0"
+    "@types/jasmine": "npm:^7.0.0"
     "@types/node": "npm:^26.0.1"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
@@ -4926,7 +4926,7 @@ __metadata:
     "@babel/core": "npm:^7.28.0"
     "@babel/preset-env": "npm:^7.28.0"
     "@babel/preset-typescript": "npm:^7.27.1"
-    "@types/jasmine": "npm:^6.0.0"
+    "@types/jasmine": "npm:^7.0.0"
     "@types/node": "npm:^26.0.1"
     allure-commandline: "npm:^2.29.0"
     allure-js-commons: "workspace:*"
