@@ -32,14 +32,23 @@ export const getStepName = (step: TestStep): string => (step.subtitle ? `${step.
  * (e.g. `button` of a click), the expected value of an assertion, or custom
  * `test.step(title, body, { params })`.
  *
- * A param equal to the subtitle (e.g. the locator of an action) is already a part of the
- * step name. Values that can't be represented in JSON (e.g. a RegExp passed to an assertion)
- * reach the reporter as `{}`, so they are skipped as well.
+ * Params of custom steps are supplied explicitly and are reported as is. For built-in steps,
+ * a param equal to the subtitle (e.g. the locator of an action) is already a part of the
+ * step name, and values that can't be represented in JSON (e.g. a RegExp passed to an
+ * assertion) reach the reporter as `{}`, so both are skipped.
  */
-export const getStepParameters = (step: TestStep): Parameter[] =>
-  Object.entries(step.params ?? {})
-    .map(([name, value]) => ({ name, value: serialize(value, { maxDepth: 3, maxLength: 128 }) }))
-    .filter(({ value }) => value !== step.subtitle && value !== "{}");
+export const getStepParameters = (step: TestStep): Parameter[] => {
+  const parameters = Object.entries(step.params ?? {}).map(([name, value]) => ({
+    name,
+    value: serialize(value, { maxDepth: 3, maxLength: 128 }),
+  }));
+
+  if (step.category === "test.step") {
+    return parameters;
+  }
+
+  return parameters.filter(({ value }) => value !== step.subtitle && value !== "{}");
+};
 
 export const statusToAllureStats = (status: TestStatus, expectedStatus: TestStatus): Status => {
   if (status === "skipped") {

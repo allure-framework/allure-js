@@ -531,3 +531,28 @@ it("reports step params as step parameters", async () => {
     ]),
   );
 });
+
+it("keeps explicit params of custom steps as is", async () => {
+  const { tests } = await runPlaywrightInlineTest({
+    "a.test.js": `
+      import { test } from '@playwright/test';
+
+      test('a test', async () => {
+        await test.step('retry', async () => {}, { subtitle: '3', params: { attempts: 3, options: {} } });
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].steps).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "retry 3",
+        parameters: [
+          expect.objectContaining({ name: "attempts", value: "3" }),
+          expect.objectContaining({ name: "options", value: "{}" }),
+        ],
+      }),
+    ]),
+  );
+});
