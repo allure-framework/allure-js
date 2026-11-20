@@ -4,7 +4,7 @@ import { env } from "node:process";
 import { type AttachmentOptions, type ContentType, type Label, type Parameter } from "allure-js-commons";
 import { Stage, Status } from "allure-js-commons";
 import type { Category, RuntimeMessage } from "allure-js-commons/sdk";
-import { getMessageAndTraceFromError, getStatusFromError, toGlobalErrorMessage } from "allure-js-commons/sdk";
+import { getMessageAndTraceFromError, getStatusFromError, hasLabel, toGlobalErrorMessage } from "allure-js-commons/sdk";
 import {
   getFallbackTestCaseIdLabel,
   getHostLabel,
@@ -15,11 +15,11 @@ import {
 import {
   ReporterRuntime,
   createDefaultWriter,
-  ensureSuiteLabels,
   getEnvironmentLabels,
   getFrameworkLabel,
   getLanguageLabel,
   getPackageLabel,
+  getSuiteLabels,
 } from "allure-js-commons/sdk/reporter";
 import { setGlobalTestRuntime } from "allure-js-commons/sdk/runtime";
 import * as Mocha from "mocha";
@@ -308,13 +308,16 @@ export class AllureMochaReporter extends Mocha.reporters.Base {
       this.runtime.updateTest(this.currentTest, (t) => {
         const projectName = getProjectName();
         const fsPath: string[] = getRelativePath(test.file!).split(sep).filter(Boolean);
-        ensureSuiteLabels(t, defaultSuites);
 
         const titlePath = fsPath.concat(...defaultSuites);
         t.titlePath = projectName ? [projectName, ...titlePath] : titlePath;
         t.stage = Stage.FINISHED;
       });
       this.runtime.stopTest(this.currentTest);
+      // Hook metadata is merged by stopTest, so apply defaults only after it.
+      this.runtime.updateTest(this.currentTest, (t) => {
+        t.labels.push(...getSuiteLabels(defaultSuites).filter(({ name }) => !hasLabel(t, name)));
+      });
       this.runtime.writeTest(this.currentTest);
       this.testsMap.delete(this.currentTest);
       this.currentTest = undefined;
