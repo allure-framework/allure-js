@@ -42,7 +42,6 @@ jobs:
         if: github.event_name == 'merge_group'
         run: yarn workspace allure-js-commons test
 
-  # ubuntu-latest + node 24 is already verified in lint job
   build-verify:
     name: "Build Verify (${{ matrix.node-version }}, ${{ matrix.os }})"
     needs: [lint]
@@ -51,8 +50,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [26]
+        node-version: [24, 26]
         os: [ubuntu-latest, windows-latest]
+        # ubuntu-latest + node 26 is already verified in lint job
+        exclude:
+          - node-version: 26
+            os: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
 
