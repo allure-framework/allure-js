@@ -50,7 +50,7 @@ Install Allure Report separately when you want to render the generated `allure-r
 - Node mode: `vitest >= 1.3.0` (with a matching `@vitest/runner` for Vitest older than 4.1)
 - Browser mode: `vitest >= 4.1.0` and a matching Vitest browser provider package
 - Linux, macOS, and Windows wherever Vitest supports Node.js
-- this repository is validated in CI on Node.js 20 and 22
+- this repository is validated in CI on Node.js 24 and 26
 
 ## Usage
 

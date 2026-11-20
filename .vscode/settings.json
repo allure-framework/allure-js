@@ -1,9 +1,8 @@
 {
   "search.exclude": {
-    "**/.yarn": true,
-    "**/.pnp.*": true
+    "**/.yarn": true
   },
-  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "oxc.oxc-vscode",

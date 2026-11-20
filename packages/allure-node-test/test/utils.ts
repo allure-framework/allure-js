@@ -1,6 +1,5 @@
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { existsSync } from "node:fs";
 import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { dirname, extname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -25,7 +24,6 @@ export type NodeInlineTestResult = AllureResults & {
 };
 
 const fileDirname = dirname(fileURLToPath(import.meta.url));
-const repoRoot = join(fileDirname, "..", "..", "..");
 
 const nodeVersion = process.versions.node.split(".").map((part) => Number.parseInt(part, 10));
 
@@ -101,22 +99,6 @@ const readAllureResults = async (resultsDir: string): Promise<AllureResults> => 
   return results;
 };
 
-const getPnpArgs = () => {
-  const pnpRequire = join(repoRoot, ".pnp.cjs");
-  const pnpLoader = join(repoRoot, ".pnp.loader.mjs");
-  const args: string[] = [];
-
-  if (existsSync(pnpRequire)) {
-    args.push("--require", pnpRequire);
-  }
-
-  if (existsSync(pnpLoader)) {
-    args.push("--experimental-loader", pathToFileURL(pnpLoader).href);
-  }
-
-  return args;
-};
-
 export const runNodeInlineTest = async (
   testFiles: NodeTestFiles,
   { env = () => ({}), setup = false }: NodeRunOptions = {},
@@ -138,7 +120,6 @@ export const runNodeInlineTest = async (
   }
 
   const args = [
-    ...getPnpArgs(),
     "--test",
     ...(setup ? ["--import", setupModulePath] : []),
     "--test-reporter",

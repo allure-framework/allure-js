@@ -10,7 +10,6 @@
     "**/node_modules/**",
     "**/dist/**",
     "**/out/**",
-    "**/.pnp.*",
     "**/allure-report/**",
     "**/test/fixtures/**"
   ]

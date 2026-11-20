@@ -39,7 +39,7 @@ Install Allure Report separately when you want to render the generated `allure-r
 
 - `cypress >= 12.17.4`
 - Linux, macOS, and Windows wherever Cypress supports Node.js
-- this repository is validated in CI on Node.js 20 and 22
+- this repository is validated in CI on Node.js 24 and 26
 
 ## Usage
 
