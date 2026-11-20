@@ -1,7 +1,7 @@
 import type { TestStatus } from "@playwright/test";
 import type { TestError, TestStep } from "@playwright/test/reporter";
-import { Stage, Status, type StatusDetails, type StepResult } from "allure-js-commons";
-import { getMessageAndTraceFromError, stripAnsi } from "allure-js-commons/sdk";
+import { type Parameter, Stage, Status, type StatusDetails, type StepResult } from "allure-js-commons";
+import { getMessageAndTraceFromError, serialize, stripAnsi } from "allure-js-commons/sdk";
 
 import { ALLURE_STEP_STATUS_ANNOTATION, isAllureStepStatus } from "./syncAnnotations.js";
 
@@ -17,6 +17,37 @@ export const getStatusDetails = (error: TestError): StatusDetails => {
   }
 
   return details;
+};
+
+/**
+ * Since Playwright 1.63, built-in steps report their target (a locator or a URL) in
+ * `TestStep.subtitle` instead of the title, e.g. title "Click" with subtitle
+ * "getByRole('button')". Custom steps can set it with `test.step(title, body, { subtitle })`.
+ * Both fields are joined to keep the step name as informative as it was before 1.63.
+ */
+export const getStepName = (step: TestStep): string => (step.subtitle ? `${step.title} ${step.subtitle}` : step.title);
+
+/**
+ * Since Playwright 1.63, steps carry `TestStep.params`: call options of built-in actions
+ * (e.g. `button` of a click), the expected value of an assertion, or custom
+ * `test.step(title, body, { params })`.
+ *
+ * Params of custom steps are supplied explicitly and are reported as is. For built-in steps,
+ * a param equal to the subtitle (e.g. the locator of an action) is already a part of the
+ * step name, and values that can't be represented in JSON (e.g. a RegExp passed to an
+ * assertion) reach the reporter as `{}`, so both are skipped.
+ */
+export const getStepParameters = (step: TestStep): Parameter[] => {
+  const parameters = Object.entries(step.params ?? {}).map(([name, value]) => ({
+    name,
+    value: serialize(value, { maxDepth: 3, maxLength: 128 }),
+  }));
+
+  if (step.category === "test.step") {
+    return parameters;
+  }
+
+  return parameters.filter(({ value }) => value !== step.subtitle && value !== "{}");
 };
 
 export const statusToAllureStats = (status: TestStatus, expectedStatus: TestStatus): Status => {
