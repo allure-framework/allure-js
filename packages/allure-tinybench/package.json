@@ -46,7 +46,7 @@
     "lint": "vp lint src test",
     "lint:fix": "vp lint --fix src test",
     "test": "run-s test:prepare test:run",
-    "test:prepare": "yarn workspace allure-js-commons compile && yarn run compile",
+    "test:prepare": "yarn workspaces foreach -R --topological-dev run compile",
     "test:run": "vp test run"
   },
   "dependencies": {

@@ -85,7 +85,9 @@
     "compile:fixup": "node ./scripts/fixup.mjs",
     "lint": "vp lint src test",
     "lint:fix": "vp lint --fix src test",
-    "test": "vp test run"
+    "test": "run-s test:prepare test:run",
+    "test:prepare": "yarn workspaces foreach -R --topological-dev run compile",
+    "test:run": "vp test run"
   },
   "dependencies": {
     "md5": "^2.3.0"

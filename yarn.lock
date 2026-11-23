@@ -5021,6 +5021,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "allure-js@workspace:."
   dependencies:
+    "@playwright/test": "npm:^1.62.0"
     allure: "npm:^3.14.3"
     lefthook: "npm:^2.1.4"
     rimraf: "npm:^6.0.0"
