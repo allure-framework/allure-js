@@ -10,7 +10,7 @@ const buildTestTask = () => {
   const shardFlag = SHARD && SHARD_TOTAL ? `--shard ${SHARD}/${SHARD_TOTAL}` : "";
 
   return {
-    command: `vp run --filter !allure-js ${filtersFlags} test:run ${shardFlag}`,
+    command: `vp run --parallel --concurrency-limit 2 --filter !allure-js ${filtersFlags} test:run ${shardFlag}`,
     cache: false,
   };
 };

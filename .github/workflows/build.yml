@@ -97,17 +97,11 @@ jobs:
           - id: playwright
             packages: allure-playwright
             requirePwChromium: true
-          - id: vitest
-            packages: allure-vitest
-            requirePwChromium: true
-          - id: mocha
-            packages: allure-mocha
-            requirePwChromium: false
-          - id: testcafe
-            packages: testcafe-reporter-allure
+          - id: vitest-testcafe
+            packages: allure-vitest,testcafe-reporter-allure
             requirePwChromium: true
           - id: fast-tests
-            packages: allure-js-commons,allure-ava,allure-axios,allure-fetch,allure-node-performance,allure-tinybench,allure-bun,allure-chai,allure-jasmine,allure-jest,allure-node-test,allure-cucumberjs,allure-codeceptjs,newman-reporter-allure
+            packages: allure-js-commons,allure-ava,allure-axios,allure-fetch,allure-node-performance,allure-tinybench,allure-bun,allure-chai,allure-jasmine,allure-jest,allure-node-test,allure-cucumberjs,allure-codeceptjs,newman-reporter-allure,allure-mocha
             requirePwChromium: false
         exclude:
           - node-version: 24
@@ -137,7 +131,7 @@ jobs:
         shell: bash
         run: |
           yarn allure run --environment $ALLURE_MATRIX_ENV --dump $ALLURE_DUMP_NAME \
-            -- yarn vp run --log labeled --parallel --concurrency-limit 2 ci:test
+            -- yarn vp run --log labeled ci:test
 
       - name: Upload test results
         if: always()
