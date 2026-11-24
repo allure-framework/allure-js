@@ -6,11 +6,13 @@ import { runMochaInlineTest } from "../../utils.js";
 describe("testplan", () => {
   it.each([
     { excludedTests: [{ id: 77 }] },
-    { excludedTests: [{ selector: [["plain-mocha", "muted"], "muted test @allure.id=77"] as [string[], string] }] },
+    {
+      excludedTests: [{ selector: [["plain-mocha", "excluded"], "excluded test @allure.id=77"] as [string[], string] }],
+    },
     { testplan: [], excludedTests: [{ id: 77 }] },
     { testplan: [{ id: 77 }, { id: 78 }], excludedTests: [{ id: 77 }] },
-  ])("excludes muted bodies: %j", async (config) => {
-    const { tests, exitCode } = await runMochaInlineTest(config, ["plain-mocha", "muted"]);
+  ])("does not execute excluded tests: %j", async (config) => {
+    const { tests, exitCode } = await runMochaInlineTest(config, ["plain-mocha", "excluded"]);
 
     expect(exitCode).toBe(0);
     expect(tests).toEqual([expect.objectContaining({ name: "survivor", status: "passed" })]);

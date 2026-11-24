@@ -1,8 +1,8 @@
-Feature: muting
+Feature: exclusion
 
   @allure.id=77
-  Scenario: muted test
-    Given a muted step
+  Scenario: excluded test
+    Given a excluded step
 
   @allure.id=78
   Scenario: survivor

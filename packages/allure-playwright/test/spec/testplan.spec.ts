@@ -3,29 +3,29 @@ import { describe, expect, it } from "vitest";
 
 import { runPlaywrightInlineTest } from "../utils.js";
 
-describe("muted test plans", () => {
+describe("test plans with excluded tests", () => {
   it.each([
     { excludedTests: [{ id: 77 }] },
-    { excludedTests: [{ selector: "muted.test.ts#muted test" }] },
-    { tests: [], excludedTests: [{ selector: "muted.test.ts › muted test" }] },
+    { excludedTests: [{ selector: "excluded.test.ts#excluded test" }] },
+    { tests: [], excludedTests: [{ selector: "excluded.test.ts › excluded test" }] },
     { tests: [{ id: 77 }, { id: 78 }], excludedTests: [{ id: 77 }] },
     {
-      tests: [{ selector: "muted.test.ts#muted test" }, { id: 78 }],
-      excludedTests: [{ selector: "muted.test.ts › muted test" }],
+      tests: [{ selector: "excluded.test.ts#excluded test" }, { id: 78 }],
+      excludedTests: [{ selector: "excluded.test.ts › excluded test" }],
     },
     {
-      tests: [{ selector: "muted.test.ts › muted test" }, { id: 78 }],
-      excludedTests: [{ selector: "muted.test.ts#muted test" }],
+      tests: [{ selector: "excluded.test.ts › excluded test" }, { id: 78 }],
+      excludedTests: [{ selector: "excluded.test.ts#excluded test" }],
     },
-  ])("excludes muted bodies: %j", async (plan) => {
+  ])("does not execute excluded tests: %j", async (plan) => {
     const results = await runPlaywrightInlineTest(
       {
         "testplan.json": JSON.stringify({ version: "1.0", ...plan }),
-        "muted.test.ts": `
+        "excluded.test.ts": `
           import { test } from "@playwright/test";
-          test("muted test", { annotation: { type: "@allure.id", description: "77" } }, () => {
-            require("node:fs").writeFileSync("muted-body-ran.txt", "yes");
-            throw new Error("Muted body must not run");
+          test("excluded test", { annotation: { type: "@allure.id", description: "77" } }, () => {
+            require("node:fs").writeFileSync("excluded-body-ran.txt", "yes");
+            throw new Error("Excluded body must not run");
           });
           test("survivor", { annotation: { type: "@allure.id", description: "78" } }, () => {});
         `,
@@ -35,7 +35,7 @@ describe("muted test plans", () => {
     );
 
     expect(results.tests).toEqual([expect.objectContaining({ name: "survivor", status: "passed" })]);
-    expect(results.restFiles["muted-body-ran.txt"]).toBeUndefined();
+    expect(results.restFiles["excluded-body-ran.txt"]).toBeUndefined();
   });
 });
 

@@ -347,11 +347,13 @@ describe("allure-ava", () => {
     );
   });
 
-  it("applies a muted-only test plan", async () => {
+  it("applies a test plan with excluded tests only", async () => {
     const { tests, exitCode } = await runAvaInlineTest({
       "ava.config.mjs": ({ allureAvaIndexPath, allureAvaSetupPath, allureResultsPath }) => `
+        import { fileURLToPath } from "node:url";
         import { installAllureAva } from "${allureAvaIndexPath}";
-        process.env.ALLURE_TESTPLAN_PATH = new URL("./testplan.json", import.meta.url).pathname;
+
+        process.env.ALLURE_TESTPLAN_PATH = fileURLToPath(new URL("./testplan.json", import.meta.url));
         await installAllureAva({
           reporterConfig: { resultsDir: ${JSON.stringify(allureResultsPath)} },
           setupModule: ${JSON.stringify(allureAvaSetupPath)},
@@ -361,7 +363,7 @@ describe("allure-ava", () => {
       "testplan.json": JSON.stringify({ version: "1.0", excludedTests: [{ id: 77 }] }),
       "sample.test.js": ({ avaModulePath }) => `
         import test from "${avaModulePath}";
-        test("muted test @allure.id=77", () => { throw new Error("muted body executed"); });
+        test("excluded test @allure.id=77", () => { throw new Error("excluded body executed"); });
         test("survivor @allure.id=78", (t) => { t.pass(); });
       `,
     });
@@ -374,7 +376,6 @@ describe("allure-ava", () => {
     const { tests, exitCode } = await runAvaInlineTest({
       "ava.config.mjs": ({ allureAvaIndexPath, allureAvaSetupPath, allureResultsPath }) => `
         import { fileURLToPath } from "node:url";
-
         import { installAllureAva } from "${allureAvaIndexPath}";
 
         process.env.ALLURE_TESTPLAN_PATH = fileURLToPath(new URL("./testplan.json", import.meta.url));
@@ -445,7 +446,6 @@ describe("allure-ava", () => {
     const { tests, exitCode } = await runAvaInlineTest({
       "ava.config.mjs": ({ allureAvaIndexPath, allureAvaSetupPath, allureResultsPath }) => `
         import { fileURLToPath } from "node:url";
-
         import { installAllureAva } from "${allureAvaIndexPath}";
 
         process.env.ALLURE_TESTPLAN_PATH = fileURLToPath(new URL("./missing-testplan.json", import.meta.url));

@@ -56,20 +56,23 @@ describe("parseTestPlan", () => {
     expect(res).toEqual(exampleTestPlan);
   });
 
-  it.each([{ id: 2 }, { selector: "sample#test" }])("should accept muted-only plans with %j when enabled", (entry) => {
-    process.env = {
-      ...originalEnv,
-      ALLURE_TESTPLAN_PATH: writeToTempFile({ version: "1.0", excludedTests: [entry] }),
-    };
+  it.each([{ id: 2 }, { selector: "sample#test" }])(
+    "should accept plans with excluded tests only with %j when enabled",
+    (entry) => {
+      process.env = {
+        ...originalEnv,
+        ALLURE_TESTPLAN_PATH: writeToTempFile({ version: "1.0", excludedTests: [entry] }),
+      };
 
-    const defaultPlan = parseTestPlan();
-    const mutedPlan = parseTestPlan({ enableExcludedTests: true });
+      const defaultPlan = parseTestPlan();
+      const excludedPlan = parseTestPlan({ enableExcludedTests: true });
 
-    expect(defaultPlan).toBeUndefined();
-    expect(mutedPlan).toEqual({ version: "1.0", tests: [], excludedTests: [entry] });
-  });
+      expect(defaultPlan).toBeUndefined();
+      expect(excludedPlan).toEqual({ version: "1.0", tests: [], excludedTests: [entry] });
+    },
+  );
 
-  it("should accept empty selection with muted entries when enabled", () => {
+  it("should accept empty selection with excluded entries when enabled", () => {
     const plan = { version: "1.0", tests: [], excludedTests: [{ id: 2 }] };
     process.env = { ...originalEnv, ALLURE_TESTPLAN_PATH: writeToTempFile(plan) };
 
@@ -79,7 +82,7 @@ describe("parseTestPlan", () => {
   });
 
   it.each([undefined, [], "invalid"])(
-    "should ignore ineffective muted collections %j when enabled",
+    "should ignore ineffective excluded collections %j when enabled",
     (excludedTests) => {
       process.env = {
         ...originalEnv,
@@ -92,7 +95,7 @@ describe("parseTestPlan", () => {
     },
   );
 
-  it("should reject malformed selection even with valid muted entries", () => {
+  it("should reject malformed selection even with valid excluded entries", () => {
     process.env = {
       ...originalEnv,
       ALLURE_TESTPLAN_PATH: writeToTempFile({ version: "1.0", tests: "invalid", excludedTests: [{ id: 2 }] }),
@@ -215,7 +218,7 @@ describe("includedInTestPlan", () => {
     { entry: { selector: "selected" }, subject: {} },
     { entry: { selector: "native://test" }, subject: { nativeSelector: "native://test" } },
     { entry: { id: 442, selector: "selected" }, subject: { id: "123" } },
-  ])("should exclude a selected test matching muted identity %j", ({ entry, subject }) => {
+  ])("should exclude a selected test matching excluded identity %j", ({ entry, subject }) => {
     const plan: TestPlanV1 = {
       version: "1.0",
       tests: [{ selector: "selected" }],
@@ -233,7 +236,7 @@ describe("includedInTestPlan", () => {
     { subject: { tags: ["unrelated"] }, expected: true },
     { subject: {}, expected: true },
     { subject: { id: "123" }, expected: false },
-  ])("should filter muted-only plans for %j", ({ subject, expected }) => {
+  ])("should filter plans with excluded tests only for %j", ({ subject, expected }) => {
     const plan: TestPlanV1 = { version: "1.0", tests: [], excludedTests: [{ id: 123 }] };
 
     const result = includedInTestPlan(plan, subject, { enableExcludedTests: true });
@@ -243,13 +246,13 @@ describe("includedInTestPlan", () => {
 
   it.each([
     { fullName: "selected", expected: true },
-    { fullName: "muted", expected: false },
+    { fullName: "excluded", expected: false },
     { fullName: "unselected", expected: false },
-  ])("should combine selection and muting for $fullName", ({ fullName, expected }) => {
+  ])("should combine selection and exclusion for $fullName", ({ fullName, expected }) => {
     const plan: TestPlanV1 = {
       version: "1.0",
-      tests: [{ selector: "selected" }, { selector: "muted" }],
-      excludedTests: [{ selector: "muted" }],
+      tests: [{ selector: "selected" }, { selector: "excluded" }],
+      excludedTests: [{ selector: "excluded" }],
     };
 
     const result = includedInTestPlan(plan, { fullName }, { enableExcludedTests: true });
@@ -257,7 +260,7 @@ describe("includedInTestPlan", () => {
     expect(result).toBe(expected);
   });
 
-  it("should ignore muted entries unless enabled", () => {
+  it("should ignore excluded entries unless enabled", () => {
     const plan: TestPlanV1 = { version: "1.0", tests: [{ id: 123 }], excludedTests: [{ id: 123 }] };
 
     const result = includedInTestPlan(plan, { id: "123" });
@@ -275,7 +278,7 @@ describe("includedInTestPlan", () => {
     expect(enabledResult).toBe(true);
   });
 
-  it("should mute when test plans provides only muted tests", () => {
+  it("should exclude matching tests when plans contain excluded tests only", () => {
     const plan: TestPlanV1 = { version: "1.0", tests: [], excludedTests: [{ id: 123 }] };
 
     const result = includedInTestPlan(plan, { id: "123" }, { enableExcludedTests: true });
@@ -283,7 +286,7 @@ describe("includedInTestPlan", () => {
     expect(result).toBe(false);
   });
 
-  it("should not match absent subject fields against absent muted fields", () => {
+  it("should not match absent subject fields against absent excluded fields", () => {
     const plan: TestPlanV1 = { version: "1.0", tests: [], excludedTests: [{}] };
 
     const result = includedInTestPlan(plan, {}, { enableExcludedTests: true });

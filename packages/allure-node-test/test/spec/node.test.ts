@@ -242,26 +242,26 @@ describe("node --test integration", () => {
 
   it.each([
     {
-      name: "applies muted-only plans across test identities",
-      plan: { excludedTests: [{ id: 77 }, { selector: "muted by selector" }] },
+      name: "applies plans with excluded tests only across test identities",
+      plan: { excludedTests: [{ id: 77 }, { selector: "excluded by selector" }] },
     },
     {
-      name: "does not let selected descendants override a parent mute",
+      name: "does not let selected descendants override a parent exclusion",
       plan: {
-        tests: [{ selector: "muted by id child" }, { id: 78 }],
+        tests: [{ selector: "excluded by id child" }, { id: 78 }],
         excludedTests: [{ id: 77 }],
       },
     },
   ])("$name", async ({ plan }) => {
     const { exitCode, tests } = await runNodeInlineTest(
       {
-        "muted.test.mjs": `
+        "excluded.test.mjs": `
           import test from "node:test";
-          test("muted by id @allure.id:77", () => {
-            throw new Error("Muted body must not run");
+          test("excluded by id @allure.id:77", () => {
+            throw new Error("Excluded body must not run");
           });
-          test("muted by selector @allure.id:79", () => {
-            throw new Error("Muted body must not run");
+          test("excluded by selector @allure.id:79", () => {
+            throw new Error("Excluded body must not run");
           });
           test("survivor @allure.id:78", () => {});
         `,

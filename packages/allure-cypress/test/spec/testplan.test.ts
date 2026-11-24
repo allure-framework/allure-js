@@ -7,14 +7,14 @@ import { runCypressInlineTest } from "../utils.js";
 
 it.each([
   { excludedTests: [{ id: 77 }] },
-  { excludedTests: [{ selector: "dummy:cypress/e2e/sample.cy.js#muted test" }] },
+  { excludedTests: [{ selector: "dummy:cypress/e2e/sample.cy.js#excluded test" }] },
   { tests: [], excludedTests: [{ id: 77 }] },
   { tests: [{ id: 77 }, { id: 78 }], excludedTests: [{ id: 77 }] },
-])("excludes muted bodies: %j", async (plan) => {
+])("does not execute excluded tests: %j", async (plan) => {
   const { tests } = await runCypressInlineTest(
     {
       "cypress/e2e/sample.cy.js": () => `
-        it("muted test @allure.id=77", () => { throw new Error("muted body executed"); });
+        it("excluded test @allure.id=77", () => { throw new Error("excluded body executed"); });
         it("survivor @allure.id=78", () => {});
       `,
       "testplan.json": () => JSON.stringify({ version: "1.0", ...plan }),

@@ -517,13 +517,13 @@ it("reports Bun hook failures consistently", async () => {
   expect(allErrors.filter((error) => error.message === "afterAll failed: afterAll boom")).toHaveLength(1);
 });
 
-it("applies a muted-only test plan", async () => {
+it("applies a test plan with excluded tests only", async () => {
   const { tests, exitCode } = await runBunInlineTest(
     {
       "testplan.json": JSON.stringify({ version: "1.0", excludedTests: [{ id: 77 }] }),
       "sample.test.ts": `
         import { it } from "bun:test";
-        it("muted test @allure.id=77", () => { throw new Error("muted body executed"); });
+        it("excluded test @allure.id=77", () => { throw new Error("excluded body executed"); });
         it("survivor @allure.id=78", () => {});
       `,
     },

@@ -29,27 +29,27 @@ describe("createAllureTestPlanFilter", () => {
   it.each([
     { excludedTests: [{ id: 77 }] },
     { tests: [], excludedTests: [{ id: "77" }] },
-    { excludedTests: [{ selector: "tests/foo.js#My fixture#muted" }] },
-    { excludedTests: [{ selector: "/workspace/tests/foo.js#My fixture#muted" }] },
-    { excludedTests: [{ selector: "foo.js#My fixture#muted" }] },
+    { excludedTests: [{ selector: "tests/foo.js#My fixture#excluded" }] },
+    { excludedTests: [{ selector: "/workspace/tests/foo.js#My fixture#excluded" }] },
+    { excludedTests: [{ selector: "foo.js#My fixture#excluded" }] },
     { tests: [{ id: 77 }, { id: 78 }], excludedTests: [{ id: 77 }] },
-  ])("excludes muted identities: %j", (plan) => {
+  ])("matches excluded test identities: %j", (plan) => {
     writePlan({ version: "1.0", ...plan });
     const filter = createAllureTestPlanFilter()!;
 
     expect(filter).toBeTypeOf("function");
-    expect(filter("muted", "My fixture", "tests/foo.js", { "allure.id": "77" }, {})).toBe(false);
-    expect(filter("muted @allure.id=77", "My fixture", "tests/foo.js", {}, {})).toBe(false);
+    expect(filter("excluded", "My fixture", "tests/foo.js", { "allure.id": "77" }, {})).toBe(false);
+    expect(filter("excluded @allure.id=77", "My fixture", "tests/foo.js", {}, {})).toBe(false);
     expect(filter("survivor", "My fixture", "tests/foo.js", { "allure.id": "78" }, {})).toBe(true);
   });
 
-  it("resolves muted-only plans relative to cwd", () => {
+  it("resolves plans with excluded tests only relative to cwd", () => {
     writePlan({ version: "1.0", excludedTests: [{ id: 77 }] });
     process.env.ALLURE_TESTPLAN_PATH = "plan.json";
     const filter = createAllureTestPlanFilter({ cwd: tmpDir })!;
 
     expect(filter).toBeTypeOf("function");
-    expect(filter("muted", "fixture", "tests/foo.js", {}, { "allure.id": "77" })).toBe(false);
+    expect(filter("excluded", "fixture", "tests/foo.js", {}, { "allure.id": "77" })).toBe(false);
     expect(filter("survivor", "fixture", "tests/foo.js", {}, { "allure.id": "78" })).toBe(true);
   });
   it("returns undefined when ALLURE_TESTPLAN_PATH is not set", () => {

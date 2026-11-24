@@ -4,12 +4,12 @@ import { expect, it } from "vitest";
 
 import { runCodeceptJsInlineTest } from "../utils.js";
 
-it("applies a muted-only test plan", async () => {
+it("applies a test plan with excluded tests only", async () => {
   const { tests } = await runCodeceptJsInlineTest(
     {
       "sample.test.js": `
         Feature("feature");
-        Scenario("muted test", () => { throw new Error("muted body executed"); }).tag("@allure.id:77");
+        Scenario("excluded test", () => { throw new Error("excluded body executed"); }).tag("@allure.id:77");
         Scenario("survivor", () => {}).tag("@allure.id:78");
       `,
       "testplan.json": JSON.stringify({ version: "1.0", excludedTests: [{ id: 77 }] }),

@@ -5,22 +5,22 @@ import { runJasmineInlineTest } from "../utils.js";
 
 it.each([
   { excludedTests: [{ id: 77 }] },
-  { excludedTests: [{ selector: "dummy:spec/test/sample.spec.js#muted test" }] },
+  { excludedTests: [{ selector: "dummy:spec/test/sample.spec.js#excluded test" }] },
   { tests: [], excludedTests: [{ id: 77 }] },
   { tests: [{ id: 77 }, { id: 78 }], excludedTests: [{ id: 77 }] },
   {
-    tests: [{ selector: "muted test" }, { id: 78 }],
-    excludedTests: [{ selector: "dummy:spec/test/sample.spec.js#muted test" }],
+    tests: [{ selector: "excluded test" }, { id: 78 }],
+    excludedTests: [{ selector: "dummy:spec/test/sample.spec.js#excluded test" }],
   },
   {
-    tests: [{ selector: "dummy:spec/test/sample.spec.js#muted test" }, { id: 78 }],
-    excludedTests: [{ selector: "muted test" }],
+    tests: [{ selector: "dummy:spec/test/sample.spec.js#excluded test" }, { id: 78 }],
+    excludedTests: [{ selector: "excluded test" }],
   },
-])("excludes muted bodies: %j", async (plan) => {
+])("does not execute excluded tests: %j", async (plan) => {
   const { tests } = await runJasmineInlineTest(
     {
       "spec/test/sample.spec.js": `
-        it("muted test @allure.id=77", () => { throw new Error("muted body executed"); });
+        it("excluded test @allure.id=77", () => { throw new Error("excluded body executed"); });
         it("survivor @allure.id=78", () => {});
       `,
       "testplan.json": JSON.stringify({ version: "1.0", ...plan }),

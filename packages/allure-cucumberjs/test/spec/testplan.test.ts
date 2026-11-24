@@ -3,8 +3,8 @@ import { expect, it } from "vitest";
 
 import { runCucumberInlineTest } from "../utils.js";
 
-it("applies a muted-only test plan", async () => {
-  const { tests } = await runCucumberInlineTest(["muted"], ["muted"], {
+it("applies a test plan with excluded tests only", async () => {
+  const { tests } = await runCucumberInlineTest(["excluded"], ["excluded"], {
     testPlan: { version: "1.0", excludedTests: [{ id: 77 }] } as TestPlanV1,
   });
 

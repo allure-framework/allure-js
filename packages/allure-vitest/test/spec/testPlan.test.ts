@@ -33,37 +33,37 @@ describe("test plan", () => {
     });
 
     it.each([
-      { name: "muted-only ID", selection: undefined, muted: { id: 2 } },
+      { name: "excluded tests only by ID", selection: undefined, excluded: { id: 2 } },
       {
-        name: "muted-only selector",
+        name: "excluded tests only by selector",
         selection: undefined,
-        muted: { selector: "dummy:foo/sample.test.ts#suite muted" },
+        excluded: { selector: "dummy:foo/sample.test.ts#suite excluded" },
       },
-      { name: "empty selection", selection: [], muted: { id: 2 } },
+      { name: "empty selection", selection: [], excluded: { id: 2 } },
       {
-        name: "selection and muting",
+        name: "selection and exclusion",
         selection: [{ id: 2 }, { selector: "dummy:foo/sample.test.ts#suite survivor" }],
-        muted: { id: 2 },
+        excluded: { id: 2 },
       },
-    ])("should skip bodies and omit results with $name", async ({ selection, muted }) => {
+    ])("should skip bodies and omit results with $name", async ({ selection, excluded }) => {
       const { tests } = await runVitestInlineTest(
         {
           "vitest.config.ts": configFileAccessor,
           "foo/sample.test.ts": `
             import { describe, expect, test } from "vitest";
 
-            let mutedBodyRan = false;
+            let excludedBodyRan = false;
             let unselectedBodyRan = false;
 
             describe("suite", () => {
-              test("muted @allure.id=2", () => {
-                mutedBodyRan = true;
+              test("excluded @allure.id=2", () => {
+                excludedBodyRan = true;
               });
 
               ${selection?.length ? 'test("unselected", () => { unselectedBodyRan = true; });' : ""}
 
               test("survivor", () => {
-                expect(mutedBodyRan).toBe(false);
+                expect(excludedBodyRan).toBe(false);
                 expect(unselectedBodyRan).toBe(false);
               });
             });
@@ -71,7 +71,7 @@ describe("test plan", () => {
           "testplan.json": JSON.stringify({
             version: "1.0",
             ...(selection === undefined ? {} : { tests: selection }),
-            excludedTests: [muted],
+            excludedTests: [excluded],
           }),
         },
         { env: (testDir) => ({ ALLURE_TESTPLAN_PATH: join(testDir, "testplan.json") }) },
