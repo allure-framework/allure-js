@@ -769,7 +769,7 @@ export const resolveTestPlan = (cwd?: string) => {
   }
 
   try {
-    return parseTestPlan();
+    return parseTestPlan({ enableExcludedTests: true });
   } finally {
     process.env.ALLURE_TESTPLAN_PATH = originalPath;
   }

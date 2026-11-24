@@ -4,6 +4,20 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { runMochaInlineTest } from "../../utils.js";
 
 describe("testplan", () => {
+  it.each([
+    { excludedTests: [{ id: 77 }] },
+    {
+      excludedTests: [{ selector: [["plain-mocha", "excluded"], "excluded test @allure.id=77"] as [string[], string] }],
+    },
+    { testplan: [], excludedTests: [{ id: 77 }] },
+    { testplan: [{ id: 77 }, { id: 78 }], excludedTests: [{ id: 77 }] },
+  ])("does not execute excluded tests: %j", async (config) => {
+    const { tests, exitCode } = await runMochaInlineTest(config, ["plain-mocha", "excluded"]);
+
+    expect(exitCode).toBe(0);
+    expect(tests).toEqual([expect.objectContaining({ name: "survivor", status: "passed" })]);
+  });
+
   describe("by selector", () => {
     let tests: TestResult[];
     beforeAll(async () => {

@@ -91,7 +91,7 @@ export class AllureReporter implements ReporterV2 {
   private readonly pwStepUuid = new WeakMap<TestStep, string>();
   private readonly testFullNames = new WeakMap<TestCase, string>();
   private readonly emittedHookGlobalErrorKeys = new Set<string>();
-  private readonly testPlan = parseTestPlan();
+  private readonly testPlan = parseTestPlan({ enableExcludedTests: true });
   private replayedBlobCount = 0;
   private activeBlobIndex?: number;
 
@@ -1110,18 +1110,22 @@ export class AllureReporter implements ReporterV2 {
   }
 
   private isInTestPlan(test: TestCase, metadata = this.getStaticTestMetadata(test)) {
-    if (!this.testPlan) {
+    const testPlan = this.testPlan;
+    if (!testPlan) {
       return true;
     }
 
     const { fullName, locationFullName, legacyFullName, staticAllureId } = metadata;
 
+    const subjects = [
+      { fullName: locationFullName, nativeSelector: fullName, id: staticAllureId },
+      { fullName: legacyFullName, id: staticAllureId },
+    ];
+    const exclusionPlan = { ...testPlan, tests: [] };
+
     return (
-      includedInTestPlan(this.testPlan, {
-        fullName: locationFullName,
-        nativeSelector: fullName,
-        id: staticAllureId,
-      }) || includedInTestPlan(this.testPlan, { fullName: legacyFullName, id: staticAllureId })
+      subjects.some((subject) => includedInTestPlan(testPlan, subject)) &&
+      subjects.every((subject) => includedInTestPlan(exclusionPlan, subject, { enableExcludedTests: true }))
     );
   }
 

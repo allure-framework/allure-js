@@ -3,6 +3,14 @@ import { expect, it } from "vitest";
 
 import { runCucumberInlineTest } from "../utils.js";
 
+it("applies a test plan with excluded tests only", async () => {
+  const { tests } = await runCucumberInlineTest(["excluded"], ["excluded"], {
+    testPlan: { version: "1.0", excludedTests: [{ id: 77 }] } as TestPlanV1,
+  });
+
+  expect(tests).toEqual([expect.objectContaining({ name: "survivor", status: "passed" })]);
+});
+
 it("should skip tests based on test plan", async () => {
   const testPlan: TestPlanV1 = {
     version: "1.0",

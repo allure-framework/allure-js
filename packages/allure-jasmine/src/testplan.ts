@@ -58,24 +58,35 @@ const hideAllureFramesFromFunc = <TArgs extends any[], TReturn, TFn extends (...
 };
 
 const getIndexedTestPlan = (): TestPlanIndex | undefined => {
-  const testplan = parseTestPlan();
+  const testplan = parseTestPlan({ enableExcludedTests: true });
   if (testplan) {
     return {
       ids: new Set(testplan.tests.filter((e) => e.id).map((e) => e.id!.toString())),
       fullNames: new Set(testplan.tests.filter((e) => e.selector).map((e) => e.selector!)),
+      excludedIds: new Set((testplan.excludedTests ?? []).filter((e) => e.id).map((e) => e.id!.toString())),
+      excludedFullNames: new Set((testplan.excludedTests ?? []).filter((e) => e.selector).map((e) => e.selector!)),
+      hasSelection: testplan.tests.length > 0,
     };
   }
 };
 
-const isInTestPlan = (testplan: TestPlanIndex | undefined, fullName: string | undefined, labels: readonly Label[]) => {
+const isInTestPlan = (
+  testplan: TestPlanIndex | undefined,
+  fullNames: (string | undefined)[],
+  labels: readonly Label[],
+) => {
   if (!testplan) {
     return true;
   }
-  if (fullName && testplan.fullNames.has(fullName)) {
-    return true;
-  }
   const allureId = labels.find((l) => l.name === LabelName.ALLURE_ID)?.value;
-  return allureId && testplan.ids.has(allureId);
+  const selected =
+    !testplan.hasSelection ||
+    fullNames.some((name) => name && testplan.fullNames.has(name)) ||
+    (allureId && testplan.ids.has(allureId));
+  const excluded =
+    fullNames.some((name) => name && testplan.excludedFullNames.has(name)) ||
+    (allureId && testplan.excludedIds.has(allureId));
+  return selected && !excluded;
 };
 
 export const enableAllureJasmineTestPlan = () => {
@@ -111,10 +122,7 @@ export const enableAllureJasmineTestPlan = () => {
     const { fullName, labels } = getAllureNamesAndLabels(filename, suites, expectation);
     // Older runners may omit filenames in reporter events even when the callsite
     // is available here. Accept the suite-based selector emitted by those runs too.
-    if (
-      isInTestPlan(testplan, fullName, labels) ||
-      isInTestPlan(testplan, getAllureNamesAndLabels(undefined, suites, expectation).fullName, labels)
-    ) {
+    if (isInTestPlan(testplan, [fullName, getAllureNamesAndLabels(undefined, suites, expectation).fullName], labels)) {
       return hideAllureFramesFromFunc(jasmineIt, expectation, assertion, timeout);
     } else {
       return hideAllureFramesFromFunc(jasmineXit, addSkipLabelAsMeta(expectation), assertion, timeout);

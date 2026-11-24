@@ -56,5 +56,9 @@ const removeSortedIndices = <T>(arr: T[], indices: readonly number[]) => {
   }
 };
 
-const includedInTestPlan = (testPlan: TestPlanV1, fullName: string, allureId: string | undefined): boolean =>
-  testPlan.tests.some((test) => (allureId && test.id?.toString() === allureId) || test.selector === fullName);
+const includedInTestPlan = (testPlan: TestPlanV1, fullName: string, allureId: string | undefined): boolean => {
+  const matches = (test: TestPlanV1["tests"][number]) =>
+    (allureId && test.id?.toString() === allureId) || test.selector === fullName;
+  const selected = testPlan.tests.length === 0 || testPlan.tests.some(matches);
+  return selected && !testPlan.excludedTests?.some(matches);
+};

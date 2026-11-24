@@ -4,6 +4,35 @@ import { check, runTestCafeInlineTest } from "../utils.js";
 
 const PAGE_PATH = "/pages/testplan.html";
 
+it("resolves a nested plan with excluded tests only before executing tests", async () => {
+  const { tests } = await runTestCafeInlineTest(
+    {
+      "workspace/pages/testplan.html": "<html><body>Excluded test plan</body></html>",
+      "workspace/plans/plan.json": JSON.stringify({
+        version: "1.0",
+        excludedTests: [{ selector: "tests/excluded.test.js#Plan fixture#excluded" }],
+      }),
+      "workspace/tests/excluded.test.js": `
+        fixture\`Plan fixture\`
+          .page\`\${process.env.TESTCAFE_BASE_URL}/workspace${PAGE_PATH}\`;
+        test("excluded", async () => {
+          throw new Error("Excluded body must not run");
+        });
+        test("survivor", async t => {
+          await t.expect(1).eql(1);
+        });
+      `,
+    },
+    {
+      env: { ALLURE_TESTPLAN_PATH: "plans/plan.json" },
+      projectCwdRelative: "workspace",
+      useTestPlanFilter: true,
+    },
+  );
+
+  expect(tests).toEqual([expect.objectContaining({ name: "survivor", status: "passed" })]);
+});
+
 it("resolves relative testplan paths from a nested project cwd and deselects before execution", async () => {
   const { tests } = await runTestCafeInlineTest(
     {

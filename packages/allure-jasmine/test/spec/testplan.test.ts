@@ -3,6 +3,34 @@ import { expect, it } from "vitest";
 
 import { runJasmineInlineTest } from "../utils.js";
 
+it.each([
+  { excludedTests: [{ id: 77 }] },
+  { excludedTests: [{ selector: "dummy:spec/test/sample.spec.js#excluded test" }] },
+  { tests: [], excludedTests: [{ id: 77 }] },
+  { tests: [{ id: 77 }, { id: 78 }], excludedTests: [{ id: 77 }] },
+  {
+    tests: [{ selector: "excluded test" }, { id: 78 }],
+    excludedTests: [{ selector: "dummy:spec/test/sample.spec.js#excluded test" }],
+  },
+  {
+    tests: [{ selector: "dummy:spec/test/sample.spec.js#excluded test" }, { id: 78 }],
+    excludedTests: [{ selector: "excluded test" }],
+  },
+])("does not execute excluded tests: %j", async (plan) => {
+  const { tests } = await runJasmineInlineTest(
+    {
+      "spec/test/sample.spec.js": `
+        it("excluded test @allure.id=77", () => { throw new Error("excluded body executed"); });
+        it("survivor @allure.id=78", () => {});
+      `,
+      "testplan.json": JSON.stringify({ version: "1.0", ...plan }),
+    },
+    { ALLURE_TESTPLAN_PATH: "testplan.json" },
+  );
+
+  expect(tests).toEqual([expect.objectContaining({ name: "survivor", status: "passed" })]);
+});
+
 it("should filter tests by selector", async () => {
   const { tests } = await runJasmineInlineTest(
     {

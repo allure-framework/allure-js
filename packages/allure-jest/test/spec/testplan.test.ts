@@ -5,6 +5,23 @@ import { expect, it } from "vitest";
 
 import { runJestInlineTest } from "../utils.js";
 
+it("applies a test plan with excluded tests only before execution", async () => {
+  const { tests, exitCode } = await runJestInlineTest(
+    {
+      "testplan.json": JSON.stringify({ version: "1.0", excludedTests: [{ id: 77 }] }),
+      "sample.test.js": `
+        it("excluded test @allure.id=77", () => { throw new Error("excluded body executed"); });
+        it("survivor @allure.id=78", () => {});
+      `,
+    },
+    (testDir) => ({ ALLURE_TESTPLAN_PATH: join(testDir, "testplan.json") }),
+    ["--runInBand"],
+  );
+
+  expect(exitCode).toBe(0);
+  expect(tests).toEqual([expect.objectContaining({ name: "survivor", status: "passed" })]);
+});
+
 it("respects testplan", async () => {
   const exampleTestPlan: TestPlanV1 = {
     version: "1.0",

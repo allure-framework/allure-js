@@ -320,7 +320,7 @@ export const createFileContext = (filePath: string, runState: BunRunState): BunF
     allureRuntime,
     runState,
     testPath,
-    testPlan: parseTestPlan(),
+    testPlan: parseTestPlan({ enableExcludedTests: true }),
     defaultRetry: getBunRetryValue(),
     testNamePattern: getBunTestNamePattern(),
     todoModeEnabled: detectBunTodoMode(),
@@ -483,7 +483,7 @@ export const isTestSelectedByPlan = (
 
   const fullName = getRegisteredTestFullName(fileContext, test);
 
-  return includedInTestPlan(testPlan, { fullName, tags: [test.name] });
+  return includedInTestPlan(testPlan, { fullName, tags: [test.name] }, { enableExcludedTests: true });
 };
 
 export const isTestSelectedByBunNamePattern = (

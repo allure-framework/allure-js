@@ -45,15 +45,16 @@ const selectorsMatch = (planSelector: string, actualSelector: string) => {
   );
 };
 
-const isIncludedInPlan = (testPlan: TestPlanV1, selector: string, allureId?: string) =>
-  testPlan.tests.some(
-    (test) =>
-      (typeof test.selector === "string" && selectorsMatch(test.selector, selector)) ||
-      (allureId && test.id !== undefined && String(test.id) === allureId),
-  );
+const isIncludedInPlan = (testPlan: TestPlanV1, selector: string, allureId?: string) => {
+  const matches = (test: TestPlanV1["tests"][number]) =>
+    (typeof test.selector === "string" && selectorsMatch(test.selector, selector)) ||
+    (allureId && test.id !== undefined && String(test.id) === allureId);
+
+  return (testPlan.tests.length === 0 || testPlan.tests.some(matches)) && !testPlan.excludedTests?.some(matches);
+};
 
 export const createAllureTestPlanFilter = ({ cwd }: CreateAllureTestPlanFilterOptions = {}) => {
-  const testPlan = cwd ? resolveTestPlan(cwd) : parseTestPlan();
+  const testPlan = cwd ? resolveTestPlan(cwd) : parseTestPlan({ enableExcludedTests: true });
 
   if (!testPlan) {
     return undefined;

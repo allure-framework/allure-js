@@ -27,7 +27,7 @@ export const runJestInlineTest = async (
   testFiles: TestFiles,
   env?: (testDir: string) => Record<string, string>,
   cliArgs?: string[],
-): Promise<AllureResults> => {
+): Promise<AllureResults & { exitCode: number | null }> => {
   const testDir = join(__dirname, "fixtures", randomUUID());
   const configFileName = "jest.config.js";
   const configFilePath = join(testDir, configFileName);
@@ -115,11 +115,11 @@ export const runJestInlineTest = async (
   });
 
   return new Promise((resolve) => {
-    testProcess.on("exit", async () => {
+    testProcess.on("exit", async (exitCode) => {
       await rm(testDir, { recursive: true, maxRetries: 3, retryDelay: 1000 });
       await messageReader.attachResults();
 
-      return resolve(messageReader.results);
+      return resolve({ ...messageReader.results, exitCode });
     });
   });
 };

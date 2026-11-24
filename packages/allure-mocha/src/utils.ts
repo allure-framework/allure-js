@@ -2,7 +2,7 @@ import { dirname, extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { LabelName } from "allure-js-commons";
-import type { TestPlanV1, TestPlanV1Test } from "allure-js-commons/sdk";
+import type { TestPlanV1Test } from "allure-js-commons/sdk";
 import { extractMetadataFromString } from "allure-js-commons/sdk";
 import { getPosixPath, getProjectName, getRelativePath, md5, parseTestPlan } from "allure-js-commons/sdk/reporter";
 import type * as Mocha from "mocha";
@@ -42,19 +42,24 @@ const createAllureFullName = (test: Mocha.Test) => {
   return projectName ? `${projectName}:${fullNameBase}` : fullNameBase;
 };
 
-const createTestPlanSelectorIndex = (testplan: TestPlanV1) => createTestPlanIndex((e) => e.selector, testplan);
+const createTestPlanSelectorIndex = (tests: TestPlanV1Test[]) => createTestPlanIndex((e) => e.selector, tests);
 
-const createTestPlanIdIndex = (testplan: TestPlanV1) => createTestPlanIndex((e) => e.id?.toString(), testplan);
+const createTestPlanIdIndex = (tests: TestPlanV1Test[]) => createTestPlanIndex((e) => e.id?.toString(), tests);
 
-const createTestPlanIndex = <T>(keySelector: (entry: TestPlanV1Test) => T | undefined, testplan: TestPlanV1): Set<T> =>
-  new Set(testplan.tests.map((e) => keySelector(e)).filter((v) => v)) as Set<T>;
+const createTestPlanIndex = <T>(
+  keySelector: (entry: TestPlanV1Test) => T | undefined,
+  tests: TestPlanV1Test[],
+): Set<T> => new Set(tests.map((e) => keySelector(e)).filter((v) => v)) as Set<T>;
 
 export const createTestPlanIndices = (): TestPlanIndices | undefined => {
-  const testplan = parseTestPlan();
+  const testplan = parseTestPlan({ enableExcludedTests: true });
   if (testplan) {
     return {
-      fullNameIndex: createTestPlanSelectorIndex(testplan),
-      idIndex: createTestPlanIdIndex(testplan),
+      fullNameIndex: createTestPlanSelectorIndex(testplan.tests),
+      idIndex: createTestPlanIdIndex(testplan.tests),
+      excludedFullNameIndex: createTestPlanSelectorIndex(testplan.excludedTests ?? []),
+      excludedIdIndex: createTestPlanIdIndex(testplan.excludedTests ?? []),
+      hasSelection: testplan.tests.length > 0,
     };
   }
 };
@@ -101,13 +106,17 @@ export const getLegacyTestCaseId = (test: Mocha.Test) => {
   return md5(JSON.stringify([testFilePath, ...suiteTitles, getAllureDisplayName(test)]));
 };
 
-export const applyTestPlan = (ids: ReadonlySet<string>, selectors: ReadonlySet<string>, rootSuite: Mocha.Suite) => {
+export const applyTestPlan = (plan: TestPlanIndices, rootSuite: Mocha.Suite) => {
   const suiteQueue = [];
   for (let s: Mocha.Suite | undefined = rootSuite; s; s = suiteQueue.shift()) {
     for (const test of s.tests) {
       const allureData = getAllureData(test);
       const allureId = getAllureId(allureData);
-      if (!selectors.has(allureData.fullName) && (!allureId || !ids.has(allureId))) {
+      const selected =
+        !plan.hasSelection || plan.fullNameIndex.has(allureData.fullName) || (allureId && plan.idIndex.has(allureId));
+      const excluded =
+        plan.excludedFullNameIndex.has(allureData.fullName) || (allureId && plan.excludedIdIndex.has(allureId));
+      if (!selected || excluded) {
         allureData.isIncludedInTestRun = false;
         test.pending = true;
       }

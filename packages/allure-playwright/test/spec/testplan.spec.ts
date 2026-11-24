@@ -3,6 +3,42 @@ import { describe, expect, it } from "vitest";
 
 import { runPlaywrightInlineTest } from "../utils.js";
 
+describe("test plans with excluded tests", () => {
+  it.each([
+    { excludedTests: [{ id: 77 }] },
+    { excludedTests: [{ selector: "excluded.test.ts#excluded test" }] },
+    { tests: [], excludedTests: [{ selector: "excluded.test.ts › excluded test" }] },
+    { tests: [{ id: 77 }, { id: 78 }], excludedTests: [{ id: 77 }] },
+    {
+      tests: [{ selector: "excluded.test.ts#excluded test" }, { id: 78 }],
+      excludedTests: [{ selector: "excluded.test.ts › excluded test" }],
+    },
+    {
+      tests: [{ selector: "excluded.test.ts › excluded test" }, { id: 78 }],
+      excludedTests: [{ selector: "excluded.test.ts#excluded test" }],
+    },
+  ])("does not execute excluded tests: %j", async (plan) => {
+    const results = await runPlaywrightInlineTest(
+      {
+        "testplan.json": JSON.stringify({ version: "1.0", ...plan }),
+        "excluded.test.ts": `
+          import { test } from "@playwright/test";
+          test("excluded test", { annotation: { type: "@allure.id", description: "77" } }, () => {
+            require("node:fs").writeFileSync("excluded-body-ran.txt", "yes");
+            throw new Error("Excluded body must not run");
+          });
+          test("survivor", { annotation: { type: "@allure.id", description: "78" } }, () => {});
+        `,
+      },
+      [],
+      { ALLURE_TESTPLAN_PATH: "testplan.json" },
+    );
+
+    expect(results.tests).toEqual([expect.objectContaining({ name: "survivor", status: "passed" })]);
+    expect(results.restFiles["excluded-body-ran.txt"]).toBeUndefined();
+  });
+});
+
 describe("testplan with v1 reporter full names", () => {
   it("respects testplan", async () => {
     const exampleTestPlan: TestPlanV1 = {

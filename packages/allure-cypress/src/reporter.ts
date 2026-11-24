@@ -592,7 +592,7 @@ const createRuntimeState = (allureConfig?: AllureCypressConfig): AllureSpecState
   config: getRuntimeConfigDefaults(allureConfig),
   initialized: false,
   messages: [],
-  testPlan: parseTestPlan(),
+  testPlan: parseTestPlan({ enableExcludedTests: true }),
   projectDir: getProjectRoot(),
   projectName: getProjectName(),
   stepStack: [],

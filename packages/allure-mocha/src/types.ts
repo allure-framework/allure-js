@@ -5,6 +5,9 @@ import type { ReporterConstructor } from "mocha";
 export type TestPlanIndices = {
   fullNameIndex: ReadonlySet<string>;
   idIndex: ReadonlySet<string>;
+  excludedFullNameIndex: ReadonlySet<string>;
+  excludedIdIndex: ReadonlySet<string>;
+  hasSelection: boolean;
 };
 
 export type AllureMochaTestData = {

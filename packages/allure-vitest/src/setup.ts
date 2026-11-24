@@ -13,7 +13,7 @@ setGetCurrentTest(getCurrentTest);
 registerAllureVitestExpect();
 
 beforeAll(() => {
-  globalThis.allureTestPlan = parseTestPlan({ includeMutedTests: true });
+  globalThis.allureTestPlan = parseTestPlan({ enableExcludedTests: true });
   setGlobalTestRuntime(new VitestTestRuntime());
 });
 

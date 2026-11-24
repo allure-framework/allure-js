@@ -4,6 +4,22 @@ import { expect, it } from "vitest";
 
 import { runCodeceptJsInlineTest } from "../utils.js";
 
+it("applies a test plan with excluded tests only", async () => {
+  const { tests } = await runCodeceptJsInlineTest(
+    {
+      "sample.test.js": `
+        Feature("feature");
+        Scenario("excluded test", () => { throw new Error("excluded body executed"); }).tag("@allure.id:77");
+        Scenario("survivor", () => {}).tag("@allure.id:78");
+      `,
+      "testplan.json": JSON.stringify({ version: "1.0", excludedTests: [{ id: 77 }] }),
+    },
+    { env: { ALLURE_TESTPLAN_PATH: "./testplan.json" } },
+  );
+
+  expect(tests).toEqual([expect.objectContaining({ name: "survivor", status: "passed" })]);
+});
+
 it("should support test plan", async () => {
   const exampleTestPlan: TestPlanV1 = {
     version: "1.0",
