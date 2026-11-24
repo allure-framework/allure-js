@@ -54,7 +54,7 @@ const isIncludedInPlan = (testPlan: TestPlanV1, selector: string, allureId?: str
 };
 
 export const createAllureTestPlanFilter = ({ cwd }: CreateAllureTestPlanFilterOptions = {}) => {
-  const testPlan = cwd ? resolveTestPlan(cwd) : parseTestPlan({ includeMutedTests: true });
+  const testPlan = cwd ? resolveTestPlan(cwd) : parseTestPlan({ enableExcludedTests: true });
 
   if (!testPlan) {
     return undefined;

@@ -91,7 +91,7 @@ export class AllureReporter implements ReporterV2 {
   private readonly pwStepUuid = new WeakMap<TestStep, string>();
   private readonly testFullNames = new WeakMap<TestCase, string>();
   private readonly emittedHookGlobalErrorKeys = new Set<string>();
-  private readonly testPlan = parseTestPlan({ includeMutedTests: true });
+  private readonly testPlan = parseTestPlan({ enableExcludedTests: true });
   private replayedBlobCount = 0;
   private activeBlobIndex?: number;
 
@@ -1125,7 +1125,7 @@ export class AllureReporter implements ReporterV2 {
 
     return (
       subjects.some((subject) => includedInTestPlan(testPlan, subject)) &&
-      subjects.every((subject) => includedInTestPlan(mutePlan, subject, { enableMutedTests: true }))
+      subjects.every((subject) => includedInTestPlan(mutePlan, subject, { enableExcludedTests: true }))
     );
   }
 

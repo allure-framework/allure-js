@@ -102,7 +102,7 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
         writer: createDefaultWriter({ resultsDir }),
       });
       this.testPath = relative(projectConfig.rootDir, context.testPath);
-      this.testPlan = parseTestPlan({ includeMutedTests: true });
+      this.testPlan = parseTestPlan({ enableExcludedTests: true });
 
       // @ts-ignore
       const testRuntime = new AllureJestTestRuntime(this as AllureJestEnvironment, this.global);
@@ -159,7 +159,9 @@ const createJestEnvironment = <T extends JestEnvironmentConstructor>(Base: T): T
           if (this.testPlan) {
             const { cleanTitle } = extractMetadataFromString(event.test.name);
             const fullName = this.#getTestFullName(event.test, cleanTitle);
-            if (!includedInTestPlan(this.testPlan, { fullName, tags: [event.test.name] }, { enableMutedTests: true })) {
+            if (
+              !includedInTestPlan(this.testPlan, { fullName, tags: [event.test.name] }, { enableExcludedTests: true })
+            ) {
               event.test.mode = "skip";
               this.runContext.skippedTestsFullNamesByTestPlan.push(fullName);
               break;

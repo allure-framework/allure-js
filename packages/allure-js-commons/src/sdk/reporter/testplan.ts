@@ -4,7 +4,7 @@ import type { Label } from "../../model.js";
 import type { TestPlanV1, TestPlanV1Test } from "../types.js";
 import { allureIdRegexp } from "../utils.js";
 
-export const parseTestPlan = (options: { includeMutedTests?: boolean } = {}): TestPlanV1 | undefined => {
+export const parseTestPlan = (options: { enableExcludedTests?: boolean } = {}): TestPlanV1 | undefined => {
   const testPlanPath = process.env.ALLURE_TESTPLAN_PATH;
 
   if (!testPlanPath) {
@@ -28,7 +28,7 @@ export const parseTestPlan = (options: { includeMutedTests?: boolean } = {}): Te
     }
 
     const hasMutedTests =
-      options.includeMutedTests && Array.isArray(testPlan.excludedTests) && testPlan.excludedTests.length > 0;
+      options.enableExcludedTests && Array.isArray(testPlan.excludedTests) && testPlan.excludedTests.length > 0;
 
     if (hasMutedTests) {
       testPlan.tests ??= [];
@@ -50,7 +50,7 @@ export const parseTestPlan = (options: { includeMutedTests?: boolean } = {}): Te
 export const includedInTestPlan = (
   testPlan: TestPlanV1,
   subject: { allureId?: string; id?: string; fullName?: string; nativeSelector?: string; tags?: string[] },
-  options: { enableMutedTests?: boolean } = {},
+  options: { enableExcludedTests?: boolean } = {},
 ): boolean => {
   const { allureId, id, fullName, nativeSelector, tags = [] } = subject;
   const effectiveId =
@@ -69,7 +69,7 @@ export const includedInTestPlan = (
   if (testPlan.tests.length === 0 && testPlan.excludedTests?.length === 0) return true;
 
   const selected = testPlan.tests.length === 0 || testPlan.tests.some(matchesTest);
-  if (!options.enableMutedTests) return selected;
+  if (!options.enableExcludedTests) return selected;
 
   return selected && !testPlan.excludedTests?.some(matchesTest);
 };

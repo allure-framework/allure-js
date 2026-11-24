@@ -42,7 +42,7 @@ type TestPlanSubject = {
 };
 
 const suiteStack: string[] = [];
-const testPlan = parseTestPlan({ includeMutedTests: true });
+const testPlan = parseTestPlan({ enableExcludedTests: true });
 
 export const hasExecutableTestPlan = () => !!testPlan;
 
@@ -292,7 +292,7 @@ const shouldRunTest = (args: readonly unknown[]) => {
 
   return (
     subjects.some((subject) => includedInTestPlanOrHasSelectedDescendant(testPlan, subject)) &&
-    subjects.every((subject) => includedInTestPlan(mutePlan, subject, { enableMutedTests: true }))
+    subjects.every((subject) => includedInTestPlan(mutePlan, subject, { enableExcludedTests: true }))
   );
 };
 

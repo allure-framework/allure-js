@@ -58,7 +58,7 @@ const hideAllureFramesFromFunc = <TArgs extends any[], TReturn, TFn extends (...
 };
 
 const getIndexedTestPlan = (): TestPlanIndex | undefined => {
-  const testplan = parseTestPlan({ includeMutedTests: true });
+  const testplan = parseTestPlan({ enableExcludedTests: true });
   if (testplan) {
     return {
       ids: new Set(testplan.tests.filter((e) => e.id).map((e) => e.id!.toString())),

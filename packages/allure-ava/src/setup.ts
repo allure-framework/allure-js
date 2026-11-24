@@ -58,7 +58,7 @@ const shouldRunTask = (testPlan: TestPlanV1, testFile: string, task: AvaTask) =>
       fullName: getFullName(testFile, task.title),
       tags: [task.title],
     },
-    { enableMutedTests: true },
+    { enableExcludedTests: true },
   );
 };
 
@@ -104,7 +104,7 @@ const installRunnerPatch = async () => {
     prototype[RUN_SINGLE_PATCHED] = true;
   }
 
-  const testPlan = parseTestPlan({ includeMutedTests: true });
+  const testPlan = parseTestPlan({ enableExcludedTests: true });
 
   if (testPlan && !prototype[TEST_PLAN_PATCHED]) {
     const originalStart = prototype.start;

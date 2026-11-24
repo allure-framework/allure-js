@@ -52,7 +52,7 @@ const createTestPlanIndex = <T>(
 ): Set<T> => new Set(tests.map((e) => keySelector(e)).filter((v) => v)) as Set<T>;
 
 export const createTestPlanIndices = (): TestPlanIndices | undefined => {
-  const testplan = parseTestPlan({ includeMutedTests: true });
+  const testplan = parseTestPlan({ enableExcludedTests: true });
   if (testplan) {
     return {
       fullNameIndex: createTestPlanSelectorIndex(testplan.tests),
