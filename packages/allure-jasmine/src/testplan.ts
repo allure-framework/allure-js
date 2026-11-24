@@ -63,8 +63,8 @@ const getIndexedTestPlan = (): TestPlanIndex | undefined => {
     return {
       ids: new Set(testplan.tests.filter((e) => e.id).map((e) => e.id!.toString())),
       fullNames: new Set(testplan.tests.filter((e) => e.selector).map((e) => e.selector!)),
-      mutedIds: new Set((testplan.excludedTests ?? []).filter((e) => e.id).map((e) => e.id!.toString())),
-      mutedFullNames: new Set((testplan.excludedTests ?? []).filter((e) => e.selector).map((e) => e.selector!)),
+      excludedIds: new Set((testplan.excludedTests ?? []).filter((e) => e.id).map((e) => e.id!.toString())),
+      excludedFullNames: new Set((testplan.excludedTests ?? []).filter((e) => e.selector).map((e) => e.selector!)),
       hasSelection: testplan.tests.length > 0,
     };
   }
@@ -83,10 +83,10 @@ const isInTestPlan = (
     !testplan.hasSelection ||
     fullNames.some((name) => name && testplan.fullNames.has(name)) ||
     (allureId && testplan.ids.has(allureId));
-  const muted =
-    fullNames.some((name) => name && testplan.mutedFullNames.has(name)) ||
-    (allureId && testplan.mutedIds.has(allureId));
-  return selected && !muted;
+  const excluded =
+    fullNames.some((name) => name && testplan.excludedFullNames.has(name)) ||
+    (allureId && testplan.excludedIds.has(allureId));
+  return selected && !excluded;
 };
 
 export const enableAllureJasmineTestPlan = () => {

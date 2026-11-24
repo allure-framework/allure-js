@@ -57,8 +57,8 @@ export const createTestPlanIndices = (): TestPlanIndices | undefined => {
     return {
       fullNameIndex: createTestPlanSelectorIndex(testplan.tests),
       idIndex: createTestPlanIdIndex(testplan.tests),
-      mutedFullNameIndex: createTestPlanSelectorIndex(testplan.excludedTests ?? []),
-      mutedIdIndex: createTestPlanIdIndex(testplan.excludedTests ?? []),
+      excludedFullNameIndex: createTestPlanSelectorIndex(testplan.excludedTests ?? []),
+      excludedIdIndex: createTestPlanIdIndex(testplan.excludedTests ?? []),
       hasSelection: testplan.tests.length > 0,
     };
   }
@@ -114,8 +114,9 @@ export const applyTestPlan = (plan: TestPlanIndices, rootSuite: Mocha.Suite) => 
       const allureId = getAllureId(allureData);
       const selected =
         !plan.hasSelection || plan.fullNameIndex.has(allureData.fullName) || (allureId && plan.idIndex.has(allureId));
-      const muted = plan.mutedFullNameIndex.has(allureData.fullName) || (allureId && plan.mutedIdIndex.has(allureId));
-      if (!selected || muted) {
+      const excluded =
+        plan.excludedFullNameIndex.has(allureData.fullName) || (allureId && plan.excludedIdIndex.has(allureId));
+      if (!selected || excluded) {
         allureData.isIncludedInTestRun = false;
         test.pending = true;
       }

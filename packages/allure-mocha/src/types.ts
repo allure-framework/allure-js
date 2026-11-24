@@ -5,8 +5,8 @@ import type { ReporterConstructor } from "mocha";
 export type TestPlanIndices = {
   fullNameIndex: ReadonlySet<string>;
   idIndex: ReadonlySet<string>;
-  mutedFullNameIndex: ReadonlySet<string>;
-  mutedIdIndex: ReadonlySet<string>;
+  excludedFullNameIndex: ReadonlySet<string>;
+  excludedIdIndex: ReadonlySet<string>;
   hasSelection: boolean;
 };
 

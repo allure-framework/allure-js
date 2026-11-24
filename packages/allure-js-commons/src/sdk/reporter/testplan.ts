@@ -27,15 +27,15 @@ export const parseTestPlan = (options: { enableExcludedTests?: boolean } = {}): 
       return undefined;
     }
 
-    const hasMutedTests =
+    const hasExcludedTests =
       options.enableExcludedTests && Array.isArray(testPlan.excludedTests) && testPlan.excludedTests.length > 0;
 
-    if (hasMutedTests) {
+    if (hasExcludedTests) {
       testPlan.tests ??= [];
     }
 
     // Execute all tests if test plan is empty
-    if (!Array.isArray(testPlan.tests) || (testPlan.tests.length === 0 && !hasMutedTests)) {
+    if (!Array.isArray(testPlan.tests) || (testPlan.tests.length === 0 && !hasExcludedTests)) {
       return undefined;
     }
 

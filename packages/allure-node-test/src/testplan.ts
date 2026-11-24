@@ -288,11 +288,11 @@ const shouldRunTest = (args: readonly unknown[]) => {
     { fullName: cleanNodeFullName, id: allureId, tags: [name] },
     { fullName: cleanName, id: allureId, tags: [name] },
   ];
-  const mutePlan = { ...testPlan, tests: [] };
+  const exclusionPlan = { ...testPlan, tests: [] };
 
   return (
     subjects.some((subject) => includedInTestPlanOrHasSelectedDescendant(testPlan, subject)) &&
-    subjects.every((subject) => includedInTestPlan(mutePlan, subject, { enableExcludedTests: true }))
+    subjects.every((subject) => includedInTestPlan(exclusionPlan, subject, { enableExcludedTests: true }))
   );
 };
 

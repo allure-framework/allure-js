@@ -1121,11 +1121,11 @@ export class AllureReporter implements ReporterV2 {
       { fullName: locationFullName, nativeSelector: fullName, id: staticAllureId },
       { fullName: legacyFullName, id: staticAllureId },
     ];
-    const mutePlan = { ...testPlan, tests: [] };
+    const exclusionPlan = { ...testPlan, tests: [] };
 
     return (
       subjects.some((subject) => includedInTestPlan(testPlan, subject)) &&
-      subjects.every((subject) => includedInTestPlan(mutePlan, subject, { enableExcludedTests: true }))
+      subjects.every((subject) => includedInTestPlan(exclusionPlan, subject, { enableExcludedTests: true }))
     );
   }
 
