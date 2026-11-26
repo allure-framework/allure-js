@@ -80,7 +80,8 @@ export const runAvaInlineTest = async (
   };
   const fixtureAccessorOpts = {
     allureAvaIndexPath: toImportSpecifier(join(packageDirname, "dist", "index.js")),
-    allureAvaSetupPath: toImportSpecifier(join(packageDirname, "dist", "setup.js")),
+    // Let AVA load setup directly so its workers don't race to rewrite the same helper on Windows.
+    allureAvaSetupPath: join(packageDirname, "dist", "setup.js"),
     allureResultsPath,
     avaCliPath: resolveAvaCli(),
     avaModulePath: toImportSpecifier(localRequire.resolve("ava")),
