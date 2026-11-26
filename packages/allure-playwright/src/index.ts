@@ -768,7 +768,10 @@ export class AllureReporter implements ReporterV2 {
       }
 
       if (this.options.suiteTitle && fileSuiteTitle && !hasLabel(testResult, LabelName.SUITE)) {
-        testResult.labels.push({ name: LabelName.SUITE, value: fileSuiteTitle });
+        const fileRoot = this.getFileRoot();
+        const suite = fileRoot ? path.relative(fileRoot, test.location.file).split(path.sep).join("/") : fileSuiteTitle;
+
+        testResult.labels.push({ name: LabelName.SUITE, value: suite });
       }
 
       if (suiteTitles.length > 0 && !hasLabel(testResult, LabelName.SUB_SUITE)) {
@@ -1060,7 +1063,7 @@ export class AllureReporter implements ReporterV2 {
           test.location.file === candidate.testDir || test.location.file.startsWith(`${candidate.testDir}${path.sep}`),
       ) ??
       this.config.projects[0];
-    const testFilePath = path.relative(project.testDir, test.location.file);
+    const testFilePath = path.relative(this.getFileRoot() ?? project.testDir, test.location.file);
     const relativeFileParts = testFilePath.split(path.sep);
     const relativeFile = relativeFileParts.join("/");
     const suiteTitles = test.titlePath().slice(3, -1);
@@ -1107,6 +1110,17 @@ export class AllureReporter implements ReporterV2 {
       legacyFullName,
       staticAllureId,
     };
+  }
+
+  private getFileRoot() {
+    const { fileRoot } = this.options;
+    if (!fileRoot) {
+      return undefined;
+    }
+
+    const configDir = this.config.configFile ? path.dirname(this.config.configFile) : process.cwd();
+
+    return path.resolve(configDir, fileRoot);
   }
 
   private isInTestPlan(test: TestCase, metadata = this.getStaticTestMetadata(test)) {
