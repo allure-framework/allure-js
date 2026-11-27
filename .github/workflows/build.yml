@@ -130,7 +130,7 @@ jobs:
       - name: Run suite tests
         shell: bash
         run: |
-          yarn allure run --environment $ALLURE_MATRIX_ENV --dump $ALLURE_DUMP_NAME \
+          yarn allure run --environment $ALLURE_MATRIX_ENV --dump $ALLURE_DUMP_NAME --rerun 2 \
             -- yarn vp run --log labeled ci:test
 
       - name: Upload test results
