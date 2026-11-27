@@ -12,6 +12,11 @@ import type { ReporterConfig } from "allure-js-commons/sdk/reporter";
 
 export interface AllurePlaywrightReporterConfig extends ReporterConfig {
   detail?: boolean;
+  /**
+   * The folder that spec paths are relative to. Relative paths resolve against the Playwright config's folder.
+   * Defaults to the project's testDir.
+   */
+  fileRoot?: string;
   /** Whether to report unmapped Playwright annotations as steps. Defaults to true. */
   reportAnnotations?: boolean;
   /** Whether to report Playwright expect steps. Defaults to the value of detail. */

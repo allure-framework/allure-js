@@ -116,6 +116,18 @@ export default defineConfig({
 This produces full names in the `file#suite test` format instead of `file:line:column`. Test names must be unique
 within the same suite when this option is enabled.
 
+Spec paths are relative to the project's `testDir` by default. They set the `package` label, `titlePath`, `testCaseId` (and so test history), test-plan names and the default `suite` label. To keep these stable when `testDir` changes, set `fileRoot` to the folder spec paths should be relative to:
+
+```js
+export default defineConfig({
+  testDir: "../..",
+  reporter: [["allure-playwright", { fileRoot: "./src" }]],
+  projects: [{ name: "e2e", testMatch: path.join(__dirname, "src/**/*.spec.ts") }],
+});
+```
+
+A relative `fileRoot` resolves against the Playwright config's folder. An absolute path is used as is.
+
 ### View the report
 
 Use Allure Report 2:
