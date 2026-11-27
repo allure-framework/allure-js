@@ -239,12 +239,25 @@ export class AllureCypress {
   };
 
   #startRun = (absolutePath: string) => {
-    if (!this.specContextByAbsolutePath.has(absolutePath)) {
+    const context = this.specContextByAbsolutePath.get(absolutePath);
+    if (!context) {
       this.#initializeSpecContext(absolutePath);
+      return;
     }
+
+    // The run started again in the same spec: Cypress reloaded the page, which it does when a test needs a different
+    // origin to the previous one (e.g. tests in a loop, each with its own baseUrl). It runs the spec from the start
+    // again, skipping the tests that already ran, and starting the suites that are still open again. The tests have
+    // been reported already, and the suites are still open, so both are ignored.
+    context.testsReportedBeforeReload = new Set(context.reportedTests);
   };
 
   #startSuite = (context: SpecContext, { data: { id, name, root } }: CypressSuiteStartMessage) => {
+    if (context.suiteIdToScope.has(id)) {
+      // started again after a page reload (see #startRun)
+      return;
+    }
+
     this.#pushNewSuiteScope(context, id);
     if (!root) {
       this.#emitPreviousTestScope(context);
@@ -318,8 +331,18 @@ export class AllureCypress {
 
   #startTest = (context: SpecContext, { data: { fullNameSuffix, ...testResultData } }: CypressTestStartMessage) => {
     this.#emitPreviousTestScope(context);
+
+    if (context.testsReportedBeforeReload.has(fullNameSuffix)) {
+      // Skipped by Cypress after a page reload (see #startRun), as it already ran. Without a current test, the messages
+      // about it that follow (the skip and its end) are ignored.
+      context.test = undefined;
+      context.testFullNameSuffix = undefined;
+      return;
+    }
+
     const testScope = this.allureRuntime.startScope();
     context.testScope = testScope;
+    context.testFullNameSuffix = fullNameSuffix;
     context.test = this.#addNewTestResult(context, fullNameSuffix, testResultData, [
       context.videoScope,
       ...context.suiteScopes,
@@ -409,6 +432,11 @@ export class AllureCypress {
     context: SpecContext,
     { data: { fullNameSuffix, suites, duration, retry, ...testResultData } }: CypressSkippedTestMessage,
   ) => {
+    if (context.testsReportedBeforeReload.has(fullNameSuffix)) {
+      // already reported before a page reload (see #startRun)
+      return;
+    }
+
     // Tests skipped because of a hook error may share all suites of the current context
     // or just a part thereof (if it's from a sibling suite).
     const scopes = suites.map((s) => context.suiteIdToScope.get(s)).filter((s): s is string => Boolean(s));
@@ -416,6 +444,7 @@ export class AllureCypress {
     const testUuid = this.#addNewTestResult(context, fullNameSuffix, testResultData, [context.videoScope, ...scopes]);
     this.#stopExistingTestResult(testUuid, { duration, retry }, context.suiteNames);
     this.allureRuntime.writeTest(testUuid);
+    context.reportedTests.add(fullNameSuffix);
   };
 
   #stopTest = (context: SpecContext, { data }: CypressTestEndMessage) => {
@@ -423,7 +452,11 @@ export class AllureCypress {
     if (testUuid) {
       this.#stopExistingTestResult(testUuid, data, context.suiteNames);
       this.allureRuntime.writeTest(testUuid);
+      if (context.testFullNameSuffix !== undefined) {
+        context.reportedTests.add(context.testFullNameSuffix);
+      }
       context.test = undefined;
+      context.testFullNameSuffix = undefined;
     }
   };
 
@@ -588,6 +621,9 @@ export class AllureCypress {
       testScope: undefined,
       suiteNames: [],
       failed: false,
+      testFullNameSuffix: undefined,
+      reportedTests: new Set(),
+      testsReportedBeforeReload: new Set(),
     };
     this.specContextByAbsolutePath.set(absolutePath, context);
   };

@@ -224,6 +224,12 @@ export type SpecContext = {
   testScope: string | undefined;
   suiteNames: string[];
   failed: boolean;
+  /** the full name suffix of the current test */
+  testFullNameSuffix: string | undefined;
+  /** the full name suffixes of the tests whose results have been written */
+  reportedTests: Set<string>;
+  /** tests that were reported before Cypress reloaded the page (see AllureCypress#startRun) */
+  testsReportedBeforeReload: Set<string>;
 };
 
 type StepDescriptorBase = {
