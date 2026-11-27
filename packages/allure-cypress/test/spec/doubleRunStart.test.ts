@@ -74,7 +74,7 @@ const suiteEnd = (root = false): CypressMessage => ({
 const testLifecycle = (name: string): CypressMessage[] => [
   { type: "cypress_test_start", data: { name, fullNameSuffix: name, start: 0, labels: [] } },
   { type: "cypress_test_pass", data: {} },
-  { type: "cypress_test_end", data: { duration: 1, retries: 0 } },
+  { type: "cypress_test_end", data: { duration: 1, retry: 0 } },
 ];
 
 describe("duplicate cypress_run_start — context identity", () => {

@@ -2,12 +2,20 @@ import { ContentType, Status } from "allure-js-commons";
 import type { StatusDetails } from "allure-js-commons";
 import { getMessageAndTraceFromError, getStatusFromError } from "allure-js-commons/sdk";
 
-import type { CypressFailMessage, CypressHook, CypressSuite, CypressTest, StepDescriptor } from "../types.js";
+import type {
+  CypressFailMessage,
+  CypressHook,
+  CypressHookEndMessage,
+  CypressSuite,
+  CypressTest,
+  StepDescriptor,
+} from "../types.js";
 import { getTestRuntime } from "./runtime.js";
 import serializeValue from "./serialize.js";
 import { dropCurrentTest, enqueueRuntimeMessage, getCurrentTest, setCurrentTest } from "./state.js";
 import { finalizeSteps, stopAllSteps } from "./steps.js";
 import {
+  getHookErrorSuppressedByRetry,
   getStatusDataOfTestSkippedByHookError,
   getStepStopData,
   getSuitePath,
@@ -63,12 +71,21 @@ export const reportHookStart = (hook: CypressHook, start?: number) => {
 };
 
 export const reportHookEnd = (hook: CypressHook) => {
+  const data: CypressHookEndMessage["data"] = { duration: hook.duration ?? 0 };
+
+  const suppressedError = getHookErrorSuppressedByRetry(hook);
+  if (suppressedError) {
+    // Cypress suppressed the error to retry the test, so Mocha doesn't emit 'fail' for the hook. In case of a
+    // `beforeEach` hook, the test attempt itself is marked as failed shortly after, by the 'retry' event.
+    data.status = getStatusFromError(suppressedError);
+    data.statusDetails = getMessageAndTraceFromError(suppressedError, serializeValue);
+    stopAllSteps(data.status, data.statusDetails);
+  }
+
   finalizeSteps();
   enqueueRuntimeMessage({
     type: "cypress_hook_end",
-    data: {
-      duration: hook.duration ?? 0,
-    },
+    data,
   });
 };
 
@@ -158,14 +175,31 @@ export const reportTestSkip = (test: CypressTest) => {
   });
 };
 
+/**
+ * Mocha emits neither 'fail' nor 'test end' for an attempt that is going to be retried. Ending the attempt here
+ * makes it a separate test result instead of being overwritten by the next attempt. Allure groups all attempts
+ * of the test by their history id and shows the previous ones as retries of the last one.
+ */
+export const reportTestRetry = (test: CypressTest, err: Error | undefined) => {
+  if (getCurrentTest() !== test) {
+    return;
+  }
+
+  if (err) {
+    reportTestOrHookFail(err);
+  } else {
+    // Cypress's experimental retries may run a test again even if the attempt has passed.
+    reportTestPass();
+  }
+
+  reportTestEnd(test);
+};
+
 export const reportTestEnd = (test: CypressTest) => {
   finalizeSteps();
   enqueueRuntimeMessage({
     type: "cypress_test_end",
-    data: {
-      duration: test.duration ?? 0,
-      retries: (test as any)._retries ?? 0,
-    },
+    data: getTestStopData(test),
   });
   dropCurrentTest();
 };

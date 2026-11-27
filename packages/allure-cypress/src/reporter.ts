@@ -300,11 +300,14 @@ export class AllureCypress {
     }
   };
 
-  #stopHook = (context: SpecContext, { data: { duration } }: CypressHookEndMessage) => {
+  #stopHook = (context: SpecContext, { data: { duration, status, statusDetails } }: CypressHookEndMessage) => {
     const fixtureUuid = context.fixture;
     if (fixtureUuid) {
       this.allureRuntime.updateFixture(fixtureUuid, (fixture) => {
-        fixture.status ??= Status.PASSED;
+        if (!fixture.status && statusDetails) {
+          fixture.statusDetails = statusDetails;
+        }
+        fixture.status ??= status ?? Status.PASSED;
       });
       this.allureRuntime.stopFixture(fixtureUuid, { duration });
       this.#fixFixtureStepStops(fixtureUuid);
@@ -404,14 +407,14 @@ export class AllureCypress {
 
   #addSkippedTest = (
     context: SpecContext,
-    { data: { fullNameSuffix, suites, duration, retries, ...testResultData } }: CypressSkippedTestMessage,
+    { data: { fullNameSuffix, suites, duration, retry, ...testResultData } }: CypressSkippedTestMessage,
   ) => {
     // Tests skipped because of a hook error may share all suites of the current context
     // or just a part thereof (if it's from a sibling suite).
     const scopes = suites.map((s) => context.suiteIdToScope.get(s)).filter((s): s is string => Boolean(s));
 
     const testUuid = this.#addNewTestResult(context, fullNameSuffix, testResultData, [context.videoScope, ...scopes]);
-    this.#stopExistingTestResult(testUuid, { duration, retries }, context.suiteNames);
+    this.#stopExistingTestResult(testUuid, { duration, retry }, context.suiteNames);
     this.allureRuntime.writeTest(testUuid);
   };
 
@@ -426,14 +429,16 @@ export class AllureCypress {
 
   #stopExistingTestResult = (
     testUuid: string,
-    { retries, duration }: CypressTestEndMessage["data"],
+    { retry, duration }: CypressTestEndMessage["data"],
     suiteNames: string[],
   ) => {
     this.allureRuntime.updateTest(testUuid, (testResult) => {
-      if (retries > 0) {
+      // Each attempt is a separate result. They all share the same history id because the parameter is excluded.
+      // That makes Allure show the previous attempts as retries of the last one.
+      if (retry > 0) {
         testResult.parameters.push({
           name: "Retry",
-          value: retries.toString(),
+          value: retry.toString(),
           excluded: true,
         });
       }

@@ -49,8 +49,21 @@ export const getTestStartData = (test: CypressTest) => ({
 
 export const getTestStopData = (test: CypressTest) => ({
   duration: test.duration ?? 0,
-  retries: (test as any)._retries ?? 0,
+  retry: ((test as any)._currentRetry as number | undefined) ?? 0,
 });
+
+/**
+ * If a `beforeEach` or `afterEach` hook fails and the test has attempts left, Cypress suppresses the error to retry
+ * the test. Mocha then ends the hook as if it has passed. This function returns the suppressed error, if any.
+ */
+export const getHookErrorSuppressedByRetry = (hook: CypressHook) => {
+  if (!hook.hookName.includes("each")) {
+    return undefined;
+  }
+
+  const test = hook.ctx?.currentTest as CypressTest | undefined;
+  return test && test.failedFromHookId === hook.hookId ? test.err : undefined;
+};
 
 export const getTestSkipData = () => ({
   statusDetails: { message: "This is a pending test" },
