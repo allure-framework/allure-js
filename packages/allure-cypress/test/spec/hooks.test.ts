@@ -1093,7 +1093,27 @@ describe("hook errors", () => {
   });
 
   it("should report the spec on spec-level after failures", async () => {
-    const { tests, groups } = await runCypressInlineTest({
+    const { tests, groups, envInfo } = await runCypressInlineTest({
+      "cypress.config.js": ({ allureCypressReporterModulePath, allureDirPath }) => `
+        const { allureCypress } = require("${allureCypressReporterModulePath}");
+
+        module.exports = {
+          e2e: {
+            setupNodeEvents: (on, config) => {
+              const environmentInfo = {};
+              const reporter = allureCypress(on, config, {
+                resultsDir: "${allureDirPath}",
+                environmentInfo,
+              });
+              on("after:spec", (spec, results) => {
+                environmentInfo[spec.name] = String(results.stats.failures);
+                reporter.onAfterSpec(spec, results);
+              });
+              return config;
+            },
+          },
+        };
+      `,
       "cypress/e2e/promise.cy.js": () => `
         after(() => new Cypress.Promise((_, reject) => setTimeout(() => reject(new Error("Lorem Ipsum promise")), 0)));
         it("foo", () => {});
@@ -1169,6 +1189,7 @@ describe("hook errors", () => {
         }),
       ]),
     );
+    expect(envInfo).toEqual({ "callback.cy.js": "1", "promise.cy.js": "1", "sync.cy.js": "1" });
   });
 });
 

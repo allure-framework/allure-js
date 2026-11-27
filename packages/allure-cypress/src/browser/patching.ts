@@ -125,10 +125,16 @@ const wrapAfterFnWithoutArgs = (fn: DirectHookImplementation) => {
     if (syncError) {
       throwAfterSpecCompletion(this, syncError);
     } else if (isPromise(result)) {
-      return result.then(
-        () => completeSpecIfNoAfterHookLeft(this),
-        (asyncError) => throwAfterSpecCompletion(this, asyncError),
+      // Await the hook without queuing Cypress commands inside its promise callbacks.
+      const outcome = result.then(
+        () => ({ ok: true as const }),
+        (error: unknown) => ({ ok: false as const, error }),
       );
+      return cy
+        .then(() => outcome)
+        .then((settled) => {
+          return settled.ok ? completeSpecIfNoAfterHookLeft(this) : throwAfterSpecCompletion(this, settled.error);
+        });
     } else {
       completeSpecIfNoAfterHookLeft(this);
       return result;

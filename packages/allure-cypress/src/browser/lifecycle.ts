@@ -209,6 +209,7 @@ export const throwAfterSpecCompletion = (context: Mocha.Context, err: any) => {
   if (!chain) {
     throw err;
   }
+  return chain;
 };
 
 export const flushRuntimeMessages = () => getTestRuntime().flushAllureMessagesToTask("reportAllureCypressSpecMessages");
