@@ -115,8 +115,9 @@ export const runCypressInlineTest = async (
     setTestProcess = resolve;
   });
   const testProcessStep = step("Run Cypress process", async (ctx) => {
-    const moduleRootPath = require.resolve("cypress");
-    const modulePath = resolvePath(moduleRootPath, "../bin/cypress");
+    // from the package root, as the main module moved to dist/ in Cypress 16
+    const moduleRootPath = dirname(require.resolve("cypress/package.json"));
+    const modulePath = resolvePath(moduleRootPath, "bin/cypress");
     await ctx.parameter("Module", modulePath);
 
     const args = ["run", "-q", "--config-file", configFilePath];

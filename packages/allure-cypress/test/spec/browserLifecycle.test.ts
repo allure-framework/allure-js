@@ -48,6 +48,35 @@ it("ignores stale pending events for tests that have already ended", async () =>
   expect(getRuntimeMessages()).toEqual(messagesBeforePending);
 });
 
+it("ends an attempt that is going to be retried", async () => {
+  const { getRuntimeMessages, reportTestRetry, reportTestStart } = await setupBrowserLifecycle();
+  const test = createCypressTest("retried");
+  (test as any)._currentRetry = 1;
+
+  reportTestStart(test);
+  reportTestRetry(test, new Error("attempt failed"));
+
+  expect(getRuntimeMessages().slice(1)).toEqual([
+    expect.objectContaining({
+      type: "cypress_fail",
+      data: expect.objectContaining({ statusDetails: expect.objectContaining({ message: "attempt failed" }) }),
+    }),
+    { type: "cypress_test_end", data: { duration: 0, retry: 1 } },
+  ]);
+});
+
+it("ignores retry events of tests other than the current one", async () => {
+  const { getRuntimeMessages, reportTestRetry, reportTestStart } = await setupBrowserLifecycle();
+  const test = createCypressTest("current");
+
+  reportTestStart(test);
+  const messagesBeforeRetry = getRuntimeMessages().slice();
+
+  reportTestRetry(createCypressTest("stale"), new Error("attempt failed"));
+
+  expect(getRuntimeMessages()).toEqual(messagesBeforeRetry);
+});
+
 it("reports pending events for the current running test", async () => {
   const { getRuntimeMessages, reportTestSkip, reportTestStart } = await setupBrowserLifecycle();
   const test = createCypressTest("skipped while running");

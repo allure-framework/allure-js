@@ -12,6 +12,7 @@ import {
   reportRunStart,
   reportSuiteStart,
   reportTestOrHookFail,
+  reportTestRetry as onRetry,
   reportTestStart,
 } from "../lifecycle.js";
 import { initTestRuntime } from "../runtime.js";
@@ -31,6 +32,7 @@ export const registerMochaEventListeners = () => {
     .on("pass", onPass)
     .on("fail", onFail)
     .on("pending", onPending)
+    .on("retry", onRetry)
     .on("test end", onTestEnd);
 };
 

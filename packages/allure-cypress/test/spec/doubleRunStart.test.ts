@@ -74,7 +74,7 @@ const suiteEnd = (root = false): CypressMessage => ({
 const testLifecycle = (name: string): CypressMessage[] => [
   { type: "cypress_test_start", data: { name, fullNameSuffix: name, start: 0, labels: [] } },
   { type: "cypress_test_pass", data: {} },
-  { type: "cypress_test_end", data: { duration: 1, retries: 0 } },
+  { type: "cypress_test_end", data: { duration: 1, retry: 0 } },
 ];
 
 describe("duplicate cypress_run_start — context identity", () => {
@@ -242,5 +242,155 @@ describe("interactive re-run", () => {
     const videoScopeSecond = reporter.specContextByAbsolutePath.get(SPEC_A)!.videoScope;
 
     expect(videoScopeSecond).not.toBe(videoScopeFirst);
+  });
+});
+
+describe("page reload (a test that needs a different origin)", () => {
+  // Cypress reloads the page when a test needs a different origin to the previous one (e.g. each test in a loop has
+  // its own baseUrl). The run starts again, the suites that are still open start again, and every test that already
+  // ran is skipped.
+  const replayedTest = (name: string): CypressMessage[] => [
+    { type: "cypress_test_start", data: { name, fullNameSuffix: name, start: 0, labels: [] } },
+    { type: "cypress_test_skip", data: { statusDetails: { message: "This is a pending test" } } },
+    { type: "cypress_test_end", data: { duration: 0, retry: 0 } },
+  ];
+
+  const failedAttempt = (name: string, retry: number): CypressMessage[] => [
+    { type: "cypress_test_start", data: { name, fullNameSuffix: name, start: retry, labels: [] } },
+    { type: "cypress_fail", data: { status: Status.FAILED, statusDetails: { message: "failed" } } },
+    { type: "cypress_test_end", data: { duration: 1, retry } },
+  ];
+
+  const results = (writer: InMemoryWriter) =>
+    writer.tests.map((t) => ({ name: t.name, status: t.status, suites: t.titlePath?.slice(SPEC_A.split("/").length) }));
+
+  it("doesn't report the tests that already ran again, or start the suites that are still open again", () => {
+    const { reporter, writer } = makeReporter();
+    const tasks = captureTaskHandlers(reporter);
+
+    send(tasks, [runStart(), suiteStart("root", "", true), suiteStart("s1", "Sites"), ...testLifecycle("site 1")]);
+    // the page reloads for "site 2"
+    send(tasks, [
+      runStart(),
+      suiteStart("root", "", true),
+      suiteStart("s1", "Sites"),
+      ...replayedTest("site 1"),
+      ...testLifecycle("site 2"),
+    ]);
+    // and again for "site 3"
+    send(tasks, [
+      runStart(),
+      suiteStart("root", "", true),
+      suiteStart("s1", "Sites"),
+      ...replayedTest("site 1"),
+      ...replayedTest("site 2"),
+      ...testLifecycle("site 3"),
+      suiteEnd(),
+      suiteEnd(true),
+    ]);
+
+    reporter.endSpec(SPEC_A);
+
+    expect(results(writer)).toEqual([
+      { name: "site 1", status: Status.PASSED, suites: ["Sites"] },
+      { name: "site 2", status: Status.PASSED, suites: ["Sites"] },
+      { name: "site 3", status: Status.PASSED, suites: ["Sites"] },
+    ]);
+  });
+
+  it("restarts the suites that had ended before the page reloaded, for the tests they replay", () => {
+    const { reporter, writer } = makeReporter();
+    const tasks = captureTaskHandlers(reporter);
+
+    send(tasks, [
+      runStart(),
+      suiteStart("root", "", true),
+      suiteStart("s1", "First"),
+      ...testLifecycle("in first"),
+      suiteEnd(),
+      suiteStart("s2", "Second"),
+      ...testLifecycle("in second"),
+    ]);
+    send(tasks, [
+      runStart(),
+      suiteStart("root", "", true),
+      suiteStart("s1", "First"),
+      ...replayedTest("in first"),
+      suiteEnd(),
+      suiteStart("s2", "Second"),
+      ...replayedTest("in second"),
+      ...testLifecycle("also in second"),
+      suiteEnd(),
+      suiteEnd(true),
+    ]);
+
+    reporter.endSpec(SPEC_A);
+
+    expect(results(writer)).toEqual([
+      { name: "in first", status: Status.PASSED, suites: ["First"] },
+      { name: "in second", status: Status.PASSED, suites: ["Second"] },
+      { name: "also in second", status: Status.PASSED, suites: ["Second"] },
+    ]);
+  });
+
+  it("still reports every attempt of a test that's retried after the page reloaded", () => {
+    const { reporter, writer } = makeReporter();
+    const tasks = captureTaskHandlers(reporter);
+
+    send(tasks, [runStart(), suiteStart("root", "", true), ...testLifecycle("before reload")]);
+    send(tasks, [
+      runStart(),
+      suiteStart("root", "", true),
+      ...replayedTest("before reload"),
+      ...failedAttempt("retried", 0),
+      { type: "cypress_test_start", data: { name: "retried", fullNameSuffix: "retried", start: 1, labels: [] } },
+      { type: "cypress_test_pass", data: {} },
+      { type: "cypress_test_end", data: { duration: 1, retry: 1 } },
+      suiteEnd(true),
+    ]);
+
+    reporter.endSpec(SPEC_A);
+
+    expect(writer.tests.map((t) => [t.name, t.status])).toEqual([
+      ["before reload", Status.PASSED],
+      ["retried", Status.FAILED],
+      ["retried", Status.PASSED],
+    ]);
+  });
+
+  it("doesn't report a test skipped because of a hook error again", () => {
+    const { reporter, writer } = makeReporter();
+    const tasks = captureTaskHandlers(reporter);
+
+    const skippedByHook: CypressMessage = {
+      type: "cypress_skipped_test",
+      data: {
+        name: "skipped",
+        fullNameSuffix: "skipped",
+        start: 0,
+        labels: [],
+        status: Status.SKIPPED,
+        statusDetails: { message: "skipped" },
+        duration: 0,
+        retry: 0,
+        suites: ["root"],
+      },
+    };
+
+    send(tasks, [runStart(), suiteStart("root", "", true), skippedByHook]);
+    send(tasks, [
+      runStart(),
+      suiteStart("root", "", true),
+      skippedByHook,
+      ...testLifecycle("after reload"),
+      suiteEnd(true),
+    ]);
+
+    reporter.endSpec(SPEC_A);
+
+    expect(writer.tests.map((t) => [t.name, t.status])).toEqual([
+      ["skipped", Status.SKIPPED],
+      ["after reload", Status.PASSED],
+    ]);
   });
 });

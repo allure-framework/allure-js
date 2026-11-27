@@ -22,6 +22,11 @@ export type CypressSuite = Mocha.Suite & {
 export type CypressTest = Mocha.Test & {
   wallClockStartedAt?: Date;
   parent: CypressSuite | undefined;
+  err?: Error;
+  /**
+   * Set by Cypress if a `beforeEach` or `afterEach` hook fails during the attempt.
+   */
+  failedFromHookId?: string;
 };
 
 export type CypressHook = Mocha.Hook & {
@@ -103,6 +108,11 @@ export type CypressHookEndMessage = {
   type: "cypress_hook_end";
   data: {
     duration: number;
+    /**
+     * Set if the hook has failed, but Cypress suppressed the error to retry the test.
+     */
+    status?: Status;
+    statusDetails?: StatusDetails;
   };
 };
 
@@ -149,7 +159,10 @@ export type CypressTestEndMessage = {
   type: "cypress_test_end";
   data: {
     duration: number;
-    retries: number;
+    /**
+     * The zero-based index of the attempt.
+     */
+    retry: number;
   };
 };
 
@@ -211,6 +224,12 @@ export type SpecContext = {
   testScope: string | undefined;
   suiteNames: string[];
   failed: boolean;
+  /** the full name suffix of the current test */
+  testFullNameSuffix: string | undefined;
+  /** the full name suffixes of the tests whose results have been written */
+  reportedTests: Set<string>;
+  /** tests that were reported before Cypress reloaded the page (see AllureCypress#startRun) */
+  testsReportedBeforeReload: Set<string>;
 };
 
 type StepDescriptorBase = {
