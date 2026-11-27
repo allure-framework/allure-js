@@ -54,8 +54,9 @@
     "generate-report": "allure generate ./out/allure-results -o ./out/allure-report --clean",
     "lint": "vp lint src test",
     "lint:fix": "vp lint --fix src test",
-    "pretest": "run-s compile",
-    "test": "vp test run"
+    "test": "run-s test:prepare test:run",
+    "test:prepare": "yarn workspaces foreach -R --topological-dev run compile",
+    "test:run": "vp test run"
   },
   "dependencies": {
     "allure-js-commons": "workspace:*"

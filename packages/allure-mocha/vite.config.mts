@@ -1,6 +1,19 @@
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
+  run: {
+    tasks: {
+      "test:run": {
+        command: [
+          "yarn run test:serial",
+          "yarn run test:parallel",
+          "yarn run test:runner",
+          "yarn run test:runner-parallel",
+        ],
+        cache: false,
+      },
+    },
+  },
   test: {
     dir: "./test/spec",
     fileParallelism: false,

@@ -20,6 +20,7 @@
     "test": "yarn workspaces foreach -Avvt run test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.0",
     "allure": "^3.14.3",
     "lefthook": "^2.1.4",
     "rimraf": "^6.0.0",

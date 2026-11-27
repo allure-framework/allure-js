@@ -74,38 +74,38 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       ALLURE_MATRIX_ENV: ${{ matrix.os }}-node-${{ matrix.node-version }}
-      ALLURE_DUMP_NAME: allure-results-${{ matrix.os }}-node${{ matrix.node-version }}-${{ matrix.suite.id }}
+      ALLURE_DUMP_NAME: allure-results-${{ matrix.os }}-node${{ matrix.node-version }}-${{ matrix.suite.id }}${{ matrix.suite.shard && format('-{0}', matrix.suite.shard) || '' }}
+      SHARD: ${{ matrix.suite.shard }}
+      SHARD_TOTAL: ${{ matrix.suite.shardTotal }}
+      TEST_PACKAGES: ${{ matrix.suite.packages }}
     strategy:
       fail-fast: false
       matrix:
         node-version: [24, 26]
         os: [ubuntu-latest, windows-latest]
+        suite:
+          - id: cypress
+            packages: allure-cypress
+            requirePwChromium: false
+            shard: 1
+            shardTotal: 2
+          - id: cypress
+            packages: allure-cypress
+            requirePwChromium: false
+            shard: 2
+            shardTotal: 2
+          - id: playwright
+            packages: allure-playwright
+            requirePwChromium: true
+          - id: vitest-testcafe
+            packages: allure-vitest,testcafe-reporter-allure
+            requirePwChromium: true
+          - id: fast-tests
+            packages: allure-js-commons,allure-ava,allure-axios,allure-fetch,allure-node-performance,allure-tinybench,allure-bun,allure-chai,allure-jasmine,allure-jest,allure-node-test,allure-cucumberjs,allure-codeceptjs,newman-reporter-allure,allure-mocha
+            requirePwChromium: false
         exclude:
           - node-version: 24
             os: windows-latest
-        suite:
-          - id: cypress-1
-            requirePwChromium: false
-          - id: cypress-2
-            requirePwChromium: false
-          - id: cypress-3
-            requirePwChromium: false
-          - id: cypress-4
-            requirePwChromium: false
-          - id: playwright-1
-            requirePwChromium: true
-          - id: playwright-2
-            requirePwChromium: true
-          - id: vitest
-            requirePwChromium: true
-          - id: mocha-a
-            requirePwChromium: false
-          - id: mocha-b
-            requirePwChromium: false
-          - id: midweight
-            requirePwChromium: true
-          - id: testcafe
-            requirePwChromium: true
     steps:
       - uses: actions/checkout@v6
 
@@ -117,25 +117,21 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Setup Bun
-        if: ${{ matrix.suite.id == 'midweight' }}
+        if: ${{ contains(matrix.suite.packages, 'bun') }}
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.3.11
 
-      - name: Install Playwright Chromium
-        id: pw-chromium
-        if: ${{ matrix.suite.requirePwChromium && (matrix.suite.id != 'testcafe' || matrix.os != 'windows-latest') }}
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/pw-browsers
-        run: |
-          node ./scripts/ci/install-playwright-chromium.mjs ${{ matrix.os == 'ubuntu-latest' && '--with-deps' || '' }}
+      - name: Install Playwright browsers and dependencies
+        if: ${{ matrix.suite.requirePwChromium }}
+        timeout-minutes: 5
+        run: yarn playwright install chromium --with-deps
 
       - name: Run suite tests
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/pw-browsers
-          PW_CHROMIUM_PATH: ${{ steps.pw-chromium.outputs.path }}
+        shell: bash
         run: |
-          yarn allure run --config ./allurerc.mjs --environment="${{ env.ALLURE_MATRIX_ENV }}" --dump="${{ env.ALLURE_DUMP_NAME }}" --rerun 2 -- node ./scripts/ci/run-suite.mjs test ${{ matrix.suite.id }}
+          yarn allure run --environment $ALLURE_MATRIX_ENV --dump $ALLURE_DUMP_NAME --rerun 2 \
+            -- yarn vp run --log labeled ci:test
 
       - name: Upload test results
         if: always()

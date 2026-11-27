@@ -1,5 +1,6 @@
-import { type ChildProcess, fork } from "node:child_process";
+import { fork } from "node:child_process";
 import { randomUUID } from "node:crypto";
+import { once } from "node:events";
 import { mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve as resolvePath } from "node:path";
 
@@ -107,152 +108,130 @@ export const runCypressInlineTest = async (
     }
   });
 
-  const stdout: string[] = [];
-  const stderr: string[] = [];
+  try {
+    await step("Run Cypress process", async (ctx) => {
+      const stdout: string[] = [];
+      const stderr: string[] = [];
 
-  let setTestProcess: (value: ChildProcess | PromiseLike<ChildProcess>) => void;
-  const testProcessPromise = new Promise<ChildProcess>((resolve) => {
-    setTestProcess = resolve;
-  });
-  const testProcessStep = step("Run Cypress process", async (ctx) => {
-    const moduleRootPath = require.resolve("cypress");
-    const modulePath = resolvePath(moduleRootPath, "../bin/cypress");
-    await ctx.parameter("Module", modulePath);
+      const moduleRootPath = require.resolve("cypress");
+      const modulePath = resolvePath(moduleRootPath, "../bin/cypress");
+      await ctx.parameter("Module", modulePath);
 
-    const args = ["run", "-q", "--config-file", configFilePath];
-    await ctx.parameter("Arguments", JSON.stringify(args));
+      const args = ["run", "-q", "--config-file", configFilePath];
+      await ctx.parameter("Arguments", JSON.stringify(args));
 
-    const envVars = env?.(testDir);
-    if (envVars) {
-      await attachment("Extra environment variables", JSON.stringify(envVars), ContentType.JSON);
-    }
+      const envVars = env?.(testDir);
+      if (envVars) {
+        await attachment("Extra environment variables", JSON.stringify(envVars), ContentType.JSON);
+      }
 
-    await ctx.parameter("CWD", processCwd);
+      await ctx.parameter("CWD", processCwd);
 
-    const childEnv = { ...process.env };
-    delete childEnv.ALLURE_TESTPLAN_PATH;
-    delete childEnv.ALLURE_RERUN;
+      const childEnv = { ...process.env };
+      delete childEnv.ALLURE_TESTPLAN_PATH;
+      delete childEnv.ALLURE_RERUN;
 
-    const testProcess = fork(modulePath, args, {
-      env: {
-        ...childEnv,
-        ...envVars,
-      },
-      cwd: processCwd,
-      silent: true,
-    });
-
-    testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
-      stdout.push(String(chunk));
-    });
-    testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
-      stderr.push(String(chunk));
-    });
-
-    setTestProcess(testProcess);
-
-    await new Promise<void>((resolve) =>
-      testProcess.on("exit", async (code, signal) => {
-        if (code !== 0) {
-          stdout.forEach((out) => process.stdout.write(out));
-          stderr.forEach((out) => process.stderr.write(out));
-        }
-
-        if (typeof code === "number") {
-          await ctx.parameter("Exit code", code.toString());
-        }
-        if (signal) {
-          await ctx.parameter("Interrupted by", signal);
-        }
-        await attachment("stdout", stdout.join("\n"), ContentType.TEXT);
-        await attachment("stderr", stderr.join("\n"), ContentType.TEXT);
-        resolve();
-      }),
-    );
-  });
-
-  return new Promise((resolve, reject) =>
-    testProcessPromise.then((testProcess) => {
-      testProcess.on("exit", async () => {
-        try {
-          await testProcessStep;
-
-          await step("Parse Allure results", async () => {
-            const testResultsDir = allureResultsDir;
-            try {
-              const resultFiles = await readdir(testResultsDir);
-
-              for (const resultFile of resultFiles) {
-                const fullPath = join(testResultsDir, resultFile);
-
-                if (resultFile === "categories.json") {
-                  const categories = JSON.parse(await readFile(fullPath, "utf8"));
-                  await attachment(resultFile, JSON.stringify(categories, undefined, 2), ContentType.JSON);
-                  res.categories = categories;
-                  continue;
-                }
-
-                if (resultFile === "environment.properties") {
-                  const content = await readFile(fullPath, "utf8");
-                  await attachment(resultFile, content, ContentType.TEXT);
-                  res.envInfo = parseEnvInfo(content);
-                  continue;
-                }
-
-                if (/-attachment\.\S+$/.test(resultFile)) {
-                  const content = await readFile(fullPath, "utf8");
-                  await attachment(resultFile, content, ContentType.TEXT);
-                  res.attachments[resultFile] = content;
-                  continue;
-                }
-
-                if (/-container\.json$/.test(resultFile)) {
-                  const testResultContainer = JSON.parse(await readFile(fullPath, "utf8")) as TestResultContainer;
-                  await attachment(resultFile, JSON.stringify(testResultContainer, undefined, 2), ContentType.JSON);
-                  res.groups.push(testResultContainer);
-                  continue;
-                }
-
-                if (resultFile.endsWith("-metric.json")) {
-                  const content = await readFile(fullPath, "utf8");
-                  (res.metrics ??= {})[resultFile] = JSON.parse(content);
-                  await attachment(resultFile, content, ContentType.JSON);
-                  continue;
-                }
-
-                if (/-globals\.json$/.test(resultFile)) {
-                  const globalInfo = JSON.parse(await readFile(fullPath, "utf8"));
-                  await attachment(resultFile, JSON.stringify(globalInfo, undefined, 2), ContentType.JSON);
-                  res.globals ??= {};
-                  res.globals[resultFile] = globalInfo;
-                  continue;
-                }
-
-                if (/-result\.json$/.test(resultFile)) {
-                  const testResult = JSON.parse(await readFile(fullPath, "utf8")) as TestResult;
-                  await attachment(resultFile, JSON.stringify(testResult, undefined, 2), ContentType.JSON);
-                  res.tests.push(testResult);
-                  const fileStat = await stat(fullPath);
-                  res.timestamps.set(testResult.uuid, fileStat.ctime);
-                  continue;
-                }
-              }
-            } catch (e) {
-              if (!(e instanceof Error && "code" in e && e.code === "ENOENT")) {
-                throw e;
-              }
-            }
-          });
-
-          await rm(testDir, { recursive: true });
-
-          return resolve(res);
-        } catch (err) {
-          await rm(testDir, { recursive: true });
-
-          return reject(err);
-        }
+      const testProcess = fork(modulePath, args, {
+        env: {
+          ...childEnv,
+          ...envVars,
+        },
+        cwd: processCwd,
+        silent: true,
       });
-    }),
-  );
+
+      testProcess.stdout?.setEncoding("utf8").on("data", (chunk) => {
+        stdout.push(String(chunk));
+      });
+      testProcess.stderr?.setEncoding("utf8").on("data", (chunk) => {
+        stderr.push(String(chunk));
+      });
+
+      const [code, signal] = (await once(testProcess, "exit")) as [number | null, NodeJS.Signals | null];
+      if (code !== 0) {
+        stdout.forEach((out) => process.stdout.write(out));
+        stderr.forEach((out) => process.stderr.write(out));
+      }
+
+      if (typeof code === "number") {
+        await ctx.parameter("Exit code", code.toString());
+      }
+      if (signal) {
+        await ctx.parameter("Interrupted by", signal);
+      }
+      await attachment("stdout", stdout.join("\n"), ContentType.TEXT);
+      await attachment("stderr", stderr.join("\n"), ContentType.TEXT);
+    });
+
+    await step("Parse Allure results", async () => {
+      const testResultsDir = allureResultsDir;
+      try {
+        const resultFiles = await readdir(testResultsDir);
+
+        for (const resultFile of resultFiles) {
+          const fullPath = join(testResultsDir, resultFile);
+
+          if (resultFile === "categories.json") {
+            const categories = JSON.parse(await readFile(fullPath, "utf8"));
+            await attachment(resultFile, JSON.stringify(categories, undefined, 2), ContentType.JSON);
+            res.categories = categories;
+            continue;
+          }
+
+          if (resultFile === "environment.properties") {
+            const content = await readFile(fullPath, "utf8");
+            await attachment(resultFile, content, ContentType.TEXT);
+            res.envInfo = parseEnvInfo(content);
+            continue;
+          }
+
+          if (/-attachment\.\S+$/.test(resultFile)) {
+            const content = await readFile(fullPath, "utf8");
+            await attachment(resultFile, content, ContentType.TEXT);
+            res.attachments[resultFile] = content;
+            continue;
+          }
+
+          if (/-container\.json$/.test(resultFile)) {
+            const testResultContainer = JSON.parse(await readFile(fullPath, "utf8")) as TestResultContainer;
+            await attachment(resultFile, JSON.stringify(testResultContainer, undefined, 2), ContentType.JSON);
+            res.groups.push(testResultContainer);
+            continue;
+          }
+
+          if (resultFile.endsWith("-metric.json")) {
+            const content = await readFile(fullPath, "utf8");
+            (res.metrics ??= {})[resultFile] = JSON.parse(content);
+            await attachment(resultFile, content, ContentType.JSON);
+            continue;
+          }
+
+          if (/-globals\.json$/.test(resultFile)) {
+            const globalInfo = JSON.parse(await readFile(fullPath, "utf8"));
+            await attachment(resultFile, JSON.stringify(globalInfo, undefined, 2), ContentType.JSON);
+            res.globals ??= {};
+            res.globals[resultFile] = globalInfo;
+            continue;
+          }
+
+          if (/-result\.json$/.test(resultFile)) {
+            const testResult = JSON.parse(await readFile(fullPath, "utf8")) as TestResult;
+            await attachment(resultFile, JSON.stringify(testResult, undefined, 2), ContentType.JSON);
+            res.tests.push(testResult);
+            const fileStat = await stat(fullPath);
+            res.timestamps.set(testResult.uuid, fileStat.ctime);
+            continue;
+          }
+        }
+      } catch (e) {
+        if (!(e instanceof Error && "code" in e && e.code === "ENOENT")) {
+          throw e;
+        }
+      }
+    });
+
+    return res;
+  } finally {
+    await rm(testDir, { recursive: true, maxRetries: 3, retryDelay: 1000 });
+  }
 };
