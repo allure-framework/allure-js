@@ -8,6 +8,7 @@ import {
   type FixtureResult,
   type Globals,
   type Label,
+  LabelName,
   Stage,
   type StepResult,
   type TestResult,
@@ -15,6 +16,7 @@ import {
 import type {
   Category,
   EnvironmentInfo,
+  LabelHierarchy,
   RuntimeAttachmentContentMessage,
   RuntimeAttachmentPathMessage,
   RuntimeGlobalAttachmentContentMessage,
@@ -208,8 +210,16 @@ export class DefaultStepStack implements StepStack {
   }
 }
 
+const hierarchyLabelNames = {
+  suites: [LabelName.PARENT_SUITE, LabelName.SUITE, LabelName.SUB_SUITE],
+  bdd: [LabelName.EPIC, LabelName.FEATURE, LabelName.STORY],
+} as const;
+
+type LabelHierarchyOverrides = Partial<Record<LabelHierarchy["kind"], LabelHierarchy["names"]>>;
+
 export class ReporterRuntime {
   private readonly state = new LifecycleState();
+  readonly #labelHierarchyOverrides = new WeakMap<TestScope | TestResult, LabelHierarchyOverrides>();
   readonly #emittedAttachments = new WeakMap<AttachmentReference, string>();
   private notifier: Notifier;
   private stepStack: StepStack = new DefaultStepStack();
@@ -376,9 +386,15 @@ export class ReporterRuntime {
     this.notifier.beforeTestResultStop(testResult);
 
     const scopeUuids = wrapped.scopeUuids;
+    let inheritedHierarchies: LabelHierarchyOverrides | undefined;
 
     scopeUuids.forEach((scopeUuid) => {
       const scope = this.state.getScope(scopeUuid);
+
+      const hierarchies = scope && this.#labelHierarchyOverrides.get(scope);
+      if (hierarchies) {
+        inheritedHierarchies = { ...inheritedHierarchies, ...hierarchies };
+      }
 
       if (scope?.labels) {
         testResult.labels = [...testResult.labels, ...scope.labels];
@@ -417,6 +433,13 @@ export class ReporterRuntime {
       }
     });
 
+    if (inheritedHierarchies) {
+      this.#labelHierarchyOverrides.set(testResult, {
+        ...inheritedHierarchies,
+        ...this.#labelHierarchyOverrides.get(testResult),
+      });
+    }
+
     testResult.labels = [...this.globalLabels, ...testResult.labels];
 
     testResult.testCaseId ??= getTestResultTestCaseId(testResult);
@@ -441,6 +464,20 @@ export class ReporterRuntime {
     if (hasSkipLabel(testResult.labels)) {
       this.state.deleteTestResult(uuid);
       return;
+    }
+
+    // Some adapters add default labels after stopTest.
+    const hierarchies = this.#labelHierarchyOverrides.get(testResult);
+    if (hierarchies) {
+      for (const kind of ["suites", "bdd"] as const) {
+        const names = hierarchies[kind];
+        if (names) {
+          const labelNames: readonly string[] = hierarchyLabelNames[kind];
+          const offset = names.length === 1 ? 1 : 0;
+          testResult.labels = testResult.labels.filter(({ name }) => !labelNames.includes(name));
+          testResult.labels.push(...names.map((value, index) => ({ name: labelNames[index + offset], value })));
+        }
+      }
     }
 
     this.notifier.beforeTestResultWrite(testResult);
@@ -656,12 +693,17 @@ export class ReporterRuntime {
     });
   };
 
+  #replaceLabelHierarchy = (target: TestScope | TestResult, { kind, names }: LabelHierarchy) => {
+    this.#labelHierarchyOverrides.set(target, { ...this.#labelHierarchyOverrides.get(target), [kind]: names });
+  };
+
   #handleMetadataMessage = (rootUuid: string, message: RuntimeMetadataMessage["data"]) => {
     // only display name could be set to fixture.
     const fixtureResult = this.state.getWrappedFixtureResult(rootUuid);
     const {
       links,
       labels,
+      labelHierarchy,
       parameters,
       displayName,
       testCaseId,
@@ -693,6 +735,7 @@ export class ReporterRuntime {
       if (
         links ||
         labels ||
+        labelHierarchy ||
         parameters ||
         description ||
         descriptionHtml ||
@@ -716,6 +759,9 @@ export class ReporterRuntime {
           }
           if (labels) {
             scope.labels = [...scope.labels, ...labels];
+          }
+          if (labelHierarchy) {
+            this.#replaceLabelHierarchy(scope, labelHierarchy);
           }
           if (parameters) {
             scope.parameters = [...scope.parameters, ...parameters];
@@ -750,6 +796,9 @@ export class ReporterRuntime {
       }
       if (labels) {
         result.labels = [...result.labels, ...labels];
+      }
+      if (labelHierarchy) {
+        this.#replaceLabelHierarchy(result, labelHierarchy);
       }
       if (parameters) {
         result.parameters = [...result.parameters, ...parameters];

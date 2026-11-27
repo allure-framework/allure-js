@@ -215,3 +215,13 @@ it("sets label from env variables", async () => {
     }),
   );
 });
+
+it("can replace the behavior hierarchy from a setup hook", async () => {
+  const { tests } = await runCucumberInlineTest(["hierarchy"], ["hierarchy"]);
+
+  expect(tests).toHaveLength(1);
+  expect(tests[0].status).toBe(Status.PASSED);
+  expect(tests[0].labels.filter(({ name }) => ["epic", "feature", "story"].includes(name))).toEqual([
+    { name: "feature", value: "Custom feature" },
+  ]);
+});

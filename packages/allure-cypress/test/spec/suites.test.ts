@@ -110,3 +110,30 @@ it("should apply defaults after hook metadata, including tests skipped by a fail
     "next skipped": ["parentSuite: failed-hook-parent", "suite: explicit-suite"],
   });
 });
+
+it("can replace both hierarchies from the browser runtime", async () => {
+  const { tests } = await runCypressInlineTest({
+    "cypress/e2e/sample.cy.js": ({ allureCommonsModulePath, allureCommonsSyncModulePath }) => `
+      const { suites } = require("${allureCommonsModulePath}");
+      const { bdd } = require("${allureCommonsSyncModulePath}");
+
+      describe("Default parent", () => {
+        describe("Default suite", () => {
+          it("custom hierarchy @allure.label.story:Old-story", () => {
+            suites("Custom suite");
+            bdd("Custom epic", "Custom feature");
+          });
+        });
+      });
+    `,
+  });
+
+  expect(tests).toHaveLength(1);
+  expect(suiteLabelsByTest(tests)).toEqual({ "custom hierarchy": ["suite: Custom suite"] });
+  expect(
+    tests[0].labels
+      .filter(({ name }) => ["epic", "feature", "story"].includes(name))
+      .map(({ name, value }) => `${name}: ${value}`)
+      .sort(),
+  ).toEqual(["epic: Custom epic", "feature: Custom feature"]);
+});
